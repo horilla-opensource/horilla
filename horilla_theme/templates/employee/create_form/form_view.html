@@ -1,36 +1,78 @@
 {% extends 'index.html' %}
-{% load static i18n %}
+{% load static i18n horillafilters %}
 {% block content %}
-<div id="view-container">
-    <section
-        class="oh-wrapper oh-main__topbar oh-profile-section__topbar pt-0"
-        x-data="{searchShow: false}"
-    >
-        <div class="oh-main__titlebar oh-main__titlebar--left">
-            <h1 class="oh-main__titlebar-title fw-bold text-lg font-semibold">
-                {% trans "Add Employee" %}
-            </h1>
-        </div>
-        <div
-            class="oh-main__titlebar oh-main__titlebar--left d-flex align-items-center"
-        >
-            <ul class="oh-general__tabs oh-profile-section__tab">
-                <li class="oh-general__tab">
-                    <a
-                        href="#"
-                        class="oh-general__tab-link oh-general__tab-link--active text-sm font-semibold mb-3"
-                        data-action="general-tab"
-                        data-target="#personal"
-                        >{% trans "Personal Info" %}</a
-                    >
-                </li>
-            </ul>
-        </div>
-    </section>
+{% get_company as theme_obj %}
 
+<style>
+    .emp-input {
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .emp-input:focus {
+        outline: none;
+        border-color: {{ theme_obj.primary_600|default:"#E54F38" }};
+        box-shadow: 0 0 0 3px {{ theme_obj.primary_100|default:"rgba(229,79,56,0.1)" }};
+    }
+    .emp-photo-zone:hover {
+        border-color: {{ theme_obj.primary_500|default:"#F7C8C1" }};
+    }
+    @media (max-width: 768px) {
+        .emp-grid-2 { grid-template-columns: 1fr !important; }
+        .emp-grid-3 { grid-template-columns: 1fr 1fr !important; }
+        .emp-grid-4 { grid-template-columns: 1fr 1fr !important; }
+        .emp-layout { flex-direction: column !important; }
+        .emp-photo-wrap { width: 100% !important; align-items: center !important; }
+    }
+</style>
+
+<div id="view-container">
+
+    <!-- Page Header + Stepper -->
+    <div class="bg-white rounded-2xl shadow-card px-6 py-3 mb-2">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+            <!-- Left: Back + Title -->
+            <div class="flex items-center gap-4">
+                <a href="{% url 'employee-view' %}?view=list"
+                   class="w-10 h-10 rounded-full border border-secondary-200 flex items-center justify-center text-color-600 no-underline hover:bg-secondary-50">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
+                    </svg>
+                </a>
+                <div>
+                    <h1 class="text-lg font-semibold text-dark-500 m-0">{% trans "Add New Employee" %}</h1>
+                    <p class="text-xs text-dark-100 mt-0.5 mb-0">{% trans "Enter the details to create a new employee profile." %}</p>
+                </div>
+            </div>
+
+            <!-- Right: Stepper -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <!-- Step 1 - Active -->
+                <div class="flex items-center gap-2 bg-primary-600 text-white px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap">
+                    <div class="w-5 h-5 rounded-full border-2 border-secondary-200 bg-white/20 flex items-center justify-center text-xxs font-semibold">1</div>
+                    {% trans "Personal Information" %}
+                </div>
+
+                <div class="w-10 h-px bg-primary-500"></div>
+
+                <!-- Step 2 -->
+                <div class="flex items-center gap-2 text-dark-100 px-3 py-1.5 text-xs font-medium whitespace-nowrap">
+                    <div class="w-6 h-6 rounded-full border-2 border-secondary-200 flex items-center justify-center text-xxs font-semibold">2</div>
+                    {% trans "Work Information" %}
+                </div>
+
+                <div class="w-10 h-px bg-secondary-200"></div>
+
+                <!-- Step 3 -->
+                <div class="flex items-center gap-2 text-dark-100 px-3 py-1.5 text-xs font-medium whitespace-nowrap">
+                    <div class="w-6 h-6 rounded-full border-2 border-secondary-200 flex items-center justify-center text-xxs font-semibold">3</div>
+                    {% trans "Bank Information" %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Card -->
     <div id="personal-info">
         {% include 'employee/create_form/personal_info.html' %}
     </div>
-
-    {% endblock content %}
 </div>
+{% endblock content %}

@@ -1,4 +1,6 @@
-{% load i18n %}
+{% load i18n widget_tweaks %}
+
+<!-- Badge Modal -->
 <div class="oh-modal" id="badgeModal" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 550px">
         <div class="oh-modal__dialog-header">
@@ -6,124 +8,234 @@
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
-
         <div class="oh-modal__dialog-body" id="badgeModalBody"></div>
     </div>
 </div>
-<div class="oh-wrapper" data-select2-id="select2-data-40-yu7x">
-    <div
-        class="oh-general__tab-target oh-profile-section mb-4 p-10"
-        id="personal"
-        data-select2-id="select2-data-personal"
-        style="border: none"
+
+<div class="bg-white rounded-2xl shadow-card px-6 py-5">
+    <form
+        method="post"
+        action='{% url "employee-create-personal-info" %}'
+        enctype="multipart/form-data"
+        id="employeeCreateForm"
     >
-        <div
-            class="oh-profile-section__card p-10"
-            data-select2-id="select2-data-48-0df8"
-            style="border: 1px solid #cdd5df; border-radius: 10px"
-        >
-            <form
-                data-select2-id="select2-data-47-5jxy"
-                method="post"
-                action='{% url "employee-create-personal-info" %}'
-                enctype="multipart/form-data"
-            >
-                {% csrf_token %}
-                <div class="row">
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 d-flex align-items-center">
-                        <div
-                            class="oh-profile-section__edit-photo me-4 mb-3"
-                            data-toggle="oh-modal-toggle"
-                            data-target="#uploadPhotoModal"
-                        >
-                            <img
-                                src="https://ui-avatars.com/api/?name=N+P&background=random"
-                                class="oh-profile-section__avatar preview"
-                                alt=""
-                            >
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="flex gap-6 emp-layout">
+            <!-- Left: Form Fields -->
+            <div class="flex-1 min-w-0">
+
+                <div class="border border-[#ebebeb] rounded-md mb-5">
+                    <h3 class="text-sm font-semibold bg-[#f3f3f3] px-3 py-3 text-[#333] flex items-center justify-between gap-2 flex-wrap rounded-t-md">
+                        {% trans "Basic Identity" %}
+                    </h3>
+                    <div class="grid grid-cols-3 gap-x-4 gap-y-2 emp-grid-3 px-3 py-3">
+                        <div>
+                            <label class="block text-xs font-medium text-color-600 mb-1" for="id_badge_id">
+                                {% trans "Badge ID" %}
+                                <a href="#" hx-get="{% url 'get-first-last-badge-id' %}" hx-target="#badgeModalBody" data-target="#badgeModal" data-toggle="oh-modal-toggle" class="text-success text-xxs ml-1 no-underline">{% trans "Show" %}</a>
+                            </label>
+                            {{ form.badge_id|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                            {{ form.badge_id.errors }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-color-600 mb-1" for="id_employee_first_name">
+                                {% trans "First Name" %} <span class="text-primary-600">*</span>
+                            </label>
+                            {{ form.employee_first_name|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                            {{ form.employee_first_name.errors }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-color-600 mb-1" for="id_employee_last_name">{% trans "Last Name" %}</label>
+                            {{ form.employee_last_name|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                            {{ form.employee_last_name.errors }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-color-600 mb-1" for="id_email">
+                                {% trans "Email" %} <span class="text-primary-600">*</span>
+                            </label>
+                            {{ form.email|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                            {{ form.email.errors }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-color-600 mb-1" for="id_phone">
+                                {% trans "Phone" %} <span class="text-primary-600">*</span>
+                            </label>
+                            {{ form.phone|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                            {{ form.phone.errors }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-color-600 mb-1" for="id_gender">
+                                {% trans "Gender" %} <span class="text-primary-600">*</span>
+                            </label>
+                            {{ form.gender|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 appearance-none" }}
+                            {{ form.gender.errors }}
                         </div>
                     </div>
                 </div>
-                {{ form.employee_profile.errors }}
-                <div
-                    class="oh-modal"
-                    id="uploadPhotoModal"
-                    role="dialog"
-                    aria-labelledby="uploadPhotoModal"
-                    aria-hidden="true"
-                >
-                    <div class="oh-modal__dialog">
-                        <div class="oh-modal__dialog-header">
-                            <span
-                                class="oh-modal__dialog-title"
-                                id="uploadPhotoModalLabel"
-                            >{% trans "Upload Photo" %}</span>
-                            <button
-                                class="oh-modal__close"
-                                onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show'); event.preventDefault()"
-                                aria-label="{% trans 'Close' %}"
-                            >
-                                <ion-icon name="close-outline"></ion-icon>
-                            </button>
+
+                <div class="border border-[#ebebeb] rounded-md mb-5">
+                    <h3 class="text-sm font-semibold bg-[#f3f3f3] px-3 py-3 text-[#333] flex items-center justify-between gap-2 flex-wrap rounded-t-md">
+                        {% trans "Contact & Address" %}
+                    </h3>
+                    <div class="px-3 py-3">
+                        <div class="mb-2">
+                            <label class="block text-xs font-medium text-color-600 mb-1" for="id_address">{% trans "Address" %}</label>
+                            {{ form.address|add_class:"emp-input w-full px-3 py-2 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 resize-y" }}
+                            {{ form.address.errors }}
                         </div>
-                        <div class="oh-modal__dialog-body">
-                            <div class="oh-profile-section__image-container">
-                                <div class="oh-profile-section__modal-avatar">
-                                    <img
-                                        src="https://ui-avatars.com/api/?name=N+P&background=random"
-                                        class="oh-profile-section__modal-image preview"
-                                        alt="{% trans 'Username' %}"
-                                    >
-                                </div>
-                                {{ form.employee_profile }}
+                        <div class="grid grid-cols-4 gap-x-4 gap-y-2 emp-grid-4">
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_country">{% trans "Country" %}</label>
+                                <select name="country" id="id_country" class="emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 oh-select-2" data-selected="{{ form.country.value|default:'' }}">
+                                    <option value="{{ form.instance.country }}" selected>{{ form.instance.country }}</option>
+                                </select>
+                                {{ form.country.errors }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_state">{% trans "State" %}</label>
+                                <select name="state" id="id_state" class="emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 oh-select-2" data-selected="{{ form.state.value|default:'' }}">
+                                    <option value="{{ form.instance.state }}" selected>{{ form.instance.state }}</option>
+                                </select>
+                                {{ form.state.errors }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_city">{% trans "City" %}</label>
+                                {{ form.city|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                {{ form.city.errors }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_zip">{% trans "Zip" %}</label>
+                                {{ form.zip|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                {{ form.zip.errors }}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                        <label class="oh-label" for="firstname">{% trans "Badge Id" %}
-                            <div
-                                hx-get="{% url 'get-first-last-badge-id' %}"
-                                hx-target="#badgeModalBody"
-                                data-target="#badgeModal"
-                                data-toggle="oh-modal-toggle"
-                                class="oh-checkpoint-badge text-success mb-2"
-                                id="selectAllInstances"
-                                style="cursor: pointer"
-                            >
-                                {% trans "Show" %}
-                            </div>
-                        </label>
-                        {{ form.badge_id }}
-                        {{ form.badge_id.errors }}
+                <div class="border border-[#ebebeb] rounded-md mb-5">
+                    <h3 class="text-sm font-semibold bg-[#f3f3f3] px-3 py-3 text-[#333] flex items-center justify-between gap-2 flex-wrap rounded-t-md">
+                        {% trans "Personal Details" %}
+                    </h3>
+                    <div class="grid grid-cols-3 gap-x-4 gap-y-2 emp-grid-3 px-3 py-3">
+                        <div>
+                            <label class="block text-xs font-medium text-color-600 mb-1" for="id_dob">{% trans "Date of Birth" %}</label>
+                            {{ form.dob|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                            {{ form.dob.errors }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-color-600 mb-1" for="id_qualification">{% trans "Qualification" %}</label>
+                            {{ form.qualification|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                            {{ form.qualification.errors }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-color-600 mb-1" for="id_experience">{% trans "Experience" %}</label>
+                            {{ form.experience|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                            {{ form.experience.errors }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-color-600 mb-1" for="id_marital_status">{% trans "Marital Status" %}</label>
+                            {{ form.marital_status|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 appearance-none" }}
+                            {{ form.marital_status.errors }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-color-600 mb-1" for="id_children">{% trans "Children" %}</label>
+                            {{ form.children|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                            {{ form.children.errors }}
+                        </div>
                     </div>
                 </div>
-                {{ form.as_p }}
-                <hr class="mt-5 mb-3 d-flex flex-row-reverse" style="color: #cdd5df">
-                <div class="col-lg-12 d-flex" style="justify-content: flex-end">
-                    <button type="submit" class="oh-btn oh-btn--secondary">
-                        {% trans "Save Changes" %}
-                    </button>
+
+                <div class="border border-[#ebebeb] rounded-md mb-5">
+                    <h3 class="text-sm font-semibold bg-[#f3f3f3] px-3 py-3 text-[#333] flex items-center justify-between gap-2 flex-wrap rounded-t-md">
+                        {% trans "Emergency Contact" %}
+                    </h3>
+                    <div class="grid grid-cols-3 gap-x-4 gap-y-2 emp-grid-3 px-3 py-3">
+                        <div>
+                            <label class="block text-xs font-medium text-color-600 mb-1" for="id_emergency_contact">{% trans "Emergency Contact" %}</label>
+                            {{ form.emergency_contact|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                            {{ form.emergency_contact.errors }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-color-600 mb-1" for="id_emergency_contact_name">{% trans "Emergency Contact Name" %}</label>
+                            {{ form.emergency_contact_name|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                            {{ form.emergency_contact_name.errors }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-color-600 mb-1" for="id_emergency_contact_relation">{% trans "Emergency Contact Relation" %}</label>
+                            {{ form.emergency_contact_relation|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                            {{ form.emergency_contact_relation.errors }}
+                        </div>
+                    </div>
                 </div>
-            </form>
+            </div>
+
+            <!-- Right: Photo Upload -->
+            <div class="w-40 flex flex-col items-center flex-shrink-0 emp-photo-wrap">
+                <label for="id_employee_profile" class="emp-photo-zone w-32 h-36 border-2 border-dashed border-secondary-300 rounded-xl flex items-center justify-center bg-secondary-50 overflow-hidden cursor-pointer transition-colors" id="photoDropZone">
+                    <img id="photoPreview" src="https://ui-avatars.com/api/?name=N+P&background=random" data-default-src="https://ui-avatars.com/api/?name=N+P&background=random" alt="{% trans 'Employee photo' %}" class="preview w-full h-full object-cover">
+                </label>
+                <div class="hidden">{{ form.employee_profile }}</div>
+                <p class="text-xxs text-dark-100 text-center mt-2 leading-relaxed">
+                    {% trans "Upload JPG, PNG or SVG" %}<br>({% trans "max 5MB" %})
+                </p>
+                <button type="button" id="removePhotoBtn" class="hidden text-xxs text-danger mt-1 border-0 bg-transparent p-0 cursor-pointer">
+                    {% trans "Remove photo" %}
+                </button>
+                {{ form.employee_profile.errors }}
+            </div>
         </div>
-    </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end gap-3 mt-5 pt-4 border-t border-secondary-100">
+            <a href="{% url 'employee-view' %}?view=list" class="px-6 py-2 border border-secondary-200 rounded-lg text-sm font-medium text-color-600 hover:bg-secondary-50 no-underline transition-colors">
+                {% trans "Cancel" %}
+            </a>
+            <button type="submit" class="px-6 py-2 bg-primary-600 rounded-lg text-sm font-medium text-white hover:bg-primary-700 transition-colors shadow-sm">
+                {% trans "Save & Continue" %}
+            </button>
+        </div>
+    </form>
 </div>
+
 <script>
     $(document).ready(function () {
-      $('#id_employee_profile').change(function (e) {
+        var $photoInput = $('#id_employee_profile');
+        var $photoPreview = $('#photoPreview');
+        var $removePhotoBtn = $('#removePhotoBtn');
+        var defaultPhotoSrc = $photoPreview.data('default-src');
 
-        const file = this.files[0];
-        const reader = new FileReader();
+        function toggleRemovePhotoButton() {
+            if ($photoInput[0] && $photoInput[0].files && $photoInput[0].files.length > 0) {
+                $removePhotoBtn.removeClass('hidden');
+            } else {
+                $removePhotoBtn.addClass('hidden');
+            }
+        }
 
-        reader.addEventListener("load", function() {
-          const imageUrl = reader.result;
-          $(".preview").attr("src", imageUrl);
+        $('#id_employee_profile').change(function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.addEventListener("load", function () {
+                    $("#photoPreview").attr("src", reader.result);
+                    $(".preview").attr("src", reader.result);
+                });
+                reader.readAsDataURL(file);
+            }
+            toggleRemovePhotoButton();
         });
 
-        reader.readAsDataURL(file);
-      });
+        $removePhotoBtn.on('click', function () {
+            $photoInput.val('');
+            $photoPreview.attr('src', defaultPhotoSrc);
+            $('.preview').attr('src', defaultPhotoSrc);
+            toggleRemovePhotoButton();
+        });
+
+        toggleRemovePhotoButton();
+        $("[name='country']").select2({ width: '100%' });
+        $("[name='state']").select2({ width: '100%' });
     });
 </script>

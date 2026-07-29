@@ -1,0 +1,167 @@
+{% load i18n horillafilters %}
+{% get_company as theme_obj %}
+
+<style>
+    .emp-input {
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .emp-input:focus {
+        outline: none;
+        border-color: {{ theme_obj.primary_600|default:"#E54F38" }};
+        box-shadow: 0 0 0 3px {{ theme_obj.primary_100|default:"rgba(229,79,56,0.1)" }};
+    }
+    .emp-step-btn {
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    .emp-step-btn--active {
+        background: {{ theme_obj.primary_600|default:"#E54F38" }};
+        color: #fff;
+    }
+    .emp-step-btn--done {
+        color: {{ theme_obj.primary_600|default:"#E54F38" }};
+    }
+    .emp-connector--done {
+        background: {{ theme_obj.primary_500|default:"#F7C8C1" }};
+    }
+    @media (max-width: 768px) {
+        .emp-grid-2 { grid-template-columns: 1fr !important; }
+        .emp-grid-3 { grid-template-columns: 1fr 1fr !important; }
+        .emp-grid-4 { grid-template-columns: 1fr 1fr !important; }
+        .emp-layout { flex-direction: column !important; }
+        .emp-photo-wrap { width: 100% !important; align-items: center !important; }
+    }
+</style>
+
+<div id="employee-update-form-root"{% if active_tab %} data-active-tab="{{ active_tab }}"{% endif %}>
+
+    <!-- Header + Stepper -->
+    <div class="bg-white rounded-2xl shadow-card px-6 py-3 mb-2">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+            <!-- Left: Back + Title -->
+            <div class="flex items-center gap-4">
+                <a href="{% url 'employee-view' %}?view=list"
+                   class="w-10 h-10 rounded-full border border-secondary-200 flex items-center justify-center text-color-600 no-underline hover:bg-secondary-50">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
+                    </svg>
+                </a>
+                <div>
+                    <h1 class="text-lg font-semibold text-dark-500 m-0">
+                        {% trans "Edit" %} {{ form.instance.employee_first_name }} {{ form.instance.employee_last_name }}
+                    </h1>
+                    <p class="text-xs text-dark-100 mt-0.5 mb-0">{% trans "Update employee information across all sections." %}</p>
+                </div>
+            </div>
+
+            <!-- Right: Step Tabs -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <a href="#" class="emp-step-btn flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap no-underline emp-step-btn--active"
+                   data-action="general-tab" data-target="#personal" id="step-personal">
+                    <div class="w-5 h-5 rounded-full border-2 border-secondary-200 bg-white/20 flex items-center justify-center text-xxs font-semibold">1</div>
+                    {% trans "Personal Information" %}
+                </a>
+
+                <div class="w-10 h-px bg-secondary-200 emp-connector" data-for="personal"></div>
+
+                <a href="#" class="emp-step-btn flex items-center gap-2 text-dark-100 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap no-underline"
+                   data-action="general-tab" data-target="#work" id="step-work">
+                    <div class="w-5 h-5 rounded-full border-2 border-secondary-200 flex items-center justify-center text-xxs font-semibold">2</div>
+                    {% trans "Work Information" %}
+                </a>
+
+                <div class="w-10 h-px bg-secondary-200 emp-connector" data-for="work"></div>
+
+                <a href="#" class="emp-step-btn flex items-center gap-2 text-dark-100 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap no-underline"
+                   data-action="general-tab" data-target="#bank" id="step-bank">
+                    <div class="w-5 h-5 rounded-full border-2 border-secondary-200 flex items-center justify-center text-xxs font-semibold">3</div>
+                    {% trans "Bank Information" %}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    {% include 'employee/update_form/personal_info.html' with active_tab=active_tab %}
+    {% include 'employee/update_form/work_details.html' with active_tab=active_tab %}
+    {% include 'employee/update_form/bank_details.html' with active_tab=active_tab %}
+
+    <script>
+        (function () {
+            function applyEmployeeEditTab(targetId) {
+                if (!["#personal", "#work", "#bank"].includes(targetId)) {
+                    targetId = "#personal";
+                }
+
+                $(".oh-general__tab-target").addClass("d-none");
+                $(targetId).removeClass("d-none");
+
+                var stepMap = { "#personal": "step-personal", "#work": "step-work", "#bank": "step-bank" };
+                var steps = ["#personal", "#work", "#bank"];
+                var activeIdx = steps.indexOf(targetId);
+
+                $(".emp-step-btn").each(function () {
+                    $(this).removeClass("emp-step-btn--active emp-step-btn--done");
+                    $(this).addClass("text-dark-100");
+                    $(this).find("div:first").removeClass("bg-white/20 border-primary-600 text-primary-600").addClass("border-2 border-secondary-200");
+                });
+                $(".emp-connector").removeClass("emp-connector--done").addClass("bg-secondary-200");
+
+                steps.forEach(function (step, idx) {
+                    var btn = $("#" + stepMap[step]);
+                    if (idx === activeIdx) {
+                        btn.removeClass("text-dark-100").addClass("emp-step-btn--active");
+                        btn.find("div:first").removeClass("border-secondary-200").addClass("bg-white/20");
+                    } else if (idx < activeIdx) {
+                        btn.removeClass("text-dark-100").addClass("emp-step-btn--done");
+                    }
+                });
+
+                if (activeIdx > 0) {
+                    $(".emp-connector[data-for='personal']").removeClass("bg-secondary-200").addClass("emp-connector--done");
+                }
+                if (activeIdx > 1) {
+                    $(".emp-connector[data-for='work']").removeClass("bg-secondary-200").addClass("emp-connector--done");
+                }
+            }
+
+            var root = document.getElementById("employee-update-form-root");
+            var serverTab = root && root.getAttribute("data-active-tab");
+            if (serverTab) {
+                localStorage.setItem("activeEmpTab", "#" + serverTab);
+                applyEmployeeEditTab("#" + serverTab);
+            } else {
+                var stored = localStorage.getItem("activeEmpTab");
+                if (["#personal", "#work", "#bank"].includes(stored)) {
+                    applyEmployeeEditTab(stored);
+                }
+            }
+
+            $("[data-action=general-tab]").off("click.empEditTab").on("click.empEditTab", function (e) {
+                e.preventDefault();
+                var targetId = $(this).attr("data-target");
+                localStorage.setItem("activeEmpTab", targetId);
+                applyEmployeeEditTab(targetId);
+            });
+
+            $('#id_profile').change(function () {
+                const file = this.files[0];
+                const reader = new FileReader();
+                reader.addEventListener("load", function () {
+                    $(".preview").attr("src", reader.result);
+                });
+                reader.readAsDataURL(file);
+            });
+        })();
+    </script>
+</div>
+
+{% if messages %}
+<div id="reloadMessages" hx-swap-oob="innerHTML">
+    <div class="oh-alert-container">
+        {% for message in messages %}
+            <div class="oh-alert oh-alert--animated {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}

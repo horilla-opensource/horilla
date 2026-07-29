@@ -1,130 +1,243 @@
-{% load static %}
-{% load i18n %}
-<div class="oh-wrapper" data-select2-id="select2-data-40-yu7x">
-    <div
-        class="oh-general__tab-target oh-profile-section mb-4 p-5"
-        id="personal"
-        data-select2-id="select2-data-personal"
-        style="border: none"
-    >
-        <div
-            class="oh-profile-section__card p-10"
-            data-select2-id="select2-data-48-0df8"
-            style="border: 1px solid #cdd5df; border-radius: 10px"
+{% load i18n widget_tweaks %}
+
+<div class="oh-general__tab-target" id="personal">
+    <div class="bg-white rounded-2xl shadow-card px-6 py-5">
+        <form
+            method="post"
+            enctype="multipart/form-data"
+            hx-post="{% url 'employee-view-update' obj_id %}"
+            hx-target="#employee-update-form-root"
+            hx-swap="outerHTML"
+            {% if not container_mode %}
+                hx-push-url="{% url 'employee-view-update' obj_id %}"
+            {% endif %}
+            hx-encoding="multipart/form-data"
+            action="{% url 'employee-view-update' obj_id %}"
+            id="employeeUpdatePersonalForm"
         >
-            {% include 'employee/update_form/edit_form_back_button.html' %}
-            <form
-                method="post"
-                enctype="multipart/form-data"
-                hx-post="{% url 'employee-view-update' obj_id %}"
-                hx-target="#employee-update-form-root"
-                hx-swap="outerHTML"
-                {% if not container_mode %}
-                    hx-push-url="{% url 'employee-view-update' obj_id %}"
-                {% endif %}
-                hx-encoding="multipart/form-data"
-                action="{% url 'employee-view-update' obj_id %}"
-            >
-                <div id="personalMessage"></div>
-                <input type="hidden" name="form" value="personal">
-                {% csrf_token %}
-                {% if container_mode %}<input type="hidden" name="container" value="true">{% endif %}
-                <div class="row">
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 d-flex align-items-center">
-                        <div
-                            class="oh-profile-section__edit-photo me-4 mb-3"
-                            data-toggle="oh-modal-toggle"
-                            data-target="#uploadPhotoModal"
-                        >
-                            <img
-                                src="{{form.instance.get_avatar}}"
-                                class="oh-profile-section__avatar preview"
-                                alt="{% trans 'Username' %}"
-                            >
+            <div id="personalMessage"></div>
+            <input type="hidden" name="form" value="personal">
+            {% csrf_token %}
+            {% if container_mode %}<input type="hidden" name="container" value="true">{% endif %}
+
+            {{ form.non_field_errors }}
+
+            <div class="flex gap-6 emp-layout">
+                <!-- Left: Form Fields -->
+                <div class="flex-1 min-w-0">
+
+                    <!-- Basic Identity -->
+                    <div class="border border-[#ebebeb] rounded-md mb-5">
+                        <h3 class="text-sm font-semibold bg-[#f3f3f3] px-3 py-3 text-[#333] flex items-center justify-between gap-2 flex-wrap rounded-t-md">
+                            {% trans "Basic Identity" %}
+                        </h3>
+                        <div class="grid grid-cols-3 gap-x-4 gap-y-2 emp-grid-3 px-3 py-3">
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_badge_id">{% trans "Badge ID" %}</label>
+                                {{ form.badge_id|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                {{ form.badge_id.errors }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_employee_first_name">{% trans "First Name" %} <span class="text-primary-600">*</span></label>
+                                {{ form.employee_first_name|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                {{ form.employee_first_name.errors }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_employee_last_name">{% trans "Last Name" %}</label>
+                                {{ form.employee_last_name|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                {{ form.employee_last_name.errors }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_email">{% trans "Email" %} <span class="text-primary-600">*</span></label>
+                                {{ form.email|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                {{ form.email.errors }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_phone">{% trans "Phone" %} <span class="text-primary-600">*</span></label>
+                                {{ form.phone|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                {{ form.phone.errors }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_gender">{% trans "Gender" %} <span class="text-primary-600">*</span></label>
+                                {{ form.gender|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 appearance-none" }}
+                                {{ form.gender.errors }}
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Contact & Address -->
+                    <div class="border border-[#ebebeb] rounded-md mb-5">
+                        <h3 class="text-sm font-semibold bg-[#f3f3f3] px-3 py-3 text-[#333] flex items-center justify-between gap-2 flex-wrap rounded-t-md">
+                            {% trans "Contact & Address" %}
+                        </h3>
+                        <div class="px-3 py-3">
+                            <div class="mb-2">
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_address">{% trans "Address" %}</label>
+                                {{ form.address|add_class:"emp-input w-full px-3 py-2 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 resize-y" }}
+                                {{ form.address.errors }}
+                            </div>
+                            <div class="grid grid-cols-4 gap-x-4 gap-y-2 emp-grid-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-color-600 mb-1" for="id_country">{% trans "Country" %}</label>
+                                    <select name="country" id="id_country" class="emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 oh-select-2" data-selected="{{ form.country.value|default:'' }}">
+                                        <option value="{{ form.instance.country }}" selected>{{ form.instance.country }}</option>
+                                    </select>
+                                    {{ form.country.errors }}
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-color-600 mb-1" for="id_state">{% trans "State" %}</label>
+                                    <select name="state" id="id_state" class="emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 oh-select-2" data-selected="{{ form.state.value|default:'' }}">
+                                        <option value="{{ form.instance.state }}" selected>{{ form.instance.state }}</option>
+                                    </select>
+                                    {{ form.state.errors }}
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-color-600 mb-1" for="id_city">{% trans "City" %}</label>
+                                    {{ form.city|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                    {{ form.city.errors }}
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-color-600 mb-1" for="id_zip">{% trans "Zip" %}</label>
+                                    {{ form.zip|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                    {{ form.zip.errors }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Details -->
+                    <div class="border border-[#ebebeb] rounded-md mb-5">
+                        <h3 class="text-sm font-semibold bg-[#f3f3f3] px-3 py-3 text-[#333] flex items-center justify-between gap-2 flex-wrap rounded-t-md">
+                            {% trans "Personal Details" %}
+                        </h3>
+                        <div class="grid grid-cols-3 gap-x-4 gap-y-2 emp-grid-3 px-3 py-3">
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_dob">{% trans "Date of Birth" %}</label>
+                                {{ form.dob|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                {{ form.dob.errors }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_qualification">{% trans "Qualification" %}</label>
+                                {{ form.qualification|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                {{ form.qualification.errors }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_experience">{% trans "Experience" %}</label>
+                                {{ form.experience|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                {{ form.experience.errors }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_marital_status">{% trans "Marital Status" %}</label>
+                                {{ form.marital_status|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 appearance-none" }}
+                                {{ form.marital_status.errors }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_children">{% trans "Children" %}</label>
+                                {{ form.children|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                {{ form.children.errors }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contact -->
+                    <div class="border border-[#ebebeb] rounded-md mb-5">
+                        <h3 class="text-sm font-semibold bg-[#f3f3f3] px-3 py-3 text-[#333] flex items-center justify-between gap-2 flex-wrap rounded-t-md">
+                            {% trans "Emergency Contact" %}
+                        </h3>
+                        <div class="grid grid-cols-3 gap-x-4 gap-y-2 emp-grid-3 px-3 py-3">
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_emergency_contact">{% trans "Emergency Contact" %}</label>
+                                {{ form.emergency_contact|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                {{ form.emergency_contact.errors }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_emergency_contact_name">{% trans "Emergency Contact Name" %}</label>
+                                {{ form.emergency_contact_name|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                {{ form.emergency_contact_name.errors }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_emergency_contact_relation">{% trans "Emergency Contact Relation" %}</label>
+                                {{ form.emergency_contact_relation|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                {{ form.emergency_contact_relation.errors }}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right: Photo -->
+                <div class="w-40 flex flex-col items-center flex-shrink-0 emp-photo-wrap">
+                    <div class="w-32 h-36 border-2 border-dashed border-secondary-300 rounded-xl flex items-center justify-center bg-secondary-50 overflow-hidden cursor-pointer transition-colors"
+                         data-toggle="oh-modal-toggle" data-target="#uploadPhotoModal">
+                        <img src="{{ form.instance.get_avatar }}" alt="{% trans 'Employee photo' %}" class="preview w-full h-full object-cover">
+                    </div>
+                    <button type="button" class="text-xxs text-primary-600 mt-2 font-medium"
+                            data-toggle="oh-modal-toggle" data-target="#uploadPhotoModal">
+                        {% trans "Change Photo" %}
+                    </button>
                     {{ form.employee_profile.errors }}
                 </div>
-                <div class="row">
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                        <label class="oh-label" for="{{form.badge_id.id_for_label}}">{% trans "Badge Id" %}</label>
-                        {{ form.badge_id }} {{ form.badge_id.errors }}
-                    </div>
-                </div>
-                {{ form.as_p }}
-                <hr class="mt-5 mb-3" style="color: #cdd5df">
-                <div class="w-100 d-flex" style="justify-content: flex-end">
-                    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--w-100-resp">
-                        {% trans "Save" %}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div class="oh-modal" id="uploadPhotoModal" role="dialog" aria-labelledby="uploadPhotoModal" aria-hidden="true">
-        <div class="oh-modal__dialog">
-            <div class="oh-modal__dialog-header">
-                <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel">{% trans "Upload Photo" %}</span>
-                <button
-                    class="oh-modal__close"
-                    aria-label="{% trans 'Close' %}"
-                    onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
-                >
-                    <ion-icon name="close-outline"></ion-icon>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-end gap-3 mt-5 pt-4 border-t border-secondary-100">
+                <a href="{% url 'employee-view' %}?view=list" class="px-6 py-2 border border-secondary-200 rounded-lg text-sm font-medium text-color-600 hover:bg-secondary-50 no-underline transition-colors">
+                    {% trans "Cancel" %}
+                </a>
+                <button type="submit" class="px-6 py-2 bg-primary-600 rounded-lg text-sm font-medium text-white hover:bg-primary-700 transition-colors shadow-sm">
+                    {% trans "Save" %}
                 </button>
             </div>
-            <div class="oh-modal__dialog-body" id="uploadPhotoModalBody">
-                <div class="oh-profile-section__image-container">
-                    <form
-                        hx-post="{% url 'update-profile-image' obj_id %}"
-                        hx-target="#uploadPhotoModalBody"
-                        hx-encoding="multipart/form-data"
-                        id="file-form"
-                    >
-                        <div class="oh-profile-section__modal-avatar">
-                            <img
-                                src="{{form.instance.get_avatar}}"
-                                class="oh-profile-section__modal-image preview"
-                                alt="{% trans 'Username' %}"
-                            >
-                        </div>
-                        <input
-                            type="file"
-                            name="employee_profile"
-                            id="id_employee_profile"
-                            class="oh-input oh-input--file oh-input--file-sm mt-4"
-                        >
-                        <div class="d-flex justify-content-between w-100 align-items-center mt-4">
-                            <button
-                                class="oh-btn oh-btn--light-danger mr-1"
-                                hx-delete="{% url 'remove-profile-image' obj_id %}"
-                                hx-target="#personalMessage"
-                            >
-                                <ion-icon class="me-1" name="trash-outline"></ion-icon>
-                                {% trans "Delete Image" %}
-                            </button>
-                            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-                                {% trans "Update Image" %}
-                            </button>
-                        </div>
-                        <script>
-                            $(document).ready(function () {
-                                $("#id_employee_profile").change(function (e) {
-                                    const file = this.files[0];
-                                    const reader = new FileReader();
+        </form>
+    </div>
+</div>
 
-                                    reader.addEventListener("load", function () {
-                                        const imageUrl = reader.result;
-                                        $(".preview").attr("src", imageUrl);
-                                    });
-
-                                    reader.readAsDataURL(file);
+<!-- Upload Photo Modal -->
+<div class="oh-modal" id="uploadPhotoModal" role="dialog" aria-labelledby="uploadPhotoModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel">{% trans "Upload Photo" %}</span>
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="uploadPhotoModalBody">
+            <div class="oh-profile-section__image-container">
+                <form hx-post="{% url 'update-profile-image' obj_id %}" hx-target="#uploadPhotoModalBody" hx-encoding="multipart/form-data" id="file-form">
+                    <div class="oh-profile-section__modal-avatar">
+                        <img src="{{ form.instance.get_avatar }}" class="oh-profile-section__modal-image preview" alt="{% trans 'Username' %}">
+                    </div>
+                    <input type="file" name="employee_profile" id="id_employee_profile" class="oh-input oh-input--file oh-input--file-sm mt-4">
+                    <div class="d-flex justify-content-between w-100 align-items-center mt-4">
+                        <button class="oh-btn oh-btn--light-danger mr-1" hx-delete="{% url 'remove-profile-image' obj_id %}" hx-target="#personalMessage">
+                            <ion-icon class="me-1" name="trash-outline"></ion-icon>
+                            {% trans "Delete Image" %}
+                        </button>
+                        <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                            {% trans "Update Image" %}
+                        </button>
+                    </div>
+                    <script>
+                        $(document).ready(function () {
+                            $("#id_employee_profile").change(function () {
+                                const file = this.files[0];
+                                const reader = new FileReader();
+                                reader.addEventListener("load", function () {
+                                    $(".preview").attr("src", reader.result);
                                 });
+                                reader.readAsDataURL(file);
                             });
-                        </script>
-                    </form>
-                </div>
+                        });
+                    </script>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $("[name='country']").select2({ width: '100%' });
+        $("[name='state']").select2({ width: '100%' });
+    });
+</script>

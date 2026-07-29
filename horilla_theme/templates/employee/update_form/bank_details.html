@@ -1,31 +1,110 @@
-{% load i18n %}
-<div class="oh-wrapper">
-    <div class="oh-general__tab-target oh-profile-section mb-4 p-5 d-none" id="bank" style="border: none">
-        <div class="oh-profile-section__card p-10" style="border: 1px solid #cdd5df; border-radius: 10px">
-            {% include 'employee/update_form/edit_form_back_button.html' %}
-            <form
-                method="post"
-                hx-post="{% url 'employee-view-update' obj_id %}"
-                hx-target="#employee-update-form-root"
-                hx-swap="outerHTML"
-                {% if not container_mode %}
-                    hx-push-url="{% url 'employee-view-update' obj_id %}"
-                {% endif %}
-                action="{% url 'employee-view-update' obj_id %}"
-            >
-                <div id="bankMessage"></div>
-                {% csrf_token %}
-                {% if container_mode %}<input type="hidden" name="container" value="true">{% endif %}
-                <input type="hidden" name="form" value="bank">
-                {{ bank_form.as_p }}
-                <hr class="mt-5 mb-3" style="color: #cdd5df">
-                <div class="w-100 d-flex" style="justify-content: flex-end">
-                    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--w-100-resp">
-                        {% trans "Save" %}
-                    </button>
+{% load i18n widget_tweaks %}
+
+<div class="oh-general__tab-target" id="bank">
+    <div class="bg-white rounded-2xl shadow-card px-6 py-5">
+        <form
+            method="post"
+            hx-post="{% url 'employee-view-update' obj_id %}"
+            hx-target="#employee-update-form-root"
+            hx-swap="outerHTML"
+            {% if not container_mode %}
+                hx-push-url="{% url 'employee-view-update' obj_id %}"
+            {% endif %}
+            action="{% url 'employee-view-update' obj_id %}"
+            id="employeeUpdateBankForm"
+        >
+            <div id="bankMessage"></div>
+            {% csrf_token %}
+            {% if container_mode %}<input type="hidden" name="container" value="true">{% endif %}
+            <input type="hidden" name="form" value="bank">
+
+            {{ bank_form.non_field_errors }}
+
+            <!-- Bank Account Details -->
+            <div class="border border-[#ebebeb] rounded-md mb-5">
+                <h3 class="text-sm font-semibold bg-[#f3f3f3] px-3 py-3 text-[#333] flex items-center justify-between gap-2 flex-wrap rounded-t-md">
+                    {% trans "Account Information" %}
+                </h3>
+                <div class="grid grid-cols-3 gap-x-4 gap-y-2 emp-grid-3 px-3 py-3">
+                    <div>
+                        <label class="block text-xs font-medium text-color-600 mb-1" for="id_bank_name">{% trans "Bank Name" %}</label>
+                        {{ bank_form.bank_name|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                        {{ bank_form.bank_name.errors }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-color-600 mb-1" for="id_account_number">{% trans "Account Number" %}</label>
+                        {{ bank_form.account_number|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                        {{ bank_form.account_number.errors }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-color-600 mb-1" for="id_branch">{% trans "Branch" %}</label>
+                        {{ bank_form.branch|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                        {{ bank_form.branch.errors }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-color-600 mb-1" for="id_any_other_code1">{% trans "Bank Code #1" %}</label>
+                        {{ bank_form.any_other_code1|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                        {{ bank_form.any_other_code1.errors }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-color-600 mb-1" for="id_any_other_code2">{% trans "Bank Code #2" %}</label>
+                        {{ bank_form.any_other_code2|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                        {{ bank_form.any_other_code2.errors }}
+                    </div>
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <!-- Bank Address -->
+            <div class="border border-[#ebebeb] rounded-md mb-5">
+                <h3 class="text-sm font-semibold bg-[#f3f3f3] px-3 py-3 text-[#333] flex items-center justify-between gap-2 flex-wrap rounded-t-md">
+                    {% trans "Bank Address" %}
+                </h3>
+                <div class="px-3 py-3">
+                <div class="mb-2">
+                    <label class="block text-xs font-medium text-color-600 mb-1" for="id_address">{% trans "Address" %}</label>
+                    {{ bank_form.address|add_class:"emp-input w-full px-3 py-2 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 resize-y" }}
+                    {{ bank_form.address.errors }}
+                </div>
+                <div class="grid grid-cols-3 gap-x-4 gap-y-2 emp-grid-3">
+                    <div>
+                        <label class="block text-xs font-medium text-color-600 mb-1" for="bank_country">{% trans "Country" %}</label>
+                        <select name="country" id="bank_country" class="emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 oh-select-2">
+                            <option value="{{ bank_form.instance.country }}" selected>{{ bank_form.instance.country }}</option>
+                        </select>
+                        {{ bank_form.country.errors }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-color-600 mb-1" for="bank_state">{% trans "State" %}</label>
+                        <select name="state" id="bank_state" class="emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 oh-select-2">
+                            <option value="{{ bank_form.instance.state }}" selected>{{ bank_form.instance.state }}</option>
+                        </select>
+                        {{ bank_form.state.errors }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-color-600 mb-1" for="id_city">{% trans "City" %}</label>
+                        {{ bank_form.city|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                        {{ bank_form.city.errors }}
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-end gap-3 mt-5 pt-4 border-t border-secondary-100">
+                <a href="{% url 'employee-view' %}?view=list" class="px-6 py-2 border border-secondary-200 rounded-lg text-sm font-medium text-color-600 hover:bg-secondary-50 no-underline transition-colors">
+                    {% trans "Cancel" %}
+                </a>
+                <button type="submit" class="px-6 py-2 bg-primary-600 rounded-lg text-sm font-medium text-white hover:bg-primary-700 transition-colors shadow-sm">
+                    {% trans "Save" %}
+                </button>
+            </div>
+        </form>
     </div>
 </div>
-</div>
+
+<script>
+    $(document).ready(function () {
+        $("#bank_country").select2({ width: '100%' });
+        $("#bank_state").select2({ width: '100%' });
+    });
+</script>
