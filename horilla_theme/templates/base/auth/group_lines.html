@@ -44,7 +44,7 @@
                 </div>
 
                 <div class="flex items-center gap-1.5 shrink-0">
-                    {% if perms.auth.change_group or perms.auth.add_group %}
+                    {% if request.user.is_superuser %}
                         <a
                             class="cursor-pointer px-2 py-1 text-[11px] leading-none bg-white shadow-card text-brand-600 rounded inline-flex items-center gap-1 hover:bg-brand-600 hover:text-white transition duration-300 h-6"
                             hx-get="{% url 'user-group-assign' %}"
@@ -59,7 +59,7 @@
                             <span>{% trans "Members" %}</span>
                         </a>
                     {% endif %}
-                    {% if perms.auth.delete_group %}
+                    {% if request.user.is_superuser %}
                         <a
                             href="#"
                             class="cursor-pointer px-2 py-1 text-[11px] leading-none bg-danger shadow-card text-white rounded inline-flex items-center gap-1 hover:bg-danger-dark transition duration-300 h-6"
@@ -107,7 +107,7 @@
                 <p class="text-xs text-dark-200 mb-5 max-w-sm">
                     {% trans "Create a group, add employees, then choose what they can access. You can change this anytime." %}
                 </p>
-                {% if perms.auth.add_group %}
+                {% if request.user.is_superuser %}
                     <button
                         class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs inline-flex items-center gap-2 hover:bg-brand-800 transition"
                         data-toggle="oh-modal-toggle"

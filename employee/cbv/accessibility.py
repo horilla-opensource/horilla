@@ -89,17 +89,42 @@ def action_accessible(request, instance, user_perms):
         return True
 
 
+def can_view_employee_permissions(request, employee) -> bool:
+    """
+    Groups & Permissions visible to: the employee, their reporting manager,
+    and superadmins.
+    """
+    if not employee or not request.user.is_authenticated:
+        return False
+    user = request.user
+    if user.is_superuser:
+        return True
+    if getattr(employee, "employee_user_id", None) == user:
+        return True
+    try:
+        return check_manager(user.employee_get, employee)
+    except Exception:
+        return False
+
+
+def can_edit_employee_permissions(request, employee) -> bool:
+    """
+    Who may change an employee's groups/permissions from the profile:
+    superadmin only. Reporting managers and the employee get view access.
+    """
+    if not employee or not request.user.is_authenticated:
+        return False
+    return bool(request.user.is_superuser)
+
+
 def permission_accessibility(
     request, instance: object = None, user_perms: PermWrapper = [], *args, **kwargs
 ) -> bool:
     """
-    accessibility for permissions tab in employee profile and individual view
+    Groups & Permissions tab: visible to the employee themselves,
+    their reporting manager, and superadmins.
     """
-    if request.user.has_perm("auth.view_permission") or request.user.has_perm(
-        "auth.view_group"
-    ):
-        return True
-    return False
+    return can_view_employee_permissions(request, instance)
 
 
 def note_accessibility(

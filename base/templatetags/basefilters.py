@@ -105,15 +105,26 @@ def user_perms(perms):
 @register.filter(name="all_user_perms")
 def all_user_perms(user):
     """
-    Return JSON list of effective permission codenames for a user
-    (direct user permissions + permissions from assigned groups).
+    Return JSON list of effective permission codenames for a user for the
+    currently selected company (group assignments + direct user permissions).
     """
     if not user:
         return json.dumps([])
-    codenames = sorted(
-        {perm.split(".", 1)[-1] for perm in user.get_all_permissions() if perm}
-    )
-    return json.dumps(codenames)
+    from base.auth_backends import get_effective_permission_codenames
+
+    return json.dumps(get_effective_permission_codenames(user))
+
+
+@register.filter(name="company_user_groups")
+def company_user_groups(user):
+    """
+    Groups assigned to the user in the currently selected company.
+    """
+    from base.auth_backends import get_user_groups_for_company
+
+    if not user:
+        return []
+    return list(get_user_groups_for_company(user))
 
 
 @register.filter(name="abs_value")

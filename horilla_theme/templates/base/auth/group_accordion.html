@@ -59,7 +59,7 @@
             >
             <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
         </div>
-        {% if perms.auth.add_group %}
+        {% if request.user.is_superuser %}
             <button
                 class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs flex flex-wrap items-center gap-2 hover:bg-brand-800 transition duration-300"
                 data-toggle="oh-modal-toggle"

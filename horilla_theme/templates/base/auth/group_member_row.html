@@ -22,7 +22,7 @@
                     {% for company in companies %}
                         <span class="inline-flex items-center gap-1 text-[10px] bg-primary-50 text-primary-700 border border-primary-200 rounded-full px-2 py-0.5">
                             {{ company.name }}
-                            {% if perms.auth.change_group %}
+                            {% if request.user.is_superuser %}
                                 <button
                                     type="button"
                                     class="text-primary-400 hover:text-danger leading-none"
@@ -45,7 +45,7 @@
             {% endif %}
         </div>
     </div>
-    {% if perms.auth.change_group %}
+    {% if request.user.is_superuser %}
         <button
             type="button"
             class="text-xs text-danger hover:underline shrink-0"

@@ -37,7 +37,7 @@
                     aria-label="{% trans 'Search Input' %}"
                 >
             </div>
-            {% if perms.auth.add_group %}
+            {% if request.user.is_superuser %}
                 <button
                     style="margin-left: 10px"
                     class="oh-btn oh-btn--secondary oh-btn--shadow"

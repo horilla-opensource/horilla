@@ -33,7 +33,7 @@
                     <script>
                         $(document).ready(function () {
                             checkSelected(
-                                `{{ employee.employee_user_id|all_user_perms|safe }}`,
+                                `{% if employee_perm_codenames %}{{ employee_perm_codenames|safe }}{% else %}{{ employee.employee_user_id|all_user_perms|safe }}{% endif %}`,
                                 '#panel{{employee.id}}',
                                 true
                             );
@@ -44,7 +44,16 @@
                             }
                         })
                     </script>
-                    {% if perms.auth.add_permission or perms.auth.change_permission or perms.auth.delete_permission %}
+                    {% if employee %}
+                        {% include 'base/auth/permission_table.html' %}
+                        {% if not can_edit_permissions %}
+                            <script>
+                                $(function () {
+                                    $("#panel{{employee.id}}").find("input[type=checkbox]").prop("disabled", true);
+                                });
+                            </script>
+                        {% endif %}
+                    {% elif perms.auth.add_permission or perms.auth.change_permission or perms.auth.delete_permission %}
                         {% include 'base/auth/permission_table.html' %}
                     {% endif %}
                 </div>

@@ -166,3 +166,93 @@ def stamp_company_on_create(instance, attr="company_id"):
         return False
     setattr(instance, attr, company)
     return True
+
+
+def _normalize_company_id(company_id=None):
+    """
+    Resolve company id for permission/group display.
+
+    None  -> current selected company from context
+    "all" -> None (union of assignment companies)
+    int/str id -> that company
+    """
+    if company_id is None:
+        company_id = get_selected_company()
+    if company_id in (None, "", "all"):
+        return None
+    try:
+        return int(company_id)
+    except (TypeError, ValueError):
+        return company_id
+
+
+def get_user_groups_for_company(user, company_id=None):
+    """
+    Groups the user holds via CompanyGroupAssignment for ``company_id``.
+
+    When company scoping is off, returns ``user.groups``.
+    When ``company_id`` is None/"all", returns the union of all assignment groups.
+    """
+    from django.contrib.auth.models import Group
+
+    if not user:
+        return Group.objects.none()
+    if not company_scoped_active():
+        return user.groups.all()
+
+    company_id = _normalize_company_id(company_id)
+    assignments = user.company_group_assignments.all()
+    if company_id is not None:
+        assignments = assignments.filter(company_id=company_id)
+    return Group.objects.filter(
+        id__in=assignments.values_list("group_id", flat=True)
+    ).distinct()
+
+
+def get_effective_permission_codenames(user, company_id=None, include_direct=True):
+    """
+    Codenames the user effectively has for a company.
+
+    - Direct ``user_permissions`` are included when ``include_direct`` (global).
+    - Group permissions come from CompanyGroupAssignment for that company
+      (or the union when company is "all"/None).
+    """
+    if not user:
+        return []
+
+    codenames = set()
+    if include_direct:
+        codenames.update(user.user_permissions.values_list("codename", flat=True))
+
+    if not company_scoped_active():
+        codenames.update(
+            Permission.objects.filter(group__user=user).values_list(
+                "codename", flat=True
+            )
+        )
+        return sorted(codenames)
+
+    company_id = _normalize_company_id(company_id)
+    assignments = user.company_group_assignments.all()
+    if company_id is not None:
+        assignments = assignments.filter(company_id=company_id)
+    codenames.update(
+        Permission.objects.filter(
+            group__company_assignments__in=assignments
+        ).values_list("codename", flat=True)
+    )
+    return sorted(set(codenames))
+
+
+def get_permission_company_label(company_id=None):
+    """Human-readable label for the company used in permission display."""
+    from base.models import Company
+
+    company_id = _normalize_company_id(company_id)
+    if company_id is None:
+        selected = get_selected_company()
+        if selected == "all":
+            return "All my companies"
+        return None
+    company = Company.objects.filter(id=company_id).first()
+    return company.company if company else None

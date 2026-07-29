@@ -26,7 +26,7 @@
             <p class="text-xs text-dark-200">
                 {% trans "People in this group get all of its permissions." %}
             </p>
-            {% if perms.auth.change_group or perms.auth.add_group %}
+            {% if request.user.is_superuser %}
                 <a
                     class="cursor-pointer px-3 py-1.5 text-xs bg-brand-600 text-white rounded-md inline-flex items-center gap-1.5 hover:bg-brand-800 transition"
                     hx-get="{% url 'user-group-assign' %}"
@@ -54,7 +54,7 @@
                 <p class="text-sm text-dark-300 mb-3">
                     {% trans "No one is in this group yet." %}
                 </p>
-                {% if perms.auth.change_group or perms.auth.add_group %}
+                {% if request.user.is_superuser %}
                     <a
                         class="cursor-pointer px-3 py-1.5 text-xs bg-brand-600 text-white rounded-md inline-flex items-center gap-1.5 hover:bg-brand-800 transition"
                         hx-get="{% url 'user-group-assign' %}"

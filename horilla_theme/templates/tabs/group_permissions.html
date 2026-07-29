@@ -1,7 +1,19 @@
-{% load i18n static i18n %}
+{% load i18n static basefilters %}
 
-{% if perms.auth.view_permission or perms.auth.view_group %}
+{% if can_view_permissions or request.user.is_superuser or request.user == employee.employee_user_id or request.user|check_manager:employee %}
     <div class="oh-tabs__contents p-3">
+        {% if company_scoped and permission_company_label %}
+            <div class="mb-3 rounded-md border border-primary-200 bg-primary-50/70 px-4 py-2.5 text-xs text-primary-700">
+                <i class="fa-solid fa-building mr-1"></i>
+                {% blocktrans with company=permission_company_label %}Showing group permissions for {{ company }}. Switch company to see permissions in another company.{% endblocktrans %}
+            </div>
+        {% elif company_scoped %}
+            <div class="mb-3 rounded-md border border-primary-200 bg-primary-50/70 px-4 py-2.5 text-xs text-primary-700">
+                <i class="fa-solid fa-building mr-1"></i>
+                {% trans "Showing combined group permissions across assigned companies." %}
+            </div>
+        {% endif %}
+
         <div class="mb-2 mt-4" id="tab_1_permission">
             {% if employee %}
                 <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
@@ -18,8 +30,11 @@
             <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center mb-3">
                 <h2 class="text-md font-semibold">
                     {% trans "Groups" %}
+                    {% if permission_company_label %}
+                        <span class="text-xs font-normal text-dark-200">— {{ permission_company_label }}</span>
+                    {% endif %}
                 </h2>
-                {% if perms.auth.change_group %}
+                {% if can_edit_permissions %}
                     <button
                         class="ms-5 px-4 py-2 bg-brand-600 text-white rounded-md text-xs flex flex-wrap items-center gap-2 hover:bg-brand-800 transition duration-300"
                         hx-get='{% url "assign-group-user" %}'
@@ -34,11 +49,11 @@
                     </button>
                 {% endif %}
             </div>
-            {% if employee.employee_user_id.groups.all.first %}
-                {% for gp in employee.employee_user_id.groups.all %}
+            {% if employee_company_groups %}
+                {% for gp in employee_company_groups %}
                     <button
                         onclick="event.stopPropagation()"
-                        class="w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-primary-100 text-primary-600 text-sm transition-all"
+                        class="w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-primary-100 text-primary-600 text-sm transition-all mb-2"
                     >
                         <div class="flex flex-wrap items-center gap-2">
                             <span
@@ -51,8 +66,9 @@
                                 >
                             </span>
                             <span class="font-semibold">{{ gp }}</span>
-                            <span class="text-xs mt-1 text-dark-300">{% trans "Total" %} {{ gp.user_set.all|length }}
-                                {% trans "users in this group" %}</span>
+                            <span class="text-xs mt-1 text-dark-300">
+                                {{ gp.permissions.count }} {% trans "permissions" %}
+                            </span>
                         </div>
                     </button>
                 {% endfor %}
@@ -61,7 +77,13 @@
                     <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
                         <div class="flex flex-col items-center justify-center h-full">
                             <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
-                            <p class="text-[#666] mb-5">{% trans "This employee is not assigned to any groups." %}</p>
+                            <p class="text-[#666] mb-5">
+                                {% if permission_company_label %}
+                                    {% blocktrans with company=permission_company_label %}No groups assigned for {{ company }}.{% endblocktrans %}
+                                {% else %}
+                                    {% trans "This employee is not assigned to any groups." %}
+                                {% endif %}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -81,7 +103,6 @@
     </script>
 
     <script>
-        // Inner accordion logic — rebind after page load or HTMX swap
         function bindInnerAccordions() {
           document.querySelectorAll('.inner-accordion-toggle').forEach((toggle) => {
             const content = toggle.nextElementSibling;
@@ -98,7 +119,6 @@
                 content.style.opacity = "1";
               }
 
-              // Auto-resize parent
               const outerPanel = toggle.closest('.accordion-panel-gp');
               if (outerPanel) {
                 setTimeout(() => {
@@ -110,10 +130,7 @@
           });
         }
 
-        // Run on page load
         document.addEventListener("DOMContentLoaded", bindInnerAccordions);
-
-        // Run after HTMX replaces any HTML
         document.body.addEventListener("htmx:afterSwap", bindInnerAccordions);
     </script>
 {% endif %}

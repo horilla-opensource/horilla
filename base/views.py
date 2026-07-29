@@ -183,6 +183,7 @@ from horilla.decorators import (
     login_required,
     manager_can_enter,
     permission_required,
+    superuser_required,
 )
 from horilla.group_by import group_by_queryset
 from horilla.http.response import HorillaRedirect
@@ -1209,7 +1210,7 @@ def _user_groups_queryset(search=""):
 
 @login_required
 @hx_request_required
-@permission_required("auth.add_group")
+@superuser_required
 def user_group_table(request):
     """
     Group create form (HTMX) — loaded on demand when opening Create modal.
@@ -1234,7 +1235,7 @@ def user_group_table(request):
 
 
 @login_required
-@permission_required("auth.view_group")
+@superuser_required
 def user_group(request):
     """
     User group list — headers only; detail panels load lazily on expand.
@@ -1255,7 +1256,7 @@ def user_group(request):
 
 @login_required
 @hx_request_required
-@permission_required("auth.view_group")
+@superuser_required
 def user_group_search(request):
     """
     Search / paginate user groups (list rows only).
@@ -1276,7 +1277,7 @@ def user_group_search(request):
 
 @login_required
 @hx_request_required
-@permission_required("auth.view_group")
+@superuser_required
 def user_group_detail(request, obj_id):
     """
     Lazy-loaded members + permissions panel for a single group.
@@ -1319,7 +1320,7 @@ def user_group_detail(request, obj_id):
 
 @login_required
 @require_http_methods(["POST"])
-@permission_required("auth.add_permission")
+@superuser_required
 def update_group_permission(
     request,
 ):
@@ -1356,7 +1357,7 @@ def update_group_permission(
 
 @login_required
 @hx_request_required
-@any_permission_required(perms=["auth.add_group", "auth.change_group"])
+@superuser_required
 def group_assign(request):
     """
     This method is used to assign user group to the users.
@@ -1399,7 +1400,7 @@ def group_assign(request):
     form = AssignUserGroup(
         initial={
             "group": group_id,
-            "employee": list(current_employees.values_list("id", flat=True)),
+            "employee": [],
             "companies": list(initial_companies),
         }
     )
@@ -1423,7 +1424,7 @@ def group_assign(request):
 
 @login_required
 @hx_request_required
-@permission_required("auth.view_group")
+@superuser_required
 def group_assign_view(request):
     """
     This method is used to search the user groups
@@ -1441,7 +1442,7 @@ def group_assign_view(request):
 
 
 @login_required
-@permission_required("auth.view_group")
+@superuser_required
 def user_group_view(request):
     """
     This method is used to render template for view all groups
@@ -1454,7 +1455,7 @@ def user_group_view(request):
 
 
 @login_required
-@permission_required("auth.change_group")
+@superuser_required
 @require_http_methods(["POST"])
 def user_group_permission_remove(request, pid, gid):
     """
@@ -1470,7 +1471,7 @@ def user_group_permission_remove(request, pid, gid):
 
 
 @login_required
-@permission_required("auth.change_group")
+@superuser_required
 @require_http_methods(["POST"])
 def group_remove_user(request, uid, gid):
     """
@@ -1540,11 +1541,17 @@ def object_delete(request, obj_id, **kwargs):
         **kwargs: Additional keyword arguments including:
             - model (Model): The Django model class to which the object belongs.
             - redirect_path (str): The URL path to redirect to after deletion.
+            - superuser_only (bool): When True, only Django superusers may delete.
     Returns:
         HttpResponse: Redirects to the specified redirect_path or reloads the
                       previous page. In case of a ProtectedError, it shows an error
                       message indicating that the object is in use.
     """
+    if kwargs.get("superuser_only") and not request.user.is_superuser:
+        from horilla.methods import handle_no_permission
+
+        return handle_no_permission(request)
+
     model = kwargs.get("model")
     redirect_path = kwargs.get("redirect_path")
     delete_error = False
@@ -3770,11 +3777,15 @@ def get_models_in_app(app_name):
 
 
 @login_required
-@manager_can_enter("auth.view_permission")
 def employee_permission_assign(request, pk=None):
     """
-    This method is used to assign permissions to employee user
+    Assign / view permissions for an employee user.
+
+    - Settings "Employee Permission" page (no employee in path): superadmin only.
+    - Employee profile tab: employee self, reporting manager, or superadmin.
     """
+    from employee.cbv.accessibility import can_edit_employee_permissions
+    from horilla.methods import handle_no_permission
 
     context = {}
     template = "base/auth/permission.html"
@@ -3786,16 +3797,48 @@ def employee_permission_assign(request, pk=None):
         emp_id = id_part
     else:
         id_part = None
+
+    # Settings page (no employee context) is superadmin-only.
+    if not emp_id and not request.user.is_superuser:
+        return handle_no_permission(request)
+
     if emp_id:
         template = "tabs/group_permissions.html"
         employees = Employee.objects.filter(id=emp_id)
-        context["employee"] = employees.first()
+        employee = employees.first()
+        if not employee:
+            return handle_no_permission(request)
+        import json
+
+        from base.auth_backends import (
+            get_effective_permission_codenames,
+            get_permission_company_label,
+            get_user_groups_for_company,
+        )
+        from employee.cbv.accessibility import can_view_employee_permissions
+
+        if not can_view_employee_permissions(request, employee):
+            return handle_no_permission(request)
+        target_user = employee.employee_user_id
+        context["employee"] = employee
+        context["can_edit_permissions"] = can_edit_employee_permissions(
+            request, employee
+        )
+        context["can_view_permissions"] = True
+        context["employee_company_groups"] = list(
+            get_user_groups_for_company(target_user)
+        )
+        context["employee_perm_codenames"] = json.dumps(
+            get_effective_permission_codenames(target_user)
+        )
+        context["permission_company_label"] = get_permission_company_label()
     else:
         employees = Employee.objects.filter(
             Q(employee_user_id__user_permissions__isnull=False)
             | Q(employee_user_id__groups__isnull=False)
         ).distinct()
         context["show_assign"] = True
+        context["can_edit_permissions"] = True
     from base.auth_backends import company_scoped_active
 
     permissions, no_permission_models = _build_permission_matrix()
@@ -3812,23 +3855,39 @@ def employee_permission_assign(request, pk=None):
 
 @login_required
 @hx_request_required
-@permission_required("auth.view_permission")
 def employee_permission_search(request, codename=None, uid=None):
     """
     This method renders template to view all instances of user permissions
     """
+    from employee.cbv.accessibility import (
+        can_edit_employee_permissions,
+        can_view_employee_permissions,
+    )
+    from horilla.methods import handle_no_permission
+
     context = {}
     template = "base/auth/permission_lines.html"
     employees = EmployeeFilter(request.GET).qs
     if request.GET.get("profile_tab"):
         employees = Employee.objects.filter(id=request.GET["employee_id"])
-        context["employee"] = employees.first()
+        employee = employees.first()
+        if not employee or not can_view_employee_permissions(request, employee):
+            return handle_no_permission(request)
+        context["employee"] = employee
+        context["can_edit_permissions"] = can_edit_employee_permissions(
+            request, employee
+        )
     else:
+        if not (
+            request.user.is_superuser or request.user.has_perm("auth.view_permission")
+        ):
+            return handle_no_permission(request)
         employees = employees.filter(
             Q(employee_user_id__user_permissions__isnull=False)
             | Q(employee_user_id__groups__isnull=False)
         ).distinct()
         context["show_assign"] = True
+        context["can_edit_permissions"] = True
     permissions, no_permission_models = _build_permission_matrix()
     context["permissions"] = permissions
     context["no_permission_models"] = no_permission_models
@@ -3842,13 +3901,15 @@ def employee_permission_search(request, codename=None, uid=None):
 
 @login_required
 @require_http_methods(["POST"])
-@permission_required("auth.add_permission")
 def update_permission(
     request,
 ):
     """
     This method is used to remove user permission.
     """
+    from employee.cbv.accessibility import can_edit_employee_permissions
+    from horilla.methods import handle_no_permission
+
     try:
         data = json.loads(request.body)
 
@@ -3864,6 +3925,9 @@ def update_permission(
         employee = Employee.objects.select_related("employee_user_id").get(
             id=employee_id
         )
+        if not can_edit_employee_permissions(request, employee):
+            return handle_no_permission(request)
+
         user = employee.employee_user_id
 
         all_codenames = [p["codename"] for p in permissions_data]
@@ -3897,7 +3961,7 @@ def update_permission(
 
 @login_required
 @hx_request_required
-@permission_required("auth.add_permission")
+@superuser_required
 def permission_table(request):
     """
     This method is used to render the permission table

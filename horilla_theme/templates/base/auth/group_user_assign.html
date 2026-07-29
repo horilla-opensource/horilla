@@ -9,7 +9,7 @@
             {% blocktrans with name=group.name %}Manage members of "{{ name }}"{% endblocktrans %}
         </p>
         <p class="text-xs text-dark-300 leading-relaxed">
-            {% trans "Search and pick employees below. Saving replaces the current member list with your selection." %}
+            {% trans "Search and pick employees below. Saving adds the selected employees to this group for the selected companies." %}
             {% if member_count %}
                 <span class="font-medium text-primary-700">
                     {% blocktrans count counter=member_count %}{{ counter }} member currently in this group.{% plural %}{{ counter }} members currently in this group.{% endblocktrans %}

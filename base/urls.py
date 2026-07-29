@@ -352,7 +352,7 @@ urlpatterns = [
         "user-group-delete/<int:obj_id>/",
         views.object_delete,
         name="user-group-delete",
-        kwargs={"model": Group, "redirect": "user-group-view"},
+        kwargs={"model": Group, "redirect": "user-group-view", "superuser_only": True},
     ),
     path(
         "group-permission-remove/<int:pid>/<int:gid>/",
@@ -1729,6 +1729,11 @@ urlpatterns = [
         "update-emp-workinfo/<int:pk>/",
         dashboard.EmployeeWorkInformationFormView.as_view(),
         name="update-emp-workinfo",
+    ),
+    path(
+        "settings/multiple-approval-rules-view/",
+        views.multiple_approval_rules_settings_view,
+        name="multiple-approval-rules-view",
     ),
     path(
         "configuration/multiple-approval-condition/",

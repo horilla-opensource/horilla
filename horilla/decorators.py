@@ -52,6 +52,17 @@ def permission_required(function, perm):
     return _function
 
 
+def superuser_required(function):
+    """Allow only Django superusers (superadmin) to enter the view."""
+
+    def _function(request, *args, **kwargs):
+        if request.user.is_authenticated and request.user.is_superuser:
+            return function(request, *args, **kwargs)
+        return handle_no_permission(request)
+
+    return _function
+
+
 @decorator_with_arguments
 def any_permission_required(function, perms):
     def _function(request, *args, **kwargs):
@@ -411,6 +422,7 @@ def meeting_manager_can_enter(function, perm, answerable=False):
 DECORATOR_MAP = {
     "login_required": login_required,
     "permission_required": permission_required,
+    "superuser_required": superuser_required,
     "delete_permission": delete_permission,
     "duplicate_permission": duplicate_permission,
     "manager_can_enter": manager_can_enter,

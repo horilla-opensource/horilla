@@ -30,7 +30,7 @@
             }
         </script>
         {% if show_assign %}
-            {% if perms.auth.add_permission %}
+            {% if request.user.is_superuser %}
                 <button
                     style="margin-left: 10px"
                     class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs flex flex-wrap items-center gap-2 hover:bg-brand-800 transition duration-300"

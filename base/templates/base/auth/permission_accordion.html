@@ -29,7 +29,7 @@
             }
         </script>
         {% if show_assign %}
-            {% if perms.auth.add_permission %}
+            {% if request.user.is_superuser %}
                 <button
                     style="margin-left: 10px"
                     class="oh-btn oh-btn--secondary oh-btn--shadow"

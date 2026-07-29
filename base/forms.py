@@ -545,16 +545,13 @@ class AssignUserGroup(Form):
 
     def save(self):
         """
-        Replace group membership for companies the editor may manage.
+        Add group membership for selected users in selected companies.
 
-        Non-superusers only touch CompanyGroupAssignment rows inside their
-        grantable companies; other companies' assignments are left alone.
+        Existing members and their current company assignments are preserved.
+        Removal is handled by dedicated remove actions, not by this form save.
         """
-        from django.contrib.auth import get_user_model
-
         from base.models import CompanyGroupAssignment
 
-        User = get_user_model()
         group = self.cleaned_data["group"]
         employee_ids = (
             self.data.getlist("employee") if hasattr(self.data, "getlist") else []
@@ -563,32 +560,7 @@ class AssignUserGroup(Form):
         assigning_users = [
             e.employee_user_id for e in assigning_employees if e.employee_user_id
         ]
-        assigning_user_ids = {u.id for u in assigning_users}
         companies = self._companies_for_save()
-
-        if self._grantable_company_ids is not None:
-            scope_ids = list(self._grantable_company_ids)
-            # Who had this group in-scope before the edit (for membership sync)
-            previously_in_scope = set(
-                CompanyGroupAssignment.objects.filter(
-                    group=group, company_id__in=scope_ids
-                ).values_list("user_id", flat=True)
-            )
-            CompanyGroupAssignment.objects.filter(
-                group=group, company_id__in=scope_ids
-            ).exclude(user_id__in=assigning_user_ids).delete()
-            CompanyGroupAssignment.objects.filter(
-                group=group,
-                company_id__in=scope_ids,
-                user_id__in=assigning_user_ids,
-            ).delete()
-            touched_ids = previously_in_scope | assigning_user_ids
-        else:
-            existing_users = list(group.user_set.all())
-            for user in existing_users:
-                user.groups.remove(group)
-            CompanyGroupAssignment.objects.filter(group=group).delete()
-            touched_ids = assigning_user_ids
 
         CompanyGroupAssignment.objects.bulk_create(
             [
@@ -599,12 +571,8 @@ class AssignUserGroup(Form):
             ignore_conflicts=True,
         )
 
-        if self._grantable_company_ids is not None:
-            for user in User.objects.filter(id__in=touched_ids):
-                CompanyGroupAssignment.sync_user_group_membership(user, group)
-        else:
-            for user in assigning_users:
-                user.groups.add(group)
+        for user in assigning_users:
+            CompanyGroupAssignment.sync_user_group_membership(user, group)
 
         return group
 

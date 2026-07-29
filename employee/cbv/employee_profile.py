@@ -197,15 +197,21 @@ EmployeeProfileView.add_tab(
 )
 
 
-@method_decorator(
-    [login_required, permission_required("auth.add_group")], name="dispatch"
-)
+@method_decorator([login_required], name="dispatch")
 class GroupAssignView(View):
     """
-    View to assign multiple groups to a single employee
+    View to assign multiple groups to a single employee.
+    Allowed for superadmin or the employee's reporting manager.
     """
 
+    def _allowed(self, request, employee):
+        from employee.cbv.accessibility import can_edit_employee_permissions
+
+        return can_edit_employee_permissions(request, employee)
+
     def get(self, request, *args, **kwargs):
+        from horilla.methods import handle_no_permission
+
         employee_id = request.GET.get("employee")
         try:
             employee = Employee.objects.get(id=employee_id)
@@ -213,6 +219,8 @@ class GroupAssignView(View):
             return HorillaRedirect(
                 request, message=_("No Employee found matching the query.")
             )
+        if not self._allowed(request, employee):
+            return handle_no_permission(request)
         groups = employee.employee_user_id.groups.all
         form = AddToUserGroupForm(
             initial={
@@ -227,7 +235,13 @@ class GroupAssignView(View):
         )
 
     def post(self, request, *args, **kwargs):
+        from horilla.methods import handle_no_permission
+
         form = AddToUserGroupForm(request.POST)
+        employee_id = request.POST.get("employee")
+        employee = Employee.objects.filter(id=employee_id).first()
+        if not employee or not self._allowed(request, employee):
+            return handle_no_permission(request)
         if form.is_valid():
             form.save()
             messages.success(request, _("Employee assigned to group"))
