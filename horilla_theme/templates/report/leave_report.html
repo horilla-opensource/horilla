@@ -298,6 +298,46 @@
                     </div>
                 </form>
 
+                <!-- Report Templates: save/reload the current Rows/Columns
+                     arrangement, so it doesn't need to be rebuilt from
+                     scratch every time. Saved per-user, per-report, per model. -->
+                <div id="reportTemplatesDropdown" class="oh-dropdown" x-data="{open: false}" style="margin-top: 10px; margin-right: 10px">
+                    <button
+                        type="button"
+                        class="oh-btn oh-btn--secondary"
+                        @click="open = !open"
+                    >
+                        <ion-icon name="bookmark-outline" class="mr-1"></ion-icon>
+                        {% trans "Templates" %}
+                    </button>
+                    <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right p-3"
+                        x-show="open"
+                        @click.outside="open = false"
+                        style="display: none; width: 260px;"
+                    >
+                        <div class="mb-2">
+                            <input
+                                type="text"
+                                id="reportTemplateName"
+                                class="oh-input w-100"
+                                placeholder="{% trans 'Template name' %}"
+                            >
+                            <button
+                                type="button"
+                                id="saveReportTemplateBtn"
+                                class="oh-btn oh-btn--secondary oh-btn--small w-100 mt-2"
+                            >
+                                {% trans "Save Current Arrangement" %}
+                            </button>
+                        </div>
+                        <hr>
+                        <div id="reportTemplateList" class="text-sm oh-report-template-list">
+                            <p class="text-muted mb-0 text-center py-2">{% trans "No saved templates yet." %}</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Export Button -->
                 <button id="export-btn" class="oh-btn oh-btn--secondary" style="margin-top: 10px">
                     <ion-icon
@@ -335,39 +375,284 @@
         .plotlyjsicon {
             display: none !important;
         }
+
+        .oh-report-template-list {
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .oh-report-template-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            transition: background-color 0.15s ease;
+        }
+
+        .oh-report-template-item:hover {
+            background-color: #f4f5f7;
+        }
+
+        .oh-report-template-item + .oh-report-template-item {
+            margin-top: 2px;
+        }
+
+        .oh-report-template-load {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+            color: #333333;
+            text-decoration: none;
+            overflow: hidden;
+        }
+
+        .oh-report-template-load span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .oh-report-template-load ion-icon {
+            flex-shrink: 0;
+            color: #e54f38;
+            font-size: 15px;
+        }
+
+        .oh-report-template-load:hover {
+            color: #e54f38;
+        }
+
+        .oh-report-template-delete {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            cursor: pointer;
+            color: #999999;
+        }
+
+        .oh-report-template-delete:hover {
+            color: #d33;
+        }
+
+        .oh-report-template-delete ion-icon {
+            font-size: 15px;
+        }
     </style>
 
     <script>
-        $(function () {
-            // Per-model export permission, computed server-side via the
-            // centralized has_export_access() check.
-            const exportAccessMap = JSON.parse(document.getElementById("export-access-map").textContent);
-            const modelPathMap = {
-                leave_request: "leave.LeaveRequest",
-                available_leave: "leave.AvailableLeave",
-            };
+    // ------------------------------------------------------------------
+    // Report Templates: save/reload the current field arrangement.
+    // This report has multiple sub-types (Leave Request/Available Leave),
+    // each with its own field set -- templates are scoped per sub-type so a
+    // saved arrangement is only ever offered back for the same sub-type.
+    // ------------------------------------------------------------------
+    function currentReportSlug() {
+        return "leave_report_" + $("#model-select").val();
+    }
 
-            // Shared "no records" empty state (same illustration/wording used
-            // throughout the app) shown instead of an empty/broken-looking
-            // pivot table when a report type has zero matching records.
-            function isEmptyPivotData(data) {
-                return !data || (Array.isArray(data) ? data.length === 0 : Object.keys(data).length === 0);
+    // Per-model export permission, computed server-side via the
+    // centralized has_export_access() check.
+    const exportAccessMap = JSON.parse(document.getElementById("export-access-map").textContent);
+    const modelPathMap = {
+        leave_request: "leave.LeaveRequest",
+        available_leave: "leave.AvailableLeave",
+    };
+
+    function currentPivotContainerId() {
+        return $(".pivot-wrapper:visible").attr("id");
+    }
+
+    function refreshTemplateList() {
+        $.getJSON("{% url 'report-templates-list' %}", { report_slug: currentReportSlug() }, function (res) {
+            var $list = $("#reportTemplateList");
+            $list.empty();
+            if (!res.templates.length) {
+                $list.append('<p class="text-muted mb-0 text-center py-2">{% trans "No saved templates yet." %}</p>');
+                return;
             }
+            res.templates.forEach(function (t) {
+                var $row = $('<div class="oh-report-template-item"></div>');
+                var $link = $('<a href="#" class="oh-report-template-load"></a>').data("id", t.id).append(
+                    $('<ion-icon name="bookmark-outline"></ion-icon>'),
+                    $('<span></span>').text(t.name)
+                );
+                var $del = $('<span class="oh-report-template-delete" title="{% trans "Delete" %}"></span>').data("id", t.id).append(
+                    $('<ion-icon name="trash-outline"></ion-icon>')
+                );
+                $row.append($link).append($del);
+                $list.append($row);
+            });
+        });
+    }
 
-            function showNoRecordsState(containerId) {
-                $("#" + containerId).html(`
-                    <div class="oh-wrapper h-full" align="center">
-                        <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
-                            <div class="flex flex-col items-center justify-center h-full">
-                                <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
-                                <p class="text-[#666] mb-5">{% trans "No records available at the moment" %}</p>
-                            </div>
-                        </div>
+    // Shared "no records" empty state (same illustration/wording used
+    // throughout the app) shown instead of an empty/broken-looking pivot
+    // table when a report type has zero matching records.
+    function isEmptyPivotData(data) {
+        return !data || (Array.isArray(data) ? data.length === 0 : Object.keys(data).length === 0);
+    }
+
+    function showNoRecordsState(containerId) {
+        $("#" + containerId).html(`
+            <div class="oh-wrapper h-full" align="center">
+                <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
+                    <div class="flex flex-col items-center justify-center h-full">
+                        <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
+                        <p class="text-[#666] mb-5">{% trans "No records available at the moment" %}</p>
                     </div>
-                `);
-                $("#export-btn").hide();
-            }
+                </div>
+            </div>
+        `);
+        $("#export-btn").hide();
+        // Nothing to filter or arrange when there's no data at all.
+        $("#filterForm").hide();
+        $("#reportTemplatesDropdown").hide();
+    }
 
+    function applyTemplateConfig(config) {
+        var model = $("#model-select").val();
+        var containerId = currentPivotContainerId();
+        $.getJSON(`/report/leave-pivot?model=${model}`, function (data) {
+            if (isEmptyPivotData(data)) {
+                showNoRecordsState(containerId);
+                return;
+            }
+            $("#filterForm").show();
+            $("#reportTemplatesDropdown").show();
+            var plotlyRenderers = $.pivotUtilities.plotly_renderers;
+            // The 4th argument (`overwrite`) has to be `true` here -- pivotUI()
+            // otherwise finds the options it already cached on this element
+            // from the initial page load and silently reuses THOSE instead of
+            // the new ones, making a loaded template look like it did nothing.
+            $("#" + containerId).pivotUI(data, $.extend({ unusedAttrsVertical: true }, config, {
+                onRefresh: function (refreshConfig) {
+                    var currentRenderer = refreshConfig.rendererName;
+                    if (currentRenderer === "Table" || currentRenderer === "Table Barchart" ||
+                        currentRenderer === "Heatmap" || currentRenderer === "Row Heatmap" || currentRenderer === "Col Heatmap") {
+                        $("#export-btn").show();
+                    } else {
+                        $("#export-btn").hide();
+                    }
+                },
+                renderers: $.extend($.pivotUtilities.renderers, plotlyRenderers)
+            }), true);
+        });
+    }
+
+    $(document).on("click", ".oh-report-template-load", function (e) {
+        e.preventDefault();
+        var id = $(this).data("id");
+        $.getJSON("/report/report-templates/" + id + "/", function (res) {
+            applyTemplateConfig(res.config);
+        });
+    });
+
+    $(document).on("click", ".oh-report-template-delete", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var id = $(this).data("id");
+        // Plain confirm() doesn't work here: this app globally replaces
+        // window.confirm with a SweetAlert-based version that assumes it's
+        // only ever called from an inline onclick on an htmx-triggering
+        // element (it reads window.event and looks for hx-* attributes to
+        // fire later) -- calling it from a plain jQuery handler throws
+        // (event.target is undefined) since none of that applies here. Using
+        // Swal directly, which is what that override wraps anyway.
+        Swal.fire({
+            text: "{% trans 'Delete this saved template?' %}",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#008000",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "{% trans 'Confirm' %}",
+            cancelButtonText: "{% trans 'Cancel' %}"
+        }).then(function (result) {
+            if (!result.isConfirmed) return;
+            $.ajax({
+                url: "/report/report-templates/" + id + "/delete/",
+                method: "POST",
+                headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                success: function () {
+                    refreshTemplateList();
+                    $("#reloadMessagesButton").click();
+                },
+                error: function () {
+                    $("#reloadMessagesButton").click();
+                }
+            });
+        });
+    });
+
+    $(document).on("click", "#saveReportTemplateBtn", function () {
+        // Plain alert() looks completely out of place next to this app's
+        // SweetAlert2-styled dialogs everywhere else -- matching the same
+        // icon/button convention already used for validation errors
+        // elsewhere (e.g. leave/static/cbv/holidays/holiday_action.js).
+        // Save/delete results themselves go through the app's normal
+        // Django-messages toast (#reloadMessagesButton), not a Swal.
+        var name = $("#reportTemplateName").val().trim();
+        if (!name) {
+            Swal.fire({
+                text: "{% trans 'Please enter a template name.' %}",
+                icon: "warning",
+                confirmButtonText: i18nMessages.close
+            });
+            return;
+        }
+        var containerId = currentPivotContainerId();
+        var opts = $("#" + containerId).data("pivotUIOptions");
+        if (!opts) {
+            Swal.fire({
+                text: "{% trans 'Nothing to save yet.' %}",
+                icon: "warning",
+                confirmButtonText: i18nMessages.close
+            });
+            return;
+        }
+        var config = {
+            rows: opts.rows,
+            cols: opts.cols,
+            aggregatorName: opts.aggregatorName,
+            rendererName: opts.rendererName,
+            vals: opts.vals
+        };
+        $.ajax({
+            url: "{% url 'report-templates-save' %}",
+            method: "POST",
+            contentType: "application/json",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            data: JSON.stringify({ report_slug: currentReportSlug(), name: name, config: config }),
+            success: function () {
+                $("#reportTemplateName").val("");
+                refreshTemplateList();
+                $("#reloadMessagesButton").click();
+            },
+            error: function () {
+                $("#reloadMessagesButton").click();
+            }
+        });
+    });
+
+    // Field pills are a fixed width and long names (e.g. "Assignee Job Role")
+    // get cut off with an ellipsis -- show the full name as a native tooltip
+    // on hover. Delegated on document (rather than re-bound in every
+    // onRefresh) so it keeps working after PivotTable.js re-renders the
+    // pills on every drag/drop or config change.
+    $(document).on("mouseover", ".pvtAxisContainer .pvtAttr", function () {
+        if (!this.title) {
+            this.title = $(this).clone().children().remove().end().text().trim();
+        }
+        // Do not let the "filter this field" triangle inherit the field-name
+        // tooltip -- it is a separate control, not part of the name label.
+        // An explicit empty title on it wins over the parent's in the
+        // ancestor-or-self lookup the tooltip widget uses.
+        $(this).find(".pvtTriangle").attr("title", "");
+    });
+
+        $(function () {
             // Function to load pivot data dynamically
             function loadPivotData(model) {
                 let url = `/report/leave-pivot?model=${model}`;
@@ -396,6 +681,8 @@
                         showNoRecordsState(containerId);
                         return;
                     }
+                    $("#filterForm").show();
+                    $("#reportTemplatesDropdown").show();
 
                     // Add Plotly renderers correctly
                     let plotlyRenderers = $.pivotUtilities.plotly_renderers;
@@ -451,6 +738,8 @@
                         showNoRecordsState(containerId);
                         return;
                     }
+                    $("#filterForm").show();
+                    $("#reportTemplatesDropdown").show();
 
                     const plotlyRenderers = $.pivotUtilities.plotly_renderers;
 
@@ -485,12 +774,14 @@
             // Initial load with all models
             loadPivotData("leave_request");
             toggleFilterSections("leave_request");
+            refreshTemplateList();
 
             // Model selection change event
             $("#model-select").on("change", function () {
                 let selectedModel = $(this).val();
                 loadPivotData(selectedModel); // Reload pivot data with selected model
                 toggleFilterSections(selectedModel);
+                refreshTemplateList();
             });
 
             // Export to Excel on button click. Re-checks export access on

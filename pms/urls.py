@@ -16,7 +16,7 @@ from pms.cbv import (
     settings_tabs,
 )
 
-from . import models, performance_setup, views
+from . import models, views
 
 urlpatterns = [
     path(
@@ -765,6 +765,51 @@ urlpatterns = [
         name="performance-settings-bonus-point-tab",
     ),
     path(
+        "performance-settings-objective-template-tab/",
+        settings_tabs.PerformanceSettingsObjectiveTemplateTab.as_view(),
+        name="performance-settings-objective-template-tab",
+    ),
+    path(
+        "performance-settings-objective-template-nav/",
+        settings_tabs.PerformanceSettingsObjectiveTemplateNav.as_view(),
+        name="performance-settings-objective-template-nav",
+    ),
+    path(
+        "performance-settings-objective-template-list/",
+        settings_tabs.PerformanceSettingsObjectiveTemplateList.as_view(),
+        name="performance-settings-objective-template-list",
+    ),
+    path(
+        "performance-settings-question-template-tab/",
+        settings_tabs.PerformanceSettingsQuestionTemplateTab.as_view(),
+        name="performance-settings-question-template-tab",
+    ),
+    path(
+        "performance-settings-question-template-nav/",
+        settings_tabs.PerformanceSettingsQuestionTemplateNav.as_view(),
+        name="performance-settings-question-template-nav",
+    ),
+    path(
+        "performance-settings-question-template-list/",
+        settings_tabs.PerformanceSettingsQuestionTemplateList.as_view(),
+        name="performance-settings-question-template-list",
+    ),
+    path(
+        "performance-settings-period-tab/",
+        settings_tabs.PerformanceSettingsPeriodTab.as_view(),
+        name="performance-settings-period-tab",
+    ),
+    path(
+        "performance-settings-period-nav/",
+        settings_tabs.PerformanceSettingsPeriodNav.as_view(),
+        name="performance-settings-period-nav",
+    ),
+    path(
+        "performance-settings-period-list/",
+        settings_tabs.PerformanceSettingsPeriodList.as_view(),
+        name="performance-settings-period-list",
+    ),
+    path(
         "bonus-point-setting-nav/",
         cbvs.BonusPointSettingNavView.as_view(),
         name="bonus-point-setting-nav",
@@ -892,10 +937,5 @@ urlpatterns = [
         "dashboard/api/feedback-completion/",
         pms_dashboard.pms_feedback_completion,
         name="pms-dashboard-fb-completion",
-    ),
-    path(
-        "templates-periods/",
-        performance_setup.performance_setup_view,
-        name="templates-periods-view",
     ),
 ]

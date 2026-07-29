@@ -15,17 +15,17 @@ from django.core.files.storage import FileSystemStorage
 # BASE PATH & ENVIRONMENT CONFIGURATION
 # ========================================
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-# settings.py
-import os
 
 env = environ.Env(
     DEBUG=(bool, True),
     SECRET_KEY=(str, "django-insecure-default-key"),
     ALLOWED_HOSTS=(list, ["*"]),
     CSRF_TRUSTED_ORIGINS=(list, ["http://localhost:8000"]),
+    SECURE_SSL_REDIRECT=(bool, False),
 )
 
-env.read_env(os.path.join(BASE_DIR, ".env"), overwrite=True)
+# Existing process environment (Compose, systemd, CI) wins over .env values.
+env.read_env(os.path.join(BASE_DIR, ".env"), overwrite=False)
 
 # ========================================
 # CORE DJANGO SETTINGS
@@ -34,6 +34,8 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
+HORILLA_ENV = env("HORILLA_ENV", default="")
+REDIS_URL = env("REDIS_URL", default=None)
 
 THEME_APP = "horilla_theme"
 
@@ -170,6 +172,24 @@ else:
             "PASSWORD": env("DB_PASSWORD", default=""),
             "HOST": env("DB_HOST", default=""),
             "PORT": env("DB_PORT", default=""),
+        }
+    }
+
+# ========================================
+# CACHE (optional Redis when REDIS_URL is set)
+# ========================================
+# Fresh clones / runserver keep Django's default LocMem cache.
+# Docker Compose sets REDIS_URL so the Redis service is actually used
+# (requires django-redis in requirements.txt).
+if REDIS_URL:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": REDIS_URL,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            },
+            "KEY_PREFIX": "horilla",
         }
     }
 
@@ -470,3 +490,22 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 AUTH_LDAP_ALWAYS_UPDATE_USER = True
+
+# ========================================
+# PRODUCTION SECURITY GATES
+# ========================================
+# Fail closed when DEBUG=False or HORILLA_ENV=production. Local DEBUG=True
+# tutorials keep insecure-but-documented defaults for open-source onboarding.
+from horilla.settings.security import (  # noqa: E402
+    apply_secure_defaults,
+    is_production_mode,
+    validate_production_secrets,
+)
+
+IS_PRODUCTION = is_production_mode(DEBUG, HORILLA_ENV)
+
+if IS_PRODUCTION:
+    validate_production_secrets(SECRET_KEY, ALLOWED_HOSTS, DB_INIT_PASSWORD)
+
+if not DEBUG:
+    globals().update(apply_secure_defaults(env, DEBUG))

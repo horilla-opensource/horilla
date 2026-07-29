@@ -129,6 +129,7 @@ if apps.is_installed("recruitment"):
                     "is_published",
                     "recruitment_managers__employee_first_name",
                     "recruitment_managers__employee_last_name",
+                    "recruitment_managers__badge_id",
                     "company_id__company",
                 )
             )
@@ -136,6 +137,7 @@ if apps.is_installed("recruitment"):
                 {
                     "Recruitment": item["title"],
                     "Manager": f"{item['recruitment_managers__employee_first_name']} {item['recruitment_managers__employee_last_name']}",
+                    "Manager Badge Id": item["recruitment_managers__badge_id"] or "-",
                     "Is Closed": "Closed" if item["closed"] else "Open",
                     "Status": "Published" if item["is_published"] else "Not Published",
                     "Start Date": item["start_date"],
@@ -157,9 +159,11 @@ if apps.is_installed("recruitment"):
                     "recruitment_id__title",
                     "employee_id__employee_first_name",
                     "employee_id__employee_last_name",
+                    "employee_id__badge_id",
                     "onboarding_task__task_title",
                     "onboarding_task__employee_id__employee_first_name",
                     "onboarding_task__employee_id__employee_last_name",
+                    "onboarding_task__employee_id__badge_id",
                     "onboarding_task__candidates__name",
                     "recruitment_id__company_id__company",
                 )
@@ -174,6 +178,7 @@ if apps.is_installed("recruitment"):
                         if item["employee_id__employee_first_name"]
                         else "-"
                     ),
+                    "Stage Manager Badge Id": item["employee_id__badge_id"] or "-",
                     "Task": (
                         item["onboarding_task__task_title"]
                         if item["onboarding_task__task_title"]
@@ -183,6 +188,9 @@ if apps.is_installed("recruitment"):
                         f"{item['onboarding_task__employee_id__employee_first_name']} {item['onboarding_task__employee_id__employee_last_name']}"
                         if item["onboarding_task__employee_id__employee_first_name"]
                         else "-"
+                    ),
+                    "Task Manager Badge Id": (
+                        item["onboarding_task__employee_id__badge_id"] or "-"
                     ),
                     "Candidates": (
                         item["onboarding_task__candidates__name"]

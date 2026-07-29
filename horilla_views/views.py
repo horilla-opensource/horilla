@@ -128,7 +128,15 @@ class ReloadField(View):
 
         module_name, class_name = class_path.rsplit(".", 1)
         module = importlib.import_module(module_name)
-        parent_form = getattr(module, class_name)()
+        form_class = getattr(module, class_name, None)
+        if not (
+            isinstance(form_class, type) and issubclass(form_class, forms.BaseForm)
+        ):
+            return HorillaRedirect(
+                request,
+                message=_("No matching query found."),
+            )
+        parent_form = form_class()
 
         dynamic_cache = CACHE.get(request.session.session_key + "cbv" + reload_field)
         onchange = CACHE.get(

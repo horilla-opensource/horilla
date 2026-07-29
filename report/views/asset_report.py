@@ -67,6 +67,7 @@ if apps.is_installed("asset"):
                 "assetassignment__assigned_by_employee_id__gender",
                 "assetassignment__assigned_by_employee_id__employee_first_name",
                 "assetassignment__assigned_by_employee_id__employee_last_name",
+                "assetassignment__assigned_by_employee_id__badge_id",
                 "assetassignment__assigned_date",
                 "assetassignment__return_date",
                 "assetassignment__return_status",
@@ -84,6 +85,9 @@ if apps.is_installed("asset"):
                         "assetassignment__assigned_by_employee_id__employee_last_name"
                     ]
                     else "-"
+                ),
+                "Asset User Badge Id": (
+                    item["assetassignment__assigned_by_employee_id__badge_id"] or "-"
                 ),
                 "Email": (
                     item["assetassignment__assigned_by_employee_id__email"]
