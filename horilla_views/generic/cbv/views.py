@@ -33,7 +33,6 @@ from base.methods import (
     eval_validate,
     get_key_instances,
     get_pagination,
-    has_export_access,
 )
 
 # from horilla.http import HorillaRedirect
@@ -273,9 +272,7 @@ class HorillaListView(ListView):
         context["selected_instances_key_id"] = self.selected_instances_key_id
         context["row_status_indications"] = self.row_status_indications
         context["saved_filters"] = self._saved_filters
-        context["quick_export"] = self.quick_export and has_export_access(
-            self.request, self.model
-        )
+        context["quick_export"] = self.quick_export
         context["filter_selected"] = self.filter_selected
         context["bulk_update"] = self.bulk_update
         context["model_name"] = self.verbose_name
@@ -2510,8 +2507,8 @@ class HorillaProfileView(DetailView):
         )
         self.toggle_form = ToggleColumnForm(
             self.tabs_list,
+            self.tabs_list,
             hidden_tabs,
-            hidden_fields=[],
         )
         for column in self.tabs_list:
             if column[1] in hidden_tabs:

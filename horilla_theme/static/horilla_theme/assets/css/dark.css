@@ -11,6 +11,20 @@ body.dark {
 body.dark .text-primary-600 {
   color: var(--primary-300, #fcedeb) !important;
 }
+/* Label/body text that stays dark-gray in light mode needs a light
+   equivalent on dark panels (e.g. profile meta chips, About field labels). */
+body.dark .text-color-600 {
+  color: #bbbbbb !important;
+}
+body.dark .bg-secondary-50 {
+  background-color: #333333 !important;
+}
+/* group-hover primary text loses to body.dark .text-dark-* !important
+   overrides — reassert theme primary on hover for related-object chips. */
+body.dark .group:hover .group-hover\:text-primary-600,
+body.dark .group:hover .group-hover\:text-primary-700 {
+  color: var(--primary-600, #e54f38) !important;
+}
 /* .accordion-panel ul li a below is more specific than .text-primary-600
    above, so it wins the cascade and flattens the active Settings sub-menu
    item to gray. Re-assert the theme color with matching specificity. */

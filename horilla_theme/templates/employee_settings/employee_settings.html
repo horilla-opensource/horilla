@@ -134,23 +134,29 @@
             function restoreEmployeeSettingsTab() {
                 if (!document.getElementById("employeeSettingsContent")) return;
 
+                var tabFromQuery = null;
+                try {
+                    tabFromQuery = new URLSearchParams(window.location.search).get("tab");
+                } catch (_) {}
+
                 var savedTabId = null;
                 try {
                     savedTabId = localStorage.getItem(STORAGE_KEY);
                 } catch (_) {}
 
+                var preferredTabId = tabFromQuery || savedTabId;
                 var initialTab = null;
-                if (savedTabId) {
+                if (preferredTabId) {
                     initialTab = document.querySelector(
                         '.employee-settings-tab-btn[data-tab-id="' +
-                            savedTabId.replace(/"/g, '\\"') +
+                            preferredTabId.replace(/"/g, '\\"') +
                             '"]'
                     );
                 }
                 if (!initialTab) {
                     initialTab = document.querySelector(".employee-settings-tab-btn");
                 }
-                loadEmployeeSettingsTab(initialTab, false);
+                loadEmployeeSettingsTab(initialTab, !!tabFromQuery || false);
             }
 
             function runWhenHtmxReady(fn) {

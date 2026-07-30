@@ -396,6 +396,8 @@ def about_tab(request, pk, **kwargs):
     employee_leaves = (
         employee.available_leave.all() if apps.is_installed("leave") else None
     )
+    bank_details = EmployeeBankDetails.objects.filter(employee_id=employee).first()
+    work_info = EmployeeWorkInformation.objects.filter(employee_id=employee).first()
     return render(
         request,
         "tabs/personal_tab.html",
@@ -403,6 +405,8 @@ def about_tab(request, pk, **kwargs):
             "employee": employee,
             "employee_leaves": employee_leaves,
             "contracts": contracts,
+            "bank_details": bank_details,
+            "work_info": work_info,
         },
     )
 
