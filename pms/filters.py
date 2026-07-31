@@ -827,7 +827,7 @@ class BonusPointSettingFilter(FilterSet):
     Filter through BonusPointSetting model
     """
 
-    # search = django_filters.CharFilter(method="search_method")
+    search = django_filters.CharFilter(method="search_method")
     # start_date_from = django_filters.DateFilter(
     #     field_name="start_date",
     #     lookup_expr="gte",
@@ -853,20 +853,32 @@ class BonusPointSettingFilter(FilterSet):
         model = BonusPointSetting
         fields = "__all__"
 
-    def search_method(self, queryset, _, value: str):
+    def search_method(self, queryset, name, value: str):
         """
-        This method is used to search employees and objective
+        Search across model/applicable-for/bonus-for, matching both the
+        raw stored value and its human-readable choice label.
         """
-        values = value.split(" ")
-        empty = queryset.model.objects.none()
-        for split in values:
-            empty = (
-                empty
-                | (queryset.filter(employee_id__employee_first_name__icontains=split))
-                | (queryset.filter(employee_id__employee_last_name__icontains=split))
-            )
+        value = (value or "").strip()
+        if not value:
+            return queryset
 
-        return empty.distinct()
+        result = (
+            queryset.filter(model__icontains=value)
+            | queryset.filter(applicable_for__icontains=value)
+            | queryset.filter(bonus_for__icontains=value)
+        )
+
+        for raw, label in BonusPointSetting.MODEL_CHOICES:
+            if value.lower() in str(label).lower():
+                result |= queryset.filter(model=raw)
+        for raw, label in BonusPointSetting.APPLECABLE_FOR:
+            if value.lower() in str(label).lower():
+                result |= queryset.filter(applicable_for=raw)
+        for raw, label in BonusPointSetting.BONUS_FOR:
+            if value.lower() in str(label).lower():
+                result |= queryset.filter(bonus_for=raw)
+
+        return result.distinct()
 
 
 class EmployeeBonusPointFilter(FilterSet):

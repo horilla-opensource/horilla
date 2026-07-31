@@ -2,7 +2,7 @@
 {% load i18n %}
 {% is_manager_of request.user instance as can_manage %}
 {% if perms.base.change_rotatingworktypeassign or can_manage %}
-    <a class="oh-btn oh-btn-group oh-btn--info" data-toggle="oh-modal-toggle" data-target="#genericModal"
+    <a class="oh-btn oh-btn-group oh-btn--light-bkg oh-btn--secondary" data-toggle="oh-modal-toggle" data-target="#genericModal"
         hx-get="{% url 'rotating-work-type-assign-update' instance.id %}" hx-target="#genericModalBody" style="width: 50%;">
         <ion-icon name="create-outline"> </ion-icon>{% trans "Edit" %}
     </a>

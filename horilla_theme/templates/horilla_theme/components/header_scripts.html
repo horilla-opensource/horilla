@@ -230,3 +230,116 @@
 
 {% block header_scripts %}
 {% endblock header_scripts %}
+
+<script>
+    // Site-wide: keep tabbed list panels (e.g. Attendance To Validate / OT /
+    // Validated, Requested / All Attendances) the same size as a plain list
+    // view (e.g. Employees) regardless of how many rows a given tab has.
+    // Uses a single MutationObserver on <body> rather than specific htmx
+    // event names, so it keeps working no matter which code path swaps the
+    // content in (declarative hx-get, htmx.ajax(), a raw jQuery fallback, or
+    // a full SPA page navigation that replaces #listContainer itself).
+    (function () {
+        var BOTTOM_MARGIN = 20; // matches the plain list view's own bottom gap
+        var SELECTOR = "#listContainer .heightContainer, #listContainer .attendance-request-scroll";
+        var pending = null;
+
+        function sizeVisibleScrollContainers() {
+            var containers = document.querySelectorAll(SELECTOR);
+            for (var i = 0; i < containers.length; i++) {
+                var container = containers[i];
+                if (container.offsetParent === null) {
+                    continue; // hidden (inactive tab) - leave it alone
+                }
+                var top = container.getBoundingClientRect().top;
+                var height = window.innerHeight - top - BOTTOM_MARGIN;
+                if (height > 100) {
+                    container.style.maxHeight = height + "px";
+                    container.style.minHeight = height + "px";
+                }
+            }
+        }
+
+        function scheduleResize() {
+            if (pending) {
+                clearTimeout(pending);
+            }
+            pending = setTimeout(sizeVisibleScrollContainers, 30);
+        }
+
+        window.addEventListener("resize", scheduleResize);
+        document.addEventListener("DOMContentLoaded", function () {
+            scheduleResize();
+            if (window.MutationObserver) {
+                new MutationObserver(function (mutations) {
+                    for (var i = 0; i < mutations.length; i++) {
+                        if (mutations[i].addedNodes.length) {
+                            scheduleResize();
+                            return;
+                        }
+                    }
+                }).observe(document.body, { childList: true, subtree: true });
+            }
+        });
+        scheduleResize();
+    })();
+</script>
+
+<script>
+    // Site-wide: grouped/accordion list views (generic/group_by_table.html,
+    // e.g. Hour Accounts) reload their ENTIRE accordion whenever a single
+    // group's own pagination is used (each group's page-jump control targets
+    // the shared outer container). The server only marks the first group open
+    // by default, so every OTHER group the user had manually expanded would
+    // collapse back on that reload. Capture which groups were open right
+    // before the swap and re-open them once the new content lands.
+    (function () {
+        var openGroupsByContainerId = {};
+
+        function captureOpenGroups(target) {
+            if (!target || !target.id) {
+                return;
+            }
+            var headers = target.querySelectorAll(".oh-accordion.oh-accordion--show > .oh-accordion-header[data-group]");
+            if (headers.length) {
+                openGroupsByContainerId[target.id] = Array.prototype.map.call(headers, function (header) {
+                    return header.getAttribute("data-group");
+                });
+            }
+        }
+
+        function restoreOpenGroups(containerId) {
+            var indices = openGroupsByContainerId[containerId];
+            if (!indices) {
+                return;
+            }
+            var container = document.getElementById(containerId);
+            if (!container) {
+                return;
+            }
+            indices.forEach(function (idx) {
+                var header = container.querySelector('.oh-accordion-header[data-group="' + idx + '"]');
+                if (header) {
+                    header.closest(".oh-accordion").classList.add("oh-accordion--show");
+                }
+            });
+        }
+
+        // Captured on beforeRequest (not beforeSwap): a separate site-wide
+        // loading-indicator handler wipes the target's content down to a
+        // skeleton div as soon as the request starts, so by the time
+        // beforeSwap fires the old accordion state is already gone. This
+        // script is loaded in <head>, ahead of that handler (loaded in the
+        // footer), so it observes the DOM before the wipe happens.
+        document.addEventListener("htmx:beforeRequest", function (evt) {
+            captureOpenGroups(evt.detail.target);
+        });
+
+        document.addEventListener("htmx:afterSwap", function (evt) {
+            var id = evt.detail.target && evt.detail.target.id;
+            if (id) {
+                restoreOpenGroups(id);
+            }
+        });
+    })();
+</script>

@@ -1,4 +1,5 @@
 {% load i18n %}
+    {% if instance.managers_count %}
     {% for manager in instance.stage_managers.all %}
     <span
       class="oh-user-panel oh-collapse-panel"
@@ -24,6 +25,7 @@
       </button>
     </span>
     {% endfor %}
+    {% endif %}
     <span class="count-span">
-      {{instance.stage_managers.all|length}} {% trans "Managers"%}
+      {{instance.managers_count}} {% trans "Managers"%}
     </span>

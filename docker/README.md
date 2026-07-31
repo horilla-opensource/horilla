@@ -59,8 +59,8 @@ A complete, step-by-step guide to running Horilla HR using Docker. Covers develo
 Get Horilla running in under 5 minutes:
 
 ```bash
-# 1. Clone the repository (defaults to stable 2.0; contributors: use -b dev/v2.0)
-git clone https://github.com/horilla/horilla-hr.git
+# 1. Clone the repository
+git clone -b dev/v2.0 https://github.com/horilla/horilla-hr.git
 cd horilla-hr
 
 # 2. Start all services

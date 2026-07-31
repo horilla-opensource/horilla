@@ -3,19 +3,14 @@
 {% if perms.instance.change_attendance or perms.instance.delete_attendance or request.user|is_reportingmanager %}
     <div class="flex items-center justify-center gap-1">
         <a
-            class="h-8 w-24 px-4 py-2 bg-info-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-info-800 transition duration-300"
+            class="oh-btn oh-btn--light-bkg oh-btn--secondary h-8 w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
             data-toggle="oh-modal-toggle"
             data-target="#genericModal"
             hx-get="{% url 'attendance-update' instance.id %}?instances_ids={{ instance.ordered_ids }}"
             hx-swap="innerHTML"
             hx-target="#genericModalBody"
         >
-            <img
-                src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}"
-                alt="{% trans 'Edit' %}"
-                width="13"
-                class="filter brightness-0 invert"
-            >{% trans "Edit" %}
+            <ion-icon name="create-outline"></ion-icon>{% trans "Edit" %}
         </a>
 
         {% if instance.attendance_overtime_approve %}

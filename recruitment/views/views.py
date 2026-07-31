@@ -546,9 +546,18 @@ def stage_component(request, view: str = "list"):
             ),
         )
 
-    ordered_stages = CACHE.get(request.session.session_key + "pipeline")[
-        "stages"
-    ].filter(recruitment_id__id=recruitment_id)
+    cache_key = request.session.session_key + "pipeline"
+    pipeline_cache = CACHE.get(cache_key)
+    if pipeline_cache is None:
+        pipeline_cache = {
+            "stages": StageFilter(request.GET).qs.order_by("sequence"),
+            "filter_dict": get_key_instances(
+                Recruitment, parse_qs(request.GET.urlencode())
+            ),
+        }
+        CACHE.set(cache_key, pipeline_cache)
+
+    ordered_stages = pipeline_cache["stages"].filter(recruitment_id__id=recruitment_id)
     template = "pipeline/components/stages_tab_content.html"
     if view == "card":
         template = "pipeline/kanban_components/kanban_stage_components.html"
@@ -558,9 +567,7 @@ def stage_component(request, view: str = "list"):
         {
             "rec": recruitment,
             "ordered_stages": ordered_stages,
-            "filter_dict": CACHE.get(request.session.session_key + "pipeline")[
-                "filter_dict"
-            ],
+            "filter_dict": pipeline_cache.get("filter_dict"),
         },
     )
 
@@ -638,14 +645,19 @@ def candidate_component(request):
     Candidate component
     """
     stage_id = request.GET.get("stage_id")
-    stage = (
-        CACHE.get(request.session.session_key + "pipeline")["stages"]
-        .filter(id=stage_id)
-        .first()
-    )
-    candidates = CACHE.get(request.session.session_key + "pipeline")[
-        "candidates"
-    ].filter(stage_id=stage)
+    cache_key = request.session.session_key + "pipeline"
+    cache = CACHE.get(cache_key)
+    if cache is None:
+        cache = {
+            "stages": StageFilter(request.GET).qs.order_by("sequence"),
+            "candidates": False,
+        }
+    if not cache.get("candidates"):
+        cache["candidates"] = CandidateFilter(request.GET).qs.filter(is_active=True)
+    CACHE.set(cache_key, cache, timeout=600)
+
+    stage = cache["stages"].filter(id=stage_id).first()
+    candidates = cache["candidates"].filter(stage_id=stage)
 
     template = "pipeline/components/candidate_stage_component.html"
     if request.GET.get("view") == "card":

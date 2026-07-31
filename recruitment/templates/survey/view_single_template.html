@@ -62,7 +62,7 @@
     <div class="oh-modal__button-container text-center">
         {% if perms.recruitment.change_recruitmentsurvey and perms.recruitment.delete_recruitmentsurvey %}
         <div class="oh-btn-group">
-            <a class="oh-btn oh-btn--info" hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
+            <a class="oh-btn oh-btn--light-bkg oh-btn--secondary" hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
                 data-toggle="oh-modal-toggle" data-target="#genericModal" hx-target="#genericModalBody"
                 style="width: 50%;">
                 <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="{% trans 'create outline' %}">
@@ -85,7 +85,7 @@
         {% else %}
         <div class="oh-btn-group">
             {% if perms.recruitment.change_recruitmentsurvey %}
-            <a class="oh-btn oh-btn--info" hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
+            <a class="oh-btn oh-btn--light-bkg oh-btn--secondary" hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
                 data-toggle="oh-modal-toggle" data-target="#genericModal" hx-target="#genericModalBody"
                 style="width: 100%;">
                 <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="{% trans 'create outline' %}">

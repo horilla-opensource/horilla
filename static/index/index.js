@@ -66,7 +66,90 @@ function addToSelectedId(newIds, storeKey) {
     ids = [...ids, ...newIds.map(String)];
     ids = Array.from(new Set(ids));
     $(`#${storeKey}`).attr("data-ids", JSON.stringify(ids));
+    setStoredSelection(storeKey, ids);
 }
+
+// Used by the "Unselect"/"Unselect All Records" actions so the clear is
+// persisted synchronously - the MutationObserver mirror below is async
+// (fires on the next microtask), which left a window where hitting reload
+// right after clicking Unselect could race ahead of the localStorage write
+// and bring the old selection back.
+function clearSelection(storeKey) {
+    $(`#${storeKey}`).attr("data-ids", "[]");
+    setStoredSelection(storeKey, []);
+}
+
+// Row-selection checkboxes only ever lived in a DOM attribute, so a browser
+// reload silently wiped out whatever the user had selected. Mirroring the
+// attribute into localStorage (scoped per page + storeKey, since the same
+// storeKey id like "selectedInstances" is reused across many unrelated list
+// views) lets us restore it right after the page comes back.
+function getSelectionStorageKey(storeKey) {
+    return `hlv_selection:${window.location.pathname}:${storeKey}`;
+}
+
+function getStoredSelection(storeKey) {
+    try {
+        return JSON.parse(localStorage.getItem(getSelectionStorageKey(storeKey)) || "[]");
+    } catch (e) {
+        return [];
+    }
+}
+
+function setStoredSelection(storeKey, ids) {
+    try {
+        localStorage.setItem(getSelectionStorageKey(storeKey), JSON.stringify(ids || []));
+    } catch (e) {
+        // localStorage unavailable (private browsing quota, etc.) - selection
+        // simply won't survive a reload, same as before this change.
+    }
+}
+
+// selectSelected() runs on every htmx reload, not just a fresh page load
+// (e.g. it also runs right after the "Unselect" button intentionally clears
+// data-ids). Only attempt the one-time restore-from-storage the first time
+// each storeKey is seen this page load, so a deliberate clear doesn't get
+// immediately undone by the very next selectSelected() call.
+var _hlvSelectionRestored = {};
+
+// Selection ids are written to the DOM in several places (inline template
+// onclick handlers, addToSelectedId, the checkbox .change() handler below) -
+// rather than hook every call site, watch the attribute itself so every path
+// stays mirrored into localStorage.
+$(document).ready(function () {
+    var selectionObserver = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+            var el = mutation.target;
+            if (el.id) {
+                setStoredSelection(el.id, JSON.parse(el.getAttribute("data-ids") || "[]"));
+            }
+        });
+    });
+    selectionObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-ids"],
+        subtree: true,
+    });
+});
+
+// Row-title collapse toggle (the little count-span/oh-permission-table--collapsed
+// expander used by, e.g., recruitment/cbv/stages/title.html). This used to be
+// registered inline via a <script> tag repeated on every single row - besides
+// re-binding the same document-level handler hundreds of times per page, that
+// row HTML is reused elsewhere to build each row's hover tooltip (title="...",
+// stripped through the `striptags` filter), and `striptags` only removes the
+// <script>/</script> tags themselves, not their contents - so the JS source
+// leaked into the tooltip text. Registering it once here, globally, fixes both.
+$(document).on("htmx:afterSwap", function () {
+    $("[data-toggle-count]")
+        .off("click")
+        .on("click", function (e) {
+            e.stopPropagation();
+            var recViewContainer = $(this).closest("tr");
+            recViewContainer.find(".count-span").toggle();
+            recViewContainer.toggleClass("oh-permission-table--collapsed");
+        });
+});
 
 function togglePublicComments() {
     if ($('#id_disable_comments').is(':checked')) {
@@ -154,7 +237,91 @@ function syncBulkSelectAllCheckbox(viewId) {
     });
 }
 
+// Toggling a column's visibility checkbox in the "..." column-picker dropdown
+// used to always trigger a full reload of the entire list view (every group,
+// every row) just to hide/show one column — slow, and it closed the dropdown
+// since the reload replaces its DOM node (Alpine's open state resets).
+// The preference is still persisted server-side via the existing hx-get
+// (unchanged), but the visual change now applies instantly client-side, and
+// the reload that follows is skipped (see window.__skipNextToggleReload,
+// checked in horilla_list_table.html / group_by_table.html's
+// hx-on::after-request). Column *reordering* (drag-and-drop) still reloads
+// normally, since re-ordering actual table cells isn't a simple show/hide.
+function toggleColumnVisibility(checkboxEl, fieldName, visible) {
+    var $th = $(`th[id$="-${fieldName}-header"]`);
+    if (!$th.length) {
+        // This column was never rendered server-side in the first place —
+        // it wasn't part of the page's current visible-column set, so
+        // there's no existing <th>/<td> to un-hide client-side. Turning it
+        // ON needs a real reload once the toggle is actually persisted (see
+        // persistColumnToggle below); turning an already-absent column OFF
+        // is a no-op either way.
+        if (visible) {
+            window.__hlvNeedsColumnReload = $(checkboxEl)
+                .closest(".hlv-container")
+                .attr("data-list-path");
+        }
+        return;
+    }
+    $th.each(function () {
+        var $header = $(this);
+        var $table = $header.closest("table");
+        var index = $header.parent().children("th").index($header);
+        $header.toggleClass("d-none", !visible);
+        $table.find("tbody tr").each(function () {
+            $(this).children("td").eq(index).toggleClass("d-none", !visible);
+        });
+    });
+    window.__skipNextToggleReload = true;
+}
+
+function toggleAllColumnsVisibility(formEl, visible) {
+    $(formEl)
+        .find('input[type="checkbox"]')
+        .each(function () {
+            toggleColumnVisibility(this, $(this).attr("id").replace("toggle_", ""), visible);
+        });
+}
+
+// Persists the column show/hide preference in the background via a plain
+// AJAX GET instead of submitting the htmx-enabled form. Clicking the form's
+// real submit button (as column *reordering* still does) fires
+// htmx:afterRequest, which bubbles up to the dropdown's hx-on::after-request
+// and reloads/recreates the whole list (closing the dropdown, since Alpine's
+// open state resets on the new DOM node). That reload is only meant to be
+// skipped via window.__skipNextToggleReload, but the flag has to survive an
+// async round trip shared with other unrelated htmx requests (e.g. the flash
+// message refresher), which made it unreliable in practice. A plain AJAX call
+// never fires any htmx event on the form, so the dropdown is never touched.
+function persistColumnToggle(formEl) {
+    var $form = $(formEl);
+    $.get($form.attr("hx-get"), $form.find(":input").serialize()).done(function () {
+        // Only reload once the newly-shown column's toggle is confirmed
+        // saved — reloading any earlier would race the save and could
+        // fetch the table before the server sees the updated preference.
+        if (window.__hlvNeedsColumnReload) {
+            var path = window.__hlvNeedsColumnReload;
+            window.__hlvNeedsColumnReload = null;
+            window.__hlvReopenDropdown = path;
+            $(`.hlv-container[data-list-path="${path}"]`)
+                .find(".reload-record")
+                .click();
+        }
+    });
+}
+
 function selectSelected(viewId, storeKey = "selectedInstances") {
+    var $store = $(`#${storeKey}`);
+    if (!_hlvSelectionRestored[storeKey]) {
+        _hlvSelectionRestored[storeKey] = true;
+        if (!JSON.parse($store.attr("data-ids") || "[]").length) {
+            var stored = getStoredSelection(storeKey);
+            if (stored.length) {
+                $store.attr("data-ids", JSON.stringify(stored));
+            }
+        }
+    }
+
     ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
     $.each(ids, function (indexInArray, valueOfElement) {
         $(
@@ -196,20 +363,34 @@ function selectSelected(viewId, storeKey = "selectedInstances") {
 
         // Update the data attribute with the modified array
         $(`#${storeKey}`).attr("data-ids", JSON.stringify(ids));
+        setStoredSelection(storeKey, ids);
 
-        // Update count and show/hide buttons after every change
+        // Update count and show/hide buttons after every change. A grouped
+        // view (group_by_table.html) renders one quick_actions.html copy per
+        // group, each with its own count_<gvid> elements - not just one for
+        // the outer viewId - so every one of them needs updating, or a
+        // group's Unselect/Export/Update buttons never reflect a change made
+        // via a row checkbox (only the group's own "Select" button, whose
+        // onclick targets its own gvid directly, updated correctly).
         if (viewId) {
-            let cleanViewId = viewId.replace('#', '');
-            reloadSelectedCount($(`#count_${cleanViewId}`), storeKey);
-            reloadSelectedCount($(`.count_${cleanViewId}`), storeKey);
+            $(viewId).find('[id^="count_"]').each(function () {
+                reloadSelectedCount($(this), storeKey);
+            });
+            $(viewId).find('[class*="count_"]').each(function () {
+                reloadSelectedCount($(this), storeKey);
+            });
         }
 
         syncBulkSelectAllCheckbox(viewId);
     });
 
     if (viewId) {
-        let cleanViewId = viewId.replace('#', '');
-        reloadSelectedCount($(`#count_${cleanViewId}`), storeKey);
+        $(viewId).find('[id^="count_"]').each(function () {
+            reloadSelectedCount($(this), storeKey);
+        });
+        $(viewId).find('[class*="count_"]').each(function () {
+            reloadSelectedCount($(this), storeKey);
+        });
     }
 }
 
@@ -358,8 +539,8 @@ function removeId(element, storeKey = "selectedInstances") {
     if (index > -1) {
         ids.splice(index, 1);
     }
-    ids = JSON.stringify(ids);
-    $(`#${storeKey}`).attr("data-ids", ids);
+    $(`#${storeKey}`).attr("data-ids", JSON.stringify(ids));
+    setStoredSelection(storeKey, ids);
 }
 function bulkStageUpdate(canIds, stageId, preStageId) {
     $.ajax({

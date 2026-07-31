@@ -3,7 +3,7 @@
 <div class="oh-btn-group" style="width: 100%">
 	{% if instance.status == 'requested' %}
         <button
-            class="oh-btn oh-btn--info"
+            class="oh-btn oh-btn--light-bkg oh-btn--secondary"
             style="width: 50%"
             title="{% trans 'Edit' %}"
             data-toggle="oh-modal-toggle"
@@ -17,7 +17,7 @@
 	{% else %}
         <button
             style="width: 50%"
-            class="oh-btn oh-btn--info"
+            class="oh-btn oh-btn--light-bkg oh-btn--secondary"
             disabled
         >
             <ion-icon name="create-outline"></ion-icon>

@@ -33,20 +33,11 @@
         </div>
     {% endif %}
 
-    {% if view_url %}
-        <div
-            class="oh-wrapper"
-            hx-get="{{view_url}}?{{request.GET.urlencode}}"
-            hx-trigger="load"
-            id="{{view_container_id}}"
-        >
-            <div
-                class="mt-4 animated-background"
-                style="height: 600px"
-            >
-            </div>
-        </div>
-    {% endif %}
+    <div
+        class="oh-wrapper"
+        id="{{view_container_id}}"
+    >
+    </div>
 
     <div
         class="oh-modal"

@@ -2,7 +2,7 @@
 {% load i18n %}
 {% is_manager_of request.user instance as can_manage %}
 {% if perms.base.change_rotatingshiftassign or can_manage %}
-    <a class="oh-btn oh-btn-group oh-btn--info" data-toggle="oh-modal-toggle" data-target="#genericModal"
+    <a class="oh-btn oh-btn-group oh-btn--light-bkg oh-btn--secondary" data-toggle="oh-modal-toggle" data-target="#genericModal"
         hx-get="{% url 'rotating-shift-assign-update' instance.id %}?instances_ids={{ request.GET.instance_ids }}"
         hx-target="#genericModalBody" style="width: 50%;">
         <button

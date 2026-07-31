@@ -2768,6 +2768,12 @@ ul.errorlist ul.errorlist li {
 .oh-titlebar__tag--custom {
   background-color: rgba(255, 68, 0, 0.543) !important;
   color: white;
+  cursor: pointer;
+}
+
+.oh-titlebar__tag--custom:hover {
+  background-color: rgba(255, 68, 0, 0.75) !important;
+  transition: background-color 0.3s ease-in-out;
 }
 
 .oh-alert-container {
@@ -3043,6 +3049,28 @@ ul.errorlist ul.errorlist li {
 .oh-sticky-table_dropdown {
   right: 0;
   width: max-content;
+}
+
+.oh-sticky-dropdown_btn {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 6px;
+  color: #666;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.oh-sticky-dropdown_btn:hover {
+  background: #f5f5f5;
+}
+
+.oh-sticky-dropdown_btn ion-icon {
+  font-size: 14px;
 }
 
 .oh-sticy-dropdown-item {

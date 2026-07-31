@@ -58,7 +58,6 @@ class ObjectivesList(HorillaListView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.search_url = reverse("tab-objectives-view")
         self.template_only = False
 
     def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
@@ -202,27 +201,24 @@ class ObjectivesTab(HorillaTabView):
         self.view_id = "objContainer"
 
     def _assigned_objectives_count(self, employee):
-        return (
-            Objective.objects.filter(employee_objective__employee_id=employee)
-            .distinct()
-            .count()
-        )
+        queryset = Objective.objects.filter(
+            employee_objective__employee_id=employee
+        ).distinct()
+        return ActualObjectiveFilter(self.request.GET, queryset=queryset).qs.count()
 
     def _all_objectives_count(self, employee):
         queryset = Objective.objects.all()
         manager = Objective.objects.filter(managers=employee).exists()
         if self.request.user.has_perm("pms.view_employeeobjective"):
-            return queryset.distinct().count()
-        if manager:
-            return (
-                (
-                    queryset.filter(Q(managers=employee))
-                    | queryset.filter(employee_objective__employee_id=employee)
-                )
-                .distinct()
-                .count()
-            )
-        return 0
+            queryset = queryset.distinct()
+        elif manager:
+            queryset = (
+                queryset.filter(Q(managers=employee))
+                | queryset.filter(employee_objective__employee_id=employee)
+            ).distinct()
+        else:
+            return 0
+        return ActualObjectiveFilter(self.request.GET, queryset=queryset).qs.count()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -243,9 +239,17 @@ class ObjectivesTab(HorillaTabView):
         can_view_all = (
             self.request.user.has_perm("pms.view_employeeobjective") or manager
         )
+
+        extra_params = self.request.GET.copy()
+        extra_params.pop("view", None)
+        query_string = extra_params.urlencode()
+
+        def with_query(url):
+            return f"{url}?{query_string}" if query_string else url
+
         all_objectives_tab = {
             "title": _("All Objectives"),
-            "url": f"{reverse('all-objectives-view-tab')}",
+            "url": with_query(reverse("all-objectives-view-tab")),
             "badge": all_objectives_count,
             "actions": [
                 {
@@ -269,7 +273,7 @@ class ObjectivesTab(HorillaTabView):
             self.tabs = [
                 {
                     "title": _("Assigned Objectives"),
-                    "url": f"{reverse('my-objectives-view-tab')}",
+                    "url": with_query(reverse("my-objectives-view-tab")),
                     "badge": assigned_objectives_count,
                 },
             ]
@@ -820,7 +824,7 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
                     "icon": "create-outline",
                     "attrs": """
                     hx-get='{get_update_url}'
-                    class="oh-btn w-100"
+                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                     data-toggle="oh-modal-toggle"
                     data-target="#genericModal"
                     hx-target="#genericModalBody"
@@ -838,7 +842,7 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
                         hx-get='{{get_delete_url}}'
                         hx-confirm="{delete_confirm}"
                         hx-swap="none"
-                        class="oh-btn oh-btn--danger-outline w-100"
+                        class="oh-btn oh-btn--danger oh-btn--sq-sm"
                         hx-on-htmx-after-request= "window.location.reload();"
                         style="cursor: pointer;"
                     """,
@@ -859,7 +863,7 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
                 hx-get='{get_history_url}'
                 hx-target="#genericOffCanvas"
                 data-target='#genericSidebar'
-                class="oh-btn oh-btn--danger-outline w-100 oh-activity-sidebar__open"
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm oh-activity-sidebar__open"
                 style="cursor: pointer;"
                 """,
                 }

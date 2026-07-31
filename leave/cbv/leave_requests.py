@@ -135,6 +135,7 @@ class LeaveRequestsListView(HorillaListView):
     header_attrs = {
         "leave_requests_custom_emp_col": """ style="width:200px !important;" """,
         "option": """ style="width:200px !important;" """,
+        "penality_col": """ style="width:160px !important;" """,
     }
 
     row_status_indications = [

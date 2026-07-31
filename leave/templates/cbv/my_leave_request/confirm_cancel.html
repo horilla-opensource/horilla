@@ -6,10 +6,10 @@
             hx-get="{% url 'user-request-cancel' instance.id %}"
             hx-target="#cancelForm"
             title="{% trans 'Cancel' %}"
-            class="oh-btn oh-btn--danger w-100"> {% trans "Cancel" %}
+            class="oh-btn oh-btn--danger w-100" style="padding: 2px 12px;"> {% trans "Cancel" %}
         </a>
     {% else %}
-        <button class="oh-btn oh-btn--danger w-100" disabled>
+        <button class="oh-btn oh-btn--danger w-100" style="padding: 2px 12px;" disabled>
             {% trans "Cancel" %}
         </button>
     {% endif %}

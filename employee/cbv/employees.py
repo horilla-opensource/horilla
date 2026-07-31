@@ -9,6 +9,7 @@ from typing import Any
 from django import forms
 from django.apps import apps
 from django.contrib.auth.hashers import identify_hasher, make_password
+from django.core.cache import cache as CACHE
 from django.core.exceptions import ImproperlyConfigured
 from django.db import transaction
 from django.dispatch import receiver
@@ -87,6 +88,12 @@ class EmployeesView(TemplateView):
         context = super().get_context_data(**kwargs)
         update_fields = BulkUpdateFieldForm()
         context["update_fields_form"] = update_fields
+        if not self.request.GET and self.request.session.session_key:
+            cached = CACHE.get(
+                self.request.session.session_key + reverse("employees-list") + "cbv"
+            )
+            if cached and cached.get("query_dict"):
+                context["initial_nav_query"] = cached["query_dict"].urlencode()
         return context
 
 
@@ -279,6 +286,23 @@ class EmployeesList(HorillaListView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("employees-list")
+
+    def get_queryset(self, *args, **kwargs):
+        return (
+            super()
+            .get_queryset(*args, **kwargs)
+            .select_related(
+                "employee_work_info",
+                "employee_work_info__department_id",
+                "employee_work_info__job_position_id",
+                "employee_work_info__job_role_id",
+                "employee_work_info__reporting_manager_id",
+                "employee_work_info__shift_id",
+                "employee_work_info__work_type_id",
+                "employee_work_info__employee_type_id",
+                "employee_work_info__company_id",
+            )
+        )
 
     columns = [
         (_("Employee"), "employee_name_with_badge_id", "get_avatar"),
@@ -570,24 +594,7 @@ class EmployeeNav(HorillaNavView):
         else:
             self.actions = None
 
-        self.view_types = [
-            {
-                "type": "list",
-                "icon": "list-outline",
-                "url": reverse("employees-list"),
-                "attrs": f"""
-                            title ='{_("List")}'
-                            """,
-            },
-            {
-                "type": "card",
-                "icon": "grid-outline",
-                "url": reverse("employees-card"),
-                "attrs": f"""
-                          title ='{_("Card")}'
-                          """,
-            },
-        ]
+        self.view_types = []
 
     nav_title = _("Employees")
     filter_body_template = "cbv/employees_view/filter_employee.html"

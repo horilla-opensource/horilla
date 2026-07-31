@@ -74,7 +74,7 @@
                         {% if perms.attendance.change_attendancevalidationcondition %}
                             <div class="oh-sticky-table__td">
                                 <a hx-get="{% url 'attendance-settings-update' condition.id %}"
-                                    hx-target="#objectUpdateModalTarget" type="button" class="oh-btn oh-btn--info"
+                                    hx-target="#objectUpdateModalTarget" type="button" class="oh-btn oh-btn--light-bkg oh-btn--secondary"
                                     data-toggle="oh-modal-toggle" data-target="#objectUpdateModal">{% trans 'Edit' %}</a>
                             </div>
                         {% endif %}

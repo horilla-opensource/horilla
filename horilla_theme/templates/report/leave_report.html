@@ -11,292 +11,101 @@
             </h3>
 
             <div style="display: inline-flex">
-                <!-- Filter section -->
-                <form
-                    id="filterForm"
-                    onsubmit="event.preventDefault(); loadFilteredPivotData()"
-                    class="me-3"
-                    style="margin-top: 10px"
+                <!-- Deep-link filter: some other page may link here with
+                     ?id=<pk> to jump straight to a single LeaveRequest.
+                     Preserved untouched by the dynamic-filter rework below;
+                     it isn't part of the Filters panel, it just rides along
+                     on every pivot request as an extra query param. -->
+                <input type="hidden" id="leaveReportIdField" value="{{ request.GET.id }}">
+
+                <!-- Filter section: dynamic Field / Operator / Value builder,
+                     anchored below the Filter button as a dropdown panel
+                     (not a page-covering modal), matching the Employee
+                     Report reference. The available fields switch based on
+                     the currently selected #model-select value. -->
+                <div
+                    id="leaveReportFilterTrigger"
+                    class="oh-dropdown"
+                    x-data="{open: false, expanded: false}"
+                    style="margin-top: 10px; margin-right: 10px"
                 >
-                    <div class="oh-main__titlebar oh-main__titlebar--right">
-                        <div class="oh-main__titlebar-button-container">
-                            <div class="oh-dropdown" x-data="{open: false}">
-                                <button
-                                    class="px-5 py-2 h-full bg-[white] rounded-md text-sm flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 cursor-pointer"
-                                    @click="open = !open"
-                                    onclick="event.preventDefault()"
+                    <button
+                        type="button"
+                        class="px-5 py-2 h-full bg-[white] rounded-md text-sm flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 cursor-pointer"
+                        @click="open = !open"
+                    >
+                        <img
+                            src="{% static 'horilla_theme/assets/img/icons/sort.svg' %}"
+                            alt="{% trans 'Filter' %}"
+                            width="15"
+                            class="mt-[-1px]"
+                        >
+                        {% trans "Filter" %}
+                        <span id="filterCount"></span>
+                    </button>
+                    <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right oh-dynamic-filter-panel"
+                        :class="{ 'oh-dynamic-filter-panel--expanded': expanded }"
+                        x-show="open"
+                        @click.outside="open = false"
+                        style="display: none;"
+                    >
+                        <div class="oh-dynamic-filter-panel__header">
+                            <h2 class="oh-dynamic-filter-panel__title">{% trans "Filters" %}</h2>
+                            <div class="oh-dynamic-filter-panel__header-actions">
+                                <span
+                                    class="oh-dynamic-filter-expand"
+                                    title="{% trans 'Expand' %}"
+                                    @click="expanded = !expanded"
                                 >
-                                    <img
-                                        src="{% static 'horilla_theme/assets/img/icons/sort.svg' %}"
-                                        alt="{% trans 'Filter' %}"
-                                        width="15"
-                                        class="mt-[-1px]"
-                                    >
-                                    {% trans "Filter" %}
-                                    <div id="filterCount"></div>
-                                </button>
-                                <div
-                                    class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-                                    x-show="open"
-                                    @click.outside="open = false"
-                                    style="display: none; width: 395px"
+                                    <ion-icon name="expand-outline"></ion-icon>
+                                </span>
+                                <span
+                                    class="oh-dynamic-filter-close"
+                                    title="{% trans 'Close' %}"
+                                    @click="open = false"
                                 >
-                                    <div class="oh-dropdown__filter-body">
-                                        <div class="oh-accordion" data-model="leave_request">
-                                            <div class="oh-accordion-header">{% trans "Leave Request" %}</div>
-                                            <div class="oh-accordion-body">
-                                                <input type="hidden" value="{{request.GET.id}}" name="id">
-                                                <div class="row">
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                                for="{{ form.employee_id.id_for_label }}"
-                                                            >{% trans "Employees" %}</label>
-                                                            {{ form.employee_id }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                                for="{{ form.leave_type_id.id_for_label }}"
-                                                            >{% trans "Leave Type" %}</label>
-                                                            {{ form.leave_type_id }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                                for="{{ form.start_date.id_for_label }}"
-                                                            >{% trans "Start Date" %}</label>
-                                                            {{ form.start_date }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                                for="{{ form.end_date.id_for_label }}"
-                                                            >{% trans "End Date" %}</label>
-                                                            {{ form.end_date }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-12">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                                for="{{ form.status.id_for_label }}"
-                                                            >{% trans "Status" %}</label>
-                                                            {{ form.status }}
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                                for="{{ form.from_date.id_for_label }}"
-                                                            >{% trans "From Date" %}</label>
-                                                            {{ form.from_date }}
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                                for="{{ form.to_date.id_for_label }}"
-                                                            >{% trans "To Date" %}</label>
-                                                            {{ form.to_date }}
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                                for="{{ form.employee_id__employee_work_info__company_id.id_for_label }}"
-                                                            >{% trans "Company" %}</label>
-                                                            {{ form.employee_id__employee_work_info__company_id }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                                for="{{ form.employee_id__employee_work_info__reporting_manager_id.id_for_label }}"
-                                                            >{% trans "Reporting Manager" %}</label>
-                                                            {{ form.employee_id__employee_work_info__reporting_manager_id }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                                for="{{ form.employee_id__employee_work_info__department_id.id_for_label }}"
-                                                            >{% trans "Department" %}</label>
-                                                            {{ form.employee_id__employee_work_info__department_id }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                                for="{{ form.employee_id__employee_work_info__job_position_id.id_for_label }}"
-                                                            >{% trans "Job Position" %}</label>
-                                                            {{ form.employee_id__employee_work_info__job_position_id }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                                for="{{ form.employee_id__employee_work_info__shift_id.id_for_label }}"
-                                                            >{% trans "Shift" %}</label>
-                                                            {{ form.employee_id__employee_work_info__shift_id }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                                for="{{ form.employee_id__employee_work_info__work_type_id.id_for_label }}"
-                                                            >{% trans "Work Type" %}</label>
-                                                            {{ form.employee_id__employee_work_info__work_type_id }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="oh-accordion" data-model="available_leave">
-                                            <div class="oh-accordion-header">{% trans "Available Leave" %}</div>
-                                            <div class="oh-accordion-body">
-                                                <div class="row">
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label class="oh-label">{% trans "Employees" %}</label>
-                                                            {{ f.form.employee_id }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label class="oh-label">{% trans "Leave Type" %}</label>
-                                                            {{ f.form.leave_type_id }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label class="oh-label">{% trans "Available Days" %}</label>
-                                                            {{ f.form.available_days }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                            >{% trans "Carryforward Days" %}</label>
-                                                            {{ f.form.carryforward_days }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                            >{% trans "Total Leave Days" %}</label>
-                                                            {{ f.form.total_leave_days }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label class="oh-label">{% trans "Assigned Date" %}</label>
-                                                            {{ f.form.assigned_date }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                            >{% trans "Available Days Greater or Equal" %}</label>
-                                                            {{ f.form.available_days__gte }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                            >{% trans "Available Days Less Than or Equal" %}</label>
-                                                            {{ f.form.available_days__lte }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                            >{% trans "Carryforward Days Greater or Equal" %}</label>
-                                                            {{ f.form.carryforward_days__gte }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                            >{% trans "Carryforward Days Less Than or Equal" %}</label>
-                                                            {{ f.form.carryforward_days__lte }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                            >{% trans "Total Leave Days Greater or Equal" %}</label>
-                                                            {{ f.form.total_leave_days__gte }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-12 col-lg-6">
-                                                        <div class="oh-input-group">
-                                                            <label
-                                                                class="oh-label"
-                                                            >{% trans "Total Leave Days Less Than or Equal" %}</label>
-                                                            {{ f.form.total_leave_days__lte }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex justify-end pt-3">
-                                        <button
-                                            type="button"
-                                            class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
-                                            id="objective-filter-form-submit"
-                                            onclick="loadFilteredPivotData()"
-                                        >
-                                            <img
-                                                src="{% static 'horilla_theme/assets/img/icons/sort.svg' %}"
-                                                alt="{% trans 'Filter' %}"
-                                                width="15"
-                                                class="mt-[-1px]"
-                                            >{% trans "Filter" %}
-                                        </button>
-                                    </div>
-                                </div>
+                                    <ion-icon name="close-outline"></ion-icon>
+                                </span>
                             </div>
                         </div>
+                        <div class="oh-dynamic-filter-panel__body">
+                            <div id="dynamicFilterRows"></div>
+                            <a
+                                href="#"
+                                id="addFilterRowBtn"
+                                class="oh-dynamic-filter-add"
+                            >
+                                <ion-icon name="add-circle-outline"></ion-icon>
+                                {% trans "Add more filter" %}
+                            </a>
+                        </div>
+                        <div class="oh-dynamic-filter-panel__footer">
+                            <button
+                                type="button"
+                                id="applyDynamicFilterBtn"
+                                class="oh-btn oh-btn--secondary"
+                                @click="open = false"
+                            >
+                                {% trans "Apply" %}
+                            </button>
+                        </div>
+
+                        <div id="appliedFiltersSection" class="oh-applied-filters" style="display: none;">
+                            <div class="oh-applied-filters__header">
+                                <strong>{% trans "Applied Filters" %}</strong>
+                                <button
+                                    type="button"
+                                    id="clearAllFiltersBtn"
+                                    class="oh-btn oh-btn--light-danger oh-btn--small"
+                                >
+                                    {% trans "Clear All" %}
+                                </button>
+                            </div>
+                            <div id="appliedFilterChips" class="oh-applied-filters__chips"></div>
+                        </div>
                     </div>
-                </form>
+                </div>
 
                 <!-- Report Templates: save/reload the current Rows/Columns
                      arrangement, so it doesn't need to be rebuilt from
@@ -440,6 +249,226 @@
         .oh-report-template-delete ion-icon {
             font-size: 15px;
         }
+
+        .oh-dynamic-filter-row {
+            display: flex !important;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            width: 100%;
+        }
+
+        /* <select> elements resist shrinking in a flex row even with
+           min-width:0 (a longstanding cross-browser quirk) -- wrapping each
+           control in its own flex-cell <div> moves the grow/shrink math onto
+           a plain block element instead, and the control just fills 100% of
+           its already-correctly-sized wrapper. */
+        .oh-dynamic-filter-cell {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
+        .oh-dynamic-filter-cell--value {
+            flex: 1.4 1 0;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        /* Compact, fixed-width AND/OR selector shown at the start of every
+           row after the first -- it says how that row combines with
+           whatever came before it, so the first row (nothing before it)
+           never shows one. */
+        .oh-dynamic-filter-cell--connector {
+            flex: 0 0 60px;
+        }
+
+        .oh-filter-connector-pill {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 35px;
+            width: 100%;
+            border-radius: 999px;
+            background-color: hsl(230, 84%, 96%);
+            color: hsl(231, 48%, 48%);
+            font-size: 0.6875rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            user-select: none;
+            box-sizing: border-box;
+        }
+
+        .oh-filter-connector-pill:hover {
+            background-color: hsl(230, 84%, 92%);
+        }
+
+        .oh-dynamic-filter-cell .filter-field-select,
+        .oh-dynamic-filter-cell .filter-operator-select,
+        .oh-dynamic-filter-cell .filter-value-input,
+        .oh-dynamic-filter-cell .filter-value-input-to {
+            width: 100%;
+            min-width: 0;
+            flex: 1 1 0;
+            margin-bottom: 0 !important;
+            box-sizing: border-box;
+        }
+
+        /* Shown instead of a value input for relative-date operators
+           (Today/This Week/etc.) that need no user-supplied value at all. */
+        .oh-dynamic-filter-cell .oh-filter-no-value {
+            color: #8a8a8a;
+            font-size: 0.8125rem;
+            font-style: italic;
+        }
+
+        /* Same look as .oh-select (v1_styles.css), replicated here since this
+           element deliberately isn't in that class -- see the comment where
+           it's created for why. */
+        .oh-dynamic-filter-cell .oh-filter-value-select {
+            width: 100%;
+            font-size: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            color: hsl(0, 0%, 11%);
+            background-color: white;
+            border-radius: 0.375rem;
+            height: 35px;
+            margin-bottom: 0 !important;
+            box-sizing: border-box;
+        }
+
+        .oh-dynamic-filter-remove {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            color: #d33;
+            font-size: 18px;
+        }
+
+        .oh-dynamic-filter-remove:hover {
+            color: #a91d1d;
+        }
+
+        .oh-dynamic-filter-add {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #28a745;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .oh-dynamic-filter-add:hover {
+            color: #1e7e34;
+        }
+
+        .oh-dynamic-filter-add ion-icon {
+            font-size: 18px;
+        }
+
+        /* Anchored dropdown panel (not a centered modal) -- same
+           .oh-dropdown__menu mechanics used elsewhere in the app (e.g. the
+           Templates dropdown), just wider to fit 3 columns per row. */
+        .oh-dynamic-filter-panel {
+            width: 620px;
+            max-width: 90vw;
+            padding: 20px;
+            transition: width 0.2s ease;
+        }
+
+        .oh-dynamic-filter-panel--expanded {
+            width: 820px;
+        }
+
+        .oh-dynamic-filter-panel__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .oh-dynamic-filter-panel__title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .oh-dynamic-filter-panel__header-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .oh-dynamic-filter-expand,
+        .oh-dynamic-filter-close {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #666666;
+            font-size: 1.2rem;
+        }
+
+        .oh-dynamic-filter-expand:hover,
+        .oh-dynamic-filter-close:hover {
+            color: #222222;
+        }
+
+        .oh-dynamic-filter-panel__footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+
+        .oh-applied-filters {
+            border-top: 1px solid #eaeaea;
+            margin-top: 16px;
+            padding-top: 14px;
+        }
+
+        .oh-applied-filters__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .oh-applied-filters__header strong {
+            font-size: 0.9rem;
+        }
+
+        .oh-applied-filters__chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .oh-applied-filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: #e6f6ec;
+            color: #1e7e34;
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .oh-applied-filter-chip__remove {
+            cursor: pointer;
+            font-size: 15px;
+            display: flex;
+        }
+
+        .oh-applied-filter-chip__remove:hover {
+            color: #a91d1d;
+        }
     </style>
 
     <script>
@@ -495,32 +524,57 @@
         return !data || (Array.isArray(data) ? data.length === 0 : Object.keys(data).length === 0);
     }
 
-    function showNoRecordsState(containerId) {
+    function showNoRecordsState(containerId, hideControls) {
         $("#" + containerId).html(`
             <div class="oh-wrapper h-full" align="center">
                 <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
                     <div class="flex flex-col items-center justify-center h-full">
                         <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
-                        <p class="text-[#666] mb-5">{% trans "No records available at the moment" %}</p>
+                        <p class="text-[#666] mb-5">${hideControls === false ? "{% trans 'No filtered records found at the moment' %}" : "{% trans 'No records available at the moment' %}"}</p>
                     </div>
                 </div>
             </div>
         `);
         $("#export-btn").hide();
-        // Nothing to filter or arrange when there's no data at all.
-        $("#filterForm").hide();
-        $("#reportTemplatesDropdown").hide();
+        // Only hide Filter/Templates on the very first, unfiltered load
+        // when the report has no data at all -- if a filter or template
+        // the user picked is what emptied the table, they still need
+        // Filter open to adjust/clear it (hiding it would trap them).
+        if (hideControls !== false) {
+            $("#leaveReportFilterTrigger").hide();
+            $("#reportTemplatesDropdown").hide();
+        }
     }
 
     function applyTemplateConfig(config) {
+        // Fall back to whatever is currently selected if the saved config
+        // predates the `model` key (or somehow lacks it).
+        if (config.model) {
+            $("#model-select").val(config.model);
+        }
         var model = $("#model-select").val();
-        var containerId = currentPivotContainerId();
-        $.getJSON(`/report/leave-pivot?model=${model}`, function (data) {
+        var containerId = containerFor(model);
+        var templateFilters = config.filters || [];
+
+        $(".pivot-wrapper").hide();
+        $("#" + containerId).show();
+
+        var params = { model: model, dynamic_filters: JSON.stringify(templateFilters) };
+        var idVal = $("#leaveReportIdField").val();
+        if (idVal) { params.id = idVal; }
+
+        $.getJSON("{% url 'leave-pivot' %}", params, function (data) {
             if (isEmptyPivotData(data)) {
-                showNoRecordsState(containerId);
+                // Loading a template is always a deliberate user action, so
+                // never trap them by hiding Filter/Templates here.
+                showNoRecordsState(containerId, false);
                 return;
             }
-            $("#filterForm").show();
+            appliedFilters = templateFilters;
+            syncFilterRowsFromApplied();
+            renderAppliedFilterChips();
+            $("#filterCount").text(appliedFilters.length ? "(" + appliedFilters.length + ")" : "");
+            $("#leaveReportFilterTrigger").show();
             $("#reportTemplatesDropdown").show();
             var plotlyRenderers = $.pivotUtilities.plotly_renderers;
             // The 4th argument (`overwrite`) has to be `true` here -- pivotUI()
@@ -542,7 +596,7 @@
         });
     }
 
-    $(document).on("click", ".oh-report-template-load", function (e) {
+    $(document).off("click", ".oh-report-template-load").on("click", ".oh-report-template-load", function (e) {
         e.preventDefault();
         var id = $(this).data("id");
         $.getJSON("/report/report-templates/" + id + "/", function (res) {
@@ -550,7 +604,7 @@
         });
     });
 
-    $(document).on("click", ".oh-report-template-delete", function (e) {
+    $(document).off("click", ".oh-report-template-delete").on("click", ".oh-report-template-delete", function (e) {
         e.preventDefault();
         e.stopPropagation();
         var id = $(this).data("id");
@@ -586,7 +640,7 @@
         });
     });
 
-    $(document).on("click", "#saveReportTemplateBtn", function () {
+    $(document).off("click", "#saveReportTemplateBtn").on("click", "#saveReportTemplateBtn", function () {
         // Plain alert() looks completely out of place next to this app's
         // SweetAlert2-styled dialogs everywhere else -- matching the same
         // icon/button convention already used for validation errors
@@ -602,9 +656,24 @@
             });
             return;
         }
-        var containerId = currentPivotContainerId();
+        trySaveTemplate(name, 5);
+    });
+
+    // pivotUI() defers its very first render of a table -- and the
+    // `pivotUIOptions` it caches on the container, which is what we read
+    // here -- by ~10ms via an internal setTimeout. A click landing in that
+    // window (or while a large table is still being built) would otherwise
+    // see no cached options yet even though a table is already visible, and
+    // wrongly report "Nothing to save yet." Retry briefly before actually
+    // giving up.
+    function trySaveTemplate(name, retriesLeft) {
+        var containerId = containerFor($("#model-select").val());
         var opts = $("#" + containerId).data("pivotUIOptions");
         if (!opts) {
+            if (retriesLeft > 0) {
+                setTimeout(function () { trySaveTemplate(name, retriesLeft - 1); }, 150);
+                return;
+            }
             Swal.fire({
                 text: "{% trans 'Nothing to save yet.' %}",
                 icon: "warning",
@@ -617,7 +686,9 @@
             cols: opts.cols,
             aggregatorName: opts.aggregatorName,
             rendererName: opts.rendererName,
-            vals: opts.vals
+            vals: opts.vals,
+            filters: appliedFilters,
+            model: $("#model-select").val()
         };
         $.ajax({
             url: "{% url 'report-templates-save' %}",
@@ -634,14 +705,14 @@
                 $("#reloadMessagesButton").click();
             }
         });
-    });
+    }
 
     // Field pills are a fixed width and long names (e.g. "Assignee Job Role")
     // get cut off with an ellipsis -- show the full name as a native tooltip
     // on hover. Delegated on document (rather than re-bound in every
     // onRefresh) so it keeps working after PivotTable.js re-renders the
     // pills on every drag/drop or config change.
-    $(document).on("mouseover", ".pvtAxisContainer .pvtAttr", function () {
+    $(document).off("mouseover", ".pvtAxisContainer .pvtAttr").on("mouseover", ".pvtAxisContainer .pvtAttr", function () {
         if (!this.title) {
             this.title = $(this).clone().children().remove().end().text().trim();
         }
@@ -653,41 +724,43 @@
     });
 
         $(function () {
-            // Function to load pivot data dynamically
-            function loadPivotData(model) {
-                let url = `/report/leave-pivot?model=${model}`;
+            // Shared loader behind both the unfiltered (model switch/initial
+            // load) and filtered (Filters panel Apply/chips) paths -- the
+            // only difference between them is which `dynamicFilters` array
+            // gets sent.
+            function doLoadPivot(model, dynamicFilters) {
+                var containerId = containerFor(model);
+                var rowsConfig = rowsConfigFor(model);
 
-                // Hide all container
                 $(".pivot-wrapper").hide();
-
-                let containerId = "";
-                let rowsConfig = [];
-
-                if (model === "leave_request"){
-                    containerId = "pivot-leave";
-                    rowsConfig = ["Name","Department","Shift", "Leave Type","Requested Days","Start Date","End Date","Status"]
-                }else if (model === "available_leave"){
-                    containerId = "pivot-availableleave";
-                    rowsConfig = ["Name","Department", "Leave Type","Assigned Date","Total Leave Days","Available Days","Carryforward Days"]
-                }
-
-
-                // Show relevant container
                 $("#" + containerId).show();
 
-                // Fetch data dynamically based on model
-                $.getJSON(url, function (data) {
+                var params = { model: model, dynamic_filters: JSON.stringify(dynamicFilters || []) };
+                var idVal = $("#leaveReportIdField").val();
+                if (idVal) { params.id = idVal; }
+
+                $.getJSON("{% url 'leave-pivot' %}", params, function (data) {
                     if (isEmptyPivotData(data)) {
-                        showNoRecordsState(containerId);
+                        // Only hide Filter/Templates on the very first,
+                        // unfiltered load -- if a filter (or the deep-link
+                        // `id` param) is what emptied the table, keep them
+                        // visible so the user can adjust/clear it.
+                        var hasFilters = (dynamicFilters && dynamicFilters.length > 0) || !!idVal;
+                        showNoRecordsState(containerId, !hasFilters);
                         return;
                     }
-                    $("#filterForm").show();
+                    $("#leaveReportFilterTrigger").show();
                     $("#reportTemplatesDropdown").show();
 
                     // Add Plotly renderers correctly
-                    let plotlyRenderers = $.pivotUtilities.plotly_renderers;
+                    var plotlyRenderers = $.pivotUtilities.plotly_renderers;
 
-                    // Initialize pivot table with Plotly enabled
+                    // Initialize pivot table with Plotly enabled. `overwrite`
+                    // (3rd/4th arg) has to be true -- otherwise pivotUI()
+                    // reuses whatever options are already cached on this
+                    // container from a previous render of the SAME model
+                    // (e.g. before/after switching away and back), instead
+                    // of starting from the fresh default rows/cols below.
                     $("#" + containerId).pivotUI(data, {
                         unusedAttrsVertical: true,
                         rows: rowsConfig,
@@ -695,7 +768,7 @@
                         aggregatorName: "Count",
                         rendererName: "Table", // Default view as Table
                         onRefresh: function (config) {
-                            let currentRenderer = config.rendererName;
+                            var currentRenderer = config.rendererName;
                             let isTableRenderer = (
                                 currentRenderer === "Table" ||
                                 currentRenderer === "Table Barchart" ||
@@ -710,77 +783,42 @@
                             }
                         },
                         renderers: $.extend($.pivotUtilities.renderers, plotlyRenderers), // Add Plotly renderers
-                    });
+                    }, true);
                 });
             }
 
-            window.loadFilteredPivotData =function loadFilteredPivotData() {
-                const selectedModel = $("#model-select").val();
-                const formData = $("#filterForm").serialize();
-
-                $(".pivot-wrapper").hide();
-
-                let containerId = "";
-                let rowsConfig = [];
-
-                if (selectedModel === "leave_request"){
-                    containerId = "pivot-leave";
-                    rowsConfig = ["Name","Department","Shift", "Leave Type","Requested Days","Start Date","End Date","Status"]
-                }else if (selectedModel === "available_leave"){
-                    containerId = "pivot-availableleave";
-                    rowsConfig = ["Name","Department", "Leave Type","Assigned Date","Total Leave Days","Available Days","Carryforward Days"]
-                }
-
-                $("#" + containerId).show();
-
-                $.getJSON(`/report/leave-pivot?model=${selectedModel}&${formData}`, function (data) {
-                    if (isEmptyPivotData(data)) {
-                        showNoRecordsState(containerId);
-                        return;
-                    }
-                    $("#filterForm").show();
-                    $("#reportTemplatesDropdown").show();
-
-                    const plotlyRenderers = $.pivotUtilities.plotly_renderers;
-
-                    $("#" + containerId).pivotUI(data, {
-                        unusedAttrsVertical: true,
-                        rows: rowsConfig,
-                        cols: [],
-                        aggregatorName: "Count",
-                        rendererName: "Table",
-                        renderers: $.extend($.pivotUtilities.renderers, plotlyRenderers),
-                        onRefresh: function (config) {
-                            const currentRenderer = config.rendererName;
-                            const isTableRenderer = ["Table", "Table Barchart", "Heatmap", "Row Heatmap", "Col Heatmap"].includes(currentRenderer);
-                            if (isTableRenderer && exportAccessMap[selectedModel]) {
-                                $("#export-btn").show();
-                            } else {
-                                $("#export-btn").hide();
-                            }
-
-                        }
-                    });
-                });
+            // Function to load pivot data dynamically, unfiltered (initial
+            // load / model switch).
+            function loadPivotData(model) {
+                doLoadPivot(model, []);
             }
 
-            // Show only the filter accordion matching the selected report
-            // type, hiding the other report types' (irrelevant) filters.
-            function toggleFilterSections(selectedModel) {
-                $(".oh-accordion[data-model]").hide();
-                $(`.oh-accordion[data-model="${selectedModel}"]`).show();
-            }
+            // Read the current field/operator/value rows out of the Filters
+            // panel, apply them, and reload. Exposed on window since it's
+            // also used as the Apply button's handler further down.
+            window.loadFilteredPivotData = function loadFilteredPivotData() {
+                var selectedModel = $("#model-select").val();
+                var dynamicFilters = collectDynamicFilters();
+                appliedFilters = dynamicFilters;
+                renderAppliedFilterChips();
+                $("#filterCount").text(dynamicFilters.length ? "(" + dynamicFilters.length + ")" : "");
+                doLoadPivot(selectedModel, dynamicFilters);
+            };
 
-            // Initial load with all models
+            // Initial load
             loadPivotData("leave_request");
-            toggleFilterSections("leave_request");
             refreshTemplateList();
 
-            // Model selection change event
+            // Model selection change event: the field catalog is different
+            // per model type, so any filters built against the previous
+            // model no longer make sense -- drop them and reload unfiltered.
             $("#model-select").on("change", function () {
-                let selectedModel = $(this).val();
-                loadPivotData(selectedModel); // Reload pivot data with selected model
-                toggleFilterSections(selectedModel);
+                var selectedModel = $(this).val();
+                appliedFilters = [];
+                syncFilterRowsFromApplied();
+                renderAppliedFilterChips();
+                $("#filterCount").text("");
+                loadPivotData(selectedModel);
                 refreshTemplateList();
             });
 
@@ -1004,10 +1042,475 @@
 
         });
 
-        $(document).ready(function () {
-            $("#filterForm").find("select").select2({
-                width: '100%'
+        // ------------------------------------------------------------------
+        // Filters panel: dynamic Field / Operator / Value rows. This report
+        // has two model types (Leave Request / Available Leave) selected via
+        // #model-select, and each has its own field catalog -- FILTER_FIELDS
+        // (singular, as in Employee Report) doesn't work here since the
+        // valid fields depend on which model is currently selected.
+        // getFilterFields() is the single place that resolves "fields for
+        // the current model" and is used everywhere the Employee Report
+        // reference uses the flat FILTER_FIELDS array.
+        // ------------------------------------------------------------------
+        var FILTER_FIELDS_BY_MODEL = {
+            leave_request: [
+                { value: "employee", label: "{% trans 'Employee' %}", type: "dropdown" },
+                { value: "leave_type", label: "{% trans 'Leave Type' %}", type: "dropdown" },
+                { value: "status", label: "{% trans 'Status' %}", type: "dropdown" },
+                { value: "company", label: "{% trans 'Company' %}", type: "dropdown" },
+                { value: "reporting_manager", label: "{% trans 'Reporting Manager' %}", type: "dropdown" },
+                { value: "department", label: "{% trans 'Department' %}", type: "dropdown" },
+                { value: "job_position", label: "{% trans 'Job Position' %}", type: "dropdown" },
+                { value: "job_role", label: "{% trans 'Job Role' %}", type: "dropdown" },
+                { value: "shift", label: "{% trans 'Shift' %}", type: "dropdown" },
+                { value: "work_type", label: "{% trans 'Work Type' %}", type: "dropdown" },
+                { value: "badge_id", label: "{% trans 'Badge Id' %}", type: "dropdown" },
+                { value: "gender", label: "{% trans 'Gender' %}", type: "dropdown" },
+                { value: "email", label: "{% trans 'Email' %}", type: "dropdown" },
+                { value: "phone", label: "{% trans 'Phone' %}", type: "dropdown" },
+                { value: "experience", label: "{% trans 'Experience' %}", type: "number" },
+                { value: "start_date", label: "{% trans 'Start Date' %}", type: "date" },
+                { value: "end_date", label: "{% trans 'End Date' %}", type: "date" },
+                { value: "start_date_breakdown", label: "{% trans 'Start Date Breakdown' %}", type: "dropdown" },
+                { value: "end_date_breakdown", label: "{% trans 'End Date Breakdown' %}", type: "dropdown" },
+                { value: "requested_days", label: "{% trans 'Requested Days' %}", type: "number" }
+            ],
+            available_leave: [
+                { value: "employee", label: "{% trans 'Employee' %}", type: "dropdown" },
+                { value: "leave_type", label: "{% trans 'Leave Type' %}", type: "dropdown" },
+                { value: "company", label: "{% trans 'Company' %}", type: "dropdown" },
+                { value: "department", label: "{% trans 'Department' %}", type: "dropdown" },
+                { value: "job_position", label: "{% trans 'Job Position' %}", type: "dropdown" },
+                { value: "job_role", label: "{% trans 'Job Role' %}", type: "dropdown" },
+                { value: "shift", label: "{% trans 'Shift' %}", type: "dropdown" },
+                { value: "work_type", label: "{% trans 'Work Type' %}", type: "dropdown" },
+                { value: "badge_id", label: "{% trans 'Badge Id' %}", type: "dropdown" },
+                { value: "gender", label: "{% trans 'Gender' %}", type: "dropdown" },
+                { value: "email", label: "{% trans 'Email' %}", type: "dropdown" },
+                { value: "phone", label: "{% trans 'Phone' %}", type: "dropdown" },
+                { value: "experience", label: "{% trans 'Experience' %}", type: "number" },
+                { value: "available_days", label: "{% trans 'Available Days' %}", type: "number" },
+                { value: "carryforward_days", label: "{% trans 'Carryforward Days' %}", type: "number" },
+                { value: "total_leave_days", label: "{% trans 'Total Leave Days' %}", type: "number" },
+                { value: "assigned_date", label: "{% trans 'Assigned Date' %}", type: "date" },
+                { value: "reset_date", label: "{% trans 'Reset Date' %}", type: "date" },
+                { value: "expired_date", label: "{% trans 'Expired Date' %}", type: "date" }
+            ]
+        };
+
+        function getFilterFields() {
+            var model = $("#model-select").val();
+            return FILTER_FIELDS_BY_MODEL[model] || FILTER_FIELDS_BY_MODEL.leave_request;
+        }
+
+        // Fields with a small, fixed set of values known up front don't need
+        // the options AJAX call -- everything else (dropdown type without an
+        // entry here) fetches its option list from leave-filter-options.
+        // Values are matched with __iexact server-side, so the exact-case
+        // display strings here still match the lowercase choice keys stored
+        // in the DB (e.g. "Approved" matches "approved").
+        var STATIC_FILTER_OPTIONS = {
+            status: ["Requested", "Approved", "Cancelled", "Rejected"],
+            gender: ["Male", "Female", "Other"],
+            start_date_breakdown: ["Full Day", "First Half", "Second Half"],
+            end_date_breakdown: ["Full Day", "First Half", "Second Half"]
+        };
+
+        var FILTER_OPERATORS_BY_TYPE = {
+            text: [
+                { value: "equals", label: "{% trans 'Equals' %}" },
+                { value: "not_equals", label: "{% trans 'Not Equals' %}" },
+                { value: "contains", label: "{% trans 'Contains' %}" },
+                { value: "is_empty", label: "{% trans 'Is Empty' %}" }
+            ],
+            dropdown: [
+                { value: "equals", label: "{% trans 'Equals' %}" },
+                { value: "not_equals", label: "{% trans 'Not Equals' %}" },
+                { value: "is_empty", label: "{% trans 'Is Empty' %}" }
+            ],
+            number: [
+                { value: "equals", label: "{% trans 'Equals' %}" },
+                { value: "not_equals", label: "{% trans 'Not Equals' %}" },
+                { value: "greater_than", label: "{% trans 'Greater Than' %}" },
+                { value: "less_than", label: "{% trans 'Less Than' %}" },
+                { value: "between", label: "{% trans 'Between' %}" },
+                { value: "is_empty", label: "{% trans 'Is Empty' %}" }
+            ],
+            date: [
+                { value: "equals", label: "{% trans 'Equals' %}" },
+                { value: "not_equals", label: "{% trans 'Not Equals' %}" },
+                { value: "greater_than", label: "{% trans 'After' %}" },
+                { value: "less_than", label: "{% trans 'Before' %}" },
+                { value: "between", label: "{% trans 'Between' %}" },
+                { value: "today", label: "{% trans 'Today' %}" },
+                { value: "yesterday", label: "{% trans 'Yesterday' %}" },
+                { value: "this_week", label: "{% trans 'This Week' %}" },
+                { value: "last_week", label: "{% trans 'Last Week' %}" },
+                { value: "this_month", label: "{% trans 'This Month' %}" },
+                { value: "last_month", label: "{% trans 'Last Month' %}" },
+                { value: "this_year", label: "{% trans 'This Year' %}" },
+                { value: "last_year", label: "{% trans 'Last Year' %}" },
+                { value: "is_empty", label: "{% trans 'Is Empty' %}" }
+            ]
+        };
+
+        var NO_VALUE_OPERATORS = [
+            "is_empty", "today", "yesterday", "this_week", "last_week",
+            "this_month", "last_month", "this_year", "last_year"
+        ];
+
+        function fieldTypeFor(fieldValue) {
+            var match = getFilterFields().filter(function (f) { return f.value === fieldValue; })[0];
+            return match ? match.type : "text";
+        }
+
+        function buildFieldOptionsHtml() {
+            var html = '<option value="">{% trans "Select Field" %}</option>';
+            getFilterFields().forEach(function (f) {
+                html += '<option value="' + f.value + '">' + f.label + '</option>';
             });
+            return html;
+        }
+
+        function buildOperatorOptionsHtml(fieldType) {
+            var operators = FILTER_OPERATORS_BY_TYPE[fieldType] || FILTER_OPERATORS_BY_TYPE.text;
+            var html = '<option value="">{% trans "Select Operator" %}</option>';
+            operators.forEach(function (op) {
+                html += '<option value="' + op.value + '">' + op.label + '</option>';
+            });
+            return html;
+        }
+
+        // `prefill`, when given ({field, operator, value}), reproduces an
+        // already-applied filter row -- used to rebuild the builder rows to
+        // match the Applied Filters chips after removing one or Clear All.
+        // Populates $valueSelect with a searchable (select2) option list for
+        // a "dropdown" field -- from STATIC_FILTER_OPTIONS if the field has
+        // a small fixed set of values (e.g. Status), otherwise fetched from
+        // leave-filter-options for the currently selected model.
+        // `selectedValue` (used when rebuilding a row from an already-applied
+        // filter) is preserved even if it isn't in the returned list, so
+        // re-opening the panel never silently drops what's actually applied.
+        function populateValueSelect($valueSelect, fieldValue, selectedValue) {
+            if ($valueSelect.data("select2")) {
+                $valueSelect.select2("destroy");
+            }
+            $valueSelect.empty();
+
+            var selectedValues = [];
+            if (selectedValue) {
+                try {
+                    var parsed = JSON.parse(selectedValue);
+                    selectedValues = Array.isArray(parsed) ? parsed.map(String) : [String(selectedValue)];
+                } catch (e) {
+                    selectedValues = [selectedValue];
+                }
+            }
+
+            function finish(options) {
+                options.forEach(function (opt) {
+                    $valueSelect.append($("<option></option>").attr("value", opt).text(opt));
+                });
+                selectedValues.forEach(function (val) {
+                    if ($valueSelect.find("option").filter(function () {
+                        return $(this).attr("value") === val;
+                    }).length === 0) {
+                        $valueSelect.append($("<option></option>").attr("value", val).text(val));
+                    }
+                });
+                $valueSelect.select2({ width: "100%", placeholder: "{% trans 'Select one or more' %}" });
+                if (selectedValues.length) {
+                    $valueSelect.val(selectedValues).trigger("change");
+                }
+            }
+
+            if (STATIC_FILTER_OPTIONS[fieldValue]) {
+                finish(STATIC_FILTER_OPTIONS[fieldValue]);
+            } else {
+                $.getJSON("{% url 'leave-filter-options' %}", { field: fieldValue, model: $("#model-select").val() }, function (res) {
+                    finish(res.options || []);
+                });
+            }
+        }
+
+        function addFilterRow(prefill) {
+            var isFirstRow = $("#dynamicFilterRows .oh-dynamic-filter-row").length === 0;
+            var $row = $('<div class="oh-dynamic-filter-row"></div>');
+            // How this row combines with everything above it -- meaningless
+            // for the first row (nothing above it to combine with), so it's
+            // created hidden there; updateRemoveButtonVisibility() keeps this
+            // in sync with actual row order as rows are added/removed.
+            var initialConnector = (prefill && prefill.connector) || "and";
+            var $connector = $('<span class="oh-filter-connector-pill filter-connector-select"></span>')
+                .attr("data-value", initialConnector)
+                .text(initialConnector === "or" ? "{% trans 'OR' %}" : "{% trans 'AND' %}")
+                .attr("title", "{% trans 'Click to toggle AND/OR' %}")
+                .on("click", function () {
+                    var next = $(this).attr("data-value") === "and" ? "or" : "and";
+                    $(this)
+                        .attr("data-value", next)
+                        .text(next === "or" ? "{% trans 'OR' %}" : "{% trans 'AND' %}");
+                });
+            var $connectorCell = $('<div class="oh-dynamic-filter-cell oh-dynamic-filter-cell--connector"></div>').append($connector);
+            if (isFirstRow) {
+                $connectorCell.hide();
+            }
+            var $field = $('<select class="oh-select filter-field-select"></select>').html(buildFieldOptionsHtml());
+            var $operator = $('<select class="oh-select filter-operator-select"></select>').html(buildOperatorOptionsHtml("text"));
+            var $value = $('<input type="text" class="oh-input filter-value-input">').attr("placeholder", "{% trans 'Enter value' %}");
+            // Second box for the "between" operator's upper bound -- hidden
+            // unless "between" is the selected operator.
+            var $valueTo = $('<input type="text" class="oh-input filter-value-input-to" style="display:none;">').attr("placeholder", "{% trans 'Enter value' %}");
+            // Deliberately NOT the "oh-select" class: a global $(document).ready
+            // handler elsewhere auto-applies select2 to every ".oh-select" on
+            // the page, including this one while it's still hidden/unused --
+            // its select2 wrapper span ignores the underlying display:none, so
+            // an empty dropdown box would show up before any field is picked.
+            // Only populateValueSelect() (below) manages this element's select2.
+            var $valueSelect = $('<select class="oh-filter-value-select filter-value-select" multiple style="display:none;"></select>');
+            // Relative-date operators (Today/This Week/etc.) are
+            // self-contained -- no value box makes sense for them at all.
+            var $noValueText = $('<span class="oh-filter-no-value"></span>').text("{% trans 'No value needed' %}").hide();
+            var $remove = $('<span class="oh-dynamic-filter-remove" title="{% trans "Remove" %}"><ion-icon name="close-outline"></ion-icon></span>');
+
+            // Re-evaluates which value widget(s) should show, based on the
+            // CURRENT field type and operator together (not just field type
+            // as before) -- "between" needs two boxes, the relative-date
+            // operators need none at all, everything else needs exactly one.
+            function updateValueUI(selectedValue) {
+                var type = fieldTypeFor($field.val());
+                var operator = $operator.val();
+
+                $value.hide();
+                $valueTo.hide();
+                $noValueText.hide();
+                if ($valueSelect.data("select2")) {
+                    $valueSelect.select2("destroy");
+                }
+                $valueSelect.hide();
+
+                if (NO_VALUE_OPERATORS.indexOf(operator) !== -1) {
+                    $noValueText.show();
+                    return;
+                }
+
+                if (operator === "between") {
+                    var parts = (selectedValue || "").split(",");
+                    var inputType = type === "date" ? "date" : "text";
+                    $value.show().attr("type", inputType).removeAttr("placeholder").val($.trim(parts[0] || ""));
+                    $valueTo.show().attr("type", inputType).removeAttr("placeholder").val($.trim(parts[1] || ""));
+                    return;
+                }
+
+                if (type === "dropdown") {
+                    $value.val("");
+                    $valueSelect.show();
+                    populateValueSelect($valueSelect, $field.val(), selectedValue);
+                    return;
+                }
+
+                // Date fields get a real date picker instead of a plain
+                // text box, same as elsewhere in the app.
+                if (type === "date") {
+                    $value.show().attr("type", "date").removeAttr("placeholder").val(selectedValue || "");
+                } else {
+                    $value.show().attr("type", "text").attr("placeholder", "{% trans 'Enter value' %}").val(selectedValue || "");
+                }
+            }
+
+            $field.on("change", function () {
+                $operator.html(buildOperatorOptionsHtml(fieldTypeFor($(this).val())));
+                updateValueUI();
+            });
+
+            $operator.on("change", function () {
+                updateValueUI();
+            });
+
+            if (prefill) {
+                $field.val(prefill.field);
+                $operator.html(buildOperatorOptionsHtml(fieldTypeFor(prefill.field)));
+                $operator.val(prefill.operator);
+                updateValueUI(prefill.value);
+            }
+
+            $row.append(
+                $connectorCell,
+                $('<div class="oh-dynamic-filter-cell"></div>').append($field),
+                $('<div class="oh-dynamic-filter-cell"></div>').append($operator),
+                $('<div class="oh-dynamic-filter-cell oh-dynamic-filter-cell--value"></div>').append($value, $valueTo, $valueSelect, $noValueText),
+                $remove
+            );
+            $("#dynamicFilterRows").append($row);
+            updateRemoveButtonVisibility();
+        }
+
+        // Removing the only row would just mean re-adding a blank one right
+        // after, so there's nothing to remove until a second row exists --
+        // hide the X until then, on every row.
+        function updateRemoveButtonVisibility() {
+            var $rows = $("#dynamicFilterRows .oh-dynamic-filter-row");
+            var multipleRows = $rows.length > 1;
+            $("#dynamicFilterRows .oh-dynamic-filter-remove").toggle(multipleRows);
+            // The AND/OR connector only makes sense once a row is combining
+            // with something before it -- show it on every row except
+            // whichever is currently first (row order changes as rows are
+            // added/removed).
+            $rows.each(function (index) {
+                $(this).find(".oh-dynamic-filter-cell--connector").toggle(index > 0);
+            });
+        }
+
+        // ------------------------------------------------------------------
+        // Applied Filters: read-only chips summarising what's actually in
+        // effect (as opposed to the builder rows above, which are just a
+        // draft until Apply is clicked). Removing a chip re-applies with
+        // that one filter dropped; Clear All resets to no filters.
+        // ------------------------------------------------------------------
+        var appliedFilters = [];
+
+        function fieldLabelFor(fieldValue) {
+            var match = getFilterFields().filter(function (f) { return f.value === fieldValue; })[0];
+            return match ? match.label : fieldValue;
+        }
+
+        function operatorLabelFor(fieldType, operatorValue) {
+            var operators = FILTER_OPERATORS_BY_TYPE[fieldType] || FILTER_OPERATORS_BY_TYPE.text;
+            var match = operators.filter(function (o) { return o.value === operatorValue; })[0];
+            return match ? match.label : operatorValue;
+        }
+
+        // A multi-select value round-trips as a JSON array string --
+        // show it as a friendly comma-joined list instead of raw JSON
+        // syntax. Falls through to the plain value unchanged for
+        // anything else (dates, numbers, single legacy values).
+        function displayValueFor(value) {
+            try {
+                var parsed = JSON.parse(value);
+                if (Array.isArray(parsed)) {
+                    return parsed.join(", ");
+                }
+            } catch (e) {
+                // Not JSON -- a plain value, use as-is.
+            }
+            return value;
+        }
+
+        function chipTextFor(filter, index) {
+            var fieldLabel = fieldLabelFor(filter.field);
+            var type = fieldTypeFor(filter.field);
+            var operatorLabel = operatorLabelFor(type, filter.operator);
+            var prefix = "";
+            if (index > 0) {
+                prefix = ((filter.connector || "and") === "or" ? "{% trans 'OR' %}" : "{% trans 'AND' %}") + " ";
+            }
+            if (NO_VALUE_OPERATORS.indexOf(filter.operator) !== -1) {
+                return prefix + fieldLabel + " " + operatorLabel;
+            }
+            if (filter.operator === "between") {
+                var parts = (filter.value || "").split(",");
+                return prefix + fieldLabel + " " + operatorLabel + " " + $.trim(parts[0] || "") + " - " + $.trim(parts[1] || "");
+            }
+            return prefix + fieldLabel + " " + operatorLabel + " " + displayValueFor(filter.value);
+        }
+
+        function renderAppliedFilterChips() {
+            var $chips = $("#appliedFilterChips");
+            $chips.empty();
+            appliedFilters.forEach(function (filter, index) {
+                var $chip = $('<span class="oh-applied-filter-chip"></span>').text(chipTextFor(filter, index));
+                var $remove = $('<ion-icon name="close-outline" class="oh-applied-filter-chip__remove"></ion-icon>').attr("data-index", index);
+                $chip.append($remove);
+                $chips.append($chip);
+            });
+            $("#appliedFiltersSection").toggle(appliedFilters.length > 0);
+        }
+
+        // Rebuild the builder rows from `appliedFilters` so re-opening the
+        // panel (or removing one chip) shows a state consistent with what's
+        // actually applied.
+        function syncFilterRowsFromApplied() {
+            $("#dynamicFilterRows").empty();
+            if (!appliedFilters.length) {
+                addFilterRow();
+                return;
+            }
+            appliedFilters.forEach(function (filter) {
+                addFilterRow(filter);
+            });
+        }
+
+        // Read the current field/operator/value rows out of the Filters
+        // panel. Rows missing a field or operator are dropped -- a
+        // still-being-filled-in row shouldn't be sent to the server.
+        function collectDynamicFilters() {
+            var rows = [];
+            $("#dynamicFilterRows .oh-dynamic-filter-row").each(function (index) {
+                var field = $(this).find(".filter-field-select").val();
+                var operator = $(this).find(".filter-operator-select").val();
+                var $valueSelect = $(this).find(".filter-value-select");
+                var value;
+                if (operator === "between") {
+                    var from = $(this).find(".filter-value-input").val();
+                    var to = $(this).find(".filter-value-input-to").val();
+                    value = (from || "") + "," + (to || "");
+                } else if ($valueSelect.is(":visible")) {
+                    // Multi-select -- always a JSON-encoded array, even for a
+                    // single pick, so the backend/chip/prefill logic has one
+                    // consistent format to parse.
+                    value = JSON.stringify($valueSelect.val() || []);
+                } else {
+                    value = $(this).find(".filter-value-input").val();
+                }
+                if (field && operator) {
+                    var row = { field: field, operator: operator, value: value };
+                    if (index > 0) {
+                        row.connector = $(this).find(".filter-connector-select").attr("data-value") || "and";
+                    }
+                    rows.push(row);
+                }
+            });
+            return rows;
+        }
+
+        $(document).off("click", ".oh-applied-filter-chip__remove").on("click", ".oh-applied-filter-chip__remove", function () {
+            var index = $(this).attr("data-index");
+            appliedFilters.splice(index, 1);
+            syncFilterRowsFromApplied();
+            loadFilteredPivotData();
+        });
+
+        $(document).off("click", "#clearAllFiltersBtn").on("click", "#clearAllFiltersBtn", function () {
+            appliedFilters = [];
+            syncFilterRowsFromApplied();
+            loadFilteredPivotData();
+        });
+
+        $(document).off("click", "#addFilterRowBtn").on("click", "#addFilterRowBtn", function (e) {
+            e.preventDefault();
+            addFilterRow();
+        });
+
+        $(document).off("click", ".oh-dynamic-filter-remove").on("click", ".oh-dynamic-filter-remove", function () {
+            // Always leave at least one row so there's always something to fill in.
+            if ($("#dynamicFilterRows .oh-dynamic-filter-row").length > 1) {
+                $(this).closest(".oh-dynamic-filter-row").remove();
+                updateRemoveButtonVisibility();
+            } else {
+                $(this).closest(".oh-dynamic-filter-row").find(".filter-field-select, .filter-operator-select").val("");
+                $(this).closest(".oh-dynamic-filter-row").find(".filter-value-input, .filter-value-input-to").val("");
+            }
+        });
+
+        // Closing the panel itself is handled declaratively by Alpine
+        // (@click="open = false" on the Apply/close buttons + @click.outside
+        // on the panel) -- this just runs the actual filter request.
+        $(document).off("click", "#applyDynamicFilterBtn").on("click", "#applyDynamicFilterBtn", function () {
+            loadFilteredPivotData();
+        });
+
+        $(document).ready(function () {
+            addFilterRow();
         });
     </script>
 {% endblock content %}

@@ -371,13 +371,7 @@ def verbose_name(instance, field_name):
         return field_name
 
 
-@register.simple_tag(takes_context=True)
-def get_company(context):
-    # Some fragments are rendered without a request in context; fall back to the
-    # default theme instead of raising so this tag is safe to use anywhere.
-    request = context.get("request")
-    session = getattr(request, "session", None) if request is not None else None
-    company_id = session.get("selected_company") if session is not None else None
+def _resolve_company_theme(company_id):
     if company_id is not None and company_id != "all":
         company = Company.objects.filter(id=company_id).first()
         theme = CompanyTheme.objects.filter(company=company).first()
@@ -386,6 +380,28 @@ def get_company(context):
         else:
             return HorillaColorTheme.objects.filter(is_default=True).first()
     return HorillaColorTheme.objects.filter(is_default=True).first()
+
+
+@register.simple_tag(takes_context=True)
+def get_company(context):
+    # Some fragments are rendered without a request in context; fall back to the
+    # default theme instead of raising so this tag is safe to use anywhere.
+    request = context.get("request")
+    session = getattr(request, "session", None) if request is not None else None
+    company_id = session.get("selected_company") if session is not None else None
+
+    # This tag is invoked from per-row/per-fragment templates (e.g. render_template()
+    # calls on list pages), so a page with N rows can call it N times per request.
+    # The resolved theme can't change within a single request, so memoize on it.
+    if request is None:
+        return _resolve_company_theme(company_id)
+    cache = getattr(request, "_horilla_company_theme_cache", None)
+    if cache is None:
+        cache = {}
+        request._horilla_company_theme_cache = cache
+    if company_id not in cache:
+        cache[company_id] = _resolve_company_theme(company_id)
+    return cache[company_id]
 
 
 @register.simple_tag

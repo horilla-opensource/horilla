@@ -260,7 +260,7 @@ class OnboardingCandidateDetailView(HorillaDetailedView):
             "action": _("Edit"),
             "icon": "create-outline",
             "attrs": """
-                    class="oh-btn oh-btn--info w-50"
+                    class="oh-btn oh-btn--light-bkg oh-btn--secondary w-50"
                     href ="{get_update_url}"
                     """,
         },

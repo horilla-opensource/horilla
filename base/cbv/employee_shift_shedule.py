@@ -117,6 +117,7 @@ class EmployeeShiftSheduleList(HorillaListView):
     model = EmployeeShiftSchedule
     filter_class = EmployeeShiftScheduleFilter
     show_filter_tags = False
+    bulk_select_option = False
 
     columns = [
         (_("Day"), "day_col", "get_avatar"),

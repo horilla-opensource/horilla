@@ -9,5 +9,8 @@ class LDAPSettings(models.Model):
     bind_password = models.CharField(max_length=255)
     base_dn = models.CharField(max_length=255, default="ou=users,dc=horilla,dc=com")
 
+    class Meta:
+        verbose_name = "LDAP Settings"
+
     def __str__(self):
         return f"LDAP Settings ({self.ldap_server})"

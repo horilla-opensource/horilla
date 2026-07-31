@@ -122,33 +122,75 @@ class TicketTabView(HorillaTabView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.view_id = "ticketPipelineContainer"
 
         view_type = self.request.GET.get("view_type", "list")
         url = reverse("ticket-tab-card")
         if view_type == "list":
             url = reverse("ticket-tab-list")
 
+        employee = self.request.user.employee_get
+        base_qs = Ticket.objects.all()
+        if self.request.GET.get("is_active") != "false":
+            base_qs = base_qs.filter(is_active=True)
+
+        my_tickets_count = TicketFilter(
+            self.request.GET, queryset=base_qs.filter(employee_id=employee)
+        ).qs.count()
+
+        suggested_qs = base_qs.none()
+        if hasattr(employee, "employee_work_info"):
+            work_info = employee.employee_work_info
+            department = work_info.department_id
+            job_position = work_info.job_position_id
+
+            if department:
+                suggested_qs |= base_qs.filter(
+                    raised_on=department.id, assigning_type="department"
+                )
+
+            if job_position:
+                suggested_qs |= base_qs.filter(
+                    raised_on=job_position.id, assigning_type="job_position"
+                )
+
+        suggested_qs |= base_qs.filter(
+            raised_on=employee.id, assigning_type="individual"
+        )
+        suggested_tickets_count = TicketFilter(
+            self.request.GET, queryset=suggested_qs.distinct()
+        ).qs.count()
+
         self.tabs = [
             {
                 "title": _("My Tickets"),
                 # "url":f'{ reverse("ticket-pipeline-view")}?ticket_tab=my_tickets&',
                 "url": f"{url}?ticket_tab=my_tickets",
+                "badge": my_tickets_count,
             },
             {
                 "title": _("Suggested Tickets"),
                 # "url":f'{ reverse("ticket-pipeline-view")}?ticket_tab=suggested_tickets&',
                 "url": f"{url}?ticket_tab=suggested_tickets",
+                "badge": suggested_tickets_count,
             },
         ]
 
         if is_reportingmanager(self.request) or self.request.user.has_perm(
             "helpdesk.view_ticket"
         ):
+            all_tickets_qs = filtersubordinates(
+                self.request, base_qs, "helpdesk.view_ticket"
+            )
+            all_tickets_count = TicketFilter(
+                self.request.GET, queryset=all_tickets_qs
+            ).qs.count()
             self.tabs.append(
                 {
                     "title": _("All Tickets"),
                     # "url":f'{ reverse("ticket-pipeline-view")}?ticket_tab=all_tickets&',
                     "url": f"{url}?ticket_tab=all_tickets",
+                    "badge": all_tickets_count,
                 }
             )
 

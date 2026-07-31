@@ -15,6 +15,13 @@ from horilla_views.generic.cbv.views import HorillaTabView, TemplateView
 from pms.cbv.objectives import ObjectiveTemplateList, ObjectiveTemplateNav
 from pms.cbv.period import PeriodList, PeriodNav
 from pms.cbv.question_template import QuestionTemplateList, QuestionTemplateNav
+from pms.filters import (
+    ActualObjectiveFilter,
+    BonusPointSettingFilter,
+    PeriodFilter,
+    QuestionTemplateFilter,
+)
+from pms.models import BonusPointSetting, Objective, Period, QuestionTemplate
 
 
 @method_decorator(login_required, name="dispatch")
@@ -35,22 +42,50 @@ class PerformanceSettingsTabView(HorillaTabView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+
+        query_string = self.request.GET.urlencode()
+
+        def with_query(url):
+            return f"{url}?{query_string}" if query_string else url
+
+        objective_template_count = ActualObjectiveFilter(
+            self.request.GET,
+            queryset=Objective.objects.filter(is_template=True),
+        ).qs.count()
+        question_template_count = QuestionTemplateFilter(
+            self.request.GET, queryset=QuestionTemplate.objects.all()
+        ).qs.count()
+        period_count = PeriodFilter(
+            self.request.GET, queryset=Period.objects.all()
+        ).qs.count()
+        bonus_point_count = BonusPointSettingFilter(
+            self.request.GET, queryset=BonusPointSetting.objects.all()
+        ).qs.count()
+
         self.tabs = [
             {
                 "title": _("Objective Templates"),
-                "url": f"{reverse('performance-settings-objective-template-tab')}",
+                "url": with_query(
+                    reverse("performance-settings-objective-template-tab")
+                ),
+                "badge": objective_template_count,
             },
             {
                 "title": _("Question Template"),
-                "url": f"{reverse('performance-settings-question-template-tab')}",
+                "url": with_query(
+                    reverse("performance-settings-question-template-tab")
+                ),
+                "badge": question_template_count,
             },
             {
                 "title": _("Period"),
-                "url": f"{reverse('performance-settings-period-tab')}",
+                "url": with_query(reverse("performance-settings-period-tab")),
+                "badge": period_count,
             },
             {
                 "title": _("Bonus Point Setting"),
-                "url": f"{reverse('performance-settings-bonus-point-tab')}",
+                "url": with_query(reverse("performance-settings-bonus-point-tab")),
+                "badge": bonus_point_count,
             },
         ]
 

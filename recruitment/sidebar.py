@@ -111,18 +111,11 @@ def recruitment_accessibility(
 def interview_accessibility(
     request, _submenu: dict = {}, user_perms: PermWrapper = [], *args, **kwargs
 ) -> bool:
-    interviews = InterviewSchedule.objects.all()
-    interviewers = []
-    for interview in interviews:
-        for emp in interview.employee_id.all():
-            interviewers.append(emp)
-    if (
-        getattr(request.user, "employee_get", None)
-        and request.user.employee_get in interviewers
-    ):
-        view_interview = True
-    else:
-        view_interview = False
+    employee = getattr(request.user, "employee_get", None)
+    view_interview = (
+        bool(employee)
+        and InterviewSchedule.objects.filter(employee_id=employee).exists()
+    )
 
     return request.user.has_perm("recruitment.view_interviewschedule") or view_interview
 

@@ -539,7 +539,7 @@ class CandidateList(HorillaListView):
             ).update(status=status)
         return response
 
-    records_per_page = 10
+    records_per_page = 25
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

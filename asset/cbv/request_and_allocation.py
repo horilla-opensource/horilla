@@ -281,14 +281,17 @@ class RequestAndAllocationTab(HorillaTabView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        self.view_id = "assetReqAllocContainer"
         if not self.request or not self.request.user.is_authenticated:
             return
         employee = self.request.user.employee_get
-        asset_count = (
-            AssetAssignment.objects.filter(assigned_to_employee_id=employee)
-            .exclude(return_status__isnull=False)
-            .count()
-        )
+        asset_qs = AssetAssignment.objects.filter(
+            assigned_to_employee_id=employee
+        ).exclude(return_status__isnull=False)
+        asset_count = AssetAllocationFilter(
+            self.request.GET, queryset=asset_qs
+        ).qs.count()
+
         request_qs = (
             filtersubordinates(
                 request=self.request,
@@ -298,8 +301,13 @@ class RequestAndAllocationTab(HorillaTabView):
             )
             | AssetRequest.objects.filter(requested_employee_id=employee)
         ).distinct()
-        request_count = request_qs.count()
-        allocation_count = AssetAssignment.objects.count()
+        request_count = AssetRequestFilter(
+            self.request.GET, queryset=request_qs
+        ).qs.count()
+
+        allocation_count = AssetAllocationFilter(
+            self.request.GET, queryset=AssetAssignment.objects.all()
+        ).qs.count()
 
         self.tabs = [
             {

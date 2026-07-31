@@ -41,14 +41,23 @@ function clearFilterFromTag(element) {
 
 function clearAllFilter(element) {
 	$('[role="tooltip"]').remove();
-	let form = $(formButton).closest('form')
-	let search_url = form.attr("hx-get")
-	let swap_target = form.attr("hx-target")
-	form.attr("hx-get", search_url.split('?')[0])
-	let newUrl = search_url.split('?')[0]
-	htmx.ajax("GET", newUrl, {
-		target: swap_target,
-		swap: "innerHTML"
+	let form = $(formButton).closest('form');
+	let search_url = form.attr("hx-get") || "";
+	form.attr("hx-get", search_url.split('?')[0]);
+
+	// Reset every field's value, not just strip a query string — the active
+	// filter (e.g. a "group by" field) is saved server-side and reapplied
+	// based on the form's OWN current values when it's actually submitted,
+	// so a bare reload here left the fields (and the saved filter) unchanged.
+	form.find('[name]').each(function () {
+		$(this).val("");
+		$(this).change();
 	});
+	$('.oh-dropdown__filter-body [id^="select2-"][id$="-container"]').each(function () {
+		$(this).attr("title", "---------");
+		$(this).text("---------");
+	});
+
+	$(formButton).click();
 	localStorage.removeItem("savedFilters");
 }

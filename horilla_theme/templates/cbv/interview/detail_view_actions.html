@@ -1,19 +1,14 @@
 {% load basefilters i18n static %}
 {% if perms.recruitment.change_interviewschedule or request.user.employee_get in instance.employee_id.all %}
     <a
-        class="oh-btn oh-btn--info w-100"
+        class="oh-btn oh-btn--light-bkg oh-btn--secondary w-100"
         data-toggle="oh-modal-toggle"
         data-target="#genericModal"
         hx-get="{% url 'edit-interview' instance.id %}?instances_ids={{ instance.ordered_ids }}"
         hx-swap="innerHTML"
         hx-target="#genericModalBody"
     >
-        <img
-            src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}"
-            alt="{% trans 'Edit' %}"
-            width="13"
-            class="filter brightness-0 invert"
-        >{% trans "Edit" %}
+        <ion-icon name="create-outline"></ion-icon>{% trans "Edit" %}
     </a>
 {% endif %}
 {% if perms.recruitment.delete_interviewschedule %}

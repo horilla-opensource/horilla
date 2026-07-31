@@ -8,13 +8,14 @@
                 id="filterForm"
                 onsubmit="event.preventDefault()"
                 hx-get="{{search_url}}"
-                hx-trigger="load, submit"
+                hx-trigger="{% if apply_first_filter %}submit{% else %}load, submit{% endif %}"
                 hx-replace-url="false"
                 hx-target="{{search_swap_target}}"
                 hx-on:submit="htmxLoadIndicator(this);"
                 class="flex flex-wrap gap-1 navFilterForm"
             >
                 <input type="text" name="nav_url" value="{{request.path}}" hidden>
+                <input type="radio" name="filter_applied" checked hidden>
 
                 <div class="relative">
                     <input
@@ -115,7 +116,7 @@
                                                         >
                                                             <option value="">{% trans "Select" %}</option>
                                                             {% for field in group_by_fields %}
-                                                                <option value="{{field.0}}">{{ field.1 }}</option>
+                                                                <option value="{{field.0}}"{% if request.GET.field == field.0 %} selected{% endif %}>{{ field.1 }}</option>
                                                             {% endfor %}
                                                         </select>
                                                     </div>
@@ -201,7 +202,27 @@
     $(document).ready(function () {
         $("#filterForm").on("htmx:configRequest", function (event) {
             if (event.detail.verb == "get" && event.target.tagName == "FORM") {
-                event.detail.path = $(this).attr("hx-get");
+                var hxGet = $(this).attr("hx-get");
+                var qIndex = hxGet.indexOf("?");
+                if (qIndex === -1) {
+                    event.detail.path = hxGet;
+                    return;
+                }
+                // Keep query params baked into hx-get (e.g. a view-type
+                // button's own "?view=list") but drop any that are also
+                // named form fields — htmx re-adds the form's current
+                // value for those from its own serialization, so leaving
+                // the stale baked-in copy here would just duplicate/
+                // conflict with it.
+                var basePath = hxGet.slice(0, qIndex);
+                var params = new URLSearchParams(hxGet.slice(qIndex + 1));
+                var formFieldNames = {};
+                $(this).find("[name]").each(function () { formFieldNames[this.name] = true; });
+                var kept = [];
+                params.forEach(function (value, key) {
+                    if (!formFieldNames[key]) kept.push(key + "=" + encodeURIComponent(value));
+                });
+                event.detail.path = basePath + (kept.length ? "?" + kept.join("&") : "");
             }
         });
 

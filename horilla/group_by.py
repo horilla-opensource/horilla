@@ -17,7 +17,14 @@ def record_queryset_paginator(request, queryset, page_name, records_per_page=10)
 
     page = request.GET.get(page_name)
     paginator = Paginator(queryset, records_per_page)
-    return paginator.get_page(page)
+    result_page = paginator.get_page(page)
+    # object_list is still a lazy, unevaluated queryset here. Row templates access
+    # it more than once each (once per rendered cell), and each fresh iteration of
+    # an unevaluated queryset re-queries instead of reusing prefetch_related's
+    # cache, turning any prefetched relation into an N+1 across the whole page.
+    # Materializing it once locks in that single evaluation for every later access.
+    result_page.object_list = list(result_page.object_list)
+    return result_page
 
 
 def generate_groups(

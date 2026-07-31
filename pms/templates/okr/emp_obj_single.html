@@ -125,7 +125,7 @@
                 <div class="oh-btn-group">
                     {% if perms.pms.change_employeeobjective or instance|is_manager:request.user %}
                         <a
-                            class="oh-btn oh-btn--info"
+                            class="oh-btn oh-btn--light-bkg oh-btn--secondary"
                             hx-get='{% url "update-employee-objective" instance.id %}'
                             hx-target="#genericModalBody"
                             data-toggle="oh-modal-toggle"

@@ -4,26 +4,26 @@
 <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
     {% if request.dashboard_feedback %}
         {% if instance|has_user_answered:request.user %}
-            <button class="oh-btn oh-btn--sq-sm" disabled title="{% trans 'Already Answered' %}">
+            <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Already Answered' %}">
                 <img style="width: 20px; height: 20px" src="{% static 'images/ui/writing.png' %}">
             </button>
         {% else %}
-            <a class="oh-btn oh-btn--sq-sm" href="{% url 'feedback-answer-get' id=instance.id %}" title="{% trans 'Answer' %}">
+            <a class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" href="{% url 'feedback-answer-get' id=instance.id %}" title="{% trans 'Answer' %}">
                 <img style="width: 20px; height: 20px" src="{% static 'images/ui/writing.png' %}">
             </a>
         {% endif %}
     {% elif request.request_feedback %}
         {% if instance|has_user_answered:request.user %}
-            <button class="oh-btn oh-btn--sq-sm" disabled title="{% trans 'Already Answered' %}">
+            <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Already Answered' %}">
                 <img style="width: 20px; height: 20px" src="{% static 'images/ui/writing.png' %}">
             </button>
         {% else %}
-            <a class="oh-btn oh-btn--sq-sm" href="{% url 'feedback-answer-get' id=instance.id %}" title="{% trans 'Answer' %}">
+            <a class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" href="{% url 'feedback-answer-get' id=instance.id %}" title="{% trans 'Answer' %}">
                 <img style="width: 20px; height: 20px" src="{% static 'images/ui/writing.png' %}">
             </a>
         {% endif %}
         <button
-            class="oh-btn oh-btn--sq-sm"
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             href="{% url 'feedback-answer-view' id=instance.id %}"
             title="{% trans 'Answer view' %}"
         >
@@ -79,16 +79,16 @@
         {% endif %}
     {% else %}
         {% if instance|has_user_answered:request.user %}
-            <button class="oh-btn oh-btn--sq-sm" disabled title="{% trans 'Already Answered' %}">
+            <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Already Answered' %}">
                 <img style="width: 20px; height: 20px" src="{% static 'images/ui/writing.png' %}">
             </button>
         {% else %}
-            <a class="oh-btn oh-btn--sq-sm" href="{% url 'feedback-answer-get' id=instance.id %}" title="{% trans 'Answer' %}">
+            <a class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" href="{% url 'feedback-answer-get' id=instance.id %}" title="{% trans 'Answer' %}">
                 <img style="width: 20px; height: 20px" src="{% static 'images/ui/writing.png' %}">
             </a>
         {% endif %}
         <a
-            class="oh-btn oh-btn--sq-sm"
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             href="{% url 'feedback-answer-view' id=instance.id %}"
             title="{% trans 'Answer view' %}"
         ><ion-icon name="eye"></ion-icon></a>

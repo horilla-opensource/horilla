@@ -14,6 +14,7 @@
 				<a
 					title="{% trans 'Join Meeting' %}"
 					href="#"
+					onclick="event.preventDefault()"
 					class="oh-btn oh-btn--disabled oh-btn--light-bkg oh-btn--sq-sm"
 					><ion-icon name="link-outline"></ion-icon
 				></a>
@@ -61,7 +62,8 @@
 <script>
 	$(document).ready(function(){
 		{% if "horilla_meet"|app_installed and "horilla_meet"|integration_installed %}
-			$(".createMeeting").on("click", function(){
+			$(".createMeeting").on("click", function(e){
+				e.preventDefault();
 				var interviewID = $(this).data("id");
 				var interviewDate = $(this).data("date");
 				var interviewTime = $(this).data("time");

@@ -2,20 +2,20 @@
 {% load basefilters %}
 {% is_manager_of request.user instance as can_manage %}
 {% if perms.leave.change_leaveallocationrequest or can_manage %}
-    <div class="oh-btn-group" onclick="event.stopPropagation();">
+    <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation();">
         {% if instance.status == 'requested' %}
             <a type="submit"
                 hx-confirm="{% trans 'Are you sure you want to approve ?' %}"
                 hx-post="{% url 'approve-compensatory-leave' instance.id %}"
                 hx-target="#listContainer"
                 title="{% trans 'Approve' %}"
-                class="oh-btn oh-btn--success w-100">
-                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                class="oh-btn oh-btn--success oh-btn--sq-sm">
+                <ion-icon name="checkmark-outline"></ion-icon>
             </a>
         {% else %}
             <a type="submit" href="#" title="{% trans 'Approve' %}"
-                class="oh-btn oh-btn--success oh-btn--disabled w-100">
-                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                class="oh-btn oh-btn--success oh-btn--disabled oh-btn--sq-sm">
+                <ion-icon name="checkmark-outline"></ion-icon>
             </a>
         {% endif %}
         {% if instance.status == 'approved' or instance.status == 'requested' %}
@@ -24,14 +24,13 @@
                 hx-get="{% url 'reject-compensatory-leave' instance.id %}"
                 hx-target="#rejectTarget"
                 title="{% trans 'Reject' %}"
-                class="oh-btn oh-btn--danger w-100">
-                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                class="oh-btn oh-btn--danger oh-btn--sq-sm">
+                <ion-icon name="close-circle-outline"></ion-icon>
             </a>
         {% else %}
             <a type="submit" href="#" title="{% trans 'Reject' %}"
-                class="oh-btn oh-btn--danger oh-btn--disabled
-                w-100" >
-                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                class="oh-btn oh-btn--danger oh-btn--disabled oh-btn--sq-sm">
+                <ion-icon name="close-circle-outline"></ion-icon>
             </a>
         {% endif %}
     </div>

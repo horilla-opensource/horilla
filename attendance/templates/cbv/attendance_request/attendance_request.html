@@ -27,6 +27,8 @@
         }
     </style>
 
+    {# Panel sizing for the tabs on this page is handled by the site-wide #}
+    {# script in horilla_theme/components/header_scripts.html. #}
     <div hx-get="{% url 'attendance-request-nav' %}" hx-trigger="load"></div>
 
     {% include "generic/components.html" %}

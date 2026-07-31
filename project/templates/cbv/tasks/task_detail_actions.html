@@ -3,7 +3,7 @@
 {% if request.user|task_crud_perm:instance or perms.project.view_task %}
     <a hx-get="{% url 'update-task' instance.id %}?project_task=true" hx-target='#genericModalBody'
         data-toggle="oh-modal-toggle" data-target="#genericModal" data-key=".oh-kanban__section"
-        class="oh-btn oh-btn-group oh-btn--info flex-fill"
+        class="oh-btn oh-btn-group oh-btn--light-bkg oh-btn--secondary flex-fill"
     >
         <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="{% trans 'create outline' %}">
         </ion-icon>

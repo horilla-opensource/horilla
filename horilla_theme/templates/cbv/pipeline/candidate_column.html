@@ -1,36 +1,4 @@
 {% load i18n %}
-<style>
-    .tooltip {
-        display: inline-block; /* Ensures that the tooltip container doesn't stretch to the full width */
-        position: relative;
-    }
-
-    .tooltip .tooltiptext {
-        visibility: hidden;
-        z-index: 1;
-        position: absolute;
-        bottom: 5%;
-        left: 50%;
-        width: auto; /* Allow the tooltip width to adjust based on content */
-        max-width: auto; /* Limit the maximum width of the tooltip to prevent it from overflowing */
-        padding: 5px;
-        overflow: hidden; /* Hides any overflowed content */
-        transform: translateX(5%);
-        border-radius: 6px;
-        background-color: green;
-        color: white;
-        font-size: 15px;
-        text-align: center;
-        white-space: nowrap; /* Prevents the text from wrapping */
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
-
-    .tooltip:hover .tooltiptext {
-        visibility: visible;
-        opacity: 1;
-    }
-</style>
 <div
     class="oh-table-config__td cursor-pointer"
     style="text-decoration: none; width: 150px !important"

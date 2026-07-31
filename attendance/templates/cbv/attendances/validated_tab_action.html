@@ -7,7 +7,7 @@
     {% if can_change or can_delete  or can_manage %}
         {% if can_change or can_manage %}
             <a
-                class="oh-btn oh-btn-group oh-btn--info"
+                class="oh-btn oh-btn-group oh-btn--light-bkg oh-btn--secondary"
                 hx-get="{% url 'attendance-update' instance.id %}?dashboard={{dashboard}}"
                 hx-target="{% if dashboard == 'true' %}#editModalForm {% else %}#genericModalBody{% endif %}"
                 hx-swap="innerHTML"

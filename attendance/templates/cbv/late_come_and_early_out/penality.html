@@ -1,23 +1,25 @@
 {% load i18n horillafilters %}
 {% get_company as theme_obj %}
 
-{% if instance.get_penalties_count %}
+{% with penalties_count=instance.get_penalties_count %}
+{% if penalties_count %}
     <div
         class=""
         data-target="#penaltyViewModal"
         data-toggle="oh-modal-toggle"
         hx-get='{% url "view-penalties" %}?late_early_id={{instance.id}}'
         hx-target="#penaltyViewModalBody"
-        style="background-color: {{ theme_obj.primary_100|default:'rgba(229, 79, 56, 0.036)' }}; border: 2px solid {{ theme_obj.primary_600|default:'rgb(229, 79, 56)' }}; border-radius: 8px; padding: 10px 16px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap"
+        style="background-color: {{ theme_obj.primary_100|default:'rgba(229, 79, 56, 0.036)' }}; border: 2px solid {{ theme_obj.primary_600|default:'rgb(229, 79, 56)' }}; border-radius: 8px; padding: 2px 12px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap"
         onclick="event.stopPropagation()"
     >
-        {% trans "Penalties" %} :{{ instance.get_penalties_count }}
+        {% trans "Penalties" %} :{{ penalties_count }}
     </div>
 {% else %}
     <div
         class=""
-        style="background-color: rgba(144, 238, 144, 0.036); border: 2px solid rgb(144, 238, 144); border-radius: 8px; padding: 10px 16px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap"
+        style="background-color: rgba(144, 238, 144, 0.036); border: 2px solid rgb(144, 238, 144); border-radius: 8px; padding: 2px 12px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap"
     >
         {% trans "No Penalties" %}
     </div>
 {% endif %}
+{% endwith %}

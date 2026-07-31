@@ -1,16 +1,18 @@
 {% load i18n %}
 
 {% if request.user.id|stringformat:"d" == instance.anonymous_feedback_id  or request.user.is_superuser %}
-    <div class="oh-btn-group" onclick="event.stopPropagation()">
-        <a
-            class="oh-btn w-100"
+    <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
+        <button
+            type="button"
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             data-toggle="oh-modal-toggle"
             data-target="#genericModal"
             hx-get="{% url 'edit-anonymous-feedback' instance.id %}?instance_ids={{instance.ordered_ids}}"
             title="{% trans 'Edit' %}"
             hx-target="#genericModalBody"
         >
-            <ion-icon name="create-outline"></ion-icon></a>
+            <ion-icon name="create-outline"></ion-icon>
+        </button>
         <form
             action="{% url 'archive-anonymous-feedback' obj_id=instance.id %}"
             method="post"
@@ -19,7 +21,7 @@
         >
             {% csrf_token %}
             <button
-                class="oh-btn oh-btn--danger w-100"
+                class="oh-btn oh-btn--danger oh-btn--sq-sm"
                 title="{% if instance.archive == True %}{% trans 'Un-archive' %}{% else %}{% trans 'Archive' %}{% endif %}"
                 type="submit"
             >
@@ -33,7 +35,7 @@
             style="display: contents"
         >
             {% csrf_token %}
-            <button class="oh-btn oh-btn--danger w-100" title="{% trans 'Delete' %}" type="submit">
+            <button class="oh-btn oh-btn--danger oh-btn--sq-sm" title="{% trans 'Delete' %}" type="submit">
                 <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
             </button>
         </form>

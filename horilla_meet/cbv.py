@@ -464,7 +464,7 @@ class GmeetDetailedView(views.HorillaDetailedView):
             hx-target="#genericModalBody"
             data-toggle="oh-modal-toggle"
             data-target="#genericModal"
-            class="oh-btn oh-btn--info w-50"
+            class="oh-btn oh-btn--light-bkg oh-btn--secondary w-50"
             """,
         },
         {

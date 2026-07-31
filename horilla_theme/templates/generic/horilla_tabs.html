@@ -27,6 +27,25 @@
     .oh-tabs__content--active {
     	display: block;
     }
+    .oh-tabs__tab-scroll {
+    	flex-wrap: nowrap;
+    	overflow-x: auto;
+    	overflow-y: hidden;
+    	scrollbar-width: thin;
+    }
+    .oh-tabs__tab-scroll::-webkit-scrollbar {
+    	height: 6px;
+    }
+    .oh-tabs__tab-scroll::-webkit-scrollbar-thumb {
+    	background-color: #d1d5db;
+    	border-radius: 6px;
+    }
+    .oh-tabs__tab-scroll .dropdown-wrapper-tab {
+    	flex-shrink: 0;
+    }
+    .oh-tabs__tab-scroll .oh-tabs__tab {
+    	white-space: nowrap;
+    }
 </style>
 
 <div id="{{view_id}}">
@@ -35,19 +54,26 @@
     {% endif %}
 
     <div class="bg-white p-3 rounded-md shadow-card oh-tabs">
+        {% if not tabs %}
+            <div class="flex flex-col items-center justify-center py-10">
+                <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="200" class="mb-4">
+                <p class="text-[#666]">{% trans "No records available at the moment" %}</p>
+            </div>
+        {% else %}
         <div class="flex flex-wrap gap-2 justify-between mb-3">
-            <div class="flex gap-1 flex-wrap">
+            <div class="flex gap-1 flex-wrap oh-tabs__tab-scroll">
                 {% for tab in tabs %}
                     <div class="relative inline-block dropdown-wrapper-tab">
                         <button
                             class="oh-tabs__tab flex {% if forloop.counter == 1 and not active_target %} oh-tabs__tab--active {% endif %}"
                             data-tab-index="{{ forloop.counter0 }}"
                             data-target="#{{view_id}}{{forloop.counter}}"
+                            data-tab-url="{{tab.url}}"
                             data-path="{{request.path}}"
                             onclick="switchTab($(this));
 								var tabContentEl = document.querySelector('#{{view_id}}{{forloop.counter}}');
 								if (!$(this).attr('data-loaded') || !tabContentEl || !tabContentEl.innerHTML.trim()) {
-									htmx.ajax('GET', '{{tab.url}}', {target: '#{{view_id}}{{forloop.counter}}'});
+									htmx.ajax('GET', '{{tab.url}}', {target: '#{{view_id}}{{forloop.counter}}', source: this});
 									this.setAttribute('data-loaded', 'true');
 								}"
                         >
@@ -119,6 +145,7 @@
                 </div>
             {% endfor %}
         </div>
+        {% endif %}
     </div>
 </div>
 
@@ -134,6 +161,22 @@
     }
 
     function switchTab($elem) {
+    	// $elem can be a stale reference: triggerInitialTabLoad() below fires
+    	// a synthetic .click() on the tab it just loaded, but if #{{view_id}}'s
+    	// whole subtree was torn down and rebuilt in the meantime (e.g. a
+    	// duplicate nav/search fetch replacing #pipelineContainer's innerHTML
+    	// while that load was in flight — see loadTab()'s own guard against
+    	// this), $elem is a detached node from the OLD generation. The class
+    	// toggles below use global selectors that match whatever is in the
+    	// CURRENT (live) DOM, so running them for a detached $elem strips the
+    	// active state off the real, current content without being able to
+    	// restore it (its own target id no longer exists), leaving the tab
+    	// looking blank. Bail out — a detached tab switching itself is never
+    	// useful.
+    	if (!document.body.contains($elem[0])) {
+    		return;
+    	}
+
     	let target = $elem.data("target")
     	let path = $elem.data("path")
 
@@ -161,26 +204,71 @@
     	function triggerInitialTabLoad() {
     		var $scope = $("#{{view_id}}");
     		if (!$scope.length) return;
+
+    		var $tabs = $scope.find(".oh-tabs__tab");
+    		if (!$tabs.length) return;
+
+    		var $preferred = $();
     		{% if active_target %}
-    			var $preferred = $scope.find(`{{active_target|safe}}`).first();
-    			if ($preferred.length) {
-    				setTimeout(function () {
-    					$preferred[0].click();
-    				}, 25);
-    			}
+    			$preferred = $scope.find(`{{active_target|safe}}`).first();
     		{% endif %}
+    		if (!$preferred.length) {
+    			$preferred = $tabs.filter(".oh-tabs__tab--active").first();
+    		}
+    		if (!$preferred.length) {
+    			$preferred = $tabs.first();
+    		}
+
+    		// Load one tab's content and resolve once its swap has settled.
+    		function loadTab(el) {
+    			// This whole tab view can be torn down and re-rendered with a
+    			// fresh view_id (e.g. a duplicate nav/search fetch replacing
+    			// #pipelineContainer's innerHTML) while this background chain
+    			// is still mid-flight. If that happens, el/target are stale:
+    			// document.querySelector(target) won't find anything in the
+    			// new DOM, and htmx.ajax() silently falls back to swapping the
+    			// response into <body> when it can't resolve a target — wiping
+    			// the whole page's sidebar/header. Bail out instead.
+    			if (!document.body.contains(el)) {
+    				return $.Deferred().resolve().promise();
+    			}
+    			var url = $(el).attr('data-tab-url');
+    			var target = $(el).attr('data-target');
+    			var targetEl = target ? document.querySelector(target) : null;
+    			if (!url || !target || !targetEl) {
+    				return $.Deferred().resolve().promise();
+    			}
+    			$(el).attr('data-loaded', 'true');
+    			var req = htmx.ajax('GET', url, {target: target, source: el});
+    			if (req && typeof req.then === 'function') {
+    				return req.catch(function () {});
+    			}
+    			return $.Deferred().resolve().promise();
+    		}
 
     		setTimeout(function () {
-    			var $activeTab = $scope.find(".oh-tabs__tab--active").first();
-    			if ($activeTab.length) {
-    				$activeTab[0].click();
-    			} else {
-    				var $firstTab = $scope.find(".oh-tabs__tab").first();
-    				if ($firstTab.length) {
-    					$firstTab[0].click();
+    			Promise.resolve(loadTab($preferred[0])).then(function () {
+    				// Content is in place; this now just flips the visual
+    				// active state + persists it (data-loaded already true,
+    				// so the button's own onclick fetch check is skipped).
+    				// Skip entirely if #{{view_id}} was torn down and rebuilt
+    				// while loadTab() was in flight — $preferred[0] is then a
+    				// detached node from the old generation, and its onclick
+    				// (switchTab() plus a fetch-if-not-loaded check keyed off
+    				// its own stale target id) has nothing safe left to do.
+    				// Other tabs are intentionally NOT pre-loaded here: with
+    				// many tabs, eagerly fetching every one of them (each
+    				// pulling its own set of per-stage requests) turned page
+    				// load into a long serialized chain the user never asked
+    				// for. Each tab's button already lazy-loads its own
+    				// content on first click (see the data-loaded check in
+    				// its onclick above), so background tabs load on demand
+    				// instead.
+    				if (document.body.contains($preferred[0])) {
+    					$preferred[0].click();
     				}
-    			}
-    		}, 100);
+    			});
+    		}, 25);
     	}
 
     	triggerInitialTabLoad();
@@ -189,19 +277,43 @@
     function actionClick(event) {
     	event.stopPropagation(); // Prevents closing when clicking inside
     	const icon = event.currentTarget;
-    	const dropdownMenu = $(icon)
-    		.closest(".dropdown-wrapper-tab")
-    		.find(".dropdown-menu");
-
-    	const isHidden = dropdownMenu.hasClass("hidden");
+    	const wrapper = $(icon).closest(".dropdown-wrapper-tab");
+    	const dropdownMenu = wrapper.find(".dropdown-menu");
 
     	// Close all other dropdowns
     	$(".dropdown-menu").not(dropdownMenu).addClass("hidden");
 
-    	dropdownMenu.toggleClass("hidden", !isHidden);
+    	// Always (re-)open this icon's own menu rather than toggling it shut —
+    	// closing is handled exclusively by the outside-click listener below.
+    	// A toggle here would close the menu right back if this handler ever
+    	// ran twice for what looks like one click (observed as the menu
+    	// opening and instantly closing again).
+    	const rect = wrapper[0].getBoundingClientRect();
+    	dropdownMenu.css({
+    		// The tab bar (.oh-tabs__tab-scroll) needs overflow-y: hidden so
+    		// its horizontal scrollbar doesn't grow a vertical one too, but
+    		// that same rule clips any absolutely-positioned dropdown that
+    		// opens below it. Escape the clip with viewport-fixed
+    		// positioning, anchored to the toggle icon's current location.
+    		position: "fixed",
+    		top: rect.bottom + "px",
+    		left: "auto",
+    		right: (window.innerWidth - rect.right) + "px",
+    	});
+    	dropdownMenu.removeClass("hidden");
     }
 
     document.addEventListener("click", function (e) {
+    	// Ignore synthetic clicks — triggerInitialTabLoad() above fires a
+    	// script-generated `.click()` on the preferred tab shortly after
+    	// page load to lazy-load its content (isTrusted: false). If a user's
+    	// first real click just opened a *different* tab's dropdown before
+    	// that delayed auto-click lands, treating it as a genuine outside
+    	// click here would immediately close the menu the user just opened.
+    	if (!e.isTrusted) {
+    		return;
+    	}
+
     	const $clickedWrapper = $(e.target).closest(".dropdown-wrapper-tab");
 
     	$(".dropdown-wrapper-tab").each(function () {

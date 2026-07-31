@@ -167,7 +167,7 @@
                 data-target="#objectUpdateModal"
                 hx-get="{% url 'attendance-change' attendance_request.id %}?all_attendance=true"
                 hx-target="#objectUpdateModalTarget"
-                class="oh-btn oh-btn--info w-100"
+                class="oh-btn oh-btn--light-bkg oh-btn--secondary w-100"
                 title="{% trans 'Edit' %}"
             >
                 <ion-icon name="lock-open-outline" role="img" class="md hydrated" aria-label="{% trans 'create outline' %}">
@@ -178,7 +178,7 @@
                 {% if perms.attendance.change_attendance and perms.attendance.delete_attendance or request.user|is_reportingmanager %}
                     <div class="oh-btn-group">
                         <a
-                            class="oh-btn oh-btn--info"
+                            class="oh-btn oh-btn--light-bkg oh-btn--secondary"
                             hx-get="{% url 'attendance-update' attendance_request.id %}?dashboard={{dashboard}}"
                             hx-target="{% if dashboard == 'true' %}#editModalForm {% else %}#updateAttendanceModalBody{% endif %}"
                             hx-swap="innerHTML"
@@ -273,7 +273,7 @@
                 {% if perms.attendance.change_attendance and perms.attendance.delete_attendance or request.user|is_reportingmanager %}
                     <div class="oh-btn-group">
                         <a
-                            class="oh-btn oh-btn--info"
+                            class="oh-btn oh-btn--light-bkg oh-btn--secondary"
                             hx-get="{% url 'attendance-update' attendance_request.id %}"
                             hx-target="{% if dashboard == 'true' %}#editModalForm {% else %}#updateAttendanceModalBody{% endif %}"
                             hx-swap="innerHTML"
@@ -324,7 +324,7 @@
                 {% if perms.attendance.change_attendance and perms.attendance.delete_attendance or request.user|is_reportingmanager %}
                     <div class="oh-btn-group">
                         <a
-                            class="oh-btn oh-btn--info"
+                            class="oh-btn oh-btn--light-bkg oh-btn--secondary"
                             hx-get="{% url 'attendance-update' attendance_request.id %}"
                             hx-target="#updateAttendanceModalBody"
                             hx-swap="innerHTML"

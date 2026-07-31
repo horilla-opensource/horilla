@@ -7,6 +7,7 @@ from typing import Any
 
 from django import forms
 from django.contrib import messages
+from django.db.models import Count, Prefetch, Q
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
@@ -57,7 +58,29 @@ class StageList(HorillaListView):
         Returns a filtered queryset of active recruitments.
         """
         queryset = super().get_queryset()
-        queryset = queryset.filter(recruitment_id__is_active=True)
+        queryset = (
+            queryset.filter(recruitment_id__is_active=True)
+            .select_related("recruitment_id")
+            .prefetch_related(
+                # Employee's manager silently filters is_active=True on .all()
+                # (HorillaCompanyManager), but prefetch_related builds its batch
+                # query from get_queryset() and skips that filter. Mismatched
+                # query shapes mean the prefetch cache never matches what the
+                # row template actually calls, causing a fresh query per stage.
+                # Prefetch() pins the exact queryset so the cache hits.
+                Prefetch(
+                    "stage_managers",
+                    queryset=Employee.objects.filter(is_active=True),
+                )
+            )
+            .annotate(
+                managers_count=Count(
+                    "stage_managers",
+                    filter=Q(stage_managers__is_active=True),
+                    distinct=True,
+                )
+            )
+        )
         return queryset
 
     columns = [

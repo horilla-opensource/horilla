@@ -203,7 +203,7 @@ class AssetAllocationFilter(CustomFilterSet):
 
     def search_method(self, queryset, _, value: str):
         """
-        This method is used to search employees
+        This method is used to search employees and assets
         """
         values = value.split(" ")
         empty = queryset.model.objects.none()
@@ -214,6 +214,10 @@ class AssetAllocationFilter(CustomFilterSet):
                 )
                 | queryset.filter(
                     assigned_to_employee_id__employee_last_name__icontains=split
+                )
+                | queryset.filter(asset_id__asset_name__icontains=split)
+                | queryset.filter(
+                    asset_id__asset_category_id__asset_category_name__icontains=split
                 )
             )
         return empty.distinct()

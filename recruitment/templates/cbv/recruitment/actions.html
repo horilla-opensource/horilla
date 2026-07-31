@@ -1,6 +1,6 @@
 {% load i18n %}
 <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
-    <a href="#" class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" onclick="copyLink(window.location.origin+'/recruitment/application-form?recruitmentId={{instance.id}}')" title="{% trans "Share Link" %}">
+    <a href="#" class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" onclick="event.preventDefault(); copyLink(window.location.origin+'/recruitment/application-form?recruitmentId={{instance.id}}')" title="{% trans "Share Link" %}">
       <ion-icon name="share-social-outline"></ion-icon>
     </a>
     {% if perms.recruitment.change_recruitment %}

@@ -1,74 +1,63 @@
-{% load i18n static %}
-<style>
-	tr span.txt {
-		display: none;
-	}
-</style>
-
-<div style="width: 100%" onclick="event.stopPropagation()">
+{% load i18n %}
+<div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
     <form
         hx-get="{% url 'update-letter-status' %}"
         hx-target="#listContainer"
         hx-swap="innerHTML"
+        class="flex items-center gap-1"
     >
         {% if perms.offboarding.change_resignationletter %}
-            <div class="flex items-center justify-center gap-1">
-                {% if instance.status == "requested" %}
+            {% if instance.status == "requested" %}
                 <button
                     title="{% trans 'By approving the request employee will added to the offboarding pipeline' %}"
                     type="button"
-                    onclick="event.stopPropagation();$(this).closest('form').find('input[name=status]').val('approved');resignLetterConfirmation('{% trans 'Do You really want to approve the request' %}?',$(this).closest('form').find('[type=submit]'),true);"
-                    class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300"
+                    onclick="$(this).closest('form').find('input[name=status]').val('approved');resignLetterConfirmation('{% trans "Do You really want to approve the request" %}?',$(this).closest('form').find('[type=submit]'),true)"
+                    class="oh-btn oh-btn--success oh-btn--sq-sm"
                 >
-                    <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
-                    class="filter brightness-0 invert" />
-                    {% trans "Approve" %}</span>
+                    <ion-icon name="checkmark"></ion-icon>
                 </button>
-                {% else %}
-                <button type="button" class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300 oh-btn--disabled">
-                    <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
-                    class="filter brightness-0 invert" />
-                    {% trans "Approve" %}</span>
+            {% else %}
+                <button
+                    type="button"
+                    class="oh-btn oh-btn--success oh-btn--sq-sm oh-btn--disabled"
+                    title="{% trans 'Approve' %}"
+                >
+                    <ion-icon name="checkmark"></ion-icon>
                 </button>
-                {% endif %}
-                {% if instance.status == 'rejected' %}
-                    <button
-                        type="button"
-                        class="h-8 w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300 oh-btn--disabled"
-                        disabled
-                    >
-                        <img src="{% static 'horilla_theme/assets/img/icons/close-circle-icon-original.svg' %}" alt="{% trans 'Reject' %}" width="13"
-                        class="filter brightness-0 invert" />
-                        {% trans "Reject" %}</span>
-                    </button>
-                {% else %}
-                    <button
-                        type="button"
-                        onclick="event.stopPropagation();$(this).closest('form').find('input[name=status]').val('rejected');resignLetterConfirmation('{% trans 'Do You really want to reject the request?' %}',$(this).closest('form').find('[type=submit]'));"
-                        class="h-8 w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
-                    >
-                        <img src="{% static 'horilla_theme/assets/img/icons/close-circle-icon-original.svg' %}" alt="{% trans 'Reject' %}" width="13"
-                        class="filter brightness-0 invert" />
-                        {% trans "Reject" %}</span>
-                    </button>
-                {% endif %}
-            </div>
-            <input type="hidden" name="status" />
-            <input type="hidden" name="letter_ids" value="{{instance.id}}" />
-            <input type="hidden" name="offboarding_id" />
+            {% endif %}
+            {% if instance.status == "rejected" %}
+                <button
+                    type="button"
+                    class="oh-btn oh-btn--danger oh-btn--sq-sm oh-btn--disabled"
+                    title="{% trans 'Reject' %}"
+                >
+                    <ion-icon name="close-circle-outline"></ion-icon>
+                </button>
+            {% else %}
+                <button
+                    type="button"
+                    onclick="$(this).closest('form').find('input[name=status]').val('rejected');resignLetterConfirmation('{% trans "Do You really want to reject the request?" %}',$(this).closest('form').find('[type=submit]'))"
+                    title="{% trans 'Reject' %}"
+                    class="oh-btn oh-btn--danger oh-btn--sq-sm"
+                >
+                    <ion-icon name="close-circle-outline"></ion-icon>
+                </button>
+            {% endif %}
+            <input type="hidden" name="status">
+            <input type="hidden" name="letter_ids" value="{{instance.id}}">
+            <input type="hidden" name="offboarding_id">
             <input
                 type="hidden"
                 name="notice_period_starts"
                 value="{% now 'Y-m-d' %}"
                 id="notice_period_starts{{instance.id}}"
-            />
+            >
             <input
                 type="hidden"
                 name="notice_period_ends"
                 id="notice_period_ends{{instance.id}}"
-            />
+            >
             <button type="submit" hidden></button>
         {% endif %}
-        <input type="submit" hidden="" id="requestCard1Button" />
     </form>
 </div>

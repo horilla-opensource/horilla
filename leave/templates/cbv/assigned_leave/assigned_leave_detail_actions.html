@@ -5,7 +5,7 @@
 	<div class="oh-btn-group" style="width: 100%">
 		{% if can_change or can_manage %}
 			<a hx-get="{% url 'available-leave-update' instance.id %}" hx-target="#objectUpdateModalTarget"
-				data-toggle="oh-modal-toggle" data-target="#objectUpdateModal" class="oh-btn oh-btn--info w-100">
+				data-toggle="oh-modal-toggle" data-target="#objectUpdateModal" class="oh-btn oh-btn--light-bkg oh-btn--secondary w-100">
 				<ion-icon name="create-outline"></ion-icon>
 				{% trans 'Edit' %}
 			</a>

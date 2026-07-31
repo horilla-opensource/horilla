@@ -66,7 +66,7 @@ class TicketFilter(FilterSet):
         FilterSet (class): custom filter set class to apply styling
     """
 
-    search = CharFilter(field_name="title", lookup_expr="icontains")
+    search = CharFilter(method="search_method")
     from_date = DateFilter(
         field_name="deadline",
         lookup_expr="gte",
@@ -83,6 +83,19 @@ class TicketFilter(FilterSet):
     department = django_filters.NumberFilter(
         field_name="employee_id__employee_work_info__department_id",
     )
+
+    def search_method(self, queryset, name, value):
+        """
+        Search by ticket title or the owning employee's name.
+        """
+        value = (value or "").strip()
+        if not value:
+            return queryset
+        return (
+            queryset.filter(title__icontains=value)
+            | queryset.filter(employee_id__employee_first_name__icontains=value)
+            | queryset.filter(employee_id__employee_last_name__icontains=value)
+        ).distinct()
 
     class Meta:
         """

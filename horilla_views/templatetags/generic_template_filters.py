@@ -7,6 +7,7 @@ This module is used to write custom template filters.
 
 import datetime
 import functools
+import json
 import re
 import types
 
@@ -218,6 +219,19 @@ def get_item(dictionary: dict, key: str):
     return ""
 
 
+@register.filter("id_list_json")
+def id_list_json(queryset):
+    """
+    JSON-encode the pks of every row in queryset, not just the current page.
+    Used to make a group's "Select" bulk-action select every matching record
+    instead of only the rows rendered on the current pagination page.
+    """
+    try:
+        return mark_safe(json.dumps(list(queryset.values_list("pk", flat=True))))
+    except (AttributeError, TypeError):
+        return "[]"
+
+
 @register.filter("get_id")
 def get_id(string: str):
     """
@@ -232,3 +246,17 @@ def is_image_file(filename):
     Django template filter to check if a given filename is an image file.
     """
     return filename.lower().endswith((".png", ".jpg", ".jpeg", ".svg"))
+
+
+@register.filter(name="elided_page_range")
+def elided_page_range(page):
+    """
+    Returns the current page's elided page range (e.g. 1, 2, 3, "...", 209)
+    with the paginator's ellipsis marker normalized to a plain "..." string.
+    """
+    return [
+        "..." if p == page.paginator.ELLIPSIS else p
+        for p in page.paginator.get_elided_page_range(
+            page.number, on_each_side=1, on_ends=1
+        )
+    ]

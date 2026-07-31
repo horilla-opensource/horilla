@@ -10,11 +10,12 @@
             data-target="#genericModal"
         {% endif %}
         class="
-            w-24 px-4 py-2 bg-info-600 text-white rounded-md text-xs flex items-center justify-center gap-2
-            transition duration-300 {% if is_locked %}opacity-60 pointer-events-none{% else %}hover:bg-info-800{% endif %}
+            oh-btn oh-btn--light-bkg oh-btn--secondary
+            w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2
+            transition duration-300 {% if is_locked %}opacity-60 pointer-events-none{% endif %}
         "
     >
-        <img src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}" width="13" class="filter brightness-0 invert">
+        <ion-icon name="create-outline"></ion-icon>
         {% trans "Edit" %}
     </a>
 

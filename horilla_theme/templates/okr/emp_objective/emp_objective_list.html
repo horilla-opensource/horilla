@@ -211,39 +211,6 @@
     </div>
 </div>
 
-<!-- pagination start -->
-{% if emp_objectives.paginator.count %}
-    <div class="flex justify-between items-center mt-4 w-full inset-0">
-        <p class="text-[#666]">
-            {% trans "Page" %}
-            {{ emp_objectives.number }}
-            {% trans "of" %}
-            {{ emp_objectives.paginator.num_pages }}
-        </p>
-        <div class="flex gap-3 text-[#666] items-center">
-            {% if emp_objectives.has_previous %}
-                <button
-                    class="text-xs hover:text-primary-600 transition duration-300"
-                    hx-target="#emp_objective_card"
-                    hx-get="{% url 'emp-objective-search' objective.id %}?{{pg}}&page={{ emp_objectives.previous_page_number }}"
-                >
-                    <i class="fa-solid fa-arrow-left"></i>
-                </button>
-            {% endif %}
-            {{ emp_objectives.number }} / {{ emp_objectives.paginator.num_pages }}
-            {% if emp_objectives.has_next %}
-                <button
-                    class="text-xs hover:text-primary-600 transition duration-300"
-                    hx-target="#emp_objective_card"
-                    hx-get="{% url 'emp-objective-search' objective.id %}?{{pg}}&page={{ emp_objectives.next_page_number }}"
-                >
-                    <i class="fa-solid fa-arrow-right"></i>
-                </button>
-            {% endif %}
-        </div>
-    </div>
-{% endif %}
-<!-- end of pagination -->
 
 <script>
     function changeObjectiveStatusFromDropdown(newStatus, empId) {

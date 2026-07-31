@@ -2,9 +2,10 @@
 
 <button
     class="
-        w-24 px-4 py-2 bg-info-600 text-white rounded-md
+        oh-btn oh-btn--light-bkg oh-btn--secondary
+        w-24 px-4 py-2 rounded-md
         text-xs flex items-center justify-center gap-2
-        hover:bg-info-800 transition duration-300
+        transition duration-300
         {% if not instance.status == 'requested' %}opacity-60 cursor-not-allowed{% endif %}
     "
     title="{% trans 'Edit' %}"
@@ -17,7 +18,7 @@
         disabled
     {% endif %}
 >
-    <img src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}" width="13" class="filter brightness-0 invert">
+    <ion-icon name="create-outline"></ion-icon>
     {% trans "Edit" %}
 </button>
 

@@ -176,18 +176,60 @@ class FeedbackGenericTabView(HorillaTabView):
         super().__init__(**kwargs)
         self.search_url = reverse("feedback-generic-tab")
 
+        employee = self.request.user.employee_get
+
+        extra_params = self.request.GET.copy()
+        extra_params.pop("view", None)
+        query_string = extra_params.urlencode()
+
+        def with_query(url):
+            return f"{url}?{query_string}" if query_string else url
+
+        self_feedback_count = FeedbackFilter(
+            self.request.GET,
+            queryset=Feedback.objects.filter(
+                employee_id=employee, employee_id__is_active=True
+            ),
+        ).qs.count()
+
+        requested_feedback_ids = Feedback.objects.filter(
+            Q(manager_id=employee, manager_id__is_active=True)
+            | Q(colleague_id=employee, colleague_id__is_active=True)
+            | Q(subordinate_id=employee, subordinate_id__is_active=True)
+            | Q(others_id=employee, others_id__is_active=True)
+        ).values_list("id", flat=True)
+        requested_feedback_count = FeedbackFilter(
+            self.request.GET,
+            queryset=Feedback.objects.filter(pk__in=requested_feedback_ids).filter(
+                employee_id__is_active=True
+            ),
+        ).qs.count()
+
+        if self.request.user.has_perm("pms.view_feedback"):
+            anonymous_feedback_qs = AnonymousFeedback.objects.all()
+        else:
+            anonymous_feedback_qs = AnonymousFeedback.objects.filter(
+                employee_id=employee
+            )
+        anonymous_feedback_count = AnonymousFilter(
+            self.request.GET, queryset=anonymous_feedback_qs
+        ).qs.count()
+
         tabs = [
             {
                 "title": _("Self Feedback"),
-                "url": f"{reverse('self-feedback-tab')}",
+                "url": with_query(reverse("self-feedback-tab")),
+                "badge": self_feedback_count,
             },
             {
                 "title": _("Requested Feedback"),
-                "url": f"{reverse('requested-feedback-tab')}",
+                "url": with_query(reverse("requested-feedback-tab")),
+                "badge": requested_feedback_count,
             },
             {
                 "title": _("Anonymous Feedback"),
-                "url": f"{reverse('anonymous-feedback-tab')}",
+                "url": with_query(reverse("anonymous-feedback-tab")),
+                "badge": anonymous_feedback_count,
                 "actions": [
                     {
                         "action": _("Add Anonymous"),
@@ -205,11 +247,24 @@ class FeedbackGenericTabView(HorillaTabView):
         if self.request.user.has_perm("pms.view_feedback") or is_reportingmanager(
             self.request
         ):
+            if self.request.user.has_perm("pms.view_feedback"):
+                all_feedback_qs = Feedback.objects.filter(employee_id__is_active=True)
+            else:
+                subordinates = Employee.objects.filter(
+                    employee_work_info__reporting_manager_id=employee, is_active=True
+                )
+                all_feedback_qs = Feedback.objects.filter(
+                    employee_id__in=subordinates, employee_id__is_active=True
+                )
+            all_feedback_count = FeedbackFilter(
+                self.request.GET, queryset=all_feedback_qs
+            ).qs.count()
             tabs.insert(
                 2,
                 {
                     "title": _("Feedbacks to Review"),
-                    "url": f"{reverse('all-feedback-tab')}",
+                    "url": with_query(reverse("all-feedback-tab")),
+                    "badge": all_feedback_count,
                 },
             )
 

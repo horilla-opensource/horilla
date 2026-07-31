@@ -351,10 +351,13 @@ def render_template(
     request = getattr(_thread_locals, "request", None)
     context.update(get_all_context_variables(request))
     template_loader = loader.get_template(path)
-    template_body = template_loader.template.source
-    template_bdy = template.Template(template_body)
+    # Render the already-compiled template directly instead of re-parsing its
+    # source into a new Template on every call — this function is invoked once
+    # per rendered fragment (often a dozen+ times per list page row), so the
+    # re-parse cost multiplies fast. Verified identical output to the old
+    # template.Template(source).render(...) path.
     context_instance = template.Context(context)
-    rendered_content = template_bdy.render(context_instance)
+    rendered_content = template_loader.template.render(context_instance)
     return HttpResponse(rendered_content, status=status).content.decode(decoding)
 
 
@@ -485,17 +488,20 @@ def update_saved_filter_cache(request, cache):
     """
     Method to save filter on cache
     """
-    if cache.get(request.session.session_key + request.path + "cbv"):
-        cache.get(request.session.session_key + request.path + "cbv").update(
+    key = request.session.session_key + request.path + "cbv"
+    existing = cache.get(key)
+    if existing:
+        existing.update(
             {
                 "path": request.path,
                 "query_dict": request.GET,
                 # "request": request,
             }
         )
+        cache.set(key, existing)
         return cache
     cache.set(
-        request.session.session_key + request.path + "cbv",
+        key,
         {
             "path": request.path,
             "query_dict": request.GET,

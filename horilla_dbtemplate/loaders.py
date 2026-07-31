@@ -56,9 +56,20 @@ class Loader(BaseLoader):
             return None
 
     def _resolve_site(self):
-        """Resolve the effective site only when request host matches a Site domain; else None."""
+        """Resolve the effective site only when request host matches a Site domain; else None.
+
+        Memoized on the request object: the resolved site cannot change within
+        the lifetime of a single request, but this loader's get_template() is
+        called once per rendered template fragment (often a dozen+ times per
+        list page via render_template()), so without caching this re-queries
+        the Site table on every single call.
+        """
         request = self._get_request()
-        return get_site_for_request(request)
+        if request is None:
+            return get_site_for_request(request)
+        if not hasattr(request, "_horilla_dbtemplate_site"):
+            request._horilla_dbtemplate_site = get_site_for_request(request)
+        return request._horilla_dbtemplate_site
 
     def _get_language(self):
         """Resolve the current language from the request."""

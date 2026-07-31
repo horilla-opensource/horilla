@@ -156,7 +156,7 @@
                     <div class="oh-btn-group">
                         {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
                             <a
-                                class="oh-btn oh-btn--info"
+                                class="oh-btn oh-btn--light-bkg oh-btn--secondary"
                                 hx-get='{% url "rotating-work-type-assign-update" instance.id %}'
                                 hx-target="#objectUpdateModalTarget"
                                 data-toggle="oh-modal-toggle"

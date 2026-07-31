@@ -2,7 +2,7 @@
 
 {% if perms.pms.change_meetings or request.user.employee_get in instance.manager.all %}
     <button
-        class="w-24 px-4 py-2 bg-info-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-info-800 transition duration-300"
+        class="oh-btn oh-btn--light-bkg oh-btn--secondary w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
         hx-get="{% url 'update-meeting' instance.id %}"
         type="submit"
         title="{% trans 'Edit' %}"
@@ -10,12 +10,7 @@
         data-target="#genericModal"
         hx-target="#genericModalBody"
     >
-        <img
-            src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}"
-            alt="{% trans 'Edit' %}"
-            width="13"
-            class="filter brightness-0 invert"
-        >
+        <ion-icon name="create-outline"></ion-icon>
         {% trans 'Edit' %}
     </button>
 {% endif %}

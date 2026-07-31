@@ -9,6 +9,9 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from base.models import Tags
+from helpdesk.filter import DepartmentManagerFilter, TagsFilter, TicketTypeFilter
+from helpdesk.models import DepartmentManager, TicketType
 from horilla_views.cbv_methods import hx_request_required, login_required
 from horilla_views.generic.cbv.views import HorillaTabView, TemplateView
 
@@ -30,18 +33,37 @@ class HelpdeskSettingsTabView(HorillaTabView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+
+        query_string = self.request.GET.urlencode()
+
+        def with_query(url):
+            return f"{url}?{query_string}" if query_string else url
+
+        department_manager_count = DepartmentManagerFilter(
+            self.request.GET, queryset=DepartmentManager.objects.all()
+        ).qs.count()
+        ticket_type_count = TicketTypeFilter(
+            self.request.GET, queryset=TicketType.objects.all()
+        ).qs.count()
+        tags_count = TagsFilter(
+            self.request.GET, queryset=Tags.objects.all()
+        ).qs.count()
+
         self.tabs = [
             {
                 "title": _("Department Managers"),
-                "url": f"{reverse('helpdesk-settings-department-manager-tab')}",
+                "url": with_query(reverse("helpdesk-settings-department-manager-tab")),
+                "badge": department_manager_count,
             },
             {
                 "title": _("Ticket Type"),
-                "url": f"{reverse('helpdesk-settings-ticket-type-tab')}",
+                "url": with_query(reverse("helpdesk-settings-ticket-type-tab")),
+                "badge": ticket_type_count,
             },
             {
                 "title": _("Helpdesk Tags"),
-                "url": f"{reverse('helpdesk-settings-tags-tab')}",
+                "url": with_query(reverse("helpdesk-settings-tags-tab")),
+                "badge": tags_count,
             },
         ]
 

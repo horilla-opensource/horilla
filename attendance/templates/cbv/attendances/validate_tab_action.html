@@ -6,7 +6,7 @@
     {% if can_change or can_delete or can_manage %}
         {% if can_change or can_manage %}
             <a
-                class="oh-btn oh-btn-group oh-btn--info"
+                class="oh-btn oh-btn-group oh-btn--light-bkg oh-btn--secondary"
                 hx-get="{% url 'attendance-update' instance.id %}"
                 onclick="event.stopPropagation()"
                 hx-target="#genericModalBody"

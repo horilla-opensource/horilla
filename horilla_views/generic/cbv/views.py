@@ -19,7 +19,7 @@ from django.core.paginator import Page
 from django.db import transaction
 from django.db.models import CharField, F
 from django.db.models.functions import Cast
-from django.http import HttpRequest, HttpResponse, JsonResponse, QueryDict
+from django.http import Http404, HttpRequest, HttpResponse, JsonResponse, QueryDict
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.urls import resolve, reverse
@@ -33,6 +33,7 @@ from base.methods import (
     eval_validate,
     get_key_instances,
     get_pagination,
+    has_export_access,
 )
 
 # from horilla.http import HorillaRedirect
@@ -62,6 +63,31 @@ from horilla_views.related_link_registry import RELATED_VIEW_PARAM, register_det
 from horilla_views.templatetags.generic_template_filters import getattribute
 
 logger = logging.getLogger(__name__)
+
+_dynamic_url_routes_registered: set = set()
+
+
+def register_dynamic_url(route: str, view, name: str = None) -> None:
+    """
+    Idempotently register a per-session/view dynamic URL route.
+
+    These routes are deterministic strings (keyed by view_id and/or session
+    key), so appending unconditionally on every request re-adds the exact
+    same route again and again. With no dedup, Django's URL resolver's
+    pattern list grows without bound over a server process's lifetime,
+    making every URL resolution progressively slower (a full resolver
+    rebuild is triggered periodically as the list grows). Track what's
+    already been registered and skip re-adding it.
+    """
+    if route in _dynamic_url_routes_registered:
+        return
+    _dynamic_url_routes_registered.add(route)
+    from horilla.urls import path, urlpatterns
+
+    if name:
+        urlpatterns.append(path(route, view, name=name))
+    else:
+        urlpatterns.append(path(route, view))
 
 
 @method_decorator(hx_request_required, name="dispatch")
@@ -272,7 +298,9 @@ class HorillaListView(ListView):
         context["selected_instances_key_id"] = self.selected_instances_key_id
         context["row_status_indications"] = self.row_status_indications
         context["saved_filters"] = self._saved_filters
-        context["quick_export"] = self.quick_export
+        context["quick_export"] = self.quick_export and has_export_access(
+            self.request, self.model
+        )
         context["filter_selected"] = self.filter_selected
         context["bulk_update"] = self.bulk_update
         context["model_name"] = self.verbose_name
@@ -446,7 +474,7 @@ class HorillaListView(ListView):
             self.template_name = "generic/group_by_table.html"
             if isinstance(queryset, Page):
                 queryset = self.filter_class(
-                    request.GET, queryset=queryset.object_list.model.objects.all()
+                    request.GET, queryset=self.get_queryset()
                 ).qs
 
             try:
@@ -465,8 +493,6 @@ class HorillaListView(ListView):
             #         ordered_ids.append(str(instance.pk))
 
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaListView] = context
-        from horilla.urls import path, urlpatterns
-
         self.export_path = (
             reverse("export-list", kwargs={"short_id": self.view_id})
             + f"?model={self.model.__module__}.{self.model.__name__}"
@@ -480,18 +506,8 @@ class HorillaListView(ListView):
             post_import_sheet_path = (
                 f"post-import-sheet-{self.view_id}-{self.request.session.session_key}/"
             )
-            urlpatterns.append(
-                path(
-                    get_import_sheet_path,
-                    self.serve_import_sheet,
-                )
-            )
-            urlpatterns.append(
-                path(
-                    post_import_sheet_path,
-                    self.import_records,
-                )
-            )
+            register_dynamic_url(get_import_sheet_path, self.serve_import_sheet)
+            register_dynamic_url(post_import_sheet_path, self.import_records)
 
             session_key = self.request.session.session_key
 
@@ -506,18 +522,8 @@ class HorillaListView(ListView):
                 f"post-bulk-update-{self.view_id}-{self.request.session.session_key}/"
             )
             self.post_bulk_path = post_bulk_path
-            urlpatterns.append(
-                path(
-                    get_bulk_path,
-                    self.serve_bulk_form,
-                )
-            )
-            urlpatterns.append(
-                path(
-                    post_bulk_path,
-                    self.handle_bulk_submission,
-                )
-            )
+            register_dynamic_url(get_bulk_path, self.serve_bulk_form)
+            register_dynamic_url(post_bulk_path, self.handle_bulk_submission)
             context["bulk_update_fields"] = self.bulk_update_fields
             context["bulk_path"] = get_bulk_path
         context["export_formats"] = self.export_formats
@@ -1642,7 +1648,7 @@ class HorillaTabView(TemplateView):
     HorillaTabView
     """
 
-    view_id: str = get_short_uuid(3, "htv")
+    view_id: str = ""
     template_name = "generic/horilla_tabs.html"
     show_filter_tags = False
 
@@ -1666,6 +1672,8 @@ class HorillaTabView(TemplateView):
         request = getattr(_thread_locals, "request", None)
         self.request = request
         self.query_params = {}
+        if not self.view_id:
+            self.view_id = get_short_uuid(3, "htv")
         # update_initial_cache(request, CACHE, HorillaTabView)
 
     def get_context_data(self, **kwargs):
@@ -2130,16 +2138,13 @@ class HorillaFormView(FormView):
                         },
                     )
 
-                    from django.urls import path
-
-                    from horilla.urls import urlpatterns
-
-                    urlpatterns.append(
-                        path(
-                            f"dynamic-path-{field}-{self.request.session.session_key}",
-                            view.as_view(),
-                            name=f"dynamic-path-{field}-{self.request.session.session_key}",
-                        )
+                    dynamic_path_route = (
+                        f"dynamic-path-{field}-{self.request.session.session_key}"
+                    )
+                    register_dynamic_url(
+                        dynamic_path_route,
+                        view.as_view(),
+                        name=dynamic_path_route,
                     )
                     queryset = form.fields[field].queryset
                     choices = [(instance.id, instance) for instance in queryset]
@@ -2396,6 +2401,37 @@ class HorillaProfileView(DetailView):
 
     tabs: list = []
 
+    # Shared across all subclasses; keys are "{subclass-name-lower}-{tab title}".
+    # Populated by _register_tabs() (called from __init_subclass__ and add_tab())
+    # and consumed at request time by the single static "hzp-tab/..." route in
+    # horilla_views/urls.py — see dispatch_profile_tab() below for why this
+    # replaced dynamically appending a fresh URL pattern per tab per request.
+    _tab_view_registry: dict = {}
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        cls._register_tabs()
+
+    @classmethod
+    def _register_tabs(cls) -> None:
+        """
+        Register any of this class's tabs that don't have a url yet into the
+        shared dispatch registry, and compute their url string.
+
+        Tabs reach here two ways: already present on the class body when the
+        subclass is defined (via __init_subclass__), or bolted on afterwards
+        by another app's add_tab() call at import time — both happen before
+        Django finishes loading and starts serving requests, so by the time
+        any HTTP request can reach dispatch_profile_tab(), every tab a
+        subclass will ever have is already in the registry.
+        """
+        prefix = cls.__name__.lower()
+        for tab in cls.tabs:
+            if not tab.get("url"):
+                key = f"{prefix}-{tab['title']}"
+                HorillaProfileView._tab_view_registry[key] = tab["view"]
+                tab["url"] = f"/hzp-tab/{key}/" + "{pk}/"
+
     def __init__(self, **kwargs: Any) -> None:
         self.url_prefix = str(self.__class__.__name__.lower())
         if not self.view_id:
@@ -2407,18 +2443,9 @@ class HorillaProfileView(DetailView):
         self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
         # update_initial_cache(request, CACHE, HorillaProfileView)
 
-        from horilla.urls import path, urlpatterns
-
-        for tab in self.tabs:
-            if not tab.get("url"):
-                url = f"{self.url_prefix}-{tab['title']}"
-                urlpatterns.append(
-                    path(
-                        url + "/<int:pk>/",
-                        tab["view"],
-                    )
-                )
-                tab["url"] = "/" + url + "/{pk}/"
+        # Safety net for tabs added after class-definition time in some
+        # unusual way __init_subclass__/add_tab() didn't already cover.
+        self._register_tabs()
 
     @classmethod
     def add_tab(cls, tab: dict = None, index: int = None, tabs: list = None) -> None:
@@ -2440,8 +2467,9 @@ class HorillaProfileView(DetailView):
         if tab:
             if index is None:
                 cls.tabs.append(tab)
-                return
-            cls.tabs.index(index, tab)
+            else:
+                cls.tabs.index(index, tab)
+        cls._register_tabs()
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -2543,3 +2571,28 @@ class HorillaProfileView(DetailView):
         }
         CACHE.set(f"{self.request.session.session_key}search_in_instance_ids", cache)
         return context
+
+
+def dispatch_profile_tab(request, tab_key: str, pk: int, *args, **kwargs):
+    """
+    Single, statically-registered route (see "hzp-tab/..." in
+    horilla_views/urls.py) that every HorillaProfileView tab (candidate
+    profile, employee profile, etc.) resolves through.
+
+    HorillaProfileView used to append a brand new URL pattern to the live
+    urlpatterns list from inside __init__, once per tab, the first time each
+    was ever requested. That was racey — a tab's own AJAX fetch could reach
+    the resolver before its registration did, 404ing and leaving the tab
+    stuck on its loading placeholder — and would not reliably work at all
+    across multiple worker *processes* in production, since each process
+    holds its own separate urlpatterns list in memory. Routing every tab
+    through one real, normally-registered URL and looking the target view up
+    in HorillaProfileView._tab_view_registry at request time removes both
+    problems: the registry is fully populated before Django serves its first
+    request (see HorillaProfileView._register_tabs), the same as it would be
+    in every worker process.
+    """
+    view_func = HorillaProfileView._tab_view_registry.get(tab_key)
+    if view_func is None:
+        raise Http404(f"No profile tab registered for '{tab_key}'")
+    return view_func(request, pk=pk, *args, **kwargs)

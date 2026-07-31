@@ -6,7 +6,11 @@ from django.urls import path
 
 from horilla_views import views
 from horilla_views.generic.cbv import history
-from horilla_views.generic.cbv.views import HorillaListView, ReloadMessages
+from horilla_views.generic.cbv.views import (
+    HorillaListView,
+    ReloadMessages,
+    dispatch_profile_tab,
+)
 
 urlpatterns = [
     path("toggle-columns/", views.ToggleColumn.as_view(), name="toggle-columns"),
@@ -81,4 +85,9 @@ urlpatterns = [
         name="dynamic-path",
     ),
     path("export-list-view/<slug:short_id>/", views.export_data, name="export-list"),
+    path(
+        "hzp-tab/<str:tab_key>/<int:pk>/",
+        dispatch_profile_tab,
+        name="hzp-profile-tab",
+    ),
 ]

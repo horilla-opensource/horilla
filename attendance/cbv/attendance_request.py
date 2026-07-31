@@ -272,7 +272,9 @@ class AttendanceListTab(AttendancesRequestListView):
     ]
 
     header_attrs = {
-        "action": """ style="width:70px !important" """,
+        # Wide enough for the "Actions" label plus the column-toggle dropdown
+        # button that now renders inside this header cell.
+        "action": """ style="width:120px !important" """,
     }
 
     row_attrs = """

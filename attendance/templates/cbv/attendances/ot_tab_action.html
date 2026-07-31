@@ -4,7 +4,7 @@
 {% is_manager_of request.user instance as can_manage %}
 {% if perms.attendance.change_attendance or can_manage %}
     <a
-        class="oh-btn oh-btn-group oh-btn--info"
+        class="oh-btn oh-btn-group oh-btn--light-bkg oh-btn--secondary"
         hx-get="{% url 'attendance-update' instance.id %}"
         hx-target="#genericModalBody"
         hx-swap="innerHTML"

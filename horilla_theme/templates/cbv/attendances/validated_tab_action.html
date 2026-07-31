@@ -3,19 +3,14 @@
 <div class="oh-btn-group">
     {% if perms.instance.change_attendance or perms.instance.delete_attendance or request.user|is_reportingmanager %}
         <a
-            class="w-24 px-4 py-2 bg-info-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-info-800 transition duration-300"
+            class="oh-btn oh-btn--light-bkg oh-btn--secondary w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
             hx-get="{% url 'attendance-update' instance.id %}?dashboard={{dashboard}}"
             hx-target="#genericModalBody"
             hx-swap="innerHTML"
             data-toggle="oh-modal-toggle"
             data-target="#genericModal"
         >
-            <img
-                src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}"
-                alt="{% trans 'Edit' %}"
-                width="13"
-                class="filter brightness-0 invert"
-            >
+            <ion-icon name="create-outline"></ion-icon>
             {% trans "Edit" %}
         </a>
 

@@ -17,7 +17,7 @@
                         type="button"
                         title="{% trans 'Approve' %}"
                         onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ instance.id }}',true);$('#requestCard{{ instance.id }} [name=status]').val('approved')"
-                        class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300"
+                        class="h-7 w-7 flex items-center justify-center bg-success text-white rounded-md hover:bg-success-dark transition duration-300"
                     >
                         <img
                             src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
@@ -30,7 +30,7 @@
                     <button
                         title="{% trans 'Approve' %}"
                         type="button"
-                        class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300 oh-btn--disabled"
+                        class="h-7 w-7 flex items-center justify-center bg-success text-white rounded-md hover:bg-success-dark transition duration-300 oh-btn--disabled"
                     >
                         <img
                             src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
@@ -43,7 +43,7 @@
 
                 {% if instance.status == 'rejected' %}
                     <button
-                        class="h-8 w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
+                        class="h-7 w-7 flex items-center justify-center bg-danger text-white rounded-md hover:bg-danger-dark transition duration-300"
                         disabled
                         onclick="event.preventDefault()"
                     >
@@ -58,7 +58,7 @@
                     <button
                         type="button"
                         onclick="$('#requestCard{{ instance.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ instance.id }}');$('#requestCard{{ instance.id }} [name=status]').val('canceled')"
-                        class="h-8 w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
+                        class="h-7 w-7 flex items-center justify-center bg-danger text-white rounded-md hover:bg-danger-dark transition duration-300"
                     >
                         <img
                             src="{% static 'horilla_theme/assets/img/icons/close-circle-icon-original.svg' %}"

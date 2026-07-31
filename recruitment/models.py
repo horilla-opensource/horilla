@@ -470,6 +470,12 @@ class Stage(HorillaModel):
     )
     sequence = models.IntegerField(null=True, default=0)
     objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
+    history = HorillaAuditLog(
+        related_name="history_set",
+        bases=[
+            HorillaAuditInfo,
+        ],
+    )
 
     class Meta:
         """
@@ -1288,10 +1294,10 @@ class Candidate(HorillaModel):
 
     def rejected_candidate_class(self):
         """
-        Returns the appropriate style and title attributes for rejected candidates.
+        Returns the appropriate title attribute for rejected candidates.
         """
         if self.is_offer_rejected():
-            return f'style="background: #ff4500a3 !important; color: white;" title="{_("Added In Rejected Candidates")}"'
+            return f'title="{_("Added In Rejected Candidates")}"'
         else:
             return f'title="{_("Add To Rejected Candidates")}"'
 

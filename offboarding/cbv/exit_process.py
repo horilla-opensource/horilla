@@ -406,9 +406,17 @@ class PipeLineTabView(HorillaTabView):
                     "get-offboarding-stage", kwargs={"offboarding_id": offboarding.pk}
                 )
 
+            extra_params = self.request.GET.copy()
+            extra_params.pop("view", None)
+            if extra_params:
+                url = f"{url}?{extra_params.urlencode()}"
+
             tab["url"] = url
 
             tab["badge_label"] = _("Stages")
+            tab["badge"] = offboarding.offboardingstage_set.filter(
+                is_active=True
+            ).count()
             if self.request.user.has_perm(
                 "offboarding.add_offboardingstage"
             ) or is_offboarding_manager(self.request.user.employee_get):
@@ -730,11 +738,11 @@ class OffboardingEmployeeList(HorillaListView):
 
     model = OffboardingEmployee
     filter_class = PipelineEmployeeFilter
-    search_url = reverse_lazy("get-offboarding-tab")
     filter_keys_to_remove = ["offboarding_stage_id", "offboarding_id"]
     next_prev = False
     quick_export = False
     filter_selected = False
+    records_count_in_tab = False
     custom_empty_template = "cbv/pipeline/empty.html"
     columns = [
         (_("Employee"), "employee_id", "employee_id__get_avatar"),

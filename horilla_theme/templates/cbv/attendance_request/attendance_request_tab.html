@@ -39,37 +39,13 @@
             {% include "generic/quick_actions.html" %}
         {% endif %}
 
-        <div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card relative">
-            {% if show_toggle_form %}
-                <div class="oh-sticky-dropdown--header absolute right-[30px] top-[25px]" style="z-index: 13">
-                    <div class="oh-dropdown" x-data="{ open: false }">
-                        <button class="oh-sticky-dropdown_btn" @click="open = !open">
-                            <ion-icon
-                                name="ellipsis-vertical-sharp"
-                                role="img"
-                                class="md hydrated"
-                                aria-label="{% trans 'ellipsis vertical sharp' %}"
-                            ></ion-icon>
-                        </button>
-                        <div
-                            class="oh-dropdown__menu oh-sticky-table_dropdown"
-                            x-show="open"
-                            @click.outside="
-                            open = false
-                            $($el).closest('#{{ view_id|safe }}').find('.reload-record').click();
-                        "
-                        >
-                            {{ toggle_form.as_list }}
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            <div class="max-h-[calc(100vh_-_300px)] overflow-hidden overflow-y-auto overflow-x-auto">
+        <div class="bg-white p-2 rounded-md shadow-card relative"{% if show_toggle_form %} x-data="{ open: false }"{% endif %}>
+            <div class="attendance-request-scroll max-h-[calc(100vh_-_300px)] overflow-hidden overflow-y-auto overflow-x-auto">
                 <table class="fixed-table w-full" data-bulk-select-option="{{bulk_select_option|yesno:'true,false'}}">
                     <thead class="sticky top-0 bg-[white] z-[1]">
                         <tr class="border-b border-[#ececec]">
                             {% if bulk_select_option %}
-                                <th class="text-sm font-medium text-left p-3 w-30">
+                                <th class="text-sm font-medium text-left px-1.5 py-1.5 w-30">
                                     <input
                                         type="checkbox"
                                         value=""
@@ -87,11 +63,11 @@
                             {% for cell in columns %}
                                 {% with cell_attr=header_attrs|get_item:cell.1 %}
                                     <th
-                                        class="text-sm font-medium text-left p-3"
+                                        class="text-sm font-medium text-left px-1.5 py-1.5"
                                         id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header"
                                     >
                                         <div
-                                            class="flex gap-3 min-w-[150px] {% for sort_map in sortby_mapping %} {% if sort_map.0 == cell.0 %}cursor-pointer {% endif %}{% endfor %}"
+                                            class="flex gap-1.5 min-w-[150px] items-center{% if forloop.last and not options and not option_method and not actions and not action_method %} justify-between{% endif %} {% for sort_map in sortby_mapping %} {% if sort_map.0 == cell.0 %}cursor-pointer {% endif %}{% endfor %}"
                                             {{cell_attr|safe}}
                                             {% for sort_map in sortby_mapping %}
                                                 {% if sort_map.0 == cell.0 %}
@@ -100,33 +76,69 @@
                                                 {% endif %}
                                             {% endfor %}
                                         >
-                                            {% for sort_map in sortby_mapping %}
-                                                {% if sort_map.0 == cell.0 %}
-                                                    <span class="text-xs flex items-center text-primary-600">
-                                                        {% if request.sort_order == "asc" and request.sort_key == sort_map.1 %}
-                                                            <i class="fa-solid fa-arrow-down"></i>
-                                                        {% elif request.sort_order == "desc" and request.sort_key == sort_map.1 %}
-                                                            <i class="fa-solid fa-arrow-up"></i>
-                                                        {% else %}
-                                                            <i class="fa-solid fa-arrow-up"></i>
-                                                            <i class="fa-solid fa-arrow-down"></i>
-                                                        {% endif %}
-                                                    </span>
-                                                {% endif %}
-                                            {% endfor %}
-                                            <span class="flex w-max"> {{ cell.0|safe }} </span>
+                                            <div class="flex gap-1.5 items-center">
+                                                {% for sort_map in sortby_mapping %}
+                                                    {% if sort_map.0 == cell.0 %}
+                                                        <span class="text-xs flex items-center text-primary-600">
+                                                            {% if request.sort_order == "asc" and request.sort_key == sort_map.1 %}
+                                                                <i class="fa-solid fa-arrow-down"></i>
+                                                            {% elif request.sort_order == "desc" and request.sort_key == sort_map.1 %}
+                                                                <i class="fa-solid fa-arrow-up"></i>
+                                                            {% else %}
+                                                                <i class="fa-solid fa-arrow-up"></i>
+                                                                <i class="fa-solid fa-arrow-down"></i>
+                                                            {% endif %}
+                                                        </span>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <span class="flex w-max"> {{ cell.0|safe }} </span>
+                                            </div>
+                                            {% if show_toggle_form and forloop.last and not options and not option_method and not actions and not action_method %}
+                                                <button type="button" class="oh-sticky-dropdown_btn" onclick="event.stopPropagation()" @click="open = !open">
+                                                    <ion-icon
+                                                        name="ellipsis-vertical-sharp"
+                                                        role="img"
+                                                        class="md hydrated"
+                                                        aria-label="{% trans 'ellipsis vertical sharp' %}"
+                                                    ></ion-icon>
+                                                </button>
+                                            {% endif %}
                                         </div>
                                     </th>
                                 {% endwith %}
                             {% endfor %}
                             {% if options or option_method %}
-                                <th class="text-sm font-medium p-3 text-center" {{header_attrs.option|safe}}>
-                                    {% trans "Options" %}
+                                <th class="text-sm font-medium px-1.5 py-1.5 text-center" {{header_attrs.option|safe}}>
+                                    <div class="flex items-center{% if not actions and not action_method %} justify-between{% else %} justify-center{% endif %}">
+                                        <span class="flex-1 text-center">{% trans "Options" %}</span>
+                                        {% if show_toggle_form and not actions and not action_method %}
+                                            <button type="button" class="oh-sticky-dropdown_btn" onclick="event.stopPropagation()" @click="open = !open">
+                                                <ion-icon
+                                                    name="ellipsis-vertical-sharp"
+                                                    role="img"
+                                                    class="md hydrated"
+                                                    aria-label="{% trans 'ellipsis vertical sharp' %}"
+                                                ></ion-icon>
+                                            </button>
+                                        {% endif %}
+                                    </div>
                                 </th>
                             {% endif %}
                             {% if actions or action_method %}
-                                <th class="stickyright text-sm font-medium p-3 text-center" {{header_attrs.action|safe}}>
-                                    {% trans "Actions" %}
+                                <th class="stickyright text-sm font-medium px-1.5 py-1.5 text-center" {{header_attrs.action|safe}}>
+                                    <div class="flex items-center{% if show_toggle_form %} justify-between{% else %} justify-center{% endif %}">
+                                        <span class="flex-1 text-center">{% trans "Actions" %}</span>
+                                        {% if show_toggle_form %}
+                                            <button type="button" class="oh-sticky-dropdown_btn" onclick="event.stopPropagation()" @click="open = !open">
+                                                <ion-icon
+                                                    name="ellipsis-vertical-sharp"
+                                                    role="img"
+                                                    class="md hydrated"
+                                                    aria-label="{% trans 'ellipsis vertical sharp' %}"
+                                                ></ion-icon>
+                                            </button>
+                                        {% endif %}
+                                    </div>
                                 </th>
                             {% endif %}
                         </tr>
@@ -139,7 +151,7 @@
                                 {{row_attrs|format:instance|safe}}
                             >
                                 {% if bulk_select_option %}
-                                    <td class="text-sm text-left p-3 text-[#666]">
+                                    <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px]">
                                         <input
                                             type="checkbox"
                                             class="list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
@@ -163,7 +175,7 @@
                                     {% with attribute=cell.1 index=forloop.counter %}
                                         <td
                                             class="
-                                                text-sm text-left p-3 text-[#666]
+                                                text-sm text-left px-1 py-1 text-[#666] h-[30px] max-w-0
                                                 {% if cell.1 == "attendance_date" %}
                                                 {% if 'attendance_date' in instance.requested_fields or instance.request_type == 'create_request' %}
                                                 diff-cell
@@ -217,18 +229,20 @@
                                             "
                                         >
                                             {% if not cell.2 %}
-                                                {{ instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id|safe }}
+                                                <div class="truncate" title="{{instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id|striptags}}">
+                                                    {{ instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id|safe }}
+                                                </div>
                                             {% else %}
-                                                <div class="oh-profile oh-profile--md">
-                                                    <div class="oh-profile__avatar mr-1">
+                                                <div class="oh-profile oh-profile--md w-full justify-normal">
+                                                    <div class="oh-profile__avatar mr-1" style="width:22px;height:22px;">
                                                         <img
                                                             src="{{instance|getattribute:cell.2}}"
                                                             alt=""
-                                                            class="oh-profile__image oh-table-img"
-                                                            width="30"
+                                                            class="oh-profile__image oh-table-img avatar-thumb"
+                                                            width="22"
                                                         >
                                                     </div>
-                                                    <span>{{ instance|getattribute:attribute|safe }}</span>
+                                                    <span class="truncate flex-1 min-w-0" title="{{instance|getattribute:attribute|striptags}}">{{ instance|getattribute:attribute|safe }}</span>
                                                 </div>
                                             {% endif %}
                                         </td>
@@ -236,7 +250,7 @@
                                 {% endfor %}
 
                                 {% if options or option_method %}
-                                    <td class="text-sm text-center p-3 text-[#666]" onclick="event.stopPropagation()">
+                                    <td class="text-sm text-center px-1 py-1 text-[#666] h-[30px]" onclick="event.stopPropagation()">
                                         {% if not option_method %}
                                             <div class="flex justify-center gap-1">
                                                 {% for option in options %}
@@ -267,7 +281,7 @@
 
                                 {% if actions or action_method %}
                                     <td
-                                        class="stickyright text-sm text-center p-3 text-[#666]"
+                                        class="stickyright text-sm text-center px-1 py-1 text-[#666] h-[30px]"
                                         onclick="event.stopPropagation()"
                                     >
                                         {% if not action_method %}
@@ -301,6 +315,19 @@
                     </tbody>
                 </table>
             </div>
+            {% if show_toggle_form %}
+                <div
+                    class="oh-dropdown__menu oh-sticky-table_dropdown absolute right-[8px] top-[56px] z-20"
+                    x-show="open"
+                    x-cloak
+                    @click.outside="
+                    open = false
+                    $($el).closest('#{{ view_id|safe }}').find('.reload-record').click();
+                "
+                >
+                    {{ toggle_form.as_list }}
+                </div>
+            {% endif %}
             {% if queryset.paginator.count %}
                 <div class="flex justify-between items-center mt-4 w-full inset-0">
                     <p class="text-xs text-[#666]">

@@ -152,13 +152,23 @@
 		$(document).off("click.dropdown");
 		$(".dropdown-toggle").off("click.dropdown");
 
+		// Scoped to `.dropdown-toggle`'s own menus only: other components on
+		// the page (e.g. the pipeline tab bar's "Actions" kebab) use the
+		// same `.dropdown-menu` class name for an unrelated dropdown, and
+		// this handler used to blindly hide every `.dropdown-menu` on the
+		// page — closing those unrelated menus too on any click, anywhere,
+		// including clicks that were opening them in the first place.
+		var kanbanMenus = function () {
+			return $(".dropdown-toggle").next(".dropdown-menu");
+		};
+
 		$(".dropdown-toggle").on("click.dropdown", function (event) {
 			event.stopPropagation();
 
 			const dropdownMenu = $(this).next(".dropdown-menu");
 			const isVisible = !dropdownMenu.hasClass("hidden");
 
-			$(".dropdown-menu").addClass("hidden");
+			kanbanMenus().addClass("hidden");
 
 			if (!isVisible) {
 				dropdownMenu.removeClass("hidden");
@@ -166,7 +176,7 @@
 		});
 
 		$(document).on("click.dropdown", function () {
-			$(".dropdown-menu").addClass("hidden");
+			kanbanMenus().addClass("hidden");
 		});
 	});
 

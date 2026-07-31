@@ -20,7 +20,7 @@
         {% if search_url %}
             <form
                 autocomplete="off"
-                id="filterForm"
+                id="filterForm{{ search_swap_target|cut:'#' }}"
                 onsubmit="event.preventDefault()"
                 hx-get="{{ search_url }}"
                 hx-trigger="load, submit"
@@ -195,32 +195,34 @@
 
 <script>
     $(document).ready(function () {
-        $("#filterForm").on("htmx:configRequest", function (event) {
+        var $inlineNavForm = $("#filterForm{{ search_swap_target|cut:'#' }}");
+
+        $inlineNavForm.on("htmx:configRequest", function (event) {
             if (event.detail.verb == "get" && event.target.tagName == "FORM") {
                 event.detail.path = $(this).attr("hx-get");
             }
         });
 
         setTimeout(() => {
-            $(".oh-view-btn--active").click();
+            $inlineNavForm.find(".oh-view-btn--active").click();
             {% if apply_first_filter %}
-            if (!$(".oh-view-btn--active").length) {
-                $("#applyFilter").click()
+            if (!$inlineNavForm.find(".oh-view-btn--active").length) {
+                $inlineNavForm.find("#applyFilter").click()
             }
             {% endif %}
         }, 100);
 
         let debounceTimer;
-        $('#filterForm input[name="search"]').on('keyup', function () {
+        $inlineNavForm.find('input[name="search"]').on('keyup', function () {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 this.form.requestSubmit();
             }, 500);
         });
 
-        $(".nav-view-btn").click(function (e) {
+        $inlineNavForm.find(".nav-view-btn").click(function (e) {
             e.preventDefault();
-            $(".oh-view-btn--active").removeClass("oh-view-btn--active");
+            $inlineNavForm.find(".oh-view-btn--active").removeClass("oh-view-btn--active");
             $(this).addClass("oh-view-btn--active");
         });
     });

@@ -77,9 +77,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Close dropdowns when clicking outside
+  // Close dropdowns when clicking outside. Scoped to this component's own
+  // ".dropdown-wrapper .dropdown-menu" convention (matching the toggle
+  // logic above) — other components on the page reuse the bare
+  // ".dropdown-menu" class name for their own, unrelated dropdowns (e.g.
+  // the pipeline tab bar's "Actions" kebab uses ".dropdown-wrapper-tab"),
+  // and closing those too on every click anywhere broke them.
   document.addEventListener("click", () => {
-    document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+    document.querySelectorAll(".dropdown-wrapper .dropdown-menu").forEach((menu) => {
       menu.classList.add("hidden");
     });
   });

@@ -109,6 +109,7 @@ class AttendancesListView(HorillaListView):
         (_("Pending Hour"), "hours_pending"),
         (_("Overtime"), "attendance_overtime"),
     ]
+    records_per_page = 20
 
     # def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
     #     """
