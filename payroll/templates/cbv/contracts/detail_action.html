@@ -7,7 +7,8 @@
                             hx-get="{% url 'update-contract' instance.id %}"
                             hx-target="#listContainer"
                             hx-swap="innerHTML"
-                            class="oh-btn-group oh-btn oh-btn--info"
+                            hx-on:click="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
+                            class="oh-btn-group oh-btn oh-btn--light-bkg oh-btn--secondary"
                             style="width: 50%;">
                             <ion-icon
                             name="create-outline"
