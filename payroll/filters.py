@@ -39,14 +39,6 @@ class ContractFilter(HorillaFilterSet):
     """
 
     search = django_filters.CharFilter(method="filter_by_contract")
-    contract_start_date = django_filters.DateFilter(
-        field_name="contract_start_date",
-        widget=forms.DateInput(attrs={"type": "date"}),
-    )
-    contract_end_date = django_filters.DateFilter(
-        field_name="contract_end_date",
-        widget=forms.DateInput(attrs={"type": "date"}),
-    )
     contract_start_date_from = django_filters.DateFilter(
         widget=forms.DateInput(attrs={"type": "date"}),
         field_name="contract_start_date",
@@ -79,8 +71,6 @@ class ContractFilter(HorillaFilterSet):
         fields = [
             "employee_id",
             "contract_name",
-            "contract_start_date",
-            "contract_end_date",
             "wage_type",
             "filing_status",
             "employee_id__employee_work_info__company_id",
@@ -234,12 +224,6 @@ class PayslipFilter(HorillaFilterSet):
         queryset=Employee.objects.all(),
         widget=forms.SelectMultiple(),
     )
-    start_date = django_filters.DateFilter(
-        widget=forms.DateInput(attrs={"type": "date"}),
-    )
-    end_date = django_filters.DateFilter(
-        widget=forms.DateInput(attrs={"type": "date"}),
-    )
     start_date_from = django_filters.DateFilter(
         widget=forms.DateInput(attrs={"type": "date"}),
         field_name="start_date",
@@ -310,8 +294,6 @@ class PayslipFilter(HorillaFilterSet):
         model = Payslip
         fields = [
             "employee_id",
-            "start_date",
-            "end_date",
             "group_name",
             "status",
             "gross_pay__lte",

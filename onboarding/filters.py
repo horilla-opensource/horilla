@@ -50,6 +50,7 @@ class RecruitmentFilter(rec_filter):
 
         model = Recruitment
         fields = "__all__"
+        exclude = ["start_date", "end_date"]
 
     def filter_by_name(self, queryset, _, value):
         """

@@ -108,13 +108,6 @@
                                                         </label>
                                                         {{ feedback_filter_form.colleague_id }}
                                                     </div>
-                                                    <div class="oh-input-group">
-                                                        <label
-                                                            class="oh-label"
-                                                            for="{{feedback_filter_form.start_date.id_for_label}}"
-                                                        >{% trans "Start Date" %}</label>
-                                                        {{ feedback_filter_form.start_date }}
-                                                    </div>
                                                 </div>
                                                 <div class="col-sm-12 col-md-12 col-lg-6">
                                                     <div class="oh-input-group">
@@ -123,13 +116,6 @@
                                                             for="{{feedback_filter_form.subordinate_id.id_for_label}}"
                                                         >{% trans "Subordinate" %}</label>
                                                         {{ feedback_filter_form.subordinate_id }}
-                                                    </div>
-                                                    <div class="oh-input-group">
-                                                        <label
-                                                            class="oh-label"
-                                                            for="{{feedback_filter_form.end_date.id_for_label}}"
-                                                        >{% trans "End Date" %}</label>
-                                                        {{ feedback_filter_form.end_date }}
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-12 col-md-12 col-lg-6">
@@ -147,6 +133,26 @@
                                     <div class="oh-accordion">
                                         <div class="oh-accordion-header">{% trans "Advanced" %}</div>
                                         <div class="oh-accordion-body">
+                                            <div class="row">
+                                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                                    <div class="oh-input-group">
+                                                        <label class="oh-label">{% trans "Start Date Range" %}</label>
+                                                        <div class="d-flex gap-2">
+                                                            {{ feedback_filter_form.start_date_range.0 }}
+                                                            {{ feedback_filter_form.start_date_range.1 }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                                    <div class="oh-input-group">
+                                                        <label class="oh-label">{% trans "End Date Range" %}</label>
+                                                        <div class="d-flex gap-2">
+                                                            {{ feedback_filter_form.end_date_range.0 }}
+                                                            {{ feedback_filter_form.end_date_range.1 }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="row">
                                                 <div class="col-sm-12 col-md-12 col-lg-6">
                                                     <div class="oh-input-group fil">

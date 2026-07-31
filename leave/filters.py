@@ -312,18 +312,6 @@ class UserLeaveRequestFilter(FilterSet):
         widget=forms.DateInput(attrs={"type": "date"}),
     )
 
-    start_date = DateFilter(
-        field_name="start_date",
-        lookup_expr="exact",
-        widget=forms.DateInput(attrs={"type": "date"}),
-    )
-
-    end_date = DateFilter(
-        field_name="end_date",
-        lookup_expr="exact",
-        widget=forms.DateInput(attrs={"type": "date"}),
-    )
-
     class Meta:
         """
         Meta class defines the model and fields to filter

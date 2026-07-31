@@ -256,15 +256,6 @@ class FeedbackFilter(HorillaFilterSet):
             attrs={"type": "date", "class": "oh-input w-100"}
         ),
     )
-    start_date = DateFilter(
-        widget=forms.DateInput(attrs={"type": "date", "class": "oh-input  w-100"}),
-        # add lookup expression here
-    )
-    end_date = DateFilter(
-        widget=forms.DateInput(attrs={"type": "date", "class": "oh-input  w-100"}),
-        # add lookup expression here
-    )
-
     start_date_range = DateFromToRangeFilter(
         field_name="start_date",
         widget=django_filters.widgets.RangeWidget(
@@ -292,8 +283,6 @@ class FeedbackFilter(HorillaFilterSet):
             "question_template_id",
             "status",
             "archive",
-            "start_date",
-            "end_date",
             "employee_key_results_id",
             "cyclic_feedback",
             "cyclic_feedback_days_count",
@@ -629,8 +618,6 @@ class EmployeeObjectiveFilter(HorillaFilterSet):
             "status",
             "archive",
             "key_result_id",
-            "start_date",
-            "end_date",
             "employee_id",
         ]
 

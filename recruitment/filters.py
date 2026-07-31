@@ -361,12 +361,6 @@ class RecruitmentFilter(HorillaFilterSet):
         field_name="title", method="onboarding_search"
     )
     description = django_filters.CharFilter(lookup_expr="icontains")
-    start_date = django_filters.DateFilter(
-        field_name="start_date", widget=forms.DateInput(attrs={"type": "date"})
-    )
-    end_date = django_filters.DateFilter(
-        field_name="end_date", widget=forms.DateInput(attrs={"type": "date"})
-    )
     start_from = django_filters.DateFilter(
         field_name="start_date",
         lookup_expr="gte",
@@ -397,8 +391,6 @@ class RecruitmentFilter(HorillaFilterSet):
             "company_id",
             "title",
             "is_event_based",
-            "start_date",
-            "end_date",
             "closed",
             "is_active",
             "is_published",

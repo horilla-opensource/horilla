@@ -21,8 +21,6 @@ class ProjectFilter(HorillaFilterSet):
             "managers",
             "members",
             "status",
-            "end_date",
-            "start_date",
             "is_active",
         ]
 

@@ -10,10 +10,6 @@
               {{form.recruitment_managers}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Start Date" %}</label>
-            {{form.start_date}}
-          </div>
-          <div class="oh-input-group">
             <label class="oh-label">{% trans "Is Closed" %}</label>
             {% comment %} {{form.closed}} {% endcomment %}
             <select name="closed" id="closed" class="oh-select oh-select-2 w-100">
@@ -27,10 +23,6 @@
           <div class="oh-input-group">
             <label class="oh-label">{% trans "Company" %}</label>
             {{form.company_id}}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans "End Date" %}</label>
-            {{form.end_date}}
           </div>
           <div class="oh-input-group">
             <label class="oh-label">{% trans "Is Published" %}</label>
