@@ -31,7 +31,7 @@
         {% for field, values in filter_dict.items %}
             {% if values and field != "path" %}
                 <span class="oh-titlebar__tag filter-field" data-field="{{ field }}">
-                    {{ field|filter_field }}: &nbsp
+                    {% if field == "field" %}{% trans "Group by" %}{% else %}{{ field|filter_field }}{% endif %}: &nbsp
                     {% for value in values %}
                         <span class="filter-value" data-value="{{value|filter_field}}">
                         {{value|filter_field}}
