@@ -5,7 +5,7 @@
 
     <div class="oh-wrapper mt-3">
         <div class="d-flex mt-3 mb-3" style="justify-content: space-between; align-items: center">
-            <h3 class="text-lg font-semibold">
+            <h3 id="pmsReportHeading" class="text-lg font-semibold">
                 {% trans "Performance Reports" %}
             </h3>
 
@@ -471,6 +471,14 @@
     </style>
 
     <script>
+    // Wrapped in an IIFE: this app navigates between reports via htmx
+    // without a full page reload, so top-level const/let here would
+    // collide ("already declared") with the same names from whichever
+    // report was open before -- and a collision throws before a single
+    // line of this script runs, silently breaking the page. A function
+    // scope per script execution avoids that entirely.
+    (function () {
+
     // ------------------------------------------------------------------
     // Report Templates: save/reload the current field arrangement.
     // This report has multiple sub-types (Objectives/Employee Objective/
@@ -499,6 +507,16 @@
             return ["Employee", "Objective", "Employee Keyresult", "Keyresult Target Value", "Keyresult Current Value"];
         }
         return ["Objective", "Key Results", "Manager", "Assignees"];
+    }
+
+    const reportHeadingByModel = {
+        objective: "{% trans 'Performance Reports' %}",
+        employeeobjective: "{% trans 'Employee Objective Reports' %}",
+        feedback: "{% trans 'Feedback Reports' %}",
+    };
+
+    function updateReportHeading(model) {
+        $("#pmsReportHeading").text(reportHeadingByModel[model] || reportHeadingByModel.objective);
     }
 
     function currentPivotContainerId() {
@@ -560,6 +578,7 @@
     function applyTemplateConfig(config) {
         var model = config.model || $("#model-select").val();
         $("#model-select").val(model);
+        updateReportHeading(model);
         var containerId = pivotContainerIdFor(model);
         var templateFilters = config.filters || [];
 
@@ -862,6 +881,7 @@
                 // Listen to dropdown
                 $("#model-select").on("change", function () {
                     let selectedModel = $(this).val();
+                    updateReportHeading(selectedModel);
                     resetDynamicFilterState();
                     loadPivotData(selectedModel);
                     refreshTemplateList();
@@ -1558,5 +1578,7 @@
         $(document).ready(function () {
             addFilterRow();
         });
-    </script>
+
+    })();
+</script>
 {% endblock content %}

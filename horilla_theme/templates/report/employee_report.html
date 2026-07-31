@@ -450,6 +450,14 @@
     </style>
 
     <script>
+    // Wrapped in an IIFE: this app navigates between reports via htmx
+    // without a full page reload, so top-level const/let here would
+    // collide ("already declared") with the same names from whichever
+    // report was open before -- and a collision throws before a single
+    // line of this script runs, silently breaking the page. A function
+    // scope per script execution avoids that entirely.
+    (function () {
+
     // ------------------------------------------------------------------
     // Report Templates: save/reload the current field arrangement
     // ------------------------------------------------------------------
@@ -1411,5 +1419,7 @@
         $(document).ready(function () {
             addFilterRow();
         });
-    </script>
+
+    })();
+</script>
 {% endblock content %}

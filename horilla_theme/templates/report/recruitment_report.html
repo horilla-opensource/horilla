@@ -5,7 +5,7 @@
 
     <div class="oh-wrapper mt-3">
         <div class="d-flex mt-3 mb-3" style="justify-content: space-between; align-items: center">
-            <h3 class="text-lg font-semibold">
+            <h3 id="recruitmentReportHeading" class="text-lg font-semibold">
                 {% trans "Candidate Reports" %}
             </h3>
             <div style="display: inline-flex">
@@ -466,6 +466,14 @@
     </style>
 
     <script>
+    // Wrapped in an IIFE: this app navigates between reports via htmx
+    // without a full page reload, so top-level const/let here would
+    // collide ("already declared") with the same names from whichever
+    // report was open before -- and a collision throws before a single
+    // line of this script runs, silently breaking the page. A function
+    // scope per script execution avoids that entirely.
+    (function () {
+
     // ------------------------------------------------------------------
     // Report Templates: save/reload the current field arrangement.
     //
@@ -505,6 +513,16 @@
         if (model === "recruitment") return "pivot-recruitment";
         if (model === "onboarding") return "pivot-onboarding";
         return "pivot-candidate";
+    }
+
+    const reportHeadingByModel = {
+        candidate: "{% trans 'Candidate Reports' %}",
+        recruitment: "{% trans 'Recruitment Reports' %}",
+        onboarding: "{% trans 'Onboarding Reports' %}",
+    };
+
+    function updateReportHeading(model) {
+        $("#recruitmentReportHeading").text(reportHeadingByModel[model] || reportHeadingByModel.candidate);
     }
 
     function refreshTemplateList() {
@@ -566,6 +584,7 @@
         // happens to be selected right now.
         var model = config.model || $("#model-select").val();
         $("#model-select").val(model);
+        updateReportHeading(model);
 
         $(".pivot-wrapper").hide();
         var containerId = containerIdForModel(model);
@@ -875,6 +894,7 @@
             // carried over, and are reset to a single blank row instead.
             $("#model-select").on("change", function () {
                 let selectedModel = $(this).val();
+                updateReportHeading(selectedModel);
                 appliedFilters = [];
                 renderAppliedFilterChips();
                 $("#filterCount").text("");
@@ -1622,5 +1642,7 @@
         $(document).ready(function () {
             addFilterRow();
         });
-    </script>
+
+    })();
+</script>
 {% endblock content %}

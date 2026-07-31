@@ -6,7 +6,7 @@
 
     <div class="oh-wrapper mt-3">
         <div class="d-flex mt-3 mb-3" style="justify-content: space-between; align-items: center">
-            <h3 class="text-lg font-semibold">
+            <h3 id="leaveReportHeading" class="text-lg font-semibold">
                 {% trans "Leave Reports" %}
             </h3>
 
@@ -472,6 +472,14 @@
     </style>
 
     <script>
+    // Wrapped in an IIFE: this app navigates between reports via htmx
+    // without a full page reload, so top-level const/let here would
+    // collide ("already declared") with the same names from whichever
+    // report was open before -- and a collision throws before a single
+    // line of this script runs, silently breaking the page. A function
+    // scope per script execution avoids that entirely.
+    (function () {
+
     // ------------------------------------------------------------------
     // Report Templates: save/reload the current field arrangement.
     // This report has multiple sub-types (Leave Request/Available Leave),
@@ -492,6 +500,26 @@
 
     function currentPivotContainerId() {
         return $(".pivot-wrapper:visible").attr("id");
+    }
+
+    function containerFor(model) {
+        return model === "available_leave" ? "pivot-availableleave" : "pivot-leave";
+    }
+
+    function rowsConfigFor(model) {
+        if (model === "available_leave") {
+            return ["Name", "Leave Type", "Available Days", "Carryforward Days", "Total Leave Days"];
+        }
+        return ["Name", "Leave Type", "Start Date", "End Date", "Status"];
+    }
+
+    const reportHeadingByModel = {
+        leave_request: "{% trans 'Leave Reports' %}",
+        available_leave: "{% trans 'Available Leave Reports' %}",
+    };
+
+    function updateReportHeading(model) {
+        $("#leaveReportHeading").text(reportHeadingByModel[model] || reportHeadingByModel.leave_request);
     }
 
     function refreshTemplateList() {
@@ -553,6 +581,7 @@
             $("#model-select").val(config.model);
         }
         var model = $("#model-select").val();
+        updateReportHeading(model);
         var containerId = containerFor(model);
         var templateFilters = config.filters || [];
 
@@ -814,6 +843,7 @@
             // model no longer make sense -- drop them and reload unfiltered.
             $("#model-select").on("change", function () {
                 var selectedModel = $(this).val();
+                updateReportHeading(selectedModel);
                 appliedFilters = [];
                 syncFilterRowsFromApplied();
                 renderAppliedFilterChips();
@@ -1512,5 +1542,7 @@
         $(document).ready(function () {
             addFilterRow();
         });
-    </script>
+
+    })();
+</script>
 {% endblock content %}

@@ -5,7 +5,7 @@
 
     <div class="oh-wrapper mt-3">
         <div class="d-flex mt-3 mb-3" style="justify-content: space-between; align-items: center">
-            <h3 class="text-lg font-semibold">
+            <h3 id="payrollReportHeading" class="text-lg font-semibold">
                 {% trans "Payroll Reports" %}
             </h3>
             <div style="display: inline-flex">
@@ -464,6 +464,14 @@
     </style>
 
     <script>
+    // Wrapped in an IIFE: this app navigates between reports via htmx
+    // without a full page reload, so top-level const/let here would
+    // collide ("already declared") with the same names from whichever
+    // report was open before -- and a collision throws before a single
+    // line of this script runs, silently breaking the page. A function
+    // scope per script execution avoids that entirely.
+    (function () {
+
     // ------------------------------------------------------------------
     // Report Templates: save/reload the current field arrangement.
     // This report has multiple sub-types (Payslip/Allowance & Deduction),
@@ -492,6 +500,15 @@
             return ["Employee", "Allowance & Deduction", "Allowance & Deduction Title", "Allowance & Deduction Amount"];
         }
         return ["Employee", "Basic Salary", "Gross Pay", "Net Pay", "Status"];
+    }
+
+    const reportHeadingByModel = {
+        payslip: "{% trans 'Payroll Reports' %}",
+        allowance: "{% trans 'Allowance & Deduction Reports' %}",
+    };
+
+    function updateReportHeading(model) {
+        $("#payrollReportHeading").text(reportHeadingByModel[model] || reportHeadingByModel.payslip);
     }
 
     function refreshTemplateList() {
@@ -559,6 +576,7 @@
         // doesn't carry a `model` (e.g. a template saved before this field
         // existed).
         var model = config.model || $("#model-select").val();
+        updateReportHeading(model);
         isApplyingTemplate = true;
         $("#model-select").val(model).trigger("change");
         isApplyingTemplate = false;
@@ -1520,6 +1538,7 @@
                 return;
             }
             var selectedModel = $(this).val();
+            updateReportHeading(selectedModel);
 
             appliedFilters = [];
             renderAppliedFilterChips();
@@ -1535,5 +1554,7 @@
     $(document).ready(function () {
         addFilterRow();
     });
-    </script>
+
+    })();
+</script>
 {% endblock content %}
