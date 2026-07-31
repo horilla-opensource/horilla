@@ -126,6 +126,8 @@ def update_selected_company(request):
     )
 
     company_id = request.GET.get("company_id")
+    next_url = request.META.get("HTTP_REFERER") or "/"
+
     if company_scoped_active() and not request.user.is_superuser:
         allowed = get_allowed_company_ids(request.user)
         assigned = get_assigned_company_ids(request.user)
@@ -139,10 +141,10 @@ def update_selected_company(request):
                 target_allowed = False
         if not target_allowed:
             messages.error(request, _("You do not have access to that company."))
-            return HorillaRedirect(request, redirect_to="/")
+            return HorillaRedirect(request, redirect_to=next_url)
     elif not request.user.has_perm("base.change_company"):
         messages.error(request, _("You do not have permission to switch the company."))
-        return HorillaRedirect(request, redirect_to="/")
+        return HorillaRedirect(request, redirect_to=next_url)
     user = request.user.employee_get
     user_company = getattr(
         getattr(user, "employee_work_info", None), "company_id", None
@@ -181,8 +183,7 @@ def update_selected_company(request):
         "id": company.id,
     }
     request.session["selected_company_instance"] = company
-    # Always land on home so company-scoped menus/data reload cleanly
-    return HorillaRedirect(request, redirect_to="/")
+    return HorillaRedirect(request, redirect_to=next_url)
 
 
 urlpatterns.append(
