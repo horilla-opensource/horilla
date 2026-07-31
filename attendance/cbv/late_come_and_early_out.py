@@ -65,7 +65,7 @@ class LateComeAndEarlyOutList(HorillaListView):
             self.action_method = "actions_column"
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().filter(attendance_id__shift_id__isnull=False)
         reports = queryset
         self_reports = queryset.filter(employee_id__employee_user_id=self.request.user)
         reports = filtersubordinates(

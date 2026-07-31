@@ -77,6 +77,8 @@ def late_come(attendance, start_time, end_time, shift):
         end_time : attendance day shift end time
 
     """
+    if not shift:
+        return
     if not enable_late_come_early_out_tracking(None).get("tracking"):
         return
     request = getattr(_thread_locals, "request", None)
@@ -413,6 +415,8 @@ def early_out(attendance, start_time, end_time, shift):
         start_time : attendance day shift start time
         start_end : attendance day shift end time
     """
+    if not shift:
+        return
     if not enable_late_come_early_out_tracking(None).get("tracking"):
         return
 

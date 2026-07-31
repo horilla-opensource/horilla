@@ -844,8 +844,8 @@ class Attendance(HorillaModel):
                 month=self.attendance_date.strftime("%B").lower(),
                 year=self.attendance_date.strftime("%Y"),
             )
-        if employee_ot.exists():
-            self.update_ot(employee_ot.first())
+            if employee_ot.exists():
+                self.update_ot(employee_ot.first())
         # Call the superclass delete() method to delete the object
         super().delete(*args, **kwargs)
 
