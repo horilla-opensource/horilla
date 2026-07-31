@@ -14,7 +14,7 @@ services:
       - .:/app
       - staticfiles:/app/staticfiles
       - media:/app/media
-     environment:
+    environment:
       - DEBUG=1
       - DB_HOST=db
       - SECRET_KEY=dev-secret-key-change-in-production
