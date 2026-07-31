@@ -2128,7 +2128,9 @@
       "allowed_clock_in": true,
       "allowed_clock_out": false,
       "is_default": false,
-      "company_id": []
+      "company_id": [
+        1
+      ]
     }
   },
   {
@@ -2144,7 +2146,9 @@
       "allowed_clock_in": true,
       "allowed_clock_out": false,
       "is_default": false,
-      "company_id": []
+      "company_id": [
+        1
+      ]
     }
   },
   {
@@ -2160,7 +2164,9 @@
       "allowed_clock_in": true,
       "allowed_clock_out": false,
       "is_default": false,
-      "company_id": []
+      "company_id": [
+        2
+      ]
     }
   },
   {
@@ -4376,54 +4382,6 @@
       "validation_at_work": "12:00",
       "minimum_overtime_to_approve": "00:30",
       "overtime_cutoff": "04:00",
-      "company_id": []
-    }
-  },
-  {
-    "model": "attendance.gracetime",
-    "pk": 1,
-    "fields": {
-      "created_at": "2025-07-22T08:34:40.921Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "allowed_time": "00:05:00",
-      "allowed_time_in_secs": 300,
-      "allowed_clock_in": true,
-      "allowed_clock_out": false,
-      "is_default": false,
-      "company_id": []
-    }
-  },
-  {
-    "model": "attendance.gracetime",
-    "pk": 2,
-    "fields": {
-      "created_at": "2025-07-22T08:34:47.746Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "allowed_time": "00:10:00",
-      "allowed_time_in_secs": 600,
-      "allowed_clock_in": true,
-      "allowed_clock_out": false,
-      "is_default": false,
-      "company_id": []
-    }
-  },
-  {
-    "model": "attendance.gracetime",
-    "pk": 3,
-    "fields": {
-      "created_at": "2025-07-22T08:34:56.149Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "allowed_time": "00:15:00",
-      "allowed_time_in_secs": 900,
-      "allowed_clock_in": true,
-      "allowed_clock_out": false,
-      "is_default": false,
       "company_id": []
     }
   },
