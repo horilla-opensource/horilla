@@ -7,6 +7,7 @@
         hx-target="#listContainer"
         hx-swap="innerHTML"
         onclick="event.stopPropagation()"
+        hx-on:click="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
         class="oh-btn oh-btn--light-bkg oh-btn--secondary w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
     >
         <ion-icon name="create-outline"></ion-icon>
