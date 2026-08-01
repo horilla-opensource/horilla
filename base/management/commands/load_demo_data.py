@@ -108,6 +108,19 @@ class Command(BaseCommand):
                 self.style.SUCCESS(f"  Re-anchored {normalized} demo payslip(s).")
             )
 
+        try:
+            from base.demo_roles import assign_demo_user_groups
+
+            assigned = assign_demo_user_groups()
+            if assigned:
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        f"  Assigned demo roles to {assigned} employee membership(s)."
+                    )
+                )
+        except Exception as e:
+            self.stderr.write(self.style.ERROR(f"  Demo roles could not be assigned: {e}"))
+
         self.stdout.write(
             self.style.SUCCESS(
                 f"\nDone. {loaded} fixture(s) loaded, {errors} error(s)."
