@@ -153,7 +153,6 @@ class HolidayDetailView(HorillaDetailedView):
         (_("End Date"), "end_date"),
         (_("Recurring"), "get_recurring_status"),
         (_("Company"), "company_id"),
-        (_("Employee Specific"), "get_is_specific_status"),
     ]
 
     action_method = "detail_view_actions"

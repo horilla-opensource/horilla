@@ -62,41 +62,32 @@
                 </div>
             {% endfor %}
 
-            {# ---- Conditional specific-holiday section ---- #}
-            {% if instance.is_specific %}
-
+            {# ---- Restriction fields: shown whenever set, independently of each other (OR condition) ---- #}
+            {% if instance.department.exists %}
                 <div class="col-span-1 md:col-span-6 mb-2 flex gap-5">
-                    <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Assigning Type" %}</span>
+                    <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Departments" %}</span>
                     <div class="text-xs font-semibold flex gap-5">
-                        : <span>{{ instance.get_assigning_type_label }}</span>
+                        : <span>{{ instance.get_department_names }}</span>
                     </div>
                 </div>
+            {% endif %}
 
-                {% if instance.assigning_type == "department" %}
-                    <div class="col-span-1 md:col-span-6 mb-2 flex gap-5">
-                        <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Departments" %}</span>
-                        <div class="text-xs font-semibold flex gap-5">
-                            : <span>{{ instance.get_department_names }}</span>
-                        </div>
+            {% if instance.job_position.exists %}
+                <div class="col-span-1 md:col-span-6 mb-2 flex gap-5">
+                    <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Job Positions" %}</span>
+                    <div class="text-xs font-semibold flex gap-5">
+                        : <span>{{ instance.get_job_position_names }}</span>
                     </div>
+                </div>
+            {% endif %}
 
-                {% elif instance.assigning_type == "job_position" %}
-                    <div class="col-span-1 md:col-span-6 mb-2 flex gap-5">
-                        <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Job Positions" %}</span>
-                        <div class="text-xs font-semibold flex gap-5">
-                            : <span>{{ instance.get_job_position_names }}</span>
-                        </div>
-                    </div>
-                {% endif %}
-
-                {# Always list the resolved employees when the holiday is specific #}
+            {% if instance.employees.exists %}
                 <div class="col-span-1 md:col-span-12 mb-2 flex gap-5">
-                    <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Applicable Employees" %}</span>
+                    <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Employees" %}</span>
                     <div class="text-xs font-semibold flex gap-5">
                         : <span style="word-break: break-word;">{{ instance.get_employee_names }}</span>
                     </div>
                 </div>
-
             {% endif %}
         </div>
 

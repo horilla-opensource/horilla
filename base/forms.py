@@ -23,6 +23,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.core.validators import validate_ipv46_address
+from django.db.models import Q
 from django.forms import DateInput, HiddenInput, TextInput
 from django.template import loader
 from django.template.loader import render_to_string
@@ -3276,66 +3277,31 @@ class HolidayForm(ModelForm):
             )
         return end_date
 
-    def clean(self):
-        cleaned_data = super().clean()
-        is_specific = cleaned_data.get("is_specific")
-        if is_specific:
-            assigning_type = cleaned_data.get("assigning_type")
-            if not assigning_type:
-                raise ValidationError(
-                    {
-                        "assigning_type": _(
-                            "Select an assigning type for this specific holiday."
-                        )
-                    }
-                )
-            if assigning_type == "department" and not cleaned_data.get("department"):
-                raise ValidationError(
-                    {"department": _("Select at least one department.")}
-                )
-            if assigning_type == "job_position" and not cleaned_data.get(
-                "job_position"
-            ):
-                raise ValidationError(
-                    {"job_position": _("Select at least one job position.")}
-                )
-            if assigning_type == "employee" and not cleaned_data.get("employees"):
-                raise ValidationError({"employees": _("Select at least one employee.")})
-        return cleaned_data
-
     def save(self, commit=True):
         instance = super().save(commit=False)
-        if not instance.is_specific:
-            instance.assigning_type = None
+        departments = self.cleaned_data.get("department")
+        job_positions = self.cleaned_data.get("job_position")
+        direct_employees = self.cleaned_data.get("employees")
+        instance.is_specific = bool(departments or job_positions or direct_employees)
+        instance.assigning_type = None
         if commit:
             instance.save()
+            instance.department.set(departments or [])
+            instance.job_position.set(job_positions or [])
             if instance.is_specific:
-                if instance.assigning_type == "department":
-                    departments = self.cleaned_data.get("department")
-                    instance.department.set(departments)
-                    expanded = Employee.objects.filter(
-                        employee_work_info__department_id__in=departments,
-                        is_active=True,
+                condition = Q(pk__in=[])
+                if direct_employees:
+                    condition |= Q(pk__in=direct_employees.values_list("pk", flat=True))
+                if departments:
+                    condition |= Q(employee_work_info__department_id__in=departments)
+                if job_positions:
+                    condition |= Q(
+                        employee_work_info__job_position_id__in=job_positions
                     )
-                    instance.employees.set(expanded)
-                    instance.job_position.clear()
-                elif instance.assigning_type == "job_position":
-                    job_positions = self.cleaned_data.get("job_position")
-                    instance.job_position.set(job_positions)
-                    expanded = Employee.objects.filter(
-                        employee_work_info__job_position_id__in=job_positions,
-                        is_active=True,
-                    )
-                    instance.employees.set(expanded)
-                    instance.department.clear()
-                elif instance.assigning_type == "employee":
-                    self.save_m2m()
-                    instance.department.clear()
-                    instance.job_position.clear()
+                expanded = Employee.objects.filter(condition, is_active=True).distinct()
+                instance.employees.set(expanded)
             else:
                 instance.employees.clear()
-                instance.department.clear()
-                instance.job_position.clear()
         return instance
 
     class Meta:
@@ -3355,6 +3321,8 @@ class HolidayForm(ModelForm):
         self.fields["end_date"].label = (
             f"{self.Meta.model()._meta.get_field('end_date').verbose_name}"
         )
+        self.fields["is_specific"].widget = forms.HiddenInput()
+        self.fields["assigning_type"].widget = forms.HiddenInput()
         self.fields["assigning_type"].required = False
         self.fields["department"].required = False
         self.fields["job_position"].required = False
