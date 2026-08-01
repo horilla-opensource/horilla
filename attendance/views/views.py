@@ -45,6 +45,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
+from PIL import Image
 from xlsxwriter.utility import xl_range
 
 from attendance.filters import (
@@ -2634,9 +2635,95 @@ def work_records_change_month(request):
         "pd": previous_data,
         "current_date": date.today(),
         "f": employee_filter_form,
+        "month_str": month_str,
     }
 
     return render(request, "attendance/work_record/work_record_list.html", context)
+
+
+#  Matches the labels employee_filters.html already shows next to each of
+#  these fields, so the "Applied Filters" summary reads the same way the
+#  filter form does instead of a raw, auto-derived field name.
+_FILTER_LABELS = {
+    "employee_first_name": "First Name",
+    "employee_last_name": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "gender": "Gender",
+    "country": "Country",
+    "department": "Department",
+    "employee_work_info__company_id": "Company",
+    "employee_work_info__department_id": "Department",
+    "employee_work_info__shift_id": "Shift",
+    "employee_work_info__tags": "Employee Tag",
+    "employee_work_info__reporting_manager_id": "Reporting Manager",
+    "employee_work_info__job_position_id": "Job Position",
+    "employee_work_info__work_type_id": "Work Type",
+    "working_today": "Currently Working",
+    "employee_user_id__groups": "Groups",
+    "is_active": "Is Active",
+    "employee_user_id__user_permissions": "Permissions",
+}
+
+
+def _build_applied_filters_summary(filterset, request_get):
+    """
+    Build a human readable "Field Equals Value" summary of the filters
+    actually applied in request_get, for display in exported reports.
+    """
+    ignored_keys = {
+        "month",
+        "start_date",
+        "end_date",
+        "csrfmiddlewaretoken",
+        "field",
+        "orderby",
+        "sortby",
+        "page",
+    }
+    parts = []
+    for key, bound_filter in filterset.filters.items():
+        if key in ignored_keys or key not in request_get:
+            continue
+        values = [value for value in request_get.getlist(key) if value]
+        if not values:
+            continue
+        label = _FILTER_LABELS.get(key, key.replace("_", " ").title())
+        queryset = getattr(bound_filter.field, "queryset", None)
+        # NullBooleanField (used for tri-state filters like "Working
+        # Today") keeps its choices on the widget, not the field itself.
+        choices = dict(
+            getattr(bound_filter.field, "choices", None)
+            or getattr(bound_filter.field.widget, "choices", [])
+            or []
+        )
+        display_values = []
+        for value in values:
+            if queryset is not None:
+                # Drop values that don't resolve to a real object (stale or
+                # tampered-with query params) instead of showing a raw,
+                # meaningless id.
+                obj = queryset.filter(pk=value).first()
+                if obj:
+                    display_values.append(str(obj))
+            elif choices:
+                # Same idea for choice fields: skip values outside the
+                # known choice set rather than showing them as-is. Also
+                # skip NullBooleanSelect-style fields' default "Unknown"
+                # option -- <select> elements always submit some value, so
+                # an untouched tri-state filter (e.g. "Working Today")
+                # still shows up in request.GET as its blank/default
+                # choice even though the user never applied it.
+                if value in choices:
+                    display_text = str(choices[value])
+                    if display_text.strip().lower() != "unknown":
+                        display_values.append(display_text)
+            else:
+                display_values.append(value)
+        if not display_values:
+            continue
+        parts.append(f"{label} Equals {', '.join(display_values)}")
+    return "; ".join(parts)
 
 
 @login_required
@@ -2678,13 +2765,17 @@ def work_record_export(request):
         except ValueError:
             end_date = None
 
-    # Default end_date to today if missing or invalid
+    # Default end_date to the last day of the selected month (from the
+    # "month" filter) if missing or invalid, instead of always today's date
+    # -- otherwise the calendar columns would ignore the selected month.
     if not end_date:
-        end_date = date.today()
+        last_day_of_month = calendar.monthrange(year, month)[1]
+        end_date = date(year=year, month=month, day=last_day_of_month)
 
-    # Default start_date to first day of end_date's month if missing or invalid
+    # Default start_date to the first day of the selected month if missing
+    # or invalid.
     if not start_date:
-        start_date = date(year=end_date.year, month=end_date.month, day=1)
+        start_date = date(year=year, month=month, day=1)
 
     # Ensure start_date is not after end_date
     if start_date > end_date:
@@ -2715,9 +2806,13 @@ def work_record_export(request):
 
     record_lookup = defaultdict(lambda: "ABS")
     for record in records:
-        if record.date <= date.today():
-            record_key = (record.employee_id, record.date)
-            record_lookup[record_key] = record.work_record_type
+        # Previously skipped records dated after today, which silently
+        # dropped real, already-known statuses (e.g. an approved future
+        # leave) from the lookup entirely. The day <= date.today() check
+        # below already decides how each day should render; this loop just
+        # needs every record available for it to consult.
+        record_key = (record.employee_id, record.date)
+        record_lookup[record_key] = record.work_record_type
 
     date_format = request.user.employee_get.get_date_format()
     format_string = settings.HORILLA_DATE_FORMATS.get(date_format)
@@ -2729,7 +2824,7 @@ def work_record_export(request):
         emp_specific_holidays = specific_employee_holidays.get(employee.pk, set())
         for day, formatted_day in zip(all_date_objects, formatted_dates):
             is_holiday_day = day in leave_dates or day in emp_specific_holidays
-            if not is_holiday_day and day < date.today():
+            if not is_holiday_day and day <= date.today():
                 row_data[formatted_day] = record_lookup.get((employee, day), "DFT")
             else:
                 data = record_lookup.get((employee, day), "")
@@ -2739,64 +2834,138 @@ def work_record_export(request):
     columns = ["Employee"] + formatted_dates
     df = pd.DataFrame(data_rows, columns=columns)
 
+    export_format = request.GET.get("format", "xlsx")
+    file_name = request.GET.get("file_name") or "Work Record Status"
+
+    if export_format == "csv":
+        csv_output = io.StringIO()
+        df.to_csv(csv_output, index=False)
+        response = HttpResponse(csv_output.getvalue(), content_type="text/csv")
+        response["Content-Disposition"] = f'attachment; filename="{file_name}.csv"'
+        return response
+
     company = getattr(request, "selected_company_instance", None)
     logo_path = getattr(company, "icon", "") if company else ""
     company_title = getattr(company, "company", "") if company else ""
+    company_address = getattr(company, "address", "") if company else ""
+    company_location = (
+        ", ".join(
+            part
+            for part in [
+                getattr(company, "country", ""),
+                getattr(company, "state", ""),
+                getattr(company, "city", ""),
+            ]
+            if part
+        )
+        if company
+        else ""
+    )
+    company_zip = getattr(company, "zip", "") if company else ""
     date_range = f"{start_date} TO {end_date}"
-    report_title = str(_("Work Records Status"))
+    applied_filters = _build_applied_filters_summary(
+        EmployeeFilter(request.GET), request.GET
+    )
+    # now() is UTC-internal (USE_TZ=True); localtime() converts it to the
+    # active/configured TIME_ZONE before formatting, otherwise the
+    # "Generated on" timestamp always shows raw UTC.
+    generated_on = django_timezone.localtime(now()).strftime("%d/%m/%Y %I:%M:%S %p")
+
+    # Row layout (0-indexed): 0-3 company block, 4 blank, 5 applied filters,
+    # 6 blank, 7 generated-on, 8 blank, 9 date range, 10 data header row.
+    DATA_HEADER_ROW = 10
 
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
         df.to_excel(
-            writer, index=False, sheet_name="Sheet1", startrow=6
+            writer, index=False, sheet_name="Sheet1", startrow=DATA_HEADER_ROW
         )  # leave space for header
         workbook = writer.book
         worksheet = writer.sheets["Sheet1"]
 
+        total_columns = len(df.columns)
+
         # --- Header Formats ---
-        company_format = workbook.add_format(
-            {"bold": True, "font_size": 16, "align": "center", "valign": "vcenter"}
-        )
-        title_format = workbook.add_format(
+        company_format = workbook.add_format({"bold": True, "font_size": 14})
+        address_format = workbook.add_format({"font_size": 10})
+        filters_format = workbook.add_format(
             {
                 "bold": True,
-                "font_size": 14,
-                "align": "center",
+                "font_size": 10,
+                "bg_color": "#FFF2CC",
                 "valign": "vcenter",
-                "font_color": "#FF0000",
             }
         )
-        date_format = workbook.add_format(
-            {"italic": True, "font_size": 11, "align": "center", "valign": "vcenter"}
+        generated_format = workbook.add_format({"italic": True, "font_size": 9})
+        date_format = workbook.add_format({"italic": True, "font_size": 11})
+        data_header_format = workbook.add_format(
+            {
+                "bold": True,
+                "font_color": "#ffffff",
+                "bg_color": "#404040",
+                "border": 1,
+                "align": "center",
+                "valign": "vcenter",
+            }
         )
 
-        # --- Calculate header merge range ---
-        total_columns = len(df.columns)
-        merge_range = xl_range(0, 0, 0, total_columns - 1)
-
-        # --- 1️⃣ Company Name ---
-        worksheet.merge_range(merge_range, company_title or "", company_format)
-
-        # --- 2️⃣ Report Title ---
-        worksheet.merge_range(
-            xl_range(1, 0, 2, total_columns - 1), report_title or "", title_format
+        # --- Company block: logo top-left, name/address beside it ---
+        worksheet.write(0, 1, company_title or "", company_format)
+        worksheet.write(1, 1, company_address or "", address_format)
+        worksheet.write(2, 1, company_location or "", address_format)
+        worksheet.write(
+            3, 1, f"ZIP: {company_zip}" if company_zip else "", address_format
         )
 
-        # --- 3️⃣ Date Range ---
-        worksheet.merge_range(
-            xl_range(3, 0, 3, total_columns - 1), date_range or "", date_format
+        # Merge column A across the company block's rows so a taller logo
+        # has enough room to render fully instead of being clipped to a
+        # single row's height.
+        worksheet.merge_range(0, 0, 2, 0, "")
+
+        logo_full_path = (
+            str(os.path.join(settings.MEDIA_ROOT, str(logo_path)))
+            if logo_path
+            else None
         )
 
-        # --- 4️⃣ Company Logo (optional) ---
-        if logo_path:
+        if logo_full_path and os.path.exists(logo_full_path):
             try:
+                # A fixed scale factor sizes the logo relative to its own
+                # source resolution, so it renders at a different size for
+                # every company depending on what they uploaded. Scale
+                # against the actual pixel dimensions instead, so the logo
+                # always comes out at roughly the same size in the sheet.
+                target_size = 60
+                with Image.open(logo_full_path) as img:
+                    width, height = img.size
+                scale = min(target_size / width, target_size / height)
                 worksheet.insert_image(
                     "A1",
-                    str(os.path.join(settings.MEDIA_ROOT, str(logo_path))),
-                    {"x_scale": 0.5, "y_scale": 0.5},
+                    logo_full_path,
+                    {"x_scale": scale, "y_scale": scale},
                 )
             except Exception as e:
                 print(f"Logo insert failed: {e}")
+
+        # --- Applied Filters banner ---
+        if applied_filters:
+            worksheet.merge_range(
+                xl_range(5, 0, 5, total_columns - 1),
+                f"Applied Filters: {applied_filters}",
+                filters_format,
+            )
+
+        # --- Generated on ---
+        worksheet.write(7, 0, f"Generated on: {generated_on}", generated_format)
+
+        # --- Date range ---
+        worksheet.merge_range(
+            xl_range(9, 0, 9, total_columns - 1), date_range or "", date_format
+        )
+
+        # --- Data header row styling ---
+        for col_idx, col in enumerate(df.columns):
+            worksheet.write(DATA_HEADER_ROW, col_idx, col, data_header_format)
 
         # --- Cell formats for codes ---
         formats = {
@@ -2819,15 +2988,21 @@ def work_record_export(request):
 
         # --- Apply cell formats ---
         for row_idx, row in enumerate(
-            df.itertuples(index=False), start=7
-        ):  # data starts from row 7
+            df.itertuples(index=False), start=DATA_HEADER_ROW + 1
+        ):  # data starts right after the data header row
             for col_idx, cell_value in enumerate(row):
                 if cell_value in formats:
                     worksheet.write(row_idx, col_idx, cell_value, formats[cell_value])
 
         # --- Auto column width ---
         for col_idx, col in enumerate(df.columns):
-            max_len = max(df[col].astype(str).map(len).max(), len(col))
+            # .max() on an empty column (no rows, e.g. filters matched no
+            # employees) returns NaN, which later crashes xlsxwriter when
+            # positioning the logo image against that column's width.
+            content_len = df[col].astype(str).map(len).max()
+            if pd.isna(content_len):
+                content_len = 0
+            max_len = max(content_len, len(col))
             worksheet.set_column(col_idx, col_idx, min(max_len + 2, 50))
 
     output.seek(0)
@@ -2836,7 +3011,7 @@ def work_record_export(request):
         output.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
-    response["Content-Disposition"] = f'attachment; filename="Work Record Status.xlsx"'
+    response["Content-Disposition"] = f'attachment; filename="{file_name}.xlsx"'
     return response
 
 

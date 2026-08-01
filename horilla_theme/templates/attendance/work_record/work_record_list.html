@@ -2,11 +2,108 @@
 
 {% include "filter_tags.html" %}
 <button
-    onclick="window.location.href = `{% url 'work-record-export' %}?{{pd}}`"
+    onclick="$('#workRecordExportModal').addClass('oh-modal--show')"
     id="workrecordExport"
     class="hidden"
 >
 </button>
+
+<div
+    class="oh-modal"
+    id="workRecordExportModal"
+    role="dialog"
+    aria-labelledby="workRecordExportModalLabel"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="workRecordExportModalLabel">
+                {% trans "Export Work Records" %}
+            </h2>
+            <button
+                onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+                class="oh-modal__close"
+                aria-label="{% trans 'Close' %}"
+            >
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <form method="get" action="{% url 'work-record-export' %}">
+            <div class="oh-modal__dialog-body">
+                <div class="oh-accordion">
+                    <div class="oh-accordion-header">{% trans "Date Range" %}</div>
+                    <div class="oh-accordion-body">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 col-lg-4">
+                                <div class="oh-input-group">
+                                    <label class="oh-label">{% trans "Month" %}</label>
+                                    <input
+                                        type="month"
+                                        name="month"
+                                        class="oh-input w-100"
+                                        value="{% if not request.GET.start_date and not request.GET.end_date %}{{ month_str }}{% endif %}"
+                                    >
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-12 col-lg-4">
+                                <div class="oh-input-group">
+                                    <label class="oh-label">{% trans "Start Date" %}</label>
+                                    <input
+                                        type="date"
+                                        name="start_date"
+                                        class="oh-input w-100"
+                                        value="{{ request.GET.start_date }}"
+                                    >
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-12 col-lg-4">
+                                <div class="oh-input-group">
+                                    <label class="oh-label">{% trans "End Date" %}</label>
+                                    <input
+                                        type="date"
+                                        name="end_date"
+                                        class="oh-input w-100"
+                                        value="{{ request.GET.end_date }}"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% include 'employee_filters.html' %}
+
+                <div class="row mt-2">
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <label class="oh-label">
+                            {% trans "File name:" %}
+                            <input
+                                type="text"
+                                class="oh-input w-100"
+                                name="file_name"
+                                value="{% trans 'Work Record Status' %}"
+                            >
+                        </label>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <label class="oh-label">
+                            {% trans "Format:" %}
+                            <select class="oh-select oh-select-2 w-100" name="format">
+                                <option value="xlsx">{% trans "Excel (.xlsx)" %}</option>
+                                <option value="csv">{% trans "CSV (.csv)" %}</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <div class="oh-modal__dialog-footer p-0 mt-3">
+                    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                        {% trans "Export" %}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 <ul class="date-list flex justify-end flex-wrap gap-2 md:gap-5 mb-4 mr-3">
     <li>{% trans "Present" %}</li>
