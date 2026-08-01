@@ -34,8 +34,10 @@ from base.methods import (
     eval_validate,
     export_data,
     filtersubordinates,
+    get_date_range,
     get_key_instances,
     get_pagination,
+    is_holiday,
     is_reportingmanager,
     sortby,
 )
@@ -4207,6 +4209,25 @@ def employee_available_leave_count(request):
                 start_date__gte=datetime.today().date(),
             ).count()
 
+    holiday_names = []
+    if (
+        start_date
+        and end_date
+        and start_date_breakdown == "full_day"
+        and end_date_breakdown == "full_day"
+    ):
+        employee_obj = (
+            available_leave.employee_id
+            if available_leave
+            else Employee.objects.filter(id=employee_id).first()
+        )
+        seen = set()
+        for single_date in get_date_range(start_date, end_date):
+            holiday = is_holiday(single_date, employee_obj)
+            if holiday and holiday.name not in seen:
+                seen.add(holiday.name)
+                holiday_names.append(holiday.name)
+
     context = {
         "hx_target": hx_target,
         "leave_type_id": leave_type_id,
@@ -4217,6 +4238,7 @@ def employee_available_leave_count(request):
         "effective_requested_days": effective_requested_days,
         "zero_requested_days": effective_requested_days is not None
         and effective_requested_days <= 0,
+        "holiday_names": holiday_names,
     }
     return render(
         request, "leave/leave_request/employee_available_leave_count.html", context
