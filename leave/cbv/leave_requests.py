@@ -10,7 +10,7 @@ from typing import Any
 from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.urls import resolve, reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -440,12 +440,8 @@ class LeaveRequestFormView(HorillaFormView):
     def form_invalid(self, form: Any) -> HttpResponse:
         if self.form.instance.pk:
             self.form_class.verbose_name = _("Leave Request")
-        if not form.is_valid():
-            errors = form.errors.as_data()
-            return render(
-                self.request, self.template_name, {"form": form, "errors": errors}
-            )
-        return super().form_invalid(form)
+        self.form = form
+        return self.render_to_response(self.get_context_data())
 
     def form_valid(self, form: LeaveRequestCreationForm) -> HttpResponse:
         form = self.form_class(

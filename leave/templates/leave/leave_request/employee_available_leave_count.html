@@ -1,22 +1,37 @@
 {% load i18n %} {% load static %} {% load horillafilters %}
 {% get_company as theme_obj %}
+<style>
+    .leave-count-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+        width: fit-content;
+        max-width: 100%;
+        border-radius: 18px;
+        padding: 6px 12px;
+    }
+    .leave-count-badge img {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+</style>
 <div
     id="{{hx_target}}"
-    class="d-flex available-leave-count"
-    style="{% if not available_leave and not leave_type_id %}height: 1px;display:none;{% else %}height: 40px;{% endif %}"
+    class="d-flex flex-wrap align-items-center gap-2 available-leave-count"
+    style="{% if not available_leave and not leave_type_id %}display:none;{% endif %}"
 >
     {% if not leave_type_id %}
         <div id="messageDiv" style="display: none"></div>
     {% elif not available_leave %}
         <div
             id="messageDiv"
+            class="leave-count-badge text-xs font-bold"
             style="
                 background-color: {{ theme_obj.primary_600|default:'rgba(229, 79, 56, 0.17)' }};
                 border: 2px solid {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }};
-                border-radius: 18px;
-                padding: 10px;
-                font-weight: bold;
-                width: auto;
             "
         >
             {% trans "Leave type is not assigned for the selected employee." %}
@@ -24,13 +39,10 @@
     {% elif total_leave_days == 0.0 %}
         <div
             id="messageDiv"
+            class="leave-count-badge text-xs font-bold"
             style="
                 background-color: {{ theme_obj.primary_600|default:'rgba(229, 79, 56, 0.17)' }};
                 border: 2px solid {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }};
-                border-radius: 18px;
-                padding: 10px;
-                font-weight: bold;
-                width: 35%;
             "
         >
             {% trans "Available Leaves" %} : {{ total_leave_days }}
@@ -38,22 +50,13 @@
     {% else %}
         <div
             id="messageDiv"
-            style="
-                background-color: #dff0d8;
-                border: 2px solid #3c763d;
-                border-radius: 18px;
-                padding: 10px;
-                font-weight: bold;
-                width: 35%;
-                display: flex;
-            "
+            class="leave-count-badge text-xs font-bold"
+            style="background-color: #dff0d8; border: 2px solid #3c763d;"
         >
             {% trans "Available Leaves" %} : {{ total_leave_days }}
             {% if forcasted_days and forcasted_days > 0 %}
                 <img
-                    style="width: 20px; height: 20px; cursor: pointer"
                     src="{% static 'images/ui/info.png' %}"
-                    class="ml-2"
                     title="{% trans 'Forecasted available days added to this Available Days (Carryforward Max. + Forcasted Days)' %}"
                 />
             {% endif %}
@@ -62,15 +65,10 @@
     {% if pending_requests %}
         <div
             id="pendingDiv"
-            class="ms-2"
+            class="leave-count-badge text-xs font-bold"
             style="
                 background-color: {{ theme_obj.primary_600|default:'rgba(229, 79, 56, 0.17)' }};
                 border: 2px solid {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }};
-                border-radius: 18px;
-                padding: 10px;
-                font-weight: bold;
-                width: 40%;
-                display: flex;
             "
         >
             {% trans "Pending Leaves Requests" %} : {{ pending_requests }}

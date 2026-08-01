@@ -7,6 +7,14 @@
         $('.available-leave-count').remove();
     });
 </script>
+<script>
+    $(document).ready(function () {
+        var $leaveType = $("#createTitle").closest("form").find("[name=leave_type_id]");
+        if ($leaveType.length && $leaveType.val()) {
+            $leaveType[0].dispatchEvent(new Event("change"));
+        }
+    });
+</script>
 
 <script>
     var test = $("#createTitle").closest("form")
