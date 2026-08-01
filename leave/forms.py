@@ -333,6 +333,17 @@ class LeaveRequestCreationForm(BaseModelForm):
             }
         )
 
+        for field_name in ["end_date", "start_date_breakdown", "end_date_breakdown"]:
+            self.fields[field_name].widget.attrs.update(
+                {
+                    "hx-include": "#leaverequestForm",
+                    "hx-target": "#createTitle",
+                    "hx-swap": "afterend",
+                    "hx-trigger": "change",
+                    "hx-get": f"/leave/employee-available-leave-count/",
+                }
+            )
+
     def as_p(self, *args, **kwargs):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -406,6 +417,17 @@ class LeaveRequestUpdationForm(BaseModelForm):
                 "hx-get": "/leave/employee-available-leave-count/",
             }
         )
+
+        for field_name in ["end_date", "start_date_breakdown", "end_date_breakdown"]:
+            self.fields[field_name].widget.attrs.update(
+                {
+                    "hx-include": "#leaveRequestUpdateForm",
+                    "hx-target": "#assinedLeaveAvailableCount",
+                    "hx-swap": "outerHTML",
+                    "hx-trigger": "change",
+                    "hx-get": "/leave/employee-available-leave-count/",
+                }
+            )
 
     def as_p(self, *args, **kwargs):
         """
@@ -672,7 +694,7 @@ class RejectForm(forms.Form):
 
 
 class UserLeaveRequestCreationForm(BaseModelForm):
-    cols = {"description": 12}
+    cols = {"description": 12, "leave_type_id": 12}
     start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
 
@@ -695,15 +717,22 @@ class UserLeaveRequestCreationForm(BaseModelForm):
             )
             self.fields["leave_type_id"].queryset = assigned_leave_types
 
-        self.fields["leave_type_id"].widget.attrs.update(
-            {
-                "hx-include": "#myleaverequestForm",
-                "hx-target": "#createTitle",
-                "hx-swap": "afterend",
-                "hx-trigger": "change",
-                "hx-get": f"/leave/employee-available-leave-count/",
-            }
-        )
+        for field_name in [
+            "leave_type_id",
+            "start_date",
+            "end_date",
+            "start_date_breakdown",
+            "end_date_breakdown",
+        ]:
+            self.fields[field_name].widget.attrs.update(
+                {
+                    "hx-include": "#myleaverequestForm",
+                    "hx-target": "#createTitle",
+                    "hx-swap": "afterend",
+                    "hx-trigger": "change",
+                    "hx-get": f"/leave/employee-available-leave-count/",
+                }
+            )
         self.fields["employee_id"].initial = employee
 
     class Meta:

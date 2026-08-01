@@ -387,34 +387,45 @@ class LeaveRequestFormView(HorillaFormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        if self.request:
-            employee = self.request.user.employee_get
-            if employee:
-                available_leaves = employee.available_leave.all()
-                assigned_leave_types = LeaveType.objects.filter(
-                    id__in=available_leaves.values_list("leave_type_id", flat=True)
-                )
-                self.form.fields["leave_type_id"].queryset = assigned_leave_types
+        from employee.models import Employee
 
-        if self.form.instance.pk:
+        # Determine which employee/leave type the "leave_type_id" queryset
+        # should be scoped to, preferring the actually submitted/selected
+        # values so a validation-error re-render doesn't revert to defaults.
+        employee = None
+        leave_type_id = None
+        if self.form.is_bound:
+            submitted_employee_id = self.form.data.get("employee_id")
+            if submitted_employee_id:
+                employee = Employee.objects.filter(id=submitted_employee_id).first()
+            leave_type_id = self.form.data.get("leave_type_id")
+        elif self.form.instance.pk:
             leave_request = LeaveRequest.objects.get(id=self.form.instance.pk)
-            leave_type_id = leave_request.leave_type_id
             employee = leave_request.employee_id
-            self.form_class(instance=leave_request)
-            if employee:
-                available_leaves = employee.available_leave.all()
-                assigned_leave_types = LeaveType.objects.filter(
-                    id__in=available_leaves.values_list("leave_type_id", flat=True)
+            leave_type_id = leave_request.leave_type_id_id
+        else:
+            emp_id = self.kwargs.get("emp_id")
+            if emp_id:
+                employee = Employee.objects.filter(id=emp_id).first()
+            leave_type_id = self.kwargs.get("type_id")
+
+        if not employee:
+            employee = self.request.user.employee_get
+
+        if employee:
+            available_leaves = employee.available_leave.all()
+            assigned_leave_types = LeaveType.objects.filter(
+                id__in=available_leaves.values_list("leave_type_id", flat=True)
+            )
+            if (
+                leave_type_id
+                and not assigned_leave_types.filter(id=leave_type_id).exists()
+            ):
+                assigned_leave_types = assigned_leave_types | LeaveType.objects.filter(
+                    id=leave_type_id
                 )
-                if leave_type_id not in assigned_leave_types.values_list(
-                    "id", flat=True
-                ):
-                    assigned_leave_types = (
-                        assigned_leave_types
-                        | LeaveType.objects.filter(id=leave_type_id.id)
-                    )
-                self.form.fields["leave_type_id"].queryset = assigned_leave_types
-                # form = self.form_class(instance = self.form.instance)
+            self.form.fields["leave_type_id"].queryset = assigned_leave_types
+
         self.form = choosesubordinates(
             self.request, self.form, "leave.add_leaverequest"
         )
@@ -423,8 +434,6 @@ class LeaveRequestFormView(HorillaFormView):
             own_employee
             and own_employee not in self.form.fields["employee_id"].queryset
         ):
-            from employee.models import Employee
-
             self.form.fields["employee_id"].queryset = (
                 self.form.fields["employee_id"].queryset
                 | Employee.objects.filter(id=own_employee.id)
@@ -550,10 +559,6 @@ class LeaveRequestFormView(HorillaFormView):
                             redirect=reverse("request-view")
                             + f"?id={leave_request.id}",
                         )
-
-                leave_requests = LeaveRequest.objects.all()
-                if len(leave_requests) == 1:
-                    return HttpResponse("")
 
             return self.HttpResponse("")
         return super().form_valid(form)

@@ -1577,6 +1577,16 @@ class LeaveRequest(HorillaModel):
             requested_days=requested_days,
             employee=self.employee_id,
         )
+
+        if effective_requested_days <= 0:
+            raise ValidationError(
+                _(
+                    "The requested days for this leave type is zero. Please check the "
+                    "selected dates, breakdown and the leave type's holiday/company "
+                    "leave exclusion settings."
+                )
+            )
+
         leave_dates = leave_requested_dates(self.start_date, self.end_date)
         month_year = [f"{date.year}-{date.strftime('%m')}" for date in leave_dates]
         today = datetime.today()

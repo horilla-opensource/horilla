@@ -4112,6 +4112,9 @@ def employee_available_leave_count(request):
     leave_type_id = request.GET.get("leave_type_id")
     hx_target = request.META.get("HTTP_HX_TARGET")
     start_date_str = request.GET.get("start_date")
+    end_date_str = request.GET.get("end_date")
+    start_date_breakdown = request.GET.get("start_date_breakdown", "full_day")
+    end_date_breakdown = request.GET.get("end_date_breakdown", "full_day")
 
     try:
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
@@ -4137,6 +4140,26 @@ def employee_available_leave_count(request):
     )
     total_leave_days = available_leave.total_leave_days if available_leave else 0
     forcasted_days = 0
+
+    effective_requested_days = None
+    try:
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+    except (TypeError, ValueError):
+        end_date = None
+
+    if leave_type_id and start_date and end_date:
+        leave_type = LeaveType.objects.filter(id=leave_type_id).first()
+        if leave_type:
+            requested_days = calculate_requested_days(
+                start_date, end_date, start_date_breakdown, end_date_breakdown
+            )
+            effective_requested_days = cal_effective_requested_days(
+                start_date=start_date,
+                end_date=end_date,
+                leave_type_id=leave_type,
+                requested_days=requested_days,
+                employee=employee_id,
+            )
 
     if not leave_type_id or not start_date:
         return render(
@@ -4191,6 +4214,9 @@ def employee_available_leave_count(request):
         "total_leave_days": total_leave_days,
         "forcasted_days": forcasted_days,
         "pending_requests": pending_requests_days,
+        "effective_requested_days": effective_requested_days,
+        "zero_requested_days": effective_requested_days is not None
+        and effective_requested_days <= 0,
     }
     return render(
         request, "leave/leave_request/employee_available_leave_count.html", context

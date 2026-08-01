@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load static %}
 <div class="oh-dropdown__filter-body">
-    <div class="oh-accordion">
+    <div class="oh-accordion oh-accordion--show">
         <div class="oh-accordion-header" onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">{% trans "Leave Request" %}</div>
         <div class="oh-accordion-body">
             <div class="row">
@@ -35,8 +35,8 @@
             </div>
         </div>
     </div>
-    <div class="oh-accordion">
-        <div class="oh-accordion-header">{% trans "Work Info" %}</div>
+    <div class="oh-accordion oh-accordion--show">
+        <div class="oh-accordion-header" onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">{% trans "Work Info" %}</div>
         <div class="oh-accordion-body">
           <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-6">

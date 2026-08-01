@@ -26,6 +26,21 @@
     `;
         test.find(".d-flex").after(button);
 
+        $("#buttonID").on("click", function (event) {
+            var zeroDaysFlag = $("#requestedDaysZeroFlag").val();
+            if (zeroDaysFlag === "true") {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                Swal.fire({
+                    title: "{% trans 'Cannot submit leave request' %}",
+                    text: "{% trans 'The selected dates result in 0 leave days for this leave type. Please adjust the dates, breakdown or leave type.' %}",
+                    icon: "warning",
+                    confirmButtonText: "{% trans 'OK' %}",
+                });
+                return false;
+            }
+        });
+
     {% if "recruitment"|app_installed %}
         $(document).ready(function () {
             $("#buttonID").on("click", function () {
