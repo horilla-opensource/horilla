@@ -200,7 +200,6 @@ def leave_type_distribution(request):
             .values(
                 "leave_type_id",
                 "leave_type_id__name",
-                "leave_type_id__color",
                 "leave_type_id__payment",
             )
             .annotate(count=Count("id"), total_days=Sum("requested_days"))
@@ -212,7 +211,6 @@ def leave_type_distribution(request):
                 {
                     "id": item["leave_type_id"],
                     "type": item["leave_type_id__name"] or "Unknown",
-                    "color": item["leave_type_id__color"] or None,
                     "payment": item["leave_type_id__payment"] or "unpaid",
                     "count": item["count"],
                     "days": round(float(item["total_days"] or 0), 1),
@@ -739,7 +737,6 @@ def employee_leave_balance(request):
                 {
                     "type_id": lt.id,
                     "name": lt.name,
-                    "color": lt.color or None,
                     "available_days": round(float(al.available_days or 0), 1),
                     "carryforward_days": round(float(al.carryforward_days or 0), 1),
                     "total_days": round(float(al.total_leave_days or 0), 1),

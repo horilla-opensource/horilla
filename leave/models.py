@@ -236,7 +236,6 @@ class LeaveType(HorillaModel):
         null=True, blank=True, upload_to=upload_path, verbose_name=_("Icon")
     )
     name = models.CharField(max_length=30, null=False, verbose_name=_("Name"))
-    color = models.CharField(null=True, max_length=30, verbose_name=_("Color"))
     payment = models.CharField(
         max_length=30, choices=PAYMENT, default="unpaid", verbose_name=_("Is Paid")
     )

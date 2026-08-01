@@ -36,13 +36,6 @@
                             {{form.icon.errors}}
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6">
-                        <div class="oh-input-group">
-                            <label for="" class="oh-label">{{ form.color.label }}</label>
-                            {{form.color}}
-                            {{form.color.errors}}
-                        </div>
-                    </div>
                     <div class="col-sm-12 col-md-12 col-lg-12">
                         <div class="oh-input-group">
                             <label for="" class="oh-label">{{ form.payment_type.label }}</label>
@@ -191,19 +184,6 @@
                     <div class="col-sm-12 col-md-12  col-lg-6">
                         <div class="oh-input-group oh-label__info justify-content-between">
                             <div class="d-flex align-items-center">
-                                <label for="" class="oh-label ">{{ form.require_approval.label }}</label>
-                                <span class=" oh-info me-3"
-                                    title="{% trans 'Do you need approval for leave from the authority?' %}"></span>
-                            </div>
-                            <div class="oh-switch p-3 ">
-                                <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_approval" checked>
-                                {{form.require_approval.errors}}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-12  col-lg-6">
-                        <div class="oh-input-group oh-label__info justify-content-between">
-                            <div class="d-flex align-items-center">
                                 <label for="" class="oh-label">{{ form.require_attachment.label }}</label>
                                 <span class=" oh-info me-3"
                                     title="{% trans 'Do you need to attach a document for leave?' %}"></span>
@@ -211,6 +191,19 @@
                             <div class="oh-switch p-3 ">
                                 <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_attachment">
                                 {{form.require_attachment.errors}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12  col-lg-6">
+                        <div class="oh-input-group oh-label__info justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <label for="" class="oh-label ">{{ form.require_approval.label }}</label>
+                                <span class=" oh-info me-3"
+                                    title="{% trans 'Do you need approval for leave from the authority?' %}"></span>
+                            </div>
+                            <div class="oh-switch p-3 ">
+                                <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_approval" checked>
+                                {{form.require_approval.errors}}
                             </div>
                         </div>
                     </div>
@@ -253,17 +246,6 @@
                             </div>
                         </div>
                     </div>
-                    {% if perms.leave.add_availableleave %}
-                        <div class="col-sm-12 col-md-12">
-                            <div class="oh-input-group oh-label__info">
-                                <label for="id_employee_id" class="oh-label">{% trans "Assign to Employees" %}</label>
-                                <span class=" oh-info me-3"
-                                    title="{% trans 'Choose employees to assign this leave type' %}"></span>
-                            </div>
-                            {{form.employee_id}}
-                            {{form.employee_id.errors}}
-                        </div>
-                    {% endif %}
                     <div hidden>{{form.require_approval}}</div>
                     <div hidden>{{form.require_attachment}}</div>
                     <div hidden>{{form.exclude_company_leave}}</div>
@@ -544,29 +526,6 @@
     $(".yesOrNo").change(function () {
         checkYesOrNoFields();
     });
-
-    $(document).ready(function () {
-        // Select All Employees Functionality
-        $("#select-all-employees").change(function () {
-            var isChecked = $(this).prop("checked");
-
-            if ($("#id_employee_id").is("select")) {
-                $("#id_employee_id option").prop("selected", isChecked);
-            } else if ($('#id_employee_id input[type="checkbox"]').length > 0) {
-                $('#id_employee_id input[type="checkbox"]').each(function () {
-                    $(this).prop("checked", false);
-
-                    if (isChecked) {
-                        $(this).prop("checked", true);
-                    }
-                });
-            }
-
-            $("#id_employee_id").trigger("change");
-        });
-    });
-
-
 </script>
 
 {% endblock %}

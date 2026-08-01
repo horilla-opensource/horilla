@@ -849,13 +849,7 @@
                     });
                     var labels = data.balances.map(function (b) { return b.name; });
 
-                    // Sanitise colors: treat null, empty, '#000', '#000000' as "use palette"
-                    var BLACK_RE = /^#?0{3,6}$/i;
-                    var colors = data.balances.map(function (b, i) {
-                        var c = b.color;
-                        if (!c || BLACK_RE.test(c.trim())) return COLORS[i % COLORS.length];
-                        return c;
-                    });
+                    var colors = data.balances.map(function (b, i) { return COLORS[i % COLORS.length]; });
 
                     var total = series.reduce(function (a, b) { return a + b; }, 0);
                     if (total === 0) {

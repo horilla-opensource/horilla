@@ -12,7 +12,6 @@ from django import forms
 from django.apps import apps
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.forms.widgets import TextInput
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
@@ -169,18 +168,6 @@ class LeaveTypeAdminForm(forms.ModelForm):
 
 class LeaveTypeForm(ConditionForm):
 
-    employee_id = HorillaMultiSelectField(
-        queryset=Employee.objects.all(),
-        widget=HorillaMultiSelectWidget(
-            filter_route_name="employee-widget-filter",
-            filter_class=EmployeeFilter,
-            filter_instance_context_name="f",
-            filter_template_path="employee_filters.html",
-            required=False,
-        ),
-        label=_("Employee"),
-    )
-
     class Meta:
         model = LeaveType
         fields = "__all__"
@@ -189,7 +176,6 @@ class LeaveTypeForm(ConditionForm):
             "name": _("Name"),
         }
         widgets = {
-            "color": TextInput(attrs={"type": "color", "style": "height:40px;"}),
             "period_in": forms.HiddenInput(),
             "total_days": forms.HiddenInput(),
             "carryforward_expire_date": forms.DateInput(attrs={"type": "date"}),
@@ -197,9 +183,8 @@ class LeaveTypeForm(ConditionForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        for key in ["employee_id", "exceed_days"]:
-            if key in self.errors:
-                del self.errors[key]
+        if "exceed_days" in self.errors:
+            del self.errors["exceed_days"]
         if not cleaned_data.get("limit_leave"):
             cleaned_data["total_days"] = LEAVE_MAX_LIMIT
             cleaned_data["reset"] = True
@@ -225,28 +210,6 @@ class LeaveTypeForm(ConditionForm):
 
         return cleaned_data
 
-    def save(self, *args, **kwargs):
-        from leave.services import evaluate_leave_type_conditions
-
-        leave_type = super().save(*args, **kwargs)
-        if employees := self.data.getlist("employee_id"):
-            for employee_id in employees:
-                try:
-                    employee = Employee.objects.get(id=employee_id)
-                except Employee.DoesNotExist:
-                    continue
-                is_eligible, _ = evaluate_leave_type_conditions(leave_type, employee)
-                if is_eligible:
-                    if not AvailableLeave.objects.filter(
-                        leave_type_id=leave_type, employee_id=employee
-                    ).exists():
-                        AvailableLeave(
-                            leave_type_id=leave_type,
-                            employee_id=employee,
-                            available_days=leave_type.total_days,
-                        ).save()
-        return leave_type
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["payment_percentage"].required = False
@@ -259,7 +222,6 @@ class UpdateLeaveTypeForm(ConditionForm):
         fields = "__all__"
         exclude = ["is_active", "conditions"]
         widgets = {
-            "color": TextInput(attrs={"type": "color", "style": "height:40px;"}),
             "period_in": forms.HiddenInput(),
             "total_days": forms.HiddenInput(),
             "carryforward_expire_date": forms.DateInput(attrs={"type": "date"}),
@@ -270,7 +232,7 @@ class UpdateLeaveTypeForm(ConditionForm):
         self.fields["payment_percentage"].required = False
 
         # Fields that must always be visible regardless of current value
-        js_managed = {"payment_type", "payment_percentage", "icon", "color", "name"}
+        js_managed = {"payment_type", "payment_percentage", "icon", "name"}
 
         for field_name, field in self.fields.items():
             if field_name in js_managed:

@@ -62,52 +62,6 @@
             background: #fbfbfc;
         }
 
-        .sr-only.peer {
-            position: absolute;
-            left: -9999px;
-        }
-
-        .sr-only.peer+div,
-        .sr-only.peer+.relative {
-            position: relative;
-            flex-shrink: 0;
-            width: 36px;
-            height: 20px;
-            border-radius: 999px;
-            background: #aeaeb2;
-            transition: background 0.18s ease;
-        }
-
-        .sr-only.peer+div::after,
-        .sr-only.peer+.relative::after {
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #fff;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-            content: '';
-            transition: transform 0.18s ease;
-        }
-
-        .sr-only.peer:checked+div,
-        .sr-only.peer:checked+.relative {
-            background: {
-                    {
-                    theme_obj.primary_600|default: "#E54F38"
-                }
-            }
-
-            ;
-        }
-
-        .sr-only.peer:checked+div::after,
-        .sr-only.peer:checked+.relative::after {
-            transform: translateX(16px);
-        }
-
         .oh-profile__avatar {
             width: 40px;
             height: 40px;
@@ -214,32 +168,18 @@
                     </div>
 
                     <!-- Limit Leave days Toggle -->
-                    <div class="flex items-center justify-between mb-2">
-                        <div
-                            class="flex items-center gap-1 pb-2 overflow-visible relative form-input-items"
-                            style="display: ruby"
-                        >
+                    <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
+                        <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
                             <label class="text-xs font-medium" for="id_reset">{% trans "Limit Leave Days" %}</label>
                             <span
                                 class="oh-info"
                                 title='{% trans "Do you want to limit leave days for this leave type?" %}'
                             ></span>
                         </div>
-                        <div class="form-input-items">
-                            <label class="inline-flex items-center cursor-pointer gap-3">
-                                {{ form.limit_leave|add_class:"sr-only peer" }}
-                                <div
-                                    class="
-                                        relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600
-                                        after:content-[''] after:absolute after:top-[2px] after:left-[2px]
-                                        after:bg-white after:rounded-full after:h-4 after:w-4
-                                        after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white
-                                    "
-                                >
-                                </div>
-                            </label>
-                            {{ form.limit_leave.errors }}
+                        <div class="oh-switch">
+                            {{ form.limit_leave }}
                         </div>
+                        {{ form.limit_leave.errors }}
                     </div>
                     <div class="form-input-items">
                         <div class="totalDaysContainer" style="display: block">
@@ -259,29 +199,6 @@
                         {{ form.total_days.errors }}
                     </div>
 
-                    <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
-                        <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
-                            <label class="text-xs font-medium" for="">{% trans "Require Approval" %}</label>
-                            <span
-                                class="oh-info"
-                                title='{% trans "Do you need approval for leave from the authority?" %}'
-                            ></span>
-                        </div>
-                        <label class="inline-flex items-center cursor-pointer gap-3">
-                            <input type="checkbox" class="sr-only peer toggle-contro yesOrNol" id="id_approval" checked>
-                            <div
-                                class="
-                                    relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600
-                                    after:content-[''] after:absolute after:top-[2px] after:left-[2px]
-                                    after:bg-white after:rounded-full after:h-4 after:w-4
-                                    after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white
-                                "
-                            >
-                            </div>
-                        </label>
-                        {{ form.reset.errors }}
-                    </div>
-
                     <!-- Reset Leave Toggle -->
                     <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
                         <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
@@ -291,18 +208,9 @@
                                 title='{% trans "Do you need to reset leaves based on conditions?" %}'
                             ></span>
                         </div>
-                        <label class="inline-flex items-center cursor-pointer gap-3">
-                            {{ form.reset|add_class:"sr-only peer" }}
-                            <div
-                                class="
-                                    relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600
-                                    after:content-[''] after:absolute after:top-[2px] after:left-[2px]
-                                    after:bg-white after:rounded-full after:h-4 after:w-4
-                                    after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white
-                                "
-                            >
-                            </div>
-                        </label>
+                        <div class="oh-switch">
+                            {{ form.reset }}
+                        </div>
                         {{ form.reset.errors }}
                     </div>
                     <div class="form-input-items hidden">
@@ -452,86 +360,67 @@
                                 alt="{% trans 'Preview' %}"
                             >
                         </div>
-                        <div class="form-input-items">
-                            <label class="text-xs font-medium">{% trans "Color" %}</label>
-                            {{ form.color }}
-                            {{ form.color.errors }}
+                        <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
+                            <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
+                                <label class="text-xs font-medium" for="id_approval">{% trans "Require Approval" %}</label>
+                                <span
+                                    class="oh-info"
+                                    title='{% trans "Do you need approval for leave from the authority?" %}'
+                                ></span>
+                            </div>
+                            <div class="oh-switch">
+                                <input type="checkbox" class="oh-switch__checkbox toggle-control yesOrNo" id="id_approval" checked>
+                            </div>
+                            {{ form.require_approval.errors }}
                         </div>
 
                         <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
                             <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
-                                <label class="text-xs font-medium" for="">{% trans "Require Attachment" %}</label>
+                                <label class="text-xs font-medium" for="id_attachment">{% trans "Require Attachment" %}</label>
                                 <span
                                     class="oh-info"
                                     title='{% trans "Do you need to attach a document for leave?" %}'
                                 ></span>
                             </div>
-                            <label class="inline-flex items-center cursor-pointer gap-3">
-                                <input type="checkbox" class="sr-only peer toggle-control yesOrNo" id="id_attachment">
-                                <div
-                                    class="
-                                        relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600
-                                        after:content-[''] after:absolute after:top-[2px] after:left-[2px]
-                                        after:bg-white after:rounded-full after:h-4 after:w-4
-                                        after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white
-                                    "
-                                >
-                                </div>
-                            </label>
+                            <div class="oh-switch">
+                                <input type="checkbox" class="oh-switch__checkbox toggle-control yesOrNo" id="id_attachment">
+                            </div>
                             {{ form.require_attachment.errors }}
                         </div>
 
                         <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
                             <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
-                                <label class="text-xs font-medium" for="">{% trans "Exclude Company Holidays" %}</label>
+                                <label class="text-xs font-medium" for="id_exclude_comp_leave">{% trans "Exclude Company Holidays" %}</label>
                                 <span
                                     class="oh-info"
                                     title='{% trans "Do you need to exclude company holidays from the requested leave days?" %}'
                                 ></span>
                             </div>
-                            <label class="inline-flex items-center cursor-pointer gap-3">
+                            <div class="oh-switch">
                                 <input
                                     type="checkbox"
-                                    class="sr-only peer toggle-control yesOrNo"
+                                    class="oh-switch__checkbox toggle-control yesOrNo"
                                     id="id_exclude_comp_leave"
                                 >
-                                <div
-                                    class="
-                                        relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600
-                                        after:content-[''] after:absolute after:top-[2px] after:left-[2px]
-                                        after:bg-white after:rounded-full after:h-4 after:w-4
-                                        after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white
-                                    "
-                                >
-                                </div>
-                            </label>
+                            </div>
                             {{ form.exclude_company_leave.errors }}
                         </div>
 
                         <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
                             <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
-                                <label class="text-xs font-medium" for="">{% trans "Exclude Holidays" %}</label>
+                                <label class="text-xs font-medium" for="id_exclude_public_leave">{% trans "Exclude Holidays" %}</label>
                                 <span
                                     class="oh-info"
                                     title='{% trans "Do you need to exclude public holidays from the requested leave days?" %}'
                                 ></span>
                             </div>
-                            <label class="inline-flex items-center cursor-pointer gap-3">
+                            <div class="oh-switch">
                                 <input
                                     type="checkbox"
-                                    class="sr-only peer toggle-control yesOrNo"
+                                    class="oh-switch__checkbox toggle-control yesOrNo"
                                     id="id_exclude_public_leave"
                                 >
-                                <div
-                                    class="
-                                        relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600
-                                        after:content-[''] after:absolute after:top-[2px] after:left-[2px]
-                                        after:bg-white after:rounded-full after:h-4 after:w-4
-                                        after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white
-                                    "
-                                >
-                                </div>
-                            </label>
+                            </div>
                             {{ form.exclude_holiday.errors }}
                         </div>
 
@@ -543,41 +432,11 @@
                                     title='{% trans "Do you need to encash pending leave days?" %}'
                                 ></span>
                             </div>
-                            <label class="inline-flex items-center cursor-pointer gap-3">
-                                {{ form.is_encashable|add_class:"sr-only peer" }}
-                                <div
-                                    class="
-                                        relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600
-                                        after:content-[''] after:absolute after:top-[2px] after:left-[2px]
-                                        after:bg-white after:rounded-full after:h-4 after:w-4
-                                        after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white
-                                    "
-                                >
-                                </div>
-                            </label>
+                            <div class="oh-switch">
+                                {{ form.is_encashable }}
+                            </div>
                             {{ form.is_encashable.errors }}
                         </div>
-                        {% if not form.instance.id %}
-                            {% if perms.leave.add_availableleave %}
-                                <div class="form-input-items">
-                                    <div
-                                        class="flex items-center gap-1 pb-2 overflow-visible relative"
-                                        style="display: ruby"
-                                        +
-                                    >
-                                        <label for="id_employee_id" class="text-xs font-medium">
-                                            {% trans "Assign to Employees" %}
-                                        </label>
-                                        <span
-                                            class="oh-info me-3"
-                                            title="{% trans 'choose employees to assign this leave type' %}"
-                                        ></span>
-                                    </div>
-                                    {{ form.employee_id|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600" }}
-                                    {{ form.employee_id.errors }}
-                                </div>
-                            {% endif %}
-                        {% endif %}
                     </div>
                 </div>
             </div>

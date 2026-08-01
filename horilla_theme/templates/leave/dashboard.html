@@ -1157,7 +1157,7 @@
                 .then(data => {
                     document.getElementById('lt-month').textContent = data.month;
                     if (!data.types.length) { document.querySelector("#chart-leave-types").innerHTML = emptyHtml('{% trans "No leave data" %}'); return; }
-                    const colors = data.types.map((t, i) => t.color || COLORS[i % COLORS.length]);
+                    const colors = data.types.map((t, i) => COLORS[i % COLORS.length]);
                     new ApexCharts(document.querySelector("#chart-leave-types"), {
                         series: data.types.map(t => t.days),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
