@@ -18,63 +18,63 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 msgid "An unexpected error occurred. Please refresh the page."
-msgstr ""
+msgstr "Ocorreu um erro inesperado. Atualize a página."
 
 msgid "Do you really want to validate all the selected attendances?"
-msgstr ""
+msgstr "Deseja realmente validar todas as presenças selecionadas?"
 
 msgid "No rows are selected from Validate Attendances."
-msgstr ""
+msgstr "Nenhuma linha foi selecionada em Validar presenças."
 
 msgid "Do you really want to approve OT for all the selected attendances?"
-msgstr ""
+msgstr "Deseja realmente aprovar as horas extras de todas as presenças selecionadas?"
 
 msgid "No rows are selected from OT Attendances."
-msgstr ""
+msgstr "Nenhuma linha foi selecionada em Presenças de horas extras."
 
 msgid "Do you really want to reject all the selected attendance requests?"
-msgstr ""
+msgstr "Deseja realmente rejeitar todas as solicitações de presença selecionadas?"
 
 msgid "Pending Attendance Update Request!"
-msgstr ""
+msgstr "Solicitação de atualização de presença pendente!"
 
 msgid ""
 "An attendance request exists for updating this attendance prior to "
 "validation."
-msgstr ""
+msgstr "Existe uma solicitação de presença para atualizar esta presença antes da validação."
 
 msgid "View Request"
-msgstr ""
+msgstr "Ver solicitação"
 
 msgid "Some selected requests have already been approved."
-msgstr ""
+msgstr "Algumas solicitações selecionadas já foram aprovadas."
 
 msgid "Some selected requests have already been rejected."
-msgstr ""
+msgstr "Algumas solicitações selecionadas já foram rejeitadas."
 
 msgid "Do you wish to create a Leave Report?"
-msgstr ""
+msgstr "Deseja criar um relatório de afastamentos?"
 
 msgid "Do you want to reject the selected leave requests?"
-msgstr ""
+msgstr "Deseja rejeitar as solicitações de afastamento selecionadas?"
 
 msgid "Do you want to send the payslip by mail?"
-msgstr ""
+msgstr "Deseja enviar o contracheque por e-mail?"
 
 msgid "Name of Employees"
-msgstr ""
+msgstr "Nomes dos funcionários"
 
 msgid "Amount"
-msgstr ""
+msgstr "Valor"
 
 msgid "Upload Completed!"
-msgstr ""
+msgstr "Envio concluído!"
 
 msgid "Imported Successfully!"
-msgstr ""
+msgstr "Importação realizada com sucesso!"
 
 msgid "Please upload a file with the .xlsx extension only."
-msgstr ""
+msgstr "Envie apenas um arquivo com a extensão .xlsx."
 
 msgid "visible"
 msgstr ""
@@ -161,40 +161,40 @@ msgid "close"
 msgstr ""
 
 msgid "Confirm"
-msgstr ""
+msgstr "Confirmar"
 
 msgid "Close"
-msgstr ""
+msgstr "Fechar"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 msgid "Selected"
-msgstr ""
+msgstr "Selecionado"
 
 msgid "Uploading..."
-msgstr ""
+msgstr "Enviando..."
 
 msgid "No Records found"
-msgstr ""
+msgstr "Nenhum registro encontrado"
 
 msgid "Do you want to download the excel file?"
-msgstr ""
+msgstr "Deseja baixar o arquivo Excel?"
 
 msgid "Do you want to download the template?"
-msgstr ""
+msgstr "Deseja baixar o modelo?"
 
 msgid "No rows are selected from the records."
-msgstr ""
+msgstr "Nenhuma linha foi selecionada entre os registros."
 
 msgid "Do you really want to delete all the selected records?"
-msgstr ""
+msgstr "Deseja realmente excluir todos os registros selecionados?"
 
 msgid "Do you really want to archive all the selected records?"
-msgstr ""
+msgstr "Deseja realmente arquivar todos os registros selecionados?"
 
 msgid "Do you really want to approve all the selected requests?"
-msgstr ""
+msgstr "Deseja realmente aprovar todas as solicitações selecionadas?"
 
 msgid "Do you really want to unarchive all the selected records?"
-msgstr ""
+msgstr "Deseja realmente desarquivar todos os registros selecionados?"

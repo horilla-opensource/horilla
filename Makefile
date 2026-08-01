@@ -1,7 +1,8 @@
-.PHONY: help dev prod build stop logs logs-web shell clean db-shell status restart
+.PHONY: help dev prod build stop logs logs-web shell clean db-shell status restart makemessages compilemessages
 
 COMPOSE ?= docker compose
 COMPOSE_PROD ?= $(COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml
+I18N_EXCLUDES ?= --ignore=static/build/* --ignore=static/images/ionicons/*
 
 help: ## Show help
 	@echo 'Available commands:'
@@ -37,6 +38,12 @@ status: ## Show status of all services
 
 restart: ## Restart all services
 	$(COMPOSE) restart
+
+makemessages: ## Refresh catalogs without extracting vendored JavaScript identifiers
+	python manage.py makemessages -a $(I18N_EXCLUDES)
+
+compilemessages: ## Compile all gettext catalogs
+	python manage.py compilemessages
 
 clean: ## Clean up (removes volumes — data loss!)
 	$(COMPOSE_PROD) down -v

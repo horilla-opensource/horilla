@@ -71,7 +71,7 @@ msgid "Name of Employees"
 msgstr "Name der Mitarbeiter"
 
 msgid "Amount"
-msgstr "Menge"
+msgstr "Betrag"
 
 msgid "Upload Completed!"
 msgstr "Hochladen abgeschlossen!"
@@ -173,7 +173,7 @@ msgid "Close"
 msgstr "Schließen"
 
 msgid "Cancel"
-msgstr "Stornieren"
+msgstr "Abbrechen"
 
 msgid "Selected"
 msgstr "Ausgewählt"

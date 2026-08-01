@@ -19,63 +19,63 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 msgid "An unexpected error occurred. Please refresh the page."
-msgstr ""
+msgstr "發生非預期錯誤。請重新整理頁面。"
 
 msgid "Do you really want to validate all the selected attendances?"
-msgstr ""
+msgstr "確定要驗證所有已選取的出勤紀錄嗎？"
 
 msgid "No rows are selected from Validate Attendances."
-msgstr ""
+msgstr "「驗證出勤」中未選取任何紀錄。"
 
 msgid "Do you really want to approve OT for all the selected attendances?"
-msgstr ""
+msgstr "確定要核准所有已選取出勤紀錄的加班嗎？"
 
 msgid "No rows are selected from OT Attendances."
-msgstr ""
+msgstr "「加班出勤」中未選取任何紀錄。"
 
 msgid "Do you really want to reject all the selected attendance requests?"
-msgstr ""
+msgstr "確定要拒絕所有已選取的出勤申請嗎？"
 
 msgid "Pending Attendance Update Request!"
-msgstr ""
+msgstr "出勤更新申請待處理！"
 
 msgid ""
 "An attendance request exists for updating this attendance prior to "
 "validation."
-msgstr ""
+msgstr "在驗證此出勤紀錄前，已有用於更新該紀錄的出勤申請。"
 
 msgid "View Request"
-msgstr ""
+msgstr "檢視申請"
 
 msgid "Some selected requests have already been approved."
-msgstr ""
+msgstr "部分已選取的申請已獲核准。"
 
 msgid "Some selected requests have already been rejected."
-msgstr ""
+msgstr "部分已選取的申請已被拒絕。"
 
 msgid "Do you wish to create a Leave Report?"
-msgstr ""
+msgstr "要建立請假報表嗎？"
 
 msgid "Do you want to reject the selected leave requests?"
-msgstr ""
+msgstr "要拒絕已選取的請假申請嗎？"
 
 msgid "Do you want to send the payslip by mail?"
-msgstr ""
+msgstr "要透過電子郵件傳送薪資單嗎？"
 
 msgid "Name of Employees"
-msgstr ""
+msgstr "員工姓名"
 
 msgid "Amount"
-msgstr ""
+msgstr "金額"
 
 msgid "Upload Completed!"
-msgstr ""
+msgstr "上傳完成！"
 
 msgid "Imported Successfully!"
-msgstr ""
+msgstr "匯入成功！"
 
 msgid "Please upload a file with the .xlsx extension only."
-msgstr ""
+msgstr "請僅上傳副檔名為 .xlsx 的檔案。"
 
 msgid "visible"
 msgstr ""
@@ -162,40 +162,40 @@ msgid "close"
 msgstr ""
 
 msgid "Confirm"
-msgstr ""
+msgstr "確認"
 
 msgid "Close"
-msgstr ""
+msgstr "關閉"
 
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 msgid "Selected"
-msgstr ""
+msgstr "已選取"
 
 msgid "Uploading..."
-msgstr ""
+msgstr "正在上傳..."
 
 msgid "No Records found"
-msgstr ""
+msgstr "找不到紀錄"
 
 msgid "Do you want to download the excel file?"
-msgstr ""
+msgstr "要下載 Excel 檔案嗎？"
 
 msgid "Do you want to download the template?"
-msgstr ""
+msgstr "要下載範本嗎？"
 
 msgid "No rows are selected from the records."
-msgstr ""
+msgstr "未選取任何紀錄。"
 
 msgid "Do you really want to delete all the selected records?"
-msgstr ""
+msgstr "確定要刪除所有已選取的紀錄嗎？"
 
 msgid "Do you really want to archive all the selected records?"
-msgstr ""
+msgstr "確定要封存所有已選取的紀錄嗎？"
 
 msgid "Do you really want to approve all the selected requests?"
-msgstr ""
+msgstr "確定要核准所有已選取的申請嗎？"
 
 msgid "Do you really want to unarchive all the selected records?"
-msgstr ""
+msgstr "確定要取消封存所有已選取的紀錄嗎？"

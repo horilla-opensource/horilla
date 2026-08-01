@@ -286,13 +286,13 @@ USE_TZ = True
 
 LANGUAGES = (
     ("en", "English (US)"),
-    ("de", "Deutsche"),
+    ("de", "Deutsch"),
     ("es", "Español"),
     ("fr", "Français"),
-    ("ar", "عربى"),
+    ("ar", "العربية"),
     ("pt-br", "Português (Brasil)"),
-    ("zh-hans", "Simplified Chinese"),
-    ("zh-hant", "Traditional Chinese"),
+    ("zh-hans", "简体中文"),
+    ("zh-hant", "繁體中文"),
     ("it", "Italian"),
     ("tr", "Turkish"),
     ("uk", "Українська"),

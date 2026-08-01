@@ -6,13 +6,13 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-01-13 14:27+0530\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2026-08-02 00:00+0000\n"
+"Last-Translator: Horilla Localization Team\n"
+"Language-Team: Simplified Chinese\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -118,10 +118,9 @@ msgstr "建立批次編號"
 msgid "Batch Number Update"
 msgstr "批次編號更新"
 
-#, fuzzy
 #| msgid "Batch number created successfully."
 msgid "Batch number updated successfully."
-msgstr "批次号创建成功。"
+msgstr "批次号更新成功。"
 
 msgid "Batch number created successfully."
 msgstr "批次号创建成功。"
@@ -150,34 +149,30 @@ msgstr "資源建立"
 msgid "Asset Update"
 msgstr "資源更新"
 
-#, fuzzy
 #| msgid "Asset created successfully"
 msgid "Asset updated successfully"
-msgstr "资产创建成功"
+msgstr "资产更新成功"
 
 msgid "Asset created successfully"
 msgstr "资产创建成功"
 
-#, fuzzy
 #| msgid "Asset Category Update"
 msgid "Asset Category Duplicate"
-msgstr "資源類別更新"
+msgstr "资产类别重复"
 
 msgid "Duplicate"
 msgstr "複製"
 
-#, fuzzy
 #| msgid "Save Duplicate"
 msgid "Asset Duplicate"
-msgstr "保存副本"
+msgstr "资产重复"
 
 msgid "Add Asset Report"
 msgstr "新增資源報告"
 
-#, fuzzy
 #| msgid "Report added successfully."
 msgid "Asset report added successfully."
-msgstr "報告新增成功。"
+msgstr "资产报告添加成功。"
 
 msgid "Asset Category"
 msgstr "資源分類"
@@ -245,58 +240,48 @@ msgstr "申請使用者"
 msgid "Requested Date"
 msgstr "申请日期"
 
-#, fuzzy
 #| msgid "Allowance deleted successfully"
 msgid "Allocation deleted successfully"
-msgstr "津贴删除成功"
+msgstr "分配删除成功"
 
-#, fuzzy
 #| msgid "Asset deleted successfully"
 msgid "Asset request deleted successfully"
-msgstr "资产删除成功"
+msgstr "资产申请删除成功"
 
 msgid "Asset Allocation"
 msgstr "资产分配"
 
-#, fuzzy
 #| msgid "Create allocation"
 msgid "Create Allocation"
 msgstr "创建分配"
 
-#, fuzzy
 #| msgid "Requested Employee"
 msgid "Asset Request / Employee"
-msgstr "请求员工"
+msgstr "资产申请／员工"
 
-#, fuzzy
 #| msgid "Asset Request Date"
 msgid "Asset Request / Asset Category"
-msgstr "资产请求日期"
+msgstr "资产申请／资产类别"
 
-#, fuzzy
 #| msgid "Asset Request Date"
 msgid "Asset Request / Request Date"
 msgstr "资产请求日期"
 
-#, fuzzy
 #| msgid "Asset Request Date"
 msgid "Asset Request / Status"
-msgstr "资产请求日期"
+msgstr "资产申请／状态"
 
-#, fuzzy
 #| msgid "Asset Allocation"
 msgid "Asset Allocation / Employee"
-msgstr "资产分配"
+msgstr "资产分配／员工"
 
-#, fuzzy
 #| msgid "Asset Allocated Date"
 msgid "Asset Allocation / Assigned Date"
-msgstr "資源分配日期"
+msgstr "资产分配／分配日期"
 
-#, fuzzy
 #| msgid "Asset Allocated Date"
 msgid "Asset Allocation / Return Date"
-msgstr "資源分配日期"
+msgstr "资产分配／归还日期"
 
 msgid "Tracking Id"
 msgstr "追蹤ID"
@@ -304,7 +289,6 @@ msgstr "追蹤ID"
 msgid "Batch No"
 msgstr "批次編號"
 
-#, fuzzy
 #| msgid "Assigned By"
 msgid "Assigned by"
 msgstr "分配人"
@@ -318,17 +302,14 @@ msgstr "资产信息"
 msgid "Request Description"
 msgstr "申请描述"
 
-#, fuzzy
 #| msgid "Request Updated Successfully"
 msgid "Asset Request Created Successfully"
-msgstr "请求更新成功"
+msgstr "资产申请创建成功"
 
-#, fuzzy
 #| msgid "Asset allocated successfully!."
 msgid "Asset allocated Successfully"
 msgstr "资产分配成功！"
 
-#, fuzzy
 #| msgid "Asset request approved successfully!"
 msgid "Asset request approved successfully!."
 msgstr "资产请求批准成功！"
@@ -351,10 +332,9 @@ msgstr "歸還日期不能是未來日期"
 msgid "Name"
 msgstr "名稱"
 
-#, fuzzy
 #| msgid "Asset Category"
 msgid "Asset Categories"
-msgstr "資源分類"
+msgstr "资产类别"
 
 msgid "Batch Number"
 msgstr "批次編號"
@@ -392,15 +372,13 @@ msgstr "提前通知 (天數)"
 msgid "An asset with this tracking ID already exists."
 msgstr "此追蹤ID的資源已存在"
 
-#, fuzzy
 #| msgid "Request Document"
 msgid "Asset Document"
-msgstr "请求文件"
+msgstr "资产文件"
 
-#, fuzzy
 #| msgid "Documents"
 msgid "Asset Documents"
-msgstr "文档"
+msgstr "资产文件"
 
 msgid "Minor damage"
 msgstr "輕微損壞"
@@ -420,7 +398,6 @@ msgstr "分配人"
 msgid "Return Condition"
 msgstr "歸還狀況"
 
-#, fuzzy
 #| msgid "Asset Allocation"
 msgid "Asset Allocations"
 msgstr "资产分配"
@@ -452,10 +429,9 @@ msgstr "已拒絕"
 msgid "Requesting User"
 msgstr "请求用户"
 
-#, fuzzy
 #| msgid "Asset Request"
 msgid "Asset Requests"
-msgstr "资产请求"
+msgstr "资产申请"
 
 msgid "Dashboard"
 msgstr "儀表板"
@@ -545,7 +521,7 @@ msgid "Report added successfully."
 msgstr "報告新增成功。"
 
 msgid "Assign asset before adding a report"
-msgstr ""
+msgstr "添加报表前请先分配资产"
 
 msgid "Back"
 msgstr "返回"
@@ -568,7 +544,6 @@ msgstr "使用中的資源"
 msgid "Allocated Assets"
 msgstr "已分配的資源"
 
-#, fuzzy
 #| msgid "No Records found"
 msgid "No Records found."
 msgstr "未找到记录"
@@ -579,10 +554,9 @@ msgstr "目前沒有資源分配。"
 msgid "Request Date"
 msgstr "申請日期"
 
-#, fuzzy
 #| msgid "Approved request"
 msgid "Approve request"
-msgstr "已批准的请求"
+msgstr "批准申请"
 
 msgid "Do you want to reject this request?"
 msgstr "您是否要拒絕此申請？"
@@ -617,10 +591,9 @@ msgstr "篩選"
 msgid "Returned date"
 msgstr "歸還日期"
 
-#, fuzzy
 #| msgid "No records available."
 msgid "No asset history available."
-msgstr "无可用记录。"
+msgstr "没有可用的资产历史记录。"
 
 msgid "Search"
 msgstr "搜尋"
@@ -658,10 +631,9 @@ msgstr "采购成本"
 msgid "Do you want to download template ?"
 msgstr "您要下载模板吗？"
 
-#, fuzzy
 #| msgid "No Asset Batches have been created."
 msgid "No Asset Categories or Assets have been created."
-msgstr "尚未建立任何資源批次。"
+msgstr "尚未创建任何资产类别或资产。"
 
 msgid "Export Assets"
 msgstr "导出资产"
@@ -684,10 +656,9 @@ msgstr "批准"
 msgid "Reject"
 msgstr "拒绝"
 
-#, fuzzy
 #| msgid "Do you want to delete this Allowance?"
 msgid "Do you want to delete this Allocation?"
-msgstr "您确定要删除此津贴吗？"
+msgstr "您确定要删除此分配吗？"
 
 msgid "Requested Employee"
 msgstr "请求员工"
@@ -725,10 +696,9 @@ msgstr "资产删除成功"
 msgid "You cannot delete this asset."
 msgstr "您无法删除此资产。"
 
-#, fuzzy
 #| msgid "Asset not found"
 msgid "Asset category not found"
-msgstr "未找到资产"
+msgstr "未找到资产类别"
 
 msgid "Asset Updated"
 msgstr "资产已更新"
@@ -763,10 +733,9 @@ msgstr "资产请求批准成功！"
 msgid "An error occurred: "
 msgstr "发生错误："
 
-#, fuzzy
 #| msgid "Shift request not found."
 msgid "Asset request not found."
-msgstr "未找到轮班请求。"
+msgstr "未找到资产申请。"
 
 msgid "Asset request has been rejected."
 msgstr "资产请求已被拒绝。"
@@ -774,16 +743,14 @@ msgstr "资产请求已被拒绝。"
 msgid "Asset allocated successfully!."
 msgstr "资产分配成功！"
 
-#, fuzzy
 #| msgid "{rshift_assign} not found."
 msgid "Asset assignment not found."
-msgstr "未找到 {rshift_assign}。"
+msgstr "未找到资产分配。"
 
 #, python-brace-format
 msgid "Return request for {} initiated."
 msgstr "已发起{}的归还请求。"
 
-#, fuzzy
 #| msgid "Asset Return Successful!."
 msgid "Asset Returned Successfully..."
 msgstr "资产归还成功！"
@@ -845,10 +812,9 @@ msgstr "签退"
 msgid "Out Date"
 msgstr "外出日期"
 
-#, fuzzy
 #| msgid "Duration (sec)"
 msgid "Duration (HH:MM:SS)"
-msgstr "时长（秒）"
+msgstr "时长（时:分:秒）"
 
 msgid "Attendance Activity"
 msgstr "考勤活动"
@@ -862,7 +828,6 @@ msgstr "国家"
 msgid "Reporting Manager"
 msgstr "汇报经理"
 
-#, fuzzy
 #| msgid "Employment Type"
 msgid "Employement Type"
 msgstr "雇佣类型"
@@ -903,15 +868,13 @@ msgstr "在岗"
 msgid "Overtime"
 msgstr "加班"
 
-#, fuzzy
 #| msgid "Approved"
 msgid "Approved By"
-msgstr "已核准"
+msgstr "批准人"
 
 msgid "Bulk-Requests"
 msgstr "批量请求"
 
-#, fuzzy
 #| msgid "Not validated"
 msgid "Not Validated"
 msgstr "未验证"
@@ -931,46 +894,39 @@ msgstr "考勤记录"
 msgid "Activities"
 msgstr "活動"
 
-#, fuzzy
 #| msgid "New Attendances Request"
 msgid "New Attendance Request"
 msgstr "新考勤请求"
 
-#, fuzzy
 #| msgid "Update Attendances Request"
 msgid "Update Attendance Request"
 msgstr "更新考勤请求"
 
-#, fuzzy
 #| msgid "New attendance request created"
 msgid "New Attendance request created"
 msgstr "新的考勤请求已创建。"
 
-#, fuzzy
 #| msgid "New attendance request created"
 msgid "New Attendance request updated"
-msgstr "新的考勤请求已创建。"
+msgstr "新的考勤请求已更新。"
 
 msgid "Attendance update request created."
 msgstr "考勤更新请求已创建。"
 
-#, fuzzy
 #| msgid "Update Attendances Request"
 msgid "Create Attendance Request"
-msgstr "更新考勤请求"
+msgstr "创建考勤请求"
 
-#, fuzzy
 #| msgid "Validated Attendances"
 msgid "Validate Attendances"
-msgstr "已验证考勤"
+msgstr "验证考勤"
 
 msgid "Hour Account"
 msgstr "小时账户"
 
-#, fuzzy
 #| msgid "Attendance Records"
 msgid "Attendance Report"
-msgstr "考勤记录"
+msgstr "考勤报告"
 
 msgid "Pending Hour"
 msgstr "待处理工时"
@@ -981,7 +937,6 @@ msgstr "待验证的考勤"
 msgid "Validate"
 msgstr "验证"
 
-#, fuzzy
 #| msgid "OT Attendances"
 msgid " OT Attendances"
 msgstr "加班考勤"
@@ -989,7 +944,6 @@ msgstr "加班考勤"
 msgid "Approve OT"
 msgstr "批准加班"
 
-#, fuzzy
 #| msgid "Validated Attendances"
 msgid " Validated Attendances"
 msgstr "已验证考勤"
@@ -1002,7 +956,6 @@ msgstr "工作类型"
 msgid "Add Attendances"
 msgstr "添加考勤"
 
-#, fuzzy
 #| msgid "Attendance added."
 msgid "Attendance Added"
 msgstr "考勤已添加。"
@@ -1010,7 +963,6 @@ msgstr "考勤已添加。"
 msgid "Edit Attendance"
 msgstr "编辑考勤"
 
-#, fuzzy
 #| msgid "Attendance Updated."
 msgid "Attandance Updated"
 msgstr "考勤已更新。"
@@ -1021,10 +973,9 @@ msgstr "请假类型"
 msgid "Minus Days"
 msgstr "扣除天数"
 
-#, fuzzy
 #| msgid "Deducted From "
 msgid "Deducted From CFD"
-msgstr "从...扣除"
+msgstr "从 CFD 中扣除"
 
 msgid "Penalty amount"
 msgstr "罚款金额"
@@ -1032,10 +983,9 @@ msgstr "罚款金额"
 msgid "Created Date"
 msgstr "创建日期"
 
-#, fuzzy
 #| msgid "Penalty"
 msgid "Penalty Type"
-msgstr "处罚"
+msgstr "处罚类型"
 
 msgid "Attendance"
 msgstr "考勤"
@@ -1061,12 +1011,10 @@ msgstr "加班截止/天"
 msgid "Break Point Condition"
 msgstr "休息点条件"
 
-#, fuzzy
 #| msgid "Create Attendance condition "
 msgid "Create Attendance condition"
 msgstr "创建考勤条件"
 
-#, fuzzy
 #| msgid "Update Attendance condition "
 msgid "Update Attendance condition"
 msgstr "更新考勤条件"
@@ -1086,10 +1034,9 @@ msgstr "启用签到/签退"
 msgid "Worked Hours"
 msgstr "工作时长"
 
-#, fuzzy
 #| msgid "Work Records"
 msgid "Work Status"
-msgstr "工作记录"
+msgstr "工作状态"
 
 msgid "Allowed Time"
 msgstr "允许时间"
@@ -1104,7 +1051,7 @@ msgid "Assigned Shifts"
 msgstr "分配的轮班"
 
 msgid "Is default"
-msgstr ""
+msgstr "设为默认"
 
 msgid "Is active"
 msgstr "是否激活"
@@ -1148,22 +1095,18 @@ msgstr "未批准的加班工时"
 msgid "Employment Type"
 msgstr "雇佣类型"
 
-#, fuzzy
 #| msgid "Overtime"
 msgid "Over time"
 msgstr "加班"
 
-#, fuzzy
 #| msgid "Hour account deleted."
 msgid "Hour account update"
-msgstr "工时账户已删除。"
+msgstr "工时账户更新"
 
-#, fuzzy
 #| msgid "Attendance account added."
 msgid "Attendance account updated"
-msgstr "考勤账户已添加。"
+msgstr "考勤账户已更新。"
 
-#, fuzzy
 #| msgid "Attendance account added."
 msgid "Attendance account added"
 msgstr "考勤账户已添加。"
@@ -1171,32 +1114,26 @@ msgstr "考勤账户已添加。"
 msgid "Type"
 msgstr "类型"
 
-#, fuzzy
 #| msgid "Penalties"
 msgid "Penalities"
 msgstr "处罚"
 
-#, fuzzy
 #| msgid "Late Come/Early Out"
 msgid "Late Come/Early Out "
 msgstr "迟到/早退"
 
-#, fuzzy
 #| msgid "Minimum hour"
 msgid "Minimum Hour"
 msgstr "最低小时数"
 
-#, fuzzy
 #| msgid "Check-In Date"
 msgid "Chen-in Date"
 msgstr "签到日期"
 
-#, fuzzy
 #| msgid "Check-Out Date"
 msgid "Check-out Date"
 msgstr "签退日期"
 
-#, fuzzy
 #| msgid "Attendance validated"
 msgid "Attendance Validated"
 msgstr "考勤已验证"
@@ -1207,7 +1144,6 @@ msgstr "已批准的请求"
 msgid "My Attendances"
 msgstr "我的考勤"
 
-#, fuzzy
 #| msgid "Check-In Date"
 msgid "Check-in Date"
 msgstr "签到日期"
@@ -1263,7 +1199,7 @@ msgstr "未选择员工"
 msgid ""
 "Do not Auto Validate Attendance if an Employee Works More Than this Amount "
 "of Duration"
-msgstr ""
+msgstr "若员工工作时长超过此时长，请勿自动验证考勤"
 
 msgid "Worked Hours(At Work) Auto Approve Till"
 msgstr "工作时长（在岗）自动批准至"
@@ -1302,10 +1238,9 @@ msgstr "在此日期范围内没有有效的日期来创建考勤请求"
 msgid "Create attendance batch"
 msgstr "创建考勤批次"
 
-#, fuzzy
 #| msgid "Create attendance batch"
 msgid "Update attendance batch"
-msgstr "创建考勤批次"
+msgstr "更新考勤批次"
 
 msgid "Invalid format, it should be HH:MM:SS format"
 msgstr "格式无效，应为 HH:MM:SS 格式"
@@ -1358,10 +1293,9 @@ msgstr "星期日"
 msgid "Update Request"
 msgstr "更新请求"
 
-#, fuzzy
 #| msgid "Create Request"
 msgid "Created Request"
-msgstr "创建请求"
+msgstr "已创建请求"
 
 msgid "Attendance date"
 msgstr "考勤日期"
@@ -1387,15 +1321,13 @@ msgstr "最低小时数"
 msgid "Batch Attendance"
 msgstr "批量考勤"
 
-#, fuzzy
 #| msgid "Overtime To Approve"
 msgid "Overtime Approve"
-msgstr "待批准的加班"
+msgstr "批准加班"
 
-#, fuzzy
 #| msgid "Attendance To Validate"
 msgid "Attendance Validate"
-msgstr "待验证的考勤"
+msgstr "验证考勤"
 
 msgid "Overtime In Second"
 msgstr "加班秒数"
@@ -1418,10 +1350,9 @@ msgstr "待处理秒数"
 msgid "Overtime Seconds"
 msgstr "加班秒数"
 
-#, fuzzy
 #| msgid "Hour Account"
 msgid "Hour Accounts"
-msgstr "小时账户"
+msgstr "工时账户"
 
 msgid "Year must be an integer value between 1900 and 2100"
 msgstr "年份必须是1900到2100之间的整数值"
@@ -1488,7 +1419,6 @@ msgstr "草稿"
 msgid "Day percentage must be between 0.0 and 1.0"
 msgstr "日百分比必须在0.0到1.0之间"
 
-#, fuzzy
 #| msgid "Work Records"
 msgid "Work Record"
 msgstr "工作记录"
@@ -1511,10 +1441,9 @@ msgstr "验证考勤"
 msgid "Incomplete minimum hour"
 msgstr "未达到最低小时数"
 
-#, fuzzy
 #| msgid "Incomplete minimum hour"
 msgid "Incomplete half minimum hour"
-msgstr "未达到最低小时数"
+msgstr "未达到最低工时的一半"
 
 msgid "Half day leave"
 msgstr "半天假"
@@ -1755,7 +1684,6 @@ msgstr "导出考勤"
 msgid "Attendnace Date"
 msgstr "考勤日期"
 
-#, fuzzy
 #| msgid "No group result found!"
 msgid "No group result found."
 msgstr "未找到分组结果！"
@@ -1775,10 +1703,9 @@ msgstr "确认"
 msgid "Error downloading file"
 msgstr "文件下载错误"
 
-#, fuzzy
 #| msgid "Do you really want to delete this leave type?"
 msgid "Do you really want to delete all the selected activities?"
-msgstr "您确定要删除此假期类型吗？"
+msgstr "您确定要删除所有选定活动吗？"
 
 msgid "Update Attendance condition "
 msgstr "更新考勤条件"
@@ -1786,10 +1713,9 @@ msgstr "更新考勤条件"
 msgid "Create Attendance condition "
 msgstr "创建考勤条件"
 
-#, fuzzy
 #| msgid "Activities"
 msgid " Activities"
-msgstr "活動"
+msgstr "活动"
 
 msgid "Today's Attendances"
 msgstr "今日考勤"
@@ -1827,15 +1753,13 @@ msgstr "部门加班图表"
 msgid "No employees are currently taking a break."
 msgstr "当前没有员工在休息。"
 
-#, fuzzy
 #| msgid "No Overtime to Validate...."
 msgid "No overtime records pending validation."
-msgstr "没有需要验证的加班..."
+msgstr "没有待验证的加班记录。"
 
-#, fuzzy
 #| msgid "No attendance requests to validate."
 msgid "No pending attendance to validate."
-msgstr "没有需要验证的考勤请求。"
+msgstr "没有待验证的考勤记录。"
 
 msgid "Shifts"
 msgstr "轮班"
@@ -1852,7 +1776,7 @@ msgstr "IP登录限制"
 msgid ""
 "Enable this feature to restrict attendance marking to specific IP addresses "
 "only."
-msgstr ""
+msgstr "启用此功能后，仅允许通过指定的 IP 地址进行考勤打卡。"
 
 msgid "Add IP"
 msgstr "添加IP"
@@ -1949,10 +1873,9 @@ msgstr "请假"
 msgid "On leave, But attendance exist"
 msgstr "请假中，但存在考勤记录"
 
-#, fuzzy
 #| msgid "Work Records"
 msgid "Work Record Status"
-msgstr "工作记录"
+msgstr "工作记录状态"
 
 msgid "Date:"
 msgstr "日期："
@@ -2011,40 +1934,33 @@ msgstr "待处理时长小于等于"
 msgid "OT Lesser or Equal"
 msgstr "加班时长小于等于"
 
-#, fuzzy
 #| msgid "Bulk-Requests"
 msgid "Bulk Request"
-msgstr "批量请求"
+msgstr "批量申请"
 
-#, fuzzy
 #| msgid "Do you want to approve this request?"
 msgid "Do you want to approve this overtime?"
-msgstr "您是否要批准此请求？"
+msgstr "您是否要批准此加班？"
 
-#, fuzzy
 #| msgid "Approve Overtime"
 msgid "Approve Overtime (OT < min.OT)"
-msgstr "批准加班"
+msgstr "批准加班（加班时长 < 最低加班时长）"
 
-#, fuzzy
 #| msgid "Are you sure want to delete this attendance?"
 msgid "Do you want to validate this attendance?"
-msgstr "您确定要删除此考勤记录吗？"
+msgstr "您是否要验证此考勤记录？"
 
-#, fuzzy
 #| msgid "Hours to Validate"
 msgid "Hours to validate"
 msgstr "待验证工时"
 
-#, fuzzy
 #| msgid "OT Approved?"
 msgid "OT to Approve"
-msgstr "加班已批准？"
+msgstr "待批准加班"
 
-#, fuzzy
 #| msgid "Penalties"
 msgid "No Penalties"
-msgstr "处罚"
+msgstr "无处罚"
 
 msgid "Assign shift"
 msgstr "分配轮班"
@@ -2055,15 +1971,13 @@ msgstr "无"
 msgid "Comments"
 msgstr "評論"
 
-#, fuzzy
 #| msgid "Comment"
 msgid "Comment here"
-msgstr "备注"
+msgstr "在此评论"
 
-#, fuzzy
 #| msgid "Add Fine"
 msgid "Add Files"
-msgstr "新增罰款"
+msgstr "添加文件"
 
 msgid "by"
 msgstr "由"
@@ -2119,10 +2033,9 @@ msgstr "您确定要取消该申请吗？"
 msgid "New Attendances Request"
 msgstr "新考勤请求"
 
-#, fuzzy
 #| msgid "There are no attendance records to display."
 msgid "There are no attendance requests to display."
-msgstr "没有可显示的考勤记录。"
+msgstr "没有可显示的考勤申请。"
 
 msgid "Not-Validated"
 msgstr "未验证"
@@ -2266,26 +2179,23 @@ msgid "Attendance activity Does not exists.."
 msgstr "考勤活动不存在。"
 
 msgid "Invalid list of IDs provided."
-msgstr ""
+msgstr "提供的 ID 列表无效。"
 
-#, fuzzy
 #| msgid "Attendance activity deleted"
 msgid "No attendance activities selected for deletion."
-msgstr "考勤活动已删除"
+msgstr "未选择要删除的考勤活动。"
 
-#, fuzzy, python-brace-format
 #| msgid "Batch attendance title updated sucessfully."
 msgid "{count} attendance activities deleted successfully."
-msgstr "批次考勤标题已成功更新。"
+msgstr "已成功删除 {count} 个考勤活动。"
 
-#, fuzzy
 #| msgid "There are no attendance activity records to display."
 msgid "No matching attendance activities were found to delete."
-msgstr "当前没有可显示的考勤活动记录。"
+msgstr "未找到可删除的匹配考勤活动。"
 
 #, python-brace-format
 msgid "Failed to delete attendance activities: {error}"
-msgstr ""
+msgstr "删除考勤活动失败：{error}"
 
 msgid "Attendance activity imported successfully"
 msgstr "考勤活动已成功导入"
@@ -2296,10 +2206,9 @@ msgstr "迟到早退记录不存在。"
 msgid "Attendance not found."
 msgstr "未找到考勤记录。"
 
-#, fuzzy, python-brace-format
 #| msgid "Late-in early-out deleted"
 msgid "{} Late-in early-out deleted."
-msgstr "迟到早退已删除"
+msgstr "已删除 {} 条迟到／早退记录。"
 
 msgid "validation condition Does not exists.."
 msgstr "验证条件不存在。"
@@ -2318,20 +2227,17 @@ msgstr "有待处理的考勤更新请求，针对 {} 在 {} 的考勤！"
 msgid "{} Attendances validated."
 msgstr "{} 的考勤记录已通过验证。"
 
-#, fuzzy
 #| msgid "You cannot delete this attendance"
 msgid "You cannot validate your own attendance."
-msgstr "您无法删除此考勤"
+msgstr "您无法验证自己的考勤记录。"
 
-#, fuzzy
 #| msgid "You cannot add more conditions."
 msgid "You cannot approve your own overtime."
-msgstr "您无法添加更多条件。"
+msgstr "您无法批准自己的加班。"
 
-#, fuzzy, python-brace-format
 #| msgid "Overtime approved"
 msgid " {} Overtime approved"
-msgstr "加班已批准"
+msgstr "已批准 {} 条加班记录"
 
 msgid "Grace time added to shifts successfully."
 msgstr "宽限时间已成功添加到轮班中。"
@@ -2375,10 +2281,9 @@ msgstr "评论删除成功！"
 msgid "File deleted successfully"
 msgstr "文件删除成功"
 
-#, fuzzy
 #| msgid "Work Records"
 msgid "Work Records Status"
-msgstr "工作记录"
+msgstr "工作记录状态"
 
 msgid "enabled"
 msgstr "已启用"
@@ -2395,13 +2300,13 @@ msgid "Check In/Check Out has been successfully {}."
 msgstr "签到/签退已成功 {}"
 
 msgid "Your department was mentioned in an announcement."
-msgstr ""
+msgstr "公告中提到了您的部门。"
 
 msgid "Your job position was mentioned in an announcement."
-msgstr ""
+msgstr "公告中提到了您的职位。"
 
 msgid "You have been mentioned in an announcement."
-msgstr ""
+msgstr "公告中提到了您。"
 
 msgid "Announcement created successfully."
 msgstr "公告创建成功。"
@@ -2427,7 +2332,7 @@ msgid "Edit Announcement."
 msgstr "编辑公告。"
 
 msgid ", "
-msgstr ""
+msgstr "，"
 
 msgid "Is Hq"
 msgstr "是否为总部"
@@ -2786,10 +2691,9 @@ msgstr "轮班分配更新"
 msgid "Rotating Shift Assign Updated Successfully"
 msgstr "轮班分配更新"
 
-#, fuzzy
 #| msgid "Rotating Shift Assign Update"
 msgid "Rotating Shift Assign Created Successfully"
-msgstr "轮班分配更新"
+msgstr "轮班分配创建成功"
 
 msgid "Rotating Work Type"
 msgstr "轮换工作类型"
@@ -2806,20 +2710,17 @@ msgstr "下次工作类型"
 msgid "Rotating Work Type Assign"
 msgstr "轮换工作类型分配"
 
-#, fuzzy
 #| msgid "Work Information Updated Successfully"
 msgid "Rotating Work Assign Updated Successfully"
-msgstr "工作信息已成功更新"
+msgstr "轮换工作分配更新成功"
 
-#, fuzzy
 #| msgid "Rotating Work Type Assign"
 msgid "Rotating Work Assigned"
-msgstr "轮换工作类型分配"
+msgstr "已分配轮换工作"
 
-#, fuzzy
 #| msgid "Rotating Work Type Assign"
 msgid "Rotating Work Assign Created"
-msgstr "轮换工作类型分配"
+msgstr "轮换工作分配已创建"
 
 msgid "Work Type 1"
 msgstr "工作类型 1"
@@ -2827,18 +2728,16 @@ msgstr "工作类型 1"
 msgid "Work Type 2"
 msgstr "工作类型 2"
 
-#, fuzzy
 #| msgid "Rotating Work Types"
 msgid "Additional Work Types"
-msgstr "轮换工作类型"
+msgstr "附加工作类型"
 
 msgid "Create Rotating Work Type"
 msgstr "创建轮班工作类型"
 
-#, fuzzy
 #| msgid "Rotating work type created."
 msgid "Rotating Work Type Created"
-msgstr "轮班工作类型已创建。"
+msgstr "轮换工作类型已创建"
 
 msgid "Update Rotating Work Type"
 msgstr "更新轮班工作类型"
@@ -2846,10 +2745,9 @@ msgstr "更新轮班工作类型"
 msgid "Update Work Type"
 msgstr "更新工作类型"
 
-#, fuzzy
 #| msgid "Rotating work type updated."
 msgid "Rotating Work Type Updated"
-msgstr "轮班工作类型已更新。"
+msgstr "轮换工作类型已更新"
 
 msgid "Canceled"
 msgstr "已取消"
@@ -2884,17 +2782,14 @@ msgstr "先前轮班"
 msgid "Is permenent shift"
 msgstr "是否为永久轮班"
 
-#, fuzzy
 #| msgid "Shift updated"
 msgid "Shift Created"
-msgstr "轮班已更新"
+msgstr "班次已创建"
 
-#, fuzzy
 #| msgid "Update Shift Request"
 msgid "Update Shift"
-msgstr "更新轮班请求"
+msgstr "更新班次"
 
-#, fuzzy
 #| msgid "Shift updated"
 msgid "Shift Updated"
 msgstr "轮班已更新"
@@ -2902,15 +2797,13 @@ msgstr "轮班已更新"
 msgid "Create Shift Request"
 msgstr "创建轮班请求"
 
-#, fuzzy
 #| msgid "Request Updated Successfully"
 msgid "Shift request updated Successfully"
-msgstr "请求更新成功"
+msgstr "班次申请更新成功"
 
-#, fuzzy
 #| msgid "Request Updated Successfully"
 msgid "Shift request added Successfully"
-msgstr "请求更新成功"
+msgstr "班次申请添加成功"
 
 msgid "Shift Request"
 msgstr "轮班申请"
@@ -2918,33 +2811,28 @@ msgstr "轮班申请"
 msgid "Work type request"
 msgstr "工作类型请求"
 
-#, fuzzy
 #| msgid "Work Type Request"
 msgid "Add Work Type Request"
-msgstr "工作类型申请"
+msgstr "添加工作类型申请"
 
 msgid "Rotating work type"
 msgstr "轮换工作类型"
 
-#, fuzzy
 #| msgid "Rotating Work Type"
 msgid "Add Rotating Work"
-msgstr "轮换工作类型"
+msgstr "添加轮换工作"
 
 msgid "Shift request"
 msgstr "轮班请求"
 
-#, fuzzy
 #| msgid "Shift Request"
 msgid "Add Shift Request"
-msgstr "轮班申请"
+msgstr "添加班次申请"
 
-#, fuzzy
 #| msgid "Rotating Shift"
 msgid "Add Rotating Shift"
-msgstr "轮换轮班"
+msgstr "添加轮换班次"
 
-#, fuzzy
 #| msgid "Previous/Current Work Type"
 msgid "Previous/current Work Type"
 msgstr "先前/当前工作类型"
@@ -2952,7 +2840,6 @@ msgstr "先前/当前工作类型"
 msgid "Work Type Requests"
 msgstr "工作类型申请列表"
 
-#, fuzzy
 #| msgid "Current Work Type"
 msgid "current Work Type"
 msgstr "当前工作类型"
@@ -2960,7 +2847,6 @@ msgstr "当前工作类型"
 msgid "Previous Work Type"
 msgstr "先前工作类型"
 
-#, fuzzy
 #| msgid "Is permenent work type"
 msgid "Is Permanent Work Type"
 msgstr "是否为永久工作类型"
@@ -2968,12 +2854,10 @@ msgstr "是否为永久工作类型"
 msgid "Create Work Type"
 msgstr "创建工作类型"
 
-#, fuzzy
 #| msgid "New leave type Created.."
 msgid "New Work Type Created"
-msgstr "新請假類型已創建。"
+msgstr "新工作类型已创建"
 
-#, fuzzy
 #| msgid "Work type updated."
 msgid "Work Type Updated"
 msgstr "工作类型已更新。"
@@ -2984,10 +2868,9 @@ msgstr "工作类型申请"
 msgid "Request Updated Successfully"
 msgstr "请求更新成功"
 
-#, fuzzy
 #| msgid "Work type request deleted."
 msgid "Work type Request Created"
-msgstr "工作类型请求已删除。"
+msgstr "工作类型申请已创建"
 
 msgid "Employee is not working in the selected company."
 msgstr "该员工不在所选公司工作。"
@@ -3005,7 +2888,6 @@ msgstr "周末"
 msgid "---Choose {label}---"
 msgstr "---选择 {label}---"
 
-#, fuzzy
 #| msgid "Job Position has been created successfully!"
 msgid "Job position has been created successfully!"
 msgstr "职位已成功创建！"
@@ -3020,10 +2902,9 @@ msgstr "工作角色已成功创建！"
 msgid "---Choose Work Type---"
 msgstr "---选择工作类型---"
 
-#, fuzzy
 #| msgid "Rotate after "
 msgid "Rotate after day"
-msgstr "轮换间隔"
+msgstr "在指定天数后轮换"
 
 msgid "Start date"
 msgstr "开始日期"
@@ -3111,10 +2992,9 @@ msgstr "密码更改成功"
 msgid "Password must be same."
 msgstr "密码必须相同。"
 
-#, fuzzy
 #| msgid "Send Test Email"
 msgid "To email"
-msgstr "发送测试邮件"
+msgstr "收件人电子邮件"
 
 msgid "Equal (==)"
 msgstr "等于 (==)"
@@ -3143,7 +3023,7 @@ msgstr "包含"
 msgid ""
 "If no employee, department or job position is selected, the announcement "
 "will be visible to all employees in the selected company."
-msgstr ""
+msgstr "如果未选择员工、部门或职位，该公告将对所选公司中的所有员工可见。"
 
 msgid "Attachments"
 msgstr "附件"
@@ -3226,10 +3106,9 @@ msgstr "公司"
 msgid "Departments"
 msgstr "部门"
 
-#, fuzzy
 #| msgid "A draft contract already exists for this employee."
 msgid "This department already exists in this company"
-msgstr "该员工已存在草稿合同"
+msgstr "该公司中已存在此部门"
 
 msgid "Job Positions"
 msgstr "职位"
@@ -3326,10 +3205,9 @@ msgstr "重新分配员工"
 msgid "An approved shift request already exists during this time period."
 msgstr "此时间段内已存在已批准的轮班申请。"
 
-#, fuzzy
 #| msgid "Tags"
 msgid "Tag"
-msgstr "標籤"
+msgstr "标签"
 
 msgid "Email Host"
 msgstr "电子邮件主机"
@@ -3362,10 +3240,10 @@ msgid "Primary Mail Server"
 msgstr "主邮件服务器"
 
 msgid "By enabling this the display name will take from who triggered the mail"
-msgstr ""
+msgstr "启用后，显示名称将使用触发邮件人员的名称。"
 
 msgid "Use dynamic display name"
-msgstr ""
+msgstr "使用动态显示名称"
 
 msgid "Email Send Timeout (seconds)"
 msgstr "邮件发送超时（秒）"
@@ -3417,29 +3295,26 @@ msgstr "范围中的结束值必须与起始值不同。"
 msgid "End value must be greater than the start value in a range."
 msgstr "范围中的结束值必须大于起始值。"
 
-#, fuzzy
 #| msgid "Multiple Approvals"
 msgid "Multiple Approval Managers"
-msgstr "多重审批"
+msgstr "多个审批经理"
 
 msgid "User"
 msgstr "用户"
 
-#, fuzzy
 #| msgid "Delete Comment"
 msgid "Disable Comments"
-msgstr "删除评论"
+msgstr "禁用评论"
 
 msgid "Show Comments to All"
-msgstr ""
+msgstr "向所有人显示评论"
 
 msgid "If enabled, all employees can view each other's comments."
-msgstr ""
+msgstr "启用后，所有员工均可查看彼此的评论。"
 
-#, fuzzy
 #| msgid "Announcement."
 msgid "Announcement"
-msgstr "公告。"
+msgstr "公告"
 
 msgid "Announcements"
 msgstr "公告"
@@ -3447,10 +3322,9 @@ msgstr "公告"
 msgid "Excluded Charts"
 msgstr "排除的图表"
 
-#, fuzzy
 #| msgid "Employees Chart"
 msgid "Dashboard Employee Charts"
-msgstr "员工图表"
+msgstr "仪表板员工图表"
 
 msgid "Enable"
 msgstr "启用"
@@ -3467,7 +3341,7 @@ msgid "Track Late Come Early Outs"
 msgstr "跟踪迟到早退"
 
 msgid "Only one TrackLateComeEarlyOut instance is allowed."
-msgstr ""
+msgstr "仅允许一个迟到早退跟踪实例。"
 
 msgid "Holiday"
 msgstr "假期"
@@ -3478,17 +3352,14 @@ msgstr "公司假期"
 msgid "Leave type"
 msgstr "请假类型"
 
-#, fuzzy
 #| msgid "On Leave"
 msgid "Minus Leaves"
-msgstr "请假中"
+msgstr "扣减休假"
 
-#, fuzzy
 #| msgid "Maximum Carryforward"
 msgid "Deduct from Carry Forward"
-msgstr "最大结转天数"
+msgstr "从结转余额中扣除"
 
-#, fuzzy
 #| msgid "Penalty amount"
 msgid "Penalty Amount"
 msgstr "罚款金额"
@@ -3505,15 +3376,13 @@ msgstr "需要扣除假期或处罚金额"
 msgid "Leave type is required"
 msgstr "请假类型为必填项"
 
-#, fuzzy
 #| msgid "Penalty Account"
 msgid "Penalty Accounts"
-msgstr "处罚账户"
+msgstr "罚款账户"
 
-#, fuzzy
 #| msgid "Create"
 msgid "Create "
-msgstr "建立"
+msgstr "创建"
 
 msgid "Are you sure you want to delete this announcement?"
 msgstr "您确定要删除此公告吗？"
@@ -3527,26 +3396,23 @@ msgstr "发布于"
 msgid "View Attachment"
 msgstr "查看附件"
 
-#, fuzzy
 #| msgid "There are no contracts at the moment."
 msgid "There are no announcements at the moment."
-msgstr "目前没有合同。"
+msgstr "目前没有公告。"
 
 msgid "NEW"
 msgstr "新建"
 
-#, fuzzy
 #| msgid "Are you sure you want to delete this tag ?"
 msgid "Are you sure do you want to delete this file ?"
-msgstr "您确定要删除此标签吗？"
+msgstr "您确定要删除此文件吗？"
 
 msgid "'s comments"
 msgstr "[user:name] 的评论"
 
-#, fuzzy
 #| msgid "No notes have been added for this candidate."
 msgid "Comments have been disabled for this announcement."
-msgstr "此候选人尚未添加备注。"
+msgstr "此公告的评论已被禁用。"
 
 msgid "Announcement Expire"
 msgstr "公告到期"
@@ -3604,36 +3470,31 @@ msgid ""
 "profile."
 msgstr "启用此功能后，您可以限制员工编辑其个人资料。"
 
-#, fuzzy
 #| msgid ""
 #| "By enabling this feature, you can restrict an employee from editing their "
 #| "profile."
 msgid ""
 "Are you sure you want to restrict all employees from editing their profiles?"
-msgstr "启用此功能后，您可以限制员工编辑其个人资料。"
+msgstr "您确定要限制所有员工编辑其个人资料吗？"
 
-#, fuzzy
 #| msgid "Are you sure you want to delete this job role?"
 msgid "Are you sure you want to allow all employees to edit their profiles?"
-msgstr "您确定要删除此工作角色吗？"
+msgstr "您确定要允许所有员工编辑其个人资料吗？"
 
-#, fuzzy
 #| msgid "Delete Confirmation"
 msgid "Please Confirm"
-msgstr "删除确认"
+msgstr "请确认"
 
 msgid "Cancel"
 msgstr "取消"
 
-#, fuzzy
 #| msgid "File Error"
 msgid "Error"
-msgstr "文件错误"
+msgstr "错误"
 
-#, fuzzy
 #| msgid "Something went wrong when enabling face"
 msgid "Something went wrong while updating."
-msgstr "启用人脸识别时出现错误"
+msgstr "更新时出现问题。"
 
 msgid "Employee History Tracking"
 msgstr "员工历史记录追踪"
@@ -3723,34 +3584,30 @@ msgstr "可编辑"
 msgid "Can delete"
 msgstr "可删除"
 
-#, fuzzy
 #| msgid "Authentication"
 msgid "Two Factor Authentication"
-msgstr "认证"
+msgstr "双因素认证"
 
 msgid "Enter the OTP send to your email: "
-msgstr ""
+msgstr "请输入发送到您邮箱的验证码："
 
-#, fuzzy
 #| msgid "Enter Password"
 msgid "Enter OTP"
-msgstr "输入密码"
+msgstr "输入一次性密码"
 
 msgid "Resend OTP in"
-msgstr ""
+msgstr "重新发送验证码倒计时"
 
 msgid "Authenticate"
 msgstr "认证"
 
-#, fuzzy
 #| msgid "Send"
 msgid "Send OTP"
-msgstr "发送"
+msgstr "发送一次性密码"
 
-#, fuzzy
 #| msgid "Reset"
 msgid "Resend"
-msgstr "重置"
+msgstr "重新发送"
 
 msgid "Change Username"
 msgstr "更改用户名"
@@ -3885,18 +3742,16 @@ msgstr "发送测试邮件"
 msgid "Send Email"
 msgstr "发送邮件"
 
-#, fuzzy
 #| msgid "Send mail"
 msgid "Sending email..."
-msgstr "发送邮件"
+msgstr "正在发送电子邮件..."
 
 msgid "Primary mail is not configured! "
 msgstr "未配置主邮件！"
 
-#, fuzzy
 #| msgid "Send Test Email"
 msgid "Test email"
-msgstr "发送测试邮件"
+msgstr "测试电子邮件"
 
 msgid "Do you want to delete this mail server configuration?"
 msgstr "您确定要删除此邮件服务器配置吗？"
@@ -3911,7 +3766,7 @@ msgid "Submit"
 msgstr "提交"
 
 msgid "Languages"
-msgstr ""
+msgstr "语言"
 
 msgid "Add more shifts.."
 msgstr "添加更多轮班..."
@@ -3979,10 +3834,9 @@ msgstr "该员工未分配轮班。"
 msgid "Selected Shifts"
 msgstr "已选轮班"
 
-#, fuzzy
 #| msgid "Import Rotating Shift"
 msgid "No Employees Assigned to Rotating Shifts."
-msgstr "导入轮班"
+msgstr "没有员工被分配至轮换班次。"
 
 msgid "Import Rotating Shift"
 msgstr "导入轮班"
@@ -4023,10 +3877,9 @@ msgstr "该员工未分配轮班工作类型。"
 msgid "Selected Worktypes"
 msgstr "已选工作类型"
 
-#, fuzzy
 #| msgid "Update Rotating Work Type"
 msgid "No Employees Assigned to Rotating Work Types."
-msgstr "更新轮班工作类型"
+msgstr "没有员工被分配至轮换工作类型。"
 
 msgid "Do you want to un-archive this rotating work type assign?"
 msgstr "您确定要取消归档此轮班工作类型分配吗？"
@@ -4109,7 +3962,6 @@ msgstr "添加更多经理.."
 msgid "Export Rotating Shift Assigns"
 msgstr "导出轮班分配"
 
-#, fuzzy
 #| msgid "Do you want to un-archive this rotating work type assign?"
 msgid "Do you want to Un-archive this rotating work type assign?"
 msgstr "您确定要取消归档此轮班工作类型分配吗？"
@@ -4132,10 +3984,9 @@ msgstr "您是否不可用于此次轮班重新分配？"
 msgid "Not available"
 msgstr "不可用"
 
-#, fuzzy
 #| msgid "Add / View Comment"
 msgid "View Comment"
-msgstr "添加/查看评论"
+msgstr "查看评论"
 
 msgid "Export Shift Requests"
 msgstr "导出轮班请求"
@@ -4206,7 +4057,6 @@ msgstr "本月没有更多假期安排。"
 msgid "Mail Templates"
 msgstr "邮件模板"
 
-#, fuzzy
 #| msgid "There are currently no email templates."
 msgid "There are currently no email templates available."
 msgstr "目前没有邮件模板。"
@@ -5632,7 +5482,7 @@ msgid "Time format cannot saved. You are not in the company."
 msgstr "时间格式无法保存。您不在公司中。"
 
 msgid "Profile edit accessibility feature has been removed."
-msgstr ""
+msgstr "个人资料编辑无障碍功能已移除。"
 
 msgid "Tag has been created successfully!"
 msgstr "标签已成功创建！"
@@ -5799,7 +5649,7 @@ msgid "Biometric Devices"
 msgstr "生物识别设备"
 
 msgid "Fetch Logs"
-msgstr ""
+msgstr "获取日志"
 
 msgid "Device Type"
 msgstr "设备类型"
@@ -5881,7 +5731,7 @@ msgstr "该税级已存在"
 
 #, python-format
 msgid "This biometric %(label)s is already mapped with an employee"
-msgstr ""
+msgstr "此生物识别 %(label)s 已映射至一名员工"
 
 msgid "Both hour and minute cannot be zero"
 msgstr "小时和分钟不能同时为零"
@@ -5903,7 +5753,7 @@ msgid "Dahua Biometric"
 msgstr "Anviz生物识别"
 
 msgid "e-Time Office"
-msgstr ""
+msgstr "e-Time Office"
 
 #, fuzzy
 #| msgid "Device"
@@ -5916,10 +5766,10 @@ msgid "Out Device"
 msgstr "设备"
 
 msgid "Alternate In/Out Device"
-msgstr ""
+msgstr "备用进出设备"
 
 msgid "System Direction(In/Out) Device"
-msgstr ""
+msgstr "系统方向（进/出）设备"
 
 msgid "Machine IP"
 msgstr "机器IP"
@@ -5945,10 +5795,9 @@ msgstr "是否实时"
 msgid "Is Scheduled"
 msgstr "是否已安排"
 
-#, fuzzy
 #| msgid "Leave Description"
 msgid "Device Direction"
-msgstr "请假说明"
+msgstr "设备方向"
 
 msgid "Activate live capture mode"
 msgstr "激活实时捕获模式"
@@ -5956,22 +5805,18 @@ msgstr "激活实时捕获模式"
 msgid "Deactivate"
 msgstr "停用"
 
-#, fuzzy
 #| msgid "The Request ID required for the Anviz Biometric Device."
 msgid "The Machine IP is required for the selected biometric device."
-msgstr "Anviz生物识别设备需要请求ID"
+msgstr "所选生物识别设备需要设备 IP 地址。"
 
-#, fuzzy
 #| msgid "The Port No is required for ZKTeco Biometric"
 msgid "The Port Number is required for the selected biometric device."
-msgstr "ZKTeco生物识别需要端口号"
+msgstr "所选生物识别设备需要端口号。"
 
-#, fuzzy
 #| msgid "The password is required for ZKTeco Biometric Device"
 msgid "The password is required for ZKTeco Biometric Device."
 msgstr "ZKTeco生物识别设备需要密码"
 
-#, fuzzy
 #| msgid ""
 #| "The password must be an integer (numeric) value for ZKTeco Biometric "
 #| "Device"
@@ -5980,35 +5825,29 @@ msgid ""
 "for                            ZKTeco Biometric Device."
 msgstr "ZKTeco生物识别设备的密码必须为整数值"
 
-#, fuzzy
 #| msgid "The password is required for ZKTeco Biometric Device"
 msgid "The Username is required for the selected biometric device."
-msgstr "ZKTeco生物识别设备需要密码"
+msgstr "所选生物识别设备需要用户名。"
 
-#, fuzzy
 #| msgid "The password is required for ZKTeco Biometric Device"
 msgid "The Password is required for the selected biometric device."
-msgstr "ZKTeco生物识别设备需要密码"
+msgstr "所选生物识别设备需要密码。"
 
-#, fuzzy
 #| msgid "The Request ID required for the Anviz Biometric Device."
 msgid "The Request ID is required for the Anviz Biometric Device."
 msgstr "Anviz生物识别设备需要请求ID"
 
-#, fuzzy
 #| msgid "The API Url required for Anviz Biometric Device"
 msgid "The API URL is required for Anviz Biometric Device."
 msgstr "Anviz生物识别设备需要API URL"
 
-#, fuzzy
 #| msgid "The API Key required for Anviz Biometric Device"
 msgid "The API Key is required for Anviz Biometric Device."
 msgstr "Anviz生物识别设备所需的API密钥"
 
-#, fuzzy
 #| msgid "The API Secret is required for Anviz Biometric Device"
 msgid "The API Secret is required for Anviz Biometric Device."
-msgstr "Anviz生物识别设备所需的API密钥"
+msgstr "Anviz 生物识别设备需要 API 密钥。"
 
 msgid ""
 "Authentication failed. Please check your API "
@@ -6029,10 +5868,9 @@ msgstr "生物识别设备中的员工"
 msgid "Employees in Biometric Device"
 msgstr "生物识别设备中的员工"
 
-#, fuzzy
 #| msgid "Attendance Requests"
 msgid "COSEC Attendance Arguments"
-msgstr "考勤请求"
+msgstr "COSEC 考勤参数"
 
 msgid "Test"
 msgstr "测试"
@@ -6125,30 +5963,26 @@ msgid "Schedule Biometric Device"
 msgstr "安排生物识别设备"
 
 msgid "Dahua User"
-msgstr ""
+msgstr "大华用户"
 
-#, fuzzy
 #| msgid "Are you sure you want to delete this stage?"
 msgid "Are you sure you want to delete this user?"
-msgstr "您确定要删除此阶段吗？"
+msgstr "您确定要删除此用户吗？"
 
 msgid "Map Dahua User"
-msgstr ""
+msgstr "映射大华用户"
 
-#, fuzzy
 #| msgid "May"
 msgid "Map"
-msgstr "五月"
+msgstr "映射"
 
-#, fuzzy
 #| msgid "Employee"
 msgid "Map Employee"
-msgstr "員工"
+msgstr "映射员工"
 
-#, fuzzy
 #| msgid "Zip Code"
 msgid "Emp Code"
-msgstr "邮政编码"
+msgstr "员工编号"
 
 msgid "Biometric device unscheduled successfully"
 msgstr "生物识别设备已成功取消排程"
@@ -6165,96 +5999,82 @@ msgstr "设备状态为 %(message)s"
 msgid "Biometric device deleted successfully."
 msgstr "生物识别设备已成功删除"
 
-#, fuzzy
 #| msgid "Login successful."
 msgid "Connection Successful"
-msgstr "登录成功。"
+msgstr "连接成功"
 
-#, fuzzy
 #| msgid "The Ticket created successfully."
 msgid "ZKTeco test connection successful."
-msgstr "工单创建成功。"
+msgstr "ZKTeco 测试连接成功。"
 
-#, fuzzy
 #| msgid "Authentication"
 msgid "Authentication Error"
-msgstr "认证"
+msgstr "认证错误"
 
 msgid "Double-check the provided IP, Port, and Password."
-msgstr ""
+msgstr "请再次确认提供的 IP、端口和密码。"
 
-#, fuzzy
 #| msgid "Login successful."
 msgid "Connection unsuccessful"
-msgstr "登录成功。"
+msgstr "连接失败"
 
-#, fuzzy
 #| msgid "Please check the data you provided."
 msgid "Please check the IP, Port, and Password."
-msgstr "请检查您提供的数据。"
+msgstr "请检查 IP 地址、端口和密码。"
 
-#, fuzzy
 #| msgid "Asset Return Successful!."
 msgid "Anviz test connection successful."
-msgstr "资产归还成功！"
+msgstr "Anviz 测试连接成功。"
 
 msgid "API credentials might be incorrect."
-msgstr ""
+msgstr "API 凭据可能不正确。"
 
-#, fuzzy
 #| msgid "requested"
 msgid "API request failed."
-msgstr "已请求"
+msgstr "API 请求失败。"
 
-#, fuzzy
 #| msgid "Mail sent successfully"
 msgid "Matrix test connection successful."
-msgstr "邮件发送成功"
+msgstr "Matrix 测试连接成功。"
 
 msgid "Double-check the provided Machine IP, Username, and Password."
-msgstr ""
+msgstr "请再次确认提供的设备 IP、用户名和密码。"
 
-#, fuzzy
 #| msgid "Question created successfully."
 msgid "Dahua test connection successful."
-msgstr "问题创建成功。"
+msgstr "Dahua 测试连接成功。"
 
-#, fuzzy
 #| msgid "The Ticket created successfully."
 msgid "e-Time Office test connection successful."
-msgstr "工单创建成功。"
+msgstr "e-Time Office 测试连接成功。"
 
 #, python-brace-format
 msgid "Double-check the provided API Url, Username, and Password: {}"
-msgstr ""
+msgstr "请再次确认提供的 API URL、用户名和密码：{}"
 
-#, fuzzy
 #| msgid "Condition Operator"
 msgid "Connection error"
-msgstr "条件运算符"
+msgstr "连接错误"
 
-#, fuzzy
 #| msgid "Biometric device not found"
 msgid "Biometric device not supported."
-msgstr "未找到生物识别设备"
+msgstr "不支持该生物识别设备。"
 
 msgid ""
 "Bulk log fetching is currently available only for ZKTeco / eSSL devices. "
 "Support for other biometric systems will be added soon."
-msgstr ""
+msgstr "目前仅支持从 ZKTeco / eSSL 设备批量获取日志。其他生物识别系统将很快得到支持。"
 
-#, fuzzy
 #| msgid "Asset deleted successfully"
 msgid "Logs Fetched Successfully"
-msgstr "资产删除成功"
+msgstr "日志获取成功"
 
-#, fuzzy
 #| msgid "Login successful."
 msgid "Connection Unsuccessful"
-msgstr "登录成功。"
+msgstr "连接失败"
 
 msgid "Double-check the provided API Url, Username, and Password"
-msgstr ""
+msgstr "请再次确认提供的 API URL、用户名和密码。"
 
 msgid ""
 "Failed to establish a connection. Please verify the accuracy of the "
@@ -6299,28 +6119,24 @@ msgstr "{} 已成功添加到生物识别设备"
 msgid "{} already added to biometric device"
 msgstr "{} 已添加到生物识别设备"
 
-#, fuzzy
 #| msgid "{} successfully removed from the biometric device."
 msgid "Selected employee successfully mapped to the biometric user"
-msgstr "{} 已成功从生物识别设备中移除"
+msgstr "已成功将所选员工映射至生物识别用户"
 
-#, fuzzy
 #| msgid "{} already added to biometric device"
 msgid "Failed to add user to biometric device."
-msgstr "{} 已添加到生物识别设备"
+msgstr "无法将用户添加至生物识别设备。"
 
-#, fuzzy, python-brace-format
 #| msgid "Tax bracket successfully deleted."
 msgid "{} successfully deleted!"
-msgstr "税率等级已成功删除。"
+msgstr "{} 已成功删除！"
 
-#, fuzzy, python-brace-format
 #| msgid "Filing status successfully deleted."
 msgid "{} users successfully deleted!"
-msgstr "申报状态已成功删除。"
+msgstr "{} 位用户已成功删除！"
 
 msgid "No rows are selected for deleting users from device."
-msgstr ""
+msgstr "未选择要从设备中删除用户的行。"
 
 #, fuzzy, python-brace-format
 #| msgid "An error occurred: {}."
@@ -6357,74 +6173,62 @@ msgstr "登录限制"
 msgid "Action Type"
 msgstr "操作类型"
 
-#, fuzzy
 #| msgid "The comment updated successfully."
 msgid "The action type updated successfully."
-msgstr "评论更新成功。"
+msgstr "操作类型更新成功。"
 
-#, fuzzy
 #| msgid "The Ticket created successfully."
 msgid "The action type created successfully."
-msgstr "工单创建成功。"
+msgstr "操作类型创建成功。"
 
-#, fuzzy
 #| msgid "You cannot delete this candidate"
 msgid "Allocation feature not possible to this candidate"
-msgstr "无法删除此候选人"
+msgstr "无法为此候选人使用分配功能"
 
 msgid "Summary"
 msgstr "摘要"
 
-#, fuzzy
 #| msgid "Contract name"
 msgid "Contact name"
-msgstr "合同名称"
+msgstr "联系人姓名"
 
-#, fuzzy
 #| msgid "Emergency Contact Relation"
 msgid "Contact Relation"
-msgstr "紧急联系人关系"
+msgstr "联系人关系"
 
-#, fuzzy
 #| msgid "Personal Information"
 msgid "Personal Information Updated"
-msgstr "个人信息"
+msgstr "个人信息已更新"
 
-#, fuzzy
 #| msgid "Work Info"
 msgid "Work Info Updated"
-msgstr "工作信息"
+msgstr "工作信息已更新"
 
-#, fuzzy
 #| msgid "Bank Info"
 msgid "Bank Info Updated"
-msgstr "银行信息"
+msgstr "银行信息已更新"
 
-#, fuzzy
 #| msgid "Policy"
 msgid "Leave Policy"
-msgstr "政策"
+msgstr "休假政策"
 
-#, fuzzy
 #| msgid "Assigned To"
 msgid "Assigned "
-msgstr "分配给"
+msgstr "已分配"
 
 msgid "Cannot Assign or Already Assigned"
-msgstr ""
+msgstr "无法分配或已分配"
 
 msgid "Select Types to Assign"
-msgstr ""
+msgstr "选择要分配的类型"
 
-#, fuzzy
 #| msgid "Selected Assets"
 msgid "Selected Available Assets Allocated"
-msgstr "已選資源"
+msgstr "已分配所选可用资产"
 
-#, fuzzy
 #| msgid "Selected Assets"
 msgid "Select Available Assets to Add"
-msgstr "已選資源"
+msgstr "选择要添加的可用资产"
 
 #, fuzzy
 #| msgid "An error occurred: "
@@ -6473,7 +6277,7 @@ msgid "Select Deductions to Add"
 msgstr "选择要更新的字段"
 
 msgid "Dashboard access provided"
-msgstr ""
+msgstr "已授予仪表板访问权限"
 
 #, fuzzy
 #| msgid "Dashboard Chart Select"
@@ -6644,23 +6448,20 @@ msgstr "搜索范围：员工"
 msgid "Search in : Reporting manager"
 msgstr "搜索范围：汇报经理"
 
-#, fuzzy, python-brace-format
 #| msgid "Employee with email id already exists."
 msgid "An Employee with this Email already exists in company {}"
-msgstr "使用该电子邮箱的员工已存在。"
+msgstr "公司 {} 中已存在使用此电子邮件地址的员工。"
 
-#, fuzzy
 #| msgid "Employee with email id already exists."
 msgid "An Employee with this Email already exists"
 msgstr "使用该电子邮箱的员工已存在。"
 
-#, fuzzy
 #| msgid "Value must be an iterable."
 msgid "Badge ID must be unique."
-msgstr "值必须为可迭代对象。"
+msgstr "工牌 ID 必须唯一。"
 
 msgid "Badge ID must contain at least one digit."
-msgstr ""
+msgstr "工牌 ID 必须至少包含一个数字。"
 
 #, python-brace-format
 msgid "Create New {} "
@@ -6699,7 +6500,6 @@ msgstr "紧急联系人关系"
 msgid "Work Phone"
 msgstr "工作电话"
 
-#, fuzzy
 #| msgid "Date of Joining"
 msgid "Date Joining"
 msgstr "入职日期"
@@ -6707,10 +6507,9 @@ msgstr "入职日期"
 msgid "Basic Salary"
 msgstr "基本工资"
 
-#, fuzzy
 #| msgid "Salary Per Hour"
 msgid "Salary Hour"
-msgstr "每小时工资"
+msgstr "时薪"
 
 msgid "Contract End Date"
 msgstr "合同结束日期"
@@ -6730,10 +6529,9 @@ msgstr "银行所在国家"
 msgid "Bank State"
 msgstr "银行所在州/省"
 
-#, fuzzy
 #| msgid "Bank Country"
 msgid "Bank City"
-msgstr "银行所在国家"
+msgstr "银行所在城市"
 
 msgid "Select Fields to Update"
 msgstr "选择要更新的字段"
@@ -6745,15 +6543,14 @@ msgid "Create new action type "
 msgstr "创建新的操作类型"
 
 msgid "The uploaded file is empty, Not contain records."
-msgstr ""
+msgstr "上传的文件为空，不包含记录。"
 
 msgid "These required headers are missing in the uploaded file: "
-msgstr ""
+msgstr "上传的文件缺少以下必填标题："
 
-#, fuzzy
 #| msgid "Optional Profile Image?"
 msgid "Profile Image"
-msgstr "可选个人资料图片？"
+msgstr "个人资料图片"
 
 msgid "Expected working"
 msgstr "预计工作"
@@ -6794,10 +6591,9 @@ msgstr "入职日期"
 msgid "Salary Per Hour"
 msgstr "每小时工资"
 
-#, fuzzy
 #| msgid "Employee Details"
 msgid "Employee Bank Details"
-msgstr "员工详情"
+msgstr "员工银行信息"
 
 msgid "Bank details for an employee with this account number already exist"
 msgstr "已存在使用此账号的员工银行信息"
@@ -6823,18 +6619,16 @@ msgstr "大于或等于"
 msgid "less than or equal"
 msgstr "小于或等于"
 
-#, fuzzy
 #| msgid " Import Warning"
 msgid "Warning"
-msgstr "导入警告"
+msgstr "警告"
 
-#, fuzzy
 #| msgid "Suspended for"
 msgid "Suspension"
-msgstr "暂停"
+msgstr "停职"
 
 msgid "Dismissal"
-msgstr ""
+msgstr "解雇"
 
 msgid "Enable login block :"
 msgstr "启用登录限制："
@@ -6842,7 +6636,7 @@ msgstr "启用登录限制："
 msgid ""
 "If is enabled, employees log in will be blocked based on period of "
 "suspension or dismissal."
-msgstr ""
+msgstr "启用后，员工登录将在停职或解雇期间被阻止。"
 
 msgid "Action Types"
 msgstr "操作类型"
@@ -6850,25 +6644,21 @@ msgstr "操作类型"
 msgid "Hours"
 msgstr "小时"
 
-#, fuzzy
 #| msgid "Gender Chart"
 msgid "Can view Gender Chart"
-msgstr "性别图表"
+msgstr "可查看性别图表"
 
-#, fuzzy
 #| msgid "Department Chart"
 msgid "Can view Department Chart"
-msgstr "部门图表"
+msgstr "可查看部门图表"
 
-#, fuzzy
 #| msgid "Employees Chart"
 msgid "Can view Employees Chart"
-msgstr "员工图表"
+msgstr "可查看员工图表"
 
-#, fuzzy
 #| msgid "Can view"
 msgid "Can view Birthdays"
-msgstr "可查看"
+msgstr "可查看生日"
 
 msgid "Policies Not Found"
 msgstr "未找到政策"
@@ -6897,35 +6687,29 @@ msgstr "文件请求"
 msgid "Organization Chart"
 msgstr "组织架构图"
 
-#, fuzzy
 #| msgid "Allocated Assets"
 msgid "Allocate Asset"
-msgstr "已分配的資源"
+msgstr "分配资产"
 
-#, fuzzy
 #| msgid "Returned Status"
 msgid "Return Asset"
-msgstr "歸還狀態"
+msgstr "归还资产"
 
-#, fuzzy
 #| msgid "Tracking Id"
 msgid "Tracking"
-msgstr "追蹤ID"
+msgstr "跟踪"
 
-#, fuzzy
 #| msgid "Allocated"
 msgid "Allocate"
-msgstr "已分配"
+msgstr "分配"
 
-#, fuzzy
 #| msgid "users in this group"
 msgid "Assign user groups"
-msgstr "此群组中的用户"
+msgstr "分配用户群组"
 
-#, fuzzy
 #| msgid "This employee is not eligible for any allowances."
 msgid "This employee is not assigned to any groups."
-msgstr "该员工不符合任何津贴资格。"
+msgstr "该员工未分配至任何群组。"
 
 msgid "Personal Info"
 msgstr "个人信息"
@@ -6933,46 +6717,39 @@ msgstr "个人信息"
 msgid "Bank Info"
 msgstr "银行信息"
 
-#, fuzzy
 #| msgid "Assign Leave"
 msgid "Assign Leave Type"
-msgstr "分配请假"
+msgstr "分配休假类型"
 
-#, fuzzy
 #| msgid "All Assigned Leaves"
 msgid "Delete Assigned Leave Type"
-msgstr "所有已分配假期"
+msgstr "删除已分配的休假类型"
 
 msgid "Total Days"
 msgstr "总天数"
 
-#, fuzzy
 #| msgid "All time allowance."
 msgid "Allocate Allowance"
-msgstr "全时津贴"
+msgstr "分配津贴"
 
-#, fuzzy
 #| msgid "view-allowance"
 msgid "Remove from allowance"
-msgstr "查看津贴"
+msgstr "从津贴中移除"
 
 msgid "Amount"
 msgstr "金额"
 
-#, fuzzy
 #| msgid "Allowance & Deduction"
 msgid "Allocate Deduction"
-msgstr "津贴与扣款"
+msgstr "分配扣款"
 
-#, fuzzy
 #| msgid "Exclude the deduction"
 msgid "Exclude from deduction"
-msgstr "排除扣款"
+msgstr "从扣款中排除"
 
-#, fuzzy
 #| msgid "Dashboard Chart Select"
 msgid "Dashboard Access"
-msgstr "仪表板图表选择"
+msgstr "仪表板访问权限"
 
 msgid "Deductions"
 msgstr "扣除"
@@ -6983,7 +6760,6 @@ msgstr "暂停"
 msgid "hours"
 msgstr "小时"
 
-#, fuzzy
 #| msgid "Are you sure you want to delete this disciplinary action?"
 msgid " Are you sure you want to delete this disciplinary action?"
 msgstr "您确定要删除此纪律处分吗？"
@@ -7030,16 +6806,14 @@ msgstr "批量更新员工"
 msgid "Export Data"
 msgstr "导出数据"
 
-#, fuzzy
 #| msgid ""
 #| " Do you really want to allow this employee to access and log into this "
 #| "webpage?"
 msgid ""
 "Do you really want to prevent this employee from accessing and logging into "
 "this webpage?"
-msgstr "您确定要允许此员工访问并登录此网页吗？"
+msgstr "您确定要禁止此员工访问并登录此网页吗？"
 
-#, fuzzy
 #| msgid ""
 #| " Do you really want to allow this employee to access and log into this "
 #| "webpage?"
@@ -7072,10 +6846,9 @@ msgstr "文件请求"
 msgid "Bulk Approve Requests"
 msgstr "批量批准请求"
 
-#, fuzzy
 #| msgid "Do You really want to approve the request"
 msgid "Do you really want to approve all the selected requests?"
-msgstr "您确定要批准该请求吗？"
+msgstr "您确定要批准所有选定的申请吗？"
 
 msgid "Bulk Reject Requests"
 msgstr "批量拒绝请求"
@@ -7086,7 +6859,6 @@ msgstr "已选文件"
 msgid "Uploaded / Requested"
 msgstr "已上传 / 已请求"
 
-#, fuzzy
 #| msgid "Are you sure you want to delete this Document Request?"
 msgid " Are you sure you want to delete this Document Request?"
 msgstr "您确定要删除此文件请求吗？"
@@ -7100,10 +6872,9 @@ msgstr "您要批准此请求吗"
 msgid "Are you sure you want to delete this Document Request?"
 msgstr "您确定要删除此文件请求吗？"
 
-#, fuzzy
 #| msgid "No document requests found."
 msgid "No documents found."
-msgstr "未找到文档请求。"
+msgstr "未找到文件。"
 
 msgid "Upload Photo"
 msgstr "上传照片"
@@ -7172,7 +6943,7 @@ msgid "Message Body"
 msgstr "消息正文"
 
 msgid "Write"
-msgstr ""
+msgstr "写入"
 
 msgid "Preview"
 msgstr "预览"
@@ -7726,10 +7497,10 @@ msgstr "员工已删除"
 
 #, python-brace-format
 msgid "- {}."
-msgstr ""
+msgstr "- {}。"
 
 msgid "No IDs provided."
-msgstr ""
+msgstr "未提供 ID。"
 
 #, python-format
 msgid "You cannot delete %(employee)s."
@@ -7790,7 +7561,7 @@ msgid "No file uploaded."
 msgstr "未上传任何文件。"
 
 msgid "Unsupported file format. Please upload a CSV or Excel file."
-msgstr ""
+msgstr "不支持的文件格式。请上传 CSV 或 Excel 文件。"
 
 #, fuzzy, python-brace-format
 #| msgid "An error occurred: {}."
@@ -7800,7 +7571,7 @@ msgstr "发生错误：{}"
 #, python-brace-format
 msgid ""
 "Failed to read file. Please ensure it is a valid CSV or Excel file. : {}"
-msgstr ""
+msgstr "读取文件失败。请确保它是有效的 CSV 或 Excel 文件：{}"
 
 msgid "In-Active"
 msgstr "未激活"
@@ -8051,11 +7822,11 @@ msgstr "今天"
 
 #, python-brace-format
 msgid "Overdue by {} days"
-msgstr ""
+msgstr "已逾期 {} 天"
 
 #, python-brace-format
 msgid "Due in {} days"
-msgstr ""
+msgstr "将在 {} 天后到期"
 
 msgid "This field is required."
 msgstr "此字段为必填项。"
@@ -8115,7 +7886,7 @@ msgid "Search in FAQs..."
 msgstr "搜尋於：資源"
 
 msgid "Load Faqs"
-msgstr ""
+msgstr "加载常见问题"
 
 msgid "Are you sure you want to delete this FAQ?"
 msgstr "您确定要删除此常见问题吗？"
@@ -8198,7 +7969,6 @@ msgstr "最后活动时间："
 msgid "Tags:"
 msgstr "标签："
 
-#, fuzzy
 #| msgid "Claim Requests"
 msgid " Claim Requests"
 msgstr "报销申请"
@@ -8206,10 +7976,9 @@ msgstr "报销申请"
 msgid "File Upload"
 msgstr "文件上传"
 
-#, fuzzy
 #| msgid "Template as Attachment"
 msgid "Delete attachment"
-msgstr "模板作为附件"
+msgstr "删除附件"
 
 msgid "Ticket Id"
 msgstr "工单编号"
@@ -8239,7 +8008,7 @@ msgid "You cannot delete this FAQ category."
 msgstr "您无法删除此常见问题分类。"
 
 msgid "No FAQ found for the given category."
-msgstr ""
+msgstr "未找到该类别的常见问题。"
 
 #, python-brace-format
 msgid "The FAQ \"{}\" has been deleted successfully."
@@ -8254,10 +8023,9 @@ msgstr "工单取消归档成功。"
 msgid "The Ticket archived successfully."
 msgstr "工单归档成功。"
 
-#, fuzzy
 #| msgid "Invalid request"
 msgid "Invalid request method."
-msgstr "无效请求"
+msgstr "无效的请求方法。"
 
 msgid "The Ticket status updated successfully."
 msgstr "工单状态更新成功。"
@@ -8321,10 +8089,9 @@ msgstr "优先级已成功更新。"
 msgid "Ticket type has been deleted successfully!"
 msgstr "工单类型已成功删除！"
 
-#, fuzzy
 #| msgid "Ticket type not found"
 msgid "Ticket type can not delete"
-msgstr "未找到工单类型"
+msgstr "无法删除工单类型"
 
 msgid "Please enable the Track Late Come & Early Out from settings"
 msgstr "请在设置中启用“迟到早退跟踪”功能"
@@ -8344,15 +8111,13 @@ msgstr "修改者"
 msgid "History Tags"
 msgstr "历史标签"
 
-#, fuzzy
 #| msgid "Create Tag"
 msgid "Create Audit Tag"
-msgstr "创建标签"
+msgstr "创建审计标签"
 
-#, fuzzy
 #| msgid "History Tag Update"
 msgid "Audit Tag Update"
-msgstr "历史标签更新"
+msgstr "更新审计标签"
 
 msgid "Updation title"
 msgstr "更新标题"
@@ -8375,7 +8140,6 @@ msgstr "更新时间"
 msgid "Why this change?"
 msgstr "为何进行此更改？"
 
-#, fuzzy
 #| msgid "Also send to"
 msgid "Also Sent to"
 msgstr "同时发送至"
@@ -8383,93 +8147,78 @@ msgstr "同时发送至"
 msgid "The employees selected here will receive the email as Cc."
 msgstr "此处选中的员工将作为抄送接收邮件。"
 
-#, fuzzy
 #| msgid "Mail Log"
 msgid "Mail To"
-msgstr "邮件日志"
+msgstr "邮件收件人"
 
 msgid ""
 "Fill mail template details (receiver/instance, `self` will be the person who "
 "triggers the automation)"
-msgstr ""
+msgstr "填写邮件模板详细信息（接收人/实例，`self` 为触发自动化的人员）"
 
-#, fuzzy
 #| msgid "Bank Details"
 msgid "Mail Details"
-msgstr "银行信息"
+msgstr "邮件详情"
 
-#, fuzzy
 #| msgid "Create"
 msgid "On Create"
-msgstr "建立"
+msgstr "创建时"
 
-#, fuzzy
 #| msgid "Update"
 msgid "On Update"
-msgstr "更新"
+msgstr "更新时"
 
-#, fuzzy
 #| msgid "Delete"
 msgid "On Delete"
-msgstr "刪除"
+msgstr "删除时"
 
-#, fuzzy
 #| msgid "Send Email"
 msgid "Send as Email"
-msgstr "发送邮件"
+msgstr "作为电子邮件发送"
 
-#, fuzzy
 #| msgid "View all notifications"
 msgid "Send as Notification"
-msgstr "查看所有通知"
+msgstr "作为通知发送"
 
-#, fuzzy
 #| msgid "View all notifications"
 msgid "Send as Email and Notification"
-msgstr "查看所有通知"
+msgstr "作为电子邮件和通知发送"
 
 msgid "Model"
-msgstr ""
+msgstr "模型"
 
-#, fuzzy
 #| msgid "Mail Not Sent"
 msgid "Mail to/Notify to"
-msgstr "邮件未发送"
+msgstr "邮件收件人／通知对象"
 
 msgid ""
 "Fill mail template details(reciever/instance, `self` will be the person who "
 "trigger the automation)"
-msgstr ""
+msgstr "填写邮件模板详细信息（接收人/实例，`self` 为触发自动化的人员）"
 
-#, fuzzy
 #| msgid "Return Condition"
 msgid "Trigger Condition"
-msgstr "歸還狀況"
+msgstr "触发条件"
 
-#, fuzzy
 #| msgid "Mail Templates"
 msgid "Mail Template"
 msgstr "邮件模板"
 
-#, fuzzy
 #| msgid "Also send to"
 msgid "Also Send to"
 msgstr "同时发送至"
 
 msgid "Choose Delivery Channel"
-msgstr ""
+msgstr "选择发送渠道"
 
-#, fuzzy
 #| msgid "Template as Attachments"
 msgid "Template Attachments"
-msgstr "模板作为附件"
+msgstr "模板附件"
 
-#, fuzzy
 #| msgid "Mail Automations"
 msgid "Load Automations"
-msgstr "邮件自动化"
+msgstr "加载自动化规则"
 
-#, fuzzy
 #| msgid "Notifications"
 msgid "Notification"
 msgstr "通知"
@@ -8477,63 +8226,55 @@ msgstr "通知"
 msgid "Not Added"
 msgstr "未添加"
 
-#, fuzzy
 #| msgid "Mail Automations"
 msgid "Refresh Automations"
-msgstr "邮件自动化"
+msgstr "刷新自动化规则"
 
-#, fuzzy
 #| msgid "Mail Automations"
 msgid "Automations"
-msgstr "邮件自动化"
+msgstr "自动化规则"
 
-#, fuzzy
 #| msgid "Mail Automations"
 msgid "New Automation"
-msgstr "邮件自动化"
+msgstr "新建自动化规则"
 
-#, fuzzy
 #| msgid "Asset View"
 msgid "Detailed View"
-msgstr "資源檢視"
+msgstr "详细视图"
 
-#, fuzzy
 #| msgid "Mail Log"
 msgid "Mail Cc"
-msgstr "邮件日志"
+msgstr "邮件抄送"
 
 msgid "Trigger"
-msgstr ""
+msgstr "触发器"
 
-#, fuzzy
 #| msgid "This leave type does not exist."
 msgid "The directory does not exist."
-msgstr "此休假类型不存在"
+msgstr "目录不存在。"
 
 msgid "Negative value is not accepatable."
-msgstr ""
+msgstr "不允许使用负值。"
 
 msgid "Enter a hour between 0 to 24."
-msgstr ""
+msgstr "请输入 0 到 24 之间的小时数。"
 
 msgid "Enter a minute between 0 to 60."
-msgstr ""
+msgstr "请输入 0 到 60 之间的分钟数。"
 
 msgid "gdrive backup automation setup updated."
-msgstr ""
+msgstr "Google Drive 备份自动化设置已更新。"
 
 msgid "gdrive backup automation setup Created."
-msgstr ""
+msgstr "Google Drive 备份自动化设置已创建。"
 
-#, fuzzy
 #| msgid "Gracetime activated successfully."
 msgid "Gdrive Backup Automation Removed Successfully."
-msgstr "宽限时间激活成功。"
+msgstr "Google Drive 备份自动化规则已成功移除。"
 
 msgid "Format"
 msgstr "格式"
 
-#, fuzzy
 #| msgid "Max size (in MB)"
 msgid "Max size (In MB)"
 msgstr "最大大小（MB）"
@@ -8557,18 +8298,16 @@ msgstr "文件大小超出限制"
 msgid "Please upload {} file only."
 msgstr "请仅上传 {} 文件。"
 
-#, fuzzy
 #| msgid "Configuration"
 msgid "LDAP Configuration"
-msgstr "配置"
+msgstr "LDAP 配置"
 
-#, fuzzy
 #| msgid "Question updated successfully."
 msgid "Configuration updated successfully."
-msgstr "问题更新成功。"
+msgstr "配置更新成功。"
 
 msgid "Feature is not enabled on the settings"
-msgstr ""
+msgstr "此功能未在设置中启用"
 
 msgid "Records"
 msgstr "记录"
@@ -8579,10 +8318,9 @@ msgstr "已更新选中的记录"
 msgid "No records selected"
 msgstr "未选择任何记录"
 
-#, fuzzy
 #| msgid "Location"
 msgid "Allocation"
-msgstr "地点"
+msgstr "分配"
 
 msgid "Delete Confirmation"
 msgstr "删除确认"
@@ -8614,10 +8352,9 @@ msgstr "需要采取行动"
 msgid "Select All Columns"
 msgstr "选择所有列"
 
-#, fuzzy
 #| msgid "File path"
 msgid "File name:"
-msgstr "文件路径"
+msgstr "文件名："
 
 msgid "Filters"
 msgstr "筛选器"
@@ -8629,15 +8366,14 @@ msgid "Clear All"
 msgstr "清除所有"
 
 msgid "Restore the previous state"
-msgstr ""
+msgstr "恢复之前的状态"
 
 msgid "E-mail"
 msgstr "电子邮件"
 
-#, fuzzy
 #| msgid "Import"
 msgid "Import Help"
-msgstr "导入"
+msgstr "导入帮助"
 
 msgid "Unselect"
 msgstr "取消选择"
@@ -8646,7 +8382,7 @@ msgid "Show All"
 msgstr "显示全部"
 
 msgid "Filter and Choose"
-msgstr ""
+msgstr "筛选并选择"
 
 msgid "Selected"
 msgstr "已选择"
@@ -8738,12 +8474,10 @@ msgstr "附件"
 msgid "Create Leave Allocation Request"
 msgstr "创建假期分配请求"
 
-#, fuzzy
 #| msgid "Leave allocation requests"
 msgid "Leave allocation request updated"
-msgstr "请假分配请求"
+msgstr "休假分配申请已更新"
 
-#, fuzzy
 #| msgid "New Leave allocation request is created"
 msgid "New leave allocation request created"
 msgstr "新的请假分配请求已创建"
@@ -8763,30 +8497,25 @@ msgstr "多重审批"
 msgid "Reason for Rejection"
 msgstr "拒绝原因"
 
-#, fuzzy
 #| msgid "Leave request is updated successfully.."
 msgid "Leave request is updated successfully"
-msgstr "請假請求已成功更新。"
+msgstr "休假申请更新成功。"
 
-#, fuzzy
 #| msgid "Leave request created successfully.."
 msgid "Leave request created successfully"
-msgstr "請假請求已成功創建。"
+msgstr "休假申请创建成功。"
 
-#, fuzzy
 #| msgid "Clashed Due To"
 msgid "Clased Due To"
 msgstr "冲突原因"
 
-#, fuzzy
 #| msgid "Deducted From "
 msgid "Deducted FromCFD"
-msgstr "从...扣除"
+msgstr "从 CFD 中扣除"
 
-#, fuzzy
 #| msgid "Paid"
 msgid "Un Paid"
-msgstr "已支付"
+msgstr "未支付"
 
 msgid "Leave Types"
 msgstr "假期类型"
@@ -8800,10 +8529,9 @@ msgstr "重置"
 msgid "Carryforward Type"
 msgstr "结转类型"
 
-#, fuzzy
 #| msgid "Is pretax"
 msgid "Is paid"
-msgstr "是否为税前"
+msgstr "是否已支付"
 
 msgid "Require Approval"
 msgstr "需要审批"
@@ -8835,51 +8563,43 @@ msgstr "重置周末"
 msgid "Maximum Carryforward"
 msgstr "最大结转天数"
 
-#, fuzzy
 #| msgid "Carryforward Expire In"
 msgid "Carryforward Expires In"
-msgstr "结转有效期"
+msgstr "结转余额将在以下时间后到期"
 
 msgid "Assign Leave"
 msgstr "分配请假"
 
-#, fuzzy
 #| msgid "Leave types assigned successfully."
 msgid "Leave type assign is successfull"
 msgstr "休假类型分配成功"
 
-#, fuzzy
 #| msgid "Leave type has already been assigned to the employee."
 msgid "leave type is already assigned to the employee"
 msgstr "该请假类型已分配给员工。"
 
-#, fuzzy
 #| msgid "Compensatory leave type cannot be assigned manually."
 msgid "Compensatory leave type cant assigned manually"
 msgstr "补休类型不能手动分配"
 
-#, fuzzy
 #| msgid "My Leave Requests"
 msgid "My Leave requests"
-msgstr "我的請假請求"
+msgstr "我的休假申请"
 
 msgid "Leave Request Update"
 msgstr "請假請求更新"
 
-#, fuzzy
 #| msgid "Leave request updated successfully.."
 msgid "Leave request updated successfully"
 msgstr "请假请求更新成功。"
 
-#, fuzzy
 #| msgid "You dont have enough leave days to make the request.."
 msgid "You dont have enough leave days to make the request"
 msgstr "您的可用假期天数不足以提交此请求。"
 
-#, fuzzy
 #| msgid "Employee has already a leave request for this date range."
 msgid "There is already a leave request for this date range"
-msgstr "员工已存在此日期范围内的请假申请。"
+msgstr "此日期范围内已有休假申请。"
 
 msgid "Restricted Days"
 msgstr "受限日期"
@@ -8890,12 +8610,10 @@ msgstr "创建受限日"
 msgid "Update Restricted Day"
 msgstr "更新受限日"
 
-#, fuzzy
 #| msgid "Restricted day updated successfully.."
 msgid "Restricted Day Updated Successfully"
 msgstr "限制日更新成功。"
 
-#, fuzzy
 #| msgid "Restricted day created successfully.."
 msgid "Restricted Day Created Successfully"
 msgstr "限制日创建成功。"
@@ -8975,15 +8693,13 @@ msgstr "结束日期明细"
 msgid "Leave Clashes Count"
 msgstr "假期冲突次数"
 
-#, fuzzy
 #| msgid "Leave type is not assigned for the selected employee."
 msgid "The selected leave type is not assigned to this employee."
-msgstr "所选员工未分配请假类型。"
+msgstr "该员工未分配所选休假类型。"
 
 msgid "End date should not be less than start date."
 msgstr "结束日期不应早于开始日期。"
 
-#, fuzzy
 #| msgid "There is a mismatch in the breakdown of the start date and end date."
 msgid "Mismatch in the breakdown of the start and end date."
 msgstr "开始日期和结束日期的分解不匹配。"
@@ -8991,7 +8707,6 @@ msgstr "开始日期和结束日期的分解不匹配。"
 msgid "An attachment is required for this leave request"
 msgstr "此请假申请需要附件。"
 
-#, fuzzy
 #| msgid "Employee has already a leave request for this date range."
 msgid "Employee already has a leave request for this date range."
 msgstr "员工已存在此日期范围内的请假申请。"
@@ -8999,10 +8714,9 @@ msgstr "员工已存在此日期范围内的请假申请。"
 msgid "Requests cannot be made for past dates."
 msgstr "无法为过去的日期提交请求。"
 
-#, fuzzy
 #| msgid "has interview in the requested date."
 msgid "Does not have sufficient leave balance for the requested dates."
-msgstr "在请求日期有面试安排。"
+msgstr "申请日期的休假余额不足。"
 
 #, python-brace-format
 msgid "The {} leave request cannot be deleted !"
@@ -9012,7 +8726,7 @@ msgid "Leave Allocation Request"
 msgstr "请假分配请求"
 
 msgid "This form cannot be edited because the status is Requested / Rejected."
-msgstr ""
+msgstr "由于状态为“已请求/已拒绝”，无法编辑此表单。"
 
 msgid ""
 "If no job positions are specifically selected, the system will consider all "
@@ -9069,10 +8783,9 @@ msgstr "总假期天数大于或等于"
 msgid "Total Leave Days Less Than or Equal"
 msgstr "总请假天数小于或等于"
 
-#, fuzzy
 #| msgid "Are you sure you want to delete this assigned leave?"
 msgid "Are you sure you want to delete this assigned leave request?"
-msgstr "您确定要删除此分配的请假吗？"
+msgstr "您确定要删除此已分配休假申请吗？"
 
 msgid "Export Assigned Leaves"
 msgstr "导出已分配假期"
@@ -9113,10 +8826,9 @@ msgstr "导出请假请求"
 msgid "Clashed Leave Requests"
 msgstr "冲突的请假请求"
 
-#, fuzzy
 #| msgid "Are you sure you want to delete this employee type?"
 msgid "Are you sure you want to delete this leave type?"
-msgstr "您确定要删除此员工类型吗？"
+msgstr "您确定要删除此休假类型吗？"
 
 msgid "Carryforward Expire in"
 msgstr "结转有效期至"
@@ -9152,7 +8864,7 @@ msgid "Are you sure you want to delete this leave request?"
 msgstr "您确定要删除此请假请求吗？"
 
 msgid "warning"
-msgstr ""
+msgstr "警告"
 
 msgid "You have an interview in this requested date range."
 msgstr "您在此請求日期範圍內有面試安排。"
@@ -9220,10 +8932,9 @@ msgstr "下一个假期"
 msgid "Upcoming holidays"
 msgstr "即将到来的假期"
 
-#, fuzzy
 #| msgid "Upcoming holidays"
 msgid "Upcoming holidays in this year."
-msgstr "即将到来的假期"
+msgstr "今年即将到来的假日。"
 
 msgid "Department Leaves"
 msgstr "部门请假情况"
@@ -9338,10 +9049,9 @@ msgid ""
 "Forcasted Days)"
 msgstr "预测可用天数已添加到此可用天数（结转最大值 + 预测天数）"
 
-#, fuzzy
 #| msgid "Leave Requests"
 msgid "Pending Leaves Requests"
-msgstr "请假请求"
+msgstr "待处理休假申请"
 
 msgid "Select All Requests"
 msgstr "全选申请"
@@ -9370,10 +9080,9 @@ msgstr "起始日期"
 msgid "Leave Description"
 msgstr "请假说明"
 
-#, fuzzy
 #| msgid "Create Leave Request"
 msgid "Create Leave Report"
-msgstr "创建请假请求"
+msgstr "创建休假报告"
 
 msgid "Selected Requests"
 msgstr "已选请求"
@@ -9545,10 +9254,9 @@ msgstr "請假請求已成功刪除。"
 msgid "Leave request not found."
 msgstr "未找到請假請求。"
 
-#, fuzzy
 #| msgid "You can't cancel this leave request."
 msgid "You cannot approve your own leave request."
-msgstr "您无法取消此请假请求"
+msgstr "您无法批准自己的休假申请。"
 
 msgid "Leave request approved successfully.."
 msgstr "請假請求已成功批准。"
@@ -9627,7 +9335,7 @@ msgid "Leave type has already been assigned to the employee."
 msgstr "该请假类型已分配给员工。"
 
 msgid "Invalid date format. Please use YYYY-MM-DD or a supported format."
-msgstr ""
+msgstr "日期格式无效。请使用 YYYY-MM-DD 或受支持的格式。"
 
 msgid "Assigned Leaves"
 msgstr "已分配的假期"
@@ -9811,10 +9519,9 @@ msgstr "离职流程"
 msgid "Update Offboarding"
 msgstr "离职流程"
 
-#, fuzzy
 #| msgid "Offboarding deleted"
 msgid "Offboarding Updated"
-msgstr "离职信息已删除"
+msgstr "离职信息已更新"
 
 msgid "Offboarding saved"
 msgstr "离职信息已保存"
@@ -9825,10 +9532,9 @@ msgstr "创建任务"
 msgid "Update Task"
 msgstr "更新任务"
 
-#, fuzzy
 #| msgid "Task deleted"
 msgid "Task Updated"
-msgstr "任务已删除"
+msgstr "任务已更新"
 
 msgid "Task Added"
 msgstr "任务已添加"
@@ -9848,10 +9554,9 @@ msgstr "阶段"
 msgid "Tasks"
 msgstr "任务"
 
-#, fuzzy
 #| msgid "pipeline"
 msgid "Pipeline"
-msgstr "管道"
+msgstr "流程管道"
 
 msgid "Stages"
 msgstr "阶段"
@@ -9860,7 +9565,7 @@ msgid "Add Stage"
 msgstr "添加阶段"
 
 msgid "Manage Stage Order"
-msgstr ""
+msgstr "管理阶段顺序"
 
 msgid "Notice Period"
 msgstr "通知期"
@@ -9877,33 +9582,28 @@ msgstr "计划离职"
 msgid "Resignations"
 msgstr "辞职"
 
-#, fuzzy
 #| msgid "Planned To Leave"
 msgid "Planned to leave date"
-msgstr "计划离职"
+msgstr "计划离职日期"
 
-#, fuzzy
 #| msgid "Resignation Letters"
 msgid "Create Resignation Letter"
-msgstr "辞职信"
+msgstr "创建辞职信"
 
-#, fuzzy
 #| msgid "Question updated successfully."
 msgid "Resignation updated successfully"
-msgstr "问题更新成功。"
+msgstr "辞职信息更新成功"
 
-#, fuzzy
 #| msgid "Question created successfully."
 msgid "Resignation created successfully"
-msgstr "问题创建成功。"
+msgstr "辞职信息创建成功"
 
 msgid "Resignation"
 msgstr "辞职"
 
-#, fuzzy
 #| msgid "Task"
 msgid "Task To"
-msgstr "任务"
+msgstr "任务对象"
 
 msgid "Ongoing"
 msgstr "进行中"
@@ -9937,10 +9637,9 @@ msgstr "通知期已结束"
 msgid "tasks"
 msgstr "任务"
 
-#, fuzzy
 #| msgid "Planned To Leave"
 msgid "Planned To Leave On"
-msgstr "计划离职"
+msgstr "计划离职日期"
 
 msgid "Todo"
 msgstr "待办"
@@ -9960,7 +9659,6 @@ msgstr "离职程序"
 msgid "Resignation Letters"
 msgstr "辞职信"
 
-#, fuzzy
 #| msgid "No Records found"
 msgid "No Records found..."
 msgstr "未找到记录"
@@ -9971,14 +9669,13 @@ msgstr "显示管理记录"
 msgid "Managers"
 msgstr "经理"
 
-#, fuzzy
 #| msgid "Update Image"
 msgid "Update Stage Order"
-msgstr "更新图片"
+msgstr "更新阶段顺序"
 
 msgid ""
 "By approving the request employee will added to the offboarding pipeline"
-msgstr ""
+msgstr "批准请求后，该员工将加入离职流程。"
 
 msgid "Do You really want to approve the request"
 msgstr "您确定要批准该请求吗？"
@@ -9998,59 +9695,53 @@ msgstr "您确定要删除此记录吗？"
 msgid "Add to offboarding"
 msgstr "添加到离职流程"
 
-#, fuzzy
 #| msgid "Returned Status"
 msgid "Not Returned Assets"
-msgstr "歸還狀態"
+msgstr "未归还资产"
 
-#, fuzzy
 #| msgid "Gender"
 msgid "Reminder"
-msgstr "性别"
+msgstr "提醒"
 
 msgid "No Assets Due for Return from Offboarding Employees."
-msgstr ""
+msgstr "离职员工没有待归还的资产。"
 
 msgid "Exit Ratio"
-msgstr ""
+msgstr "离职率"
 
 msgid "Archived Employees / Total Employees"
-msgstr ""
+msgstr "已归档员工数/员工总数"
 
 msgid "Exiting to Joining Ratio"
-msgstr ""
+msgstr "离职与入职比例"
 
 msgid "Exiting Employees : Joining Employees"
-msgstr ""
+msgstr "离职员工：入职员工"
 
-#, fuzzy
 #| msgid "Add Employee"
 msgid "Archived Employees"
-msgstr "添加员工"
+msgstr "已归档员工"
 
-#, fuzzy
 #| msgid "Same Department & Job Position"
 msgid "Department - JobPosition Offboarding"
-msgstr "相同部门及职位"
+msgstr "部门－职位离职流程"
 
 msgid "Joining and Offboarding Chart"
-msgstr ""
+msgstr "入职和离职图表"
 
-#, fuzzy
 #| msgid "Offboarding employee deleted"
 msgid "Offboarding Employees Feedbacks"
-msgstr "离职员工已删除"
+msgstr "离职员工反馈"
 
 msgid "Feedback"
 msgstr "反馈"
 
-#, fuzzy
 #| msgid "No feedbacks are available."
 msgid "No feedbacks for Offboarding Employees."
-msgstr "无可用反馈。"
+msgstr "没有离职员工反馈。"
 
 msgid "No Pending Tasks for Offboarding Employees."
-msgstr ""
+msgstr "离职员工没有待处理任务。"
 
 msgid "stage"
 msgstr "阶段"
@@ -10080,10 +9771,9 @@ msgstr "启用此功能后，普通用户可以请求查看其辞职进度。"
 msgid "Are you sure want to delete this stage?"
 msgstr "您确定要删除此阶段吗？"
 
-#, fuzzy
 #| msgid "Do you want to delete this asset?"
 msgid "Do you want to delete task?"
-msgstr "您確定要刪除此資源嗎？"
+msgstr "您确定要删除此任务吗？"
 
 msgid "Add Task"
 msgstr "添加任务"
@@ -10124,10 +9814,9 @@ msgstr "备注已成功删除"
 msgid "Note not found."
 msgstr "未找到备注"
 
-#, fuzzy
 #| msgid "Task updated successfully.."
 msgid "Task status updated successfully..."
-msgstr "任务更新成功.."
+msgstr "任务状态更新成功。"
 
 msgid "Task status changed successfully."
 msgstr "任务状态已成功更改。"
@@ -10157,7 +9846,6 @@ msgstr "已安排"
 msgid "Done"
 msgstr "完成"
 
-#, fuzzy
 #| msgid "Candidate"
 msgid "Candidaate"
 msgstr "候选人"
@@ -10186,22 +9874,18 @@ msgstr "入职未设置"
 msgid "Portal Not-Sent"
 msgstr "门户未发送"
 
-#, fuzzy
 #| msgid "Portal Sent"
 msgid "Portal Send"
-msgstr "门户已发送"
+msgstr "发送门户链接"
 
-#, fuzzy
 #| msgid "Probation ends"
 msgid "Probation End"
 msgstr "试用期结束"
 
-#, fuzzy
 #| msgid "Offer letter status :"
 msgid "Offer Letter Status"
-msgstr "录用通知书状态："
+msgstr "录用通知书状态"
 
-#, fuzzy
 #| msgid "Reject Reason"
 msgid "Rejected Reason"
 msgstr "拒绝原因"
@@ -10212,27 +9896,22 @@ msgstr "技能专区"
 msgid "Send Portal"
 msgstr "发送门户"
 
-#, fuzzy
 #| msgid "Create Tag"
 msgid "Create Stage"
-msgstr "创建标签"
+msgstr "创建阶段"
 
-#, fuzzy
 #| msgid "Update Image"
 msgid "Update Stage"
-msgstr "更新图片"
+msgstr "更新阶段"
 
-#, fuzzy
 #| msgid "Stage is updated successfully.."
 msgid "Stage Updated Successfully"
 msgstr "阶段已成功更新。"
 
-#, fuzzy
 #| msgid "New stage created successfully.."
 msgid "New stage created successfully"
 msgstr "新阶段已成功创建。"
 
-#, fuzzy
 #| msgid "New task created successfully..."
 msgid "New Task Created Successfully"
 msgstr "新任务创建成功..."
@@ -10240,7 +9919,6 @@ msgstr "新任务创建成功..."
 msgid "Task updated successfully.."
 msgstr "任务更新成功.."
 
-#, fuzzy
 #| msgid "Onboarding portal stage"
 msgid "Onboarding Portal Stage"
 msgstr "入职门户阶段"
@@ -10248,35 +9926,29 @@ msgstr "入职门户阶段"
 msgid "Rating"
 msgstr "评分"
 
-#, fuzzy
 #| msgid "All Notifications"
 msgid "Allocations"
-msgstr "所有通知"
+msgstr "分配"
 
-#, fuzzy
 #| msgid " View Note"
 msgid "View Note"
 msgstr "查看备注"
 
-#, fuzzy
 #| msgid "Stage updated."
 msgid "Stage Updated"
 msgstr "阶段已更新。"
 
-#, fuzzy
 #| msgid "Stage updated."
 msgid "Stage not updated"
-msgstr "阶段已更新。"
+msgstr "阶段未更新"
 
-#, fuzzy
 #| msgid "Allocated"
 msgid "Task Allocated"
-msgstr "已分配"
+msgstr "任务已分配"
 
-#, fuzzy
 #| msgid "Stage updated."
 msgid "Status updated"
-msgstr "阶段已更新。"
+msgstr "状态已更新"
 
 msgid "Full Name"
 msgstr "全名"
@@ -10374,7 +10046,7 @@ msgid "Start Onboarding"
 msgstr "开始入职"
 
 msgid "Already Added!"
-msgstr ""
+msgstr "已添加！"
 
 #, fuzzy
 #| msgid "Candidates Started Onboarding"
@@ -10440,7 +10112,7 @@ msgid "Till End Date"
 msgstr "至结束日期"
 
 msgid "Taks"
-msgstr ""
+msgstr "任务"
 
 msgid "Upload Resumes"
 msgstr "上传简历"
@@ -10715,7 +10387,7 @@ msgid "Token Expire"
 msgstr "公告到期"
 
 msgid "Primary"
-msgstr ""
+msgstr "主要"
 
 #, fuzzy
 #| msgid "Ticket ID"
@@ -10738,10 +10410,10 @@ msgid "Expired⚠️"
 msgstr "已过期"
 
 msgid "Refresh Token"
-msgstr ""
+msgstr "刷新令牌"
 
 msgid "Token not refreshed, Login required"
-msgstr ""
+msgstr "令牌未刷新，需要登录"
 
 #, fuzzy
 #| msgid "Note deleted successfully."
@@ -10754,7 +10426,7 @@ msgid "Mail sent"
 msgstr "邮件已发送"
 
 msgid "Outlook authentication required/expired"
-msgstr ""
+msgstr "需要 Outlook 身份验证或验证已过期"
 
 msgid "Tax"
 msgstr "税务"
@@ -10895,20 +10567,17 @@ msgstr "进度"
 msgid "Loan / Advanced Salary"
 msgstr "贷款/预支工资"
 
-#, fuzzy
 #| msgid "Loan / Advanced Salary"
 msgid "Loan / Advanced Sarlary"
 msgstr "贷款/预支工资"
 
-#, fuzzy
 #| msgid "Candidate Updated Successfully."
 msgid "Loan Updated Successfully"
-msgstr "候选人更新成功。"
+msgstr "贷款更新成功"
 
-#, fuzzy
 #| msgid "New holiday created successfully.."
 msgid "New Loan Created Successfully"
-msgstr "新假期已成功创建。"
+msgstr "新贷款创建成功"
 
 msgid "Generate"
 msgstr "生成"
@@ -10916,7 +10585,6 @@ msgstr "生成"
 msgid "Payslip Report"
 msgstr "工资单报告"
 
-#, fuzzy
 #| msgid "Send via mail"
 msgid "Send Via Mail"
 msgstr "通过邮件发送"
@@ -10924,7 +10592,6 @@ msgstr "通过邮件发送"
 msgid "Payslip"
 msgstr "工资单"
 
-#, fuzzy
 #| msgid "Payslip Batch"
 msgid "Pay Slip Batch"
 msgstr "工资单批次"
@@ -10956,12 +10623,10 @@ msgstr "创建自动工资单生成"
 msgid "Update Auto Payslip Generate"
 msgstr "更新自动工资单生成"
 
-#, fuzzy
 #| msgid "All company"
 msgid "All companies"
-msgstr "全公司"
+msgstr "所有公司"
 
-#, fuzzy
 #| msgid "Active 'Payslip auto generate' cannot delete."
 msgid "Active 'Payslip auto generate' cannot be deleted."
 msgstr "无法删除已激活的“工资单自动生成”。"
@@ -10985,20 +10650,18 @@ msgid "Bonus to encash"
 msgstr "可折现的奖金"
 
 msgid "Create Reimbursement / Encashment"
-msgstr ""
+msgstr "创建报销/折现"
 
 msgid "Update Reimbursement / Encashment"
-msgstr ""
+msgstr "更新报销/折现"
 
-#, fuzzy
 #| msgid "The comment updated successfully."
 msgid "Reimbursement updated successfully"
-msgstr "评论更新成功。"
+msgstr "报销更新成功"
 
-#, fuzzy
 #| msgid "Document created successfully."
 msgid "Reimbursement created successfully"
-msgstr "文档创建成功。"
+msgstr "报销创建成功"
 
 msgid "Payslip Batch"
 msgstr "工资单批次"
@@ -11036,12 +10699,10 @@ msgstr "数值必须大于零"
 msgid "Taxable Gross Pay"
 msgstr "应税总收入"
 
-#, fuzzy
 #| msgid "Bank Code"
 msgid "Python Code"
-msgstr "银行代码"
+msgstr "Python 代码"
 
-#, fuzzy
 #| msgid "Filing Status"
 msgid "Filing Statuses"
 msgstr "申报状态"
@@ -11167,18 +10828,16 @@ msgstr "限制津贴金额"
 msgid "The maximum amount for the allowance"
 msgstr "津贴的最大金额"
 
-#, fuzzy
 #| msgid "Paid Amount"
 msgid "Maximum Amount"
-msgstr "已付金额"
+msgstr "最高金额"
 
 msgid "For working days on month"
 msgstr "本月工作日数"
 
-#, fuzzy
 #| msgid "Has Maximum Limit"
 msgid "Maximum Unit"
-msgstr "有最大限制"
+msgstr "最大单位数"
 
 msgid "The pay head for the if condition"
 msgstr "薪资项的条件判断"
@@ -11195,10 +10854,9 @@ msgstr "薪资项范围的起始金额"
 msgid "The end amount of the pay-head range"
 msgstr "薪资项范围的结束金额"
 
-#, fuzzy
 #| msgid "Info"
 msgid "If"
-msgstr "信息"
+msgstr "如果"
 
 msgid "If the 'Is fixed' field is disabled, the 'Based on' field is required."
 msgstr "如果“是否固定”字段被禁用，则“基于”字段为必填项。"
@@ -11342,12 +11000,10 @@ msgstr "分期金额"
 msgid "Total installments"
 msgstr "总分期数"
 
-#, fuzzy
 #| msgid "Installment Start Date"
 msgid "Installment start date"
 msgstr "分期开始日期"
 
-#, fuzzy
 #| msgid "Is settled"
 msgid "Settled"
 msgstr "已结算"
@@ -11385,26 +11041,23 @@ msgid ""
 "days"
 msgstr "该员工没有足够的假期可用于CFD/可用天数兑换"
 
-#, fuzzy
 #| msgid "Payslip Auto Generation"
 msgid "Payslip Generate Day"
-msgstr "工资单自动生成"
+msgstr "工资单生成日"
 
 msgid "On this day of every month,Payslip will auto generate"
-msgstr ""
+msgstr "每月的这一天将自动生成工资单。"
 
-#, fuzzy
 #| msgid "Generate"
 msgid "Auto Generate"
-msgstr "生成"
+msgstr "自动生成"
 
 msgid "Postfix"
 msgstr "后缀"
 
-#, fuzzy
 #| msgid "Payroll settings updated."
 msgid "Payroll Settings"
-msgstr "薪资设置已更新。"
+msgstr "薪资设置"
 
 msgid "Min. Income"
 msgstr "最低收入"
@@ -11424,10 +11077,9 @@ msgstr "最高收入必须大于最低收入。"
 msgid "Payslips"
 msgstr "工资单"
 
-#, fuzzy
 #| msgid "Reimbursements"
 msgid "Encashments & Reimbursements"
-msgstr "报销"
+msgstr "兑现与报销"
 
 msgid "Federal Tax"
 msgstr "联邦税"
@@ -11481,9 +11133,8 @@ msgid "Basic Salary Greater or Equal"
 msgstr "基本工资大于或等于"
 
 msgid "out of"
-msgstr ""
+msgstr "共"
 
-#, fuzzy
 #| msgid "Installments"
 msgid "installments"
 msgstr "分期付款"
@@ -11503,15 +11154,13 @@ msgstr "序号"
 msgid "One Time Date"
 msgstr "一次性日期"
 
-#, fuzzy
 #| msgid "Installment Start Date"
 msgid "Installment paid, Click to view"
-msgstr "分期开始日期"
+msgstr "分期付款已支付，点击查看"
 
-#, fuzzy
 #| msgid "Is settled"
 msgid "Loan Settled"
-msgstr "已结算"
+msgstr "贷款已结清"
 
 msgid "Loan Filter"
 msgstr "贷款筛选"
@@ -11522,10 +11171,9 @@ msgstr "提供日期"
 msgid "Is settled"
 msgstr "已结算"
 
-#, fuzzy
 #| msgid "Do you want to send the payslip by mail?"
 msgid "Do you want to sent the payslip by mail?"
-msgstr "您是否希望通过邮件发送工资单？"
+msgstr "您是否要通过电子邮件发送工资单？"
 
 msgid "Send via mail"
 msgstr "通过邮件发送"
@@ -11569,15 +11217,13 @@ msgstr "批量工资单"
 msgid "Export Payslips"
 msgstr "导出工资单"
 
-#, fuzzy
 #| msgid "Attachments"
 msgid "No Attachments."
-msgstr "附件"
+msgstr "没有附件。"
 
-#, fuzzy
 #| msgid "Add MoM"
 msgid "Add More"
-msgstr "添加会议纪要"
+msgstr "添加更多"
 
 msgid "There are currently no allowances to consider."
 msgstr "目前没有可考虑的津贴。"
@@ -11638,23 +11284,20 @@ msgstr "部门总金额"
 msgid "Employer Contributions"
 msgstr "雇主缴纳部分"
 
-#, fuzzy
 #| msgid "Contracts ending "
 msgid "Contracts Ending "
-msgstr "合同即将到期"
+msgstr "即将到期的合同"
 
 msgid "Number of contracts expiring in "
 msgstr "即将到期的合同数量"
 
-#, fuzzy
 #| msgid "Contract Created"
 msgid "Contracts Expired"
-msgstr "合同已创建"
+msgstr "已到期合同"
 
-#, fuzzy
 #| msgid "Number of contracts expiring in "
 msgid "Number of contracts expired in "
-msgstr "即将到期的合同数量"
+msgstr "在指定期间内到期的合同数量"
 
 msgid "No records available."
 msgstr "无可用记录。"
@@ -11831,23 +11474,20 @@ msgstr "工资单报告"
 msgid "No payslips have been generated."
 msgstr "尚未生成任何工资单。"
 
-#, fuzzy
 #| msgid "No penalties found."
 msgid "No Files found."
-msgstr "未找到处罚记录。"
+msgstr "未找到文件。"
 
-#, fuzzy
 #| msgid "No records available at the moment."
 msgid "No files available at the moment."
-msgstr "目前沒有可用的記錄。"
+msgstr "目前没有可用文件。"
 
 msgid "'s reimbursement request"
 msgstr "[user:name] 的报销申请"
 
-#, fuzzy
 #| msgid "No records available at the moment."
 msgid "No comments available at the moment."
-msgstr "目前沒有可用的記錄。"
+msgstr "目前没有可用评论。"
 
 msgid "carryforward to encash"
 msgstr "结转至折现"
@@ -11972,10 +11612,9 @@ msgstr "未找到税率等级"
 msgid "Tax bracket successfully deleted."
 msgstr "税率等级已成功删除。"
 
-#, fuzzy
 #| msgid "Question created successfully."
 msgid "Python code saved successfully!"
-msgstr "问题创建成功。"
+msgstr "Python 代码保存成功！"
 
 msgid "Contract Created"
 msgstr "合同已创建"
@@ -12102,30 +11741,25 @@ msgstr "请求的反馈"
 msgid "Anonymous Feedback"
 msgstr "匿名反馈"
 
-#, fuzzy
 #| msgid "Anonymous"
 msgid "Add Anonymous"
-msgstr "匿名"
+msgstr "添加匿名反馈"
 
-#, fuzzy
 #| msgid "Feedbacks to review"
 msgid "Feedbacks to Review"
 msgstr "待审核的反馈"
 
-#, fuzzy
 #| msgid "Total feedbacks"
 msgid "Bulk feedback"
-msgstr "反馈总数"
+msgstr "批量反馈"
 
 msgid "Feedbacks"
 msgstr "反馈"
 
-#, fuzzy
 #| msgid "Feedback updated successfully!."
 msgid "Feedback Updated Successfully"
-msgstr "反馈更新成功！"
+msgstr "反馈更新成功"
 
-#, fuzzy
 #| msgid "Feedback created successfully."
 msgid "Feedback Created Successfully"
 msgstr "反馈创建成功。"
@@ -12136,7 +11770,6 @@ msgstr "效能"
 msgid "Update Feedback"
 msgstr "更新反馈"
 
-#, fuzzy
 #| msgid "Feedback updated successfully!."
 msgid "Feedback updated successfully!"
 msgstr "反馈更新成功！"
@@ -12153,15 +11786,13 @@ msgstr "创建关键成果"
 msgid "Update Key result"
 msgstr "更新关键成果"
 
-#, fuzzy
 #| msgid "Key result Updated sucessfully."
 msgid "Ket result  deleted successfully!"
-msgstr "关键结果更新成功。"
+msgstr "关键结果删除成功！"
 
-#, fuzzy
 #| msgid "Leave request not found"
 msgid "Key result not found"
-msgstr "未找到请假请求"
+msgstr "未找到关键结果"
 
 msgid "MoM"
 msgstr "会议纪要 (MoM)"
@@ -12178,35 +11809,29 @@ msgstr "可回答的员工"
 msgid "Minutes of Meeting"
 msgstr "会议纪要"
 
-#, fuzzy
 #| msgid "Update Request"
 msgid "Update Meeting"
-msgstr "更新请求"
+msgstr "更新会议"
 
-#, fuzzy
 #| msgid "Meeting added successfully"
 msgid "Meeting updated successfully"
-msgstr "会议添加成功"
+msgstr "会议更新成功"
 
 msgid "Meeting added successfully"
 msgstr "会议添加成功"
 
-#, fuzzy
 #| msgid "Response"
 msgid "Add Response"
-msgstr "回复"
+msgstr "添加回复"
 
-#, fuzzy
 #| msgid "Report added successfully."
 msgid "Response added successfully"
-msgstr "報告新增成功。"
+msgstr "回复添加成功"
 
-#, fuzzy
 #| msgid "Assigned Leaves"
 msgid "Assigned Objectives"
-msgstr "已分配的假期"
+msgstr "已分配目标"
 
-#, fuzzy
 #| msgid "All Objective"
 msgid "All Objectives"
 msgstr "所有目标"
@@ -12226,7 +11851,6 @@ msgstr "员工目标更新成功"
 msgid "Employee objective created successfully"
 msgstr "员工目标创建成功"
 
-#, fuzzy
 #| msgid "Create Objective"
 msgid "Create  Objective"
 msgstr "创建目标"
@@ -12234,20 +11858,17 @@ msgstr "创建目标"
 msgid "Update Objective"
 msgstr "更新目标"
 
-#, fuzzy
 #| msgid "Objective deleted successfully!."
 msgid "Objective Updated successfully"
-msgstr "目标删除成功！"
+msgstr "目标更新成功"
 
-#, fuzzy
 #| msgid "Objective deleted successfully!."
 msgid "Objective created successfully"
-msgstr "目标删除成功！"
+msgstr "目标创建成功"
 
 msgid "Add assignees"
 msgstr "添加负责人"
 
-#, fuzzy
 #| msgid "Key result Updated sucessfully."
 msgid "Key result updated sucessfully."
 msgstr "关键结果更新成功。"
@@ -12264,93 +11885,77 @@ msgstr "创建周期"
 msgid "Update Period"
 msgstr "更新周期"
 
-#, fuzzy
 #| msgid "Period updated  Successfully. "
 msgid "Period Updated Successfully"
 msgstr "周期更新成功。"
 
-#, fuzzy
 #| msgid "Period updated  Successfully. "
 msgid "Period Created Successfully"
-msgstr "周期更新成功。"
+msgstr "周期创建成功"
 
-#, fuzzy
 #| msgid "Total Question"
 msgid "Total Questions"
 msgstr "问题总数"
 
-#, fuzzy
 #| msgid "Question Template"
 msgid "Add Question Template"
-msgstr "问题模板"
+msgstr "添加问题模板"
 
-#, fuzzy
 #| msgid "Question Template"
 msgid "Edit Question Template"
-msgstr "问题模板"
+msgstr "编辑问题模板"
 
-#, fuzzy
 #| msgid "Question updated successfully."
 msgid "Question Template Updated Successfully"
-msgstr "问题更新成功。"
+msgstr "问题模板更新成功"
 
-#, fuzzy
 #| msgid "Question created successfully."
 msgid "Question Template Created Successfully"
-msgstr "问题创建成功。"
+msgstr "问题模板创建成功"
 
 msgid "Bonus Point Setting"
 msgstr "积分设置"
 
-#, fuzzy
 #| msgid "Bonus Point Setting"
 msgid "Create Bonus Point Setting"
-msgstr "积分设置"
+msgstr "创建奖励积分设置"
 
 #, fuzzy
 #| msgid "employee-bonus-point"
 msgid "Employee Bonus Point "
 msgstr "员工奖励积分"
 
-#, fuzzy
 #| msgid "Create Employee Shift"
 msgid "Create Employee Bonus Point "
-msgstr "创建员工轮班"
+msgstr "创建员工奖励积分"
 
-#, fuzzy
 #| msgid "There are no Feedback requests available."
 msgid "Share Feedback request "
-msgstr "当前没有可用的反馈请求。"
+msgstr "共享反馈请求"
 
-#, fuzzy
 #| msgid "Bulk Reject Requests"
 msgid "Bulk Feedback request "
-msgstr "批量拒绝请求"
+msgstr "批量反馈请求"
 
-#, fuzzy
 #| msgid "Overtime"
 msgid "Overdue"
-msgstr "加班"
+msgstr "逾期"
 
-#, fuzzy
 #| msgid "Today"
 msgid "Due Today"
-msgstr "今天"
+msgstr "今日到期"
 
-#, fuzzy
 #| msgid "This Week"
 msgid "Due This Week"
-msgstr "本周"
+msgstr "本周到期"
 
-#, fuzzy
 #| msgid "This Month"
 msgid "Due This Month"
-msgstr "本月"
+msgstr "本月到期"
 
-#, fuzzy
 #| msgid "Reset Month"
 msgid "Due Next Month"
-msgstr "重置月份"
+msgstr "下月到期"
 
 msgid "Key result"
 msgstr "关键结果"
@@ -12388,10 +11993,9 @@ msgstr "此'奖励对象'不在模型状态中"
 msgid "Bonus point must be greater than zero"
 msgstr "奖励积分必须大于零"
 
-#, fuzzy
 #| msgid "Amount should be greater than zero."
 msgid "Point should be greater than zero."
-msgstr "金额应大于零。"
+msgstr "积分必须大于零。"
 
 #, fuzzy
 #| msgid "Online Employees"
@@ -12399,7 +12003,7 @@ msgid "Other employees"
 msgstr "在线员工"
 
 msgid "Employees need to sent feedback request."
-msgstr ""
+msgstr "员工需要发送反馈请求。"
 
 #, fuzzy
 #| msgid "Include all"
@@ -12482,7 +12086,7 @@ msgid "Subordinates"
 msgstr "下属"
 
 msgid "Employees for whom the feedback requester is the reporting manager"
-msgstr ""
+msgstr "反馈请求人是直属经理的员工"
 
 #, fuzzy
 #| msgid "Online Employees"
@@ -12494,11 +12098,11 @@ msgstr "周期时长"
 
 #, python-format
 msgid "Over due by %(days)s days"
-msgstr ""
+msgstr "已逾期 %(days)s 天"
 
 #, python-format
 msgid "Due in %(days)s days"
-msgstr ""
+msgstr "将在 %(days)s 天后到期"
 
 msgid "General"
 msgstr "通用"
@@ -12612,45 +12216,38 @@ msgstr "离职流程"
 msgid "Start Date Range"
 msgstr "开始日期"
 
-#, fuzzy
 #| msgid "Date range"
 msgid "End Date Range"
-msgstr "日期范围"
+msgstr "结束日期范围"
 
-#, fuzzy
 #| msgid "Created At"
 msgid "Created At Range"
-msgstr "创建于"
+msgstr "创建日期范围"
 
-#, fuzzy
 #| msgid "Filters"
 msgid "Quick Filters"
-msgstr "筛选器"
+msgstr "快速筛选"
 
-#, fuzzy
 #| msgid "Are you sure you want to delete\tthis Key result?"
 msgid "Are you sure you want to delete this Key result?"
 msgstr "您确定要删除此关键成果吗？"
 
-#, fuzzy
 #| msgid "Due"
 msgid "due"
-msgstr "截止日期"
+msgstr "到期"
 
 #, fuzzy
 #| msgid "Fine"
 msgid "in"
 msgstr "罚款"
 
-#, fuzzy
 #| msgid "Do you want to unarchive this meeting?"
 msgid "Do you want to unarchive this key Result?"
-msgstr "您要取消归档此会议吗？"
+msgstr "您要取消归档此关键结果吗？"
 
-#, fuzzy
 #| msgid "Do you want to archive this ticket?"
 msgid "Do you want to archive this key Result?"
-msgstr "您要归档此工单吗？"
+msgstr "您要归档此关键结果吗？"
 
 msgid "Do you want to delete this Key result?"
 msgstr "您确定要删除此关键结果吗？"
@@ -12792,10 +12389,9 @@ msgstr "差"
 msgid "Owner: "
 msgstr "负责人："
 
-#, fuzzy
 #| msgid "Requested Feedback"
 msgid "Request feedback"
-msgstr "请求的反馈"
+msgstr "请求反馈"
 
 msgid "Do you want archive this Feedback ?"
 msgstr "您确定要归档此反馈吗？"
@@ -12827,10 +12423,9 @@ msgstr "反馈概览"
 msgid "Answer View"
 msgstr "答复视图"
 
-#, fuzzy
 #| msgid "Self Feedback"
 msgid "Bulk Feedback"
-msgstr "自我反馈"
+msgstr "批量反馈"
 
 msgid "No Feedbacks are available."
 msgstr "无可用反馈。"
@@ -12931,7 +12526,6 @@ msgstr "员工目标"
 msgid "Activites"
 msgstr "活动"
 
-#, fuzzy
 #| msgid "Add Key Results"
 msgid "Add Key Result"
 msgstr "添加关键结果"
@@ -12944,26 +12538,24 @@ msgstr "您要删除此员工目标吗？"
 
 #, python-format
 msgid "Objective Progress %% (GTE)"
-msgstr ""
+msgstr "目标进度 %%（大于或等于）"
 
 #, python-format
 msgid "Objective Progress %% (LTE)"
-msgstr ""
+msgstr "目标进度 %%（小于或等于）"
 
 #, fuzzy
 #| msgid "End Date Till"
 msgid "End Date TTill"
 msgstr "结束日期至"
 
-#, fuzzy, python-format
 #| msgid "Progress Type"
 msgid "KR Progress %% (GTE)"
-msgstr "进度类型"
+msgstr "关键结果进度 %%（大于或等于）"
 
-#, fuzzy, python-format
 #| msgid "Progress Type"
 msgid "KR Progress %% (LTE)"
-msgstr "进度类型"
+msgstr "关键结果进度 %%（小于或等于）"
 
 msgid "Create Key Result"
 msgstr "创建关键结果"
@@ -13109,15 +12701,13 @@ msgstr "关键结果 %(key_result)s 创建成功"
 msgid "Key result %(key_result)s updated successfully"
 msgstr "关键结果 %(key_result)s 更新成功"
 
-#, fuzzy
 #| msgid "Meeting unarchived successfully"
 msgid "Key reuslt unarchived successfully"
-msgstr "会议取消归档成功"
+msgstr "关键结果取消归档成功"
 
-#, fuzzy
 #| msgid "Meeting archived successfully"
 msgid "Key reuslt archived successfully"
-msgstr "会议归档成功"
+msgstr "关键结果归档成功"
 
 #, python-format
 msgid "Objective %(objective)s deleted"
@@ -13130,20 +12720,17 @@ msgstr "无法删除目标 %(objective)s，存在相关条目"
 msgid "Objective not found."
 msgstr "未找到目标"
 
-#, fuzzy
 #| msgid "Stage manager removed successfully."
 msgid "Manger removed successfully."
-msgstr "阶段经理移除成功。"
+msgstr "经理移除成功。"
 
-#, fuzzy
 #| msgid "Key result Updated sucessfully."
 msgid "Key result removed successfully."
-msgstr "关键结果更新成功。"
+msgstr "关键结果移除成功。"
 
-#, fuzzy
 #| msgid "Asset created successfully"
 msgid "Assignee removed successfully."
-msgstr "资产创建成功"
+msgstr "受分配人移除成功。"
 
 #, python-format
 msgid "Objective %(objective)s status updated"
@@ -13195,15 +12782,13 @@ msgstr "进行中的反馈不可编辑！"
 msgid "Feedback updated successfully!."
 msgstr "反馈更新成功！"
 
-#, fuzzy
 #| msgid "Feedback is not answered yet"
 msgid "Feedback not started yet"
-msgstr "反馈尚未答复"
+msgstr "反馈尚未开始"
 
-#, fuzzy
 #| msgid "Feedback Title"
 msgid "Feedback is due/closed"
-msgstr "反馈标题"
+msgstr "反馈已到期／已关闭"
 
 msgid "You are not allowed to answer"
 msgstr "您无权回答"
@@ -13240,10 +12825,9 @@ msgstr "反馈状态已更新为 %(status)s"
 msgid "Error occurred during status update to %(status)s"
 msgstr "状态更新为 %(status)s 时发生错误"
 
-#, fuzzy
 #| msgid "Attendance Does not exists.."
 msgid "Feedback does not exist."
-msgstr "考勤记录不存在。"
+msgstr "反馈不存在。"
 
 msgid "Feedback un-archived successfully!."
 msgstr "反馈已成功取消归档！"
@@ -13278,10 +12862,9 @@ msgstr "删除问题失败：问题模板正在使用中。"
 msgid "Related entries exist."
 msgstr "存在相关条目"
 
-#, fuzzy
 #| msgid "Question created successfully."
 msgid "Question template created successfully!"
-msgstr "问题创建成功。"
+msgstr "问题模板创建成功！"
 
 msgid "Question template does not exist"
 msgstr "问题模板不存在。"
@@ -13326,10 +12909,9 @@ msgstr "您无法删除状态为 %(status)s 的目标 %(objective)s"
 msgid "{feedback} is {message}"
 msgstr "{feedback} 是 {message}"
 
-#, fuzzy
 #| msgid "Delete"
 msgid "Deleted"
-msgstr "刪除"
+msgstr "已删除"
 
 msgid "You are don't have permissions."
 msgstr "您没有权限。"
@@ -13372,88 +12954,75 @@ msgstr "奖励积分设置已成功激活。"
 msgid "Bonus point setting deactivated successfully."
 msgstr "奖励积分设置已成功停用。"
 
-#, fuzzy
 #| msgid "Project"
 msgid "View Project"
-msgstr "项目"
+msgstr "查看项目"
 
-#, fuzzy
 #| msgid "Tasks"
 msgid "No of Tasks"
-msgstr "任务"
+msgstr "任务数量"
 
-#, fuzzy
 #| msgid "Create Objective"
 msgid "Create Project Stage"
-msgstr "创建目标"
+msgstr "创建项目阶段"
 
 #, fuzzy
 #| msgid "Something went wrong"
 msgid "Something went wrong!"
 msgstr "出现错误"
 
-#, fuzzy
 #| msgid "Update Objective"
 msgid "Update Project Stage"
-msgstr "更新目标"
+msgstr "更新项目阶段"
 
-#, fuzzy
 #| msgid "Key result created"
 msgid "New project stage created"
-msgstr "关键结果已创建"
+msgstr "新项目阶段已创建"
 
-#, fuzzy
 #| msgid "Key result created"
 msgid "New project created"
-msgstr "关键结果已创建"
+msgstr "新项目已创建"
 
-#, fuzzy
 #| msgid "Project"
 msgid "Projects"
 msgstr "项目"
 
-#, fuzzy
 #| msgid "To Date"
 msgid "To Do"
-msgstr "结束日期"
+msgstr "待办"
 
-#, fuzzy
 #| msgid "Selected"
 msgid "Select Stage"
-msgstr "已选择"
+msgstr "选择阶段"
 
 #, fuzzy
 #| msgid "Dynamic create"
 msgid "Dynamic Create"
 msgstr "动态创建"
 
-#, fuzzy
 #| msgid "Key result created"
 msgid "New Task created"
-msgstr "关键结果已创建"
+msgstr "新任务已创建"
 
-#, fuzzy
 #| msgid "Bank Details"
 msgid "Task Details"
-msgstr "银行信息"
+msgstr "任务详情"
 
 #, fuzzy
 #| msgid "Objective status"
 msgid "archive_status"
 msgstr "目标状态"
 
-#, fuzzy
 #| msgid "Update Ticket"
 msgid "Update Time Sheet"
-msgstr "更新工单"
+msgstr "更新时间表"
 
-#, fuzzy
 #| msgid "New attendance request created"
 msgid "New time sheet created"
-msgstr "新的考勤请求已创建。"
+msgstr "新时间表已创建"
 
 msgid "Time Spent"
-msgstr ""
+msgstr "耗时"
 
 #, fuzzy
 #| msgid "Start from"
@@ -13551,10 +13120,10 @@ msgid "Are you sure you want to delete this time sheet?"
 msgstr "您确定要删除此轮班吗？"
 
 msgid "Time Sheet"
-msgstr ""
+msgstr "工时表"
 
 msgid "Time Sheets"
-msgstr ""
+msgstr "工时表"
 
 #, fuzzy
 #| msgid "Time"
@@ -13601,132 +13170,110 @@ msgstr "您要取消归档此员工目标吗？"
 msgid "Do you really want to delete all the selected projects?"
 msgstr "您确定要删除此假期类型吗？"
 
-#, fuzzy
 #| msgid "There are no rotating shift assigned to this employee."
 msgid "No projects assigned to this employee."
-msgstr "该员工未分配轮班。"
+msgstr "该员工未分配项目。"
 
-#, fuzzy
 #| msgid "Import Assets"
 msgid "Import Project"
-msgstr "匯入資源"
+msgstr "导入项目"
 
-#, fuzzy
 #| msgid "Do you want to archive this ticket?"
 msgid "Do you want to archive this task?"
-msgstr "您要归档此工单吗？"
+msgstr "您要归档此任务吗？"
 
-#, fuzzy
 #| msgid "Do you want to un-archive this ticket?"
 msgid "Do you want to un archive this task?"
-msgstr "您要取消归档此工单吗？"
+msgstr "您要取消归档此任务吗？"
 
-#, fuzzy
 #| msgid "Do you want Delete this OKR ?"
 msgid "Do you want Delete this Task ?"
-msgstr "您确定要删除此OKR吗？"
+msgstr "您确定要删除此任务吗？"
 
 msgid "Time sheet"
-msgstr ""
+msgstr "工时表"
 
-#, fuzzy
 #| msgid "Do you want to delete this asset?"
 msgid "Do you want to delete this task?"
-msgstr "您確定要刪除此資源嗎？"
+msgstr "您确定要删除此任务吗？"
 
-#, fuzzy
 #| msgid "Do you want to delete this asset?"
 msgid "Do you want to delete this time sheet?"
-msgstr "您確定要刪除此資源嗎？"
+msgstr "您确定要删除此时间表吗？"
 
 msgid "View Timesheet Chart"
-msgstr ""
+msgstr "查看工时表图表"
 
-#, fuzzy
 #| msgid "Not Added"
 msgid " Add"
-msgstr "未添加"
+msgstr "添加"
 
-#, fuzzy
 #| msgid "Total Hires"
 msgid "Total Projects"
-msgstr "总招聘人数"
+msgstr "项目总数"
 
-#, fuzzy
 #| msgid "Project"
 msgid "New Projects"
-msgstr "项目"
+msgstr "新项目"
 
-#, fuzzy
 #| msgid "In progress"
 msgid "Projects in progress"
-msgstr "進行中"
+msgstr "进行中的项目"
 
-#, fuzzy
 #| msgid "Portal Status"
 msgid "Project Status"
-msgstr "门户状态"
+msgstr "项目状态"
 
-#, fuzzy
 #| msgid "No contracts ending this month"
 msgid "Projects due in this month"
-msgstr "本月没有合同到期"
+msgstr "本月到期的项目"
 
-#, fuzzy
 #| msgid "Recruitment manager"
 msgid "Project manager"
-msgstr "招聘经理"
+msgstr "项目经理"
 
-#, fuzzy
 #| msgid "Do you want to archive this objective?"
 msgid "Do you want to archive this project?"
-msgstr "您确定要归档此目标吗？"
+msgstr "您确定要归档此项目吗？"
 
-#, fuzzy
 #| msgid "Do you want to unarchive this objective?"
 msgid "Do you want to un archive this project?"
-msgstr "您确定要取消归档此目标吗？"
+msgstr "您确定要取消归档此项目吗？"
 
 #, fuzzy
 #| msgid "Do you want to delete this template"
 msgid "Do you want to delete this employee?"
 msgstr "您要删除此模板吗？"
 
-#, fuzzy
 #| msgid "There are currently no allowances to consider."
 msgid "There are currently no available projects; please create a new one."
-msgstr "目前没有可考虑的津贴。"
+msgstr "当前没有可用项目；请创建一个新项目。"
 
-#, fuzzy
 #| msgid "Department Managers"
 msgid "Project Manager"
-msgstr "部门经理"
+msgstr "项目经理"
 
 msgid "Are you sure you want to delete this stage?"
 msgstr "您确定要删除此阶段吗？"
 
-#, fuzzy
 #| msgid "There are currently no email templates."
 msgid "There are currently no available tasks; please create a new one."
-msgstr "目前没有邮件模板。"
+msgstr "当前没有可用任务；请创建一个新任务。"
 
-#, fuzzy
 #| msgid "Task Manager"
 msgid "Task manager"
 msgstr "任务经理"
 
-#, fuzzy
 #| msgid "Task Managers"
 msgid "Task members"
-msgstr "任务管理者"
+msgstr "任务成员"
 
 msgid " Time sheet"
-msgstr ""
+msgstr " 工时表"
 
-#, fuzzy
 #| msgid "Do you really want to delete this leave type?"
 msgid "Do you really want to delete this task?"
-msgstr "您确定要删除此假期类型吗？"
+msgstr "您确定要删除此任务吗？"
 
 #, fuzzy
 #| msgid "Managers:"
@@ -13738,25 +13285,21 @@ msgstr "经理："
 msgid " Are you sure you want to delete this stage?"
 msgstr "您确定要删除此阶段吗？"
 
-#, fuzzy
 #| msgid "No user found with the username"
 msgid "No tasks found in this stage."
-msgstr "未找到使用该用户名的用户"
+msgstr "此阶段中未找到任务。"
 
-#, fuzzy
 #| msgid "Create Task"
 msgid "Create task"
 msgstr "创建任务"
 
-#, fuzzy
 #| msgid "There are currently no email templates."
 msgid "There are currently no available timesheets; please create a new one."
-msgstr "目前没有邮件模板。"
+msgstr "当前没有可用时间表；请创建一个新的时间表。"
 
 msgid "Do you want to delete this candidate?"
 msgstr "您要删除此候选人吗？"
 
-#, fuzzy
 #| msgid "Managers"
 msgid "Mangers"
 msgstr "经理"
@@ -13766,162 +13309,134 @@ msgstr "经理"
 msgid " Task"
 msgstr "任务"
 
-#, fuzzy
 #| msgid "Time"
 msgid "Personal Timesheet of"
-msgstr "时间"
+msgstr "个人时间表："
 
-#, fuzzy
 #| msgid "Weekly"
 msgid "Week"
-msgstr "每周"
+msgstr "周"
 
-#, fuzzy
 #| msgid "Profile updated."
 msgid "Project updated"
-msgstr "个人资料已更新。"
+msgstr "项目已更新"
 
-#, fuzzy
 #| msgid "Invalid start date format."
 msgid "Invalid status or missing data."
-msgstr "开始日期格式无效。"
+msgstr "状态无效或缺少数据。"
 
-#, fuzzy
 #| msgid "This leave type does not exist."
 msgid "The specified project does not exist."
-msgstr "此休假类型不存在"
+msgstr "指定项目不存在。"
 
 msgid "Could not retrieve project IDs."
-msgstr ""
+msgstr "无法获取项目 ID。"
 
 msgid "Invalid value for 'is_active'. Use 'true' or 'false'."
-msgstr ""
+msgstr "“is_active”的值无效。请使用“true”或“false”。"
 
-#, fuzzy
 #| msgid "No records were available."
 msgid "No project IDs were provided."
-msgstr "没有可用的记录。"
+msgstr "未提供项目 ID。"
 
-#, fuzzy, python-brace-format
 #| msgid "Note deleted successfully."
 msgid "{count} project(s) deleted successfully."
-msgstr "备注删除成功。"
+msgstr "已成功删除 {count} 个项目。"
 
 #, python-format
 msgid "Permission denied or skipped for: %(projects)s."
-msgstr ""
+msgstr "没有权限或已跳过：%(projects)s。"
 
-#, fuzzy
 #| msgid "Tag has been created successfully!"
 msgid "The task has been created successfully!"
-msgstr "标签已成功创建！"
+msgstr "任务创建成功！"
 
-#, fuzzy
 #| msgid "Key results created"
 msgid "New task created"
-msgstr "关键结果已创建"
+msgstr "新任务已创建"
 
-#, fuzzy
 #| msgid "Task deleted"
 msgid "Task updated"
-msgstr "任务已删除"
+msgstr "任务已更新"
 
-#, fuzzy
 #| msgid "The {} has been deleted successfully."
 msgid "The task has been deleted successfully."
-msgstr "{} 已成功删除。"
+msgstr "任务已成功删除。"
 
-#, fuzzy
 #| msgid "Stage updated."
 msgid "Task stage updated"
-msgstr "阶段已更新。"
+msgstr "任务阶段已更新"
 
-#, fuzzy
 #| msgid "Shift schedule created."
 msgid "Timesheet created"
-msgstr "轮班表已创建。"
+msgstr "时间表已创建"
 
-#, fuzzy
 #| msgid "Shift updated"
 msgid "Timesheet updated"
-msgstr "轮班已更新"
+msgstr "时间表已更新"
 
-#, fuzzy
 #| msgid "The note has been successfully deleted."
 msgid "Task stage has been successfully updated."
-msgstr "备注已成功删除"
+msgstr "任务阶段已成功更新。"
 
-#, fuzzy
 #| msgid "The note has been successfully deleted."
 msgid "Tasks order has been successfully updated."
-msgstr "备注已成功删除"
+msgstr "任务顺序已成功更新。"
 
-#, fuzzy
 #| msgid "Can't delete the feedback it's already answered."
 msgid "Cannot update status. Task has already expired."
-msgstr "无法删除已答复的反馈。"
+msgstr "无法更新状态。任务已过期。"
 
-#, fuzzy
 #| msgid "The contract status has been updated successfully."
 msgid "Task status has been updated successfully"
-msgstr "合同状态已成功更新。"
+msgstr "任务状态已成功更新"
 
-#, fuzzy
 #| msgid "Task updated successfully.."
 msgid "Task updated successfully"
-msgstr "任务更新成功.."
+msgstr "任务更新成功"
 
-#, fuzzy, python-format
 #| msgid "You cannot delete this asset."
 msgid "You cannot delete %(task)s."
-msgstr "您无法删除此资产。"
+msgstr "您无法删除 %(task)s。"
 
 #, python-brace-format
 msgid "{} tasks."
-msgstr ""
+msgstr "{} 个任务。"
 
-#, fuzzy
 #| msgid "The Ticket tag updated successfully."
 msgid "Project stage updated successfully"
-msgstr "工单标签更新成功。"
+msgstr "项目阶段更新成功"
 
-#, fuzzy
 #| msgid "Stage deleted successfully."
 msgid "Stage deleted successfully"
 msgstr "阶段删除成功。"
 
 msgid "Can't Delete. This stage contain some tasks"
-msgstr ""
+msgstr "无法删除。此阶段包含一些任务。"
 
-#, fuzzy
 #| msgid "The note has been successfully deleted."
 msgid "The project stage sequence has been successfully updated."
-msgstr "备注已成功删除"
+msgstr "项目阶段顺序已成功更新。"
 
-#, fuzzy
 #| msgid "Shift schedule created."
 msgid "Time sheet created"
-msgstr "轮班表已创建。"
+msgstr "时间表已创建"
 
-#, fuzzy
 #| msgid "Key result updated"
 msgid "Time sheet updated"
-msgstr "关键结果已更新"
+msgstr "时间表已更新"
 
-#, fuzzy
 #| msgid "The {} has been deleted successfully."
 msgid "The time sheet has been deleted successfully"
-msgstr "{} 已成功删除。"
+msgstr "时间表已成功删除"
 
-#, fuzzy, python-format
 #| msgid "%(employee)s deleted."
 msgid "%(timesheet)s deleted."
-msgstr "%(employee)s 已删除。"
+msgstr "%(timesheet)s 已删除。"
 
-#, fuzzy, python-format
 #| msgid "You cannot delete %(employee)s."
 msgid "You cannot delete %(timesheet)s."
-msgstr "您无法删除 %(employee)s。"
+msgstr "您无法删除 %(timesheet)s。"
 
 msgid "View candidate self tracking"
 msgstr "查看候选人自我跟踪"
@@ -14054,27 +13569,22 @@ msgstr "简历筛选"
 msgid "Reopen"
 msgstr "重新开启"
 
-#, fuzzy
 #| msgid "Scheduled Interviews"
 msgid "Scheduled Interview"
-msgstr "已安排的面试"
+msgstr "已安排面试"
 
-#, fuzzy
 #| msgid "Edit Rejected Candidate"
 msgid "Reject Candidate"
-msgstr "编辑已拒绝的候选人"
+msgstr "拒绝候选人"
 
-#, fuzzy
 #| msgid "Hide Questions"
 msgid "Survey Questions"
-msgstr "隐藏问题"
+msgstr "调查问题"
 
-#, fuzzy
 #| msgid "Create survey questions"
 msgid "Update Survey Questions"
-msgstr "创建调查问题"
+msgstr "更新调查问题"
 
-#, fuzzy
 #| msgid "New survey question updated."
 msgid "Survey question updated."
 msgstr "新调查问题已更新。"
@@ -14082,15 +13592,13 @@ msgstr "新调查问题已更新。"
 msgid "New survey question created."
 msgstr "新调查问题已创建。"
 
-#, fuzzy
 #| msgid "Duplicate Survey Template"
 msgid "Duplicate Survey Questions"
-msgstr "复制调查模板"
+msgstr "复制调查问题"
 
-#, fuzzy
 #| msgid "Templates"
 msgid "Template saved"
-msgstr "模板"
+msgstr "模板已保存"
 
 msgid "Sequence"
 msgstr "序列"
@@ -14098,7 +13606,6 @@ msgstr "序列"
 msgid "Open Jobs"
 msgstr "开放职位"
 
-#, fuzzy
 #| msgid "Vacancy"
 msgid "Vaccancy"
 msgstr "职位空缺"
@@ -14124,61 +13631,51 @@ msgstr "可选简历？"
 msgid "Skills"
 msgstr "技能"
 
-#, fuzzy
 #| msgid "Skill Zone created successfully."
 msgid "New Skill Created Successfully"
-msgstr "技能区域已成功创建。"
+msgstr "新技能创建成功"
 
 msgid "Add Recruitment"
 msgstr "添加招聘"
 
-#, fuzzy
 #| msgid "Request Updated Successfully"
 msgid "Recruitment Updated Successfully"
-msgstr "请求更新成功"
+msgstr "招聘信息更新成功"
 
-#, fuzzy
 #| msgid "Recruitment deleted successfully."
 msgid "Recruitment Created Successfully"
-msgstr "招聘信息删除成功。"
+msgstr "招聘信息创建成功"
 
 msgid "Add Candidate"
 msgstr "添加候选人"
 
-#, fuzzy
 #| msgid "Candidate added successfully."
 msgid "Candidate Added successfully."
 msgstr "候选人已成功添加。"
 
-#, fuzzy
 #| msgid "Recruitment added."
 msgid "Recruitment added"
-msgstr "招聘已添加。"
+msgstr "招聘信息已添加"
 
-#, fuzzy
 #| msgid "Skill Zone"
 msgid "Create Skill Zone"
-msgstr "技能专区"
+msgstr "创建技能专区"
 
-#, fuzzy
 #| msgid "Add to Skill Zone"
 msgid "Update Skill Zone"
-msgstr "添加到技能专区"
+msgstr "更新技能专区"
 
 msgid "Skill Zone updated successfully."
 msgstr "技能区域已成功更新。"
 
-#, fuzzy
 #| msgid "Skill Zone created successfully."
 msgid "Skill Zone created successfully"
 msgstr "技能区域已成功创建。"
 
-#, fuzzy
 #| msgid "Add to Skill Zone"
 msgid "Add Candidate to  skill zone"
-msgstr "添加到技能专区"
+msgstr "将候选人添加至技能专区"
 
-#, fuzzy
 #| msgid "Candidate Updated Successfully."
 msgid "Candidate updated successfully."
 msgstr "候选人更新成功。"
@@ -14189,20 +13686,17 @@ msgstr "候选人已成功添加。"
 msgid "Skill"
 msgstr "技能"
 
-#, fuzzy
 #| msgid "Update Task"
 msgid "Update Skills"
-msgstr "更新任务"
+msgstr "更新技能"
 
-#, fuzzy
 #| msgid "Shift updated"
 msgid "Skill updated"
-msgstr "轮班已更新"
+msgstr "技能已更新"
 
-#, fuzzy
 #| msgid "Skill Zone created successfully."
 msgid "Skill created successfully!"
-msgstr "技能区域已成功创建。"
+msgstr "技能创建成功！"
 
 msgid "Edit Stage"
 msgstr "编辑阶段"
@@ -14217,20 +13711,17 @@ msgstr "阶段已更新。"
 msgid "Stage added"
 msgstr "阶段已添加。"
 
-#, fuzzy
 #| msgid "Fine Amount"
 msgid "LinkedIn Accounts"
-msgstr "罚款金额"
+msgstr "LinkedIn 帐户"
 
-#, fuzzy
 #| msgid "Survey Filter"
 msgid "Survey Answer By"
-msgstr "调查筛选器"
+msgstr "调查回答者"
 
-#, fuzzy
 #| msgid "Select all users"
 msgid "Select survey answers..."
-msgstr "选择所有用户"
+msgstr "选择调查回答..."
 
 msgid "Stage Type"
 msgstr "阶段类型"
@@ -14245,7 +13736,7 @@ msgid "Job position is required if the recruitment is publishing."
 msgstr "如果招聘正在发布，则必须选择职位。"
 
 msgid "LinkedIn account is required for publishing."
-msgstr ""
+msgstr "发布需要 LinkedIn 帐户。"
 
 msgid "Choose valid choice"
 msgstr "选择有效选项"
@@ -14268,7 +13759,6 @@ msgstr "面试时间不能为过去时间。"
 msgid "File must be a PDF."
 msgstr "文件必须为PDF格式。"
 
-#, fuzzy
 #| msgid "Survey Templates"
 msgid "Survey Template"
 msgstr "调查模板"
@@ -14284,38 +13774,34 @@ msgid ""
 "appear on open recruitment page."
 msgstr "在网站上发布招聘，若为false则不会出现在公开招聘页面。"
 
-#, fuzzy
 #| msgid "Fine Amount"
 msgid "LinkedIn Account"
-msgstr "罚款金额"
+msgstr "LinkedIn 帐户"
 
-#, fuzzy
 #| msgid ""
 #| "To publish a recruitment in website, if false then it             will "
 #| "not appear on open recruitment page."
 msgid ""
 "To publish a recruitment in Linkedin, if active is false then it             "
 "will not post on LinkedIn."
-msgstr "在网站上发布招聘，若为false则不会出现在公开招聘页面。"
+msgstr "要在 LinkedIn 发布招聘，请启用此选项；停用后将不会发布到 LinkedIn。"
 
 msgid "Post on LinkedIn"
-msgstr ""
+msgstr "发布到 LinkedIn"
 
 msgid "Profile image not mandatory for candidate creation"
 msgstr "候选人创建时，个人头像非必填"
 
-#, fuzzy
 #| msgid "Optional Profile Image?"
 msgid "Optional Profile Image"
-msgstr "可选个人资料图片？"
+msgstr "可选个人资料图片"
 
 msgid "Resume not mandatory for candidate creation"
 msgstr "候选人创建时，简历非必填"
 
-#, fuzzy
 #| msgid "Optional Resume?"
 msgid "Optional Resume"
-msgstr "可选简历？"
+msgstr "可选简历"
 
 msgid "Recruitments"
 msgstr "招聘"
@@ -14329,21 +13815,19 @@ msgstr "结束日期不能早于开始日期。"
 msgid "Applied"
 msgstr "已申请"
 
-#, fuzzy
 #| msgid "Not set"
 msgid "Not Sent"
-msgstr "未设置"
+msgstr "未发送"
 
-#, fuzzy
 #| msgid "Mail Sent"
 msgid "Sent"
-msgstr "邮件已发送"
+msgstr "已发送"
 
 msgid "Accepted"
-msgstr ""
+msgstr "已接受"
 
 msgid "Joined"
-msgstr ""
+msgstr "已入职"
 
 msgid "Application Form"
 msgstr "申请表"
@@ -14369,10 +13853,9 @@ msgstr "已转换"
 msgid "Employee is uniques for candidate"
 msgstr "员工是候选人的唯一标识"
 
-#, fuzzy
 #| msgid "Reason"
 msgid "No Reason"
-msgstr "原因"
+msgstr "无原因"
 
 msgid "Yes/No"
 msgstr "是/否"
@@ -14392,26 +13875,23 @@ msgstr "用 ',  ' 分隔选项"
 msgid "Is Interview Completed"
 msgstr "面试是否完成"
 
-#, fuzzy
 #| msgid "Scheduled Interviews"
 msgid "Schedule Interviews"
-msgstr "已安排的面试"
+msgstr "安排面试"
 
-#, fuzzy
 #| msgid "Asset Name"
 msgid "App Name"
-msgstr "資源名稱"
+msgstr "应用名称"
 
-#, fuzzy
 #| msgid "API Key"
 msgid "API Token"
-msgstr "API密钥"
+msgstr "API 令牌"
 
 msgid "Email mismatched."
-msgstr ""
+msgstr "电子邮件不匹配。"
 
 msgid "Check the credentials"
-msgstr ""
+msgstr "检查凭据"
 
 msgid "Recruitment Pipeline"
 msgstr "招聘流程"
@@ -14461,10 +13941,9 @@ msgstr "候选人已转换"
 msgid "To Skill zone"
 msgstr "前往技能专区"
 
-#, fuzzy
 #| msgid "Cancel / Reject"
 msgid "Cancel Rejection"
-msgstr "取消/拒绝"
+msgstr "取消拒绝"
 
 msgid "Application Tracking"
 msgstr "申请跟踪"
@@ -14512,7 +13991,6 @@ msgstr "面试官"
 msgid " Edit"
 msgstr "編輯"
 
-#, fuzzy
 #| msgid "Are you sure you want to delete this interview?"
 msgid " Are you sure you want to delete this interview?"
 msgstr "您确定要删除此次面试吗？"
@@ -14537,17 +14015,14 @@ msgstr "已关闭"
 msgid "Recruitment Managers"
 msgstr "招聘经理"
 
-#, fuzzy
 #| msgid "Question Type"
 msgid "Question & Response"
-msgstr "问题类型"
+msgstr "问题与回答"
 
-#, fuzzy
 #| msgid "Scheduled from"
 msgid "Scheduled From"
 msgstr "安排开始时间"
 
-#, fuzzy
 #| msgid "Scheduled till"
 msgid "Scheduled Till"
 msgstr "安排结束时间"
@@ -14558,15 +14033,13 @@ msgstr "招聘信息"
 msgid "Current Stage"
 msgstr "当前阶段"
 
-#, fuzzy
 #| msgid "No interviews are scheduled for this candidate"
 msgid "No interviews are scheduled for this candidate."
 msgstr "该候选人没有安排任何面试"
 
-#, fuzzy
 #| msgid "There are no assignees for this objective at the moment."
 msgid "There are no tasks assigned for this candidate."
-msgstr "目前此目标暂无分配人员。"
+msgstr "此候选人暂无已分配任务。"
 
 msgid "This candidate does not have a resume on file."
 msgstr "该候选人尚未上传简历。"
@@ -14595,23 +14068,20 @@ msgstr "已安排的面试"
 msgid "Share Link"
 msgstr "分享链接"
 
-#, fuzzy
 #| msgid "Are you sure you want to close this recruitment?"
 msgid "Are you sure you want to archive this recruitment?"
-msgstr "您确定要关闭此招聘吗？"
+msgstr "您确定要归档此招聘吗？"
 
-#, fuzzy
 #| msgid "Are you sure you want to close this recruitment?"
 msgid "Are you sure you want to unarchive this recruitment?"
-msgstr "您确定要关闭此招聘吗？"
+msgstr "您确定要取消归档此招聘吗？"
 
 msgid "Unknown"
 msgstr "未知"
 
-#, fuzzy
 #| msgid "Are you sure you want to remove this department manager?"
 msgid "Are you sure you want to remove this recruitment manager?"
-msgstr "您确定要移除该部门经理吗？"
+msgstr "您确定要移除此招聘经理吗？"
 
 msgid "Jobs"
 msgstr "职位"
@@ -14668,12 +14138,11 @@ msgid "Ongoing Recruitments & Hiring Managers"
 msgstr "进行中的招聘与招聘经理"
 
 msgid "Check Connection"
-msgstr ""
+msgstr "检查连接"
 
-#, fuzzy
 #| msgid "Do you want to delete the question?"
 msgid "Do you want to delete the linkedin account?"
-msgstr "您确定要删除此问题吗？"
+msgstr "您确定要删除 LinkedIn 帐户吗？"
 
 msgid "Resumes"
 msgstr "简历"
@@ -14705,7 +14174,6 @@ msgstr "简历"
 msgid " Actions"
 msgstr "操作"
 
-#, fuzzy
 #| msgid "Add Candidate"
 msgid "Add Candidates"
 msgstr "添加候选人"
@@ -14737,25 +14205,21 @@ msgstr "候选人"
 msgid "Add to Sill Zone"
 msgstr "添加到技能区"
 
-#, fuzzy
 #| msgid "Send Mail"
 msgid "Send Mail to"
-msgstr "发送邮件"
+msgstr "向以下对象发送邮件"
 
-#, fuzzy
 #| msgid "Select All Candidates"
 msgid "Send Mail to Multiple Candidates"
-msgstr "全选候选人"
+msgstr "向多位候选人发送邮件"
 
-#, fuzzy
 #| msgid "Candidate view status updated"
 msgid "Candidate can view this note"
-msgstr "候选人查看状态已更新"
+msgstr "候选人可以查看此备注"
 
-#, fuzzy
 #| msgid "Candidate view status updated"
 msgid "Candidate can't view this note"
-msgstr "候选人查看状态已更新"
+msgstr "候选人无法查看此备注"
 
 msgid "Switch to Ongoing Recruitments"
 msgstr "切换到进行中的招聘"
@@ -14797,15 +14261,13 @@ msgstr "容量"
 msgid "Total vacancies"
 msgstr "总空缺职位"
 
-#, fuzzy
 #| msgid "Posted on"
 msgid "posted on"
 msgstr "发布于"
 
-#, fuzzy
 #| msgid "Fine Amount"
 msgid "LinkedIn account"
-msgstr "罚款金额"
+msgstr "LinkedIn 帐户"
 
 msgid "Are you sure to delete this recruitment?"
 msgstr "您确定要删除此招聘信息吗？"
@@ -14847,10 +14309,9 @@ msgstr "您确定要删除此原因吗？"
 msgid "Are you sure want to delete this skill?"
 msgstr "您确定要删除此技能吗？"
 
-#, fuzzy
 #| msgid "Skill Zones"
 msgid "'s Skill Zones"
-msgstr "技能专区"
+msgstr "的技能专区"
 
 msgid "There are currently no skill zone to consider."
 msgstr "目前没有可考虑的技能区域。"
@@ -14893,7 +14354,6 @@ msgstr "您没有候选人。"
 msgid "View Stages"
 msgstr "查看阶段"
 
-#, fuzzy
 #| msgid "No recruitment stages currently available."
 msgid "No recruitment stages are currently available."
 msgstr "目前没有可用的招聘阶段。"
@@ -15034,10 +14494,9 @@ msgstr "申请已保存。"
 msgid "Recruitment not found."
 msgstr "未找到招聘信息。"
 
-#, fuzzy
 #| msgid "You cannot delete this recruitment as it is using in {}"
 msgid "Couldn’t delete the recruitment post from LinkedIn."
-msgstr "无法删除此招聘，因为它正在用于 {}"
+msgstr "无法从 LinkedIn 删除招聘职位。"
 
 #, python-brace-format
 msgid "You cannot delete this recruitment as it is using in {}"
@@ -15090,21 +14549,19 @@ msgstr "%(year)s 年入职的员工"
 msgid "Openings"
 msgstr "职位空缺"
 
-#, fuzzy
 #| msgid "Account created successfully.."
 msgid "LinkedIn Account activated successfully."
-msgstr "账户创建成功.."
+msgstr "LinkedIn 帐户已成功启用。"
 
-#, fuzzy
 #| msgid "Account created successfully.."
 msgid "LinkedIn Account deactivated successfully."
-msgstr "账户创建成功.."
+msgstr "LinkedIn 帐户已成功停用。"
 
 msgid "LinkedIn connection success."
-msgstr ""
+msgstr "LinkedIn 连接成功。"
 
 msgid "LinkedIn connection failed."
-msgstr ""
+msgstr "LinkedIn 连接失败。"
 
 msgid "File size exceeds the limit. Maximum size is 5 MB"
 msgstr "文件大小超出限制。最大大小为 5 MB"
@@ -15121,23 +14578,20 @@ msgstr "问题已成功删除"
 msgid "You cannot delete this question"
 msgstr "您无法删除此问题"
 
-#, fuzzy
 #| msgid "Recruitment manager"
 msgid "Recruitment ID is missing"
-msgstr "招聘经理"
+msgstr "缺少招聘 ID"
 
-#, fuzzy
 #| msgid "Recruitment not found."
 msgid "Recruitment not found"
 msgstr "未找到招聘信息。"
 
-#, fuzzy
 #| msgid "Add Recruitment"
 msgid "Invalid Recruitment ID"
-msgstr "添加招聘"
+msgstr "无效的招聘 ID"
 
 msgid "The recruitment entry you are trying to edit does not exist."
-msgstr ""
+msgstr "您尝试编辑的招聘记录不存在。"
 
 msgid "Vaccancy is filled"
 msgstr "职位空缺已填补"
@@ -15154,20 +14608,17 @@ msgstr "候选人查看状态已更新"
 msgid "Candidate Does not exists.."
 msgstr "候选人不存在。"
 
-#, fuzzy
 #| msgid "Manager has been successfully removed from the meeting."
 msgid "Candidate has been successfully converted into an employee."
-msgstr "经理已成功从会议中移除。"
+msgstr "候选人已成功转换为员工。"
 
-#, fuzzy
 #| msgid "Period deleted successfully."
 msgid "Interview deleted successfully."
-msgstr "周期删除成功。"
+msgstr "面试删除成功。"
 
-#, fuzzy
 #| msgid "Scheduled Interview"
 msgid "Scheduled Interview not found"
-msgstr "已安排面试"
+msgstr "未找到已安排面试"
 
 msgid "Skill Zone created successfully."
 msgstr "技能区域已成功创建。"
@@ -15193,15 +14644,13 @@ msgstr "候选人已成功归档。"
 msgid "Candidate unarchived successfully.."
 msgstr "候选人已成功取消归档。"
 
-#, fuzzy
 #| msgid "Application Tracking"
 msgid "Application Tracking is enabled "
-msgstr "申请跟踪"
+msgstr "申请跟踪已启用"
 
-#, fuzzy
 #| msgid "Application Tracking"
 msgid "Application Tracking is disabled "
-msgstr "申请跟踪"
+msgstr "申请跟踪已禁用"
 
 #, fuzzy
 #| msgid "Rating Visiblity"
@@ -15529,7 +14978,7 @@ msgid "Check In/Check Out"
 msgstr "签到/签退"
 
 msgid "Geo & Face Config"
-msgstr ""
+msgstr "地理围栏和人脸配置"
 
 msgid "Restrictions"
 msgstr "限制"
@@ -15543,7 +14992,7 @@ msgid "Whatsapp Configuration"
 msgstr "配置"
 
 msgid "Whatsapp Credentials"
-msgstr ""
+msgstr "WhatsApp 凭据"
 
 msgid "My Company"
 msgstr "我的公司"

@@ -74,7 +74,7 @@ msgid "Amount"
 msgstr "Montant"
 
 msgid "Upload Completed!"
-msgstr "Téléchargement terminé !"
+msgstr "Téléversement terminé !"
 
 msgid "Imported Successfully!"
 msgstr "Importé avec succès !"
@@ -173,13 +173,13 @@ msgid "Close"
 msgstr "Fermer"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 msgid "Selected"
 msgstr "Choisi"
 
 msgid "Uploading..."
-msgstr "Téléchargement..."
+msgstr "Téléversement en cours..."
 
 msgid "No Records found"
 msgstr "Aucun enregistrement trouvé"

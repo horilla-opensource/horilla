@@ -57,19 +57,19 @@ msgid "Some selected requests have already been rejected."
 msgstr "Algunas solicitudes seleccionadas ya han sido rechazadas."
 
 msgid "Do you wish to create a Leave Report?"
-msgstr "¿Quieres crear un informe de ausencias?"
+msgstr "¿Desea crear un informe de ausencias?"
 
 msgid "Do you want to reject the selected leave requests?"
-msgstr "¿Quieres rechazar las solicitudes de permiso seleccionadas?"
+msgstr "¿Desea rechazar las solicitudes de permiso seleccionadas?"
 
 msgid "Do you want to send the payslip by mail?"
-msgstr "¿Quieres enviar la nómina por correo?"
+msgstr "¿Desea enviar la nómina por correo electrónico?"
 
 msgid "Name of Employees"
-msgstr "Nombre de las empleadas"
+msgstr "Nombres de los empleados"
 
 msgid "Amount"
-msgstr "Cantidad"
+msgstr "Importe"
 
 msgid "Upload Completed!"
 msgstr "¡Subida completada!"
@@ -168,10 +168,10 @@ msgid "Confirm"
 msgstr "Confirmar"
 
 msgid "Close"
-msgstr "Cerca"
+msgstr "Cerrar"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 msgid "Selected"
 msgstr "Seleccionado"
@@ -183,10 +183,10 @@ msgid "No Records found"
 msgstr "No se encontraron registros"
 
 msgid "Do you want to download the excel file?"
-msgstr "¿Quieres descargar el archivo excel?"
+msgstr "¿Desea descargar el archivo de Excel?"
 
 msgid "Do you want to download the template?"
-msgstr "¿Quieres descargar la plantilla?"
+msgstr "¿Desea descargar la plantilla?"
 
 msgid "No rows are selected from the records."
 msgstr "No se selecciona ninguna fila de los registros."

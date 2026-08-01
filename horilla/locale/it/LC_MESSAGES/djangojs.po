@@ -18,63 +18,63 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 msgid "An unexpected error occurred. Please refresh the page."
-msgstr ""
+msgstr "Si è verificato un errore imprevisto. Aggiorna la pagina."
 
 msgid "Do you really want to validate all the selected attendances?"
-msgstr ""
+msgstr "Vuoi davvero convalidare tutte le presenze selezionate?"
 
 msgid "No rows are selected from Validate Attendances."
-msgstr ""
+msgstr "Non è selezionata alcuna riga in Convalida presenze."
 
 msgid "Do you really want to approve OT for all the selected attendances?"
-msgstr ""
+msgstr "Vuoi davvero approvare gli straordinari per tutte le presenze selezionate?"
 
 msgid "No rows are selected from OT Attendances."
-msgstr ""
+msgstr "Non è selezionata alcuna riga in Presenze straordinarie."
 
 msgid "Do you really want to reject all the selected attendance requests?"
-msgstr ""
+msgstr "Vuoi davvero rifiutare tutte le richieste di presenza selezionate?"
 
 msgid "Pending Attendance Update Request!"
-msgstr ""
+msgstr "Richiesta di aggiornamento della presenza in attesa!"
 
 msgid ""
 "An attendance request exists for updating this attendance prior to "
 "validation."
-msgstr ""
+msgstr "Esiste una richiesta di presenza per aggiornare questa presenza prima della convalida."
 
 msgid "View Request"
-msgstr ""
+msgstr "Visualizza richiesta"
 
 msgid "Some selected requests have already been approved."
-msgstr ""
+msgstr "Alcune richieste selezionate sono già state approvate."
 
 msgid "Some selected requests have already been rejected."
-msgstr ""
+msgstr "Alcune richieste selezionate sono già state rifiutate."
 
 msgid "Do you wish to create a Leave Report?"
-msgstr ""
+msgstr "Vuoi creare un report delle assenze?"
 
 msgid "Do you want to reject the selected leave requests?"
-msgstr ""
+msgstr "Vuoi rifiutare le richieste di assenza selezionate?"
 
 msgid "Do you want to send the payslip by mail?"
-msgstr ""
+msgstr "Vuoi inviare il cedolino paga via e-mail?"
 
 msgid "Name of Employees"
-msgstr ""
+msgstr "Nomi dei dipendenti"
 
 msgid "Amount"
-msgstr ""
+msgstr "Importo"
 
 msgid "Upload Completed!"
-msgstr ""
+msgstr "Caricamento completato!"
 
 msgid "Imported Successfully!"
-msgstr ""
+msgstr "Importazione completata correttamente!"
 
 msgid "Please upload a file with the .xlsx extension only."
-msgstr ""
+msgstr "Carica solo un file con estensione .xlsx."
 
 msgid "visible"
 msgstr ""
@@ -161,40 +161,40 @@ msgid "close"
 msgstr ""
 
 msgid "Confirm"
-msgstr ""
+msgstr "Conferma"
 
 msgid "Close"
-msgstr ""
+msgstr "Chiudi"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Annulla"
 
 msgid "Selected"
-msgstr ""
+msgstr "Selezionato"
 
 msgid "Uploading..."
-msgstr ""
+msgstr "Caricamento in corso..."
 
 msgid "No Records found"
-msgstr ""
+msgstr "Nessun record trovato"
 
 msgid "Do you want to download the excel file?"
-msgstr ""
+msgstr "Vuoi scaricare il file Excel?"
 
 msgid "Do you want to download the template?"
-msgstr ""
+msgstr "Vuoi scaricare il modello?"
 
 msgid "No rows are selected from the records."
-msgstr ""
+msgstr "Non è selezionata alcuna riga tra i record."
 
 msgid "Do you really want to delete all the selected records?"
-msgstr ""
+msgstr "Vuoi davvero eliminare tutti i record selezionati?"
 
 msgid "Do you really want to archive all the selected records?"
-msgstr ""
+msgstr "Vuoi davvero archiviare tutti i record selezionati?"
 
 msgid "Do you really want to approve all the selected requests?"
-msgstr ""
+msgstr "Vuoi davvero approvare tutte le richieste selezionate?"
 
 msgid "Do you really want to unarchive all the selected records?"
-msgstr ""
+msgstr "Vuoi davvero ripristinare dall'archivio tutti i record selezionati?"

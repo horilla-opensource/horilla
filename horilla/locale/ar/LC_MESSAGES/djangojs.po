@@ -29,10 +29,10 @@ msgid "No rows are selected from Validate Attendances."
 msgstr "لم يتم تحديد أي صفوف من التحقق من الحضور."
 
 msgid "Do you really want to approve OT for all the selected attendances?"
-msgstr "هل تريد حقًا الموافقة على العلاج المهني لجميع الحضور المحدد؟"
+msgstr "هل تريد حقًا الموافقة على ساعات العمل الإضافية لجميع سجلات الحضور المحددة؟"
 
 msgid "No rows are selected from OT Attendances."
-msgstr "لم يتم تحديد أي صفوف من حضور العلاج المهني."
+msgstr "لم يتم تحديد أي صفوف في سجلات حضور العمل الإضافي."
 
 msgid "Do you really want to reject all the selected attendance requests?"
 msgstr "هل تريد حقًا رفض جميع طلبات الحضور المحددة؟"
@@ -61,13 +61,13 @@ msgid "Do you want to reject the selected leave requests?"
 msgstr "هل تريد رفض طلبات الإجازة المحددة؟"
 
 msgid "Do you want to send the payslip by mail?"
-msgstr "هل تريد إرسال شهادة الراتب بالبريد؟"
+msgstr "هل تريد إرسال كشف الراتب عبر البريد الإلكتروني؟"
 
 msgid "Name of Employees"
-msgstr "اسم الموظفين"
+msgstr "أسماء الموظفين"
 
 msgid "Amount"
-msgstr "كمية"
+msgstr "المبلغ"
 
 msgid "Upload Completed!"
 msgstr "تم التحميل!"
@@ -163,13 +163,13 @@ msgid "close"
 msgstr ""
 
 msgid "Confirm"
-msgstr "يتأكد"
+msgstr "تأكيد"
 
 msgid "Close"
-msgstr "يغلق"
+msgstr "إغلاق"
 
 msgid "Cancel"
-msgstr "يلغي"
+msgstr "إلغاء"
 
 msgid "Selected"
 msgstr "مختارة"

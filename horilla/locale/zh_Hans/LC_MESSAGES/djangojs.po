@@ -6,76 +6,76 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-12-18 13:57+0530\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2026-08-02 00:00+0000\n"
+"Last-Translator: Horilla Localization Team\n"
+"Language-Team: Simplified Chinese\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 msgid "An unexpected error occurred. Please refresh the page."
-msgstr ""
+msgstr "发生意外错误。请刷新页面。"
 
 msgid "Do you really want to validate all the selected attendances?"
-msgstr ""
+msgstr "确定要验证所有已选考勤记录吗？"
 
 msgid "No rows are selected from Validate Attendances."
-msgstr ""
+msgstr "“验证考勤”中未选择任何记录。"
 
 msgid "Do you really want to approve OT for all the selected attendances?"
-msgstr ""
+msgstr "确定要批准所有已选考勤记录的加班吗？"
 
 msgid "No rows are selected from OT Attendances."
-msgstr ""
+msgstr "“加班考勤”中未选择任何记录。"
 
 msgid "Do you really want to reject all the selected attendance requests?"
-msgstr ""
+msgstr "确定要拒绝所有已选考勤申请吗？"
 
 msgid "Pending Attendance Update Request!"
-msgstr ""
+msgstr "考勤更新申请待处理！"
 
 msgid ""
 "An attendance request exists for updating this attendance prior to "
 "validation."
-msgstr ""
+msgstr "在验证此考勤记录前，已有用于更新该记录的考勤申请。"
 
 msgid "View Request"
-msgstr ""
+msgstr "查看申请"
 
 msgid "Some selected requests have already been approved."
-msgstr ""
+msgstr "部分已选申请已获批准。"
 
 msgid "Some selected requests have already been rejected."
-msgstr ""
+msgstr "部分已选申请已被拒绝。"
 
 msgid "Do you wish to create a Leave Report?"
-msgstr ""
+msgstr "要创建请假报表吗？"
 
 msgid "Do you want to reject the selected leave requests?"
-msgstr ""
+msgstr "要拒绝已选请假申请吗？"
 
 msgid "Do you want to send the payslip by mail?"
-msgstr ""
+msgstr "要通过电子邮件发送工资单吗？"
 
 msgid "Name of Employees"
-msgstr ""
+msgstr "员工姓名"
 
 msgid "Amount"
-msgstr ""
+msgstr "金额"
 
 msgid "Upload Completed!"
-msgstr ""
+msgstr "上传完成！"
 
 msgid "Imported Successfully!"
-msgstr ""
+msgstr "导入成功！"
 
 msgid "Please upload a file with the .xlsx extension only."
-msgstr ""
+msgstr "请仅上传扩展名为 .xlsx 的文件。"
 
 msgid "visible"
 msgstr ""
@@ -162,40 +162,40 @@ msgid "close"
 msgstr ""
 
 msgid "Confirm"
-msgstr ""
+msgstr "确认"
 
 msgid "Close"
-msgstr ""
+msgstr "关闭"
 
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 msgid "Selected"
-msgstr ""
+msgstr "已选择"
 
 msgid "Uploading..."
-msgstr ""
+msgstr "正在上传..."
 
 msgid "No Records found"
-msgstr ""
+msgstr "未找到记录"
 
 msgid "Do you want to download the excel file?"
-msgstr ""
+msgstr "要下载 Excel 文件吗？"
 
 msgid "Do you want to download the template?"
-msgstr ""
+msgstr "要下载模板吗？"
 
 msgid "No rows are selected from the records."
-msgstr ""
+msgstr "未选择任何记录。"
 
 msgid "Do you really want to delete all the selected records?"
-msgstr ""
+msgstr "确定要删除所有已选记录吗？"
 
 msgid "Do you really want to archive all the selected records?"
-msgstr ""
+msgstr "确定要归档所有已选记录吗？"
 
 msgid "Do you really want to approve all the selected requests?"
-msgstr ""
+msgstr "确定要批准所有已选申请吗？"
 
 msgid "Do you really want to unarchive all the selected records?"
-msgstr ""
+msgstr "确定要取消归档所有已选记录吗？"
