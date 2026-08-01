@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
-from base.views import _shift_fixture_dates
+from base.views import _shift_fixture_dates, normalize_demo_payslips
 
 
 class Command(BaseCommand):
@@ -98,6 +98,12 @@ class Command(BaseCommand):
             finally:
                 if tmp and os.path.exists(tmp):
                     os.remove(tmp)
+
+        normalized = normalize_demo_payslips()
+        if normalized:
+            self.stdout.write(
+                self.style.SUCCESS(f"  Re-anchored {normalized} demo payslip(s).")
+            )
 
         self.stdout.write(
             self.style.SUCCESS(

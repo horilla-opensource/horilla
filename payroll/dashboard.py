@@ -313,13 +313,18 @@ def payroll_contract_status(request):
     ending_soon = []
     expired = []
 
+    # The panel advertises a 60-day outlook, so always cover at least that far in
+    # each direction. The selected period only ever widens the window, never
+    # narrows it — otherwise the default period (which ends today) would leave
+    # nothing to show.
+    horizon = timedelta(days=60)
+
     try:
-        # Ending within the period (still active and end_date is on/after today)
-        ending_cutoff = max(today, from_date)
+        # Still active and ending on or after today.
         ending_qs = (
             Contract.objects.filter(
-                contract_end_date__gte=ending_cutoff,
-                contract_end_date__lte=to_date,
+                contract_end_date__gte=today,
+                contract_end_date__lte=max(to_date, today + horizon),
                 contract_status="active",
             )
             .select_related("employee_id")
@@ -343,12 +348,11 @@ def payroll_contract_status(request):
                 }
             )
 
-        # Expired within the period (end_date is before today and within the window)
-        expired_cap = min(today - timedelta(days=1), to_date)
+        # Already ended, within the same 60-day outlook looking backwards.
         expired_qs = (
             Contract.objects.filter(
-                contract_end_date__gte=from_date,
-                contract_end_date__lte=expired_cap,
+                contract_end_date__gte=min(from_date, today - horizon),
+                contract_end_date__lte=today - timedelta(days=1),
             )
             .select_related("employee_id")
             .order_by("-contract_end_date")[:10]

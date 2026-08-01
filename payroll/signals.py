@@ -14,6 +14,10 @@ def employeeworkinformation_pre_save(sender, instance, **_kwargs):
     """
     This method is used to override the save method for EmployeeWorkInformation Model
     """
+    # Skip during fixture load — demo contracts come from payroll_data.json
+    if _kwargs.get("raw"):
+        return
+
     active_employee = (
         instance.employee_id
         if instance.employee_id and instance.employee_id.is_active == True
@@ -32,6 +36,7 @@ def employeeworkinformation_pre_save(sender, instance, **_kwargs):
             contract.wage = (
                 instance.basic_salary if instance.basic_salary is not None else 0
             )
+            contract.contract_status = "active"
             contract.save()
 
 

@@ -306,6 +306,65 @@ def _shift_fixture_dates(file_path):
     return DATE_RE.sub(_shift, content)
 
 
+DEMO_PAYROLL_GROUP_PREFIX = "Demo Payroll M-"
+
+
+def normalize_demo_payslips():
+    """
+    Re-anchor demo payslip periods onto real calendar months.
+
+    Demo payslips ship tagged as ``Demo Payroll M-<n>``, where ``n`` counts months
+    back from the current one. Fixture date shifting moves every date by a fixed
+    number of days, which cannot keep month-long periods aligned to month
+    boundaries, so the period, the dates embedded in ``pay_head_data`` and the batch
+    label are recomputed from that tag instead. Returns the number of payslips
+    updated.
+    """
+    if not apps.is_installed("payroll"):
+        return 0
+
+    from payroll.models.models import Payslip
+
+    today = datetime.today().date()
+    updated = 0
+
+    # _base_manager skips the company scoping that would hide other companies' rows.
+    payslips = Payslip._base_manager.filter(
+        group_name__startswith=DEMO_PAYROLL_GROUP_PREFIX
+    )
+    for payslip in payslips:
+        try:
+            offset = int(payslip.group_name.rsplit("M-", 1)[1])
+        except (IndexError, ValueError):
+            continue
+
+        year, month = today.year, today.month - offset
+        while month < 1:
+            month += 12
+            year -= 1
+        # Day 28 exists in every month, so each period stays inside its own month.
+        start = datetime(year, month, 1).date()
+        end = datetime(year, month, 28).date()
+
+        pay_head_data = payslip.pay_head_data
+        if isinstance(pay_head_data, dict):
+            pay_head_data["start_date"] = start.strftime("%Y-%m-%d")
+            pay_head_data["end_date"] = end.strftime("%Y-%m-%d")
+            pay_head_data["range"] = (
+                f"{start.strftime('%b %d %Y')} - {end.strftime('%b %d %Y')}"
+            )
+
+        Payslip._base_manager.filter(pk=payslip.pk).update(
+            start_date=start,
+            end_date=end,
+            pay_head_data=pay_head_data,
+            group_name=f"Demo Payroll - {start.strftime('%b %Y')}",
+        )
+        updated += 1
+
+    return updated
+
+
 def load_demo_database(request):
     if initialize_database_condition():
         if request.method == "POST":
@@ -360,6 +419,8 @@ def load_demo_database(request):
                     finally:
                         if tmp and path.exists(tmp):
                             os.remove(tmp)
+
+                normalize_demo_payslips()
 
                 messages.success(request, _("Database loaded successfully."))
                 try:
