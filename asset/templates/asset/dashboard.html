@@ -925,6 +925,25 @@
             document.getElementById('as-save-customize').addEventListener('click', () => { const p = getCustState(); saveCustPrefs(p); applyCustPrefs(p); closeCust(); });
             document.getElementById('as-reset-customize').addEventListener('click', () => { localStorage.removeItem(CUST_KEY); location.reload(); });
 
+            // ── Chart instance registry ──
+            // ApexCharts.render() always appends a new SVG into the target
+            // element rather than replacing it, so calling the same chart
+            // block twice (e.g. on auto-refresh) would stack duplicate
+            // charts on top of each other. Every chart goes through here so
+            // a refresh destroys the previous instance first.
+            const chartInstances = {};
+            function renderChart(key, el, options) {
+                if (!el) return null;
+                if (chartInstances[key]) {
+                    chartInstances[key].destroy();
+                    chartInstances[key] = null;
+                }
+                const chart = new ApexCharts(el, options);
+                chartInstances[key] = chart;
+                chart.render();
+                return chart;
+            }
+
             // ── Auto-refresh ──
             const REFRESH_INTERVAL = 300000; // 5 minutes
             const REFRESH_KEY = 'as_auto_refresh';
@@ -947,7 +966,11 @@
                 refreshDot.classList.add('as-refresh__dot--pulse');
                 refreshToggle.textContent = '⟳';
                 refreshToggle.title = 'Auto-refresh ON (5 min)';
-                refreshTimer = setInterval(() => location.reload(), REFRESH_INTERVAL);
+                refreshTimer = setInterval(() => {
+                    lastRefresh = Date.now();
+                    updateRefreshText();
+                    refreshAllData();
+                }, REFRESH_INTERVAL);
             }
             function stopAutoRefresh() {
                 autoRefreshOn = false;
@@ -961,6 +984,7 @@
             if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
 
             // ─── KPI CARDS ───
+            function loadKpiCards() {
             fetchP("{% url 'asset-dashboard-kpi' %}")
                 .then(r => r.json())
                 .then(data => {
@@ -991,14 +1015,17 @@
                 </a>`;
                 })
                 .catch(() => { document.getElementById('as-kpi-grid').innerHTML = emptyHtml('{% trans "Could not load KPIs" %}'); });
+            }
+            loadKpiCards();
 
             // ─── ASSET STATUS ───
+            function loadAssetStatus() {
             fetchP("{% url 'asset-dashboard-status' %}")
                 .then(r => r.json())
                 .then(data => {
                     const total = data.statuses.reduce((a, s) => a + s.count, 0);
                     if (!total) { document.querySelector("#chart-asset-status").innerHTML = emptyHtml('{% trans "No assets" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-asset-status"), {
+                    renderChart('asset-status', document.querySelector("#chart-asset-status"), {
                         series: data.statuses.map(s => s.count),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1011,17 +1038,20 @@
                         stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                         legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light' },
-                    }).render();
+                    });
                 })
                 .catch(() => { document.querySelector("#chart-asset-status").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
+            }
+            loadAssetStatus();
 
             // ─── REQUEST STATUS ───
+            function loadRequestStatus() {
             fetchP("{% url 'asset-dashboard-requests' %}")
                 .then(r => r.json())
                 .then(data => {
                     const total = data.statuses.reduce((a, s) => a + s.count, 0);
                     if (!total) { document.querySelector("#chart-request-status").innerHTML = emptyHtml('{% trans "No requests" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-request-status"), {
+                    renderChart('request-status', document.querySelector("#chart-request-status"), {
                         series: data.statuses.map(s => s.count),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1035,16 +1065,19 @@
                         stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                         legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light' },
-                    }).render();
+                    });
                 })
                 .catch(() => { document.querySelector("#chart-request-status").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
+            }
+            loadRequestStatus();
 
             // ─── ASSETS BY CATEGORY ───
+            function loadByCategory() {
             fetchP("{% url 'asset-dashboard-category' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.categories.length) { document.querySelector("#chart-by-category").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-by-category"), {
+                    renderChart('by-category', document.querySelector("#chart-by-category"), {
                         series: [
                             { name: '{% trans "In Use" %}', data: data.categories.map(c => c.in_use) },
                             { name: '{% trans "Available" %}', data: data.categories.map(c => c.available) },
@@ -1064,16 +1097,19 @@
                         dataLabels: { enabled: true, style: { fontSize: '11px' } },
                         legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light' },
-                    }).render();
+                    });
                 })
                 .catch(() => { document.querySelector("#chart-by-category").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
+            }
+            loadByCategory();
 
             // ─── VALUE BY CATEGORY ───
+            function loadValueCategory() {
             fetchP("{% url 'asset-dashboard-value' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.categories.length) { document.querySelector("#chart-value-category").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-value-category"), {
+                    renderChart('value-category', document.querySelector("#chart-value-category"), {
                         series: data.categories.map(c => c.value),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1088,16 +1124,19 @@
                         stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                         legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { seriesIndex: i }) => `${fmt(v)} (${data.categories[i].count} assets)` } },
-                    }).render();
+                    });
                 })
                 .catch(() => { document.querySelector("#chart-value-category").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
+            }
+            loadValueCategory();
 
             // ─── ASSETS BY DEPARTMENT ───
+            function loadDeptAssets() {
             fetchP("{% url 'asset-dashboard-dept' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.departments.length) { document.querySelector("#chart-dept-assets").innerHTML = emptyHtml('{% trans "No allocated assets" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-dept-assets"), {
+                    renderChart('dept-assets', document.querySelector("#chart-dept-assets"), {
                         series: data.departments.map(d => d.count),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1112,17 +1151,20 @@
                         stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                         legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light' },
-                    }).render();
+                    });
                 })
                 .catch(() => { document.querySelector("#chart-dept-assets").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
+            }
+            loadDeptAssets();
 
             // ─── ASSET AGE ───
+            function loadAgeDist() {
             fetchP("{% url 'asset-dashboard-age' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.brackets.length) { document.querySelector("#chart-age-dist").innerHTML = emptyHtml('{% trans "No purchase date data" %}'); return; }
                     const ageColors = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#94a3b8'];
-                    new ApexCharts(document.querySelector("#chart-age-dist"), {
+                    renderChart('age-dist', document.querySelector("#chart-age-dist"), {
                         series: [{ name: '{% trans "Assets" %}', data: data.brackets.map(b => b.count) }],
                         chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1137,11 +1179,14 @@
                         dataLabels: { enabled: true, style: { fontSize: '12px', colors: ['#fff'] } },
                         legend: { show: false },
                         tooltip: { theme: isDark ? 'dark' : 'light' },
-                    }).render();
+                    });
                 })
                 .catch(() => { document.querySelector("#chart-age-dist").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
+            }
+            loadAgeDist();
 
             // ─── EXPIRING SOON ───
+            function loadExpiring() {
             fetchP("{% url 'asset-dashboard-expiring' %}")
                 .then(r => r.json())
                 .then(data => {
@@ -1161,8 +1206,11 @@
                 </a>`;
                     }).join('');
                 }).catch(() => { document.getElementById('as-expiring').innerHTML = '<div class="as-info-panel__empty">{% trans "No data" %}</div>'; });
+            }
+            loadExpiring();
 
             // ─── RECENT ALLOCATIONS ───
+            function loadAllocations() {
             fetchP("{% url 'asset-dashboard-allocations' %}")
                 .then(r => r.json())
                 .then(data => {
@@ -1180,6 +1228,22 @@
                 </a>`;
                     }).join('');
                 }).catch(() => { document.getElementById('as-allocations').innerHTML = '<div class="as-info-panel__empty">{% trans "No data" %}</div>'; });
+            }
+            loadAllocations();
+
+            // ── Re-run every load/chart function above in place (used by the
+            // auto-refresh timer instead of location.reload()).
+            function refreshAllData() {
+                loadKpiCards();
+                loadAssetStatus();
+                loadRequestStatus();
+                loadByCategory();
+                loadValueCategory();
+                loadDeptAssets();
+                loadAgeDist();
+                loadExpiring();
+                loadAllocations();
+            }
 
         })();
     </script>

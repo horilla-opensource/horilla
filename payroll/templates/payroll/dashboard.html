@@ -371,6 +371,25 @@
     document.getElementById('pd-save-customize').addEventListener('click', () => { const p = getCustState(); saveCustPrefs(p); applyCustPrefs(p); closeCust(); });
     document.getElementById('pd-reset-customize').addEventListener('click', () => { localStorage.removeItem(CUST_KEY); location.reload(); });
 
+    // ── Chart instance registry ──
+    // ApexCharts.render() always appends a new SVG into the target
+    // element rather than replacing it, so calling the same chart
+    // block twice (e.g. on auto-refresh) would stack duplicate
+    // charts on top of each other. Every chart goes through here so
+    // a refresh destroys the previous instance first.
+    const chartInstances = {};
+    function renderChart(key, el, options) {
+        if (!el) return null;
+        if (chartInstances[key]) {
+            chartInstances[key].destroy();
+            chartInstances[key] = null;
+        }
+        const chart = new ApexCharts(el, options);
+        chartInstances[key] = chart;
+        chart.render();
+        return chart;
+    }
+
     // ── Auto-refresh ──
     const REFRESH_INTERVAL = 300000; // 5 minutes
     const REFRESH_KEY = 'pd_auto_refresh';
@@ -393,7 +412,11 @@
         refreshDot.classList.add('pd-refresh__dot--pulse');
         refreshToggle.textContent = '⟳';
         refreshToggle.title = 'Auto-refresh ON (5 min)';
-        refreshTimer = setInterval(() => location.reload(), REFRESH_INTERVAL);
+        refreshTimer = setInterval(() => {
+            lastRefresh = Date.now();
+            updateRefreshText();
+            refreshAllData();
+        }, REFRESH_INTERVAL);
     }
     function stopAutoRefresh() {
         autoRefreshOn = false;
@@ -407,6 +430,7 @@
     if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
 
     // ─── KPI CARDS ───
+    function loadKpiCards() {
     fetchP("{% url 'payroll-dashboard-kpi' %}")
         .then(r => r.json())
         .then(data => {
@@ -444,8 +468,11 @@
                     <div class="pd-kpi-card__sub">{% trans "Pending requests" %}</div>
                 </a>`;
         });
+    }
+    loadKpiCards();
 
     // ─── PAYSLIP PIPELINE ───
+    function loadPayslipPipeline() {
     fetchP("{% url 'payroll-dashboard-pipeline' %}")
         .then(r => r.json())
         .then(data => {
@@ -460,13 +487,16 @@
                 </div>`
             ).join('<div style="display:flex;align-items:center;opacity:0.3;font-size:18px;">→</div>') + '</div>';
         });
+    }
+    loadPayslipPipeline();
 
     // ─── PAYROLL COST TREND ───
+    function loadPayrollTrend() {
     fetchP("{% url 'payroll-dashboard-trend' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.months.length || !data.months.some(m => m.net > 0)) { document.querySelector("#chart-payroll-trend").innerHTML = emptyHtml('{% trans "No payroll data" %}'); return; }
-            new ApexCharts(document.querySelector("#chart-payroll-trend"), {
+            renderChart('payroll-trend', document.querySelector("#chart-payroll-trend"), {
                 series: [
                     { name: '{% trans "Gross" %}', data: data.months.map(m => m.gross) },
                     { name: '{% trans "Deductions" %}', data: data.months.map(m => m.deductions) },
@@ -482,16 +512,19 @@
                 grid: { borderColor: gridColor, strokeDashArray: 4 },
                 legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => fmt(v) } },
-            }).render();
+            });
         });
+    }
+    loadPayrollTrend();
 
     // ─── DEPARTMENT COST ───
+    function loadDeptCost() {
     fetchP("{% url 'payroll-dashboard-dept' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('dept-month').textContent = data.month;
             if (!data.departments.length) { document.querySelector("#chart-dept-cost").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-            new ApexCharts(document.querySelector("#chart-dept-cost"), {
+            renderChart('dept-cost', document.querySelector("#chart-dept-cost"), {
                 series: data.departments.map(d => d.net),
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
@@ -511,10 +544,13 @@
                 dataLabels: { enabled: false },
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { seriesIndex: i }) => `${fmt(v)} (${data.departments[i].count} payslips)` } },
-            }).render();
+            });
         });
+    }
+    loadDeptCost();
 
     // ─── REIMBURSEMENT SUMMARY ───
+    function loadReimbursementSummary() {
     fetchP("{% url 'payroll-dashboard-reimbursement' %}")
         .then(r => r.json())
         .then(data => {
@@ -523,7 +559,7 @@
             if (s.requested === 0 && s.approved === 0 && s.rejected === 0) { el.innerHTML = emptyHtml('{% trans "No reimbursements" %}'); return; }
 
             if (data.by_type.length) {
-                new ApexCharts(el, {
+                renderChart('reimbursement', el, {
                     series: data.by_type.map(t => t.count),
                     chart: { type: 'donut', height: 280, background: 'transparent', fontFamily: 'inherit',
                         events: { dataPointSelection: (event, ctx, opts) => {
@@ -541,18 +577,21 @@
                     dataLabels: { enabled: false },
                     legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px' },
                     tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { seriesIndex: i }) => `${v} (${fmt(data.by_type[i].amount)})` } },
-                }).render();
+                });
             } else {
                 el.innerHTML = `<div style="text-align:center;padding:20px;"><div style="font-size:24px;font-weight:800;">${s.requested + s.approved}</div><div style="font-size:12px;opacity:0.5;">{% trans "Total requests" %}</div></div>`;
             }
         });
+    }
+    loadReimbursementSummary();
 
     // ─── SALARY DISTRIBUTION ───
+    function loadSalaryDistribution() {
     fetchP("{% url 'payroll-dashboard-salary-dist' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.bands.length) { document.querySelector("#chart-salary-dist").innerHTML = emptyHtml('{% trans "No salary data" %}'); return; }
-            new ApexCharts(document.querySelector("#chart-salary-dist"), {
+            renderChart('salary-dist', document.querySelector("#chart-salary-dist"), {
                 series: [{ name: '{% trans "Employees" %}', data: data.bands.map(b => b.count) }],
                 chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
@@ -573,15 +612,18 @@
                 grid: { borderColor: gridColor, strokeDashArray: 4 },
                 dataLabels: { enabled: true, style: { fontSize: '11px', colors: ['#fff'] } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
-            }).render();
+            });
         });
+    }
+    loadSalaryDistribution();
 
     // ─── DEDUCTION COMPONENTS ───
+    function loadDeductionComponents() {
     fetchP("{% url 'payroll-dashboard-components' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.components.length) { document.querySelector("#chart-components").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-            new ApexCharts(document.querySelector("#chart-components"), {
+            renderChart('components', document.querySelector("#chart-components"), {
                 series: [{ name: '{% trans "Amount" %}', data: data.components.map(c => c.amount) }],
                 chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (event, ctx, opts) => {
@@ -597,10 +639,13 @@
                 grid: { borderColor: gridColor },
                 dataLabels: { enabled: true, formatter: v => fmt(v), style: { fontSize: '11px' } },
                 tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => fmt(v) } },
-            }).render();
+            });
         });
+    }
+    loadDeductionComponents();
 
     // ─── TOP EARNERS ───
+    function loadTopEarners() {
     fetchP("{% url 'payroll-dashboard-earners' %}")
         .then(r => r.json())
         .then(data => {
@@ -620,8 +665,11 @@
                 </a>`;
             }).join('');
         }).catch(() => { document.getElementById('pd-top-earners').innerHTML = '<div class="pd-info-panel__empty">{% trans "No data" %}</div>'; });
+    }
+    loadTopEarners();
 
     // ─── CONTRACTS ENDING ───
+    function loadContractsEnding() {
     fetchP("{% url 'payroll-dashboard-contracts' %}")
         .then(r => r.json())
         .then(data => {
@@ -641,8 +689,11 @@
                 </a>`;
             }).join('');
         }).catch(() => { document.getElementById('pd-contracts').innerHTML = '<div class="pd-info-panel__empty">{% trans "No data" %}</div>'; });
+    }
+    loadContractsEnding();
 
     // ─── ACTIVE LOANS ───
+    function loadActiveLoans() {
     fetchP("{% url 'payroll-dashboard-loans' %}")
         .then(r => r.json())
         .then(data => {
@@ -661,6 +712,23 @@
                 </a>`;
             }).join('');
         }).catch(() => { document.getElementById('pd-loans').innerHTML = '<div class="pd-info-panel__empty">{% trans "No data" %}</div>'; });
+    }
+    loadActiveLoans();
+
+    // ── Re-run every load/chart function above in place (used by the
+    // auto-refresh timer instead of location.reload()).
+    function refreshAllData() {
+        loadKpiCards();
+        loadPayslipPipeline();
+        loadPayrollTrend();
+        loadDeptCost();
+        loadReimbursementSummary();
+        loadSalaryDistribution();
+        loadDeductionComponents();
+        loadTopEarners();
+        loadContractsEnding();
+        loadActiveLoans();
+    }
 
 })();
 </script>

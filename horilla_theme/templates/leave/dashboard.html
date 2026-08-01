@@ -1052,6 +1052,25 @@
             document.getElementById('ld-save-customize').addEventListener('click', () => { const p = getCustState(); saveCustPrefs(p); applyCustPrefs(p); closeCust(); });
             document.getElementById('ld-reset-customize').addEventListener('click', () => { localStorage.removeItem(CUST_KEY); location.reload(); });
 
+            // ── Chart instance registry ──
+            // ApexCharts.render() always appends a new SVG into the target
+            // element rather than replacing it, so calling the same chart
+            // block twice (e.g. on auto-refresh) would stack duplicate
+            // charts on top of each other. Every chart goes through here so
+            // a refresh destroys the previous instance first.
+            const chartInstances = {};
+            function renderChart(key, el, options) {
+                if (!el) return null;
+                if (chartInstances[key]) {
+                    chartInstances[key].destroy();
+                    chartInstances[key] = null;
+                }
+                const chart = new ApexCharts(el, options);
+                chartInstances[key] = chart;
+                chart.render();
+                return chart;
+            }
+
             // ── Auto-refresh ──
             const REFRESH_INTERVAL = 300000; // 5 minutes
             const REFRESH_KEY = 'ld_auto_refresh';
@@ -1068,13 +1087,21 @@
             }
             setInterval(updateRefreshText, 30000);
 
+            // Re-runs every data/chart load in place instead of reloading
+            // the whole document -- refreshAllData() is defined further
+            // down, once every load function it calls exists, but function
+            // declarations are hoisted so referencing it here is safe.
             function startAutoRefresh() {
                 autoRefreshOn = true;
                 localStorage.setItem(REFRESH_KEY, 'on');
                 refreshDot.classList.add('ld-refresh__dot--pulse');
                 refreshToggle.textContent = '⟳';
                 refreshToggle.title = '{% trans 'Auto-refresh ON (5 min)' %}';
-                refreshTimer = setInterval(() => location.reload(), REFRESH_INTERVAL);
+                refreshTimer = setInterval(() => {
+                    lastRefresh = Date.now();
+                    updateRefreshText();
+                    refreshAllData();
+                }, REFRESH_INTERVAL);
             }
             function stopAutoRefresh() {
                 autoRefreshOn = false;
@@ -1088,7 +1115,8 @@
             if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
 
             // ─── KPI CARDS ───
-            fetchP("{% url 'leave-dashboard-kpi' %}")
+            function loadKpiCards() {
+                fetchP("{% url 'leave-dashboard-kpi' %}")
                 .then(r => r.json())
                 .then(data => {
                     document.getElementById('ld-kpi-grid').innerHTML = `
@@ -1117,14 +1145,17 @@
                     <div class="ld-kpi-card__sub">${data.pending_comp > 0 ? '<span class="ld-badge ld-badge--amber">' + data.pending_comp + ' {% trans "comp. requests" %}</span>' : '{% trans "Employees away" %}'}</div>
                 </a>`;
                 });
+            }
+            loadKpiCards();
 
             // ─── MONTHLY TREND ───
-            fetchP("{% url 'leave-dashboard-monthly-trend' %}")
+            function loadMonthlyTrend() {
+                fetchP("{% url 'leave-dashboard-monthly-trend' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.months.length) { document.querySelector("#chart-monthly-trend").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
                     const statusForSeries = ['approved', 'rejected', 'requested'];
-                    new ApexCharts(document.querySelector("#chart-monthly-trend"), {
+                    renderChart('monthly-trend', document.querySelector("#chart-monthly-trend"), {
                         series: [
                             { name: '{% trans "Approved" %}', data: data.months.map(m => m.approved) },
                             { name: '{% trans "Rejected" %}', data: data.months.map(m => m.rejected) },
@@ -1148,17 +1179,20 @@
                         dataLabels: { enabled: false },
                         legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light' },
-                    }).render();
+                    });
                 });
+            }
+            loadMonthlyTrend();
 
             // ─── LEAVE TYPE DISTRIBUTION ───
-            fetchP("{% url 'leave-dashboard-type-dist' %}")
+            function loadLeaveTypeDist() {
+                fetchP("{% url 'leave-dashboard-type-dist' %}")
                 .then(r => r.json())
                 .then(data => {
                     document.getElementById('lt-month').textContent = data.month;
                     if (!data.types.length) { document.querySelector("#chart-leave-types").innerHTML = emptyHtml('{% trans "No leave data" %}'); return; }
                     const colors = data.types.map((t, i) => COLORS[i % COLORS.length]);
-                    new ApexCharts(document.querySelector("#chart-leave-types"), {
+                    renderChart('leave-types', document.querySelector("#chart-leave-types"), {
                         series: data.types.map(t => t.days),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1174,16 +1208,19 @@
                         dataLabels: { enabled: false },
                         legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { seriesIndex: i }) => `${v} days (${data.types[i].count} requests)` } },
-                    }).render();
+                    });
                 });
+            }
+            loadLeaveTypeDist();
 
             // ─── PAID VS UNPAID ───
-            fetchP("{% url 'leave-dashboard-paid-unpaid' %}")
+            function loadPaidUnpaid() {
+                fetchP("{% url 'leave-dashboard-paid-unpaid' %}")
                 .then(r => r.json())
                 .then(data => {
                     document.getElementById('pu-month').textContent = data.month;
                     if (data.paid === 0 && data.unpaid === 0) { document.querySelector("#chart-paid-unpaid").innerHTML = emptyHtml('{% trans "No leave data" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-paid-unpaid"), {
+                    renderChart('paid-unpaid', document.querySelector("#chart-paid-unpaid"), {
                         series: [data.paid, data.unpaid],
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit' },
                         labels: ['{% trans "Paid" %}', '{% trans "Unpaid" %}'],
@@ -1193,16 +1230,19 @@
                         dataLabels: { enabled: false },
                         legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' days' } },
-                    }).render();
+                    });
                 });
+            }
+            loadPaidUnpaid();
 
             // ─── DEPARTMENT BREAKDOWN ───
-            fetchP("{% url 'leave-dashboard-dept' %}")
+            function loadDeptBreakdown() {
+                fetchP("{% url 'leave-dashboard-dept' %}")
                 .then(r => r.json())
                 .then(data => {
                     document.getElementById('dept-month').textContent = data.month;
                     if (!data.departments.length) { document.querySelector("#chart-dept-leave").innerHTML = emptyHtml('{% trans "No leave data" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-dept-leave"), {
+                    renderChart('dept-leave', document.querySelector("#chart-dept-leave"), {
                         series: [{ name: '{% trans "Leave Days" %}', data: data.departments.map(d => d.days) }],
                         chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1218,16 +1258,19 @@
                         dataLabels: { enabled: true, formatter: (v, { dataPointIndex: i }) => `${v}d (${data.departments[i].count})`, style: { fontSize: '11px' } },
                         legend: { show: false },
                         tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { dataPointIndex: i }) => `${v} days (${data.departments[i].count} requests)` } },
-                    }).render();
+                    });
                 });
+            }
+            loadDeptBreakdown();
 
             // ─── WEEKLY PATTERN ───
-            fetchP("{% url 'leave-dashboard-weekly-pattern' %}")
+            function loadWeeklyPattern() {
+                fetchP("{% url 'leave-dashboard-weekly-pattern' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.counts.some(c => c > 0)) { document.querySelector("#chart-weekly-pattern").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
                     const maxCount = Math.max(...data.counts);
-                    new ApexCharts(document.querySelector("#chart-weekly-pattern"), {
+                    renderChart('weekly-pattern', document.querySelector("#chart-weekly-pattern"), {
                         series: [{ name: '{% trans "Leave Days" %}', data: data.counts }],
                         chart: { type: 'radar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
                         colors: ['#6366f1'],
@@ -1237,11 +1280,14 @@
                         yaxis: { show: false, max: maxCount > 0 ? maxCount * 1.2 : 10 },
                         markers: { size: 4 },
                         tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' leave day(s)' } },
-                    }).render();
+                    });
                 });
+            }
+            loadWeeklyPattern();
 
             // ─── LEAVE UTILIZATION ───
-            fetchP("{% url 'leave-dashboard-utilization' %}")
+            function loadLeaveUtilization() {
+                fetchP("{% url 'leave-dashboard-utilization' %}")
                 .then(r => r.json())
                 .then(data => {
                     const el = document.querySelector("#chart-utilization");
@@ -1258,9 +1304,12 @@
                     html += '</div>';
                     el.innerHTML = html;
                 });
+            }
+            loadLeaveUtilization();
 
             // ─── ON LEAVE TODAY ───
-            fetchP("{% url 'leave-dashboard-on-leave' %}")
+            function loadOnLeaveToday() {
+                fetchP("{% url 'leave-dashboard-on-leave' %}")
                 .then(r => r.json())
                 .then(data => {
                     const el = document.getElementById('ld-on-leave');
@@ -1278,9 +1327,12 @@
                 </a>`;
                     }).join('');
                 }).catch(() => { document.getElementById('ld-on-leave').innerHTML = '<div class="ld-info-panel__empty">{% trans "No one on leave today" %}</div>'; });
+            }
+            loadOnLeaveToday();
 
             // ─── UPCOMING LEAVES ───
-            fetchP("{% url 'leave-dashboard-upcoming' %}")
+            function loadUpcomingLeaves() {
+                fetchP("{% url 'leave-dashboard-upcoming' %}")
                 .then(r => r.json())
                 .then(data => {
                     const el = document.getElementById('ld-upcoming');
@@ -1301,9 +1353,12 @@
                 </a>`;
                     }).join('');
                 }).catch(() => { document.getElementById('ld-upcoming').innerHTML = '<div class="ld-info-panel__empty">{% trans "No upcoming leaves" %}</div>'; });
+            }
+            loadUpcomingLeaves();
 
             // ─── TOP LEAVE TAKERS ───
-            fetchP("{% url 'leave-dashboard-top-takers' %}")
+            function loadTopLeaveTakers() {
+                fetchP("{% url 'leave-dashboard-top-takers' %}")
                 .then(r => r.json())
                 .then(data => {
                     const el = document.getElementById('ld-top-takers');
@@ -1322,9 +1377,12 @@
                 </a>`;
                     }).join('');
                 }).catch(() => { document.getElementById('ld-top-takers').innerHTML = '<div class="ld-info-panel__empty">{% trans "No leaves this month" %}</div>'; });
+            }
+            loadTopLeaveTakers();
 
             // ─── UPCOMING HOLIDAYS ───
-            fetchP("{% url 'leave-dashboard-holidays' %}")
+            function loadUpcomingHolidays() {
+                fetchP("{% url 'leave-dashboard-holidays' %}")
                 .then(r => r.json())
                 .then(data => {
                     const el = document.getElementById('ld-holidays');
@@ -1338,6 +1396,24 @@
                 </div>`;
                     }).join('');
                 }).catch(() => { document.getElementById('ld-holidays').innerHTML = '<div class="ld-info-panel__empty">{% trans "No upcoming holidays" %}</div>'; });
+            }
+            loadUpcomingHolidays();
+
+            // ── Re-run every load/chart function above in place (used by the
+            // auto-refresh timer instead of location.reload()).
+            function refreshAllData() {
+                loadKpiCards();
+                loadMonthlyTrend();
+                loadLeaveTypeDist();
+                loadPaidUnpaid();
+                loadDeptBreakdown();
+                loadWeeklyPattern();
+                loadLeaveUtilization();
+                loadOnLeaveToday();
+                loadUpcomingLeaves();
+                loadTopLeaveTakers();
+                loadUpcomingHolidays();
+            }
 
         })();
     </script>

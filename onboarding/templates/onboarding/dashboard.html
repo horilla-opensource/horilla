@@ -320,6 +320,25 @@
     document.getElementById('on-save-customize').addEventListener('click', () => { const p = getCustState(); saveCustPrefs(p); applyCustPrefs(p); closeCust(); });
     document.getElementById('on-reset-customize').addEventListener('click', () => { localStorage.removeItem(CUST_KEY); location.reload(); });
 
+    // ── Chart instance registry ──
+    // ApexCharts.render() always appends a new SVG into the target
+    // element rather than replacing it, so calling the same chart
+    // block twice (e.g. on auto-refresh) would stack duplicate
+    // charts on top of each other. Every chart goes through here so
+    // a refresh destroys the previous instance first.
+    const chartInstances = {};
+    function renderChart(key, el, options) {
+        if (!el) return null;
+        if (chartInstances[key]) {
+            chartInstances[key].destroy();
+            chartInstances[key] = null;
+        }
+        const chart = new ApexCharts(el, options);
+        chartInstances[key] = chart;
+        chart.render();
+        return chart;
+    }
+
     // ── Auto-refresh ──
     const REFRESH_INTERVAL = 300000; // 5 minutes
     const REFRESH_KEY = 'on_auto_refresh';
@@ -336,13 +355,21 @@
     }
     setInterval(updateRefreshText, 30000);
 
+    // Re-runs every data/chart load in place instead of reloading
+    // the whole document -- refreshAllData() is defined further
+    // down, once every load function it calls exists, but function
+    // declarations are hoisted so referencing it here is safe.
     function startAutoRefresh() {
         autoRefreshOn = true;
         localStorage.setItem(REFRESH_KEY, 'on');
         refreshDot.classList.add('on-refresh__dot--pulse');
         refreshToggle.textContent = '⟳';
         refreshToggle.title = 'Auto-refresh ON (5 min)';
-        refreshTimer = setInterval(() => location.reload(), REFRESH_INTERVAL);
+        refreshTimer = setInterval(() => {
+            lastRefresh = Date.now();
+            updateRefreshText();
+            refreshAllData();
+        }, REFRESH_INTERVAL);
     }
     function stopAutoRefresh() {
         autoRefreshOn = false;
@@ -356,7 +383,8 @@
     if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
 
     // ─── KPI CARDS ───
-    fetchP("{% url 'onboarding-dashboard-kpi' %}")
+    function loadKpiCards() {
+        fetchP("{% url 'onboarding-dashboard-kpi' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('on-kpi-grid').innerHTML = `
@@ -385,13 +413,16 @@
                     <div class="on-kpi-card__sub">{% trans "Active hiring" %}</div>
                 </a>`;
         });
+    }
+    loadKpiCards();
 
     // ─── STAGE PIPELINE ───
-    fetchP("{% url 'onboarding-dashboard-stages' %}")
+    function loadStagePipeline() {
+        fetchP("{% url 'onboarding-dashboard-stages' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.stages.length) { document.querySelector("#chart-on-stages").innerHTML = emptyHtml('{% trans "No onboarding stages" %}'); return; }
-            new ApexCharts(document.querySelector("#chart-on-stages"), {
+            renderChart('stage-pipeline', document.querySelector("#chart-on-stages"), {
                 series: [{ name: '{% trans "Candidates" %}', data: data.stages.map(s => s.count) }],
                 chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, cfg) => {
@@ -408,16 +439,19 @@
                 legend: { show: false },
                 tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { dataPointIndex: i }) => `${v} candidates (${data.stages[i].recruitment})` } },
                 states: { hover: { filter: { type: 'darken', value: 0.85 } } },
-            }).render();
+            });
         });
+    }
+    loadStagePipeline();
 
     // ─── TASK STATUS ───
-    fetchP("{% url 'onboarding-dashboard-tasks' %}")
+    function loadTaskStatus() {
+        fetchP("{% url 'onboarding-dashboard-tasks' %}")
         .then(r => r.json())
         .then(data => {
             const total = data.statuses.reduce((a, s) => a + s.count, 0);
             if (!total) { document.querySelector("#chart-on-tasks").innerHTML = emptyHtml('{% trans "No tasks" %}'); return; }
-            new ApexCharts(document.querySelector("#chart-on-tasks"), {
+            renderChart('task-status', document.querySelector("#chart-on-tasks"), {
                 series: data.statuses.map(s => s.count),
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: () => {
@@ -430,15 +464,18 @@
                 stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
-            }).render();
+            });
         });
+    }
+    loadTaskStatus();
 
     // ─── BY RECRUITMENT ───
-    fetchP("{% url 'onboarding-dashboard-recruitment' %}")
+    function loadByRecruitment() {
+        fetchP("{% url 'onboarding-dashboard-recruitment' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.recruitments.length) { document.querySelector("#chart-on-recruitment").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-            new ApexCharts(document.querySelector("#chart-on-recruitment"), {
+            renderChart('by-recruitment', document.querySelector("#chart-on-recruitment"), {
                 series: data.recruitments.map(r => r.count),
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
@@ -452,15 +489,18 @@
                 stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
-            }).render();
+            });
         });
+    }
+    loadByRecruitment();
 
     // ─── BY JOB POSITION ───
-    fetchP("{% url 'onboarding-dashboard-position' %}")
+    function loadByPosition() {
+        fetchP("{% url 'onboarding-dashboard-position' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.positions.length) { document.querySelector("#chart-on-position").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-            new ApexCharts(document.querySelector("#chart-on-position"), {
+            renderChart('by-position', document.querySelector("#chart-on-position"), {
                 series: [{ name: '{% trans "Candidates" %}', data: data.positions.map(p => p.count) }],
                 chart: { type: 'bar', height: 260, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, cfg) => {
@@ -477,15 +517,18 @@
                 legend: { show: false },
                 tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' candidates' } },
                 states: { hover: { filter: { type: 'darken', value: 0.85 } } },
-            }).render();
+            });
         });
+    }
+    loadByPosition();
 
     // ─── COMPLETION TREND ───
-    fetchP("{% url 'onboarding-dashboard-completion-trend' %}")
+    function loadCompletionTrend() {
+        fetchP("{% url 'onboarding-dashboard-completion-trend' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.months.length || !data.months.some(m => m.count > 0)) { document.querySelector("#chart-completion-trend").innerHTML = emptyHtml('{% trans "No completions" %}'); return; }
-            new ApexCharts(document.querySelector("#chart-completion-trend"), {
+            renderChart('completion-trend', document.querySelector("#chart-completion-trend"), {
                 series: [{ name: '{% trans "Completed" %}', data: data.months.map(m => m.count) }],
                 chart: { type: 'bar', height: 260, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
@@ -510,11 +553,14 @@
                 grid: { borderColor: gridColor, strokeDashArray: 4 },
                 dataLabels: { enabled: true, style: { fontSize: '12px', colors: ['#fff'] } },
                 tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' completed' } },
-            }).render();
+            });
         });
+    }
+    loadCompletionTrend();
 
     // ─── CANDIDATES LIST ───
-    fetchP("{% url 'onboarding-dashboard-candidates' %}")
+    function loadCandidates() {
+        fetchP("{% url 'onboarding-dashboard-candidates' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('on-candidates');
@@ -536,9 +582,12 @@
                 </a>`;
             }).join('');
         }).catch(() => { document.getElementById('on-candidates').innerHTML = '<div class="on-info-panel__empty">{% trans "No data" %}</div>'; });
+    }
+    loadCandidates();
 
     // ─── MY TASKS ───
-    fetchP("{% url 'onboarding-dashboard-my-tasks' %}")
+    function loadMyTasks() {
+        fetchP("{% url 'onboarding-dashboard-my-tasks' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('on-my-tasks');
@@ -557,9 +606,12 @@
                 </div>`;
             }).join('');
         }).catch(() => { document.getElementById('on-my-tasks').innerHTML = '<div class="on-info-panel__empty">{% trans "No data" %}</div>'; });
+    }
+    loadMyTasks();
 
     // ─── PORTAL ACCESS ───
-    fetchP("{% url 'onboarding-dashboard-portal-status' %}")
+    function loadPortalStatus() {
+        fetchP("{% url 'onboarding-dashboard-portal-status' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('on-portal-status');
@@ -571,6 +623,22 @@
                 return `<div class="on-cand-item"><div class="on-cand-item__info"><div class="on-cand-item__name">${p.name}</div></div>${badge}</div>`;
             }).join('');
         }).catch(() => { document.getElementById('on-portal-status').innerHTML = '<div class="on-info-panel__empty">{% trans "No data" %}</div>'; });
+    }
+    loadPortalStatus();
+
+    // ── Re-run every load/chart function above in place (used by the
+    // auto-refresh timer instead of location.reload()).
+    function refreshAllData() {
+        loadKpiCards();
+        loadStagePipeline();
+        loadTaskStatus();
+        loadByRecruitment();
+        loadByPosition();
+        loadCompletionTrend();
+        loadCandidates();
+        loadMyTasks();
+        loadPortalStatus();
+    }
 
 })();
 </script>

@@ -1075,6 +1075,25 @@
             document.getElementById('pm-save-customize').addEventListener('click', () => { const p = getCustState(); saveCustPrefs(p); applyCustPrefs(p); closeCust(); });
             document.getElementById('pm-reset-customize').addEventListener('click', () => { localStorage.removeItem(CUST_KEY); location.reload(); });
 
+            // ── Chart instance registry ──
+            // ApexCharts.render() always appends a new SVG into the target
+            // element rather than replacing it, so calling the same chart
+            // block twice (e.g. on auto-refresh) would stack duplicate
+            // charts on top of each other. Every chart goes through here so
+            // a refresh destroys the previous instance first.
+            const chartInstances = {};
+            function renderChart(key, el, options) {
+                if (!el) return null;
+                if (chartInstances[key]) {
+                    chartInstances[key].destroy();
+                    chartInstances[key] = null;
+                }
+                const chart = new ApexCharts(el, options);
+                chartInstances[key] = chart;
+                chart.render();
+                return chart;
+            }
+
             // ── Auto-refresh ──
             const REFRESH_INTERVAL = 300000; // 5 minutes
             const REFRESH_KEY = 'pm_auto_refresh';
@@ -1097,7 +1116,11 @@
                 refreshDot.classList.add('pm-refresh__dot--pulse');
                 refreshToggle.textContent = '⟳';
                 refreshToggle.title = 'Auto-refresh ON (5 min)';
-                refreshTimer = setInterval(() => location.reload(), REFRESH_INTERVAL);
+                refreshTimer = setInterval(() => {
+                    lastRefresh = Date.now();
+                    updateRefreshText();
+                    refreshAllData();
+                }, REFRESH_INTERVAL);
             }
             function stopAutoRefresh() {
                 autoRefreshOn = false;
@@ -1111,7 +1134,8 @@
             if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
 
             // ─── KPI CARDS ───
-            fetchP("{% url 'pms-dashboard-kpi' %}")
+            function loadKpiCards() {
+                fetchP("{% url 'pms-dashboard-kpi' %}")
                 .then(r => r.json())
                 .then(data => {
                     document.getElementById('pm-kpi-grid').innerHTML = `
@@ -1140,14 +1164,17 @@
                     <div class="pm-kpi-card__sub">${data.pending_feedback > 0 ? '<span class="pm-badge pm-badge--amber">' + data.pending_feedback + ' {% trans "pending" %}</span>' : '{% trans "All reviewed" %}'}</div>
                 </a>`;
                 });
+            }
+            loadKpiCards();
 
             // ─── OBJECTIVE STATUS ───
-            fetchP("{% url 'pms-dashboard-obj-status' %}")
+            function loadObjectiveStatus() {
+                fetchP("{% url 'pms-dashboard-obj-status' %}")
                 .then(r => r.json())
                 .then(data => {
                     const total = data.statuses.reduce((a, s) => a + s.count, 0);
                     if (!total) { document.querySelector("#chart-obj-status").innerHTML = emptyHtml('{% trans "No objectives" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-obj-status"), {
+                    renderChart('obj-status', document.querySelector("#chart-obj-status"), {
                         series: data.statuses.map(s => s.count),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1162,16 +1189,19 @@
                         dataLabels: { enabled: false },
                         legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light' },
-                    }).render();
+                    });
                 });
+            }
+            loadObjectiveStatus();
 
             // ─── KEY RESULT STATUS ───
-            fetchP("{% url 'pms-dashboard-kr-status' %}")
+            function loadKeyResultStatus() {
+                fetchP("{% url 'pms-dashboard-kr-status' %}")
                 .then(r => r.json())
                 .then(data => {
                     const total = data.statuses.reduce((a, s) => a + s.count, 0);
                     if (!total) { document.querySelector("#chart-kr-status").innerHTML = emptyHtml('{% trans "No key results" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-kr-status"), {
+                    renderChart('kr-status', document.querySelector("#chart-kr-status"), {
                         series: data.statuses.map(s => s.count),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1186,16 +1216,19 @@
                         dataLabels: { enabled: false },
                         legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light' },
-                    }).render();
+                    });
                 });
+            }
+            loadKeyResultStatus();
 
             // ─── FEEDBACK STATUS ───
-            fetchP("{% url 'pms-dashboard-fb-status' %}")
+            function loadFeedbackStatus() {
+                fetchP("{% url 'pms-dashboard-fb-status' %}")
                 .then(r => r.json())
                 .then(data => {
                     const total = data.statuses.reduce((a, s) => a + s.count, 0);
                     if (!total) { document.querySelector("#chart-fb-status").innerHTML = emptyHtml('{% trans "No feedback" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-fb-status"), {
+                    renderChart('fb-status', document.querySelector("#chart-fb-status"), {
                         series: data.statuses.map(s => s.count),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1210,15 +1243,18 @@
                         dataLabels: { enabled: false },
                         legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light' },
-                    }).render();
+                    });
                 });
+            }
+            loadFeedbackStatus();
 
             // ─── DEPARTMENT PERFORMANCE ───
-            fetchP("{% url 'pms-dashboard-dept' %}")
+            function loadDepartmentPerformance() {
+                fetchP("{% url 'pms-dashboard-dept' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.departments.length) { document.querySelector("#chart-dept-perf").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-dept-perf"), {
+                    renderChart('dept-perf', document.querySelector("#chart-dept-perf"), {
                         series: [{ name: '{% trans "Avg Progress" %}', data: data.departments.map(d => d.avg_progress) }],
                         chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1239,11 +1275,14 @@
                         dataLabels: { enabled: true, formatter: (v, { dataPointIndex: i }) => `${v}% (${data.departments[i].closed}/${data.departments[i].total})`, style: { fontSize: '11px' } },
                         legend: { show: false },
                         tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { dataPointIndex: i }) => `${v}% avg · ${data.departments[i].at_risk} at risk` } },
-                    }).render();
+                    });
                 });
+            }
+            loadDepartmentPerformance();
 
             // ─── OKR PROGRESS OVERVIEW ───
-            fetchP("{% url 'pms-dashboard-okr-overview' %}")
+            function loadOkrOverview() {
+                fetchP("{% url 'pms-dashboard-okr-overview' %}")
                 .then(r => r.json())
                 .then(data => {
                     const el = document.getElementById('pm-okr-overview');
@@ -1280,13 +1319,16 @@
                     html += '</div>';
                     el.innerHTML = html;
                 });
+            }
+            loadOkrOverview();
 
             // ─── PROGRESS TREND ───
-            fetchP("{% url 'pms-dashboard-progress-trend' %}")
+            function loadProgressTrend() {
+                fetchP("{% url 'pms-dashboard-progress-trend' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.months.length) { document.querySelector("#chart-progress-trend").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-progress-trend"), {
+                    renderChart('progress-trend', document.querySelector("#chart-progress-trend"), {
                         series: [{ name: '{% trans "Avg Progress" %}', data: data.months.map(m => m.avg_progress) }],
                         chart: { type: 'area', height: 260, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1307,11 +1349,14 @@
                         yaxis: { min: 0, max: 100, labels: { style: { colors: textColor }, formatter: v => v + '%' } },
                         grid: { borderColor: gridColor, strokeDashArray: 4 },
                         tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + '%' } },
-                    }).render();
+                    });
                 });
+            }
+            loadProgressTrend();
 
             // ─── FEEDBACK COMPLETION ───
-            fetchP("{% url 'pms-dashboard-fb-completion' %}")
+            function loadFeedbackCompletion() {
+                fetchP("{% url 'pms-dashboard-fb-completion' %}")
                 .then(r => r.json())
                 .then(data => {
                     const el = document.querySelector("#chart-fb-completion");
@@ -1324,9 +1369,12 @@
                     html += '</div>';
                     el.innerHTML = html;
                 });
+            }
+            loadFeedbackCompletion();
 
             // ─── AT RISK OBJECTIVES ───
-            fetchP("{% url 'pms-dashboard-at-risk' %}")
+            function loadAtRiskObjectives() {
+                fetchP("{% url 'pms-dashboard-at-risk' %}")
                 .then(r => r.json())
                 .then(data => {
                     const el = document.getElementById('pm-at-risk');
@@ -1348,9 +1396,12 @@
                 </a>`;
                     }).join('');
                 }).catch(() => { document.getElementById('pm-at-risk').innerHTML = '<div class="pm-info-panel__empty">{% trans "No data" %}</div>'; });
+            }
+            loadAtRiskObjectives();
 
             // ─── TOP PERFORMERS ───
-            fetchP("{% url 'pms-dashboard-performers' %}")
+            function loadTopPerformers() {
+                fetchP("{% url 'pms-dashboard-performers' %}")
                 .then(r => r.json())
                 .then(data => {
                     const el = document.getElementById('pm-performers');
@@ -1368,9 +1419,12 @@
                 </a>`;
                     }).join('');
                 }).catch(() => { document.getElementById('pm-performers').innerHTML = '<div class="pm-info-panel__empty">{% trans "No data" %}</div>'; });
+            }
+            loadTopPerformers();
 
             // ─── UPCOMING MEETINGS ───
-            fetchP("{% url 'pms-dashboard-meetings' %}")
+            function loadUpcomingMeetings() {
+                fetchP("{% url 'pms-dashboard-meetings' %}")
                 .then(r => r.json())
                 .then(data => {
                     const el = document.getElementById('pm-meetings');
@@ -1384,6 +1438,24 @@
                     </div>
                 </div>`).join('');
                 }).catch(() => { document.getElementById('pm-meetings').innerHTML = '<div class="pm-info-panel__empty">{% trans "No upcoming meetings" %}</div>'; });
+            }
+            loadUpcomingMeetings();
+
+            // ── Re-run every load/chart function above in place (used by the
+            // auto-refresh timer instead of location.reload()).
+            function refreshAllData() {
+                loadKpiCards();
+                loadObjectiveStatus();
+                loadKeyResultStatus();
+                loadFeedbackStatus();
+                loadDepartmentPerformance();
+                loadOkrOverview();
+                loadProgressTrend();
+                loadFeedbackCompletion();
+                loadAtRiskObjectives();
+                loadTopPerformers();
+                loadUpcomingMeetings();
+            }
 
         })();
     </script>

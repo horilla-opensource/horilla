@@ -325,6 +325,25 @@
     document.getElementById('ob-save-customize').addEventListener('click', () => { const p = getCustState(); saveCustPrefs(p); applyCustPrefs(p); closeCust(); });
     document.getElementById('ob-reset-customize').addEventListener('click', () => { localStorage.removeItem(CUST_KEY); location.reload(); });
 
+    // ── Chart instance registry ──
+    // ApexCharts.render() always appends a new SVG into the target
+    // element rather than replacing it, so calling the same chart
+    // block twice (e.g. on auto-refresh) would stack duplicate
+    // charts on top of each other. Every chart goes through here so
+    // a refresh destroys the previous instance first.
+    const chartInstances = {};
+    function renderChart(key, el, options) {
+        if (!el) return null;
+        if (chartInstances[key]) {
+            chartInstances[key].destroy();
+            chartInstances[key] = null;
+        }
+        const chart = new ApexCharts(el, options);
+        chartInstances[key] = chart;
+        chart.render();
+        return chart;
+    }
+
     // ── Auto-refresh ──
     const REFRESH_INTERVAL = 300000; // 5 minutes
     const REFRESH_KEY = 'ob_auto_refresh';
@@ -347,7 +366,11 @@
         refreshDot.classList.add('ob-refresh__dot--pulse');
         refreshToggle.textContent = '⟳';
         refreshToggle.title = 'Auto-refresh ON (5 min)';
-        refreshTimer = setInterval(() => location.reload(), REFRESH_INTERVAL);
+        refreshTimer = setInterval(() => {
+            lastRefresh = Date.now();
+            updateRefreshText();
+            refreshAllData();
+        }, REFRESH_INTERVAL);
     }
     function stopAutoRefresh() {
         autoRefreshOn = false;
@@ -361,6 +384,7 @@
     if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
 
     // ─── KPI CARDS ───
+    function loadKpiCards() {
     fetchP("{% url 'offboarding-dashboard-kpi' %}")
         .then(r => r.json())
         .then(data => {
@@ -390,16 +414,22 @@
                     <div class="ob-kpi-card__sub">${data.notice_ending_soon > 0 ? '<span class="ob-badge ob-badge--amber">' + data.notice_ending_soon + ' {% trans "notice ending" %}</span>' : '<span id="ob-avg-duration">{% trans "Completed offboarding" %}</span>'}</div>
                 </a>`;
         });
+    }
+    loadKpiCards();
 
     // ─── AVG OFFBOARDING DURATION ───
+    function loadAvgDuration() {
     fetchP("{% url 'offboarding-dashboard-avg-duration' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ob-avg-duration');
             if (el) el.textContent = data.avg_days !== null ? data.avg_days + ' days avg' : '';
         });
+    }
+    loadAvgDuration();
 
     // ─── OFFBOARDING PIPELINE ───
+    function loadOffboardingPipeline() {
     fetchP("{% url 'offboarding-dashboard-pipeline' %}")
         .then(r => r.json())
         .then(data => {
@@ -414,14 +444,17 @@
                 </div>`
             ).join('<div style="display:flex;align-items:center;opacity:0.3;font-size:18px;">→</div>') + '</div>';
         });
+    }
+    loadOffboardingPipeline();
 
     // ─── RESIGNATION STATUS ───
+    function loadResignationStatus() {
     fetchP("{% url 'offboarding-dashboard-resignation' %}")
         .then(r => r.json())
         .then(data => {
             const total = data.statuses.reduce((a, s) => a + s.count, 0);
             if (!total) { document.querySelector("#chart-resignation").innerHTML = emptyHtml('{% trans "No resignations" %}'); return; }
-            new ApexCharts(document.querySelector("#chart-resignation"), {
+            renderChart('resignation', document.querySelector("#chart-resignation"), {
                 series: data.statuses.map(s => s.count),
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
@@ -435,17 +468,20 @@
                 stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
-            }).render();
+            });
         });
+    }
+    loadResignationStatus();
 
     // ─── TASK COMPLETION ───
+    function loadTaskCompletion() {
     fetchP("{% url 'offboarding-dashboard-tasks' %}")
         .then(r => r.json())
         .then(data => {
             const total = data.statuses.reduce((a, s) => a + s.count, 0);
             if (!total) { document.querySelector("#chart-tasks").innerHTML = emptyHtml('{% trans "No tasks" %}'); return; }
             const taskColors = { todo: '#94a3b8', in_progress: '#3b82f6', stuck: '#ef4444', completed: '#22c55e' };
-            new ApexCharts(document.querySelector("#chart-tasks"), {
+            renderChart('tasks', document.querySelector("#chart-tasks"), {
                 series: data.statuses.map(s => s.count),
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: () => {
@@ -458,15 +494,18 @@
                 stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
-            }).render();
+            });
         });
+    }
+    loadTaskCompletion();
 
     // ─── DEPARTMENT ATTRITION ───
+    function loadDeptAttrition() {
     fetchP("{% url 'offboarding-dashboard-dept' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.departments.length) { document.querySelector("#chart-dept-attrition").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-            new ApexCharts(document.querySelector("#chart-dept-attrition"), {
+            renderChart('dept-attrition', document.querySelector("#chart-dept-attrition"), {
                 series: data.departments.map(d => d.count),
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
@@ -485,15 +524,18 @@
                 stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
-            }).render();
+            });
         });
+    }
+    loadDeptAttrition();
 
     // ─── EXIT REASONS ───
+    function loadExitReasons() {
     fetchP("{% url 'offboarding-dashboard-reasons' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.reasons.length) { document.querySelector("#chart-exit-reasons").innerHTML = emptyHtml('{% trans "No exit reasons recorded" %}'); return; }
-            new ApexCharts(document.querySelector("#chart-exit-reasons"), {
+            renderChart('exit-reasons', document.querySelector("#chart-exit-reasons"), {
                 series: [{ name: '{% trans "Count" %}', data: data.reasons.map(r => r.count) }],
                 chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: () => {
@@ -508,15 +550,18 @@
                 dataLabels: { enabled: true, style: { fontSize: '11px' } },
                 legend: { show: false },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
-            }).render();
+            });
         });
+    }
+    loadExitReasons();
 
     // ─── JOINING VS EXITING ───
+    function loadJoinExitTrend() {
     fetchP("{% url 'offboarding-dashboard-join-exit' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.months.length) { document.querySelector("#chart-join-exit").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-            new ApexCharts(document.querySelector("#chart-join-exit"), {
+            renderChart('join-exit', document.querySelector("#chart-join-exit"), {
                 series: [
                     { name: '{% trans "Joining" %}', data: data.months.map(m => m.joining) },
                     { name: '{% trans "Exiting" %}', data: data.months.map(m => m.exiting) },
@@ -542,10 +587,13 @@
                 dataLabels: { enabled: true, style: { fontSize: '11px', colors: ['#fff'] } },
                 legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
-            }).render();
+            });
         });
+    }
+    loadJoinExitTrend();
 
     // ─── NOTICE PERIOD TRACKER ───
+    function loadNoticeTracker() {
     fetchP("{% url 'offboarding-dashboard-notice' %}")
         .then(r => r.json())
         .then(data => {
@@ -568,8 +616,11 @@
                 </a>`;
             }).join('');
         }).catch(() => { document.getElementById('ob-notice').innerHTML = '<div class="ob-info-panel__empty">{% trans "No data" %}</div>'; });
+    }
+    loadNoticeTracker();
 
     // ─── UNRETURNED ASSETS ───
+    function loadUnreturnedAssets() {
     fetchP("{% url 'offboarding-dashboard-assets' %}")
         .then(r => r.json())
         .then(data => {
@@ -585,6 +636,23 @@
                 </a>`;
             }).join('');
         }).catch(() => { document.getElementById('ob-assets').innerHTML = '<div class="ob-info-panel__empty">{% trans "No data" %}</div>'; });
+    }
+    loadUnreturnedAssets();
+
+    // ── Re-run every load/chart function above in place (used by the
+    // auto-refresh timer instead of location.reload()).
+    function refreshAllData() {
+        loadKpiCards();
+        loadAvgDuration();
+        loadOffboardingPipeline();
+        loadResignationStatus();
+        loadTaskCompletion();
+        loadDeptAttrition();
+        loadExitReasons();
+        loadJoinExitTrend();
+        loadNoticeTracker();
+        loadUnreturnedAssets();
+    }
 
 })();
 </script>

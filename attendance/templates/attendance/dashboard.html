@@ -1282,6 +1282,25 @@
                 location.reload();
             });
 
+            // ── Chart instance registry ──
+            // ApexCharts.render() always appends a new SVG into the target
+            // element rather than replacing it, so calling the same chart
+            // block twice (e.g. on auto-refresh) would stack duplicate
+            // charts on top of each other. Every chart goes through here so
+            // a refresh destroys the previous instance first.
+            const chartInstances = {};
+            function renderChart(key, el, options) {
+                if (!el) return null;
+                if (chartInstances[key]) {
+                    chartInstances[key].destroy();
+                    chartInstances[key] = null;
+                }
+                const chart = new ApexCharts(el, options);
+                chartInstances[key] = chart;
+                chart.render();
+                return chart;
+            }
+
             // ═══════════════════════════════════════════
             //  AUTO-REFRESH
             // ═══════════════════════════════════════════
@@ -1306,7 +1325,11 @@
                 refreshDot.classList.add('am-refresh__dot--pulse');
                 refreshToggle.textContent = '⟳';
                 refreshToggle.title = '{% trans "Auto-refresh ON (5 min)" %}';
-                refreshTimer = setInterval(() => location.reload(), REFRESH_INTERVAL);
+                refreshTimer = setInterval(() => {
+                    lastRefresh = Date.now();
+                    updateRefreshText();
+                    refreshAllData();
+                }, REFRESH_INTERVAL);
             }
             function stopAutoRefresh() {
                 autoRefreshOn = false;
@@ -1380,6 +1403,7 @@
             // ═══════════════════════════════════════════
 
             // ─── KPI CARDS ───
+            function loadKpiCards() {
             fetchP("{% url 'attendance-dashboard-kpi' %}")
                 .then(r => r.json())
                 .then(data => {
@@ -1413,8 +1437,11 @@
                                 : '{% trans "To validate" %}'}</div>
                 </a>`;
                 }).catch(() => { document.getElementById('am-kpi-grid').innerHTML = emptyHtml('{% trans "Unable to load KPIs" %}'); });
+            }
+            loadKpiCards();
 
             // ─── ATTENDANCE TREND ───
+            function loadAttendanceTrend() {
             fetchP("{% url 'attendance-dashboard-weekly' %}")
                 .then(r => r.json())
                 .then(data => {
@@ -1427,7 +1454,7 @@
                     }
                     if (!data.days || !data.days.length) { document.querySelector("#chart-weekly-trend").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
                     const dense = data.days.length > 14;
-                    new ApexCharts(document.querySelector("#chart-weekly-trend"), {
+                    renderChart('weekly-trend', document.querySelector("#chart-weekly-trend"), {
                         series: [{ name: '{% trans "Present" %}', data: data.days.map(d => d.count) }],
                         chart: { type: 'area', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                             dropShadow: { enabled: true, top: 4, blur: 10, opacity: 0.12, color: '#6366f1' } },
@@ -1449,17 +1476,20 @@
                             x: d.day, borderColor: '#22c55e',
                             label: { text: '{% trans "Today" %}', style: { color: '#fff', background: '#22c55e', fontSize: '10px' } }
                         })) },
-                    }).render();
+                    });
                 }).catch(() => { document.querySelector("#chart-weekly-trend").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
+            }
+            loadAttendanceTrend();
 
             // ─── DEPARTMENT ATTENDANCE ───
+            function loadDeptAttendance() {
             fetchP("{% url 'attendance-dashboard-dept' %}")
                 .then(r => r.json())
                 .then(data => {
                     const subEl = document.getElementById('dept-attendance-subtitle');
                     if (subEl) subEl.textContent = asOfLabel(data.date, '{% trans "Attendance rate by department" %}');
                     if (!data.departments.length) { document.querySelector("#chart-dept-attendance").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-dept-attendance"), {
+                    renderChart('dept-attendance', document.querySelector("#chart-dept-attendance"), {
                         series: [{ name: '{% trans "Rate" %}', data: data.departments.map(d => d.rate) }],
                         chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1477,10 +1507,13 @@
                         legend: { show: false },
                         tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + '%' } },
                         states: { hover: { filter: { type: 'darken', value: 0.85 } } },
-                    }).render();
+                    });
                 }).catch(() => { document.querySelector("#chart-dept-attendance").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
+            }
+            loadDeptAttendance();
 
             // ─── LATE COME & EARLY OUT ───
+            function loadLateEarly() {
             fetchP("{% url 'attendance-dashboard-late-early' %}")
                 .then(r => r.json())
                 .then(data => {
@@ -1490,7 +1523,7 @@
                     if (!allDepts.length) { document.querySelector("#chart-late-early").innerHTML = emptyHtml('{% trans "No late/early records" %}'); return; }
                     const lateMap = {}; data.late_come.forEach(d => { lateMap[d.department] = d.count; });
                     const earlyMap = {}; data.early_out.forEach(d => { earlyMap[d.department] = d.count; });
-                    new ApexCharts(document.querySelector("#chart-late-early"), {
+                    renderChart('late-early', document.querySelector("#chart-late-early"), {
                         series: [
                             { name: '{% trans "Late Come" %}', data: allDepts.map(d => lateMap[d] || 0) },
                             { name: '{% trans "Early Out" %}', data: allDepts.map(d => earlyMap[d] || 0) },
@@ -1512,16 +1545,19 @@
                         legend: { ...LEGEND_STYLE, position: 'top', horizontalAlign: 'right' },
                         tooltip: { ...TOOLTIP_STYLE },
                         states: { hover: { filter: { type: 'darken', value: 0.85 } } },
-                    }).render();
+                    });
                 }).catch(() => { document.querySelector("#chart-late-early").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
+            }
+            loadLateEarly();
 
             // ─── OVERTIME BY DEPARTMENT ───
+            function loadOvertimeDept() {
             fetchP("{% url 'attendance-dashboard-overtime' %}")
                 .then(r => r.json())
                 .then(data => {
                     document.getElementById('ot-month').textContent = data.month;
                     if (!data.departments.length) { document.querySelector("#chart-overtime").innerHTML = emptyHtml('{% trans "No overtime data" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-overtime"), {
+                    renderChart('overtime', document.querySelector("#chart-overtime"), {
                         series: data.departments.map(d => d.total_hours),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1547,15 +1583,18 @@
                         dataLabels: { enabled: false },
                         legend: { ...LEGEND_STYLE },
                         tooltip: { ...TOOLTIP_STYLE, y: { formatter: (v, { seriesIndex: i }) => `${v.toFixed(1)} hrs (${data.departments[i].employees} emp)` } },
-                    }).render();
+                    });
                 }).catch(() => { document.querySelector("#chart-overtime").innerHTML = emptyHtml('{% trans "No overtime data" %}'); });
+            }
+            loadOvertimeDept();
 
             // ─── HOURS DISTRIBUTION ───
+            function loadHoursDistribution() {
             fetchP("{% url 'attendance-dashboard-hours' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.departments.length) { document.querySelector("#chart-hours").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-hours"), {
+                    renderChart('hours', document.querySelector("#chart-hours"), {
                         series: [
                             { name: '{% trans "Worked" %}', data: data.departments.map(d => d.worked_hours) },
                             { name: '{% trans "Pending" %}', data: data.departments.map(d => d.pending_hours) },
@@ -1577,15 +1616,18 @@
                         legend: { ...LEGEND_STYLE, position: 'top', horizontalAlign: 'right' },
                         tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' hrs' } },
                         states: { hover: { filter: { type: 'darken', value: 0.85 } } },
-                    }).render();
+                    });
                 }).catch(() => { document.querySelector("#chart-hours").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
+            }
+            loadHoursDistribution();
 
             // ─── SHIFT DISTRIBUTION ───
+            function loadShiftDistribution() {
             fetchP("{% url 'attendance-dashboard-shifts' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.shifts.length) { document.querySelector("#chart-shifts").innerHTML = emptyHtml('{% trans "No shift data" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-shifts"), {
+                    renderChart('shifts', document.querySelector("#chart-shifts"), {
                         series: data.shifts.map(s => s.count),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1606,17 +1648,20 @@
                         dataLabels: { enabled: false },
                         legend: { ...LEGEND_STYLE },
                         tooltip: { ...TOOLTIP_STYLE },
-                    }).render();
+                    });
                 }).catch(() => { document.querySelector("#chart-shifts").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
+            }
+            loadShiftDistribution();
 
             // ─── CLOCK-IN DISTRIBUTION ───
+            function loadClockinDist() {
             fetchP("{% url 'attendance-dashboard-clockin' %}")
                 .then(r => r.json())
                 .then(data => {
                     const subEl = document.getElementById('clockin-subtitle');
                     if (subEl) subEl.textContent = asOfLabel(data.date, '{% trans "When employees clock in" %}');
                     if (!data.hours.length) { document.querySelector("#chart-clockin-dist").innerHTML = emptyHtml('{% trans "No clock-in data" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-clockin-dist"), {
+                    renderChart('clockin-dist', document.querySelector("#chart-clockin-dist"), {
                         series: [{ name: '{% trans "Employees" %}', data: data.counts }],
                         chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1641,10 +1686,13 @@
                         dataLabels: { enabled: true, style: { fontSize: '11px', fontWeight: 700, colors: ['#fff'] }, background: { enabled: false } },
                         tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' {% trans "employee(s)" %}' } },
                         states: { hover: { filter: { type: 'darken', value: 0.85 } } },
-                    }).render();
+                    });
                 }).catch(() => { document.querySelector("#chart-clockin-dist").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
+            }
+            loadClockinDist();
 
             // ─── CALENDAR HEATMAP ───
+            function loadCalendarHeatmap() {
             fetchP("{% url 'attendance-dashboard-calendar' %}")
                 .then(r => r.json())
                 .then(data => {
@@ -1652,7 +1700,7 @@
                     if (!data.days.length) { document.querySelector("#chart-calendar").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
                     const dense = data.days.length > 31;
                     const categories = data.days.map(d => d.label !== undefined ? d.label : d.dom);
-                    new ApexCharts(document.querySelector("#chart-calendar"), {
+                    renderChart('calendar', document.querySelector("#chart-calendar"), {
                         series: [{ name: '{% trans "Attendance Rate" %}', data: data.days.map(d => d.rate) }],
                         chart: { type: 'bar', height: 220, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1675,15 +1723,18 @@
                             const prefix = data.aggregate === 'weekly' ? '{% trans "Week of" %} ' + day.day + ' — ' : '';
                             return prefix + v + '% (' + day.count + ' {% trans "present" %})';
                         } } },
-                    }).render();
+                    });
                 }).catch(() => { document.querySelector("#chart-calendar").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
+            }
+            loadCalendarHeatmap();
 
             // ─── ABSENTEEISM RATE TREND ───
+            function loadAbsenteeismTrend() {
             fetchP("{% url 'attendance-dashboard-absenteeism' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.months.length) { document.querySelector("#chart-absenteeism").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-absenteeism"), {
+                    renderChart('absenteeism', document.querySelector("#chart-absenteeism"), {
                         series: [{ name: '{% trans "Absenteeism Rate" %}', data: data.months.map(m => m.rate) }],
                         chart: { type: 'area', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                             dropShadow: { enabled: true, top: 4, blur: 10, opacity: 0.1, color: '#ef4444' } },
@@ -1698,16 +1749,19 @@
                         yaxis: { ...YAXIS_STYLE, min: 0, labels: { ...YAXIS_STYLE.labels, formatter: v => v + '%' } },
                         grid: GRID,
                         tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + '% {% trans "absenteeism" %}' } },
-                    }).render();
+                    });
                 }).catch(() => { document.querySelector("#chart-absenteeism").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
+            }
+            loadAbsenteeismTrend();
 
             // ─── AVG WORKING HOURS ───
+            function loadAvgHours() {
             fetchP("{% url 'attendance-dashboard-avg-hours' %}")
                 .then(r => r.json())
                 .then(data => {
                     document.getElementById('avg-hours-month').textContent = data.month;
                     if (!data.departments.length) { document.querySelector("#chart-avg-hours").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-avg-hours"), {
+                    renderChart('avg-hours', document.querySelector("#chart-avg-hours"), {
                         series: [{ name: '{% trans "Avg Hrs/Day" %}', data: data.departments.map(d => d.avg_hours_per_day) }],
                         chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1731,16 +1785,19 @@
                         tooltip: { ...TOOLTIP_STYLE, y: { formatter: (v, { dataPointIndex: i }) => `${v} hrs/day (${data.departments[i].employees} {% trans "employees" %})` } },
                         annotations: { yaxis: [{ y: 8, borderColor: '#22c55e', strokeDashArray: 4,
                             label: { text: '{% trans "8h target" %}', style: { color: '#22c55e', background: 'transparent', fontSize: '10px' } } }] },
-                    }).render();
+                    });
                 }).catch(() => { document.querySelector("#chart-avg-hours").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
+            }
+            loadAvgHours();
 
             // ─── WORK TYPE DISTRIBUTION ───
+            function loadWorkTypeDistribution() {
             fetchP("{% url 'attendance-dashboard-work-types' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.work_types.length) { document.querySelector("#chart-work-types").innerHTML = emptyHtml('{% trans "No work type data" %}'); return; }
                     const wtColors = { 'Regular': '#3b82f6', 'Remote': '#22c55e', 'Hybrid': '#a855f7', 'Not Assigned': '#94a3b8' };
-                    new ApexCharts(document.querySelector("#chart-work-types"), {
+                    renderChart('work-types', document.querySelector("#chart-work-types"), {
                         series: data.work_types.map(w => w.count),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1761,10 +1818,13 @@
                         dataLabels: { enabled: false },
                         legend: { ...LEGEND_STYLE },
                         tooltip: { ...TOOLTIP_STYLE },
-                    }).render();
+                    });
                 }).catch(() => { document.querySelector("#chart-work-types").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
+            }
+            loadWorkTypeDistribution();
 
             // ─── TOP ABSENTEES ───
+            function loadTopAbsentees() {
             fetchP("{% url 'attendance-dashboard-absentees' %}")
                 .then(r => r.json())
                 .then(data => {
@@ -1785,15 +1845,18 @@
                 </a>`;
                     }).join('');
                 }).catch(() => { document.getElementById('am-absentees').innerHTML = '<div class="am-info-panel__empty">{% trans "No absences this month" %}</div>'; });
+            }
+            loadTopAbsentees();
 
             // ─── ATTENDANCE OVERVIEW ───
+            function loadAttendanceOverview() {
             fetchP("{% url 'attendance-dashboard-overview' %}")
                 .then(r => r.json())
                 .then(data => {
                     const subEl = document.getElementById('att-overview-subtitle');
                     if (subEl) subEl.textContent = asOfLabel(data.date, '{% trans "On-time, late arrivals & early departures by department" %}');
                     if (!data.dataSet || !data.dataSet.length || !data.labels.length) { document.querySelector("#chart-att-overview").innerHTML = emptyHtml('{% trans "No attendance records available" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-att-overview"), {
+                    renderChart('att-overview', document.querySelector("#chart-att-overview"), {
                         series: data.dataSet.map(d => ({ name: d.label, data: d.data })),
                         chart: { type: 'bar', height: 320, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: false, animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1818,8 +1881,29 @@
                         legend: { ...LEGEND_STYLE, position: 'top', horizontalAlign: 'right' },
                         tooltip: { ...TOOLTIP_STYLE },
                         states: { hover: { filter: { type: 'darken', value: 0.85 } } },
-                    }).render();
+                    });
                 }).catch(() => { document.querySelector("#chart-att-overview").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
+            }
+            loadAttendanceOverview();
+
+            // ── Re-run every load/chart function above in place (used by the
+            // auto-refresh timer instead of location.reload()).
+            function refreshAllData() {
+                loadKpiCards();
+                loadAttendanceTrend();
+                loadDeptAttendance();
+                loadLateEarly();
+                loadOvertimeDept();
+                loadHoursDistribution();
+                loadShiftDistribution();
+                loadClockinDist();
+                loadCalendarHeatmap();
+                loadAbsenteeismTrend();
+                loadAvgHours();
+                loadWorkTypeDistribution();
+                loadTopAbsentees();
+                loadAttendanceOverview();
+            }
 
         })();
     </script>

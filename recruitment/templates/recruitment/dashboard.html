@@ -1192,6 +1192,25 @@
             document.getElementById('rd-save-customize').addEventListener('click', () => { const p = getCustState(); saveCustPrefs(p); applyCustPrefs(p); closeCust(); });
             document.getElementById('rd-reset-customize').addEventListener('click', () => { localStorage.removeItem(CUST_KEY); location.reload(); });
 
+            // ── Chart instance registry ──
+            // ApexCharts.render() always appends a new SVG into the target
+            // element rather than replacing it, so calling the same chart
+            // block twice (e.g. on auto-refresh) would stack duplicate
+            // charts on top of each other. Every chart goes through here so
+            // a refresh destroys the previous instance first.
+            const chartInstances = {};
+            function renderChart(key, el, options) {
+                if (!el) return null;
+                if (chartInstances[key]) {
+                    chartInstances[key].destroy();
+                    chartInstances[key] = null;
+                }
+                const chart = new ApexCharts(el, options);
+                chartInstances[key] = chart;
+                chart.render();
+                return chart;
+            }
+
             // ── Auto-refresh ──
             const REFRESH_INTERVAL = 300000; // 5 minutes
             const REFRESH_KEY = 'rd_auto_refresh';
@@ -1208,13 +1227,21 @@
             }
             setInterval(updateRefreshText, 30000);
 
+            // Re-runs every data/chart load in place instead of reloading
+            // the whole document -- refreshAllData() is defined further
+            // down, once every load function it calls exists, but function
+            // declarations are hoisted so referencing it here is safe.
             function startAutoRefresh() {
                 autoRefreshOn = true;
                 localStorage.setItem(REFRESH_KEY, 'on');
                 refreshDot.classList.add('rd-refresh__dot--pulse');
                 refreshToggle.textContent = '⟳';
                 refreshToggle.title = 'Auto-refresh ON (5 min)';
-                refreshTimer = setInterval(() => location.reload(), REFRESH_INTERVAL);
+                refreshTimer = setInterval(() => {
+                    lastRefresh = Date.now();
+                    updateRefreshText();
+                    refreshAllData();
+                }, REFRESH_INTERVAL);
             }
             function stopAutoRefresh() {
                 autoRefreshOn = false;
@@ -1228,7 +1255,8 @@
             if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
 
             // ─── KPI CARDS ───
-            fetchP("{% url 'recruitment-dashboard-kpi' %}")
+            function loadKpiCards() {
+                fetchP("{% url 'recruitment-dashboard-kpi' %}")
                 .then(r => r.json())
                 .then(data => {
                     document.getElementById('rd-kpi-grid').innerHTML = `
@@ -1263,9 +1291,12 @@
                     <div class="rd-kpi-card__sub">{% trans "Offer accepted" %}</div>
                 </a>`;
                 });
+            }
+            loadKpiCards();
 
             // ─── STAGE CONVERSION FUNNEL ───
-            fetchP("{% url 'recruitment-dashboard-conversion' %}")
+            function loadConversionFunnel() {
+                fetchP("{% url 'recruitment-dashboard-conversion' %}")
                 .then(r => r.json())
                 .then(data => {
                     const el = document.querySelector("#chart-conversion-funnel");
@@ -1286,14 +1317,17 @@
                     html += '</div>';
                     el.innerHTML = html;
                 });
+            }
+            loadConversionFunnel();
 
             // ─── SOURCE OF HIRE ───
-            fetchP("{% url 'recruitment-dashboard-source' %}")
+            function loadSourceOfHire() {
+                fetchP("{% url 'recruitment-dashboard-source' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.sources.length) { document.querySelector("#chart-source-hire").innerHTML = emptyHtml('{% trans "No source data" %}'); return; }
                     const sourceColors = { 'Application Form': '#3b82f6', 'Inside Software': '#6366f1', 'Referral': '#22c55e', 'Other': '#94a3b8' };
-                    new ApexCharts(document.querySelector("#chart-source-hire"), {
+                    renderChart('source-hire', document.querySelector("#chart-source-hire"), {
                         series: data.sources.map(s => s.count),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1314,15 +1348,18 @@
                         dataLabels: { enabled: false },
                         legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light' },
-                    }).render();
+                    });
                 });
+            }
+            loadSourceOfHire();
 
             // ─── OPEN POSITIONS BY DEPARTMENT ───
-            fetchP("{% url 'recruitment-dashboard-open-dept' %}")
+            function loadOpenPositionsByDept() {
+                fetchP("{% url 'recruitment-dashboard-open-dept' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.departments.length) { document.querySelector("#chart-open-dept").innerHTML = emptyHtml('{% trans "No open positions" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-open-dept"), {
+                    renderChart('open-dept', document.querySelector("#chart-open-dept"), {
                         series: [
                             { name: '{% trans "Filled" %}', data: data.departments.map(d => d.filled) },
                             { name: '{% trans "Open" %}', data: data.departments.map(d => d.open) },
@@ -1336,15 +1373,18 @@
                         dataLabels: { enabled: true, style: { fontSize: '11px' } },
                         legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light' },
-                    }).render();
+                    });
                 });
+            }
+            loadOpenPositionsByDept();
 
             // ─── SOURCE CONVERSION ───
-            fetchP("{% url 'recruitment-dashboard-source-conv' %}")
+            function loadSourceConversion() {
+                fetchP("{% url 'recruitment-dashboard-source-conv' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.sources.length) { document.querySelector("#chart-source-conv").innerHTML = emptyHtml('{% trans "No source data" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-source-conv"), {
+                    renderChart('source-conv', document.querySelector("#chart-source-conv"), {
                         series: [
                             { name: '{% trans "Hired" %}', data: data.sources.map(s => s.hired) },
                             { name: '{% trans "Total" %}', data: data.sources.map(s => s.total - s.hired) },
@@ -1358,11 +1398,14 @@
                         dataLabels: { enabled: false },
                         legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { seriesIndex: si, dataPointIndex: di }) => si === 0 ? `${v} hired (${data.sources[di].rate}%)` : `${v} not hired` } },
-                    }).render();
+                    });
                 });
+            }
+            loadSourceConversion();
 
             // ─── INTERVIEWS IN PERIOD ───
-            fetchP("{% url 'recruitment-dashboard-interviews' %}")
+            function loadInterviews() {
+                fetchP("{% url 'recruitment-dashboard-interviews' %}")
                 .then(r => r.json())
                 .then(data => {
                     const el = document.getElementById('rd-interviews');
@@ -1377,14 +1420,17 @@
                     <div class="rd-interview-item__time">${iv.time}</div>
                 </div>`).join('');
                 }).catch(() => { document.getElementById('rd-interviews').innerHTML = '<div class="rd-info-panel__empty">{% trans "No interviews scheduled" %}</div>'; });
+            }
+            loadInterviews();
 
             // ─── CANDIDATES BY STAGE ───
-            fetchP("{% url 'recruitment-dashboard-stage-summary' %}")
+            function loadStageSummary() {
+                fetchP("{% url 'recruitment-dashboard-stage-summary' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.stages.length) { document.querySelector("#chart-stage-summary").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
                     const stageColors = { initial: '#94a3b8', test: '#3b82f6', interview: '#f59e0b', hired: '#22c55e', cancelled: '#ef4444' };
-                    new ApexCharts(document.querySelector("#chart-stage-summary"), {
+                    renderChart('stage-summary', document.querySelector("#chart-stage-summary"), {
                         series: [{ name: '{% trans "Candidates" %}', data: data.stages.map(s => s.count) }],
                         chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1400,17 +1446,20 @@
                         dataLabels: { enabled: true, style: { fontSize: '12px', colors: ['#fff'] } },
                         legend: { show: false },
                         tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' candidate(s)' } },
-                    }).render();
+                    });
                 });
+            }
+            loadStageSummary();
 
             // ─── OFFER LETTER STATUS ───
-            fetchP("{% url 'recruitment-dashboard-offer-status' %}")
+            function loadOfferStatus() {
+                fetchP("{% url 'recruitment-dashboard-offer-status' %}")
                 .then(r => r.json())
                 .then(data => {
                     const total = data.data.reduce((a, b) => a + b, 0);
                     if (!total) { document.querySelector("#chart-offer-status").innerHTML = emptyHtml('{% trans "No candidates" %}'); return; }
                     const offerColors = ['#94a3b8', '#f59e0b', '#22c55e', '#ef4444', '#6366f1'];
-                    new ApexCharts(document.querySelector("#chart-offer-status"), {
+                    renderChart('offer-status', document.querySelector("#chart-offer-status"), {
                         series: data.data,
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1425,11 +1474,14 @@
                         dataLabels: { enabled: false },
                         legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light' },
-                    }).render();
+                    });
                 });
+            }
+            loadOfferStatus();
 
             // ─── HIRING PIPELINE TABLE ───
-            fetchP("{% url 'recruitment-dashboard-pipeline' %}")
+            function loadPipelineTable() {
+                fetchP("{% url 'recruitment-dashboard-pipeline' %}")
                 .then(r => r.json())
                 .then(data => {
                     const el = document.getElementById('rd-pipeline-table');
@@ -1449,13 +1501,16 @@
                     html += '</tbody></table>';
                     el.innerHTML = html;
                 });
+            }
+            loadPipelineTable();
 
             // ─── HIRE RATE ───
-            fetchP("{% url 'recruitment-dashboard-source-quality' %}")
+            function loadHireRate() {
+                fetchP("{% url 'recruitment-dashboard-source-quality' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.sources.length) { document.querySelector("#chart-hire-rate").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-hire-rate"), {
+                    renderChart('hire-rate', document.querySelector("#chart-hire-rate"), {
                         series: [{ name: '{% trans "Hire Rate" %}', data: data.sources.map(s => s.rate) }],
                         chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1470,15 +1525,18 @@
                         grid: { borderColor: gridColor },
                         dataLabels: { enabled: true, formatter: v => v + '%', style: { fontSize: '11px' } },
                         tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { dataPointIndex: i }) => `${v}% (${data.sources[i].hired}/${data.sources[i].total})` } },
-                    }).render();
+                    });
                 });
+            }
+            loadHireRate();
 
             // ─── TIME TO HIRE ───
-            fetchP("{% url 'recruitment-dashboard-time-to-hire' %}")
+            function loadTimeToHire() {
+                fetchP("{% url 'recruitment-dashboard-time-to-hire' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.data.length) { document.querySelector("#chart-time-to-hire").innerHTML = emptyHtml('{% trans "No hire date data available" %}'); return; }
-                    new ApexCharts(document.querySelector("#chart-time-to-hire"), {
+                    renderChart('time-to-hire', document.querySelector("#chart-time-to-hire"), {
                         series: [{ name: '{% trans "Avg Days" %}', data: data.data.map(d => d.avg_days) }],
                         chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1493,18 +1551,21 @@
                         grid: { borderColor: gridColor, strokeDashArray: 4 },
                         dataLabels: { enabled: true, formatter: v => v + ' {% trans "days" %}', style: { fontSize: '11px', colors: ['#fff'] } },
                         tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { dataPointIndex: i }) => `${v} days (${data.data[i].hired_count} hired)` } },
-                    }).render();
+                    });
                 });
+            }
+            loadTimeToHire();
 
             // ─── JOININGS PER MONTH (period-driven) ───
-            fetchP("{% url 'recruitment-dashboard-joinings' %}")
+            function loadJoinings() {
+                fetchP("{% url 'recruitment-dashboard-joinings' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.data || !data.data.length || !data.data.some(v => v > 0)) {
                         document.querySelector("#chart-joinings").innerHTML = emptyHtml('{% trans "No joinings in this period" %}');
                         return;
                     }
-                    new ApexCharts(document.querySelector("#chart-joinings"), {
+                    renderChart('joinings', document.querySelector("#chart-joinings"), {
                         series: [{ name: '{% trans "Joined" %}', data: data.data }],
                         chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1524,11 +1585,14 @@
                         grid: { borderColor: gridColor, strokeDashArray: 4 },
                         dataLabels: { enabled: true, style: { fontSize: '11px', colors: ['#fff'] } },
                         tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' employee(s)' } },
-                    }).render();
+                    });
                 });
+            }
+            loadJoinings();
 
             // ─── ONGOING RECRUITMENTS & MANAGERS ───
-            fetchP("{% url 'recruitment-dashboard-managers' %}")
+            function loadManagersTable() {
+                fetchP("{% url 'recruitment-dashboard-managers' %}")
                 .then(r => r.json())
                 .then(data => {
                     const el = document.getElementById('rd-managers-table');
@@ -1546,6 +1610,26 @@
                     html += '</tbody></table>';
                     el.innerHTML = html;
                 });
+            }
+            loadManagersTable();
+
+            // ── Re-run every load/chart function above in place (used by the
+            // auto-refresh timer instead of location.reload()).
+            function refreshAllData() {
+                loadKpiCards();
+                loadConversionFunnel();
+                loadSourceOfHire();
+                loadOpenPositionsByDept();
+                loadSourceConversion();
+                loadInterviews();
+                loadStageSummary();
+                loadOfferStatus();
+                loadPipelineTable();
+                loadHireRate();
+                loadTimeToHire();
+                loadJoinings();
+                loadManagersTable();
+            }
 
         })();
     </script>
