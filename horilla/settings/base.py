@@ -261,6 +261,7 @@ TEMPLATES = [
                 "base.context_processors.enable_late_come_early_out_tracking",
                 "base.context_processors.enable_profile_edit",
                 "base.context_processors.export_access_enabled",
+                "base.context_processors.navbar_languages",
                 "horilla_tour.context_processors.pending_tours_flag",
                 "horilla_crumbs.context_processors.breadcrumbs",
             ],

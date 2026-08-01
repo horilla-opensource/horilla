@@ -1,9 +1,8 @@
 {% load static i18n %}
-{% get_available_languages as LANGUAGES %}
 {% get_current_language as LANGUAGE_CODE %}
 <div class="dropdown-content absolute right-0 z-10 w-max min-w-56 max-w-[22rem] rounded-lg bg-white py-2 [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)]">
     <ul class="max-h-[70vh] overflow-y-auto text-sm">
-        {% for language in LANGUAGES %}
+        {% for language in navbar_languages %}
             {% with IMAGE_PATH='images/ui/'|add:language.0|add:'.png' %}
                 <li>
                     <button

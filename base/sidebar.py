@@ -32,6 +32,7 @@ def system_preferences_accessibility(request, submenu, user_perms, *args, **kwar
             "horilla_audit.view_historytrackingfields",
             "payroll.view_payrollsettings",
             "base.view_company",
+            "base.view_companylanguagesetting",
         ]
     )
 
@@ -234,6 +235,12 @@ class GeneralSettings:
                     "text": _("Tracking Fields"),
                     "description": _(
                         "Select which work information fields are recorded in change history"
+                    ),
+                },
+                {
+                    "text": _("Enable Languages"),
+                    "description": _(
+                        "Restrict which languages appear in the navbar language switcher for this company"
                     ),
                 },
             ],

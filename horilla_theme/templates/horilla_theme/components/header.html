@@ -149,12 +149,14 @@
                 {% include "notification/notification.html" %}
             </div>
 
-            <div class="relative dropdown-wrapper">
-                <button class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300">
-                    <i class="fas fa-globe transition duration-300 group-hover:text-white"></i>
-                </button>
-                {% include "base/navbar_components/language_settings.html" %}
-            </div>
+            {% if show_language_switcher %}
+                <div class="relative dropdown-wrapper">
+                    <button class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300">
+                        <i class="fas fa-globe transition duration-300 group-hover:text-white"></i>
+                    </button>
+                    {% include "base/navbar_components/language_settings.html" %}
+                </div>
+            {% endif %}
 
             {% if show_company_switcher %}
                 <div class="relative dropdown-wrapper">

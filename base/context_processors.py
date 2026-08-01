@@ -10,7 +10,12 @@ from django.contrib import messages
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
-from base.models import Company, DefaultExportPermission, TrackLateComeEarlyOut
+from base.models import (
+    Company,
+    CompanyLanguageSetting,
+    DefaultExportPermission,
+    TrackLateComeEarlyOut,
+)
 from base.urls import urlpatterns
 from employee.models import EmployeeGeneralSetting, ProfileEditFeature
 from horilla.decorators import hx_request_required, login_required
@@ -402,3 +407,28 @@ def export_access_enabled(request):
     setting = DefaultExportPermission.objects.filter(company_id=company).first()
     enabled = setting is None or bool(setting.is_enabled)
     return {"export_access_enabled": enabled}
+
+
+def navbar_languages(request):
+    """
+    Exposes the list of languages available in the navbar language
+    switcher for the user's current company. The switcher is only shown
+    once a company has explicitly enabled one or more languages; until
+    then it stays hidden rather than defaulting to every language.
+    """
+    selected_company = request.session.get("selected_company")
+    if not selected_company or selected_company == "all":
+        company = None
+    else:
+        company = Company.objects.filter(id=selected_company).first()
+
+    setting = CompanyLanguageSetting.objects.filter(company_id=company).first()
+    if setting and setting.enabled_languages:
+        enabled_codes = set(setting.enabled_languages)
+        languages = [
+            language for language in settings.LANGUAGES if language[0] in enabled_codes
+        ]
+        if languages:
+            return {"navbar_languages": languages, "show_language_switcher": True}
+
+    return {"navbar_languages": [], "show_language_switcher": False}

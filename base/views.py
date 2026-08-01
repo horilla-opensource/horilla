@@ -138,6 +138,7 @@ from base.models import (
     BiometricAttendance,
     Company,
     CompanyGroupAssignment,
+    CompanyLanguageSetting,
     CompanyLeaves,
     DashboardEmployeeCharts,
     DefaultExportPermission,
@@ -5899,6 +5900,57 @@ def _system_preferences_context(request):
     else:
         pagination_form = DynamicPaginationForm()
 
+    language_company = _selected_company(request)
+    language_setting = CompanyLanguageSetting.objects.filter(
+        company_id=language_company
+    ).first()
+    enabled_languages = language_setting.enabled_languages if language_setting else []
+    if language_company:
+        language_employee_count = EmployeeWorkInformation.objects.filter(
+            company_id=language_company, employee_id__is_active=True
+        ).count()
+    else:
+        language_employee_count = Employee.objects.filter(is_active=True).count()
+    language_configured_on = language_setting.created_at if language_setting else None
+
+    from base.auth_backends import company_scoped_active, get_allowed_company_ids
+
+    language_scoped = (
+        company_scoped_active()
+        and request.user.is_authenticated
+        and not request.user.is_superuser
+    )
+    if language_scoped:
+        all_language_companies = Company.objects.filter(
+            id__in=get_allowed_company_ids(request.user) or []
+        )
+    else:
+        all_language_companies = Company.objects.all()
+    language_employee_counts_by_company = {
+        row["company_id"]: row["count"]
+        for row in (
+            EmployeeWorkInformation.objects.filter(employee_id__is_active=True)
+            .values("company_id")
+            .annotate(count=Count("id"))
+        )
+    }
+    language_enabled_counts_by_company = {
+        setting.company_id_id: len(setting.enabled_languages or [])
+        for setting in CompanyLanguageSetting.objects.exclude(company_id=None)
+    }
+    language_company_options = [
+        {
+            "id": company.id,
+            "name": company.company,
+            "icon": company.icon.url,
+            "selected": language_company is not None
+            and company.id == language_company.id,
+            "employee_count": language_employee_counts_by_company.get(company.id, 0),
+            "enabled_count": language_enabled_counts_by_company.get(company.id, 0),
+        }
+        for company in all_language_companies
+    ]
+
     return {
         "form": form,
         "currency_form": currency_form,
@@ -5912,6 +5964,14 @@ def _system_preferences_context(request):
         "selected_company_id": selected_company_id,
         "announcement_expire_instance": instance,
         "current_company": companies.first(),
+        "languages": settings.LANGUAGES,
+        "enabled_languages": enabled_languages,
+        "language_employee_count": language_employee_count,
+        "language_configured_on": language_configured_on,
+        "language_company": language_company,
+        "language_company_count": all_language_companies.count(),
+        "language_company_options": language_company_options,
+        "language_total_available": len(settings.LANGUAGES),
     }
 
 
@@ -6319,6 +6379,34 @@ def enable_default_export_access(request):
         if request.META.get("HTTP_HX_REQUEST"):
             return HttpResponse()
         return redirect(default_export_access_settings_view)
+    return HttpResponse(status=405)
+
+
+@login_required
+@permission_required("base.change_companylanguagesetting")
+def update_language_settings(request):
+    """
+    Handles the "Enable Languages" form on the System Preferences page.
+    Restricts, per company, which languages appear in the navbar language
+    switcher for that company's users. When no languages are selected,
+    every language defined in settings.LANGUAGES stays available.
+    """
+    if request.method == "POST":
+        selected_languages = request.POST.getlist("enabled_languages")
+        valid_codes = {code for code, _label in settings.LANGUAGES}
+        selected_languages = [
+            code for code in selected_languages if code in valid_codes
+        ]
+        company = _selected_company(request)
+        instance, _created = CompanyLanguageSetting.objects.get_or_create(
+            company_id=company
+        )
+        instance.enabled_languages = selected_languages
+        instance.save()
+        messages.success(request, _("Language settings have been updated."))
+        if request.META.get("HTTP_HX_REQUEST"):
+            return HttpResponse()
+        return redirect(system_preferences_settings_view)
     return HttpResponse(status=405)
 
 

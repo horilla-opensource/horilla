@@ -167,9 +167,11 @@
                         {% include 'notification/notification.html' %}
                         <!-- End of notifications button in nav bar -->
 
-                        <!-- Start of Languages dropdown in nav bar -->
-                        {% include "base/navbar_components/language_settings.html" %}
-                        <!-- End of Languages dropdown in nav bar -->
+                        {% if show_language_switcher %}
+                            <!-- Start of Languages dropdown in nav bar -->
+                            {% include "base/navbar_components/language_settings.html" %}
+                            <!-- End of Languages dropdown in nav bar -->
+                        {% endif %}
 
                         {% if show_company_switcher %}
                             <!-- Start of Companies dropdown in nav bar -->

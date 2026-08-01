@@ -1342,6 +1342,11 @@ urlpatterns = [
         name="enable-default-export-access",
     ),
     path(
+        "settings/update-language-settings/",
+        views.update_language_settings,
+        name="update-language-settings",
+    ),
+    path(
         "rwork-individual-view/<int:instance_id>/",
         views.rotating_work_individual_view,
         name="rwork-individual-view",

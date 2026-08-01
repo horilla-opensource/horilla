@@ -3171,4 +3171,23 @@ class DefaultExportPermission(HorillaModel):
     objects = models.Manager()
 
 
+class CompanyLanguageSetting(HorillaModel):
+    """
+    Per-company list of enabled languages for the navbar language switcher.
+    When a company has one or more languages configured here, only those
+    languages are shown to that company's users; if none are configured,
+    every language defined in settings.LANGUAGES remains available.
+    """
+
+    company_id = models.ForeignKey(
+        Company,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        verbose_name=_("Company"),
+    )
+    enabled_languages = models.JSONField(default=list, blank=True)
+    objects = models.Manager()
+
+
 # User.add_to_class("is_new_employee", models.BooleanField(default=False))

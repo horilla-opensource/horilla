@@ -60,4 +60,15 @@
             </div>
         </div>
     {% endif %}
+
+    {% if perms.base.view_companylanguagesetting %}
+        <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+            <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">
+                {% trans "Languages" %}
+            </h5>
+            <div class="p-4">
+                {% include "base/settings/language_settings.html" %}
+            </div>
+        </div>
+    {% endif %}
 {% endblock settings %}
