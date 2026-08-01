@@ -5,17 +5,17 @@
 	<div class="oh-btn-group">
 		{% if is_owner and not can_manage %}
 			{% if instance.approved or instance.reallocate_canceled or instance.reallocate_approved %}
-				<button class="oh-btn oh-btn--success w-100" disabled>
-					<ion-icon name="checkmark-outline"></ion-icon>
+				<button class="oh-btn oh-btn--info w-100" disabled>
+					<ion-icon name="thumbs-up-outline"></ion-icon>
 				</button>
 			{% else %}
 				<a
 					href=" {% url 'shift-allocation-request-approve' instance.id %}"
 					onclick="return confirm(`{% trans 'Are you available for this shift reallocation?' %}`)"
-					class="oh-btn oh-btn--success w-100"
+					class="oh-btn oh-btn--info w-100"
 					title="{% trans 'Available' %}"
 				>
-					<ion-icon name="checkmark-outline"></ion-icon>
+					<ion-icon name="thumbs-up-outline"></ion-icon>
 				</a>
 			{% endif %}
 		{% endif %}

@@ -1,0 +1,68 @@
+{% load i18n %}
+<div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
+    {% if instance.document %}
+        {% if perms.horilla_documents.change_documentrequest %}
+            {% if instance.status == "approved" %}
+                <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Approve' %}">
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                </button>
+            {% else %}
+                <button
+                    class="oh-btn oh-btn--success oh-btn--sq-sm"
+                    hx-get="{% url 'document-approve' instance.id %}"
+                    title="{% trans 'Approve' %}"
+                    onclick="event.stopPropagation()"
+                >
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                </button>
+            {% endif %}
+
+            {% if instance.status == "rejected" %}
+                <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Reject' %}">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            {% else %}
+                <button
+                    class="oh-btn oh-btn--danger oh-btn--sq-sm"
+                    hx-get="{% url 'document-reject' instance.id %}"
+                    hx-target="#genericModalBody"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    title="{% trans 'Reject' %}"
+                    onclick="event.stopPropagation()"
+                >
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            {% endif %}
+        {% endif %}
+    {% else %}
+        <button
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
+            title="{% trans 'Upload Document' %}"
+            hx-get="{% url 'file-upload' instance.id %}"
+            hx-target="#genericModalBody"
+            data-document-id="{{ instance.id }}"
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            onclick="event.stopPropagation()"
+        >
+            <ion-icon name="cloud-upload-outline"></ion-icon>
+        </button>
+    {% endif %}
+
+    {% if not instance.document_request_id or perms.horilla_documents.change_documentrequest %}
+        <form
+            hx-confirm="{% trans 'Are you sure you want to delete this Document Request?' %}"
+            hx-post="{% url 'document-delete' instance.id %}"
+            hx-target="#document{{instance.id}}"
+            hx-swap="outerHTML"
+            hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 300);"
+            onclick="event.stopPropagation()"
+        >
+            {% csrf_token %}
+            <button type="submit" class="oh-btn oh-btn--danger oh-btn--sq-sm" title="{% trans 'Delete' %}">
+                <ion-icon name="trash-outline"></ion-icon>
+            </button>
+        </form>
+    {% endif %}
+</div>

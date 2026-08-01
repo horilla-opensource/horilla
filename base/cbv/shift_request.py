@@ -59,6 +59,7 @@ class ShiftList(HorillaListView):
 
     model = ShiftRequest
     filter_class = ShiftRequestFilter
+    quick_export = False
 
     row_status_class = (
         "approved-{approved} canceled-{canceled} requested-{approved}-{canceled}"
@@ -118,12 +119,6 @@ class ShiftRequestList(ShiftList):
         self.search_url = reverse("list-shift-request")
         self.view_id = "shift-container"
         # self.filter_keys_to_remove = ["deleted"]
-        if self.request.user.has_perm(
-            "base.change_shiftrequest"
-        ) or is_reportingmanager(self.request):
-            self.action_method = "confirmations"
-        else:
-            self.action_method = None
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -161,11 +156,11 @@ class ShiftRequestList(ShiftList):
     ]
 
     header_attrs = {
-        "option": """ style="width:190px !important;" """,
+        "action": """ style="width:190px !important;" """,
         "description": """ style="width:300px !important;" """,
     }
 
-    option_method = "shift_actions"
+    action_method = "shift_actions"
 
     sortby_mapping = [
         (_("Employee"), "employee_id__get_full_name"),
@@ -217,7 +212,6 @@ class AllocatedShift(ShiftList):
     ]
 
     action_method = "allocated_confirm_action_col"
-    option_method = "allocate_confirmations"
 
     def get_queryset(self):
         queryset = super().get_queryset()

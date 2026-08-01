@@ -8,6 +8,8 @@ This page is used to register filter for employee models
 import django
 import django_filters
 from django import forms
+from django.contrib.auth.models import Permission
+from django.db.models import Q
 from django.utils.translation import gettext as _
 from django_filters import CharFilter
 
@@ -62,6 +64,11 @@ class EmployeeFilter(HorillaFilterSet):
     department = django_filters.CharFilter(
         field_name="employee_work_info__department_id__department",
         lookup_expr="icontains",
+    )
+
+    employee_user_id__user_permissions = django_filters.ModelMultipleChoiceFilter(
+        queryset=Permission.objects.select_related("content_type").all(),
+        label=_("Permissions"),
     )
 
     is_active = django_filters.ChoiceFilter(
@@ -272,7 +279,11 @@ class DocumentRequestFilter(FilterSet):
     Custom filter for Document Requests.
     """
 
-    search = CharFilter(field_name="title", lookup_expr="icontains")
+    # Document.title is a near-constant string set once per document request
+    # (e.g. "Upload Passport" for every employee in that group), so matching
+    # against it can never narrow a group down to one employee. Search by the
+    # employee's name/badge instead, like every other request list in the app.
+    search = CharFilter(method=filter_by_name)
 
     class Meta:
         """
@@ -313,9 +324,19 @@ class DocumentPipelineFilter(HorillaFilterSet):
     def search_method(self, queryset, _, value):
         """
         This method is used to search
-        """
 
-        return queryset.filter(title__icontains=value).distinct()
+        Matches either the request type's own title (e.g. "Passport") or the
+        name/badge of an employee assigned to it, so searching for a person
+        surfaces every document-type group they have a pending request in -
+        matching the same "search" convention used across the rest of the app.
+        """
+        value = " ".join(value.split())
+        return queryset.filter(
+            Q(title__icontains=value)
+            | Q(employee_id__employee_first_name__icontains=value)
+            | Q(employee_id__employee_last_name__icontains=value)
+            | Q(employee_id__badge_id__icontains=value)
+        ).distinct()
 
 
 class DisciplinaryActionFilter(FilterSet):

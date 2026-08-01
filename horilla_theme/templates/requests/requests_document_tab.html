@@ -7,6 +7,15 @@
         {% trans "Review document upload requests and submit required files from HR." %}
     </p>
 
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
+
     <div id="view-container" class="oh-wrapper p-1">
         <div class="animated-background"></div>
     </div>
@@ -27,3 +36,5 @@
         </div>
     </div>
 </div>
+
+<script src="{% static '/document/actions.js' %}"></script>

@@ -51,17 +51,15 @@ class WorkRequestListView(HorillaListView):
 
     filter_class = WorkTypeRequestFilter
     model = WorkTypeRequest
+    # The Actions dropdown's own Export entry covers this (exports the
+    # selection, or everything when nothing is selected), so this standalone
+    # quick-action button would just duplicate it.
+    quick_export = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("work-list-view")
         self.view_id = "work-shift"
-        if self.request.user.has_perm(
-            "base.change_worktyperequest"
-        ) or is_reportingmanager(self.request):
-            self.action_method = "confirmation"
-        else:
-            self.action_method = None
 
     def get_queryset(self):
         """
@@ -98,10 +96,10 @@ class WorkRequestListView(HorillaListView):
         (_("Status"), "request_status"),
     ]
 
-    option_method = "work_actions"
+    action_method = "confirmation"
 
     header_attrs = {
-        "option": """
+        "action": """
                 style="width:200px !important;"
                 """,
     }

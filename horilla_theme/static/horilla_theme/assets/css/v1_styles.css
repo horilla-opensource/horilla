@@ -45,31 +45,9 @@
 }
 
 .animated-background {
-  animation-duration: 2s;
-  animation-fill-mode: forwards;
-  animation-iteration-count: infinite;
-  animation-name: placeHolderShimmer;
-  animation-timing-function: linear;
   background-color: #f6f7f8;
-  background: linear-gradient(
-    to right,
-    #eeeeee9c -58%,
-    #e4e4e496 18%,
-    #eeeeee61 33%
-  );
-  background-size: 800px 64px;
   height: 300px;
   position: relative;
-}
-
-@keyframes placeHolderShimmer {
-  0% {
-    background-position: -800px 0;
-  }
-
-  100% {
-    background-position: 800px 0;
-  }
 }
 
 .oh-modal {
@@ -1739,6 +1717,18 @@ table .oh-btn-group a {
   background-color: rgb(221, 51, 51);
 }
 
+/* Stacked accordions in a filter dropdown (Work Info / Work Type Request /
+   Advanced / Group By, etc.) only get a gap between each other from the
+   wrapper's Tailwind "space-y-2" utility class - since these dropdowns are
+   injected via htmx after the initial page load, that class can briefly
+   render unstyled before the Tailwind CDN Play compiler rescans the DOM
+   (see .oh-filter-dropdown further down for the same issue on the outer
+   padding). Pinning the gap here, on the plain (non-Tailwind) .oh-accordion class,
+   guarantees it regardless of that timing. */
+.oh-accordion + .oh-accordion {
+  margin-top: 0.5rem;
+}
+
 .oh-accordion-header {
   position: relative;
   padding: 8px 10px;
@@ -1824,6 +1814,17 @@ table .oh-btn-group a {
   opacity: 1;
   transition: all 500ms ease;
   /* max-height: 400px; */
+}
+
+/* The "Filter" dropdown (nav bars + attendance work record view) is loaded
+   via htmx into the page after the initial load, so its Tailwind CDN
+   utility classes (min-w-[400px] p-3) can briefly render unstyled until the
+   Play CDN's JIT compiler rescans the DOM. Pinning padding/min-width here,
+   in the plain stylesheet loaded upfront on every page, keeps this
+   consistent across every filter form regardless of that timing. */
+.oh-filter-dropdown {
+  min-width: 400px;
+  padding: 0.75rem;
 }
 
 .oh-accordion-meta {

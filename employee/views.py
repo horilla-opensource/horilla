@@ -13,6 +13,7 @@ provide the main entry points for interacting with the application's functionali
 
 import ast
 import calendar
+import contextlib
 import json
 import operator
 import os
@@ -1145,7 +1146,17 @@ def document_bulk_reject(request):
         if request.method == "POST"
         else request.GET.getlist("ids")
     )
-    form = DocumentRejectForm(request.POST or None)
+    # DocumentRejectForm is a ModelForm but this view never calls form.save()
+    # (the actual update is the manual queryset .update() below) - it's only
+    # used to validate reject_reason. Without an instance, Django validates a
+    # brand new blank Document(), and Document.clean() unconditionally checks
+    # len(self.title) < 3 regardless of the form's fields, raising a
+    # ValueError ("has no field named 'title'") since title isn't one of
+    # them. Binding to any one of the actual target documents gives clean()
+    # a real, already-valid title instead.
+    form = DocumentRejectForm(
+        request.POST or None, instance=Document.objects.filter(id__in=ids).first()
+    )
 
     if request.method == "POST" and form.is_valid():
         reject_reason = form.cleaned_data["reject_reason"]
@@ -2702,9 +2713,11 @@ def employee_import(request):
 
 @login_required
 @permission_required("employee.add_employee")
-def employee_export(_):
+def employee_export(request):
     """
-    This method is used to export employee data to xlsx
+    This method is used to export employee data to xlsx. If the caller
+    selected specific employees in the list view (instance_ids), only those
+    are exported; otherwise every employee is exported, same as before.
     """
     # Get the list of field names for your model
     field_names = [f.name for f in Employee._meta.get_fields() if not f.auto_created]
@@ -2715,8 +2728,16 @@ def employee_export(_):
     field_names.remove("is_directly_converted")
     field_names.remove("is_active")
 
+    employees = Employee.objects.all()
+    instance_ids = request.GET.get("instance_ids")
+    if instance_ids:
+        with contextlib.suppress(ValueError, SyntaxError):
+            instance_ids = ast.literal_eval(instance_ids)
+            if instance_ids:
+                employees = employees.filter(pk__in=instance_ids)
+
     # Get the existing employee data and convert it to a DataFrame
-    employee_data = Employee.objects.values_list(*field_names)
+    employee_data = employees.values_list(*field_names)
     data_frame = pd.DataFrame(list(employee_data), columns=field_names)
 
     # Export the DataFrame to an Excel file

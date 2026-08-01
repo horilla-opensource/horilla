@@ -2,41 +2,25 @@
 <form class="pt-5" hx-get="{% url 'toggle-columns' %}" hx-swap="none">
     <input type="hidden" name="path" value="{{request.path_info}}">
     <ul class="oh-dropdown__items toggleForm">
-        <div class="oh-dropdown_btn-header oh-btn-group">
-            <button
-                onclick="$(this)
-						.closest('form')
-						.find('[type=checkbox]')
-						.prop('checked', true);
-					$(this)
-						.closest('form')
-						.find('[type=checkbox]')
-						.siblings('input[type=hidden]')
-						.val('');
-					toggleAllColumnsVisibility($(this).closest('form')[0], true);
-					persistColumnToggle($(this).closest('form')[0])"
-                class="oh-btn oh-btn--success text-sm"
-            >
-                {% trans "Select All Records" %}
-            </button>
-            <button
-                onclick="$(this)
-						.closest('form')
-						.find('[type=checkbox]')
-						.prop('checked', false);
-					$(this)
-						.closest('form')
-						.find('[type=checkbox]')
-						.siblings('input[type=hidden]')
-						.val('off');
-					toggleAllColumnsVisibility($(this).closest('form')[0], false);
-					persistColumnToggle($(this).closest('form')[0])"
-                class="oh-btn oh-btn--primary-outline text-sm"
-            >
-                {% trans "Unselect All Records" %}
-            </button>
-        </div>
-
+        <li class="oh-dropdown__item oh-sticy-dropdown-item">
+            <span class="text-sm">{% trans "Select All" %}</span>
+            <span class="oh-table__checkbox">
+                <input
+                    type="checkbox"
+                    class="custom-checkbox toggle-select-all"
+                    onclick="var checked = $(this).is(':checked');
+					var $form = $(this).closest('form');
+					$form.find('.toggle-column-checkbox').each(function () {
+						$(this).prop('checked', checked);
+						$(this)
+							.siblings('input[type=hidden]')
+							.val(checked ? '' : 'off');
+					});
+					toggleAllColumnsVisibility($form[0], checked);
+					persistColumnToggle($form[0])"
+                >
+            </span>
+        </li>
         {% for field in form.visible_fields %}
             <li class="oh-dropdown__item oh-sticy-dropdown-item">
                 {% if forloop.counter  == 1 %}
@@ -58,7 +42,7 @@
                     >
                     <input
                         type="checkbox"
-                        class="custom-checkbox"
+                        class="custom-checkbox toggle-column-checkbox"
                         id="toggle_{{field.name}}"
                         {% if field.initial %}
                             checked
@@ -71,7 +55,12 @@
 						$(this)
 							.siblings('input[type=hidden]')
 							.val(value);
-						persistColumnToggle($(this).closest('form')[0])"
+						persistColumnToggle($(this).closest('form')[0]);
+						var $form = $(this).closest('form');
+						$form.find('.toggle-select-all').prop(
+							'checked',
+							$form.find('.toggle-column-checkbox').length === $form.find('.toggle-column-checkbox:checked').length
+						)"
                     >
                 </span>
             </li>
@@ -88,4 +77,22 @@
             $(this).closest('form').find('[type=submit]').click();
         }
     });
+
+    // Keep "Select All"'s own initial state consistent with whatever the
+    // individual columns actually start checked/unchecked as (some columns
+    // can already be hidden from a previously saved preference). Scoped
+    // per-form via .each() since a page can have several of these dropdowns
+    // open at once (e.g. one per accordion group) - a plain combined
+    // selector would average their states together instead of keeping each
+    // instance independent.
+    (function () {
+        $(".toggleForm").each(function () {
+            var $form = $(this).closest("form");
+            var $columns = $form.find(".toggle-column-checkbox");
+            $form.find(".toggle-select-all").prop(
+                "checked",
+                $columns.length === $columns.filter(":checked").length
+            );
+        });
+    })();
 </script>

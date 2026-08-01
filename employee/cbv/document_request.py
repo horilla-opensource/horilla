@@ -4,7 +4,7 @@ This page handles the cbv methods for document request page
 
 import os
 from typing import Any, Optional
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 from django import forms
 from django.contrib import messages
@@ -15,7 +15,7 @@ from django.utils.decorators import method_decorator
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-from base.methods import choosesubordinates, is_reportingmanager
+from base.methods import choosesubordinates, get_key_instances, is_reportingmanager
 from employee.filters import DocumentPipelineFilter, DocumentRequestFilter
 from employee.models import Employee
 from horilla.decorators import manager_can_enter
@@ -307,6 +307,8 @@ class DocumentRequestNav(HorillaNavView):
                         "attrs": f"""
                         id="bulkApproveDocument"
                         hx-post="{reverse('document-bulk-approve')}"
+                        hx-target="#view-container"
+                        hx-swap="innerHTML"
                         hx-confirm='Do you really want to approve all the selected requests?'
                         style="cursor: pointer;"
                         hx-on:click="validateDocsIds(event, 'approved');"
@@ -317,6 +319,7 @@ class DocumentRequestNav(HorillaNavView):
                         "action": _("Bulk Reject Requests"),
                         "attrs": f"""
                         hx-get={reverse('document-bulk-reject')}
+                        hx-vals='js:{{"ids": JSON.parse(document.getElementById("selectedInstances").getAttribute("data-ids") || "[]")}}'
                         data-target="#objectCreateModal"
                         data-toggle="oh-modal-toggle"
                         hx-on:click="validateDocsIds(event, 'rejected');"
@@ -383,6 +386,36 @@ class DocumentRequestPipelineView(Pipeline):
         }
     ]
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Pipeline (unlike HorillaListView) never builds filter_dict itself,
+        # so generic/filter_tags.html - included by cbv/documents/pipeline.html
+        # to give the nav's search/filter dropdown a working "remove filter"
+        # tag - would otherwise always render empty. Mirrors the same
+        # get_key_instances()-based construction HorillaListView uses.
+        data_dict = parse_qs(self.request.GET.urlencode())
+        data_dict = {
+            key: list(dict.fromkeys(values)) for key, values in data_dict.items()
+        }
+        data_dict = get_key_instances(self.model, data_dict)
+        for key in ("filter_applied", "nav_url", "referrer", "grouper"):
+            data_dict.pop(key, None)
+        context["filter_dict"] = data_dict
+
+        # The accordion badge used to show group.document_set.count - the
+        # group's grand total, unaffected by the nav's own search/filter.
+        # That reads as broken once the inner document list (which *is*
+        # filtered, since the accordion's hx-get forwards request.GET into
+        # it) only shows a handful of matching rows under a badge still
+        # claiming the group's full, unfiltered size. Filter each group's
+        # own count the same way DocumentListView filters its document list,
+        # so the badge always matches what's actually visible underneath it.
+        for group in context["groups"]:
+            group.filtered_document_count = DocumentRequestFilter(
+                self.request.GET, queryset=group.document_set.all()
+            ).qs.count()
+        return context
+
 
 @method_decorator(login_required, name="dispatch")
 class DocumentListView(HorillaListView):
@@ -392,8 +425,35 @@ class DocumentListView(HorillaListView):
 
     model = Document
     filter_class = DocumentRequestFilter
-    template_name = "cbv/documents/document_list.html"
     filter_keys_to_remove = ["document_request_id"]
+    quick_export = False
+    # This per-group list has no filter UI of its own - the only visible
+    # search/filter controls on the page belong to the outer nav
+    # (DocumentRequestNav). filter_tags.html hardcodes
+    # id="filterTagContainerSectionNav", the same id the nav's own template
+    # (generic/inline_nav.html) uses for its own container, so leaving this
+    # enabled means every group reload's filter_tags.html re-renders into
+    # *both* matching elements (jQuery's #id selector matches all of them),
+    # clobbering the nav's own search tag with this list's unrelated,
+    # forwarded-through-request.GET filter state.
+    show_filter_tags = False
+
+    columns = [
+        (_("Document"), "document_title_display", "employee_id__get_avatar"),
+        (_("Status"), "document_status_display"),
+        (_("Date"), "issue_date"),
+    ]
+    default_columns = columns
+
+    action_method = "document_actions"
+
+    row_attrs = """
+                id="document{id}"
+                hx-get='{view_file_url}'
+                hx-target="#viewFile"
+                data-toggle="oh-modal-toggle"
+                data-target="#viewFileModal"
+                """
 
     def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
         queryset = super().get_queryset(queryset, filtered, *args, **kwargs)

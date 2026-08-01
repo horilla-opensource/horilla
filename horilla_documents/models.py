@@ -12,6 +12,7 @@ from django.utils.translation import gettext as _
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
 from horilla.models import HorillaModel, upload_path
+from horilla_views.cbv_methods import render_template
 
 STATUS = [
     ("requested", "Requested"),
@@ -186,3 +187,34 @@ class Document(HorillaModel):
         without_documents = total_requests.filter(document="").count()
         count = total_requests.count() - without_documents
         return count
+
+    def document_title_display(self):
+        """
+        "Document" column text for the list view - title plus the employee it
+        belongs to, matching the employee list's own "name" column pattern.
+        """
+        return f"{self.title} -- {self.employee_id.get_full_name()}"
+
+    def document_status_display(self):
+        """
+        "Status" column text for the list view - a document without an
+        uploaded file has no meaningful status yet.
+        """
+        if not self.document:
+            return _("No Document")
+        return self.get_status_display()
+
+    def view_file_url(self):
+        """
+        URL used by the list view's row click to open the file preview modal.
+        """
+        return reverse_lazy("view-file", args=[self.id])
+
+    def document_actions(self):
+        """
+        Upload/Approve/Reject/Delete column for the list view.
+        """
+        return render_template(
+            path="cbv/documents/document_row_actions.html",
+            context={"instance": self},
+        )

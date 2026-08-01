@@ -276,8 +276,13 @@ function toggleColumnVisibility(checkboxEl, fieldName, visible) {
 }
 
 function toggleAllColumnsVisibility(formEl, visible) {
+    // Scoped to .toggle-column-checkbox, not every checkbox in the form -
+    // the "Select All" master checkbox itself is also an
+    // input[type="checkbox"] in this same form but has no id to derive a
+    // field name from, so including it here threw on `.attr("id").replace(...)`
+    // and aborted the loop before any real column got toggled.
     $(formEl)
-        .find('input[type="checkbox"]')
+        .find(".toggle-column-checkbox")
         .each(function () {
             toggleColumnVisibility(this, $(this).attr("id").replace("toggle_", ""), visible);
         });
@@ -322,16 +327,21 @@ function selectSelected(viewId, storeKey = "selectedInstances") {
         }
     }
 
+    // Selected ids can span every page of a filtered list (thousands, on a
+    // large table), but only the current page's rows exist in the DOM. Loop
+    // over the (small, bounded) set of on-page checkboxes and look each one
+    // up in a Set - not the other way around, which re-queried the DOM twice
+    // per selected id and made "Select All" scale with total selection size
+    // instead of rows-per-page.
     ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
-    $.each(ids, function (indexInArray, valueOfElement) {
-        $(
-            `${viewId} .oh-sticky-table__tbody .list-table-row[value=${valueOfElement}]`
-        )
-            .prop("checked", true)
-            .change();
-        $(`${viewId} tbody .list-table-row[value=${valueOfElement}]`)
-            .prop("checked", true)
-            .change();
+    var _hlvIdSet = new Set(ids.map(String));
+    var $hlvRows = $(
+        `${viewId} .oh-sticky-table__tbody .list-table-row,${viewId} tbody .list-table-row`
+    );
+    $hlvRows.each(function () {
+        if (_hlvIdSet.has(String($(this).val()))) {
+            $(this).prop("checked", true).change();
+        }
     });
 
     // Reflect the row selection on the header "select all" checkbox: checked
@@ -339,9 +349,12 @@ function selectSelected(viewId, storeKey = "selectedInstances") {
     // indeterminate when some, but not all, rows are selected).
     syncBulkSelectAllCheckbox(viewId);
 
-    $(
-        `${viewId} .oh-sticky-table__tbody .list-table-row,${viewId} tbody .list-table-row`
-    ).change(function (e) {
+    // Namespaced + re-bound (not stacked): selectSelected runs on every
+    // select-all/unselect/page-load, and a plain .change(fn) here would
+    // attach one more duplicate handler each time without ever removing the
+    // old ones, so every row toggle re-ran all of them - the exact cause of
+    // "Select All" getting slower the more it's used in a session.
+    $hlvRows.off("change.hlvSelectSync").on("change.hlvSelectSync", function (e) {
         id = $(this).val();
         ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
 
@@ -523,6 +536,15 @@ function reloadSelectedCount(targetElement, storeKey = "selectedInstances") {
         $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).addClass(
             "d-none"
         );
+    }
+
+    // Hide "Select" once every record matching the current filter is already
+    // selected - there's nothing left for it to do. It reappears as soon as
+    // the count drops below the total again (Unselect, or deselecting a row).
+    var $selectBtn = $(`#select_${id}`);
+    if ($selectBtn.length) {
+        var total = parseInt($selectBtn.attr("data-total-count"), 10) || 0;
+        $selectBtn.toggleClass("d-none", total > 0 && count >= total);
     }
 }
 
