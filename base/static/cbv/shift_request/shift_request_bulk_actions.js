@@ -63,7 +63,7 @@ function refreshShiftRequestList() {
 
     if (typeof htmx !== "undefined" && typeof htmx.ajax === "function") {
         htmx
-            .ajax("GET", "/shift-request-tab/", {
+            .ajax("GET", "/list-shift-request/", {
                 target: "#listContainer",
                 swap: "innerHTML",
                 headers: {
@@ -77,7 +77,7 @@ function refreshShiftRequestList() {
 
     $.ajax({
         type: "GET",
-        url: "/shift-request-tab/",
+        url: "/employee/requests/shift-request-tab/",
         headers: {
             "HX-Request": "true",
             "HX-Current-URL": window.location.href,
