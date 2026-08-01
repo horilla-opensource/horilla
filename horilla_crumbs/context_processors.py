@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 from django.apps import apps
 from django.shortcuts import redirect
 from django.urls import Resolver404, path, resolve, reverse
+from django.utils.translation import gettext as _trans
 
 from base.context_processors import white_labelling_company
 from employee.models import Employee
@@ -28,6 +29,27 @@ def _split_path(self, path=None):
         return []
 
     return parts
+
+
+def _resolve_menu_section(path, menus):
+    """
+    Find the top-level sidebar section (a MENU entry from some app's
+    sidebar.py) that owns a submenu whose redirect matches the given path,
+    either exactly or as a parent path (e.g. an employee detail page under
+    the Employees list submenu). Returns (section_label, submenu_redirect)
+    for the longest/most specific matching submenu, or None if nothing
+    matches (e.g. settings pages, which aren't part of the main sidebar).
+    """
+    best = None
+    for menu in menus or []:
+        for submenu in menu.get("submenu", []):
+            redirect = submenu.get("redirect") or ""
+            if not redirect:
+                continue
+            if path == redirect or path.startswith(redirect):
+                if best is None or len(redirect) > len(best[1]):
+                    best = (str(menu.get("menu", "")), redirect)
+    return best
 
 
 BREADCRUMB_URL_NAMES = {
@@ -264,6 +286,37 @@ def breadcrumbs(request):
         parts = _split_path(request)
         path = base_url
 
+        # Section-aware breadcrumb: instead of guessing the top-level label from
+        # the raw first URL segment, look it up in the same sidebar MENU/SUBMENUS
+        # registry that drives the actual left nav (see any app's sidebar.py).
+        # The one exception is the main Dashboard: it isn't a "section" of its
+        # own, so when the user actually came from there (via HTTP_REFERER,
+        # rather than a one-off query marker) we show "Dashboard" instead of
+        # whatever section the destination page belongs to.
+        menus = getattr(request, "MENUS", None)
+        if menus is None:
+            try:
+                from horilla.config import sidebar as _build_sidebar_menus
+
+                _build_sidebar_menus(request)
+                menus = getattr(request, "MENUS", [])
+            except Exception:
+                menus = []
+
+        current_section = _resolve_menu_section(request.path, menus)
+
+        section_override = None
+        try:
+            dashboard_path = reverse("dashboard")
+        except Exception:
+            dashboard_path = None
+
+        referer = request.META.get("HTTP_REFERER")
+        if referer and dashboard_path:
+            referer_path = urlparse(referer).path
+            if referer_path.rstrip("/") == dashboard_path.rstrip("/"):
+                section_override = {"name": _trans("Dashboard"), "url": dashboard_path}
+
         if apps.is_installed("recruitment"):
             from recruitment.models import Candidate
 
@@ -323,6 +376,7 @@ def breadcrumbs(request):
                 first_path = breadcrumbs[0]
                 request.session["breadcrumbs"].clear()
                 request.session["breadcrumbs"].append(first_path)
+
         for i, item in enumerate(parts):
             path = path + item + "/"
             parsed_url = urlparse(path)
@@ -357,6 +411,13 @@ def breadcrumbs(request):
                 "found": found,
                 "clickable": clickable,
             }
+
+            if i == 0:
+                if section_override:
+                    new_dict["name"] = section_override["name"]
+                    new_dict["url"] = base_url.rstrip("/") + section_override["url"]
+                elif current_section:
+                    new_dict["name"] = current_section[0]
 
             if item == "attendance":
                 from base.templatetags.basefilters import is_reportingmanager
