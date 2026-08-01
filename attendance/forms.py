@@ -1013,6 +1013,10 @@ class GraceTimeForm(BaseModelForm):
 
         exclude = ["objects", "allowed_time_in_secs", "is_active"]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["company_id"].required = True
+
 
 class GraceTimeAssignForm(forms.Form):
     """

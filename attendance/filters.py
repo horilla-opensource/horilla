@@ -175,16 +175,6 @@ class LateComeEarlyOutFilter(HorillaFilterSet):
         widget=forms.TimeInput(attrs={"type": "time"}),
         lookup_expr="lte",
     )
-    attendance_clock_in = django_filters.TimeFilter(
-        field_name="attendance_id__attendance_clock_in",
-        widget=forms.TimeInput(attrs={"type": "time"}),
-        lookup_expr="exact",
-    )
-    attendance_clock_out = django_filters.TimeFilter(
-        field_name="attendance_id__attendance_clock_out",
-        widget=forms.TimeInput(attrs={"type": "time"}),
-        lookup_expr="exact",
-    )
     attendance_date = django_filters.DateFilter(
         field_name="attendance_id__attendance_date",
         widget=forms.DateInput(attrs={"type": "date"}),
@@ -240,8 +230,6 @@ class LateComeEarlyOutFilter(HorillaFilterSet):
             "attendance_clock_in__gte",
             "attendance_clock_out__gte",
             "attendance_clock_out__lte",
-            "attendance_clock_in",
-            "attendance_clock_out",
             "attendance_date",
             "department",
             "year",
@@ -392,15 +380,6 @@ class AttendanceFilters(HorillaFilterSet):
         widget=forms.TimeInput(attrs={"type": "time"}),
         lookup_expr="lte",
     )
-    attendance_clock_in = django_filters.TimeFilter(
-        field_name="attendance_clock_in",
-        widget=forms.TimeInput(attrs={"type": "time"}),
-    )
-    attendance_clock_out = django_filters.TimeFilter(
-        field_name="attendance_clock_out",
-        widget=forms.TimeInput(attrs={"type": "time"}),
-    )
-
     attendance_date = django_filters.DateFilter(
         widget=forms.DateInput(attrs={"type": "date"}),
     )
@@ -492,8 +471,6 @@ class AttendanceFilters(HorillaFilterSet):
             "shift_id",
             "minimum_hour",
             "attendance_validated",
-            "attendance_clock_in",
-            "attendance_clock_out",
             "at_work_second",
             "overtime_second",
             "late_come_early_out__type",
