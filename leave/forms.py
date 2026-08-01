@@ -488,7 +488,7 @@ class LeaveOneAssignForm(HorillaModelForm):
         """
 
         model = AvailableLeave
-        fields = ["employee_id", "is_active"]
+        fields = ["employee_id"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
