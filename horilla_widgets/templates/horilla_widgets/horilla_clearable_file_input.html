@@ -1,0 +1,33 @@
+{% if widget.is_initial %}
+    <div class="text-muted text-xs mb-1">{{ widget.input_text }}:</div>
+{% endif %}
+<input type="{{ widget.type }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
+{% if widget.is_initial %}
+    <div class="mb-1" style="display: flex; align-items: center;">
+        <input
+            type="checkbox"
+            name="{{ widget.checkbox_name }}"
+            id="{{ widget.checkbox_id }}"
+            class="oh-clear-file-checkbox"
+            style="display: none;"
+        >
+        <span class="oh-clear-file-info" style="display: flex; align-items: center;">
+            <ion-icon name="attach-outline" class="me-1"></ion-icon>
+            <a class="text-xs" href="{{ widget.value.url }}" target="_blank" rel="noopener noreferrer">{{ widget.value_name }}</a>
+        </span>
+        <label
+            for="{{ widget.checkbox_id }}"
+            class="ms-2"
+            title="{{ widget.clear_checkbox_label }}"
+            style="cursor: pointer; display: inline-flex; align-items: center;"
+        >
+            <ion-icon name="close-outline"></ion-icon>
+        </label>
+    </div>
+    <style>
+        #{{ widget.checkbox_id }}:checked ~ .oh-clear-file-info {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+    </style>
+{% endif %}
