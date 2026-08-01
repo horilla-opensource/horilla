@@ -1,0 +1,103 @@
+{% extends "settings.html" %}
+{% load i18n %}
+
+{% block settings %}
+<script>
+    function checkSelected(names, target, initial = false) {
+        names = JSON.parse(`${names}`);
+        $.each(names, function (_index, value) {
+            const $input = $(target).find(`[value="${value}"]`);
+            $input.prop("checked", true);
+            if (!initial) {
+                $input.change();
+            }
+        });
+        if (typeof refreshPermPicker === "function") {
+            let $picker = $(target).closest("[data-perm-picker]");
+            if (!$picker.length) {
+                $picker = $(target).find("[data-perm-picker]");
+            }
+            if ($picker.length) {
+                refreshPermPicker($picker);
+            }
+        }
+    }
+    var showSearch = true;
+</script>
+
+<section class="rounded-md bg-white min-h-[calc(100vh_-_150px)]">
+    <header class="px-4 pt-4">
+        <h1 class="text-base font-semibold text-dark-400">
+            {% trans "Roles and Permissions" %}
+        </h1>
+        <p class="mt-1 text-xs text-dark-200">
+            {% trans "Manage reusable roles and direct employee permissions from one place." %}
+        </p>
+
+        <nav class="mt-4 flex border-b border-primary-200 bg-primary-100 px-2"
+             aria-label="{% trans 'Roles and Permissions' %}">
+            <a
+                href="{% url 'user-group-view' %}?tab=roles"
+                class="px-5 py-3 text-sm border-b-2 transition-colors
+                    {% if active_tab == 'roles' %}
+                        border-brand-600 text-brand-600 font-medium
+                    {% else %}
+                        border-transparent text-dark-300 hover:text-brand-600
+                    {% endif %}"
+            >
+                {% trans "Roles" %}
+            </a>
+            <a
+                href="{% url 'user-group-view' %}?tab=permissions"
+                class="px-5 py-3 text-sm border-b-2 transition-colors
+                    {% if active_tab == 'permissions' %}
+                        border-brand-600 text-brand-600 font-medium
+                    {% else %}
+                        border-transparent text-dark-300 hover:text-brand-600
+                    {% endif %}"
+            >
+                {% trans "Permissions" %}
+            </a>
+        </nav>
+    </header>
+
+    <div class="p-4">
+        {% if active_tab == "permissions" %}
+            {% include "base/auth/permission_accordion.html" %}
+        {% else %}
+            {% include "base/auth/group_accordion.html" %}
+        {% endif %}
+    </div>
+</section>
+
+{% if active_tab == "permissions" %}
+<script>
+    function updateBadge() {
+        if (typeof refreshPermPicker === "function") {
+            $("[data-perm-picker]").each(function () {
+                refreshPermPicker($(this));
+            });
+        }
+    }
+
+    function selectAllPermissions(source) {
+        const isChecked = $(source).is(":checked");
+        const $rows = $(source)
+            .closest("table")
+            .find("tr.perm-feature-row")
+            .not(".hidden");
+        $rows.find("[name=permissions], .row-permission")
+            .prop("checked", isChecked);
+        if (typeof refreshPermPicker === "function") {
+            refreshPermPicker($(source).closest("[data-perm-picker]"));
+        }
+        const $first = $rows.find("[name=permissions]").first();
+        if ($first.length) {
+            $first.trigger("change");
+        }
+    }
+
+    $(document).ready(updateBadge);
+</script>
+{% endif %}
+{% endblock settings %}

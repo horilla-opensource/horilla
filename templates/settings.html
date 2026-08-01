@@ -115,10 +115,10 @@
                                                     {% endif %}
                                                 </div>
                                                 <div class="oh-input-group">
-                                                    {% if perms.auth.view_permission %}
+                                                    {% if request.user.is_superuser %}
                                                         <a
-                                                            id="employeePermission"
-                                                            href="{% url 'employee-permission-assign' %}"
+                                                            id="rolesAndPermissions"
+                                                            href="{% url 'user-group-view' %}"
                                                             class="oh-inner-sidebar__link oh-dropdown__link"
                                                         >{% trans "Employee Permissions" %}</a>
                                                     {% endif %}
@@ -138,7 +138,7 @@
                                                             id="userGroup"
                                                             href="{% url 'user-group-view' %}"
                                                             class="oh-inner-sidebar__link oh-dropdown__link"
-                                                        >{% trans "User Groups" %}</a>
+                                                        >{% trans "User Group" %}</a>
                                                     {% endif %}
                                                 </div>
                                                 <div class="oh-input-group">

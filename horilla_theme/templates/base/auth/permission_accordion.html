@@ -1,10 +1,19 @@
 {% load i18n %}
 <div id="messages" class="oh-alert-container"></div>
 
+<div class="col-span-12 mb-3">
+    <h2 class="text-base font-semibold text-dark-400 mb-1">
+        {% trans "User Permissions" %}
+    </h2>
+    <p class="text-xs text-dark-200">
+        {% trans "Review or assign permissions directly to individual employees." %}
+    </p>
+</div>
+
 {% if company_scoped %}
     <div class="col-span-12 mb-3 rounded-md border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs text-amber-800">
         <i class="fa-solid fa-circle-info mr-1"></i>
-        {% trans "Permissions assigned directly to an employee here apply in all companies. Use User Groups to grant company-specific permissions." %}
+        {% trans "Permissions assigned directly to an employee here apply in all companies. Use Roles to grant company-specific permissions." %}
     </div>
 {% endif %}
 

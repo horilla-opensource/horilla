@@ -24,20 +24,35 @@
     <div class="ug-tab-panel" data-ug-panel="members" data-group="{{ group.id }}">
         <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
             <p class="text-xs text-dark-200">
-                {% trans "People in this group get all of its permissions." %}
+                {% trans "People in this role get all of its permissions." %}
             </p>
             {% if request.user.is_superuser %}
-                <a
-                    class="cursor-pointer px-3 py-1.5 text-xs bg-brand-600 text-white rounded-md inline-flex items-center gap-1.5 hover:bg-brand-800 transition"
-                    hx-get="{% url 'user-group-assign' %}"
-                    hx-vals='{"group":"{{ group.id }}"}'
-                    hx-target="#groupAssignBody"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#groupAssign"
-                >
-                    <i class="fa-solid fa-user-plus"></i>
-                    {% trans "Add / edit members" %}
-                </a>
+                <div class="flex flex-wrap items-center gap-2">
+                    <a
+                        class="cursor-pointer px-3 py-1.5 text-xs bg-brand-600 text-white rounded-md inline-flex items-center gap-1.5 hover:bg-brand-800 transition"
+                        hx-get="{% url 'user-group-assign' %}"
+                        hx-vals='{"group":"{{ group.id }}", "mode":"add"}'
+                        hx-target="#groupAssignBody"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#groupAssign"
+                    >
+                        <i class="fa-solid fa-user-plus"></i>
+                        {% trans "Add" %}
+                    </a>
+                    {% if member_count %}
+                        <a
+                            class="cursor-pointer px-3 py-1.5 text-xs border border-brand-600 text-brand-600 bg-white rounded-md inline-flex items-center gap-1.5 hover:bg-brand-600 hover:text-white transition"
+                            hx-get="{% url 'user-group-assign' %}"
+                            hx-vals='{"group":"{{ group.id }}", "mode":"edit"}'
+                            hx-target="#groupAssignBody"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#groupAssign"
+                        >
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            {% trans "Edit" %}
+                        </a>
+                    {% endif %}
+                </div>
             {% endif %}
         </div>
 
@@ -52,19 +67,19 @@
         {% else %}
             <div class="text-center py-8 border border-dashed border-[#ddd] rounded-md">
                 <p class="text-sm text-dark-300 mb-3">
-                    {% trans "No one is in this group yet." %}
+                    {% trans "No one is in this role yet." %}
                 </p>
                 {% if request.user.is_superuser %}
                     <a
                         class="cursor-pointer px-3 py-1.5 text-xs bg-brand-600 text-white rounded-md inline-flex items-center gap-1.5 hover:bg-brand-800 transition"
                         hx-get="{% url 'user-group-assign' %}"
-                        hx-vals='{"group":"{{ group.id }}"}'
+                        hx-vals='{"group":"{{ group.id }}", "mode":"add"}'
                         hx-target="#groupAssignBody"
                         data-toggle="oh-modal-toggle"
                         data-target="#groupAssign"
                     >
                         <i class="fa-solid fa-user-plus"></i>
-                        {% trans "Add members" %}
+                        {% trans "Add" %}
                     </a>
                 {% endif %}
             </div>

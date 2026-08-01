@@ -43,6 +43,8 @@ BREADCRUMB_URL_NAMES = {
     "leave-settings-view": "Configuration",
     "payroll-settings-view": "Configuration",
     "performance-settings-view": "Configuration",
+    "user-group-view": "Roles and Permissions",
+    "employee-permission-assign": "Roles and Permissions",
 }
 
 sidebar_urls = [

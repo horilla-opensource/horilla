@@ -46,29 +46,14 @@
                 <div class="flex items-center gap-1.5 shrink-0">
                     {% if request.user.is_superuser %}
                         <a
-                            class="cursor-pointer px-2 py-1 text-[11px] leading-none bg-white shadow-card text-brand-600 rounded inline-flex items-center gap-1 hover:bg-brand-600 hover:text-white transition duration-300 h-6"
-                            hx-get="{% url 'user-group-assign' %}"
-                            hx-vals='{"group":"{{ group.id }}"}'
-                            hx-target="#groupAssignBody"
-                            data-toggle="oh-modal-toggle"
-                            data-target="#groupAssign"
-                            title="{% trans 'Add or change who is in this group' %}"
-                            onclick="event.stopPropagation()"
-                        >
-                            <i class="fa-solid fa-user-plus text-[10px]"></i>
-                            <span>{% trans "Members" %}</span>
-                        </a>
-                    {% endif %}
-                    {% if request.user.is_superuser %}
-                        <a
                             href="#"
                             class="cursor-pointer px-2 py-1 text-[11px] leading-none bg-danger shadow-card text-white rounded inline-flex items-center gap-1 hover:bg-danger-dark transition duration-300 h-6"
                             hx-post="{% url 'user-group-delete' group.id %}"
                             hx-target="#settingsContainer"
                             hx-swap="none"
-                            hx-confirm="{% trans 'Delete this group? Employees will keep their accounts, but will no longer get permissions from this group.' %}"
+                            hx-confirm="{% trans 'Delete this role? Employees will keep their accounts, but will no longer get permissions from this role.' %}"
                             onclick="event.preventDefault(); event.stopPropagation()"
-                            title="{% trans 'Delete group' %}"
+                            title="{% trans 'Delete role' %}"
                         >
                             <i class="fa-solid fa-trash text-[10px]"></i>
                             <span>{% trans "Delete" %}</span>
@@ -102,7 +87,7 @@
                     class="mb-4"
                 >
                 <p class="text-[#666] mb-2 font-medium">
-                    {% trans "No user groups yet" %}
+                    {% trans "No roles yet" %}
                 </p>
                 <p class="text-xs text-dark-200 mb-5 max-w-sm">
                     {% trans "Create a group, add employees, then choose what they can access. You can change this anytime." %}

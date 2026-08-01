@@ -2,7 +2,7 @@
 <div class="space-y-4">
     <div>
         <label class="block text-sm font-medium text-dark-400 mb-1" for="{{ form.name.id_for_label }}">
-            {% trans "Group name" %} <span class="text-danger">*</span>
+            {% trans "Role name" %} <span class="text-danger">*</span>
         </label>
         {{ form.name.errors }}
         {{ form.name }}
@@ -27,7 +27,7 @@
             type="submit"
             class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs hover:bg-brand-800 transition"
         >
-            {% trans "Create group" %}
+            {% trans "Create role" %}
         </button>
     </div>
 </div>

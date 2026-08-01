@@ -265,36 +265,25 @@ class GeneralSettings:
             ],
         },
         {
-            "label": _("Employee Permissions"),
-            "url": reverse_lazy("employee-permission-assign"),
-            "accessibility": employee_permission_accessibility,
-            "search_entries": [
-                {
-                    "text": _("Employee Permissions"),
-                    "description": _(
-                        "Assign individual Django permissions to employees"
-                    ),
-                },
-                {
-                    "text": _("Assign Permission"),
-                    "description": _(
-                        "Grant or revoke specific access rights per employee"
-                    ),
-                },
-            ],
-        },
-        {
-            "label": _("User Groups"),
+            "label": _("Roles and Permissions"),
             "url": reverse_lazy("user-group-view"),
             "accessibility": user_group_accessibility,
             "search_entries": [
                 {
-                    "text": _("User Groups"),
-                    "description": _("Create and manage Django permission groups"),
+                    "text": _("Roles and Permissions"),
+                    "description": _(
+                        "Create reusable roles and assign direct employee permissions"
+                    ),
                 },
                 {
-                    "text": _("Group Permissions"),
-                    "description": _("Assign permissions to a user group"),
+                    "text": _("Roles"),
+                    "description": _("Create and manage reusable permission roles"),
+                },
+                {
+                    "text": _("Employee Permissions"),
+                    "description": _(
+                        "Grant or revoke specific access rights per employee"
+                    ),
                 },
             ],
         },

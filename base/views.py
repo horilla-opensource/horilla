@@ -362,6 +362,21 @@ def load_demo_database(request):
                             os.remove(tmp)
 
                 messages.success(request, _("Database loaded successfully."))
+                try:
+                    from base.demo_roles import assign_demo_user_groups
+
+                    assigned = assign_demo_user_groups()
+                    if assigned:
+                        messages.info(
+                            request,
+                            _("Assigned demo roles to %(count)s employee memberships.")
+                            % {"count": assigned},
+                        )
+                except Exception as e:
+                    messages.warning(
+                        request,
+                        _("Demo roles could not be assigned: %(error)s") % {"error": e},
+                    )
             else:
                 messages.error(request, _("Database Authentication Failed"))
         return redirect(home)
@@ -1222,7 +1237,7 @@ def user_group_table(request):
         form = UserGroupForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, _("User group created."))
+            messages.success(request, _("Role created."))
             return HorillaRedirect(request)
     return render(
         request,
@@ -1239,19 +1254,48 @@ def user_group_table(request):
 @superuser_required
 def user_group(request):
     """
-    User group list — headers only; detail panels load lazily on expand.
+    Combined Roles and Permissions settings page.
+
+    Roles are the default tab. The permissions tab keeps the existing direct
+    employee-permission workflow on the same settings screen.
     """
-    form = UserGroupForm()
-    groups = _user_groups_queryset()
+    from base.auth_backends import company_scoped_active
+
+    active_tab = "permissions" if request.GET.get("tab") == "permissions" else "roles"
+    context = {
+        "active_tab": active_tab,
+        "no_permission_models": settings.NO_PERMISSION_MODALS,
+    }
+    if active_tab == "permissions":
+        employees = Employee.objects.filter(
+            Q(employee_user_id__user_permissions__isnull=False)
+            | Q(employee_user_id__groups__isnull=False)
+        ).distinct()
+        permissions, no_permission_models = _build_permission_matrix()
+        context.update(
+            {
+                "employees": paginator_qry(employees, request.GET.get("page")),
+                "permissions": permissions,
+                "no_permission_models": no_permission_models,
+                "show_assign": True,
+                "can_edit_permissions": True,
+                "company_scoped": company_scoped_active(),
+            }
+        )
+    else:
+        context.update(
+            {
+                "form": UserGroupForm(),
+                "groups": paginator_qry(
+                    _user_groups_queryset(), request.GET.get("page")
+                ),
+                "permissions": [],
+            }
+        )
     return render(
         request,
-        "base/auth/group.html",
-        {
-            "form": form,
-            "groups": paginator_qry(groups, request.GET.get("page")),
-            "permissions": [],
-            "no_permission_models": settings.NO_PERMISSION_MODALS,
-        },
+        "base/auth/roles_permissions.html",
+        context,
     )
 
 
@@ -1366,6 +1410,9 @@ def group_assign(request):
     from base.auth_backends import company_scoped_active, get_assigned_company_ids
 
     group_id = request.GET.get("group") or request.POST.get("group")
+    mode = (request.GET.get("mode") or request.POST.get("mode") or "add").lower()
+    if mode not in ("add", "edit"):
+        mode = "add"
     if not group_id:
         return HorillaRedirect(request, message=_("Required parameters are missing"))
     group = Group.objects.filter(id=group_id).first()
@@ -1398,10 +1445,12 @@ def group_assign(request):
             group_assignments__group=group
         ).distinct()
 
+    # Add starts empty; Edit pre-fills current members so companies can be updated.
+    initial_employees = list(current_employees) if mode == "edit" else []
     form = AssignUserGroup(
         initial={
             "group": group_id,
-            "employee": [],
+            "employee": initial_employees,
             "companies": list(initial_companies),
         }
     )
@@ -1409,7 +1458,14 @@ def group_assign(request):
         form = AssignUserGroup(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, _("Group members updated."))
+            messages.success(
+                request,
+                (
+                    _("Role members updated.")
+                    if mode == "edit"
+                    else _("Role members added.")
+                ),
+            )
             return HorillaRedirect(request)
     return render(
         request,
@@ -1419,6 +1475,7 @@ def group_assign(request):
             "group_id": group_id,
             "group": group,
             "member_count": current_employees.count(),
+            "assign_mode": mode,
         },
     )
 
@@ -3802,6 +3859,10 @@ def employee_permission_assign(request, pk=None):
     # Settings page (no employee context) is superadmin-only.
     if not emp_id and not request.user.is_superuser:
         return handle_no_permission(request)
+    if not emp_id:
+        # Direct employee permissions now live beside Roles on one settings
+        # screen. Keep this legacy URL as a backwards-compatible entry point.
+        return redirect(f"{reverse('user-group-view')}?tab=permissions")
 
     if emp_id:
         template = "tabs/group_permissions.html"

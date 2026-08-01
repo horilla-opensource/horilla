@@ -1,18 +1,26 @@
 {% load i18n %}
 <form
-    hx-post="{% url 'user-group-assign' %}?group={{ group_id }}"
+    hx-post="{% url 'user-group-assign' %}?group={{ group_id }}&mode={{ assign_mode|default:'add' }}"
     hx-target="#groupAssignBody"
     class="oh-profile-section space-y-4"
 >
     <div class="rounded-md border border-primary-200 bg-primary-50/60 px-4 py-3 text-sm">
         <p class="font-medium text-primary-700 mb-1">
-            {% blocktrans with name=group.name %}Manage members of "{{ name }}"{% endblocktrans %}
+            {% if assign_mode == "edit" %}
+                {% blocktrans with name=group.name %}Edit members of "{{ name }}"{% endblocktrans %}
+            {% else %}
+                {% blocktrans with name=group.name %}Add members to "{{ name }}"{% endblocktrans %}
+            {% endif %}
         </p>
         <p class="text-xs text-dark-300 leading-relaxed">
-            {% trans "Search and pick employees below. Saving adds the selected employees to this group for the selected companies." %}
+            {% if assign_mode == "edit" %}
+                {% trans "Update employees or companies for this role. Saving applies the selected employees to the selected companies." %}
+            {% else %}
+                {% trans "Search and pick employees below. Saving adds the selected employees to this role for the selected companies." %}
+            {% endif %}
             {% if member_count %}
                 <span class="font-medium text-primary-700">
-                    {% blocktrans count counter=member_count %}{{ counter }} member currently in this group.{% plural %}{{ counter }} members currently in this group.{% endblocktrans %}
+                    {% blocktrans count counter=member_count %}{{ counter }} member currently in this role.{% plural %}{{ counter }} members currently in this role.{% endblocktrans %}
                 </span>
             {% endif %}
         </p>
@@ -21,7 +29,11 @@
     {{ form.group.errors }}
     <div>
         <label class="block text-sm font-medium text-dark-400 mb-1">
-            {% trans "Employees in this group" %}
+            {% if assign_mode == "edit" %}
+                {% trans "Employees in this role" %}
+            {% else %}
+                {% trans "Employees to add" %}
+            {% endif %}
         </label>
         <p class="text-xs text-dark-200 mb-2">
             {% trans "Use search or filters to find people quickly." %}
@@ -44,6 +56,7 @@
         </div>
     {% endif %}
     <input type="hidden" name="group" value="{{ group_id }}">
+    <input type="hidden" name="mode" value="{{ assign_mode|default:'add' }}">
 
     <div class="flex flex-wrap justify-end gap-2 pt-2 border-t border-[#ececec]">
         <button
@@ -57,7 +70,11 @@
             type="submit"
             class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs hover:bg-brand-800 transition"
         >
-            {% trans "Save members" %}
+            {% if assign_mode == "edit" %}
+                {% trans "Save changes" %}
+            {% else %}
+                {% trans "Add members" %}
+            {% endif %}
         </button>
     </div>
 </form>

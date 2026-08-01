@@ -33,12 +33,12 @@
 
 <div class="col-span-12 lg:col-span-10">
     <div class="mb-4 rounded-md border border-primary-200 bg-white px-4 py-3">
-        <h2 class="text-base font-semibold text-dark-400 mb-1">{% trans "User groups" %}</h2>
+        <h2 class="text-base font-semibold text-dark-400 mb-1">{% trans "Roles" %}</h2>
         <p class="text-xs text-dark-200 leading-relaxed max-w-3xl">
-            {% trans "A user group is a named set of employees who share the same access. Create a group, add members, then turn permissions on or off." %}
+            {% trans "A role is a named set of employees who share the same access. Create a role, add members, then turn permissions on or off." %}
         </p>
         <ol class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-dark-300 list-decimal list-inside">
-            <li>{% trans "Create a group" %}</li>
+            <li>{% trans "Create a role" %}</li>
             <li>{% trans "Add employees (Members)" %}</li>
             <li>{% trans "Set what they can do (Permissions)" %}</li>
         </ol>
@@ -52,7 +52,7 @@
                 hx-trigger="keyup changed delay:.2s"
                 type="text"
                 id="permissionSearch"
-                placeholder="{% trans 'Search groups...' %}"
+                placeholder="{% trans 'Search roles...' %}"
                 name="search"
                 class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full min-w-[220px] border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
                 aria-label="{% trans 'Search Input' %}"
@@ -73,7 +73,7 @@
                     width="13"
                     class="filter brightness-0 invert"
                 >
-                {% trans "Create group" %}
+                {% trans "Create role" %}
             </button>
         {% endif %}
     </div>
@@ -97,7 +97,7 @@
     <div class="oh-modal__dialog" style="max-width: 880px">
         <div class="oh-modal__dialog-header">
             <h2 class="oh-modal__dialog-title" id="createGroupModalLabel">
-                {% trans "Create user group" %}
+                {% trans "Create role" %}
             </h2>
             <button
                 class="oh-modal__close"
@@ -132,7 +132,7 @@
     <div class="oh-modal__dialog" style="max-width: 720px">
         <div class="oh-modal__dialog-header">
             <h2 class="oh-modal__dialog-title" id="groupAssignModalLabel">
-                {% trans "Manage group members" %}
+                {% trans "Role members" %}
             </h2>
             <button
                 class="oh-modal__close"
