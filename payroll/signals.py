@@ -45,6 +45,12 @@ def create_installments(sender, instance, created, **kwargs):
     """
     Post save method for loan account
     """
+    # Demo fixtures carry pre-built allowance and installment relationships.
+    # Rebuilding them while loaddata is running duplicates the allowance and
+    # replaces the curated schedule with signal-generated records.
+    if kwargs.get("raw"):
+        return
+
     installments = []
     asset = True
     if apps.is_installed("asset"):

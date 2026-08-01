@@ -61,9 +61,12 @@ class Command(BaseCommand):
             ("onboarding", "onboarding_data.json"),
             ("offboarding", "offboarding_data.json"),
             ("pms", "pms_data.json"),
+            ("pms", "pms_scenarios_data.json"),
+            ("payroll", "payroll_scenarios_data.json"),
             ("payroll", "payroll_data.json"),
             ("payroll", "payroll_loanaccount_data.json"),
             ("project", "project_data.json"),
+            ("project", "project_scenarios_data.json"),
         ]
         data_files += [f for app, f in optional_apps if apps.is_installed(app)]
 
@@ -104,19 +107,6 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.SUCCESS(f"  Re-anchored {normalized} demo payslip(s).")
             )
-
-        try:
-            from base.demo_roles import assign_demo_user_groups
-
-            assigned = assign_demo_user_groups()
-            if assigned:
-                self.stdout.write(
-                    self.style.SUCCESS(
-                        f"  Assigned demo roles to {assigned} employee membership(s)."
-                    )
-                )
-        except Exception as e:
-            self.stderr.write(self.style.ERROR(f"  Demo roles could not be assigned: {e}"))
 
         self.stdout.write(
             self.style.SUCCESS(

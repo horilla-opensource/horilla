@@ -1,0 +1,946 @@
+[
+  {
+    "model": "payroll.payrollgeneralsetting",
+    "pk": 1001,
+    "fields": {
+      "notice_period": 45,
+      "company_id": 1
+    }
+  },
+  {
+    "model": "payroll.encashmentgeneralsettings",
+    "pk": 1001,
+    "fields": {
+      "bonus_amount": 25,
+      "leave_amount": 1500
+    }
+  },
+  {
+    "model": "payroll.payslipautogenerate",
+    "pk": 1001,
+    "fields": {
+      "generate_day": "25",
+      "auto_generate": true,
+      "company_id": 1
+    }
+  },
+  {
+    "model": "payroll.payslipautogenerate",
+    "pk": 1002,
+    "fields": {
+      "generate_day": "last day",
+      "auto_generate": false,
+      "company_id": 2
+    }
+  },
+  {
+    "model": "payroll.payslipautogenerate",
+    "pk": 1003,
+    "fields": {
+      "generate_day": "28",
+      "auto_generate": true,
+      "company_id": 3
+    }
+  },
+  {
+    "model": "payroll.multiplecondition",
+    "pk": 1001,
+    "fields": {
+      "field": "employee_work_info__experience",
+      "condition": "ge",
+      "value": "2"
+    }
+  },
+  {
+    "model": "payroll.multiplecondition",
+    "pk": 1002,
+    "fields": {
+      "field": "contract_set__pay_frequency",
+      "condition": "equal",
+      "value": "monthly"
+    }
+  },
+  {
+    "model": "payroll.allowance",
+    "pk": 1001,
+    "fields": {
+      "title": "Relocation Salary Advance",
+      "one_time_date": "2025-05-01",
+      "include_active_employees": false,
+      "is_taxable": false,
+      "is_condition_based": false,
+      "is_fixed": true,
+      "amount": 15000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_loan": true,
+      "specific_employees": [7],
+      "exclude_employees": [],
+      "other_conditions": []
+    }
+  },
+  {
+    "model": "payroll.allowance",
+    "pk": 1002,
+    "fields": {
+      "title": "Professional Certification Loan",
+      "one_time_date": "2025-02-01",
+      "include_active_employees": false,
+      "is_taxable": false,
+      "is_condition_based": false,
+      "is_fixed": true,
+      "amount": 48000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_loan": true,
+      "specific_employees": [12],
+      "exclude_employees": [],
+      "other_conditions": []
+    }
+  },
+  {
+    "model": "payroll.allowance",
+    "pk": 1003,
+    "fields": {
+      "title": "Travel Salary Advance",
+      "one_time_date": "2025-06-01",
+      "include_active_employees": false,
+      "is_taxable": false,
+      "is_condition_based": false,
+      "is_fixed": true,
+      "amount": 10000.0,
+      "company_id": 2,
+      "only_show_under_employee": true,
+      "is_loan": true,
+      "specific_employees": [25],
+      "exclude_employees": [],
+      "other_conditions": []
+    }
+  },
+  {
+    "model": "payroll.allowance",
+    "pk": 1004,
+    "fields": {
+      "title": "Sales Performance Incentive",
+      "one_time_date": null,
+      "include_active_employees": false,
+      "is_taxable": true,
+      "is_condition_based": true,
+      "field": "contract_set__department__department",
+      "condition": "equal",
+      "value": "Sales Dept",
+      "is_fixed": false,
+      "amount": null,
+      "based_on": "basic_pay",
+      "rate": 8.0,
+      "has_max_limit": true,
+      "maximum_amount": 5000.0,
+      "company_id": 1,
+      "only_show_under_employee": false,
+      "is_loan": false,
+      "specific_employees": [],
+      "exclude_employees": [],
+      "other_conditions": [1001, 1002]
+    }
+  },
+  {
+    "model": "payroll.allowance",
+    "pk": 1005,
+    "fields": {
+      "title": "Casual Leave Encashment",
+      "one_time_date": "2025-07-10",
+      "include_active_employees": false,
+      "is_taxable": true,
+      "is_condition_based": false,
+      "is_fixed": true,
+      "amount": 1500.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_loan": false,
+      "specific_employees": [13],
+      "exclude_employees": [],
+      "other_conditions": []
+    }
+  },
+  {
+    "model": "payroll.allowance",
+    "pk": 1006,
+    "fields": {
+      "title": "Quarterly Bonus Encashment",
+      "one_time_date": "2025-07-12",
+      "include_active_employees": false,
+      "is_taxable": true,
+      "is_condition_based": false,
+      "is_fixed": true,
+      "amount": 625.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_loan": false,
+      "specific_employees": [13],
+      "exclude_employees": [],
+      "other_conditions": []
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1000,
+    "fields": {
+      "title": "Employee Health Insurance",
+      "one_time_date": null,
+      "include_active_employees": true,
+      "is_tax": false,
+      "is_pretax": true,
+      "is_condition_based": false,
+      "is_fixed": true,
+      "amount": 750.0,
+      "company_id": 1,
+      "only_show_under_employee": false,
+      "is_installment": false,
+      "specific_employees": [],
+      "exclude_employees": [],
+      "other_conditions": []
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1001,
+    "fields": {
+      "title": "Medical Loan - installment 1 of 12",
+      "one_time_date": "2025-01-01",
+      "include_active_employees": false,
+      "is_tax": false,
+      "is_pretax": true,
+      "is_condition_based": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [18]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1002,
+    "fields": {
+      "title": "Medical Loan - installment 2 of 12",
+      "one_time_date": "2025-02-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [18]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1003,
+    "fields": {
+      "title": "Medical Loan - installment 3 of 12",
+      "one_time_date": "2025-03-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [18]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1004,
+    "fields": {
+      "title": "Medical Loan - installment 4 of 12",
+      "one_time_date": "2025-04-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [18]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1005,
+    "fields": {
+      "title": "Medical Loan - installment 5 of 12",
+      "one_time_date": "2025-05-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [18]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1006,
+    "fields": {
+      "title": "Medical Loan - installment 6 of 12",
+      "one_time_date": "2025-06-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [18]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1007,
+    "fields": {
+      "title": "Medical Loan - installment 7 of 12",
+      "one_time_date": "2025-07-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [18]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1008,
+    "fields": {
+      "title": "Medical Loan - installment 8 of 12",
+      "one_time_date": "2025-08-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [18]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1009,
+    "fields": {
+      "title": "Medical Loan - installment 9 of 12",
+      "one_time_date": "2025-09-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [18]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1010,
+    "fields": {
+      "title": "Medical Loan - installment 10 of 12",
+      "one_time_date": "2025-10-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [18]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1011,
+    "fields": {
+      "title": "Medical Loan - installment 11 of 12",
+      "one_time_date": "2025-11-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [18]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1012,
+    "fields": {
+      "title": "Medical Loan - installment 12 of 12",
+      "one_time_date": "2025-12-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [18]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1013,
+    "fields": {
+      "title": "Relocation Salary Advance - installment 1 of 3",
+      "one_time_date": "2025-05-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [7]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1014,
+    "fields": {
+      "title": "Relocation Salary Advance - installment 2 of 3",
+      "one_time_date": "2025-06-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [7]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1015,
+    "fields": {
+      "title": "Relocation Salary Advance - installment 3 of 3",
+      "one_time_date": "2025-07-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [7]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1016,
+    "fields": {
+      "title": "Equipment Damage Fine - installment 1 of 2",
+      "one_time_date": "2025-06-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 1200.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [22]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1017,
+    "fields": {
+      "title": "Equipment Damage Fine - installment 2 of 2",
+      "one_time_date": "2025-07-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 1200.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [22]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1018,
+    "fields": {
+      "title": "Professional Certification Loan - installment 1 of 6",
+      "one_time_date": "2025-02-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 8000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [12]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1019,
+    "fields": {
+      "title": "Professional Certification Loan - installment 2 of 6",
+      "one_time_date": "2025-03-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 8000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [12]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1020,
+    "fields": {
+      "title": "Professional Certification Loan - installment 3 of 6",
+      "one_time_date": "2025-04-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 8000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [12]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1021,
+    "fields": {
+      "title": "Professional Certification Loan - installment 4 of 6",
+      "one_time_date": "2025-05-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 8000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [12]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1022,
+    "fields": {
+      "title": "Professional Certification Loan - installment 5 of 6",
+      "one_time_date": "2025-06-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 8000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [12]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1023,
+    "fields": {
+      "title": "Professional Certification Loan - installment 6 of 6",
+      "one_time_date": "2025-07-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 8000.0,
+      "company_id": 1,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [12]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1024,
+    "fields": {
+      "title": "Travel Salary Advance - installment 1 of 2",
+      "one_time_date": "2025-06-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 2,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [25]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1025,
+    "fields": {
+      "title": "Travel Salary Advance - installment 2 of 2",
+      "one_time_date": "2025-07-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 5000.0,
+      "company_id": 2,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [25]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1026,
+    "fields": {
+      "title": "Safety Compliance Fine - installment 1 of 3",
+      "one_time_date": "2025-05-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 1000.0,
+      "company_id": 3,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [29]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1027,
+    "fields": {
+      "title": "Safety Compliance Fine - installment 2 of 3",
+      "one_time_date": "2025-06-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 1000.0,
+      "company_id": 3,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [29]
+    }
+  },
+  {
+    "model": "payroll.deduction",
+    "pk": 1028,
+    "fields": {
+      "title": "Safety Compliance Fine - installment 3 of 3",
+      "one_time_date": "2025-07-01",
+      "include_active_employees": false,
+      "is_fixed": true,
+      "amount": 1000.0,
+      "company_id": 3,
+      "only_show_under_employee": true,
+      "is_installment": true,
+      "specific_employees": [29]
+    }
+  },
+  {
+    "model": "payroll.reimbursement",
+    "pk": 1001,
+    "fields": {
+      "title": "Casual Leave Encashment Request",
+      "type": "leave_encashment",
+      "employee_id": 12,
+      "allowance_on": "2025-07-10",
+      "attachment": null,
+      "leave_type_id": 2,
+      "ad_to_encash": 0.5,
+      "cfd_to_encash": 0.0,
+      "bonus_to_encash": 0,
+      "amount": 750.0,
+      "status": "requested",
+      "approved_by": null,
+      "description": "Encash half of an unused casual-leave day.",
+      "allowance_id": null,
+      "other_attachments": []
+    }
+  },
+  {
+    "model": "payroll.reimbursement",
+    "pk": 1002,
+    "fields": {
+      "title": "Approved Casual Leave Encashment",
+      "type": "leave_encashment",
+      "employee_id": 13,
+      "allowance_on": "2025-07-10",
+      "attachment": null,
+      "leave_type_id": 2,
+      "ad_to_encash": 1.0,
+      "cfd_to_encash": 0.0,
+      "bonus_to_encash": 0,
+      "amount": 1500.0,
+      "status": "approved",
+      "approved_by": 1,
+      "description": "One unused casual-leave day approved for encashment.",
+      "allowance_id": 1005,
+      "other_attachments": []
+    }
+  },
+  {
+    "model": "payroll.reimbursement",
+    "pk": 1003,
+    "fields": {
+      "title": "Rejected Leave Encashment",
+      "type": "leave_encashment",
+      "employee_id": 22,
+      "allowance_on": "2025-07-11",
+      "attachment": null,
+      "leave_type_id": 2,
+      "ad_to_encash": 1.0,
+      "cfd_to_encash": 0.0,
+      "bonus_to_encash": 0,
+      "amount": 1500.0,
+      "status": "rejected",
+      "approved_by": 1,
+      "description": "Rejected because the requested days were reserved for upcoming leave.",
+      "allowance_id": null,
+      "other_attachments": []
+    }
+  },
+  {
+    "model": "payroll.reimbursement",
+    "pk": 1004,
+    "fields": {
+      "title": "Quarterly Bonus Encashment Request",
+      "type": "bonus_encashment",
+      "employee_id": 12,
+      "allowance_on": "2025-07-12",
+      "attachment": null,
+      "leave_type_id": null,
+      "ad_to_encash": 0.0,
+      "cfd_to_encash": 0.0,
+      "bonus_to_encash": 20,
+      "amount": 500.0,
+      "status": "requested",
+      "approved_by": null,
+      "description": "Redeem performance bonus points in the current payroll cycle.",
+      "allowance_id": null,
+      "other_attachments": []
+    }
+  },
+  {
+    "model": "payroll.reimbursement",
+    "pk": 1005,
+    "fields": {
+      "title": "Approved Bonus Encashment",
+      "type": "bonus_encashment",
+      "employee_id": 13,
+      "allowance_on": "2025-07-12",
+      "attachment": null,
+      "leave_type_id": null,
+      "ad_to_encash": 0.0,
+      "cfd_to_encash": 0.0,
+      "bonus_to_encash": 25,
+      "amount": 625.0,
+      "status": "approved",
+      "approved_by": 1,
+      "description": "Performance bonus redemption approved for payroll.",
+      "allowance_id": 1006,
+      "other_attachments": []
+    }
+  },
+  {
+    "model": "payroll.reimbursement",
+    "pk": 1006,
+    "fields": {
+      "title": "Bonus Encashment Above Balance",
+      "type": "bonus_encashment",
+      "employee_id": 68,
+      "allowance_on": "2025-07-13",
+      "attachment": null,
+      "leave_type_id": null,
+      "ad_to_encash": 0.0,
+      "cfd_to_encash": 0.0,
+      "bonus_to_encash": 50,
+      "amount": 1250.0,
+      "status": "rejected",
+      "approved_by": 1,
+      "description": "Rejected because the request exceeded the redeemable balance.",
+      "allowance_id": null,
+      "other_attachments": []
+    }
+  },
+  {
+    "model": "payroll.workrecord",
+    "pk": 1001,
+    "fields": {
+      "record_name": "February payroll - full day",
+      "work_record_type": "FDP",
+      "employee_id": 1,
+      "date": "2025-02-03",
+      "at_work": "08:15",
+      "min_hour": "08:00",
+      "at_work_second": 29700,
+      "min_hour_second": 28800,
+      "note": "Validated attendance record for the February payroll period.",
+      "message": "Validated",
+      "is_attendance_record": true,
+      "is_leave_record": false,
+      "day_percentage": 1.0,
+      "last_update": "2025-02-03T17:30:00Z"
+    }
+  },
+  {
+    "model": "payroll.workrecord",
+    "pk": 1002,
+    "fields": {
+      "record_name": "February payroll - half day",
+      "work_record_type": "HDP",
+      "employee_id": 2,
+      "date": "2025-02-04",
+      "at_work": "04:00",
+      "min_hour": "08:00",
+      "at_work_second": 14400,
+      "min_hour_second": 28800,
+      "note": "Validated half-day attendance; unpaid portion is available to payroll rules.",
+      "message": "Incomplete minimum hour",
+      "is_attendance_record": true,
+      "is_leave_record": false,
+      "day_percentage": 0.5,
+      "last_update": "2025-02-04T17:30:00Z"
+    }
+  },
+  {
+    "model": "payroll.workrecord",
+    "pk": 1003,
+    "fields": {
+      "record_name": "February payroll - approved leave",
+      "work_record_type": "ABS",
+      "employee_id": 3,
+      "date": "2025-02-05",
+      "at_work": "00:00",
+      "min_hour": "08:00",
+      "at_work_second": 0,
+      "min_hour_second": 28800,
+      "note": "Approved full-day leave record for the February payroll period.",
+      "message": "Absent",
+      "is_attendance_record": false,
+      "is_leave_record": true,
+      "day_percentage": 0.0,
+      "last_update": "2025-02-05T17:30:00Z"
+    }
+  },
+  {
+    "model": "payroll.workrecord",
+    "pk": 1004,
+    "fields": {
+      "record_name": "February payroll - company holiday",
+      "work_record_type": "HD",
+      "employee_id": 4,
+      "date": "2025-02-06",
+      "at_work": "00:00",
+      "min_hour": "00:00",
+      "at_work_second": 0,
+      "min_hour_second": 0,
+      "note": "Company holiday retained as a paid calendar day for payroll reporting.",
+      "message": "Holiday/Company Leave",
+      "is_attendance_record": false,
+      "is_leave_record": false,
+      "day_percentage": 1.0,
+      "last_update": "2025-02-06T17:30:00Z"
+    }
+  },
+  {
+    "model": "payroll.workrecord",
+    "pk": 1005,
+    "fields": {
+      "record_name": "February payroll - attendance conflict",
+      "work_record_type": "CONF",
+      "employee_id": 5,
+      "date": "2025-02-07",
+      "at_work": "03:45",
+      "min_hour": "08:00",
+      "at_work_second": 13500,
+      "min_hour_second": 28800,
+      "note": "Attendance exception awaiting manager validation before payroll finalization.",
+      "message": "Validate the attendance",
+      "is_attendance_record": true,
+      "is_leave_record": false,
+      "day_percentage": 0.5,
+      "last_update": "2025-02-07T17:30:00Z"
+    }
+  },
+  {
+    "model": "payroll.workrecord",
+    "pk": 1006,
+    "fields": {
+      "record_name": "February payroll - draft correction",
+      "work_record_type": "DFT",
+      "employee_id": 6,
+      "date": "2025-02-10",
+      "at_work": "00:00",
+      "min_hour": "08:00",
+      "at_work_second": 0,
+      "min_hour_second": 28800,
+      "note": "Draft work record reserved for a pending timesheet correction.",
+      "message": "Draft",
+      "is_attendance_record": false,
+      "is_leave_record": false,
+      "day_percentage": 0.0,
+      "last_update": "2025-02-10T17:30:00Z"
+    }
+  },
+  {
+    "model": "payroll.reimbursementfile",
+    "pk": 1001,
+    "fields": {
+      "file": "payroll/reimbursements/leave-encashment-balance-summary.pdf"
+    }
+  },
+  {
+    "model": "payroll.reimbursementfile",
+    "pk": 1002,
+    "fields": {
+      "file": "payroll/reimbursements/bonus-redemption-approval.pdf"
+    }
+  },
+  {
+    "model": "payroll.reimbursementrequestcomment",
+    "pk": 1001,
+    "fields": {
+      "request_id": 1001,
+      "employee_id": 12,
+      "comment": "Please include this encashment in the current payroll cycle.",
+      "created_at": "2025-07-10T09:30:00Z",
+      "files": [
+        1001
+      ]
+    }
+  },
+  {
+    "model": "payroll.reimbursementrequestcomment",
+    "pk": 1002,
+    "fields": {
+      "request_id": 1001,
+      "employee_id": 1,
+      "comment": "The leave balance is being verified.",
+      "created_at": "2025-07-10T10:15:00Z",
+      "files": [
+        1002
+      ]
+    }
+  },
+  {
+    "model": "payroll.reimbursementrequestcomment",
+    "pk": 1003,
+    "fields": {
+      "request_id": 1002,
+      "employee_id": 1,
+      "comment": "Approved and queued for the next payslip.",
+      "created_at": "2025-07-10T11:00:00Z",
+      "files": []
+    }
+  },
+  {
+    "model": "payroll.reimbursementrequestcomment",
+    "pk": 1004,
+    "fields": {
+      "request_id": 1004,
+      "employee_id": 12,
+      "comment": "These points were earned from the completed sales objective.",
+      "created_at": "2025-07-12T09:45:00Z",
+      "files": []
+    }
+  },
+  {
+    "model": "payroll.reimbursementrequestcomment",
+    "pk": 1005,
+    "fields": {
+      "request_id": 1006,
+      "employee_id": 1,
+      "comment": "Please submit a lower amount within the available point balance.",
+      "created_at": "2025-07-13T14:20:00Z",
+      "files": []
+    }
+  }
+]

@@ -1,0 +1,396 @@
+[
+  {
+    "model": "pms.comment",
+    "pk": 1001,
+    "fields": {
+      "comment": "Pipeline coverage is ahead of plan. Focus the next sprint on converting qualified opportunities.",
+      "employee_id": 37,
+      "employee_objective_id": 1,
+      "created_at": "2024-10-02T09:30:00Z"
+    }
+  },
+  {
+    "model": "pms.comment",
+    "pk": 1002,
+    "fields": {
+      "comment": "Customer interviews have identified two onboarding improvements; the delivery team has accepted both actions.",
+      "employee_id": 12,
+      "employee_objective_id": 1,
+      "created_at": "2024-10-08T11:00:00Z"
+    }
+  },
+  {
+    "model": "pms.comment",
+    "pk": 1003,
+    "fields": {
+      "comment": "Please document the campaign learnings before the period close so they can be reused next quarter.",
+      "employee_id": 37,
+      "employee_objective_id": 2,
+      "created_at": "2024-10-15T14:15:00Z"
+    }
+  },
+  {
+    "model": "pms.anonymousfeedback",
+    "pk": 1001,
+    "fields": {
+      "feedback_subject": "Quarterly employee experience pulse",
+      "based_on": "general",
+      "employee_id": null,
+      "department_id": null,
+      "job_position_id": null,
+      "status": "On Track",
+      "created_at": "2025-07-01",
+      "archive": false,
+      "anonymous_feedback_id": "PULSE-Q3",
+      "feedback_description": "A confidential pulse survey covering collaboration, workload, and psychological safety."
+    }
+  },
+  {
+    "model": "pms.anonymousfeedback",
+    "pk": 1002,
+    "fields": {
+      "feedback_subject": "Leadership feedback request",
+      "based_on": "employee",
+      "employee_id": 37,
+      "department_id": null,
+      "job_position_id": null,
+      "status": "Not Started",
+      "created_at": "2025-07-05",
+      "archive": false,
+      "anonymous_feedback_id": "LEAD-037",
+      "feedback_description": "Confidential upward feedback on leadership communication and support."
+    }
+  },
+  {
+    "model": "pms.anonymousfeedback",
+    "pk": 1003,
+    "fields": {
+      "feedback_subject": "Sales team engagement review",
+      "based_on": "department",
+      "employee_id": null,
+      "department_id": 2,
+      "job_position_id": null,
+      "status": "Behind",
+      "created_at": "2025-07-08",
+      "archive": false,
+      "anonymous_feedback_id": "SALES-Q3",
+      "feedback_description": "A department-level review of goals, tools, and recognition practices."
+    }
+  },
+  {
+    "model": "pms.anonymousfeedback",
+    "pk": 1004,
+    "fields": {
+      "feedback_subject": "Developer role feedback",
+      "based_on": "job_position",
+      "employee_id": null,
+      "department_id": null,
+      "job_position_id": 2,
+      "status": "Closed",
+      "created_at": "2025-06-15",
+      "archive": false,
+      "anonymous_feedback_id": "DEV-ROLE",
+      "feedback_description": "Completed role-based feedback on engineering practices and career development."
+    }
+  },
+  {
+    "model": "pms.answer",
+    "pk": 1001,
+    "fields": {
+      "answer": {"answer": "Isabella communicated project risks early and kept the team aligned during the release."},
+      "question_id": 1,
+      "employee_id": 13,
+      "feedback_id": 1
+    }
+  },
+  {
+    "model": "pms.answer",
+    "pk": 1002,
+    "fields": {
+      "answer": {"answer": "4"},
+      "question_id": 2,
+      "employee_id": 16,
+      "feedback_id": 1
+    }
+  },
+  {
+    "model": "pms.answer",
+    "pk": 1003,
+    "fields": {
+      "answer": {"answer": "Communication"},
+      "question_id": 3,
+      "employee_id": 18,
+      "feedback_id": 1
+    }
+  },
+  {
+    "model": "pms.keyresultfeedback",
+    "pk": 1001,
+    "fields": {
+      "feedback_id": 1,
+      "employee_id": 13,
+      "answer": {"answer": "The campaign dashboard is clear; add a weekly conversion trend to make decisions faster."},
+      "key_result_id": 2
+    }
+  },
+  {
+    "model": "pms.meetingsanswer",
+    "pk": 1001,
+    "fields": {
+      "answer": {"answer": "The release retrospective identified faster peer review as the most useful improvement."},
+      "question_id": 1,
+      "employee_id": 12,
+      "meeting_id": 1
+    }
+  },
+  {
+    "model": "pms.meetingsanswer",
+    "pk": 1002,
+    "fields": {
+      "answer": {"answer": "5"},
+      "question_id": 2,
+      "employee_id": 37,
+      "meeting_id": 1
+    }
+  },
+  {
+    "model": "pms.meetingsanswer",
+    "pk": 1003,
+    "fields": {
+      "answer": {"answer": "Communication"},
+      "question_id": 3,
+      "employee_id": 13,
+      "meeting_id": 1
+    }
+  },
+  {
+    "model": "pms.period",
+    "pk": 1001,
+    "fields": {"period_name": "Q3 2026 Performance Cycle", "start_date": "2026-07-01", "end_date": "2026-09-30", "company_id": [1, 2, 3]}
+  },
+  {
+    "model": "pms.period",
+    "pk": 1002,
+    "fields": {"period_name": "Q4 2026 Planning Cycle", "start_date": "2026-10-01", "end_date": "2026-12-31", "company_id": [1, 2, 3]}
+  },
+  {
+    "model": "pms.keyresult",
+    "pk": 1001,
+    "fields": {"title": "Increase qualified pipeline", "description": "Create qualified opportunities from priority accounts during the quarter.", "progress_type": "#", "target_value": 40, "duration": 90, "archive": false, "company_id": 1}
+  },
+  {
+    "model": "pms.keyresult",
+    "pk": 1002,
+    "fields": {"title": "Improve renewal rate", "description": "Maintain customer renewals through proactive success planning.", "progress_type": "%", "target_value": 95, "duration": 90, "archive": false, "company_id": 1}
+  },
+  {
+    "model": "pms.keyresult",
+    "pk": 1003,
+    "fields": {"title": "Deliver quarterly revenue", "description": "Achieve the approved quarterly recurring-revenue target.", "progress_type": "$", "target_value": 250000, "duration": 90, "archive": false, "company_id": 1}
+  },
+  {
+    "model": "pms.keyresult",
+    "pk": 1004,
+    "fields": {"title": "Reduce production incidents", "description": "Resolve and prevent high-severity production incidents.", "progress_type": "#", "target_value": 12, "duration": 90, "archive": false, "company_id": 1}
+  },
+  {
+    "model": "pms.keyresult",
+    "pk": 1005,
+    "fields": {"title": "Complete reliability improvements", "description": "Deliver the prioritized reliability improvements in the engineering roadmap.", "progress_type": "%", "target_value": 100, "duration": 90, "archive": false, "company_id": 1}
+  },
+  {
+    "model": "pms.objective",
+    "pk": 1001,
+    "fields": {"title": "Grow sustainable revenue", "description": "Build predictable growth through qualified pipeline and disciplined account management.", "duration_unit": "months", "duration": 3, "add_assignees": true, "is_template": false, "archive": false, "company_id": 1, "self_employee_progress_update": true, "managers": [37], "assignees": [12, 13, 68], "key_result_id": [1001, 1003]}
+  },
+  {
+    "model": "pms.objective",
+    "pk": 1002,
+    "fields": {"title": "Improve customer retention", "description": "Strengthen customer outcomes, adoption, and renewal readiness.", "duration_unit": "months", "duration": 3, "add_assignees": true, "is_template": false, "archive": false, "company_id": 1, "self_employee_progress_update": true, "managers": [37], "assignees": [12, 13], "key_result_id": [1002]}
+  },
+  {
+    "model": "pms.objective",
+    "pk": 1003,
+    "fields": {"title": "Engineering reliability template", "description": "A reusable quarterly objective for service reliability and operational excellence.", "duration_unit": "months", "duration": 3, "add_assignees": false, "is_template": true, "archive": false, "company_id": 1, "self_employee_progress_update": true, "managers": [37], "assignees": [], "key_result_id": [1004, 1005]}
+  },
+  {
+    "model": "pms.employeeobjective",
+    "pk": 1001,
+    "fields": {"objective": null, "objective_description": null, "created_at": "2026-07-01", "objective_id": 1001, "employee_id": 12, "updated_at": "2026-08-01", "start_date": "2026-07-01", "end_date": "2026-10-01", "status": "On Track", "progress_percentage": 68, "archive": false, "key_result_id": [1001, 1003]}
+  },
+  {
+    "model": "pms.employeeobjective",
+    "pk": 1002,
+    "fields": {"objective": null, "objective_description": null, "created_at": "2026-07-01", "objective_id": 1001, "employee_id": 13, "updated_at": "2026-08-01", "start_date": "2026-07-01", "end_date": "2026-10-01", "status": "At Risk", "progress_percentage": 42, "archive": false, "key_result_id": [1001]}
+  },
+  {
+    "model": "pms.employeeobjective",
+    "pk": 1003,
+    "fields": {"objective": null, "objective_description": null, "created_at": "2026-07-01", "objective_id": 1001, "employee_id": 68, "updated_at": "2026-08-01", "start_date": "2026-07-01", "end_date": "2026-10-01", "status": "Behind", "progress_percentage": 28, "archive": false, "key_result_id": [1003]}
+  },
+  {
+    "model": "pms.employeeobjective",
+    "pk": 1004,
+    "fields": {"objective": null, "objective_description": null, "created_at": "2026-07-01", "objective_id": 1002, "employee_id": 12, "updated_at": "2026-08-01", "start_date": "2026-07-01", "end_date": "2026-10-01", "status": "On Track", "progress_percentage": 74, "archive": false, "key_result_id": [1002]}
+  },
+  {
+    "model": "pms.employeeobjective",
+    "pk": 1005,
+    "fields": {"objective": null, "objective_description": null, "created_at": "2026-07-01", "objective_id": 1002, "employee_id": 13, "updated_at": "2026-08-01", "start_date": "2026-07-01", "end_date": "2026-10-01", "status": "Closed", "progress_percentage": 100, "archive": false, "key_result_id": [1002]}
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 1001,
+    "fields": {"key_result": "Increase qualified pipeline", "key_result_description": "Qualified opportunities sourced in Q3.", "employee_objective_id": 1001, "key_result_id": 1001, "progress_type": "#", "status": "On Track", "start_value": 0, "current_value": 27, "target_value": 40, "start_date": "2026-07-01", "end_date": "2026-09-30", "progress_percentage": 68}
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 1002,
+    "fields": {"key_result": "Deliver quarterly revenue", "key_result_description": "Recurring revenue closed in Q3.", "employee_objective_id": 1001, "key_result_id": 1003, "progress_type": "$", "status": "On Track", "start_value": 0, "current_value": 170000, "target_value": 250000, "start_date": "2026-07-01", "end_date": "2026-09-30", "progress_percentage": 68}
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 1003,
+    "fields": {"key_result": "Increase qualified pipeline", "key_result_description": "Qualified opportunities sourced in Q3.", "employee_objective_id": 1002, "key_result_id": 1001, "progress_type": "#", "status": "At Risk", "start_value": 0, "current_value": 17, "target_value": 40, "start_date": "2026-07-01", "end_date": "2026-09-30", "progress_percentage": 42}
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 1004,
+    "fields": {"key_result": "Deliver quarterly revenue", "key_result_description": "Recurring revenue closed in Q3.", "employee_objective_id": 1003, "key_result_id": 1003, "progress_type": "$", "status": "Behind", "start_value": 0, "current_value": 70000, "target_value": 250000, "start_date": "2026-07-01", "end_date": "2026-09-30", "progress_percentage": 28}
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 1005,
+    "fields": {"key_result": "Improve renewal rate", "key_result_description": "Renewal rate across the assigned portfolio.", "employee_objective_id": 1004, "key_result_id": 1002, "progress_type": "%", "status": "On Track", "start_value": 80, "current_value": 92, "target_value": 95, "start_date": "2026-07-01", "end_date": "2026-09-30", "progress_percentage": 74}
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 1006,
+    "fields": {"key_result": "Improve renewal rate", "key_result_description": "Renewal rate across the assigned portfolio.", "employee_objective_id": 1005, "key_result_id": 1002, "progress_type": "%", "status": "Closed", "start_value": 80, "current_value": 96, "target_value": 95, "start_date": "2026-07-01", "end_date": "2026-09-30", "progress_percentage": 100}
+  },
+  {
+    "model": "pms.questiontemplate",
+    "pk": 1001,
+    "fields": {"question_template": "Quarterly Performance Review", "company_id": [1, 2, 3]}
+  },
+  {
+    "model": "pms.question",
+    "pk": 1001,
+    "fields": {"question": "Did this employee meet the agreed commitments?", "question_type": "3", "template_id": 1001}
+  },
+  {
+    "model": "pms.question",
+    "pk": 1002,
+    "fields": {"question": "How would you rate the quality and impact of the work delivered?", "question_type": "5", "template_id": 1001}
+  },
+  {
+    "model": "pms.question",
+    "pk": 1003,
+    "fields": {"question": "Which development focus would have the greatest impact next quarter?", "question_type": "4", "template_id": 1001}
+  },
+  {
+    "model": "pms.questionoptions",
+    "pk": 1001,
+    "fields": {"question_id": 1003, "option_a": "Stakeholder communication", "option_b": "Technical depth", "option_c": "Planning and prioritization", "option_d": "Coaching and collaboration"}
+  },
+  {
+    "model": "pms.feedback",
+    "pk": 1001,
+    "fields": {"review_cycle": "Q3 revenue review - Abigail", "manager_id": 37, "employee_id": 12, "question_template_id": 1001, "status": "On Track", "archive": false, "start_date": "2026-07-15", "end_date": "2026-09-20", "cyclic_feedback": false, "cyclic_feedback_days_count": null, "cyclic_feedback_period": null, "cyclic_next_start_date": null, "cyclic_next_end_date": null, "colleague_id": [13, 68], "subordinate_id": [], "others_id": [1], "employee_key_results_id": [1001, 1002]}
+  },
+  {
+    "model": "pms.feedback",
+    "pk": 1002,
+    "fields": {"review_cycle": "Q3 customer success review - Alexander", "manager_id": 37, "employee_id": 13, "question_template_id": 1001, "status": "At Risk", "archive": false, "start_date": "2026-07-15", "end_date": "2026-09-20", "cyclic_feedback": false, "cyclic_feedback_days_count": null, "cyclic_feedback_period": null, "cyclic_next_start_date": null, "cyclic_next_end_date": null, "colleague_id": [12, 68], "subordinate_id": [], "others_id": [], "employee_key_results_id": [1003, 1005]}
+  },
+  {
+    "model": "pms.feedback",
+    "pk": 1003,
+    "fields": {"review_cycle": "Monthly manager check-in - Andrew", "manager_id": 37, "employee_id": 68, "question_template_id": 1001, "status": "Behind", "archive": false, "start_date": "2026-08-01", "end_date": "2026-08-31", "cyclic_feedback": true, "cyclic_feedback_days_count": 1, "cyclic_feedback_period": "months", "cyclic_next_start_date": "2026-09-01", "cyclic_next_end_date": "2026-09-30", "colleague_id": [12, 13], "subordinate_id": [], "others_id": [], "employee_key_results_id": [1004]}
+  },
+  {
+    "model": "pms.feedback",
+    "pk": 1004,
+    "fields": {"review_cycle": "Completed quarterly review - Abigail", "manager_id": 37, "employee_id": 12, "question_template_id": 1001, "status": "Closed", "archive": false, "start_date": "2026-04-01", "end_date": "2026-06-30", "cyclic_feedback": false, "cyclic_feedback_days_count": null, "cyclic_feedback_period": null, "cyclic_next_start_date": null, "cyclic_next_end_date": null, "colleague_id": [13], "subordinate_id": [], "others_id": [], "employee_key_results_id": []}
+  },
+  {
+    "model": "pms.feedback",
+    "pk": 1005,
+    "fields": {"review_cycle": "Q4 development planning - Alexander", "manager_id": 37, "employee_id": 13, "question_template_id": 1001, "status": "Not Started", "archive": false, "start_date": "2026-10-01", "end_date": "2026-12-15", "cyclic_feedback": false, "cyclic_feedback_days_count": null, "cyclic_feedback_period": null, "cyclic_next_start_date": null, "cyclic_next_end_date": null, "colleague_id": [12], "subordinate_id": [], "others_id": [68], "employee_key_results_id": []}
+  },
+  {
+    "model": "pms.answer",
+    "pk": 1004,
+    "fields": {"answer": {"answer": "yes"}, "question_id": 1001, "employee_id": 37, "feedback_id": 1001}
+  },
+  {
+    "model": "pms.answer",
+    "pk": 1005,
+    "fields": {"answer": {"answer": "4"}, "question_id": 1002, "employee_id": 13, "feedback_id": 1001}
+  },
+  {
+    "model": "pms.answer",
+    "pk": 1006,
+    "fields": {"answer": {"answer": "Planning and prioritization"}, "question_id": 1003, "employee_id": 68, "feedback_id": 1002}
+  },
+  {
+    "model": "pms.keyresultfeedback",
+    "pk": 1002,
+    "fields": {"feedback_id": 1001, "employee_id": 37, "answer": {"answer": "Pipeline health is strong; keep weekly deal reviews focused on next actions and decision makers."}, "key_result_id": 1001}
+  },
+  {
+    "model": "pms.keyresultfeedback",
+    "pk": 1003,
+    "fields": {"feedback_id": 1002, "employee_id": 37, "answer": {"answer": "Prioritize the renewals with adoption risk and document recovery plans by the next check-in."}, "key_result_id": 1005}
+  },
+  {
+    "model": "pms.meetings",
+    "pk": 1001,
+    "fields": {"title": "Q3 Revenue Operating Review", "date": "2026-08-05T09:30:00Z", "question_template": 1001, "response": "Reviewed pipeline quality, renewal risks, and owners for the next two-week actions.", "show_response": true, "company_id": 1, "employee_id": [12, 13, 68], "manager": [37], "answer_employees": [12, 13, 68]}
+  },
+  {
+    "model": "pms.meetings",
+    "pk": 1002,
+    "fields": {"title": "Customer Success Improvement Workshop", "date": "2026-08-12T13:00:00Z", "question_template": 1001, "response": "", "show_response": false, "company_id": 1, "employee_id": [12, 13], "manager": [37], "answer_employees": [12, 13]}
+  },
+  {
+    "model": "pms.meetings",
+    "pk": 1003,
+    "fields": {"title": "Q3 Performance Calibration", "date": "2026-09-18T10:00:00Z", "question_template": 1001, "response": "Calibration completed; ratings and development actions will be finalized after evidence review.", "show_response": false, "company_id": 1, "employee_id": [12, 13, 68, 37], "manager": [1, 37], "answer_employees": [12, 13, 68]}
+  },
+  {
+    "model": "pms.meetings",
+    "pk": 1004,
+    "fields": {"title": "Q4 Objective Planning", "date": "2026-10-02T09:00:00Z", "question_template": 1001, "response": "", "show_response": false, "company_id": 1, "employee_id": [12, 13, 68], "manager": [37], "answer_employees": [12, 13, 68]}
+  },
+  {
+    "model": "pms.meetingsanswer",
+    "pk": 1004,
+    "fields": {"answer": {"answer": "yes"}, "question_id": 1001, "employee_id": 12, "meeting_id": 1001}
+  },
+  {
+    "model": "pms.meetingsanswer",
+    "pk": 1005,
+    "fields": {"answer": {"answer": "4"}, "question_id": 1002, "employee_id": 13, "meeting_id": 1001}
+  },
+  {
+    "model": "pms.meetingsanswer",
+    "pk": 1006,
+    "fields": {"answer": {"answer": "Coaching and collaboration"}, "question_id": 1003, "employee_id": 68, "meeting_id": 1001}
+  },
+  {
+    "model": "pms.employeebonuspoint",
+    "pk": 1001,
+    "fields": {"employee_id": 12, "bonus_point": 30, "instance": "Q3 revenue operating review", "based_on": "Recognized for delivering qualified pipeline milestones", "bonus_point_id": null}
+  },
+  {
+    "model": "pms.employeebonuspoint",
+    "pk": 1002,
+    "fields": {"employee_id": 13, "bonus_point": 20, "instance": "Customer retention objective", "based_on": "Recognized for completing an early renewal recovery plan", "bonus_point_id": null}
+  },
+  {
+    "model": "pms.employeebonuspoint",
+    "pk": 1003,
+    "fields": {"employee_id": 68, "bonus_point": 15, "instance": "Performance calibration", "based_on": "Recognized for cross-functional collaboration", "bonus_point_id": null}
+  }
+]

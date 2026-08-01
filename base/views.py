@@ -386,9 +386,12 @@ def load_demo_database(request):
                     ("onboarding", "onboarding_data.json"),
                     ("offboarding", "offboarding_data.json"),
                     ("pms", "pms_data.json"),
+                    ("pms", "pms_scenarios_data.json"),
+                    ("payroll", "payroll_scenarios_data.json"),
                     ("payroll", "payroll_data.json"),
                     ("payroll", "payroll_loanaccount_data.json"),
                     ("project", "project_data.json"),
+                    ("project", "project_scenarios_data.json"),
                 ]
 
                 # Add data files for installed apps
