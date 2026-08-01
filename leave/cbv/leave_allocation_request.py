@@ -26,7 +26,7 @@ from horilla_views.generic.cbv.views import (
 )
 from leave.cbv.leave_tab import IndividualLeaveTab
 from leave.filters import LeaveAllocationRequestFilter
-from leave.forms import LeaveAllocationRequestForm
+from leave.forms import LeaveAllocationBulkForm, LeaveAllocationRequestForm
 from leave.models import LeaveAllocationRequest
 from notifications.signals import notify
 
@@ -241,6 +241,20 @@ class LeaveAllocationRequestNav(HorillaNavView):
                             hx-get="{reverse_lazy('leave-allocation-request-create')}"
                             """
 
+        if self.request.user.has_perm("leave.add_leaveallocationrequest"):
+            self.actions = [
+                {
+                    "action": _("Bulk Allocate Leave"),
+                    "attrs": f"""
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModal"
+                            hx-target="#genericModalBody"
+                            hx-get="{reverse_lazy('leave-allocation-request-bulk-create')}"
+                            style="cursor: pointer;"
+                        """,
+                },
+            ]
+
     nav_title = _("Leave Allocation Requests")
     filter_instance = LeaveAllocationRequestFilter()
     filter_body_template = "cbv/leave_allocation_request/filter.html"
@@ -383,6 +397,29 @@ class LeaveAllocationRequestFormView(HorillaFormView):
                     )
             instance.save()
             messages.success(self.request, message)
+            return self.HttpResponse()
+        return super().form_valid(form)
+
+
+@method_decorator(login_required, name="dispatch")
+class LeaveAllocationBulkFormView(HorillaFormView):
+    """
+    Form view to bulk allocate (and optionally approve) leave for multiple
+    employees at once.
+    """
+
+    model = LeaveAllocationRequest
+    form_class = LeaveAllocationBulkForm
+    new_display_title = _("Bulk Allocate Leave")
+
+    def form_valid(self, form: LeaveAllocationBulkForm) -> HttpResponse:
+        if form.is_valid():
+            created_requests = form.save()
+            messages.success(
+                self.request,
+                _("Leave allocated for %(count)s employee(s)")
+                % {"count": len(created_requests)},
+            )
             return self.HttpResponse()
         return super().form_valid(form)
 

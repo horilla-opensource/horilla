@@ -381,6 +381,11 @@ urlpatterns = [
         leave_allocation_request.LeaveAllocationRequestFormView.as_view(),
         name="leave-allocation-request-create",
     ),
+    path(
+        "leave-allocation-request-bulk-create/",
+        leave_allocation_request.LeaveAllocationBulkFormView.as_view(),
+        name="leave-allocation-request-bulk-create",
+    ),
     # path(
     #     "leave-allocation-request-filter",
     #     views.leave_allocation_request_filter,

@@ -590,11 +590,11 @@ class UserLeaveRequestForm(BaseModelForm):
         fields = [
             "employee_id",
             "leave_type_id",
-            "attachment",
             "start_date",
             "start_date_breakdown",
             "end_date",
             "end_date_breakdown",
+            "attachment",
             "description",
         ]
         widgets = {
@@ -715,11 +715,11 @@ class UserLeaveRequestCreationForm(BaseModelForm):
         fields = [
             "leave_type_id",
             "employee_id",
-            "attachment",
             "start_date",
             "start_date_breakdown",
             "end_date",
             "end_date_breakdown",
+            "attachment",
             "description",
             "requested_days",
         ]
@@ -763,6 +763,92 @@ class LeaveAllocationRequestForm(BaseModelForm):
             "attachment",
             "description",
         ]
+
+
+class LeaveAllocationBulkForm(BaseModelForm):
+    """
+    Form to quickly allocate leave to multiple employees at once, optionally
+    approving the allocation immediately.
+    """
+
+    verbose_name = _("Bulk Allocate Leave")
+
+    employee_id = HorillaMultiSelectField(
+        queryset=Employee.objects.all(),
+        widget=HorillaMultiSelectWidget(
+            filter_route_name="employee-widget-filter",
+            filter_class=EmployeeFilter,
+            filter_instance_context_name="f",
+            filter_template_path="employee_filters.html",
+            required=True,
+        ),
+        label=_("Employees"),
+    )
+    requested_days = forms.FloatField(required=True, label=_("Requested Days"))
+    is_approved = forms.BooleanField(required=False, label=_("Approve"))
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = LeaveAllocationRequest
+        fields = ["leave_type_id", "employee_id", "requested_days", "description"]
+
+    def clean(self):
+        """
+        Clean method for validating the form data.
+        """
+        cleaned_data = super().clean()
+        employee_ids = self.data.getlist("employee_id")
+        self.errors.pop("employee_id", None)
+        self.instance.employee_id = Employee.objects.filter(id__in=employee_ids).first()
+        if not employee_ids:
+            raise ValidationError({"employee_id": _("Employee not chosen")})
+        return cleaned_data
+
+    def save(self, commit=True):
+        employee_ids = self.data.getlist("employee_id")
+        leave_type = self.cleaned_data["leave_type_id"]
+        requested_days = self.cleaned_data["requested_days"]
+        description = self.cleaned_data["description"]
+        is_approved = self.cleaned_data.get("is_approved")
+
+        created_requests = []
+        for employee in Employee.objects.filter(id__in=employee_ids):
+            allocation_request = LeaveAllocationRequest(
+                employee_id=employee,
+                leave_type_id=leave_type,
+                requested_days=requested_days,
+                description=description,
+            )
+            allocation_request.save()
+            if is_approved:
+                self._approve(allocation_request)
+            created_requests.append(allocation_request)
+        return created_requests
+
+    def _approve(self, allocation_request):
+        """
+        Add the requested days to the employee's available leave and mark
+        the allocation request as approved, mirroring the logic in
+        leave.views.leave_allocation_request_approve.
+        """
+        employee = allocation_request.employee_id
+        available_leave = employee.available_leave.filter(
+            leave_type_id=allocation_request.leave_type_id
+        ).first()
+        if not available_leave:
+            available_leave = AvailableLeave(
+                leave_type_id=allocation_request.leave_type_id,
+                employee_id=employee,
+            )
+        available_leave.available_days = (
+            available_leave.available_days or 0
+        ) + allocation_request.requested_days
+        available_leave.save()
+        allocation_request.status = "approved"
+        allocation_request.save()
 
 
 class LeaveAllocationRequestRejectForm(forms.Form):

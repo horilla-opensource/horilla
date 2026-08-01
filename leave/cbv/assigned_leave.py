@@ -4,15 +4,22 @@ this page handles cbv of assigned leave page
 
 from typing import Any
 
+from django import forms
 from django.contrib import messages
 from django.http import HttpResponse
+from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from base.decorators import manager_can_enter
-from base.methods import filtersubordinates
-from horilla_views.cbv_methods import hx_request_required, login_required
+from base.methods import eval_validate, filtersubordinates
+from horilla_views.cbv_methods import (
+    get_short_uuid,
+    hx_request_required,
+    login_required,
+)
+from horilla_views.forms import DynamicBulkUpdateForm
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
@@ -76,6 +83,81 @@ class AssignedleaveList(HorillaListView):
     ]
 
     action_method = "assigned_leave_actions"
+
+    bulk_update_fields = [
+        "leave_type_id",
+        "available_days",
+        "carryforward_days",
+        "total_leave_days",
+        "assigned_date",
+    ]
+
+    def get_bulk_form(self):
+        form = super().get_bulk_form()
+        form.fields["add_available_days"] = forms.FloatField(
+            required=False,
+            label=_("Add Available Days"),
+            help_text=_(
+                "Adds this value to each selected record's existing Available "
+                "Days, instead of replacing it."
+            ),
+            widget=forms.NumberInput(attrs={"class": "oh-input w-100"}),
+        )
+        return form
+
+    def handle_bulk_submission(self, request):
+        """
+        This method to handle bulk update form submission, including the
+        custom "Add Available Days" field that increments available_days
+        per selected record instead of replacing it.
+        """
+        if not self.bulk_update_accessibility():
+            return HttpResponse("You dont have permission")
+
+        instance_ids = eval_validate(request.POST.get("instance_ids", "[]"))
+        form = DynamicBulkUpdateForm(
+            request.POST,
+            request.FILES,
+            root_model=self.model,
+            bulk_update_fields=self.bulk_update_fields,
+            ids=instance_ids,
+        )
+        form.fields["add_available_days"] = forms.FloatField(
+            required=False, label=_("Add Available Days")
+        )
+        if instance_ids and form.is_valid():
+            form.save()
+
+            add_available_days = request.POST.get("add_available_days")
+            if add_available_days:
+                for available_leave in AvailableLeave.objects.filter(
+                    id__in=instance_ids
+                ):
+                    available_leave.available_days = (
+                        available_leave.available_days or 0
+                    ) + float(add_available_days)
+                    available_leave.save()
+
+            messages.success(request, _("Selected Records updated"))
+
+            script_id = get_short_uuid(length=3, prefix="bulk")
+            return HttpResponse(
+                f"""
+                <script id="{script_id}">
+                    $("#{script_id}").closest(".oh-modal--show").removeClass("oh-modal--show");
+                    $("#{self.selected_instances_key_id}").attr("data-ids", "[]");
+                    $(".reload-record").click()
+                    $("#reloadMessagesButton").click()
+                </script>
+                """
+            )
+        if not instance_ids:
+            messages.info(request, _("No records selected"))
+        return render(
+            request,
+            self.bulk_template,
+            {"form": form, "post_bulk_path": self.post_bulk_path},
+        )
 
 
 @method_decorator(login_required, name="dispatch")
