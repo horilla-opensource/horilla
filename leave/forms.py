@@ -1152,6 +1152,17 @@ class RestrictLeaveForm(BaseModelForm):
                 "hx-get": "/leave/get-restrict-job-positions/",
             }
         )
+        # Keep include_all and spesific_leave_types submitting with the
+        # form (still in self.fields, so they're in cleaned_data/POST) but
+        # not shown to the user -- Django moves HiddenInput-widget fields
+        # from form.visible_fields to form.hidden_fields automatically,
+        # which generic/form.html already renders separately without a
+        # label. Only "Exclude Leave Types" is shown to the user now.
+        self.fields["include_all"].widget = forms.HiddenInput()
+        # spesific_leave_types is a multi-value (M2M) field -- a plain
+        # HiddenInput only renders/parses a single value, so it needs
+        # MultipleHiddenInput (one hidden <input> per selected value).
+        self.fields["spesific_leave_types"].widget = forms.MultipleHiddenInput()
 
 
 if apps.is_installed("attendance"):
