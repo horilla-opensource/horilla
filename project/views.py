@@ -526,10 +526,12 @@ def project_bulk_export(request):
     """
     This method is used to export bulk of Project instances
     """
+    # No selection means "export everything", same convention as every other
+    # list view's export flow - this used to hard-block instead of falling
+    # back, so selecting nothing was the only way to get a "no rows" error.
     ids = request.POST.get("ids")
-    if not ids:
-        return HorillaRedirect(request, message=_("No project IDs were provided."))
-    ids = json.loads(ids)
+    ids = json.loads(ids) if ids else None
+    projects = Project.objects.filter(pk__in=ids) if ids else Project.objects.all()
     data_list = []
     # Add headers to the worksheet
     headers = [
@@ -543,10 +545,7 @@ def project_bulk_export(request):
     ]
 
     # Get the list of field names for your model
-    for project_id in ids:
-        project = Project.find(project_id)
-        if not project:
-            continue  # Skip if project not found
+    for project in projects:
         data = {
             "Title": f"{project.title}",
             "Managers": f"{',' .join([manager.employee_first_name + ' ' + manager.employee_last_name for manager in project.managers.all()]) if project.managers.exists() else ''}",

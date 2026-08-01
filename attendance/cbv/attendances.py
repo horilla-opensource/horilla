@@ -60,6 +60,7 @@ class AttendancesListView(HorillaListView):
     """
 
     export_file_name = _("Attendance Report")
+    quick_export = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

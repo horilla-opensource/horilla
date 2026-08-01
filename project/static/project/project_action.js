@@ -66,116 +66,52 @@ $(".all-projects").change(function (e) {
     }
 });
 
-$("#exportProject").click(function (e) {
+// Selecting some rows exports just those; selecting none exports every
+// project (same convention as every other list view's export flow) - this
+// used to be two separate handlers bound to the same click (one reading
+// checkboxes, one reading #selectedInstances), both of which blocked with a
+// warning instead of falling back when nothing was selected.
+$(document).on("click", "#exportProject", function (e) {
     e.preventDefault();
 
-    var checkedRows = $(".all-project-row").filter(":checked");
-    if (checkedRows.length === 0) {
-        Swal.fire({
-            text: i18nMessages.noRowsSelected,
-            icon: "warning",
-            confirmButtonText: i18nMessages.close,
-        });
-    } else {
-        Swal.fire({
-            text: i18nMessages.downloadExcel,
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#6c757d",
-            confirmButtonText: i18nMessages.confirm,
-            cancelButtonText: i18nMessages.cancel,
-        }).then(function (result) {
-            if (result.isConfirmed) {
-                var checkedRows = $(".all-project-row").filter(":checked");
-                ids = [];
-                checkedRows.each(function () {
-                    ids.push($(this).attr("id"));
-                });
+    var idsRaw = $("#selectedInstances").attr("data-ids");
+    var ids = idsRaw ? JSON.parse(idsRaw) : [];
 
-                $.ajax({
-                    type: "POST",
-                    url: "/project/project-bulk-export/",
-                    dataType: "binary",
-                    xhrFields: {
-                        responseType: "blob",
-                    },
-                    data: {
-                        csrfmiddlewaretoken: getCookie("csrftoken"),
-                        ids: JSON.stringify(ids),
-                    },
-                    success: function (response, textStatus, jqXHR) {
-                        const file = new Blob([response], {
-                            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        });
-                        const url = URL.createObjectURL(file);
-                        const link = document.createElement("a");
-                        link.href = url;
-                        link.download = "project details.xlsx";
-                        document.body.appendChild(link);
-                        link.click();
-                    },
-                });
-            }
-        });
-    }
-});
-
-$(document).on('click', '#exportProject', function (e) {
-    e.preventDefault();
-
-    ids = [];
-    ids.push($("#selectedInstances").attr("data-ids"));
-    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-    if (ids.length === 0) {
-        Swal.fire({
-            text: i18nMessages.noRowsSelected,
-            icon: "warning",
-            confirmButtonText: i18nMessages.close,
-        });
-    } else {
-        Swal.fire({
-            text: i18nMessages.downloadExcel,
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#6c757d",
-            confirmButtonText: i18nMessages.confirm,
-            cancelButtonText: i18nMessages.cancel,
-        }).then(function (result) {
-            if (result.isConfirmed) {
-                // var checkedRows = $(".all-project-row").filter(":checked");
-                // ids = [];
-                // checkedRows.each(function () {
-                //   ids.push($(this).attr("id"));
-                // });
-
-                $.ajax({
-                    type: "POST",
-                    url: "/project/project-bulk-export/",
-                    dataType: "binary",
-                    xhrFields: {
-                        responseType: "blob",
-                    },
-                    data: {
-                        csrfmiddlewaretoken: getCookie("csrftoken"),
-                        ids: JSON.stringify(ids),
-                    },
-                    success: function (response, textStatus, jqXHR) {
-                        const file = new Blob([response], {
-                            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        });
-                        const url = URL.createObjectURL(file);
-                        const link = document.createElement("a");
-                        link.href = url;
-                        link.download = "project details.xlsx";
-                        document.body.appendChild(link);
-                        link.click();
-                    },
-                });
-            }
-        });
-    }
+    Swal.fire({
+        text: i18nMessages.downloadExcel,
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: i18nMessages.confirm,
+        cancelButtonText: i18nMessages.cancel,
+    }).then(function (result) {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: "POST",
+                url: "/project/project-bulk-export/",
+                dataType: "binary",
+                xhrFields: {
+                    responseType: "blob",
+                },
+                data: {
+                    csrfmiddlewaretoken: getCookie("csrftoken"),
+                    ids: JSON.stringify(ids),
+                },
+                success: function (response, textStatus, jqXHR) {
+                    const file = new Blob([response], {
+                        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    });
+                    const url = URL.createObjectURL(file);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = "project details.xlsx";
+                    document.body.appendChild(link);
+                    link.click();
+                },
+            });
+        }
+    });
 });
 
 

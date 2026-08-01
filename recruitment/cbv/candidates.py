@@ -100,6 +100,7 @@ class ListCandidates(HorillaListView):
 
     model = Candidate
     filter_class = CandidateFilter
+    quick_export = False
     bulk_template = "cbv/employees_view/bulk_update_page.html"
     bulk_update_fields = [
         "gender",

@@ -107,6 +107,7 @@
                         action="{% url 'late-come-early-out-info-export' %}"
                         method="get"
                         onsubmit="event.stopPropagation();
+						$(this).find('[name=instance_ids]').val($('#selectedInstances').attr('data-ids') || '[]');
 						$(this)
 							.parents()
 							.find('.oh-modal--show')

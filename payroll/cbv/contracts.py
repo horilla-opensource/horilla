@@ -41,6 +41,8 @@ class ContractsList(HorillaListView):
     List view
     """
 
+    quick_export = False
+
     bulk_update_fields = [
         "contract_start_date",
         "contract_end_date",

@@ -64,8 +64,6 @@
   <div
   class="oh-wrapper"
   id="listContainer">
-  <div class="animated-background">
-  </div>
 </div>
 
 
@@ -158,10 +156,13 @@
         <form
           action="{%url 'employee-export' %}"
           method="get"
-          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+          onsubmit="event.stopPropagation();
+            $(this).find('[name=instance_ids]').val($('#selectedInstances').attr('data-ids') || '[]');
+            $(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
           id="employeeExportForm"
         >
-          {% csrf_token %} {% include 'cbv/employees_view/employee_export.html' %}
+          {% csrf_token %}
+          {% include 'cbv/employees_view/employee_export.html' %}
 
 
         </form>

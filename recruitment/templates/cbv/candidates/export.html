@@ -10,10 +10,13 @@
         <form
             action="{%url 'candidate-info-export' %}"
             method="get"
-            onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show')"
+            onsubmit="event.stopPropagation();
+                $(this).find('[name=instance_ids]').val($('#selectedInstances').attr('data-ids') || '[]');
+                $(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show')"
             id="candidateExportForm"
         >
             {% csrf_token %}
+            <input type="hidden" name="instance_ids">
             {% include 'candidate/export_filter.html' with embedded=True %}
             <div class="oh-dropdown__filter-footer">
                 <button class="oh-btn oh-btn--secondary oh-btn--small w-100">

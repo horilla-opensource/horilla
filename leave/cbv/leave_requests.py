@@ -54,6 +54,8 @@ class LeaveRequestsListView(HorillaListView):
     Lits view of the page
     """
 
+    quick_export = False
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("request-filter")

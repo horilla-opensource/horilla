@@ -5,6 +5,7 @@ accessibility/filters.py
 from functools import reduce
 
 import django_filters
+from django.contrib.auth.models import Permission
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
@@ -45,6 +46,10 @@ class AccessibilityFilter(HorillaFilterSet):
     excluded_employees = django_filters.ModelMultipleChoiceFilter(
         queryset=Employee.objects.all(),
         label=_("Exclude Employees"),
+    )
+    employee_user_id__user_permissions = django_filters.ModelMultipleChoiceFilter(
+        queryset=Permission.objects.select_related("content_type").all(),
+        label=_("Permissions"),
     )
 
     verbose_name = {

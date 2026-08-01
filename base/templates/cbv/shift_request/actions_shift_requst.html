@@ -36,6 +36,38 @@
                             name="trash-outline"></ion-icon></button>
                 {% endif %}
             {% endif %}
+
+            {% if perms.base.change_shiftrequest or can_manage %}
+                {% if instance.approved or instance.canceled %}
+                    <a href="#" class="oh-btn oh-btn--success oh-btn--disabled oh-btn--sq-sm" title="{% trans 'Approve' %}">
+                        <ion-icon name="checkmark-outline"></ion-icon>
+                    </a>
+                {% else %}
+                    <a
+                        onclick="shiftRequestRowApprove('{% url 'shift-request-approve' instance.id %}', '{% trans 'Do you want to approve this request?' %}')"
+                        class="oh-btn oh-btn--success oh-btn--sq-sm"
+                        style="cursor:pointer;"
+                        title="{% trans 'Approve' %}"
+                    >
+                        <ion-icon name="checkmark-outline"></ion-icon>
+                    </a>
+                {% endif %}
+
+                {% if instance.canceled %}
+                    <a href="#" class="oh-btn oh-btn--danger oh-btn--disabled oh-btn--sq-sm" title="{% trans 'Reject' %}">
+                        <ion-icon name="close-circle-outline"></ion-icon>
+                    </a>
+                {% else %}
+                    <a
+                        onclick="shiftRequestRowApprove('{% url 'shift-request-cancel' instance.id %}', '{% trans 'Do you want to reject this request?' %}')"
+                        class="oh-btn oh-btn--danger oh-btn--sq-sm"
+                        style="cursor:pointer;"
+                        title="{% trans 'Reject' %}"
+                    >
+                        <ion-icon name="close-circle-outline"></ion-icon>
+                    </a>
+                {% endif %}
+            {% endif %}
         </div>
     {% endif %}
 {% endwith %}

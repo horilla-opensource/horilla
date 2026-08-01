@@ -23,7 +23,7 @@ def get_horilla_model_class(app_label, model):
         Model: The Django model class corresponding to the specified app label and model name.
 
     """
-    content_type = ContentType.objects.get(app_label=app_label, model=model)
+    content_type = ContentType.objects.get_by_natural_key(app_label, model)
     model_class = content_type.model_class()
     return model_class
 

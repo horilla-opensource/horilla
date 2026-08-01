@@ -146,7 +146,9 @@
                     <form
                         action="{%url 'payslip-info-export' %}"
                         method="get"
-                        onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show')"
+                        onsubmit="event.stopPropagation();
+                            $(this).find('[name=instance_ids]').val($('#selectedInstances').attr('data-ids') || '[]');
+                            $(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show')"
                         id="payslipExportForm"
                     >
                         {% csrf_token %}

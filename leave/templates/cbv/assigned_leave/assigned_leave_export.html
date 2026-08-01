@@ -11,11 +11,14 @@
     <form
         action="{%url 'assigned-leaves-info-export' %}"
         method="get"
-        onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show')"
+        onsubmit="event.stopPropagation();
+            $(this).find('[name=instance_ids]').val($('#selectedInstances').attr('data-ids') || '[]');
+            $(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show')"
         id="assignedLeavesExportForm"
         class="oh-profile-section"
     >
         {% csrf_token %}
+        <input type="hidden" name="instance_ids">
         <div class="oh-dropdown__filter-body">
             <div class="oh-accordion">
                 <div class="oh-accordion-header">{% trans "Excel columns" %}</div>

@@ -117,6 +117,11 @@ class EmployeesList(HorillaListView):
     model = Employee
     filter_class = EmployeeFilter
     view_id = "view-container"
+    # The "Actions" dropdown already has an Export entry that exports the
+    # selected employees (falling back to the full filtered list when nothing
+    # is selected), so this standalone quick-action button would just be a
+    # second, redundant way to do the same thing.
+    quick_export = False
     bulk_template = "cbv/employees_view/bulk_update_page.html"
     bulk_update_fields = [
         "experience",
@@ -594,7 +599,24 @@ class EmployeeNav(HorillaNavView):
         else:
             self.actions = None
 
-        self.view_types = []
+        self.view_types = [
+            {
+                "type": "list",
+                "icon": "list-outline",
+                "url": reverse("employees-list"),
+                "attrs": f"""
+                            title ='{_("List")}'
+                            """,
+            },
+            {
+                "type": "card",
+                "icon": "grid-outline",
+                "url": reverse("employees-card"),
+                "attrs": f"""
+                          title ='{_("Card")}'
+                          """,
+            },
+        ]
 
     nav_title = _("Employees")
     filter_body_template = "cbv/employees_view/filter_employee.html"

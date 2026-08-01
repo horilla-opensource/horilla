@@ -150,6 +150,7 @@ class ProjectsList(HorillaListView):
 
     model = Project
     filter_class = ProjectFilter
+    quick_export = False
 
     def get_queryset(self):
         queryset = super().get_queryset()

@@ -50,6 +50,7 @@ class GeneralParent(HorillaListView):
     """
 
     template_name = "cbv/rotating_work_type/extended_rotating_work.html"
+    quick_export = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

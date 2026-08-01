@@ -4,6 +4,8 @@ component_views.py
 This module is used to write methods to the component_urls patterns respectively
 """
 
+import ast
+import contextlib
 import json
 import math
 import operator
@@ -1301,11 +1303,25 @@ def payslip_export(request):
     selected_fields = request.GET.getlist("selected_fields")
     form = forms.PayslipExportColumnForm()
 
+    # Rows selected in the list view take priority over whatever's left in
+    # the filter fields - same convention as the other export flows. Guarded
+    # separately from the "ids" fallback below so one doesn't clobber the
+    # other when selected_fields is also empty.
+    instance_ids = request.GET.get("instance_ids")
+    has_instance_ids = False
+    if instance_ids:
+        with contextlib.suppress(ValueError, SyntaxError):
+            instance_ids = ast.literal_eval(instance_ids)
+            if instance_ids:
+                payslips = Payslip.objects.filter(pk__in=instance_ids)
+                has_instance_ids = True
+
     if not selected_fields:
         selected_fields = form.fields["selected_fields"].initial
-        ids = request.GET.get("ids", "[]")
-        id_list = json.loads(ids)
-        payslips = Payslip.objects.filter(id__in=id_list)
+        if not has_instance_ids:
+            ids = request.GET.get("ids", "[]")
+            id_list = json.loads(ids)
+            payslips = Payslip.objects.filter(id__in=id_list)
 
     for field in forms.excel_columns:
         value = field[0]

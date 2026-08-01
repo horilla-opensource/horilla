@@ -64,6 +64,7 @@ class PayslipList(HorillaListView):
     """
 
     selected_instances_key_id = "selectedInstances"
+    quick_export = False
     bulk_update_fields = [
         "status",
         "start_date",

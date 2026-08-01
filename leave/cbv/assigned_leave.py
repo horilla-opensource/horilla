@@ -51,6 +51,7 @@ class AssignedleaveList(HorillaListView):
 
     model = AvailableLeave
     filter_class = AssignedLeaveFilter
+    quick_export = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

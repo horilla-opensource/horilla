@@ -61,6 +61,24 @@ function refreshShiftRequestList() {
         }
     };
 
+    // "/shift-request-tab/" is the standalone Shift Request page's own tab
+    // endpoint. This script is also loaded on pages that embed the shift
+    // request list elsewhere (e.g. the "Work Requests" page at
+    // /employee/requests/, whose tab endpoint is
+    // /employee/requests/shift-request-tab/) - hitting the hardcoded
+    // absolute URL there replaced #listContainer with the wrong (unrelated,
+    // always-empty) tab markup and broke the view. The list itself already
+    // renders a hidden "reload-record" button whose hx-get is baked in with
+    // the correct current request.path, so reuse that instead of guessing
+    // the endpoint - it reloads just the list, which is all a single
+    // approve/reject/delete actually needs to refresh.
+    var $reloadBtn = $("#listContainer .reload-record").first();
+    if ($reloadBtn.length) {
+        $reloadBtn.one("htmx:afterRequest", doneMessages);
+        $reloadBtn.trigger("click");
+        return;
+    }
+
     if (typeof htmx !== "undefined" && typeof htmx.ajax === "function") {
         htmx
             .ajax("GET", "/list-shift-request/", {

@@ -36,6 +36,8 @@ class AttendanceActivityListView(HorillaListView):
     list view of the page
     """
 
+    quick_export = False
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("attendance-activity-search")

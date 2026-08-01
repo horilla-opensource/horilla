@@ -1,5 +1,6 @@
 import ast
 import calendar
+import contextlib
 import json
 import os
 import random
@@ -933,13 +934,29 @@ def export_data(request, model, form_class, filter_class, file_name, perm=None):
     export_objects = filter_class(request.GET).qs
     if perm:
         export_objects = filtersubordinates(request, export_objects, perm)
+
+    # If the caller selected specific rows in the list view (instance_ids),
+    # export exactly those - not whatever the filter fields happen to match -
+    # same convention as the standalone quick-export button and the Employee
+    # export flow. No selection falls back to the filtered queryset above,
+    # unchanged.
+    instance_ids = request.GET.get("instance_ids")
+    has_instance_ids = False
+    if instance_ids:
+        with contextlib.suppress(ValueError, SyntaxError):
+            instance_ids = ast.literal_eval(instance_ids)
+            if instance_ids:
+                export_objects = model.objects.filter(pk__in=instance_ids)
+                has_instance_ids = True
+
     selected_fields = request.GET.getlist("selected_fields")
 
     if not selected_fields:
         selected_fields = form.fields["selected_fields"].initial
-        ids = request.GET.get("ids", "[]")
-        id_list = json.loads(ids)
-        export_objects = model.objects.filter(id__in=id_list)
+        if not has_instance_ids:
+            ids = request.GET.get("ids", "[]")
+            id_list = json.loads(ids)
+            export_objects = model.objects.filter(id__in=id_list)
 
     for field in form.fields["selected_fields"].choices:
         value = field[0]
@@ -1021,6 +1038,10 @@ def reload_queryset(fields):
                 field.queryset = model.objects.all()
         elif (filters := model_filters.get(model_name)) is not None:
             field.queryset = model.objects.filter(**filters)
+        elif model_name == "Permission":
+            # Rendering permission choices calls str(permission), which touches
+            # content_type; without select_related that's one query per permission.
+            field.queryset = model.objects.select_related("content_type").all()
         else:
             field.queryset = model.objects.all()
 

@@ -76,7 +76,9 @@
                         action="{% url 'attendance-account-info-export' %}"
                         id="hourAccountExportModalBody"
                         method="get"
-                        onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show')"
+                        onsubmit="event.stopPropagation();
+                            $(this).find('[name=instance_ids]').val($('#selectedInstances').attr('data-ids') || '[]');
+                            $(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show')"
                     >
                     </form>
                 </div>

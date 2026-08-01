@@ -47,6 +47,8 @@ class RotatingShiftListParent(HorillaListView):
     Parent class
     """
 
+    quick_export = False
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("rotating-shift-request-list")

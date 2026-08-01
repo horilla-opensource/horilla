@@ -46,6 +46,7 @@ class HolidayListView(HorillaListView):
 
     filter_class = HolidayFilter
     model = Holidays
+    quick_export = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

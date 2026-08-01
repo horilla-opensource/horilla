@@ -48,6 +48,7 @@ class LateComeAndEarlyOutList(HorillaListView):
     """
 
     filter_keys_to_remove = ["late_early_id"]
+    quick_export = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

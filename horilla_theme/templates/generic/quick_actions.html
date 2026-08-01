@@ -9,32 +9,8 @@
 <div class="flex flex-wrap justify-between items-center gap-2 mb-2 {{ margin_class|default:'ml-2 mr-2' }} {{ extra_class|default:'' }}">
     {% if bulk_select_option %}
     <div class="flex flex-nowrap gap-1 items-center flex-shrink-0">
-        {% if not hide_select %}
-            <button
-                class="quick-bulk-action px-4 py-2 bg-primary-600 text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
-                onclick="addToSelectedId({{ select_all_ids|safe }},'{{ selected_instances_key_id }}');
-            selectSelected('#{{ root_view_id|default:view_id|safe }}','{{ selected_instances_key_id }}');
-            reloadSelectedCount($('#count_{{ view_id|safe }}'),'{{ selected_instances_key_id }}');
-            reloadSelectedCount($('.count_{{ view_id|safe }}'),'{{ selected_instances_key_id }}')"
-            >
-                <span class="label">{% trans 'Select' %}</span>
-                ({{ queryset.paginator.count }})
-            </button>
-        {% elif group_select %}
-            <button
-                class="quick-bulk-action px-4 py-2 bg-primary-600 text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
-                onclick="addToSelectedId({{ select_all_ids|default:'[]'|safe }},'{{ selected_instances_key_id }}');
-            selectSelected('#{{ root_view_id|default:view_id|safe }}','{{ selected_instances_key_id }}');
-            reloadSelectedCount($('#count_{{ view_id|safe }}'),'{{ selected_instances_key_id }}');
-            reloadSelectedCount($('.count_{{ view_id|safe }}'),'{{ selected_instances_key_id }}')"
-            >
-                <span class="label">{% trans 'Select' %}</span>
-                ({{ queryset.paginator.count }})
-            </button>
-        {% endif %}
-
         <button
-            class="d-none quick-bulk-action px-4 py-2 bg-[#720c80] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
+            class="d-none quick-bulk-action px-4 py-2 bg-transparent border border-secondary-700 text-secondary-700 rounded-md text-xs hover:bg-secondary-700 hover:text-white transition duration-300"
             id="unselect_{{ view_id }}"
             onclick="clearSelection('{{ selected_instances_key_id }}');
         selectSelected('#{{ root_view_id|default:view_id|safe }}','{{ selected_instances_key_id }}');
@@ -48,10 +24,38 @@
             <span class="label">{% trans 'Unselect' %}</span>
             (<span id="count_{{ view_id }}">0</span>)
         </button>
+
+        {% if not hide_select %}
+            <button
+                id="select_{{ view_id }}"
+                data-total-count="{{ queryset.paginator.count }}"
+                class="quick-bulk-action px-4 py-2 bg-transparent border border-primary-600 text-primary-600 rounded-md text-xs hover:bg-primary-600 hover:text-white transition duration-300"
+                onclick="addToSelectedId({{ select_all_ids|safe }},'{{ selected_instances_key_id }}');
+            selectSelected('#{{ root_view_id|default:view_id|safe }}','{{ selected_instances_key_id }}');
+            reloadSelectedCount($('#count_{{ view_id|safe }}'),'{{ selected_instances_key_id }}');
+            reloadSelectedCount($('.count_{{ view_id|safe }}'),'{{ selected_instances_key_id }}')"
+            >
+                <span class="label">{% trans 'Select' %}</span>
+                ({{ queryset.paginator.count }})
+            </button>
+        {% elif group_select %}
+            <button
+                id="select_{{ view_id }}"
+                data-total-count="{{ queryset.paginator.count }}"
+                class="quick-bulk-action px-4 py-2 bg-transparent border border-primary-600 text-primary-600 rounded-md text-xs hover:bg-primary-600 hover:text-white transition duration-300"
+                onclick="addToSelectedId({{ select_all_ids|default:'[]'|safe }},'{{ selected_instances_key_id }}');
+            selectSelected('#{{ root_view_id|default:view_id|safe }}','{{ selected_instances_key_id }}');
+            reloadSelectedCount($('#count_{{ view_id|safe }}'),'{{ selected_instances_key_id }}');
+            reloadSelectedCount($('.count_{{ view_id|safe }}'),'{{ selected_instances_key_id }}')"
+            >
+                <span class="label">{% trans 'Select' %}</span>
+                ({{ queryset.paginator.count }})
+            </button>
+        {% endif %}
         {% if quick_export %}
             <button
                 id="export_{{ view_id }}"
-                class="d-none quick-bulk-action px-4 py-2 bg-[#15159e] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
+                class="d-none quick-bulk-action px-4 py-2 bg-transparent border border-secondary-700 text-secondary-700 rounded-md text-xs hover:bg-secondary-700 hover:text-white transition duration-300"
                 data-toggle="oh-modal-toggle"
                 data-target="#exportFields{{ view_id|safe }}"
             >
@@ -62,7 +66,7 @@
         {% if bulk_path and bulk_update %}
             <button
                 id="bulk_udate_{{ view_id }}"
-                class="d-none quick-bulk-action px-4 py-2 bg-[#0f800f] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
+                class="d-none quick-bulk-action px-4 py-2 bg-transparent border border-success text-success rounded-md text-xs hover:bg-success hover:text-white transition duration-300"
                 data-toggle="oh-modal-toggle"
                 data-target="#bulkUpdateModal{{ view_id|safe }}"
                 onclick="ids = $('#{{ selected_instances_key_id }}').attr('data-ids')
