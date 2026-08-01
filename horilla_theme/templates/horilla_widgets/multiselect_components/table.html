@@ -202,6 +202,7 @@
     				)
     			);
     		});
+    		$("#{{section_id}} #avatarsWrapper{{section_id}}").toggleClass("oh-hidden-flex", instanceData.length === 0);
     	});
 
     	$("#{{section_id}} #selectAllInstances").click(function (e) {
@@ -252,6 +253,7 @@
     			$(rowId).addClass("oh-sticky-table__tr--selected");
     			$(rowId).find("[type=checkbox]").prop("checked", true);
     		});
+    		$("#{{section_id}} #avatarsWrapper{{section_id}}").toggleClass("oh-hidden-flex", selectedOptions.length === 0);
     	});
     	{% if initial %}
     		$('#{{section_id}} #selectContainer{{self.attrs.id}}').find("[name={{field_name}}]").val({{initial|safe}}).change()

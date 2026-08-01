@@ -135,8 +135,11 @@
             border-radius: 6px;
             background-color: #888;
         }
+        .oh-hidden-flex {
+            display: none !important;
+        }
     </style>
-    <div id="selectContainer{{self.attrs.id}}">
+    <div id="selectContainer{{self.attrs.id}}" style="position: relative;">
         <select
             name="{{field_name}}"
             id="{{self.attrs.id}}"
@@ -150,24 +153,20 @@
                 <option value="{{instance.id}}">{{ instance }}</option>
             {% endfor %}
         </select>
-    </div>
-    <!-- custom scroll/ horizontal scroll section -->
-    <div class="d-flex justify-content-between custom-scroll">
-        <div class="avatars" id="avatarsContainer"></div>
-    </div>
-    <span
-        style="cursor: pointer; padding: 10px; display: flex; justify-content: right"
-        class="text-primary-600"
-    >
         <span
             data-toggle="oh-modal-toggle"
             data-target="#filterChoose{{section_id}}"
             title="Filter and Choose {{field.label}}"
-            style="justify-content: right; align-items: center; display: flex; width: 50px; font-size: 0.75rem"
+            class="text-primary-600"
+            style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); z-index: 5; cursor: pointer; display: flex; align-items: center; font-size: 0.75rem;"
         >
             <ion-icon name="filter-circle"></ion-icon> {% trans "Filter" %}
         </span>
-    </span>
+    </div>
+    <!-- custom scroll/ horizontal scroll section: shown only once employees are selected -->
+    <div class="d-flex justify-content-between custom-scroll oh-hidden-flex" id="avatarsWrapper{{section_id}}">
+        <div class="avatars" id="avatarsContainer"></div>
+    </div>
     <div
         class="oh-modal"
         id="filterChoose{{section_id}}"

@@ -744,11 +744,11 @@ class UserLeaveRequestCreationForm(BaseModelForm):
         fields = [
             "leave_type_id",
             "employee_id",
-            "attachment",
             "start_date",
             "start_date_breakdown",
             "end_date",
             "end_date_breakdown",
+            "attachment",
             "description",
             "requested_days",
         ]
