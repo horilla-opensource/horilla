@@ -134,7 +134,7 @@ class DepartmentNavView(HorillaNavView):
                                 hx-get="{reverse('settings-department-creation')}"
                                 """
 
-    nav_title = _("Department")
+    nav_title = _("Departments")
     search_swap_target = "#listContainer"
     filter_instance = DepartmentViewFilter()
 

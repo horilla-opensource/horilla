@@ -93,7 +93,7 @@ class AutomationNavView(views.HorillaNavView):
                 }
             )
 
-    nav_title = _("Mail Automation")
+    nav_title = _("Mail Automations")
     search_url = reverse_lazy("mail-automations-list-view")
     search_swap_target = "#listContainer"
     template_name = "generic/inline_nav.html"

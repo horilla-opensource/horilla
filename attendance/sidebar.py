@@ -172,7 +172,7 @@ class AttendanceSettings:
     condition = lambda self, request: apps.is_installed("attendance")
     items = [
         {
-            "label": _("Attendance Rule"),
+            "label": _("Attendance Rules"),
             "url": reverse_lazy("attendance-rule-view"),
             "accessibility": attendance_rule_accessibility,
             "search_entries": [

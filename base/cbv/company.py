@@ -147,7 +147,7 @@ class CompanyNavView(HorillaNavView):
                                 hx-get="{reverse('company-create-form')}"
                                 """
 
-    nav_title = _("Company")
+    nav_title = _("Companies")
     search_swap_target = "#listContainer"
     filter_instance = CompanyFilter()
 

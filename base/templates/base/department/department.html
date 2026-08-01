@@ -9,7 +9,7 @@
         {% if perms.base.view_department %}
             <div hx-get="{% url 'department-nav' %}" hx-trigger="load"></div>
             {% comment %} <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
-            <h2 class="oh-inner-sidebar-content__title">{% trans "Department" %}</h2>
+            <h2 class="oh-inner-sidebar-content__title">{% trans "Departments" %}</h2>
             {% if perms.base.add_department %}
                 <button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
                     data-target="#objectCreateModal" hx-get="{% url 'department-creation' %}"

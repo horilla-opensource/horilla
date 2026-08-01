@@ -62,7 +62,7 @@ class JobRoleNav(HorillaNavView):
     Nav bar
     """
 
-    nav_title = _("Job Role")
+    nav_title = _("Job Roles")
     filter_instance = JobRoleFilter()
     search_swap_target = "#listContainer"
 

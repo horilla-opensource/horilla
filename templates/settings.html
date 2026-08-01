@@ -120,7 +120,7 @@
                                                             id="employeePermission"
                                                             href="{% url 'employee-permission-assign' %}"
                                                             class="oh-inner-sidebar__link oh-dropdown__link"
-                                                        >{% trans "Employee Permission" %}</a>
+                                                        >{% trans "Employee Permissions" %}</a>
                                                     {% endif %}
                                                 </div>
                                                 <div class="oh-input-group">
@@ -129,7 +129,7 @@
                                                             id="defaultAccessibility"
                                                             href="{% url 'user-accessibility' %}"
                                                             class="oh-inner-sidebar__link oh-dropdown__link"
-                                                        >{% trans "Accessibility Restriction" %}</a>
+                                                        >{% trans "Accessibility Restrictions" %}</a>
                                                     {% endif %}
                                                 </div>
                                                 <div class="oh-input-group">
@@ -138,7 +138,7 @@
                                                             id="userGroup"
                                                             href="{% url 'user-group-view' %}"
                                                             class="oh-inner-sidebar__link oh-dropdown__link"
-                                                        >{% trans "User Group" %}</a>
+                                                        >{% trans "User Groups" %}</a>
                                                     {% endif %}
                                                 </div>
                                                 <div class="oh-input-group">
@@ -174,7 +174,7 @@
                                                             id="date"
                                                             href="{% url 'mail-server-conf' %}"
                                                             class="oh-inner-sidebar__link oh-dropdown__link"
-                                                        >{% trans "Mail Server" %}</a>
+                                                        >{% trans "Mail Servers" %}</a>
                                                     </div>
                                                 {% elif perms.base.view_dynamicemailconfiguration and "outlook_auth"|app_installed %}
                                                     <div class="oh-input-group">
@@ -232,7 +232,7 @@
                                                             id="department"
                                                             href="{% url 'department-view' %}"
                                                             class="oh-inner-sidebar__link oh-dropdown__link"
-                                                        >{% trans "Department" %}</a>
+                                                        >{% trans "Departments" %}</a>
                                                     {% endif %}
                                                 </div>
                                                 <div class="oh-input-group">
@@ -250,7 +250,7 @@
                                                             id="jobRole"
                                                             href="{% url 'job-role-view' %}"
                                                             class="oh-inner-sidebar__link oh-dropdown__link"
-                                                        >{% trans "Job Role" %}</a>
+                                                        >{% trans "Job Roles" %}</a>
                                                     {% endif %}
                                                 </div>
                                                 <div class="oh-input-group">
@@ -259,7 +259,7 @@
                                                             id="company"
                                                             href="{% url 'company-view' %}"
                                                             class="oh-inner-sidebar__link oh-dropdown__link"
-                                                        >{% trans "Company" %}</a>
+                                                        >{% trans "Companies" %}</a>
                                                     {% endif %}
                                                 </div>
                                             </div>

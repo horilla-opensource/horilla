@@ -239,12 +239,12 @@ class GeneralSettings:
             ],
         },
         {
-            "label": _("Accessibility Restriction"),
+            "label": _("Accessibility Restrictions"),
             "url": reverse_lazy("user-accessibility"),
             "accessibility": accessibility_restriction_accessibility,
             "search_entries": [
                 {
-                    "text": _("Accessibility Restriction"),
+                    "text": _("Accessibility Restrictions"),
                     "description": _(
                         "Control which user roles can see which menu items"
                     ),
@@ -265,12 +265,12 @@ class GeneralSettings:
             ],
         },
         {
-            "label": _("Employee Permission"),
+            "label": _("Employee Permissions"),
             "url": reverse_lazy("employee-permission-assign"),
             "accessibility": employee_permission_accessibility,
             "search_entries": [
                 {
-                    "text": _("Employee Permission"),
+                    "text": _("Employee Permissions"),
                     "description": _(
                         "Assign individual Django permissions to employees"
                     ),
@@ -284,12 +284,12 @@ class GeneralSettings:
             ],
         },
         {
-            "label": _("User Group"),
+            "label": _("User Groups"),
             "url": reverse_lazy("user-group-view"),
             "accessibility": user_group_accessibility,
             "search_entries": [
                 {
-                    "text": _("User Group"),
+                    "text": _("User Groups"),
                     "description": _("Create and manage Django permission groups"),
                 },
                 {
@@ -356,7 +356,7 @@ class BaseSettings:
     order = 2
     items = [
         {
-            "label": _("Company"),
+            "label": _("Companies"),
             "url": reverse_lazy("company-view"),
             "accessibility": company_accessibility,
             "search_entries": [
@@ -379,11 +379,11 @@ class BaseSettings:
             ],
         },
         {
-            "label": _("Department"),
+            "label": _("Departments"),
             "url": reverse_lazy("department-view"),
             "accessibility": department_accessibility,
             "search_entries": [
-                {"text": _("Department"), "description": _("Name of the department")},
+                {"text": _("Departments"), "description": _("Name of the department")},
                 {
                     "text": _("Department Manager"),
                     "description": _("Manager assigned to the department"),
@@ -402,11 +402,11 @@ class BaseSettings:
             ],
         },
         {
-            "label": _("Job Role"),
+            "label": _("Job Roles"),
             "url": reverse_lazy("job-role-view"),
             "accessibility": job_role_accessibility,
             "search_entries": [
-                {"text": _("Job Role"), "description": _("Name of the job role")},
+                {"text": _("Job Roles"), "description": _("Name of the job role")},
             ],
         },
         {
@@ -453,7 +453,7 @@ class MailSettings:
     order = 3
     items = [
         {
-            "label": _("Mail Server"),
+            "label": _("Mail Servers"),
             "url": reverse_lazy("mail-server-conf"),
             "accessibility": mail_server_accessibility,
             "search_entries": [
@@ -504,12 +504,12 @@ class MailSettings:
             ],
         },
         {
-            "label": _("Mail Template"),
+            "label": _("Mail Templates"),
             "url": reverse_lazy("mail-templates-view"),
             "accessibility": mail_template_accessibility,
             "search_entries": [
                 {
-                    "text": _("Mail Template"),
+                    "text": _("Mail Templates"),
                     "description": _("Create reusable email body templates"),
                 },
                 {"text": _("Template Title"), "description": _("Name of the template")},
@@ -520,12 +520,12 @@ class MailSettings:
             ],
         },
         {
-            "label": _("Mail Automation"),
+            "label": _("Mail Automations"),
             "url": reverse_lazy("mail-automations-view"),
             "accessibility": mail_automation_accessibility,
             "search_entries": [
                 {
-                    "text": _("Mail Automation"),
+                    "text": _("Mail Automations"),
                     "description": _("Trigger automated emails on model events"),
                 },
                 {
