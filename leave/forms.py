@@ -590,11 +590,11 @@ class UserLeaveRequestForm(BaseModelForm):
         fields = [
             "employee_id",
             "leave_type_id",
+            "attachment",
             "start_date",
             "start_date_breakdown",
             "end_date",
             "end_date_breakdown",
-            "attachment",
             "description",
         ]
         widgets = {
@@ -715,11 +715,11 @@ class UserLeaveRequestCreationForm(BaseModelForm):
         fields = [
             "leave_type_id",
             "employee_id",
+            "attachment",
             "start_date",
             "start_date_breakdown",
             "end_date",
             "end_date_breakdown",
-            "attachment",
             "description",
             "requested_days",
         ]
