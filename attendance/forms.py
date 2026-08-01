@@ -668,11 +668,11 @@ class AttendanceRequestForm(BaseModelForm):
         fields = [
             "attendance_date",
             "shift_id",
-            "work_type_id",
             "attendance_clock_in_date",
             "attendance_clock_in",
             "attendance_clock_out_date",
             "attendance_clock_out",
+            "work_type_id",
             "attendance_worked_hour",
             "minimum_hour",
             "request_description",
