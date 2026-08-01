@@ -136,22 +136,71 @@
                     </div>
                 </div>
 
-                <!-- Export Button -->
+                <!-- Export Button: a dropdown so the user picks a format
+                     (PDF/Excel/CSV) instead of always getting Excel. -->
                 {% if export_access %}
-                <button id="export-btn" class="oh-btn oh-btn--secondary" style="margin-top: 10px">
-                    <ion-icon
-                        name="download-outline"
-                        class="mr-1 md hydrated"
-                        role="img"
-                        aria-label="{% trans 'Download' %}"
-                    ></ion-icon>
-                    {% trans "Export Table" %}
-                </button>
+                <div id="exportDropdown" class="oh-dropdown" x-data="{open: false}" style="margin-top: 10px;">
+                    <button
+                        id="export-btn"
+                        type="button"
+                        class="oh-btn oh-btn--secondary"
+                        @click="open = !open"
+                    >
+                        <ion-icon
+                            name="download-outline"
+                            class="mr-1 md hydrated"
+                            role="img"
+                            aria-label="{% trans 'Download' %}"
+                        ></ion-icon>
+                        {% trans "Export Table" %}
+                    </button>
+                    <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right p-2"
+                        x-show="open"
+                        @click.outside="open = false"
+                        style="display: none; width: 170px;"
+                    >
+                        <a href="#" class="oh-export-option" data-format="pdf">
+                            <ion-icon name="document-text-outline"></ion-icon>{% trans "As PDF" %}
+                        </a>
+                        <a href="#" class="oh-export-option" data-format="excel">
+                            <ion-icon name="grid-outline"></ion-icon>{% trans "As Excel" %}
+                        </a>
+                        <a href="#" class="oh-export-option" data-format="csv">
+                            <ion-icon name="document-outline"></ion-icon>{% trans "As CSV" %}
+                        </a>
+                    </div>
+                </div>
                 {% endif %}
             </div>
         </div>
 
+        <!-- Page-level applied filters, mirroring the ones inside the
+             Filter dropdown above -- shown here so active filters are
+             visible at a glance without having to open that dropdown.
+             renderAppliedFilterChips() keeps both copies in sync. -->
+        <div id="pageAppliedFiltersSection" class="oh-applied-filters oh-page-applied-filters" style="display: none;">
+            <div class="oh-applied-filters__header">
+                <button
+                    type="button"
+                    id="pageClearAllFiltersBtn"
+                    class="oh-btn oh-btn--light-danger oh-btn--small"
+                >
+                    {% trans "Clear All" %}
+                </button>
+            </div>
+            <div id="pageAppliedFilterChips" class="oh-applied-filters__chips"></div>
+        </div>
+
         <!-- Pivot Container -->
+        <!-- The "Table"/renderer <select> normally sits wedged in the pivot
+             grid's top-left corner -- moved out to a plain standalone
+             control up here instead (see relocateRendererSelect() in the
+             script below), so it reads as a page-level "view as" setting
+             rather than one more cramped field inside the builder grid. -->
+        <div id="oh-report-view-slot" class="oh-report-view-slot">
+            <label>{% trans "View As" %}</label>
+        </div>
         <p class="oh-report-drag-hint">{% trans "Drag fields between the boxes below to change how this report is grouped." %}</p>
         <div id="pivot-container" class="mb-5" style="width: 100%; overflow-x: auto"></div>
     </div>
@@ -181,6 +230,28 @@
         }
 
         .oh-report-template-item + .oh-report-template-item {
+            margin-top: 2px;
+        }
+
+        .oh-export-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            color: #333333;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: background-color 0.15s ease;
+        }
+
+        .oh-export-option:hover {
+            background-color: #f4f5f7;
+            color: #333333;
+            text-decoration: none;
+        }
+
+        .oh-export-option + .oh-export-option {
             margin-top: 2px;
         }
 
@@ -259,6 +330,18 @@
            from instead of a connector between rows. */
         .oh-dynamic-filter-cell--connector {
             flex: 0 0 60px;
+        }
+
+        /* The first row has no connector (nothing above it to combine
+           with) -- previously hidden via display:none, which removes the
+           cell from the row's flex flow entirely and lets Field/Operator/
+           Value grow to fill the freed 60px+gap, making that row's fields
+           visibly wider than every row after it. visibility:hidden instead
+           keeps the same 60px slot reserved but invisible, so all rows
+           -- with or without a visible AND/OR pill -- line up identically. */
+        .oh-dynamic-filter-cell--connector.oh-connector-hidden {
+            visibility: hidden;
+            pointer-events: none;
         }
 
         .oh-filter-connector-pill {
@@ -409,6 +492,30 @@
             padding-top: 14px;
         }
 
+        /* The page-level copy sits directly under the button row rather
+           than inside the Filter dropdown panel, so it needs its own
+           bottom spacing before the next section (View As / pivot
+           container) instead of the dropdown copy's implicit spacing.
+           width:fit-content + margin-left:auto pulls the whole block over
+           to the right edge -- lining it up under the Filter/Templates/
+           Export Table buttons above it -- instead of stretching full
+           width from the page's left margin. */
+        .oh-page-applied-filters {
+            margin-bottom: 16px;
+            width: fit-content;
+            max-width: 100%;
+            margin-left: auto;
+        }
+
+        /* No "Applied Filters" heading here (unlike the dropdown copy) --
+           just Clear All, so the shared .oh-applied-filters__header
+           space-between (which needs 2 items to do anything) is overridden
+           to keep this lone button pinned to the right instead of
+           collapsing to the left edge. */
+        .oh-page-applied-filters .oh-applied-filters__header {
+            justify-content: flex-end;
+        }
+
         .oh-applied-filters__header {
             display: flex;
             align-items: center;
@@ -446,6 +553,235 @@
 
         .oh-applied-filter-chip__remove:hover {
             color: #a91d1d;
+        }
+
+        /* Available Fields / Columns / Rows fold-unfold, Odoo-Kanban-column
+           style -- the shared v1_styles.css label for these boxes is a
+           ::before pseudo element (can't be clicked), so a real header bar
+           is injected in JS (setupFieldsCollapse()) on every pivotUI render
+           and given a click handler here instead. */
+        #pivot-container .pvtAxisContainer.pvtUnused,
+        #pivot-container .pvtAxisContainer.pvtRows,
+        #pivot-container .pvtAxisContainer.pvtCols {
+            padding-top: 0 !important;
+        }
+
+        #pivot-container .pvtAxisContainer.pvtUnused::before,
+        #pivot-container .pvtAxisContainer.pvtRows::before,
+        #pivot-container .pvtAxisContainer.pvtCols::before {
+            content: none !important;
+        }
+
+        /* Darker text + an accent-colored icon at rest (not just on hover)
+           so these read as active, clickable controls rather than plain
+           section labels -- the previous very light gray (#9aa1ab) at 10px
+           was too low-contrast to read comfortably and gave no visual hint
+           that the row does anything. The icon uses the app's own brand
+           accent (hsl(8, 77%, 56%), same as the Templates/Export Table
+           buttons elsewhere on this page) so it's immediately recognizable
+           as an interactive affordance, not decoration. */
+        #pivot-container .oh-fields-toggle-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #4b5563;
+            padding: 7px 8px;
+            background-color: #f4f5f7;
+            border-bottom: 1px solid #e9edf1;
+            user-select: none;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        #pivot-container .oh-fields-toggle-header:hover {
+            color: #1f2937;
+            background-color: hsl(8, 77%, 56%, 0.1);
+        }
+
+        #pivot-container .oh-fields-toggle-icon {
+            flex-shrink: 0;
+            font-size: 15px;
+            color: hsl(8, 77%, 56%);
+            transition: transform 0.15s ease;
+        }
+
+        #pivot-container .oh-fields-toggle-header:hover .oh-fields-toggle-icon {
+            color: hsl(8, 77%, 48%);
+        }
+
+        /* Folded, vertical boxes (Available Fields / Columns): shrink to a
+           thin strip and hide everything except the header, whose label
+           rotates to read top-to-bottom -- the same "collapsed column"
+           look as an Odoo Kanban stage folded shut. */
+        #pivot-container .pvtAxisContainer.pvtUnused.oh-fields-collapsed,
+        #pivot-container .pvtAxisContainer.pvtRows.oh-columns-collapsed {
+            width: 28px !important;
+            min-width: 28px !important;
+            max-width: 28px !important;
+            overflow: hidden;
+            padding: 0 !important;
+        }
+
+        #pivot-container .pvtAxisContainer.pvtUnused.oh-fields-collapsed > *:not(.oh-fields-toggle-header),
+        #pivot-container .pvtAxisContainer.pvtRows.oh-columns-collapsed > *:not(.oh-fields-toggle-header),
+        #pivot-container .pvtAxisContainer.pvtCols.oh-rows-collapsed > *:not(.oh-fields-toggle-header) {
+            display: none !important;
+        }
+
+        /* The "Drag a field here" empty-state hint is a ::after pseudo
+           element on .pvtRows/.pvtCols themselves (not a real child), so
+           the rule above hiding children doesn't touch it -- suppressed
+           separately here or it would keep showing through the fold. */
+        #pivot-container .pvtAxisContainer.pvtRows.oh-columns-collapsed::after,
+        #pivot-container .pvtAxisContainer.pvtCols.oh-rows-collapsed::after {
+            content: none !important;
+        }
+
+        #pivot-container .pvtAxisContainer.pvtUnused.oh-fields-collapsed .oh-fields-toggle-header,
+        #pivot-container .pvtAxisContainer.pvtRows.oh-columns-collapsed .oh-fields-toggle-header {
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            height: 100%;
+            padding: 8px 0;
+        }
+
+        #pivot-container .pvtAxisContainer.pvtUnused.oh-fields-collapsed .oh-fields-toggle-label,
+        #pivot-container .pvtAxisContainer.pvtRows.oh-columns-collapsed .oh-fields-toggle-label {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            white-space: nowrap;
+            margin-top: 6px;
+        }
+
+        #pivot-container .pvtAxisContainer.pvtUnused.oh-fields-collapsed .oh-fields-toggle-icon,
+        #pivot-container .pvtAxisContainer.pvtRows.oh-columns-collapsed .oh-fields-toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Folded, horizontal box (Rows = .pvtCols, a horizontal pill list
+           above the table): shrinks HEIGHT instead of width -- it's a row,
+           not a column, so sideways text wouldn't read naturally. That
+           row's grid height is "auto" (not a fixed track), so hiding the
+           content is enough on its own to shrink it. */
+        #pivot-container .pvtAxisContainer.pvtCols.oh-rows-collapsed {
+            overflow: hidden;
+            padding: 0 !important;
+        }
+
+        #pivot-container .pvtAxisContainer.pvtCols.oh-rows-collapsed .oh-fields-toggle-header {
+            border-bottom: none;
+        }
+
+        /* Shrinking the .pvtUnused/.pvtRows CELLS above does nothing on
+           their own -- v1_styles.css turns .pvtUi into a CSS grid with FIXED
+           tracks (`grid-template-columns: 170px 170px 1fr`), so the column
+           TRACKS stay 170px wide regardless of the cells' own width, leaving
+           the reclaimed space as a dead gap instead of handing it to the
+           actual report table. Overriding the tracks themselves (via classes
+           on #pivot-container, which -- unlike .pvtUi -- survives every
+           pivotUI re-render) lets the 1fr renderer-area track absorb it.
+           All 4 combinations of the two independent folds are covered
+           explicitly since both share the same grid-template-columns
+           property (an !important shorthand can't be merged/added to).
+           Column 2 is also shared with the "Count"/aggregator picker in row
+           1 (.pvtVals) -- explicit fixed pixel tracks don't grow to fit
+           content, so shrinking column 2 alone would crush Count's own
+           select. Fixed below by permanently spanning Count's cell across
+           BOTH column 1 and 2 (see .pvtVals.pvtUiCell rule) so it always
+           renders at their combined width, in every fold combination --
+           down to a floor of 56px (28+28) when both are folded, which is
+           tight but enough for the short word "Count" itself; nothing else
+           ever occupies column 1 in row 1 (the renderer select that used to
+           live there was relocated out entirely, see .oh-report-view-slot
+           below), so the two cells can safely overlap in that region. */
+        #pivot-container.oh-fields-collapsed-container:not(.oh-columns-collapsed-container) .pvtUi {
+            grid-template-columns: 28px 170px 1fr !important;
+        }
+
+        #pivot-container.oh-columns-collapsed-container:not(.oh-fields-collapsed-container) .pvtUi {
+            grid-template-columns: 170px 28px 1fr !important;
+        }
+
+        #pivot-container.oh-fields-collapsed-container.oh-columns-collapsed-container .pvtUi {
+            grid-template-columns: 28px 28px 1fr !important;
+        }
+
+        /* Spans columns 1+2 (not just its native column 2) so Count's cell
+           is always sized to their full combined width, whatever that
+           happens to be after either/both folds shrink those tracks --
+           instead of anchoring/overflowing past a too-narrow single cell
+           (which broke down once both columns shrank to 28px each, pushing
+           Count's ~224px-wide select far enough left to run under the
+           fixed sidebar). Applies unconditionally (all fold states, not
+           just collapsed ones) since it's a strict improvement even in the
+           fully-open default layout, where Count previously overflowed
+           ~54px rightward into the Rows box next to it. */
+        #pivot-container .pvtVals.pvtUiCell {
+            grid-column: 1 / 3;
+            /* v1_styles.css sets a global `min-width: 170px` on this cell
+               (sized for the old un-spanned single-column layout) that would
+               otherwise force this cell wider than its actual 56px-110px
+               spanned track total once folded, undoing the whole point of
+               the span. Needs overriding here since it's the same
+               specificity otherwise (both are 2 classes, no id) and could
+               lose on source order alone. */
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            overflow: hidden;
+        }
+
+        /* min-width:0 lets the select shrink below its intrinsic content
+           width instead of forcing the flex item (and therefore the whole
+           cell) wider than the space actually available -- without it, a
+           <select> refuses to shrink past its own text/option width. */
+        #pivot-container .pvtVals.pvtUiCell select {
+            min-width: 0;
+        }
+
+        /* Once Columns folds down to 28px, even the shrunk-to-fit select
+           above only has room for 1-2 truncated letters, which reads as
+           broken rather than folded -- simplest fix is to just hide Count
+           entirely while Columns is folded, matching the empty look of the
+           other folded strips, rather than show an unreadable sliver.
+           display:none only hides it -- the select and its value/bindings
+           are untouched underneath, so it reappears exactly as it was the
+           moment Columns is unfolded again. */
+        #pivot-container.oh-columns-collapsed-container .pvtVals.pvtUiCell select {
+            display: none;
+        }
+
+        /* The renderer <select> that used to live in row 1's first cell
+           (the one sharing a column with Available Fields, which is what
+           forced the width/z-index/margin juggling this comment used to
+           document) has been relocated out of the grid entirely -- see
+           .oh-report-view-slot below -- so that whole conflict no longer
+           applies and the aggregator picker just keeps its normal width. */
+
+        .oh-report-view-slot {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .oh-report-view-slot label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        .oh-report-view-slot select.pvtRenderer {
+            width: 170px;
+            min-width: 170px;
+            max-width: 170px;
         }
     </style>
 
@@ -506,6 +842,9 @@
             // the new ones, making a loaded template look like it did nothing.
             $("#pivot-container").pivotUI(data, $.extend({}, config, {
                 onRefresh: function (refreshConfig) {
+                    setupFieldsCollapse();
+                    relocateRendererSelect();
+                    updateTotalsLabel(refreshConfig.aggregatorName);
                     var currentRenderer = refreshConfig.rendererName;
                     if (currentRenderer === "Table" || currentRenderer === "Table Barchart" ||
                         currentRenderer === "Heatmap" || currentRenderer === "Row Heatmap" || currentRenderer === "Col Heatmap") {
@@ -644,6 +983,115 @@
         $(this).find(".pvtTriangle").attr("title", "");
     });
 
+        // Available Fields / Columns / Rows fold/unfold (Odoo-Kanban-column
+        // style). PivotTable.js rebuilds each of these boxes' contents on
+        // every render (initial load, filter apply, template load, or just
+        // dragging a field between zones), wiping out anything injected into
+        // them -- so the real header bar has to be re-injected every time
+        // (called from each onRefresh), while the fold/unfold STATE lives
+        // here at module scope so it survives across those rebuilds instead
+        // of resetting each time.
+        // Available Fields starts folded -- it's just a picker most visits
+        // never touch, so folding it maximizes room for the table right
+        // away. Columns and Rows both start OPEN -- they shape the table's
+        // own structure, so hiding them by default would hide that.
+        var fieldsPanelCollapsed = true;
+        var columnsPanelCollapsed = false;
+        var rowsPanelCollapsed = false;
+
+        function applyFieldsCollapsedState() {
+            $("#pivot-container .pvtAxisContainer.pvtUnused").toggleClass("oh-fields-collapsed", fieldsPanelCollapsed);
+            // .pvtUnused shrinking doesn't free up any space on its own --
+            // .pvtUi is a CSS grid with a fixed column track, so the actual
+            // track width has to be overridden separately (see CSS above).
+            $("#pivot-container").toggleClass("oh-fields-collapsed-container", fieldsPanelCollapsed);
+
+            // Columns (.pvtRows) shares its grid column with the Count/
+            // aggregator select in row 1 -- Count's own CSS (see above)
+            // spans both columns and shrinks to fit unconditionally, so
+            // this track override is safe in every combination without
+            // moving or resizing Count's actual DOM/bindings.
+            $("#pivot-container .pvtAxisContainer.pvtRows").toggleClass("oh-columns-collapsed", columnsPanelCollapsed);
+            $("#pivot-container").toggleClass("oh-columns-collapsed-container", columnsPanelCollapsed);
+
+            // Rows (.pvtCols) sits in its own grid row (height "auto", not
+            // shared with anything else), so folding it just needs its
+            // content hidden -- no track override needed.
+            $("#pivot-container .pvtAxisContainer.pvtCols").toggleClass("oh-rows-collapsed", rowsPanelCollapsed);
+        }
+
+        function injectToggleHeader($box, label) {
+            if (!$box.length) return;
+            $box.find(".oh-fields-toggle-header").remove();
+            // A native title tooltip on hover spells out that this whole bar
+            // is clickable -- the icon+styling alone (see CSS) still isn't
+            // obvious on first encounter, and a tooltip needs no separate
+            // state tracking to stay accurate; the label/icon direction
+            // already show the current open/closed state either way.
+            $('<div class="oh-fields-toggle-header" title="{% trans "Click to expand or collapse" %}">')
+                .append($('<span class="oh-fields-toggle-label">').text(label))
+                .append('<ion-icon name="chevron-back-outline" class="oh-fields-toggle-icon"></ion-icon>')
+                .prependTo($box);
+        }
+
+        function setupFieldsCollapse() {
+            var $unused = $("#pivot-container .pvtAxisContainer.pvtUnused");
+            if (!$unused.length) return;
+            injectToggleHeader($unused, "{% trans 'Available Fields' %}");
+            injectToggleHeader($("#pivot-container .pvtAxisContainer.pvtRows"), "{% trans 'Columns' %}");
+            injectToggleHeader($("#pivot-container .pvtAxisContainer.pvtCols"), "{% trans 'Rows' %}");
+            applyFieldsCollapsedState();
+        }
+
+        // Bound once on the container itself (not document) -- #pivot-container
+        // isn't recreated by pivotUI refreshes, only its contents are, so this
+        // delegation keeps matching freshly re-injected headers without ever
+        // needing to be rebound. Which state variable to flip is decided by
+        // which box the clicked header lives in.
+        $("#pivot-container").off("click", ".oh-fields-toggle-header").on("click", ".oh-fields-toggle-header", function () {
+            var $box = $(this).closest(".pvtAxisContainer");
+            if ($box.hasClass("pvtUnused")) {
+                fieldsPanelCollapsed = !fieldsPanelCollapsed;
+            } else if ($box.hasClass("pvtRows")) {
+                columnsPanelCollapsed = !columnsPanelCollapsed;
+            } else if ($box.hasClass("pvtCols")) {
+                rowsPanelCollapsed = !rowsPanelCollapsed;
+            }
+            applyFieldsCollapsedState();
+        });
+
+        // Moves the "Table"/renderer <select> out of the pivot builder grid
+        // and into the standalone #oh-report-view-slot above it, so it reads
+        // as a page-level "view as" control instead of a cramped field
+        // wedged in the grid's corner. PivotTable.js rebuilds a brand new
+        // select in its usual spot on every render (drag, filter, template
+        // load), so the previous render's relocated one -- now stale, no
+        // longer wired to the live pivot state -- is discarded and the
+        // fresh one moved over instead. Uses .append (an actual DOM move,
+        // not a clone) so the library's own change handler on it keeps
+        // working after the move.
+        function relocateRendererSelect() {
+            var $slot = $("#oh-report-view-slot");
+            var $select = $("#pivot-container .pvtUi select.pvtRenderer");
+            if (!$slot.length || !$select.length) return;
+            $slot.find("select.pvtRenderer").remove();
+            $slot.append($select);
+        }
+
+        // PivotTable.js always labels the grand-total row/column header
+        // "Totals" (a static localeStrings string), no matter which
+        // aggregator is actually selected -- misleading once anything other
+        // than Count is chosen, e.g. an "Average" column's grand total still
+        // reading "Totals" as if the figure were a sum. Renamed here to name
+        // the actual aggregation shown instead; Count keeps "Totals" since a
+        // total count IS a total. Called from every onRefresh (aggregator
+        // changes trigger one) since PivotTable.js rebuilds these header
+        // cells from scratch on every render.
+        function updateTotalsLabel(aggregatorName) {
+            var label = (aggregatorName === "Count") ? "{% trans 'Totals' %}" : aggregatorName;
+            $("#pivot-container .pvtTotalLabel").text(label);
+        }
+
         // Shared "no records" empty state (same illustration/wording used
         // throughout the app) shown instead of an empty/broken-looking
         // pivot table when a report has zero matching records.
@@ -732,11 +1180,14 @@
 
                     // Initialize pivot table with Plotly enabled
                 $("#pivot-container").pivotUI(data, {
-                    rows: ["Department","Job Position","Job Role","Name","Email","Phone"],
+                    rows: ["Badge Id","Name","Phone","Email","Department","Job Position","Job Role","Shift","Company"],
                     cols: [],
                     aggregatorName: "Count",
                     rendererName: "Table", // Default view as Table
                     onRefresh: function (config) {
+                        setupFieldsCollapse();
+                    relocateRendererSelect();
+                        updateTotalsLabel(config.aggregatorName);
                         let currentRenderer = config.rendererName;
                         if (currentRenderer === "Table" || currentRenderer === "Table Barchart" ||
                             currentRenderer === "Heatmap" || currentRenderer === "Row Heatmap" || currentRenderer === "Col Heatmap" ) {
@@ -773,11 +1224,14 @@
 
                 // Initialize pivot table with Plotly enabled
                 $("#pivot-container").pivotUI(data, {
-                    rows: ["Department","Job Position","Job Role","Name","Email","Phone"],
+                    rows: ["Badge Id","Name","Phone","Email","Department","Job Position","Job Role","Shift","Company"],
                     cols: [],
                     aggregatorName: "Count",
                     rendererName: "Table", // Default view as Table
                     onRefresh: function (config) {
+                        setupFieldsCollapse();
+                    relocateRendererSelect();
+                        updateTotalsLabel(config.aggregatorName);
                         let currentRenderer = config.rendererName;
                         if (currentRenderer === "Table" || currentRenderer === "Table Barchart" ||
                             currentRenderer === "Heatmap" || currentRenderer === "Row Heatmap" || currentRenderer === "Col Heatmap" ) {
@@ -800,15 +1254,28 @@
                 loadFilteredPivotData(); // Call the function to load filtered data
             });
 
-            // Export to Excel on button click. Re-checks export access on
-            // the backend so the action can't be triggered by calling the
-            // click handler directly once the button is hidden client-side.
-            $("#export-btn").on("click", function () {
+            // Export button dropdown: PDF/Excel/CSV. Delegated on the
+            // dropdown itself (not document) so it can't stack handlers
+            // across htmx navigations -- this container is part of the
+            // report's own re-rendered HTML, so it's recreated fresh every
+            // time, unlike document which persists across page swaps.
+            // Re-checks export access on the backend so the action can't be
+            // triggered by calling the click handler directly once the
+            // button is hidden client-side.
+            $("#exportDropdown").on("click", ".oh-export-option", function (e) {
+                e.preventDefault();
+                var format = $(this).data("format");
                 $.get("{% url 'report-check-export-access' %}", {model: "employee.Employee"}, function (resp) {
-                    if (resp.allowed) {
-                        exportTableToExcel("pivot-container", "pivot_report.xlsx");
-                    } else {
+                    if (!resp.allowed) {
                         alert("{% trans 'You dont have access to export this data' %}");
+                        return;
+                    }
+                    if (format === "pdf") {
+                        exportTableToPDF("pivot-container", "Employee_Report.pdf");
+                    } else if (format === "csv") {
+                        exportTableToCSV("pivot-container", "Employee_Report.csv");
+                    } else {
+                        exportTableToExcel("pivot-container", "Employee_Report.xlsx");
                     }
                 });
             });
@@ -830,6 +1297,11 @@
             const baseRow = 1;
             const baseCol = 1;
             let currentRow = baseRow;
+            // Rows used for the company/filters/generated-on banners --
+            // excluded from the column auto-fit below, since they're
+            // deliberately wide merged text unrelated to any one column's
+            // actual data width.
+            const headerRows = [];
 
             // Add company details first (if not 'all')
             if ('{{company}}' !== 'all') {
@@ -862,14 +1334,17 @@
                     });
 
                     worksheet.addImage(imageId, {
-                        tl: { col: baseCol - 1, row: currentRow - 1 },
-                        ext: { width: 80, height: 80 }
+                        tl: { col: baseCol - 1 + 0.06, row: currentRow - 1 + 0.27 },
+                        ext: { width: 60, height: 60 }
                     });
                 });
 
-                // Merge cells for company details text
-                const companyTextCell = worksheet.getCell(currentRow, baseCol + 1);
-                worksheet.mergeCells(currentRow, baseCol + 1, currentRow, baseCol + 2);
+                // Icon and company text share ONE merged cell (A:B) instead of
+                // the icon sitting alone in column A with a gridline before the
+                // text -- the indent below keeps the text clear of the icon,
+                // which floats over column A's portion of the merge.
+                worksheet.mergeCells(currentRow, baseCol, currentRow, baseCol + 1);
+                const companyTextCell = worksheet.getCell(currentRow, baseCol);
                 companyTextCell.value = {
                     richText: [
                         { text: `\n${companyDetails.name}\n`, font: { size: 14, bold: true, color: { argb: 'FF333333' } } },
@@ -881,11 +1356,46 @@
                 companyTextCell.alignment = {
                     horizontal: 'left',
                     vertical: 'top',
-                    wrapText: true
+                    wrapText: true,
+                    indent: 8
                 };
-                worksheet.getRow(currentRow).height = 80;
+                worksheet.getRow(currentRow).height = 100;
+                headerRows.push(currentRow);
 
-                currentRow += 1; // Leave a blank row
+                currentRow += 2; // Leave a blank row
+            }
+
+            // Applied-filters summary -- only shown when the export was
+            // taken with filters active, reusing the same human-readable
+            // text as the Filters panel's chips so the export matches what
+            // the user actually saw on screen.
+            if (appliedFilters && appliedFilters.length > 0) {
+                const filterSummary = appliedFilters.map(function (f, i) { return chipTextFor(f, i); }).join("   ");
+                const filterCell = worksheet.getCell(currentRow, baseCol);
+                worksheet.mergeCells(currentRow, baseCol, currentRow, baseCol + 3);
+                filterCell.value = {
+                    richText: [
+                        { text: "{% trans 'Applied Filters: ' %}", font: { size: 10, bold: true, color: { argb: 'FF333333' } } },
+                        { text: filterSummary, font: { size: 10, color: { argb: 'FF333333' } } }
+                    ]
+                };
+                filterCell.alignment = { horizontal: "left", vertical: "middle", wrapText: true };
+                // Highlight the whole Applied Filters banner (all 4 merged
+                // columns, not just the master cell) with a soft amber box so
+                // it stands out from the plain Generated-on line below it.
+                for (let c = baseCol; c <= baseCol + 3; c++) {
+                    const bannerCell = worksheet.getCell(currentRow, c);
+                    bannerCell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFFF4CE" } };
+                    bannerCell.border = {
+                        top: { style: "thin", color: { argb: "FFE8B84B" } },
+                        bottom: { style: "thin", color: { argb: "FFE8B84B" } },
+                        left: c === baseCol ? { style: "thin", color: { argb: "FFE8B84B" } } : undefined,
+                        right: c === baseCol + 3 ? { style: "thin", color: { argb: "FFE8B84B" } } : undefined
+                    };
+                }
+                worksheet.getRow(currentRow).height = 22;
+                headerRows.push(currentRow);
+                currentRow += 2; // the filter row itself, plus a blank row after it
             }
 
             // Add timestamp
@@ -899,8 +1409,9 @@
             downloadCell.value = `Generated on: ${timestamp}`;
             downloadCell.alignment = { horizontal: 'left', vertical: 'middle', wrapText: true };
             downloadCell.font = { size: 10, italic: true, color: { argb: 'FF666666' }, bold: true };
+            headerRows.push(currentRow);
 
-            currentRow += 1;
+            currentRow += 2; // Leave a blank row before the table
 
             // Table rendering
             const cellMap = {};
@@ -949,7 +1460,9 @@
                         fgColor: {
                             argb: isHeader ? 'FF545454' :
                                 isLastRow ? 'FFFFE599' :  // light yellow
-                                'FFF5F5F5'
+                                // Zebra striping: alternate white/light-gray between data
+                                // rows so long tables are easier to scan row-by-row.
+                                (rowIndex - headerRowCount) % 2 === 0 ? 'FFFFFFFF' : 'FFF5F5F5'
                         }
                     };
 
@@ -986,9 +1499,14 @@
 
             worksheet.getRow(currentRow).height = 30; // adjust height for Heading
 
-            worksheet.columns.forEach(column => {
+            worksheet.columns.forEach((column, columnIndex) => {
                 let maxLength = 2;
                 column.eachCell({ includeEmpty: true }, cell => {
+                    // Company/Applied Filters/Generated on all sit in wide merged
+                    // banner rows tracked in headerRows -- excluded here, or their
+                    // deliberately-long text would blow out every column they
+                    // span to match, unrelated to that column's actual data.
+                    if (headerRows.indexOf(cell.row) !== -1) return;
                     const value = cell.value ? cell.value.toString() : '';
                     maxLength = Math.max(maxLength, value.length);
                 });
@@ -1005,6 +1523,210 @@
             link.href = URL.createObjectURL(blob);
             link.download = filename;
             link.click();
+        }
+
+        // Quotes a CSV field only when it actually needs it (contains a
+        // comma, quote, or newline), escaping embedded quotes by doubling
+        // them per RFC 4180.
+        function csvField(value) {
+            var s = value === null || value === undefined ? "" : String(value);
+            if (/[",\n\r]/.test(s)) {
+                s = '"' + s.replace(/"/g, '""') + '"';
+            }
+            return s;
+        }
+
+        // Flattens the pivot <table> (which uses rowspan/colspan for grouped
+        // headers/rows) into a plain rectangular grid, repeating a spanned
+        // cell's value into every cell it covers -- CSV has no concept of
+        // merged cells, so leaving those blank would silently drop data.
+        function buildTableGrid(table) {
+            var grid = [];
+            var maxCols = 0;
+            Array.from(table.rows).forEach(function (row, rowIndex) {
+                if (!grid[rowIndex]) grid[rowIndex] = [];
+                var colIndex = 0;
+                Array.from(row.cells).forEach(function (cell) {
+                    while (grid[rowIndex][colIndex] !== undefined) colIndex++;
+                    var rowspan = parseInt(cell.getAttribute("rowspan")) || 1;
+                    var colspan = parseInt(cell.getAttribute("colspan")) || 1;
+                    var value = cell.textContent.trim();
+                    for (var r = 0; r < rowspan; r++) {
+                        if (!grid[rowIndex + r]) grid[rowIndex + r] = [];
+                        for (var c = 0; c < colspan; c++) {
+                            grid[rowIndex + r][colIndex + c] = value;
+                        }
+                    }
+                    colIndex += colspan;
+                    maxCols = Math.max(maxCols, colIndex);
+                });
+            });
+            grid.forEach(function (row) {
+                for (var i = 0; i < maxCols; i++) {
+                    if (row[i] === undefined) row[i] = "";
+                }
+            });
+            return grid;
+        }
+
+        function exportTableToCSV(containerId, filename) {
+            var table = document.querySelector(`#${containerId} .pvtTable`);
+            if (!table) {
+                alert("No table found to export.");
+                return;
+            }
+
+            var lines = [];
+
+            if ('{{company}}' !== 'all') {
+                lines.push(csvField("{{ company.company|escapejs }}"));
+                lines.push(csvField("{{ company.address|escapejs }}"));
+                lines.push(csvField("{{ company.country|escapejs }}, {{ company.state|escapejs }}, {{ company.city|escapejs }}"));
+                lines.push(csvField("ZIP: {{ company.zip|escapejs }}"));
+                lines.push("");
+            }
+
+            if (appliedFilters && appliedFilters.length > 0) {
+                var filterSummary = appliedFilters.map(function (f, i) { return chipTextFor(f, i); }).join("   ");
+                lines.push(csvField("Applied Filters: " + filterSummary));
+                lines.push("");
+            }
+
+            var timestamp = new Date().toLocaleDateString('en-GB') + ' ' +
+                new Date().toLocaleTimeString('en-US', {
+                    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+                });
+            lines.push(csvField("Generated on: " + timestamp));
+            lines.push("");
+
+            buildTableGrid(table).forEach(function (row) {
+                lines.push(row.map(csvField).join(","));
+            });
+
+            // Leading BOM so Excel (not just browsers) recognizes this as
+            // UTF-8 instead of guessing the system codepage and mangling
+            // non-ASCII names.
+            var blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+            var link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        // Converts the pivot <table> into jsPDF-autotable's row format --
+        // unlike the Excel export (which addresses cells by absolute
+        // row/col and needs a cellMap to skip already-covered positions),
+        // autoTable consumes rows the same way the DOM does: a row's array
+        // only lists cells that START in that row, and rowSpan/colSpan on
+        // a cell tells it to cover the rest -- no manual grid-filling needed.
+        function buildAutoTableRows(table) {
+            var headerRowCount = table.tHead ? table.tHead.rows.length : 1;
+            var allRows = Array.from(table.rows);
+            var lastRowIndex = allRows.length - 1;
+            var head = [];
+            var body = [];
+
+            allRows.forEach(function (row, rowIndex) {
+                var isHeader = rowIndex < headerRowCount;
+                var isLastRow = rowIndex === lastRowIndex;
+                var rowArr = Array.from(row.cells).map(function (cell) {
+                    var rowspan = parseInt(cell.getAttribute("rowspan")) || 1;
+                    var colspan = parseInt(cell.getAttribute("colspan")) || 1;
+                    var cellObj = { content: cell.textContent.trim() };
+                    if (rowspan > 1) cellObj.rowSpan = rowspan;
+                    if (colspan > 1) cellObj.colSpan = colspan;
+                    cellObj.styles = isHeader
+                        ? { fillColor: [84, 84, 84], textColor: [255, 255, 255], fontStyle: "bold", halign: "center" }
+                        : isLastRow
+                            ? { fillColor: [255, 229, 153], fontStyle: "bold", halign: "center" }
+                            : { fillColor: (rowIndex - headerRowCount) % 2 === 0 ? [255, 255, 255] : [245, 245, 245], halign: "center" };
+                    return cellObj;
+                });
+                (isHeader ? head : body).push(rowArr);
+            });
+
+            return { head: head, body: body };
+        }
+
+        async function exportTableToPDF(containerId, filename) {
+            var table = document.querySelector(`#${containerId} .pvtTable`);
+            if (!table) {
+                alert("No table found to export.");
+                return;
+            }
+
+            var doc = new window.jspdf.jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
+            var pageWidth = doc.internal.pageSize.getWidth();
+            var margin = 40;
+            var cursorY = 40;
+
+            if ('{{company}}' !== 'all') {
+                try {
+                    var logoUrl = "{{ protocol }}://{{ host }}{{ company.icon.url }}";
+                    var base64 = await fetch(logoUrl)
+                        .then(function (response) { return response.blob(); })
+                        .then(function (blob) {
+                            return new Promise(function (resolve, reject) {
+                                var reader = new FileReader();
+                                reader.onloadend = function () { resolve(reader.result); };
+                                reader.onerror = reject;
+                                reader.readAsDataURL(blob);
+                            });
+                        });
+                    doc.addImage(base64, "PNG", margin, cursorY, 45, 45);
+                } catch (e) {
+                    // No logo reachable -- fall back to just the text block.
+                }
+
+                doc.setFont(undefined, "bold");
+                doc.setFontSize(14);
+                doc.setTextColor(51, 51, 51);
+                doc.text("{{ company.company|escapejs }}", margin + 55, cursorY + 14);
+                doc.setFont(undefined, "normal");
+                doc.setFontSize(10);
+                doc.text("{{ company.address|escapejs }}", margin + 55, cursorY + 28);
+                doc.text("{{ company.country|escapejs }}, {{ company.state|escapejs }}, {{ company.city|escapejs }}", margin + 55, cursorY + 40);
+                doc.text("ZIP: {{ company.zip|escapejs }}", margin + 55, cursorY + 52);
+                cursorY += 70;
+            }
+
+            if (appliedFilters && appliedFilters.length > 0) {
+                var filterSummary = appliedFilters.map(function (f, i) { return chipTextFor(f, i); }).join("   ");
+                doc.setFillColor(255, 244, 206);
+                doc.setDrawColor(232, 184, 75);
+                doc.rect(margin, cursorY, pageWidth - margin * 2, 20, "FD");
+                doc.setFont(undefined, "bold");
+                doc.setFontSize(9);
+                doc.setTextColor(51, 51, 51);
+                doc.text("Applied Filters: ", margin + 6, cursorY + 13);
+                var labelWidth = doc.getTextWidth("Applied Filters: ");
+                doc.setFont(undefined, "normal");
+                doc.text(filterSummary, margin + 6 + labelWidth, cursorY + 13);
+                cursorY += 30;
+            }
+
+            var timestamp = new Date().toLocaleDateString('en-GB') + ' ' +
+                new Date().toLocaleTimeString('en-US', {
+                    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+                });
+            doc.setFont(undefined, "italic");
+            doc.setFontSize(9);
+            doc.setTextColor(102, 102, 102);
+            doc.text(`Generated on: ${timestamp}`, margin, cursorY + 10);
+            cursorY += 25;
+
+            var tableData = buildAutoTableRows(table);
+            doc.autoTable({
+                head: tableData.head,
+                body: tableData.body,
+                startY: cursorY,
+                theme: "grid",
+                margin: { left: margin, right: margin },
+                styles: { fontSize: 8, cellPadding: 3, lineColor: [200, 200, 200], lineWidth: 0.5 }
+            });
+
+            doc.save(filename);
         }
 
         // ------------------------------------------------------------------
@@ -1193,7 +1915,7 @@
                 });
             var $connectorCell = $('<div class="oh-dynamic-filter-cell oh-dynamic-filter-cell--connector"></div>').append($connector);
             if (isFirstRow) {
-                $connectorCell.hide();
+                $connectorCell.addClass("oh-connector-hidden");
             }
             var $field = $('<select class="oh-select filter-field-select"></select>').html(buildFieldOptionsHtml());
             var $operator = $('<select class="oh-select filter-operator-select"></select>').html(buildOperatorOptionsHtml("text"));
@@ -1297,7 +2019,7 @@
             // whichever is currently first (row order changes as rows are
             // added/removed).
             $rows.each(function (index) {
-                $(this).find(".oh-dynamic-filter-cell--connector").toggle(index > 0);
+                $(this).find(".oh-dynamic-filter-cell--connector").toggleClass("oh-connector-hidden", index === 0);
             });
         }
 
@@ -1354,16 +2076,26 @@
             return prefix + fieldLabel + " " + operatorLabel + " " + displayValueFor(filter.value);
         }
 
-        function renderAppliedFilterChips() {
-            var $chips = $("#appliedFilterChips");
-            $chips.empty();
+        // Builds the same chip markup into whichever container is passed in
+        // -- used to keep the dropdown-panel copy and the page-level copy
+        // (shown under the button row, outside the dropdown) in sync
+        // without duplicating the chip-building logic.
+        function buildAppliedFilterChipsInto($container) {
+            $container.empty();
             appliedFilters.forEach(function (filter, index) {
                 var $chip = $('<span class="oh-applied-filter-chip"></span>').text(chipTextFor(filter, index));
                 var $remove = $('<ion-icon name="close-outline" class="oh-applied-filter-chip__remove"></ion-icon>').attr("data-index", index);
                 $chip.append($remove);
-                $chips.append($chip);
+                $container.append($chip);
             });
-            $("#appliedFiltersSection").toggle(appliedFilters.length > 0);
+        }
+
+        function renderAppliedFilterChips() {
+            buildAppliedFilterChipsInto($("#appliedFilterChips"));
+            buildAppliedFilterChipsInto($("#pageAppliedFilterChips"));
+            var hasFilters = appliedFilters.length > 0;
+            $("#appliedFiltersSection").toggle(hasFilters);
+            $("#pageAppliedFiltersSection").toggle(hasFilters);
         }
 
         // Rebuild the builder rows from `appliedFilters` so re-opening the
@@ -1388,6 +2120,15 @@
         });
 
         $(document).off("click", "#clearAllFiltersBtn").on("click", "#clearAllFiltersBtn", function () {
+            appliedFilters = [];
+            syncFilterRowsFromApplied();
+            loadFilteredPivotData();
+        });
+
+        // Same action as the dropdown's own Clear All button -- the
+        // page-level copy needs its own handler since it's a separate
+        // button (different id) sitting outside the dropdown.
+        $(document).off("click", "#pageClearAllFiltersBtn").on("click", "#pageClearAllFiltersBtn", function () {
             appliedFilters = [];
             syncFilterRowsFromApplied();
             loadFilteredPivotData();
