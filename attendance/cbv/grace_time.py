@@ -78,13 +78,7 @@ class DefaultGraceTimeList(GenericGraceTimeListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        selected_company = self.request.session.get("selected_company")
-        if selected_company == "all":
-            queryset = GraceTime.objects.entire().filter(is_default=True)
-        else:
-            queryset = GraceTime.objects.entire().filter(
-                is_default=True, company_id=selected_company
-            )
+        queryset = GraceTime.objects.filter(is_default=True)
         return queryset.filter(is_default=True)
 
 
@@ -107,13 +101,7 @@ class GraceTimeList(GenericGraceTimeListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        selected_company = self.request.session.get("selected_company")
-        if selected_company == "all":
-            queryset = GraceTime.objects.entire().filter(is_default=False)
-        else:
-            queryset = GraceTime.objects.entire().filter(
-                is_default=False, company_id=selected_company
-            )
+        queryset = GraceTime.objects.filter(is_default=False)
         return queryset
 
 
