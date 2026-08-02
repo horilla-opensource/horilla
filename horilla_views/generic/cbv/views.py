@@ -39,7 +39,7 @@ from base.methods import (
 # from horilla.http import HorillaRedirect
 from horilla.filters import FilterSet
 from horilla.group_by import group_by_queryset
-from horilla.horilla_middlewares import _thread_locals
+from horilla.horilla_middlewares import _thread_locals, get_selected_company
 from horilla.http.response import HorillaRedirect
 from horilla.models import HorillaModel
 from horilla.signals import post_generic_import, pre_generic_import
@@ -1989,6 +1989,8 @@ class HorillaFormView(FormView):
     close_button_attrs: str = """"""
     submit_button_attrs: str = """"""
 
+    restrict_company_field: bool = True
+
     # NOTE: Dynamic create view's forms save method will be overwritten
     is_dynamic_create_view: bool = False
     # [(field_name,DynamicFormView,[other_field1,...])] # other_fields
@@ -2200,6 +2202,25 @@ class HorillaFormView(FormView):
                 self.form_class.verbose_name = self.new_display_title
             form.close_button_attrs = self.close_button_attrs
             form.submit_button_attrs = self.submit_button_attrs
+            company_field = form.fields.get("company_id")
+            selected_company = get_selected_company()
+            # user = getattr(self.request, "user", None)
+            # can_manage_company = user and (
+            #     user.has_perm("base.add_company") or user.has_perm("base.change_company")
+            # )
+            if (
+                self.restrict_company_field
+                and company_field
+                and selected_company
+                and selected_company != "all"
+                # and not can_manage_company
+            ):
+                if isinstance(company_field, forms.ModelMultipleChoiceField):
+                    company_field.widget = forms.MultipleHiddenInput()
+                    form.initial["company_id"] = [selected_company]
+                else:
+                    company_field.widget = forms.HiddenInput()
+                    form.initial["company_id"] = selected_company
             # CACHE.get(self.request.session.session_key + "cbv")[HorillaFormView] = form
             self.form = form
         return self.form
