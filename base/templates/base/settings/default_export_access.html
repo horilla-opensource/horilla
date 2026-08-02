@@ -11,22 +11,30 @@
 
     <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
         <div class="p-4">
-            <form id="enableExportAccessForm" hx-post="{% url 'enable-default-export-access' %}" hx-swap="none"
-                hx-include="#enableExportAccess" hx-on-htmx-after-request="setTimeout(reloadMessage, 70);">
-                {% csrf_token %}
-                <div class="oh-label__info">
-                    <label class="oh-label" for="enableExportAccess">
-                        {% trans "Allow All Users to Export Data" %}
-                    </label>
-                    <span class="oh-info mr-2"
-                        title="{% trans 'When enabled, every user of this company can export data from any module. When disabled, only users (or superusers) with the appropriate export permission for a module can export its data.' %}">
-                    </span>
-                </div>
-                <div class="oh-switch p-3">
-                    <input type="checkbox" class="oh-switch__checkbox" name="enable_export_access"
-                        id="enableExportAccess" {% if enabled_export_access %} checked {% endif %} />
-                </div>
-            </form>
+            <div class="col-span-12 lg:col-span-6">
+                <form id="enableExportAccessForm" hx-post="{% url 'enable-default-export-access' %}" hx-swap="none"
+                    hx-include="#enableExportAccess" hx-on-htmx-after-request="setTimeout(reloadMessage, 70);">
+                    {% csrf_token %}
+                    <div class="flex items-center mb-4">
+                        <div>
+                            <div class="flex space-x-2">
+                                <h3 class="text-sm font-medium">{% trans "Allow All Users to Export Data" %}</h3>
+                                <span class="oh-info mr-2"
+                                    title="{% trans 'When enabled, every user of this company can export data from any module. When disabled, only users (or superusers) with the appropriate export permission for a module can export its data.' %}">
+                                </span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">
+                                {% trans "Allow every user of this company to export data from any module." %}
+                            </p>
+                        </div>
+                        <label class="toggle-label ml-4">
+                            <input type="checkbox" class="toggle-input" name="enable_export_access"
+                                id="enableExportAccess" {% if enabled_export_access %} checked {% endif %} />
+                            <div class="toggle-switch"></div>
+                        </label>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
