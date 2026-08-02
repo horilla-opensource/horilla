@@ -253,6 +253,7 @@ class GeneralSettings:
                     "description": _(
                         "Restrict which languages appear in the navbar language switcher for this company"
                     ),
+                    "anchor": "companyLanguageSettings",
                 },
             ],
         },
