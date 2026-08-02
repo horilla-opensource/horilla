@@ -36,7 +36,7 @@
         type="button"
         class="oh-modal__close"
         data-dismiss="oh-modal"
-        aria-label="Close"
+        aria-label={% trans 'Close' %}
         data-toggle="oh-modal-toggle"
     >
         <ion-icon name="close-outline"></ion-icon>
@@ -52,7 +52,7 @@
                 <img
                 src="{{contract.employee_id.get_avatar}}"
                 class="oh-profile__image me-2"
-                alt="Mary Magdalene"
+                alt="{{ contract.employee_id }}"
                 />
             </div>
             <div class="oh-timeoff-modal__profile-info">
@@ -189,10 +189,10 @@
     </div>
 {% else %}
     <div class="oh-modal__dialog-header">
-        <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close" data-toggle="oh-modal-toggle">
+        <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label={% trans 'Close' %} data-toggle="oh-modal-toggle">
             <ion-icon name="close-outline"></ion-icon>
         </button>
-        <img style="margin-top: 8%;margin-left: 29%;width: 190px;height: 190px;" src="{% static 'images/ui/no_request.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+        <img style="margin-top: 8%;margin-left: 29%;width: 190px;height: 190px;" src="{% static 'images/ui/no_request.png' %}" class="oh-404__image mb-4" alt="{% trans 'Page not found. 404.' %}"/>
         <h5 class="oh-404__subtitle">{% trans "There have been no contracts signed." %}</h5>
     </div>
 {% endif %}

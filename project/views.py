@@ -641,10 +641,16 @@ def project_bulk_archive(request):
         if project and is_project_manager_or_super_user(request, project):
             project.is_active = is_active
             project.save()
-            messages.success(request, f"{project} is {message} successfully.")
+            messages.success(
+                request,
+                _("%(project)s is %(message)s successfully.")
+                % {"project": project, "message": message},
+            )
         else:
             messages.warning(
-                request, f"Permission denied or project not found: ID {project_id}"
+                request,
+                _("Permission denied or project not found: ID %(project_id)s")
+                % {"project_id": project_id},
             )
 
     return HttpResponse("<script>$('#applyFilter').click();</script>")
@@ -785,7 +791,7 @@ def quick_create_task(request, stage_id):
                 "hx_target": hx_target,
             },
         )
-    messages.info(request, "You dont have permission.")
+    messages.info(request, _("You dont have permission."))
     return HorillaRedirect(request)
 
 
@@ -819,7 +825,7 @@ def create_task(request, stage_id):
             "task/new/forms/create_task.html",
             context={"form": form, "stage_id": stage_id},
         )
-    messages.info(request, "You dont have permission.")
+    messages.info(request, _("You dont have permission."))
     return HorillaRedirect(request)
 
 
@@ -859,7 +865,7 @@ def create_task_in_project(request, project_id):
         return render(
             request, "task/new/forms/create_task_project.html", context=context
         )
-    messages.info(request, "You dont have permission.")
+    messages.info(request, _("You dont have permission."))
     return HorillaRedirect(request)
 
 
@@ -1249,7 +1255,9 @@ def task_all_bulk_archive(request):
         message = _("archived")
         if is_active:
             message = _("un-archived")
-        messages.success(request, f"{task} is {message}")
+        messages.success(
+            request, _("%(task)s is %(message)s") % {"task": task, "message": message}
+        )
     return JsonResponse({"message": "Success"})
 
 
@@ -1761,7 +1769,7 @@ def time_sheet_update(request, time_sheet_id):
             },
         )
     else:
-        messages.error(request, "You dont have permission.")
+        messages.error(request, _("You dont have permission."))
         return HorillaRedirect(request)
 
 

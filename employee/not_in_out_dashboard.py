@@ -323,9 +323,17 @@ def send_mail_to_employee(request):
         try:
             email.send()
             if employee.employee_work_info.email or employee.email:
-                messages.success(request, f"Mail sent to {employee.get_full_name()}")
+                messages.success(
+                    request,
+                    _("Mail sent to %(employee)s")
+                    % {"employee": employee.get_full_name()},
+                )
             else:
-                messages.info(request, f"Email not set for {employee.get_full_name()}")
+                messages.info(
+                    request,
+                    _("Email not set for %(employee)s")
+                    % {"employee": employee.get_full_name()},
+                )
         except Exception as e:
-            messages.error(request, "Something went wrong")
+            messages.error(request, _("Something went wrong"))
     return HorillaRedirect(request)

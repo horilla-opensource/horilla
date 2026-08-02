@@ -858,7 +858,9 @@ class EmployeeKeyResult(models.Model):
             )
         if start_value > current_value or start_value > target_value:
             raise ValidationError(
-                "The start value can't be greater than current value or target value."
+                _(
+                    "The start value can't be greater than current value or target value."
+                )
             )
         # if current_value > target_value:
         #     raise ValidationError(

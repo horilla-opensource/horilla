@@ -1,0 +1,355 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-18 13:57+0530\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "An unexpected error occurred. Please refresh the page."
+msgstr ""
+
+msgid "Do you really want to validate all the selected attendances?"
+msgstr ""
+
+msgid "No rows are selected from Validate Attendances."
+msgstr ""
+
+msgid "Do you really want to approve OT for all the selected attendances?"
+msgstr ""
+
+msgid "No rows are selected from OT Attendances."
+msgstr ""
+
+msgid "Do you really want to reject all the selected attendance requests?"
+msgstr ""
+
+msgid "Pending Attendance Update Request!"
+msgstr ""
+
+msgid ""
+"An attendance request exists for updating this attendance prior to "
+"validation."
+msgstr ""
+
+msgid "View Request"
+msgstr ""
+
+msgid "Some selected requests have already been approved."
+msgstr ""
+
+msgid "Some selected requests have already been rejected."
+msgstr ""
+
+msgid "Do you wish to create a Leave Report?"
+msgstr ""
+
+msgid "Do you want to reject the selected leave requests?"
+msgstr ""
+
+msgid "Do you want to send the payslip by mail?"
+msgstr ""
+
+msgid "Name of Employees"
+msgstr ""
+
+msgid "Amount"
+msgstr ""
+
+msgid "Upload Completed!"
+msgstr ""
+
+msgid "Imported Successfully!"
+msgstr ""
+
+msgid "Please upload a file with the .xlsx extension only."
+msgstr ""
+
+msgid "visible"
+msgstr ""
+
+msgid "bgcolor"
+msgstr ""
+
+msgid "bordercolor"
+msgstr ""
+
+msgid "borderwidth"
+msgstr ""
+
+msgid "thickness"
+msgstr ""
+
+msgid "autorange"
+msgstr ""
+
+msgid "range"
+msgstr ""
+
+msgid "x"
+msgstr ""
+
+msgid "y"
+msgstr ""
+
+msgid "minor"
+msgstr ""
+
+msgid "label"
+msgstr ""
+
+msgid "arrowlen"
+msgstr ""
+
+msgid "source"
+msgstr ""
+
+msgid "target"
+msgstr ""
+
+msgid "value"
+msgstr ""
+
+msgid "line.color"
+msgstr ""
+
+msgid "line.width"
+msgstr ""
+
+msgid "hoverinfo"
+msgstr ""
+
+msgid "hovertemplate"
+msgstr ""
+
+msgid "color"
+msgstr ""
+
+msgid "hovercolor"
+msgstr ""
+
+msgid "customdata"
+msgstr ""
+
+msgid "punc"
+msgstr ""
+
+msgid "name"
+msgstr ""
+
+msgid "keyword"
+msgstr ""
+
+msgid "arrow"
+msgstr ""
+
+msgid "operator"
+msgstr ""
+
+msgid "close"
+msgstr ""
+
+msgid "Confirm"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Selected"
+msgstr ""
+
+msgid "Uploading..."
+msgstr ""
+
+msgid "No Records found"
+msgstr ""
+
+msgid "Do you want to download the excel file?"
+msgstr ""
+
+msgid "Do you want to download the template?"
+msgstr ""
+
+msgid "No rows are selected from the records."
+msgstr ""
+
+msgid "Do you really want to delete all the selected records?"
+msgstr ""
+
+msgid "Do you really want to archive all the selected records?"
+msgstr ""
+
+msgid "Do you really want to approve all the selected requests?"
+msgstr ""
+
+msgid "Do you really want to unarchive all the selected records?"
+msgstr ""
+
+msgid "Ok"
+msgstr "добре"
+
+msgid "Total vacancy is %(vacancy)s."
+msgstr "Загальна кількість вакансій %(vacancy)s."
+
+msgid "Are you sure to change the candidate from %(from)s stage to %(to)s stage"
+msgstr "Ви впевнені, що змінюєте кандидата зі стадії %(from)s на стадію %(to)s"
+
+msgid "Stage updated"
+msgstr "Етап оновлено"
+
+msgid "Confirm Stage Change"
+msgstr "Підтвердьте зміну етапу"
+
+msgid "The candidate is being moved from %(from)s to the %(to)s stage. Do you want to proceed?"
+msgstr "Кандидат переміщується з %(from)s на етап %(to)s. Ви бажаєте продовжити?"
+
+msgid "Don't show this again in this session"
+msgstr "Не показувати це знову в цьому сеансі"
+
+msgid "Cannot Change Stage"
+msgstr "Неможливо змінити етап"
+
+msgid "This move is not allowed."
+msgstr "Цей рух заборонено."
+
+msgid "Do you really want to delete all the selected attendances?"
+msgstr "Ви дійсно хочете видалити всі вибрані відвідування?"
+msgid "Do you really want to delete this employee?"
+msgstr "Ви справді хочете видалити цього співробітника?"
+msgid "No rows are selected for deleting attendances."
+msgstr "Не вибрано жодного рядка для видалення явок."
+
+
+msgid "Add Stage"
+msgstr "Додати етап"
+msgid "Add announcement"
+msgstr "Додати оголошення"
+msgid "Add candidate"
+msgstr "Додати кандидата"
+msgid "Add candidate to stage option"
+msgstr "Опція додавання кандидата до етапу"
+msgid "Add new recruitment"
+msgstr "Додати нову вакансію"
+msgid "Add new stage to recruitment"
+msgstr "Додати новий етап до найму"
+msgid "All your company and base configurations"
+msgstr "Усі налаштування компанії та базові конфігурації"
+msgid "App"
+msgstr "Додаток"
+msgid "Approve or Reject Options"
+msgstr "Опції схвалити або відхилити"
+msgid "Candidate"
+msgstr "Кандидат"
+msgid "Candidate change stage option"
+msgstr "Опція зміни етапу кандидата"
+msgid "Candidate management options"
+msgstr "Параметри керування кандидатами"
+msgid "Candidate rating option"
+msgstr "Опція оцінки кандидата"
+msgid "Candidate record"
+msgstr "Запис кандидата"
+msgid "Change Stage"
+msgstr "Змінити етап"
+msgid "Company"
+msgstr "Компанія"
+msgid "Create Quick Requests"
+msgstr "Створити швидкі запити"
+msgid "Create announcement from dashboard"
+msgstr "Створити оголошення з панелі"
+msgid "Dashboard"
+msgstr "Панель"
+msgid "Dashboard Actions"
+msgstr "Дії панелі"
+msgid "Dashboard Tiles"
+msgstr "Плитки панелі"
+msgid "Filter"
+msgstr "Фільтр"
+msgid "Filter Tag"
+msgstr "Мітка фільтра"
+msgid "Filter tag option"
+msgstr "Опція мітки фільтра"
+msgid "Horilla Dashboard Tiles"
+msgstr "Плитки панелі Horilla"
+msgid "Horilla Hr Apps. eg Dashboard"
+msgstr "Додатки Horilla HR, напр. Панель"
+msgid "Horilla dashboard section"
+msgstr "Розділ панелі Horilla"
+msgid "Language"
+msgstr "Мова"
+msgid "Mark Attendance"
+msgstr "Відмітити присутність"
+msgid "Multi-Company"
+msgstr "Кілька компаній"
+msgid "Multi-Company options"
+msgstr "Параметри кількох компаній"
+msgid "Multi-Language options"
+msgstr "Багатомовні параметри"
+msgid "New Recruitment"
+msgstr "Новий найм"
+msgid "Notification"
+msgstr "Сповіщення"
+msgid "Notifications section"
+msgstr "Розділ сповіщень"
+msgid "Options"
+msgstr "Параметри"
+msgid "Pipeline"
+msgstr "Воронка"
+msgid "Pipeline filter option"
+msgstr "Опція фільтра воронки"
+msgid "Profile"
+msgstr "Профіль"
+msgid "Profile and change password options"
+msgstr "Параметри профілю та зміни пароля"
+msgid "Quick Actions"
+msgstr "Швидкі дії"
+msgid "Quick Filters"
+msgstr "Швидкі фільтри"
+msgid "Rating"
+msgstr "Оцінка"
+msgid "Recruitment"
+msgstr "Найм"
+msgid "Recruitment pipeline management"
+msgstr "Керування воронкою найму"
+msgid "Recruitment stage"
+msgstr "Етап найму"
+msgid "Search"
+msgstr "Пошук"
+msgid "Search in candidate, recruitment and stage"
+msgstr "Пошук за кандидатом, наймом і етапом"
+msgid "Selected settings view"
+msgstr "Вибраний вигляд налаштувань"
+msgid "Settings"
+msgstr "Налаштування"
+msgid "Settings Options"
+msgstr "Параметри налаштувань"
+msgid "Settings View"
+msgstr "Вигляд налаштувань"
+msgid "Settings configurations"
+msgstr "Конфігурації налаштувань"
+msgid "Settings menu bar"
+msgstr "Панель меню налаштувань"
+msgid "Stage"
+msgstr "Етап"
+msgid "Toggle View"
+msgstr "Перемкнути вигляд"
+msgid "Toggle view type"
+msgstr "Перемкнути тип вигляду"
+msgid "Used to mark your attendance"
+msgstr "Використовується для відмітки присутності"
+msgid "Your current company access"
+msgstr "Ваш поточний доступ до компанії"

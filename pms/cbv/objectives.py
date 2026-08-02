@@ -671,7 +671,7 @@ class CreateEmployeeKeyResultFormView(HorillaFormView):
             )
         ):
             return super().get(request, *args, pk=pk, **kwargs)
-        messages.info(request, "You dont have permission")
+        messages.info(request, _("You dont have permission"))
         return HorillaRedirect(request)
 
     def get_context_data(self, **kwargs):

@@ -78,10 +78,10 @@
 					html: confirmationMessage,
 					icon: 'warning',
 					showCancelButton: true,
-					confirmButtonText: 'Confirm',
+					confirmButtonText: i18nMessages.confirm,
 					cancelButtonColor: "#6c757d",
 					confirmButtonColor: "#008000",
-					cancelButtonText: 'Cancel'
+					cancelButtonText: i18nMessages.cancel
 				}).then((result) => {
 					if (result.isConfirmed) {
 						$("#loading-overlay").removeClass("d-none");

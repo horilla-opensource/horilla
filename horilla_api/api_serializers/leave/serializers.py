@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from employee.models import Employee
@@ -57,7 +58,7 @@ def leave_Validations(self, data):
         leave_requests = leave_requests.exclude(id=self.instance.id)
     if leave_requests:
         raise serializers.ValidationError(
-            "There is already a leave request for this date range."
+            _("There is already a leave request for this date range.")
         )
 
     # checking if the end date is less than the start date
@@ -66,11 +67,13 @@ def leave_Validations(self, data):
 
     if start_date == end_date and start_date_breakdown != end_date_breakdown:
         raise serializers.ValidationError(
-            "There is a mismatch in the breakdown of the start date and end date."
+            _("There is a mismatch in the breakdown of the start date and end date.")
         )
 
     if not effective_requested_days <= total_leave_days:
-        raise serializers.ValidationError("Employee doesn't have enough leave days..")
+        raise serializers.ValidationError(
+            _("Employee doesn't have enough leave days..")
+        )
 
     if leave_type_id.require_attachment == "yes" and attachment == None:
         errors["attachment"] = ["This field is required."]
@@ -488,7 +491,7 @@ class LeaveRequestApproveSerializer(serializers.ModelSerializer):
     def validate(self, data):
         leave_request = self.instance
         if leave_request.status != "requested":
-            raise serializers.ValidationError("Nothing to approve.")
+            raise serializers.ValidationError(_("Nothing to approve."))
         employee_id = leave_request.employee_id
         leave_type_id = leave_request.leave_type_id
         available_leave = AvailableLeave.objects.get(

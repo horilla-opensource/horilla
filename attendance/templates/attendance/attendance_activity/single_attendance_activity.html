@@ -23,7 +23,7 @@
         <h2 class="oh-modal__dialog-title m-0" id="addEmployeeModalLabel">
             {% trans "Details" %}
         </h2>
-        <button class="oh-modal__close" aria-label="Close">
+        <button class="oh-modal__close" aria-label={% trans 'Close' %}>
             <ion-icon name="close-outline"></ion-icon>
         </button>
     </div>
@@ -64,7 +64,7 @@
         >
             <div class="oh-profile mb-2">
                 <div class="oh-profile__avatar">
-                    <img src="{{activity.employee_id.get_avatar}}" class="oh-profile__image me-2" alt="Mary Magdalene">
+                    <img src="{{activity.employee_id.get_avatar}}" class="oh-profile__image me-2" alt="{{ activity.employee_id }}">
                 </div>
                 <div class="oh-timeoff-modal__profile-info">
                     <span class="oh-timeoff-modal__user fw-bold">{{ activity.employee_id }}</span>
@@ -149,7 +149,7 @@
 {% else %}
     <div class="oh-modal__dialog-header">
         <span class="oh-modal__dialog-title" style="margin-left: 30px"></span>
-        <button class="oh-modal__close" aria-label="Close">
+        <button class="oh-modal__close" aria-label={% trans 'Close' %}>
             <ion-icon name="close-outline"></ion-icon>
         </button>
     </div>
@@ -158,7 +158,7 @@
             style="margin-left: 33%; width: 150px; height: 150px"
             src="{% static 'images/ui/present.png' %}"
             class="oh-404__image mb-2"
-            alt="Page not found. 404."
+            alt="{% trans 'Page not found. 404.' %}"
         >
         <h5 class="oh-404__subtitle">
             {% trans "There are no attendance records to display." %}

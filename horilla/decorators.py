@@ -319,7 +319,7 @@ def owner_can_enter(
                 obj = model.objects.filter(id=instance_id).first()
                 employee = getattr(obj, employee_field, None) if obj else None
             except:
-                messages.error(request, ("Sorry, something went wrong!"))
+                messages.error(request, _("Sorry, something went wrong!"))
                 return HorillaRedirect(request)
         can_enter = (
             request.user.employee_get == employee

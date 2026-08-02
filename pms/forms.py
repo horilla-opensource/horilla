@@ -53,7 +53,7 @@ def validate_date(start_date, end_date):
     Validates that the start date is before or equal to the end date.
     """
     if start_date and end_date and start_date > end_date:
-        raise forms.ValidationError("The start date must be before the end date.")
+        raise forms.ValidationError(_("The start date must be before the end date."))
 
 
 def set_date_field_initial(instance):
@@ -178,10 +178,10 @@ class ObjectiveForm(BaseForm):
         start_date = cleaned_data.get("start_date")
         managers = cleaned_data.get("managers")
         if not managers or managers == None:
-            raise forms.ValidationError("Managers is a required field")
+            raise forms.ValidationError(_("Managers is a required field"))
         if add_assignees:
             if not assignees.exists() or start_date is None:
-                raise forms.ValidationError("Assign employees and start date")
+                raise forms.ValidationError(_("Assign employees and start date"))
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
         # Check that start date is before end date
@@ -632,7 +632,7 @@ class KeyResultForm(ModelForm):
             and value > other_value
         ):
             raise forms.ValidationError(
-                "Current value cannot be greater than target value"
+                _("Current value cannot be greater than target value")
             )
         elif (
             value is not None
@@ -641,7 +641,7 @@ class KeyResultForm(ModelForm):
             and value < other_value
         ):
             raise forms.ValidationError(
-                "Target value cannot be less than current value"
+                _("Target value cannot be less than current value")
             )
         return value
 
@@ -657,18 +657,20 @@ class KeyResultForm(ModelForm):
         # date comparing with objective start and end date
         if employee_objective_id and start_date and end_date:
             if start_date < employee_objective_id.start_date:
-                raise ValidationError("Start date should be after Objective start date")
+                raise ValidationError(
+                    _("Start date should be after Objective start date")
+                )
 
             if end_date > employee_objective_id.end_date:
-                raise ValidationError("End date should be below Objective end date")
+                raise ValidationError(_("End date should be below Objective end date"))
         else:
-            raise forms.ValidationError("Employee Objective not found")
+            raise forms.ValidationError(_("Employee Objective not found"))
         # target value and current value comparison
         if target_value <= 0:
-            raise ValidationError("Target value should be greater than zero")
+            raise ValidationError(_("Target value should be greater than zero"))
         if current_value > target_value:
             raise forms.ValidationError(
-                "Current value cannot be greater than target value"
+                _("Current value cannot be greater than target value")
             )
         return cleaned_data
 

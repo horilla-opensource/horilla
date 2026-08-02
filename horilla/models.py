@@ -179,7 +179,7 @@ class HorillaModel(models.Model, metaclass=HorillaModelBase):
                 value = getattr(self, field.name, None)
                 if value and has_xss(value):
                     errors[field.name] = ValidationError(
-                        "Potential XSS content detected."
+                        _("Potential XSS content detected.")
                     )
 
         if errors:

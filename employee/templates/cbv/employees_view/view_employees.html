@@ -83,7 +83,7 @@
       <h2 class="oh-modal__dialog-title" id="workInfoImportLavel">
         {% trans "Import Employee" %}
       </h2>
-      <button class="oh-modal__close" aria-label="Close">
+      <button class="oh-modal__close" aria-label={% trans 'Close' %}>
         <ion-icon name="close-outline"></ion-icon>
       </button>
       <div class="oh-modal__dialog-body p-0 pt-2" id="workInfoImportModalBody">
@@ -149,7 +149,7 @@
       <h2 class="oh-modal__dialog-title" id="employeeExportLavel">
         {% trans "Export Employees" %}
       </h2>
-      <button class="oh-modal__close" aria-label="Close">
+      <button class="oh-modal__close" aria-label={% trans 'Close' %}>
         <ion-icon name="close-outline"></ion-icon>
       </button>
       <div class="oh-modal__dialog-body p-0 pt-2" id="employeeExportModalBody">
@@ -174,7 +174,7 @@
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <span class="oh-modal__dialog-title" id="sendMailModalLabel"><h5>{% trans 'Send Mail' %}</h5></span>
-      <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      <button class="oh-modal__close" aria-label={% trans 'Close' %}><ion-icon name="close-outline"></ion-icon></button>
     </div>
     <div class="oh-modal__dialog-body" id="mail-content"></div>
   </div>
@@ -192,7 +192,7 @@
       <h2 class="oh-modal__dialog-title" id="bulkUpdateModalLavel">
         {% trans "Bulk Update Employees" %}
       </h2>
-      <button class="oh-modal__close" aria-label="Close">
+      <button class="oh-modal__close" aria-label={% trans 'Close' %}>
         <ion-icon name="close-outline"></ion-icon>
       </button>
       <div class="oh-modal__dialog-body p-0 pt-2" id="bulkUpdateModalBody">
@@ -220,7 +220,7 @@
   <div class="oh-modal__dialog">
     <div class="oh-modal__dialog-header">
       <span class="oh-modal__dialog-title" id="dataExport"><h5>{% trans 'Export Data' %}</h5></span>
-      <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      <button class="oh-modal__close" aria-label={% trans 'Close' %}><ion-icon name="close-outline"></ion-icon></button>
     </div>
     <div class="oh-modal__dialog-body" id="export-content"></div>
   </div>
@@ -306,7 +306,7 @@
         showCancelButton: true,
         confirmButtonColor: "#d33",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: "Confirm"
+        confirmButtonText: i18nMessages.confirm
     }).then((result) => {
         if (result.isConfirmed) {
             const form = document.createElement('form');

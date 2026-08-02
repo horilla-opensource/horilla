@@ -1,3 +1,5 @@
+from django.utils.translation import gettext_lazy as _
+
 """
 payroll.methods.safe_tax_code
 
@@ -152,7 +154,7 @@ class _PolicyVisitor(ast.NodeVisitor):
 def _check(code: str):
     """Parse ``code`` and return the parsed module, raising on any violation."""
     if not isinstance(code, str) or not code.strip():
-        raise TaxCodeValidationError("Tax code is empty.")
+        raise TaxCodeValidationError(_("Tax code is empty."))
 
     try:
         tree = ast.parse(code, mode="exec")

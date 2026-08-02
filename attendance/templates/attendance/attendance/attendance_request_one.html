@@ -50,7 +50,7 @@
                 <img
                     src="{{attendance_request.employee_id.get_avatar}}"
                     class="oh-profile__image me-2"
-                    alt="Mary Magdalene"
+                    alt="{{ attendance_request.employee_id }}"
                 >
             </div>
             <div class="oh-timeoff-modal__profile-info">
@@ -217,7 +217,7 @@
                                             confirmButtonColor: '#008000',
                                             cancelButtonColor: '#6c757d',
                                             confirmButtonText: 'Approve',
-                                            cancelButtonText: 'Cancel'
+                                            cancelButtonText: i18nMessages.cancel
                                         }).then((result) => {
                                             if (result.isConfirmed) {
                                             Swal.fire(

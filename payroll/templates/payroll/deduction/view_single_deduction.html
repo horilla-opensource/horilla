@@ -31,7 +31,7 @@
         <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
             <h5 style="margin-bottom: 20px;">{{deduction.title}}</h5>
         </span>
-        <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close" data-toggle="oh-modal-toggle">
+        <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label={% trans 'Close' %} data-toggle="oh-modal-toggle">
             <ion-icon name="close-outline"></ion-icon>
         </button>
         <div class="oh-timeoff-modal__stats-container mb-3">
@@ -127,7 +127,7 @@
 {% else %}
     <div class="oh-modal__dialog-header">
         <span class="oh-modal__dialog-title"></span>
-        <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close"
+        <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label={% trans 'Close' %}
             data-toggle="oh-modal-toggle">
             <ion-icon name="close-outline"></ion-icon>
         </button>

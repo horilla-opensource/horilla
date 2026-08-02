@@ -2,7 +2,7 @@
 <div id="tourStepsPanel">
     <div class="oh-modal__dialog-header">
         <span class="oh-modal__dialog-title">{% trans "Steps" %} — {{ tour.title }}</span>
-        <button class="oh-modal__close" aria-label="Close"
+        <button class="oh-modal__close" aria-label={% trans 'Close' %}
             onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')">
             <ion-icon name="close-outline"></ion-icon>
         </button>

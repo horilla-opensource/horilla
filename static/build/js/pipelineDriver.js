@@ -3,21 +3,21 @@ const driver = window.driver.js.driver;
 
 
 var steps = [
-    { popover: { title: 'Pipeline', description: 'Recruitment pipeline management' } },
-    { element: '#createNewRecruitment', popover: { title: 'New Recruitment', description: 'Add new recruitment' } },
-    { element: '#pipelineFilterDrop', popover: { title: 'Filter', description: 'Pipeline filter option' } },
-    { element: '#viewTypes', popover: { title: 'Toggle View', description: 'Toggle view type' } },
-    { element: '#pipelineSearchInput', popover: { title: 'Search', description: 'Search in candidate, recruitment and stage' } },
-    { element: '.filter-field', popover: { title: 'Filter Tag', description: 'Filter tag option' } },
-    { element: '#quickFilters', popover: { title: 'Quick Filters', description: 'Quick Filters' } },
-    { element: '.oh-tabs__tab.oh-tabs__tab--active', popover: { title: 'Recruitment', description: 'Recruitment' } },
-    { element: '.oh-tabs__content--active [data-target="#addStageModal"]', popover: { title: 'Add Stage', description: 'Add new stage to recruitment' } },
-    { element: '.oh-tabs__content--active .oh-tabs__movable', popover: { title: 'Stage', description: 'Recruitment stage' } },
-    { element: '.oh-tabs__content--active .oh-tabs__movable .oh-btn--secondary-outline', popover: { title: 'Add candidate', description: 'Add candidate to stage option' } },
-    { element: '.oh-tabs__content--active .oh-table-config__td', popover: { title: 'Candidate', description: 'Candidate record' } },
-    { element: '.oh-tabs__content--active .oh-table-config__td form', popover: { title: 'Rating', description: 'Candidate rating option' } },
-    { element: '.oh-tabs__content--active .oh-select.w-100.stage-change', popover: { title: 'Change Stage', description: 'Candidate change stage option' } },
-    { element: '.oh-tabs__content--active .oh-table-config__td .oh-btn-group', popover: { title: 'Options', description: 'Candidate management options' } },
+    { popover: { title: gettext('Pipeline'), description: gettext('Recruitment pipeline management') } },
+    { element: '#createNewRecruitment', popover: { title: gettext('New Recruitment'), description: gettext('Add new recruitment') } },
+    { element: '#pipelineFilterDrop', popover: { title: gettext('Filter'), description: gettext('Pipeline filter option') } },
+    { element: '#viewTypes', popover: { title: gettext('Toggle View'), description: gettext('Toggle view type') } },
+    { element: '#pipelineSearchInput', popover: { title: gettext('Search'), description: gettext('Search in candidate, recruitment and stage') } },
+    { element: '.filter-field', popover: { title: gettext('Filter Tag'), description: gettext('Filter tag option') } },
+    { element: '#quickFilters', popover: { title: gettext('Quick Filters'), description: gettext('Quick Filters') } },
+    { element: '.oh-tabs__tab.oh-tabs__tab--active', popover: { title: gettext('Recruitment'), description: gettext('Recruitment') } },
+    { element: '.oh-tabs__content--active [data-target="#addStageModal"]', popover: { title: gettext('Add Stage'), description: gettext('Add new stage to recruitment') } },
+    { element: '.oh-tabs__content--active .oh-tabs__movable', popover: { title: gettext('Stage'), description: gettext('Recruitment stage') } },
+    { element: '.oh-tabs__content--active .oh-tabs__movable .oh-btn--secondary-outline', popover: { title: gettext('Add candidate'), description: gettext('Add candidate to stage option') } },
+    { element: '.oh-tabs__content--active .oh-table-config__td', popover: { title: gettext('Candidate'), description: gettext('Candidate record') } },
+    { element: '.oh-tabs__content--active .oh-table-config__td form', popover: { title: gettext('Rating'), description: gettext('Candidate rating option') } },
+    { element: '.oh-tabs__content--active .oh-select.w-100.stage-change', popover: { title: gettext('Change Stage'), description: gettext('Candidate change stage option') } },
+    { element: '.oh-tabs__content--active .oh-table-config__td .oh-btn-group', popover: { title: gettext('Options'), description: gettext('Candidate management options') } },
 ];
 
 

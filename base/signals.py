@@ -12,6 +12,7 @@ from django.db.models.signals import m2m_changed, post_delete, post_migrate, pos
 from django.dispatch import receiver
 from django.http import Http404
 from django.shortcuts import redirect, render
+from django.utils.translation import gettext as _
 
 from base.models import Announcement, PenaltyAccounts
 from horilla.methods import get_horilla_model_class
@@ -519,7 +520,9 @@ def log_login_failed(sender, credentials, request, **kwargs):
     if session_key in ban_time and ban_time[session_key] > time.time():
         banned_until = time.strftime("%H:%M", time.localtime(ban_time[session_key]))
         messages.info(
-            request, f"You are banned until {banned_until}. Please try again later."
+            request,
+            _("You are banned until %(banned_until)s. Please try again later.")
+            % {"banned_until": banned_until},
         )
         return redirect("/")
 
@@ -542,13 +545,17 @@ def log_login_failed(sender, credentials, request, **kwargs):
         ban_time[session_key] = time.time() + ban_duration
         messages.info(
             request,
-            f"You have been banned for {ban_duration // 60} minutes due to multiple failed login attempts.",
+            _(
+                "You have been banned for %(minutes)s minutes due to multiple failed login attempts."
+            )
+            % {"minutes": ban_duration // 60},
         )
         return redirect("/")
 
     messages.info(
         request,
-        f"You have {attempts_left} login attempt(s) left before a temporary ban.",
+        _("You have %(attempts)s login attempt(s) left before a temporary ban.")
+        % {"attempts": attempts_left},
     )
     return redirect("login")
 
@@ -570,7 +577,9 @@ class Fail2BanMiddleware:
         if session_key in ban_time and ban_time[session_key] > time.time():
             banned_until = time.strftime("%H:%M", time.localtime(ban_time[session_key]))
             messages.info(
-                request, f"You are banned until {banned_until}. Please try again later."
+                request,
+                _("You are banned until %(banned_until)s. Please try again later.")
+                % {"banned_until": banned_until},
             )
             return render(request, "403.html")
 

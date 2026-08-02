@@ -957,7 +957,10 @@ def generate_payslip(request):
                     ),
                     icon="close",
                 )
-            messages.success(request, f"{emp_count} payslip saved as draft")
+            messages.success(
+                request,
+                _("%(emp_count)s payslip saved as draft") % {"emp_count": emp_count},
+            )
             return redirect(
                 f"/payroll/view-payslip/?group_by=group_name&active_group={group_name}"
             )
@@ -1397,7 +1400,7 @@ def send_slip(request):
     if not getattr(
         email_backend, "dynamic_from_email_with_display_name", None
     ) or not len(email_backend.dynamic_from_email_with_display_name):
-        messages.error(request, "Email server is not configured")
+        messages.error(request, _("Email server is not configured"))
         if view:
             return HorillaRedirect(request)
         else:
@@ -1414,7 +1417,7 @@ def send_slip(request):
 
     mail_thread = MailSendThread(request, result_dict=result_dict, ids=payslip_ids)
     mail_thread.start()
-    messages.info(request, "Mail processing")
+    messages.info(request, _("Mail processing"))
     if view:
         return HorillaRedirect(request)
     else:
@@ -1593,7 +1596,7 @@ def create_loan(request):
         form = forms.LoanAccountForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request, "Loan created/updated")
+            messages.success(request, _("Loan created/updated"))
             return HorillaRedirect(request)
     return render(
         request, "payroll/loan/form.html", {"form": form, "instance_id": instance_id}
@@ -1652,9 +1655,9 @@ def delete_loan(request):
             ).exists()
         ):
             loan.delete()
-            messages.success(request, "Loan account deleted")
+            messages.success(request, _("Loan account deleted"))
         else:
-            messages.error(request, "Loan account cannot be deleted")
+            messages.error(request, _("Loan account cannot be deleted"))
     if request.headers.get("HX-Request"):
         response = HttpResponse("", status=200)
         response["HX-Trigger"] = json.dumps(
@@ -1716,9 +1719,9 @@ def edit_installment_amount(request):
             loan.deduction_ids.add(installment)
 
         loans.update(installments=len(loan.deduction_ids.all()))
-        messages.success(request, "Installment amount updated successfully")
+        messages.success(request, _("Installment amount updated successfully"))
     else:
-        messages.error(request, "Cannot change paid installments ")
+        messages.error(request, _("Cannot change paid installments "))
 
     return render(
         request,
@@ -1865,7 +1868,7 @@ def create_reimbursement(request):
         form = forms.ReimbursementForm(request.POST, request.FILES, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request, "Reimbursement saved successfully")
+            messages.success(request, _("Reimbursement saved successfully"))
             return HorillaRedirect(request)
     else:
         form = forms.ReimbursementForm(instance=instance)
@@ -1930,7 +1933,7 @@ def get_assigned_leaves(request):
     """
     emp_id = request.GET.get("employeeId")
     if not emp_id:
-        messages.error(request, "Missing required parameters.")
+        messages.error(request, _("Missing required parameters."))
         return JsonResponse(
             {"error": "Missing required parameters: employeeId"}, status=400
         )
@@ -2042,7 +2045,7 @@ def delete_reimbursements(request):
             recipients.append(recipient)
             seen_user_ids.add(recipient.id)
     reimbursements.delete()
-    messages.success(request, "Reimbursements deleted")
+    messages.success(request, _("Reimbursements deleted"))
     if recipients:
         notify.send(
             request.user.employee_get,
@@ -2115,7 +2118,7 @@ def delete_attachments(request, _reimbursement_id):
     """
     ids = request.GET.getlist("ids")
     ReimbursementMultipleAttachment.objects.filter(id__in=ids).delete()
-    messages.success(request, "Attachment deleted")
+    messages.success(request, _("Attachment deleted"))
     return redirect("view-reimbursement")
 
 

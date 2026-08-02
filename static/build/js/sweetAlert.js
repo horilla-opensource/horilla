@@ -1591,7 +1591,7 @@
             denyButtonText: "No",
             denyButtonAriaLabel: "",
             denyButtonColor: void 0,
-            cancelButtonText: "Cancel",
+            cancelButtonText: i18nMessages.cancel,
             cancelButtonAriaLabel: "",
             cancelButtonColor: void 0,
             buttonsStyling: !0,

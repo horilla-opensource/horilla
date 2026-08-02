@@ -333,10 +333,10 @@ def update_stage_order(request, pk):
                 stage = offboarding.offboardingstage_set.get(id=stage_id)
                 stage.sequence = index + 1
                 stage.save()
-            messages.success(request, "Sequence Updated Successfully")
+            messages.success(request, _("Sequence Updated Successfully"))
             return JsonResponse({"status": "success"})
         except Exception as e:
-            messages.error(request, "Error Updating Sequence..")
+            messages.error(request, _("Error Updating Sequence.."))
             return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
     stages = offboarding.offboardingstage_set.order_by("sequence")
@@ -1199,7 +1199,9 @@ def update_status(request):
                     offboarding, notice_period_starts, notice_period_ends
                 )
             messages.success(
-                request, f"Resignation request has been {letter.get_status_display()}"
+                request,
+                _("Resignation request has been %(status)s")
+                % {"status": letter.get_status_display()},
             )
             notify.send(
                 request.user.employee_get,

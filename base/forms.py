@@ -689,13 +689,13 @@ class CompanyForm(ModelForm):
         max_size = 5 * 1024 * 1024
 
         if file.size > max_size:
-            raise ValidationError("File size should be less than 5MB.")
+            raise ValidationError(_("File size should be less than 5MB."))
 
         # Check file extension
         valid_extensions = [".jpg", ".jpeg", ".png", ".webp", ".svg"]
         ext = os.path.splitext(file.name)[1].lower()
         if ext not in valid_extensions:
-            raise ValidationError("Unsupported file extension.")
+            raise ValidationError(_("Unsupported file extension."))
 
     def clean_icon(self):
         icon = self.cleaned_data.get("icon")
@@ -860,7 +860,10 @@ class JobPositionForm(ModelForm):
                 if JobPosition.objects.filter(
                     department_id=dep, job_position=form_data
                 ).exists():
-                    messages.error(request, f"Job position already exists under {dep}")
+                    messages.error(
+                        request,
+                        _("Job position already exists under %(dep)s") % {"dep": dep},
+                    )
                 else:
                     messages.success(
                         request, _("Job position has been created successfully!")
@@ -933,7 +936,10 @@ class JobPositionMultiForm(ModelForm):
                 if JobPosition.objects.filter(
                     department_id=dep, job_position=job_position
                 ).exists():
-                    messages.error(request, f"Job position already exists under {dep}")
+                    messages.error(
+                        request,
+                        _("Job position already exists under %(dep)s") % {"dep": dep},
+                    )
                 else:
                     position = JobPosition(department_id=dep, job_position=job_position)
                     position.save()
@@ -1020,7 +1026,11 @@ class JobRoleForm(ModelForm):
                         request, _("Job role has been created successfully!")
                     )
                 except:
-                    messages.info(request, f"Role already exists under {position}")
+                    messages.info(
+                        request,
+                        _("Role already exists under %(position)s")
+                        % {"position": position},
+                    )
                 roles.append(role.pk)
             return JobRole.objects.filter(id__in=roles)
         super().save(commit, *args, **kwargs)
@@ -2352,14 +2362,14 @@ class ChangePasswordForm(forms.Form):
     def clean_old_password(self):
         old_password = self.cleaned_data.get("old_password")
         if not self.user.check_password(old_password):
-            raise forms.ValidationError("Incorrect old password.")
+            raise forms.ValidationError(_("Incorrect old password."))
         return old_password
 
     def clean_new_password(self):
         new_password = self.cleaned_data.get("new_password")
         if self.user.check_password(new_password):
             raise forms.ValidationError(
-                "New password must be different from the old password."
+                _("New password must be different from the old password.")
             )
 
         return new_password
@@ -2419,10 +2429,10 @@ class ChangeUsernameForm(forms.Form):
     def clean_password(self):
         username = self.cleaned_data.get("username")
         if HorillaUser.objects.filter(username=username).exists():
-            raise forms.ValidationError("Username already exists.")
+            raise forms.ValidationError(_("Username already exists."))
         password = self.cleaned_data.get("password")
         if not self.user.check_password(password):
-            raise forms.ValidationError("Incorrect password.")
+            raise forms.ValidationError(_("Incorrect password."))
         return password
 
 
@@ -2919,7 +2929,7 @@ class AnnouncementForm(ModelForm):
         # Remove HTML tags and check if there's meaningful content
         text_content = strip_tags(description).strip()
         if not text_content:  # Checks if the field is empty after stripping HTML
-            raise forms.ValidationError("Description is required.")
+            raise forms.ValidationError(_("Description is required."))
         return description
 
     def __init__(self, *args, **kwargs):
@@ -3203,7 +3213,7 @@ class AttendanceAllowedIPUpdateForm(ModelForm):
         try:
             validate_ipv46_address(value)
         except ValidationError:
-            raise ValidationError("Enter a valid IPv4 or IPv6 address.")
+            raise ValidationError(_("Enter a valid IPv4 or IPv6 address."))
         return value
 
     def clean(self):

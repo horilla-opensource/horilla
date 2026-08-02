@@ -420,7 +420,9 @@ def load_demo_database(request):
                         else:
                             call_command("loaddata", file_path)
                     except Exception as e:
-                        messages.error(request, f"An error occured : {e}")
+                        messages.error(
+                            request, _("An error occured : %(e)s") % {"e": e}
+                        )
                     finally:
                         if tmp and path.exists(tmp):
                             os.remove(tmp)
@@ -898,7 +900,7 @@ class EmployeePasswordResetView(PasswordResetView):
             return HorillaRedirect(self.request)
 
         except Exception as e:
-            messages.error(self.request, f"Something went wrong.....")
+            messages.error(self.request, _("Something went wrong....."))
             return HorillaRedirect(self.request)
 
 
@@ -990,13 +992,13 @@ def two_factor_auth(request):
             request.session["otp_code_timestamp"] = None
             request.session["otp_code_verified"] = True
             request.session.save()
-            messages.success(request, "OTP verified successfully.")
+            messages.success(request, _("OTP verified successfully."))
             return redirect("/")
         elif otp is None:
-            messages.error(request, "OTP expired. Please request a new one.")
+            messages.error(request, _("OTP expired. Please request a new one."))
             return render(request, "base/auth/two_factor_auth.html")
         else:
-            messages.error(request, "Invalid OTP.")
+            messages.error(request, _("Invalid OTP."))
             return render(request, "base/auth/two_factor_auth.html")
 
     if not settings.TWO_FACTORS_AUTHENTICATION:
@@ -1785,7 +1787,11 @@ def object_duplicate(request, obj_id, **kwargs):
     try:
         original_object = model.objects.get(id=obj_id)
     except model.DoesNotExist:
-        messages.error(request, f"{model._meta.verbose_name} object does not exist.")
+        messages.error(
+            request,
+            _("%(model__meta_verbose_name)s object does not exist.")
+            % {"model__meta_verbose_name": model._meta.verbose_name},
+        )
         return HorillaRedirect(request)
 
     form = form_class(instance=original_object)
@@ -2131,7 +2137,7 @@ def view_mail_template(request, obj_id):
         form = MailTemplateForm(request.POST, instance=template)
         if form.is_valid():
             form.save()
-            messages.success(request, "Template updated")
+            messages.success(request, _("Template updated"))
             return HorillaRedirect(request)
 
     return render(
@@ -2156,7 +2162,7 @@ def create_mail_templates(request):
         if form.is_valid():
             instance = form.save()
             instance.save()
-            messages.success(request, "Template created")
+            messages.success(request, _("Template created"))
             return HorillaRedirect(request)
 
     return render(
@@ -2171,7 +2177,7 @@ def create_mail_templates(request):
 def delete_mail_templates(request):
     ids = request.GET.getlist("ids")
     result = HorillaMailTemplate.objects.filter(id__in=ids).delete()
-    messages.success(request, "Template deleted")
+    messages.success(request, _("Template deleted"))
     return redirect(view_mail_templates)
 
 
@@ -2900,7 +2906,7 @@ def rotating_work_type_assign_archive(request, obj_id):
         )
         rwork_type.is_active = not rwork_type.is_active
         if rwork_type.is_active and employees_rwork_types:
-            messages.error(request, "Already on record is active")
+            messages.error(request, _("Already on record is active"))
         else:
             rwork_type.save()
             message = _("un-archived") if rwork_type.is_active else _("archived")
@@ -3552,7 +3558,7 @@ def rotating_shift_assign_import(request):
             keys_list = list(work_info_dicts[0].keys())
             error_dict = {key: [] for key in keys_list}
         except:
-            messages.error(request, "something went wrong....")
+            messages.error(request, _("something went wrong...."))
             data_frame = pd.DataFrame(
                 ["Please provide valid data"],
                 columns=["Title Error"],
@@ -3771,7 +3777,7 @@ def rotating_shift_assign_archive(request, obj_id):
         )
         rshift.is_active = not rshift.is_active
         if rshift.is_active and employees_rshift_assigns:
-            messages.error(request, "Already on record is active")
+            messages.error(request, _("Already on record is active"))
         else:
             rshift.save()
             message = _("un-archived") if rshift.is_active else _("archived")
@@ -5617,7 +5623,7 @@ def shift_request_delete(request, id):
     try:
         shift_request = ShiftRequest.find(id)
         user = shift_request.employee_id.employee_user_id
-        messages.success(request, "Shift request deleted")
+        messages.success(request, _("Shift request deleted"))
         shift_request.delete()
         notify.send(
             request.user.employee_get,
@@ -8388,7 +8394,7 @@ class EnableIntegrationsView(View):
         app_label = request.GET.get("app_label")
 
         if not app_label:
-            messages.error(request, "Missing app_label")
+            messages.error(request, _("Missing app_label"))
             return HttpResponse("<script>window.location.reload()</script>")
 
         selected_company = request.session.get("selected_company")
@@ -8410,9 +8416,17 @@ class EnableIntegrationsView(View):
             app_verbose_name = app_label
 
         if enabled:
-            messages.success(request, f"{app_verbose_name} enabled")
+            messages.success(
+                request,
+                _("%(app_verbose_name)s enabled")
+                % {"app_verbose_name": app_verbose_name},
+            )
         else:
-            messages.error(request, f"{app_verbose_name} disabled")
+            messages.error(
+                request,
+                _("%(app_verbose_name)s disabled")
+                % {"app_verbose_name": app_verbose_name},
+            )
 
         return HttpResponse("<script>window.location.reload()</script>")
 

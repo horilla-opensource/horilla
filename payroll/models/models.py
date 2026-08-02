@@ -2482,7 +2482,7 @@ class Reimbursement(HorillaModel):
             if self.allowance_id:
                 self.allowance_id.delete()
                 super().delete(*args, **kwargs)
-                message = messages.success(request, "Reimbursement deleted")
+                message = messages.success(request, _("Reimbursement deleted"))
 
         return message
 

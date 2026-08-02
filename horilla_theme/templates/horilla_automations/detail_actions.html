@@ -23,7 +23,7 @@
     <!-- Start of Delete a href Tag -->
     <a
         class="w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
-        onclick="confirm('Do you want to delete the automation?','{{instance.delete_url}}')"
+        onclick="confirm('{% trans "Do you want to delete the automation?" %}','{{instance.delete_url}}')"
     >
         <img
             src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}"

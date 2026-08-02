@@ -174,7 +174,7 @@ $(document).on("click", "#exportProject", function (e) {
 //       showCancelButton: true,
 //       confirmButtonColor: '#008000',
 //       cancelButtonColor: '#d33',
-//       confirmButtonText: 'Confirm'
+//       confirmButtonText: i18nMessages.confirm
 //     }).then(function(result) {
 //       if (result.isConfirmed) {
 //         $.ajax({

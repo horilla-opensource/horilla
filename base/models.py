@@ -409,7 +409,9 @@ class WorkType(HorillaModel):
                 .exclude(id=self.id)
                 .exists()
             ):
-                raise ValidationError("This work type already exists in this company")
+                raise ValidationError(
+                    _("This work type already exists in this company")
+                )
         return
 
     def get_company_name(self):
@@ -773,7 +775,7 @@ class EmployeeType(HorillaModel):
                 .exists()
             ):
                 raise ValidationError(
-                    "This employee type already exists in this company"
+                    _("This employee type already exists in this company")
                 )
         return
 
@@ -888,7 +890,7 @@ class EmployeeShift(HorillaModel):
                 .exists()
             ):
                 raise ValidationError(
-                    "This employee shift already exists in this company"
+                    _("This employee shift already exists in this company")
                 )
         return
 
@@ -1576,7 +1578,7 @@ class WorkTypeRequest(HorillaModel):
         else:
             if request:
                 clear_messages(request)
-                messages.warning(request, "The request entry cannot be deleted.")
+                messages.warning(request, _("The request entry cannot be deleted."))
 
     def is_any_work_type_request_exists(self):
         approved_work_type_requests_range = WorkTypeRequest.objects.filter(
@@ -1927,7 +1929,7 @@ class ShiftRequest(HorillaModel):
         else:
             if request:
                 clear_messages(request)
-                messages.warning(request, "The request entry cannot be deleted.")
+                messages.warning(request, _("The request entry cannot be deleted."))
 
     def __str__(self) -> str:
         return f"{self.employee_id.employee_first_name} \

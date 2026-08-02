@@ -210,12 +210,14 @@ class COSECUserForm(Form):
         cleaned_data = super().clean()
         if len(cleaned_data["name"]) > 15:
             raise forms.ValidationError(
-                "Maximum 15 characters allowed for Name in COSEC Biometric Device"
+                _("Maximum 15 characters allowed for Name in COSEC Biometric Device")
             )
         if cleaned_data["validity_enable"]:
             if cleaned_data.get("validity_end_date") is None:
                 raise forms.ValidationError(
-                    "When the Validity field is enabled, a Validity End Date is required."
+                    _(
+                        "When the Validity field is enabled, a Validity End Date is required."
+                    )
                 )
 
 

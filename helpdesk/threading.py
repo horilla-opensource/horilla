@@ -10,6 +10,7 @@ from threading import Thread
 from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+from django.utils.translation import gettext as _
 
 from base.backends import ConfiguredEmailBackend
 from base.models import Department
@@ -79,7 +80,9 @@ class TicketSendThread(Thread):
                 email.send()
             except:
                 messages.error(
-                    self.request, f"Mail not sent to {recipient.get_full_name()}"
+                    self.request,
+                    _("Mail not sent to %(employee)s")
+                    % {"employee": recipient.get_full_name()},
                 )
 
     def run(self) -> None:
@@ -187,7 +190,9 @@ class AddAssigneeThread(Thread):
                 email.send()
             except:
                 messages.error(
-                    self.request, f"Mail not sent to {recipient.get_full_name()}"
+                    self.request,
+                    _("Mail not sent to %(employee)s")
+                    % {"employee": recipient.get_full_name()},
                 )
 
 
@@ -246,5 +251,7 @@ class RemoveAssigneeThread(Thread):
                 email.send()
             except:
                 messages.error(
-                    self.request, f"Mail not sent to {recipient.get_full_name()}"
+                    self.request,
+                    _("Mail not sent to %(employee)s")
+                    % {"employee": recipient.get_full_name()},
                 )

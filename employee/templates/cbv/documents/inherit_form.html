@@ -32,8 +32,8 @@
     var infoBox = `
           <div class="file-validation col-12">
             <ul style="list-style-type: disc;">
-                <li>Upload {{ form.instance.document_request_id.format|upper }} file</li>
-                <li>Max size of the file: {{ form.instance.document_request_id.max_size|default:"any" }} MB</li>
+                <li>{% trans "Upload" %} {{ form.instance.document_request_id.format|upper }} {% trans "file" %}</li>
+                <li>{% trans "Max size of the file" %}: {{ form.instance.document_request_id.max_size|default:"any" }} MB</li>
             </ul>
       </div>
     `;

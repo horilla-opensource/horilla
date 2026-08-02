@@ -241,7 +241,8 @@ class TicketsCreateFormView(HorillaFormView):
                     if ext in BLOCKED_EXTENSIONS:
                         messages.error(
                             self.request,
-                            f"File type {ext} is not allowed for security reasons.",
+                            _("File type %(ext)s is not allowed for security reasons.")
+                            % {"ext": ext},
                         )
                         continue
 

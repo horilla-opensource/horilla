@@ -22,13 +22,13 @@
             <div class="loan-type">{{ record.get_type_display }}</div>
             <div>
               <a class="mr-2" hx-get="{% url 'create-loan' %}?instance_id={{ record.id }}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal"><ion-icon class="text-dark" name="create-outline"></ion-icon></a>
-              <a href="{% url 'delete-loan' %}?ids={{ record.id }}" onclick="return confirm('Do you want to delete this record?')"><ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
+              <a href="{% url 'delete-loan' %}?ids={{ record.id }}" onclick="return confirm('{% trans "Do you want to delete this record?" %}')"><ion-icon class="text-danger" name="trash-outline"></ion-icon></a>
             </div>
           </div>
           <div class="oh-timeoff-modal__profile-content">
             <div class="oh-profile mb-2">
               <div class="oh-profile__avatar">
-                <img src="{{ record.employee_id.get_avatar }}" class="oh-profile__image me-2" alt="Mary Magdalene" />
+                <img src="{{ record.employee_id.get_avatar }}" class="oh-profile__image me-2" alt="{{ record.employee_id }}" />
               </div>
               <div class="oh-timeoff-modal__profile-info">
                 <span class="oh-timeoff-modal__user m-0 fw-bold">{{ record.employee_id }}</span>

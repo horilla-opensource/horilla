@@ -1178,7 +1178,11 @@ def candidate_bulk_archive(request):
         candidate_obj = Candidate.objects.get(id=cand_id)
         candidate_obj.is_active = is_active
         candidate_obj.save()
-        messages.success(request, f"{candidate_obj} is {message}")
+        messages.success(
+            request,
+            _("%(candidate_obj)s is %(message)s")
+            % {"candidate_obj": candidate_obj, "message": message},
+        )
     return JsonResponse({"message": "Success"})
 
 

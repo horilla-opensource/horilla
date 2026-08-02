@@ -47,7 +47,7 @@
                     <img
                         src="{{instance.employee_id.get_avatar}}"
                         class="oh-profile__image me-2"
-                        alt="Mary Magdalene"
+                        alt="{{ instance.employee_id }}"
                     >
                 </div>
                 <div class="oh-timeoff-modal__profile-info">
@@ -140,7 +140,7 @@
                             <form
                                 class="oh-btn oh-btn--success"
                                 style="width: 50%"
-                                onsubmit="return confirm('Do you want to Unarchive this Employee objective?')"
+                                onsubmit="return confirm('{% trans "Do you want to Unarchive this Employee objective?" %}')"
                                 action='{% url "archive-employee-objective" instance.id %}'
                             >
                                 <input type="hidden" name="archive" value="False" id="">
@@ -154,7 +154,7 @@
                             <form
                                 class="oh-btn oh-btn--danger"
                                 style="width: 50%"
-                                onsubmit="return confirm('Do you want to archive this Employee objective?')"
+                                onsubmit="return confirm('{% trans "Do you want to archive this Employee objective?" %}')"
                                 action='{% url "archive-employee-objective" instance.id %}'
                             >
                                 <input type="hidden" name="archive" value="False" id="">
@@ -169,7 +169,7 @@
                             class="oh-btn oh-btn--danger"
                             method="post"
                             style="width: 50%"
-                            onsubmit="return confirm('Do you Want to delete this employee objective?')"
+                            onsubmit="return confirm('{% trans "Do you Want to delete this employee objective?" %}')"
                             action='{% url "delete-employee-objective" instance.id %}'
                         >
                             {% csrf_token %}

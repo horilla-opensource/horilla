@@ -567,7 +567,11 @@ def attendance_bulk_delete(request):
 
     # Build response messages
     if success_count:
-        messages.success(request, f"{success_count} attendances deleted successfully.")
+        messages.success(
+            request,
+            _("%(success_count)s attendances deleted successfully.")
+            % {"success_count": success_count},
+        )
     for error in error_messages:
         messages.error(request, error)
     return JsonResponse({"message": "Success"})
@@ -1460,9 +1464,11 @@ def validate_this_attendance(request, obj_id):
         messages.success(
             request,
             (
-                f"{attendance.employee_id} {attendance.attendance_date.strftime('%d %b %Y') }"
-                + " "
-                + _("Attendance validated.")
+                _("%(employee)s %(date)s Attendance validated.")
+                % {
+                    "employee": attendance.employee_id,
+                    "date": attendance.attendance_date.strftime("%d %b %Y"),
+                }
             ),
         )
         notify.send(
@@ -1545,7 +1551,11 @@ def approve_overtime(request, obj_id):
         modified_url = f"/attendance/attendance-view/?{urlencode}"
         messages.success(
             request,
-            f"{attendance.employee_id}'s {attendance.attendance_date.strftime('%d %b %Y')} overtime approved",
+            _("%(employee)s's %(date)s overtime approved")
+            % {
+                "employee": attendance.employee_id,
+                "date": attendance.attendance_date.strftime("%d %b %Y"),
+            },
         )
         with contextlib.suppress(Exception):
             notify.send(
@@ -3305,7 +3315,7 @@ def validate_ip_address(self, value):
     try:
         validate_ipv46_address(value)
     except ValidationError:
-        raise ValidationError("Enter a valid IPv4 or IPv6 address.")
+        raise ValidationError(_("Enter a valid IPv4 or IPv6 address."))
     return value
 
 
@@ -3332,7 +3342,9 @@ def create_allowed_ips(request):
             duplicates = new_ips & existing_ips
             if duplicates:
                 messages.error(
-                    request, f"IP addresses already exist: {', '.join(duplicates)}"
+                    request,
+                    _("IP addresses already exist: %(ips)s")
+                    % {"ips": ", ".join(duplicates)},
                 )
             non_duplicates = new_ips - duplicates
             if non_duplicates:

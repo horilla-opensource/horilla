@@ -11,6 +11,7 @@ from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 from django.http.response import HttpResponse
 from django.shortcuts import render
+from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 
 from base.models import Announcement, IntegrationApps
@@ -290,7 +291,9 @@ def create_generic_templates(request, id):
         credential.created_templates = True
         credential.save()
 
-        messages.success(request, "Message templates and flows created successfully.")
+        messages.success(
+            request, _("Message templates and flows created successfully.")
+        )
     return HttpResponse("<script>window.location.reload();</script>")
 
 

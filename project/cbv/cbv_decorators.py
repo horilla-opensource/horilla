@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.utils.translation import gettext as _
 
 from horilla.horilla_middlewares import _thread_locals
 from horilla.http import HorillaRedirect
@@ -38,7 +39,7 @@ def is_projectmanager_or_member_or_perms(function, perm):
             or any_task_member(user)
         ):
             return function(self, *args, **kwargs)
-        messages.info(request, "You don't have permission.")
+        messages.info(request, _("You don't have permission."))
         return HorillaRedirect(request)
 
     return _function

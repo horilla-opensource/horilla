@@ -26,7 +26,7 @@ class FaceDetection(models.Model):
                 qs = qs.exclude(pk=self.pk)
             if qs.exists():
                 raise ValidationError(
-                    "Only one FaceDetection can have a null company_id."
+                    _("Only one FaceDetection can have a null company_id.")
                 )
 
     def save(self, *args, **kwargs):

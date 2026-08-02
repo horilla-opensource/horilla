@@ -7,6 +7,7 @@ if (typeof i18nMessages === 'undefined') {
         selected: gettext("Selected"),
         uploading: gettext("Uploading..."),
         emptyMessages: gettext("No Records found"),
+        ok: gettext("Ok"),
         downloadExcel: gettext("Do you want to download the excel file?"),
         downloadTemplate: gettext("Do you want to download the template?"),
         noRowsSelected: gettext("No rows are selected from the records."),
@@ -15,6 +16,10 @@ if (typeof i18nMessages === 'undefined') {
         confirmBulkReject: gettext("Do you really want to approve all the selected requests?"),
         confirmBulkApprove: gettext("Do you really want to approve all the selected requests?"),
         confirmBulkUnArchive: gettext("Do you really want to unarchive all the selected records?"),
+        totalVacancy: gettext("Total vacancy is %(vacancy)s."),
+        candidateStageChange: gettext(
+            "Are you sure to change the candidate from %(from)s stage to %(to)s stage"
+        ),
     }
 }
 
@@ -581,9 +586,13 @@ function bulkStageUpdate(canIds, stageId, preStageId) {
             if (response.message) {
                 Swal.fire({
                     title: response.message,
-                    text: `Total vacancy is ${response.vacancy}.`, // Using template literals
+                    text: interpolate(
+                        i18nMessages.totalVacancy,
+                        { vacancy: response.vacancy },
+                        true
+                    ),
                     icon: "info",
-                    confirmButtonText: "Ok",
+                    confirmButtonText: i18nMessages.ok,
                 });
             }
         },
@@ -607,9 +616,13 @@ function updateCandStage(canIds, stageId, preStageId) {
             if (response.message) {
                 Swal.fire({
                     title: response.message,
-                    text: `Total vacancy is ${response.vacancy}.`, // Using template literals
+                    text: interpolate(
+                        i18nMessages.totalVacancy,
+                        { vacancy: response.vacancy },
+                        true
+                    ),
                     icon: "info",
-                    confirmButtonText: "Ok",
+                    confirmButtonText: i18nMessages.ok,
                 });
             }
         },
@@ -634,13 +647,18 @@ function checkSequence(element) {
         stage.type != "cancelled"
     ) {
         Swal.fire({
-            title: "Confirm",
-            text: `Are you sure to change the candidate from ${preStage.stage} stage to ${stage.stage} stage`,
+            title: i18nMessages.confirm,
+            text: interpolate(
+                i18nMessages.candidateStageChange,
+                { from: preStage.stage, to: stage.stage },
+                true
+            ),
             icon: "info",
             showCancelButton: true,
             confirmButtonColor: "#008000",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "Confirm",
+            confirmButtonText: i18nMessages.confirm,
+            cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
             if (result.isConfirmed) {
                 updateCandStage(canIds, stageId, preStageId);
@@ -683,8 +701,8 @@ function hxConfirm(element, messageText) {
         showCancelButton: true,
         confirmButtonColor: "#008000",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: "Confirm",
-        cancelButtonText: "Cancel",
+        confirmButtonText: i18nMessages.confirm,
+        cancelButtonText: i18nMessages.cancel,
         reverseButtons: true,
     }).then((result) => {
         if (result.isConfirmed) {

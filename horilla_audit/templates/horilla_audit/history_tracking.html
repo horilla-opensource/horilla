@@ -52,7 +52,7 @@
 
                 <div class="oh-history_user-details">
                     <span class="oh-history__username"
-                        >{% if history.actor.employee_get %} {{history.actor.employee_get.get_full_name}} {% else %} Horilla Bot {% endif %}</span
+                        >{% if history.actor.employee_get %} {{history.actor.employee_get.get_full_name}} {% else %}{% trans "Horilla Bot" %} {% endif %}</span
                     >
                     <div class="oh-history_abt pb-0">
                         <span class="oh-history_task-state">

@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.translation import gettext as _
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -50,7 +51,7 @@ def ess_dashboard(request):
 
         from horilla.http.response import HorillaRedirect
 
-        messages.error(request, "Your account is not linked to an employee record.")
+        messages.error(request, _("Your account is not linked to an employee record."))
         return HorillaRedirect(request)
     return render(
         request,

@@ -92,7 +92,7 @@
                     {% if instance.end_date.month > current_date.month %}
                         onclick="leaveRequestConfirm('This leave request is for the month of {{instance.start_date|date:'F'}}. Approval depends on the {{instance.employee_id.get_full_name}} having available leave days for this month.', event);"
                     {% else %}
-                        onclick="return confirm('Do you really want to approve this request?');"
+                        onclick="return confirm('{% trans "Do you really want to approve this request?" %}');"
                     {% endif %}>
                     <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                 </button>

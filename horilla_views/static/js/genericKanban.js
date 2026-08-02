@@ -86,16 +86,18 @@ function handleValidDrop(groupId, objectId, row) {
 
 				Toast.fire({
 					icon: "success",
-					title: "Stage updated",
+					title: typeof gettext !== "undefined" ? gettext("Stage updated") : "Stage updated",
 					position: "top-end",
 				});
 
 				if (response.message) {
 					Swal.fire({
 						title: response.message,
-						text: `Total vacancy is ${response.vacancy}.`,
+						text: typeof interpolate !== "undefined" && typeof i18nMessages !== "undefined"
+							? interpolate(i18nMessages.totalVacancy, { vacancy: response.vacancy }, true)
+							: `Total vacancy is ${response.vacancy}.`,
 						icon: "info",
-						confirmButtonText: "Ok",
+						confirmButtonText: typeof i18nMessages !== "undefined" ? i18nMessages.ok : "Ok",
 					});
 				}
 			},
@@ -301,17 +303,24 @@ function initializeKanbanSortable(sectionSelector, stageSelector) {
 				if (!isNextStage(originalStageId, targetStageId, parsedStageOrder)) {
 					if (sessionStorage.getItem(`showKanban${modelName}Confirmation`) !== "false") {
 						Swal.fire({
-							title: "Confirm Stage Change",
+							title: typeof gettext !== "undefined" ? gettext("Confirm Stage Change") : "Confirm Stage Change",
 							html: `
-                                <p class="mb-2">The candidate is being moved from ${preStage.stage}
-                                to the ${currentStage.stage} stage. Do you want to proceed?</p>
-                                <label><input type="checkbox" id="doNotShowAgain"> Don't show this again in this session</label>
+                                <p class="mb-2">${typeof interpolate !== "undefined" && typeof gettext !== "undefined"
+									? interpolate(
+										gettext("The candidate is being moved from %(from)s to the %(to)s stage. Do you want to proceed?"),
+										{ from: preStage.stage, to: currentStage.stage },
+										true
+									)
+									: `The candidate is being moved from ${preStage.stage} to the ${currentStage.stage} stage. Do you want to proceed?`
+								}</p>
+                                <label><input type="checkbox" id="doNotShowAgain"> ${typeof gettext !== "undefined" ? gettext("Don't show this again in this session") : "Don't show this again in this session"}</label>
                             `,
 							icon: "warning",
 							showCancelButton: true,
 							cancelButtonColor: "#6c757d",
 							confirmButtonColor: "#008000",
 							confirmButtonText: i18nMessages.confirm,
+							cancelButtonText: typeof i18nMessages !== "undefined" ? i18nMessages.cancel : "Cancel",
 							preConfirm: () => {
 								const doNotShowAgain = Swal.getPopup().querySelector("#doNotShowAgain").checked;
 								if (doNotShowAgain) {
@@ -346,8 +355,9 @@ function initializeKanbanSortable(sectionSelector, stageSelector) {
 						if (response.blocked) {
 							Swal.fire({
 								icon: "error",
-								title: "Cannot Change Stage",
-								text: response.message || "This move is not allowed.",
+								title: typeof gettext !== "undefined" ? gettext("Cannot Change Stage") : "Cannot Change Stage",
+								text: response.message || (typeof gettext !== "undefined" ? gettext("This move is not allowed.") : "This move is not allowed."),
+								confirmButtonText: typeof i18nMessages !== "undefined" ? i18nMessages.ok : "Ok",
 							});
 							revertItemPosition(ui);
 						} else {

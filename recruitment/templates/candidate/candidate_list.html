@@ -134,7 +134,7 @@
                   <div class="oh-profile__avatar mr-1">
                     <img src="{{cand.get_avatar}}"
                     class="oh-profile__image"
-                    alt="Username" />
+                    alt="{{ cand }}" />
                   </div>
                   <span class="oh-profile__name oh-text--dark">{{cand}}</span>
                 </a>
@@ -528,7 +528,7 @@
         showCancelButton: true,
         confirmButtonColor: "#008000",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: "Confirm",
+        confirmButtonText: i18nMessages.confirm,
       }).then(function (result) {
         if (result.isConfirmed) {
           $.ajax({

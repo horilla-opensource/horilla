@@ -234,10 +234,10 @@ def update_stage_order(request, pk):
                 stage = recruitment.onboarding_stage.get(id=stage_id)
                 stage.sequence = index + 1
                 stage.save()
-            messages.success(request, "Sequence Updated Successfully")
+            messages.success(request, _("Sequence Updated Successfully"))
             return JsonResponse({"status": "success"})
         except Exception as e:
-            messages.error(request, "Error Updating Sequence..")
+            messages.error(request, _("Error Updating Sequence.."))
             return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
     stages = recruitment.onboarding_stage.order_by("sequence")
@@ -697,7 +697,7 @@ def candidate_filter(request):
 #     template_attachment_ids = request.POST.getlist("template_attachment_ids")
 #     email_backend = ConfiguredEmailBackend()
 #     if not candidates:
-#         messages.info(request, "Please choose candidates")
+#         messages.info(request, _("Please choose candidates"))
 #         return HttpResponse("<script>window.location.reload()</script>")
 
 #     bodys = list(
@@ -766,10 +766,10 @@ def candidate_filter(request):
 #             try:
 #                 email.send()
 #                 # to check ajax or not
-#                 messages.success(request, "Portal link sent to the candidate")
+#                 messages.success(request, _("Portal link sent to the candidate"))
 #             except Exception as e:
 #                 logger.error(e)
-#                 messages.error(request, f"Mail not send to {candidate.name}")
+#                 messages.error(request, _("Mail not send to %(candidate_name)s") % {"candidate_name": candidate.name})
 #             candidate.start_onboard = True
 #             candidate.save()
 #         try:
@@ -779,7 +779,7 @@ def candidate_filter(request):
 #             )
 #             onboarding_candidate.candidate_id = candidate
 #             onboarding_candidate.save()
-#             messages.success(request, "Candidate Added to Onboarding Stage")
+#             messages.success(request, _("Candidate Added to Onboarding Stage"))
 #         except Exception as e:
 #             logger.error(e)
 
@@ -812,7 +812,7 @@ def email_send(request):
     display_email_name = email_backend.dynamic_from_email_with_display_name
 
     if not candidates:
-        messages.info(request, "Please choose candidates")
+        messages.info(request, _("Please choose candidates"))
         return HorillaRedirect(request)
 
     # Fetch PDF templates
@@ -835,7 +835,9 @@ def email_send(request):
         # Prevent duplicate onboarding
         if candidate.converted_employee_id:
             messages.info(
-                request, f"{candidate} has already been converted to employee."
+                request,
+                _("%(candidate)s has already been converted to employee.")
+                % {"candidate": candidate},
             )
             continue
 
@@ -916,10 +918,14 @@ def email_send(request):
         # Send mail
         try:
             email.send()
-            messages.success(request, "Portal link sent to the candidate")
+            messages.success(request, _("Portal link sent to the candidate"))
         except Exception as e:
             logger.error(e)
-            messages.error(request, f"Mail not sent to {candidate.name}")
+            messages.error(
+                request,
+                _("Mail not sent to %(candidate_name)s")
+                % {"candidate_name": candidate.name},
+            )
             # continue
 
         # Mark onboarding started without triggering Candidate.save() validation
@@ -1674,7 +1680,7 @@ def candidate_task_bulk_update(request):
     count = CandidateTask.objects.filter(
         candidate_id__id__in=candidate_id_list, onboarding_task_id=task
     ).update(status=status)
-    # messages.success(request,f"{count} candidate's task status updated successfully")
+    # messages.success(request, _("%(count)s candidate's task status updated successfully") % {"count": count})
 
     return JsonResponse(
         {"message": _("Candidate onboarding stage updated"), "type": "success"}
@@ -2040,20 +2046,20 @@ def update_offer_letter_status(request):
     status = request.GET.get("status")
     candidate = None
     if not candidate_id or not status:
-        messages.error(request, "candidate or status is missing")
+        messages.error(request, _("candidate or status is missing"))
         return redirect("/onboarding/candidates-view/")
     if not status in ["not_sent", "sent", "accepted", "rejected", "joined"]:
-        messages.error(request, "Please Pass valid status")
+        messages.error(request, _("Please Pass valid status"))
         return redirect("/onboarding/candidates-view/")
     try:
         candidate = Candidate.objects.get(id=candidate_id)
     except Candidate.DoesNotExist:
-        messages.error(request, "Candidate not found")
+        messages.error(request, _("Candidate not found"))
         return redirect("/onboarding/candidates-view/")
     if status in ["not_sent", "sent", "accepted", "rejected", "joined"]:
         candidate.offer_letter_status = status
         candidate.save()
-    messages.success(request, "Status of offer letter updated successfully")
+    messages.success(request, _("Status of offer letter updated successfully"))
     url = "/onboarding/candidates-view/"
     return HttpResponse(
         f"""
@@ -2083,7 +2089,7 @@ def add_to_rejected_candidates(request):
         if form.is_valid():
             form.save()
             form = RejectedCandidateForm()
-            messages.success(request, "Candidate reject reason saved")
+            messages.success(request, _("Candidate reject reason saved"))
             return HorillaRedirect(request)
     return render(request, "onboarding/rejection/form.html", {"form": form})
 
@@ -2184,7 +2190,7 @@ def offer_letter_bulk_status_update(request):
     letter_ids = request.GET.get("ids")
 
     if not letter_ids:
-        messages.error(request, "No offer letters selected for status update.")
+        messages.error(request, _("No offer letters selected for status update."))
         return JsonResponse("Missing required parameter: ids", safe=False, status=400)
 
     ids = json.loads(letter_ids)
@@ -2195,11 +2201,11 @@ def offer_letter_bulk_status_update(request):
             if candidate.offer_letter_status != status:
                 candidate.offer_letter_status = status
                 candidate.save()
-                messages.success(request, "offer letter status updated successfully")
+                messages.success(request, _("offer letter status updated successfully"))
             else:
-                messages.error(request, "Status already in {} status".format(status))
+                messages.error(request, _("Status already in {} status").format(status))
         except:
-            messages.error(request, "Candidate doesnot exist")
+            messages.error(request, _("Candidate doesnot exist"))
 
     return JsonResponse("success", safe=False)
 
@@ -2213,7 +2219,7 @@ def onboarding_candidate_bulk_delete(request):
 
     cand_ids = request.GET.get("ids")
     if not cand_ids:
-        messages.error(request, "No candidates selected for deletion.")
+        messages.error(request, _("No candidates selected for deletion."))
         return JsonResponse("Missing required parameter: ids", safe=False, status=400)
 
     ids = json.loads(cand_ids)
@@ -2221,8 +2227,8 @@ def onboarding_candidate_bulk_delete(request):
         try:
             candidate = Candidate.objects.filter(id=int(id)).first()
             candidate.delete()
-            messages.success(request, "candidate deleted successfully")
+            messages.success(request, _("candidate deleted successfully"))
         except:
-            messages.error(request, "Candidate doesnot exist")
+            messages.error(request, _("Candidate doesnot exist"))
 
     return JsonResponse("success", safe=False)

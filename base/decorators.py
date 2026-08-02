@@ -3,6 +3,7 @@ decorator functions for base
 """
 
 from django.contrib import messages
+from django.utils.translation import gettext as _
 
 from employee.models import EmployeeWorkInformation
 from horilla.horilla_middlewares import _thread_locals
@@ -37,7 +38,7 @@ def shift_request_change_permission(function=None, *args, **kwargs):
             or request.user.employee_get == shift_request.employee_id
         ):
             return function(request, *args, shift_request_id=shift_request_id, **kwargs)
-        messages.info(request, "You dont have permission.")
+        messages.info(request, _("You dont have permission."))
         return HorillaRedirect(request)
         # return function(request, *args, **kwargs)
 
@@ -65,7 +66,7 @@ def work_type_request_change_permission(function=None, *args, **kwargs):
             return function(
                 request, *args, work_type_request_id=work_type_request_id, **kwargs
             )
-        messages.info(request, "You dont have permission.")
+        messages.info(request, _("You dont have permission."))
         return HorillaRedirect(request)
         # return function(request, *args, **kwargs)
 

@@ -44,7 +44,7 @@ $("#deleteBioUsers").click(function (e) {
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "Confirm",
+            confirmButtonText: i18nMessages.confirm,
         }).then(function (result) {
             if (result.isConfirmed) {
                 ids = [];
@@ -90,7 +90,7 @@ $("#deleteCosecUsers").click(function (e) {
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "Confirm",
+            confirmButtonText: i18nMessages.confirm,
         }).then(function (result) {
             if (result.isConfirmed) {
                 ids = [];
@@ -134,7 +134,7 @@ function deleteDahuaUsers(e) {
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "Confirm",
+            confirmButtonText: i18nMessages.confirm,
         }).then(function (result) {
             if (result.isConfirmed) {
                 ids = [];
@@ -165,7 +165,7 @@ function deleteETimeOfficeUsers(e) {
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "Confirm",
+            confirmButtonText: i18nMessages.confirm,
         }).then(function (result) {
             if (result.isConfirmed) {
                 ids = [];

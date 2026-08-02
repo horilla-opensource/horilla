@@ -199,3 +199,30 @@ msgstr ""
 
 msgid "Do you really want to unarchive all the selected records?"
 msgstr ""
+
+msgid "Ok"
+msgstr ""
+
+msgid "Total vacancy is %(vacancy)s."
+msgstr ""
+
+msgid "Are you sure to change the candidate from %(from)s stage to %(to)s stage"
+msgstr ""
+
+msgid "Stage updated"
+msgstr ""
+
+msgid "Confirm Stage Change"
+msgstr ""
+
+msgid "The candidate is being moved from %(from)s to the %(to)s stage. Do you want to proceed?"
+msgstr ""
+
+msgid "Don't show this again in this session"
+msgstr ""
+
+msgid "Cannot Change Stage"
+msgstr ""
+
+msgid "This move is not allowed."
+msgstr ""

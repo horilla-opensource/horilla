@@ -28,7 +28,7 @@ def outlook_login(request):
         api = models.AzureApi.objects.filter(company=selected_company).first()
 
     if not api:
-        messages.info(request, "Not configured outlook")
+        messages.info(request, _("Not configured outlook"))
     oauth = OAuth2Session(
         api.outlook_client_id,
         redirect_uri=api.outlook_redirect_uri,
@@ -135,7 +135,7 @@ def send_outlook_email(request, email_data=None):
     if not token and not api.is_token_expired():
         refresh_outlook_token(api)
     if not token and request:
-        messages.info(request, "Mail not sent")
+        messages.info(request, _("Mail not sent"))
         return redirect("outlook_login")
 
     oauth = OAuth2Session(

@@ -61,10 +61,10 @@ def delete_automation(request, pk):
     """
     try:
         MailAutomation.objects.get(id=pk).delete()
-        messages.success(request, "Automation deleted")
+        messages.success(request, _("Automation deleted"))
     except Exception as e:
         print(e)
-        messages.error(request, "Something went wrong")
+        messages.error(request, _("Something went wrong"))
     return redirect(reverse("mail-automations-view"))
 
 
@@ -99,8 +99,8 @@ def refresh_automations(request):
         refreshed = True
 
     if refreshed:
-        messages.success(request, "Automations refreshed successfully.")
+        messages.success(request, _("Automations refreshed successfully."))
     else:
-        messages.error(request, "Automation method not available to refresh.")
+        messages.error(request, _("Automation method not available to refresh."))
 
     return HorillaFormView.HttpResponse()

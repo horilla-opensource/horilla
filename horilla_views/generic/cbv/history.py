@@ -5,6 +5,7 @@ horilla_views/generic/cbv/history.py
 from django.apps import apps
 from django.contrib import messages
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
 from django.views.generic import DetailView
 from simple_history.utils import get_history_model_for_model
 
@@ -80,6 +81,6 @@ class HorillaHistoryView(DetailView):
             history_id=history_id
         )
         history.instance.save()
-        messages.success(request, "History reverted")
+        messages.success(request, _("History reverted"))
 
         return HorillaFormView.HttpResponse()

@@ -1992,11 +1992,15 @@ def load_faqs(request):
                 faq_obj.tags.set(tags)
 
                 messages.success(
-                    request, f"Automation '{faq_obj.question}' created successfully."
+                    request,
+                    _("Automation '%(faq_obj_question)s' created successfully.")
+                    % {"faq_obj_question": faq_obj.question},
                 )
             else:
                 messages.warning(
-                    request, f"Automation '{faq_obj.question}' already exists."
+                    request,
+                    _("Automation '%(faq_obj_question)s' already exists.")
+                    % {"faq_obj_question": faq_obj.question},
                 )
 
         script = """
@@ -2049,7 +2053,9 @@ def ticket_file_upload(request, id):
 
             if ext in BLOCKED_EXTENSIONS:
                 messages.error(
-                    request, f"File type {ext} is not allowed for security reasons."
+                    request,
+                    _("File type %(ext)s is not allowed for security reasons.")
+                    % {"ext": ext},
                 )
                 continue
 

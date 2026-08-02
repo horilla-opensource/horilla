@@ -616,7 +616,7 @@ class HorillaListView(ListView):
         Method to serve bulk import sheet
         """
         if not self.import_accessibility():
-            messages.info(request, "You dont have permission")
+            messages.info(request, _("You dont have permission"))
             return HorillaFormView.HttpResponse()
         ids = eval_validate(request.POST["selected_ids"])
 
@@ -643,7 +643,7 @@ class HorillaListView(ListView):
         """
         try:
             if not self.import_accessibility():
-                messages.info(request, "You dont have permission")
+                messages.info(request, _("You dont have permission"))
             field_column_mapping = {
                 field: get_verbose_name_from_field_path(
                     self.model, field, self.import_related_model_column_mapping
@@ -1570,7 +1570,7 @@ class HorillaDetailedView(DetailView):
         if not self.instance and self.empty_template:
             return render(request, self.empty_template, context=self.get_context_data())
         elif not self.instance:
-            messages.info(request, "No record found...")
+            messages.info(request, _("No record found..."))
             return HorillaRedirect(request)
         return response
 
@@ -2015,7 +2015,7 @@ class HorillaFormView(FormView):
         _pk = pk
         form = self.get_form()
         if pk and not form.instance:
-            messages.error(request, "Matching query does not exists.")
+            messages.error(request, _("Matching query does not exists."))
             return HorillaRedirect(request)
         response = super().get(request, *args, **kwargs)
         return response

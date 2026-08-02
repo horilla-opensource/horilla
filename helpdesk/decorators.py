@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render
+from django.utils.translation import gettext as _
 
 from base.methods import check_manager
 from helpdesk.models import Ticket
@@ -29,7 +30,7 @@ def ticket_owner_can_enter(function, perm: str, model: object, manager_access=Fa
             try:
                 employee = model.objects.get(id=instance_id).employee_id
             except:
-                messages.error(request, ("Sorry, something went wrong!"))
+                messages.error(request, _("Sorry, something went wrong!"))
                 return HorillaRedirect(request)
         can_enter = (
             request.user.employee_get == employee

@@ -411,7 +411,7 @@
         localStorage.setItem(REFRESH_KEY, 'on');
         refreshDot.classList.add('pd-refresh__dot--pulse');
         refreshToggle.textContent = '⟳';
-        refreshToggle.title = 'Auto-refresh ON (5 min)';
+        refreshToggle.title = '{% trans "Auto-refresh ON (5 min)" %}';
         refreshTimer = setInterval(() => {
             lastRefresh = Date.now();
             updateRefreshText();
@@ -423,7 +423,7 @@
         localStorage.setItem(REFRESH_KEY, 'off');
         refreshDot.classList.remove('pd-refresh__dot--pulse');
         refreshToggle.textContent = '⏸';
-        refreshToggle.title = 'Auto-refresh OFF';
+        refreshToggle.title = '{% trans "Auto-refresh OFF" %}';
         if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
     }
     refreshToggle.addEventListener('click', () => { if (autoRefreshOn) stopAutoRefresh(); else startAutoRefresh(); });

@@ -1653,7 +1653,9 @@ class LeaveRequest(HorillaModel):
                     and not restrict.job_position.exists()
                 ) or (emp_job and emp_job in restrict.job_position.all()):
                     raise ValidationError(
-                        "You cannot request leave for this date range. The requested dates are restricted. Please contact admin."
+                        _(
+                            "You cannot request leave for this date range. The requested dates are restricted. Please contact admin."
+                        )
                     )
 
         return cleaned_data

@@ -4271,7 +4271,7 @@ def cut_available_leave(request, instance_id):
             penalty.penalty_amount = penalty_instance.penalty_amount
             penalty.save()
             form = PenaltyAccountForm()
-            messages.success(request, "Penalty/Fine added")
+            messages.success(request, _("Penalty/Fine added"))
     return render(
         request,
         "leave/leave_request/penalty/form.html",

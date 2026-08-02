@@ -7,6 +7,7 @@ This module is used to write custom authentication decorators for offboarding mo
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.utils.translation import gettext as _
 
 from horilla.decorators import decorator_with_arguments
 from offboarding.models import (
@@ -37,7 +38,7 @@ def any_manager_can_enter(function, perm, offboarding_employee_can_enter=False):
         ):
             return function(request, *args, **kwargs)
         else:
-            messages.info(request, "You don't have permission.")
+            messages.info(request, _("You don't have permission."))
             previous_url = request.META.get("HTTP_REFERER", "/")
             script = f'<script>window.location.href = "{previous_url}"</script>'
             key = "HTTP_HX_REQUEST"
@@ -58,7 +59,7 @@ def offboarding_manager_can_enter(function, perm):
         ):
             return function(request, *args, **kwargs)
         else:
-            messages.info(request, "You dont have permission.")
+            messages.info(request, _("You dont have permission."))
             previous_url = request.META.get("HTTP_REFERER", "/")
             script = f'<script>window.location.href = "{previous_url}"</script>'
             key = "HTTP_HX_REQUEST"
@@ -80,7 +81,7 @@ def offboarding_or_stage_manager_can_enter(function, perm):
         ):
             return function(request, *args, **kwargs)
         else:
-            messages.info(request, "You dont have permission.")
+            messages.info(request, _("You dont have permission."))
             previous_url = request.META.get("HTTP_REFERER", "/")
             key = "HTTP_HX_REQUEST"
             if key in request.META.keys():
@@ -98,7 +99,7 @@ def check_feature_enabled(function, feature_name):
         enabled = getattr(general_setting, feature_name, False)
         if enabled:
             return function(request, *args, **kwargs)
-        messages.info(request, "Feature is not enabled on the settings")
+        messages.info(request, _("Feature is not enabled on the settings"))
         previous_url = request.META.get("HTTP_REFERER", "/")
         key = "HTTP_HX_REQUEST"
         if key in request.META.keys():

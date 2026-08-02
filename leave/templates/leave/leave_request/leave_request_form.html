@@ -58,7 +58,7 @@
 
                         title = "{% trans 'Leave Request Alert.' %}";
                         var content = `<div>
-                                                <p>${employee} has interview in the requested date.</p>
+                                                <p>${employee} {% trans "has interview in the requested date." %}</p>
                                                 <ol style="margin-left:5%">`;
                         interviews.forEach(function (interview, index) {
                             content += `<li style="text-align:left; font-size:14px">${interview}</li>`;
@@ -75,7 +75,7 @@
                                 showCancelButton: true,
                                 confirmButtonColor: "#008000",
                                 cancelButtonColor: "#6c757d",
-                                confirmButtonText: "Confirm",
+                                confirmButtonText: i18nMessages.confirm,
                             }).then(function (result) {
                                 if (result.isConfirmed) {
                                     $("#leaveRequestCreateForm [type=submit]").click();

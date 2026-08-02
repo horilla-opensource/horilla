@@ -9,7 +9,7 @@ function deleteItem(url, message) {
         showCancelButton: true,
         confirmButtonColor: "#d33",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: "Confirm"
+        confirmButtonText: typeof i18nMessages !== "undefined" ? i18nMessages.confirm : "Confirm"
     }).then((result) => {
         if (result.isConfirmed) {
             const form = document.createElement('form');

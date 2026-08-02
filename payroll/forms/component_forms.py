@@ -738,12 +738,14 @@ class LoanAccountForm(ModelForm):
             "installment_start_date"
         ) < cleaned_data.get("provided_date"):
             raise forms.ValidationError(
-                "Installment start date should be greater than or equal to provided date"
+                _(
+                    "Installment start date should be greater than or equal to provided date"
+                )
             )
         if cleaned_data.get("installments") != None:
             if cleaned_data.get("installments") <= 0:
                 raise forms.ValidationError(
-                    "Installments needs to be a positive integer"
+                    _("Installments needs to be a positive integer")
                 )
 
         return cleaned_data

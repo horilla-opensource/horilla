@@ -261,7 +261,7 @@ class SavedFilter(HorillaFormView):
                 instance.filter = result_dict
                 instance.urlencode = self.request.GET.urlencode()
             instance.save()
-            messages.success(self.request, "Filter Saved")
+            messages.success(self.request, _("Filter Saved"))
             return self.HttpResponse()
         return super().form_valid(form)
 
@@ -395,7 +395,7 @@ class HorillaDeleteConfirmationView(View):
         try:
             app, MODEL_NAME = self.request.GET.get("model").split(".")
         except:
-            messages.error(self.request, "Invalid model parameter format.")
+            messages.error(self.request, _("Invalid model parameter format."))
             return HorillaFormView.HttpResponse()
 
         if not self.request.user.has_perm(app + ".delete_" + MODEL_NAME.lower()):
@@ -669,13 +669,20 @@ class HorillaDeleteConfirmationView(View):
                         view_instance=self,
                         kwargs=kwargs,
                     )
-                    messages.success(self.request, f"Deleted {instance}")
+                    messages.success(
+                        self.request, _("Deleted %(instance)s") % {"instance": instance}
+                    )
                 else:
                     messages.info(
-                        self.request, f"You don't have permission to delete {instance}"
+                        self.request,
+                        _("You don't have permission to delete %(instance)s")
+                        % {"instance": instance},
                     )
             except:
-                messages.error(self.request, f"Cannot delete : {instance}")
+                messages.error(
+                    self.request,
+                    _("Cannot delete : %(instance)s") % {"instance": instance},
+                )
 
         # deleting protected objects
         for obj in collector.protected:

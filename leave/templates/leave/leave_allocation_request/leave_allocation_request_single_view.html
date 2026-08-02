@@ -37,7 +37,7 @@
     <h2 class="oh-modal__dialog-title" id="objectDetailsModalLabel">
         {% trans "Details" %}
     </h2>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label={% trans 'Close' %}>
         <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="{% trans 'close outline' %}"></ion-icon>
     </button>
 </div>
@@ -50,7 +50,7 @@
             <img
               src="{{leave_allocation_request.employee_id.get_avatar}}"
               class="oh-profile__image me-2"
-              alt="Mary Magdalene"
+              alt="{{ leave_allocation_request.employee_id }}"
             />
           </div>
           <div class="oh-timeoff-modal__profile-info">
@@ -216,7 +216,7 @@
 </div>
 {% else %}
     <div class="oh-empty">
-        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}" />
         <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
         <p class="oh-empty__subtitle" style="text-align: center;">{% trans "There are no leave allocation requests at the moment." %}</p>
     </div>

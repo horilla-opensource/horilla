@@ -202,7 +202,7 @@
                                                     {% endif %}
                                                 {% endif %}
                                                 {% if perms.payroll.delete_reimbursement %}
-                                                    <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="event.stopPropagation();return confirm('Do you want to delete this record?')"
+                                                    <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="event.stopPropagation();return confirm('{% trans "Do you want to delete this record?" %}')"
                                                         class='w-100 oh-btn oh-btn--danger' title='{% trans "Delete" %}'>
 
                                                         <ion-icon name="trash-outline"></ion-icon>
@@ -543,7 +543,7 @@
                                                         {% endif %}
                                                     {% endif %}
                                                     {% if perms.payroll.delete_reimbursement %}
-                                                        <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')"
+                                                        <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('{% trans "Do you want to delete this record?" %}')"
                                                             class='w-100 oh-btn oh-btn--danger' title='{% trans "Delete" %}'>
 
                                                             <ion-icon name="trash-outline"></ion-icon>
@@ -869,7 +869,7 @@
                                                         {% endif %}
                                                     {% endif %}
                                                     {% if perms.payroll.delete_reimbursement %}
-                                                        <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('Do you want to delete this record?')"
+                                                        <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('{% trans "Do you want to delete this record?" %}')"
                                                             class='w-100 oh-btn oh-btn--danger' title='{% trans "Delete" %}'>
 
                                                             <ion-icon name="trash-outline"></ion-icon>
@@ -1053,7 +1053,7 @@
                 showCancelButton: true,
                 confirmButtonColor: "#008000",
                 cancelButtonColor: "#6c757d",
-                confirmButtonText: "Confirm",
+                confirmButtonText: i18nMessages.confirm,
                 cancelButtonText: "Close",
             }).then((result) => {
                 if (result.isConfirmed) {

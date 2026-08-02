@@ -305,7 +305,7 @@ class ResignationLetterForm(ModelForm):
             instance = super().save(commit)
         else:
             messages.info(
-                request, "You cannot edit a request that has been rejected/approved"
+                request, _("You cannot edit a request that has been rejected/approved")
             )
             return None
 

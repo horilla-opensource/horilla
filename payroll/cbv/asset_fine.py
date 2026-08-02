@@ -40,7 +40,7 @@ class AssetFineFormView(HorillaFormView):
             instance.provided_date = datetime.date.today()
             instance.asset_id = asset
             instance.save()
-            messages.success(self.request, "Asset fine added")
+            messages.success(self.request, _("Asset fine added"))
             return HttpResponse(
                 "<script>$('#dynamicCreateModal').toggleClass('oh-modal--show'); $('#reloadMessagesButton').click()</script>"
             )

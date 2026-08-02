@@ -16,7 +16,7 @@
         {% if instance.archive %}
             <form
                 class="oh-btn oh-btn--success"
-                onsubmit="return confirm('Do you want to Unarchive this Employee objective?')"
+                onsubmit="return confirm('{% trans "Do you want to Unarchive this Employee objective?" %}')"
                 action='{% url "archive-employee-objective" instance.id %}'
             >
                 <input type="hidden" name="archive" value="False" id="">
@@ -30,7 +30,7 @@
             <form
                 class="oh-btn oh-btn--danger"
                 style="width: 50%"
-                onsubmit="return confirm('Do you want to archive this Employee objective?')"
+                onsubmit="return confirm('{% trans "Do you want to archive this Employee objective?" %}')"
                 action='{% url "archive-employee-objective" instance.id %}'
             >
                 <input type="hidden" name="archive" value="False" id="">
@@ -45,7 +45,7 @@
             class="oh-btn oh-btn--danger"
             method="post"
             style="width: 50%"
-            onsubmit="return confirm('Do you Want to delete this employee objective?')"
+            onsubmit="return confirm('{% trans "Do you Want to delete this employee objective?" %}')"
             action='{% url "delete-employee-objective" instance.id %}'
         >
             {% csrf_token %}

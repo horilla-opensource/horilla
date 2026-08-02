@@ -74,7 +74,7 @@ class GeoFencingSetupPutDeleteAPIView(APIView):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        raise serializers.ValidationError("Access Denied..")
+        raise serializers.ValidationError(_("Access Denied.."))
 
     @method_decorator(
         permission_required("geofencing.delete_geofencing", raise_exception=True),
@@ -89,7 +89,7 @@ class GeoFencingSetupPutDeleteAPIView(APIView):
                 {"message": "GeoFencing location deleted successfully"},
                 status=status.HTTP_200_OK,
             )
-        raise serializers.ValidationError("Access Denied..")
+        raise serializers.ValidationError(_("Access Denied.."))
 
 
 class GeoFencingEmployeeLocationCheckAPIView(APIView):
@@ -133,7 +133,7 @@ class GeoFencingEmployeeLocationCheckAPIView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        raise serializers.ValidationError("Geofencing is not yet started..")
+        raise serializers.ValidationError(_("Geofencing is not yet started.."))
 
 
 class GeoFencingSetUpPermissionCheck(APIView):
@@ -187,5 +187,5 @@ def geo_location_config(request):
             geofencing.save()
             messages.success(request, _("Geofencing config created successfully."))
         else:
-            messages.info(request, "Not valid")
+            messages.info(request, _("Not valid"))
     return render(request, "geo_config.html", {"form": form})

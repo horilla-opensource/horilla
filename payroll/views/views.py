@@ -470,7 +470,7 @@ def settings(request):
                 return HttpResponse("")
             return HorillaRedirect(request)
         else:
-            messages.error(request, "There was an error updating the currency.")
+            messages.error(request, _("There was an error updating the currency."))
             if request.headers.get("HX-Request"):
                 return HttpResponse("", status=400)
     if request.headers.get("HX-Request"):

@@ -19,7 +19,7 @@
 	<form
 		action="{% url 'delete-allowed-ip' %}?id={{instance.pk}}"
 		class="w-50"
-		onsubmit="return confirm('Are you sure you want to delete this IP ?');"
+		onsubmit="return confirm('{% trans "Are you sure you want to delete this IP ?" %}');"
 		method="post"
 	>
 		{% csrf_token %}

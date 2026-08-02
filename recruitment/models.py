@@ -57,7 +57,7 @@ def validate_mobile(value):
                     or no other characters allowed."
             )
         raise forms.ValidationError(
-            "Invalid input: Only digits and spaces are allowed."
+            _("Invalid input: Only digits and spaces are allowed.")
         )
 
 

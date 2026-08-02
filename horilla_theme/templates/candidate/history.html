@@ -37,7 +37,7 @@
 
                     <div class="md:w-1/2 md:pl-10 md:text-left">
                         <h5 class="text-xs font-semibold">
-                            {{ history.updated_by.get_full_name|default:"Horilla Bot" }}
+                            {% if history.updated_by.get_full_name %}{{ history.updated_by.get_full_name }}{% else %}{% trans "Horilla Bot" %}{% endif %}
                         </h5>
                         {% if history.pair.0.history_title %}
                             <p class="text-xs text-[#777777] mb-2">

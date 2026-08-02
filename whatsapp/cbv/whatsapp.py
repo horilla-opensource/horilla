@@ -164,7 +164,7 @@ def delete_credentials(request):
     crediential = WhatsappCredientials.objects.filter(id=id).first()
     count = WhatsappCredientials.objects.count()
     crediential.delete()
-    messages.success(request, f"Crediential deleted.")
+    messages.success(request, _("Crediential deleted."))
     if count == 1:
         return HttpResponse("<script>$('.reload-record').click();</script>")
     return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")

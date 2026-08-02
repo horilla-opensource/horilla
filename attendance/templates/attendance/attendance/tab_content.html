@@ -193,7 +193,7 @@
                                                 <img
                                                     src="{{attendance.employee_id.get_avatar}}"
                                                     class="oh-profile__image"
-                                                    alt="Mary Magdalene"
+                                                    alt="{{ attendance.employee_id }}"
                                                 >
                                             </div>
                                             <span
@@ -533,7 +533,7 @@
                                                 <img
                                                     src="{{attendance.employee_id.get_avatar}}"
                                                     class="oh-profile__image"
-                                                    alt="Mary Magdalene"
+                                                    alt="{{ attendance.employee_id }}"
                                                 >
                                             </div>
                                             <span
@@ -884,7 +884,7 @@
                                                 <img
                                                     src="{{attendance.employee_id.get_avatar}}"
                                                     class="oh-profile__image"
-                                                    alt="Mary Magdalene"
+                                                    alt="{{ attendance.employee_id }}"
                                                 >
                                             </div>
                                             <span
@@ -1006,7 +1006,7 @@
                                               confirmButtonColor: '#008000',
                                               cancelButtonColor: '#6c757d',
                                               confirmButtonText: 'Approve',
-                                              cancelButtonText: 'Cancel'
+                                              cancelButtonText: i18nMessages.cancel
                                             }).then((result) => {
                                               if (result.isConfirmed) {
                                                 // Your approve action logic here

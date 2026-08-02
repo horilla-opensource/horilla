@@ -3,7 +3,7 @@
     <span class="oh-modal__dialog-title" id="rotatingWorkTypeDetailModalLabel">
         {% trans "Details" %}
     </span>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label={% trans 'Close' %}>
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
@@ -29,7 +29,7 @@
         <div class="oh-profile mb-2">
             <div class="oh-profile__avatar">
                 <img src="{{leave_request.employee_id.get_avatar}}" class="oh-profile__image me-2"
-                    alt="Mary Magdalene" />
+                    alt="{{ leave_request.employee_id }}" />
             </div>
             <div class="oh-timeoff-modal__profile-info">
                 <span class="oh-timeoff-modal__user fw-bold">{{leave_request.employee_id}}</span>

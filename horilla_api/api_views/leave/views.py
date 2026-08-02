@@ -5,6 +5,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.db.models import Count
 from django.http import Http404, QueryDict
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -825,7 +826,7 @@ class LeaveRequestRejectAPIView(APIView):
                     api_redirect=f"/api/leave/user-request/{leave_request.id}/",
                 )
             return Response(status=200)
-        raise serializers.ValidationError("Nothing to reject.")
+        raise serializers.ValidationError(_("Nothing to reject."))
 
 
 class LeaveRequestCancelAPIView(APIView):
@@ -849,8 +850,8 @@ class LeaveRequestCancelAPIView(APIView):
                 leave_request.status = "cancelled"
                 leave_request.save()
                 return Response(status=200)
-            raise serializers.ValidationError("Nothing to cancel.")
-        raise serializers.ValidationError("Access Denied.")
+            raise serializers.ValidationError(_("Nothing to cancel."))
+        raise serializers.ValidationError(_("Access Denied."))
 
 
 class LeaveAllocationApproveAPIView(APIView):
@@ -878,7 +879,7 @@ class LeaveAllocationApproveAPIView(APIView):
             leave_allocation_request.status = "approved"
             leave_allocation_request.save()
             return Response(status=200)
-        raise serializers.ValidationError("Access Denied.")
+        raise serializers.ValidationError(_("Access Denied."))
 
 
 class LeaveAllocationRequestRejectAPIView(APIView):
@@ -911,7 +912,7 @@ class LeaveAllocationRequestRejectAPIView(APIView):
             leave_allocation_request.status = "rejected"
             leave_allocation_request.save()
             return Response(status=200)
-        raise serializers.ValidationError("Access Denied.")
+        raise serializers.ValidationError(_("Access Denied."))
 
 
 class LeaveRequestBulkApproveDeleteAPIview(APIView):
@@ -929,7 +930,7 @@ class LeaveRequestBulkApproveDeleteAPIview(APIView):
         )
         if leave_requests:
             return leave_requests
-        raise serializers.ValidationError("Nothing to approve")
+        raise serializers.ValidationError(_("Nothing to approve"))
 
     def leave_approve_calculation(self, leave_request, available_leave):
         if leave_request.requested_days > available_leave.available_days:

@@ -1095,7 +1095,7 @@ class SkillZoneCandidateForm(ModelForm):
         if hasattr(candidate_field, "__iter__"):
             for candidate in candidate_field:
                 if not isinstance(candidate, Candidate):
-                    raise forms.ValidationError("Invalid candidate selected.")
+                    raise forms.ValidationError(_("Invalid candidate selected."))
             return candidate_field
 
         return candidate_field

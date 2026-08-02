@@ -383,7 +383,7 @@ class GoogleMeeting(HorillaModel):
             and self.event_id
             and GoogleMeeting.objects.filter(event_id=self.event_id).exists()
         ):
-            raise ValidationError("Meeting with this Event already exists")
+            raise ValidationError(_("Meeting with this Event already exists"))
         super().save(*args, **kwargs)
 
 

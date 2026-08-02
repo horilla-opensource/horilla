@@ -297,11 +297,15 @@ class LoadAutomationsView(View):
                 automation_obj.save()
 
                 messages.success(
-                    request, f"Automation '{automation_obj.title}' added successfully."
+                    request,
+                    _("Automation '%(automation_obj_title)s' added successfully.")
+                    % {"automation_obj_title": automation_obj.title},
                 )
             else:
                 messages.warning(
-                    request, f"Automation '{automation_obj.title}' already exists."
+                    request,
+                    _("Automation '%(automation_obj_title)s' already exists.")
+                    % {"automation_obj_title": automation_obj.title},
                 )
 
         script = """

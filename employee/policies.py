@@ -101,7 +101,7 @@ def create_policy(request):
         form = PolicyForm(request.POST, request.FILES, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request, "Policy saved")
+            messages.success(request, _("Policy saved"))
             form = PolicyForm()
             # return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "policies/form.html", {"form": form})
@@ -155,7 +155,7 @@ def delete_policies(request):
         if count == 0:
             messages.error(request, _("Policies Not Found"))
         else:
-            messages.success(request, "Policies deleted")
+            messages.success(request, _("Policies deleted"))
     except ValueError:
         messages.error(request, _("Policies Not Found"))
     if request.META.get("HTTP_HX_REQUEST"):
@@ -193,7 +193,7 @@ def add_attachment(request):
         attachment.save()
         attachments.append(attachment)
     policy.attachments.add(*attachments)
-    messages.success(request, "Attachments added")
+    messages.success(request, _("Attachments added"))
     return render(request, "policies/attachments.html", {"policy": policy})
 
 

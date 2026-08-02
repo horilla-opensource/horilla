@@ -221,7 +221,9 @@ def employee_profile(request):
         )
 
         if str(company_id) != str(selected_company):
-            messages.error(request, "Employee is not working in the selected company.")
+            messages.error(
+                request, _("Employee is not working in the selected company.")
+            )
             return redirect("employee-view")
 
     today = datetime.today()
@@ -325,7 +327,7 @@ def employee_view_individual(request, obj_id, **kwargs):
             company_id = getattr(company, "pk", None)
             if company_id != request.session["selected_company"]:
                 messages.error(
-                    request, "Employee is not working in the selected company."
+                    request, _("Employee is not working in the selected company.")
                 )
                 return redirect("employee-view")
         except Exception as e:
@@ -2265,7 +2267,11 @@ def employee_bulk_archive(request):
             message = _("archived")
             if is_active:
                 message = _("un-archived")
-            messages.success(request, f"{employee} is {message}")
+            messages.success(
+                request,
+                _("%(employee)s is %(message)s")
+                % {"employee": employee, "message": message},
+            )
         else:
             messages.warning(request, _("Related data found for {}.").format(employee))
     return JsonResponse({"message": "Success"})
@@ -2878,7 +2884,11 @@ def work_info_import(request):
                 "model": _("Employees"),
                 "path_info": path_info,
             }
-            messages.success(request, f"{created_count} employees created.")
+            messages.success(
+                request,
+                _("%(created_count)s employees created.")
+                % {"created_count": created_count},
+            )
             result = render_to_string("import_popup.html", context)
             result += """
                         <script>
@@ -3436,7 +3446,9 @@ def add_more_employee_files(request, note_id):
             # Block dangerous file types
             if ext in BLOCKED_EXTENSIONS:
                 messages.error(
-                    request, f"File type {ext} is not allowed for security reasons."
+                    request,
+                    _("File type %(ext)s is not allowed for security reasons.")
+                    % {"ext": ext},
                 )
                 continue  # skip this file
 
@@ -3825,12 +3837,12 @@ def initial_prefix(request):
         form = EmployeeGeneralSettingPrefixForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request, "Initial prefix updated successfully.")
+            messages.success(request, _("Initial prefix updated successfully."))
             if request.headers.get("HX-Request"):
                 return HttpResponse("")
             return HorillaRedirect(request)
         else:
-            messages.error(request, "There was an error updating the prefix.")
+            messages.error(request, _("There was an error updating the prefix."))
     else:
         form = EmployeeGeneralSettingPrefixForm(instance=instance)
 

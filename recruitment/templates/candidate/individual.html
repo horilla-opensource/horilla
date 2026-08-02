@@ -226,7 +226,7 @@
                     <div class="oh-profile oh-profile--lg me-3">
                         <div class="oh-profile__avatar">
                             <img src="{{candidate.get_avatar}}" class="oh-profile-section__avatar preview"
-                                alt="Username" style="border-radius:10%" onmouseover="showImage(this) $('#showImageContainer').addClass('enlarge-image-container'); " onmouseout="hideshowImage() $('#showImageContainer').removeClass('enlarge-image-container'); " />
+                                alt="{{ candidate }}" style="border-radius:10%" onmouseover="showImage(this) $('#showImageContainer').addClass('enlarge-image-container'); " onmouseout="hideshowImage() $('#showImageContainer').removeClass('enlarge-image-container'); " />
                         </div>
                         <span class="oh-profile__active-badge oh-profile__active-badge--secondary"
                             title="{% trans 'Active' %}"></span>

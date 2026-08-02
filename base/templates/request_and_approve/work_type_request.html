@@ -26,7 +26,7 @@
                             <img
                                 src="{{work_type.employee_id.get_avatar}}"
                                 class="oh-profile__image"
-                                alt="Username"
+                                alt="{{ work_type.employee_id }}"
                             />
                         </div>
                         <span class="oh-profile__name oh-text--dark"
@@ -64,7 +64,7 @@
 </div>
 {% else %}
     <div class="oh-empty h-100">
-        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}" />
         <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
         <p class="oh-empty__subtitle">{% trans "No records available at the moment." %}</p>
     </div>

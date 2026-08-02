@@ -428,7 +428,11 @@ def application_form(request):
                     else field_name
                 )
                 for error in field_errors:
-                    messages.error(request, f"{field_label}: {error}")
+                    messages.error(
+                        request,
+                        _("%(field_label)s: %(error)s")
+                        % {"field_label": field_label, "error": error},
+                    )
         recruitment_for_job_position = form.data.get("recruitment_id") or recruitment_id
         if recruitment_for_job_position:
             recruitment_for_job_position = Recruitment.objects.filter(
@@ -480,7 +484,7 @@ def create_template(request):
         request.user.has_perm("recruitment.add_surveytemplate")
         or request.user.has_perm("recruitment.change_surveytemplate")
     ):
-        messages.info(request, "You dont have permission.")
+        messages.info(request, _("You dont have permission."))
         return HorillaRedirect(request)
 
     title = request.GET.get("title")
@@ -492,7 +496,7 @@ def create_template(request):
         form = TemplateForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request, "Template saved")
+            messages.success(request, _("Template saved"))
             return HorillaRedirect(request)
     return render(request, "survey/main_form.html", {"form": form})
 
@@ -506,9 +510,9 @@ def delete_template(request):
     title = request.GET.get("title")
     SurveyTemplate.objects.filter(title=str(title)).delete()
     if title == "None":
-        messages.info(request, "This template group cannot be deleted")
+        messages.info(request, _("This template group cannot be deleted"))
     else:
-        messages.success(request, "Template group deleted")
+        messages.success(request, _("Template group deleted"))
 
     if request.META.get("HTTP_HX_REQUEST") == "true":
         return HttpResponse("<script>$('#filterSubmit').click();</script>")
@@ -532,7 +536,7 @@ def question_add(request):
         form = AddQuestionForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Question added")
+            messages.success(request, _("Question added"))
             if request.META.get("HTTP_HX_REQUEST") == "true":
                 return HttpResponse(
                     "<script>"

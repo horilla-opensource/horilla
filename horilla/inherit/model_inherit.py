@@ -16,7 +16,7 @@ Usage in an extension app:
 
         def clean(self):
             if self.warranty_expiry_date and self.warranty_expiry_date < date.today():
-                raise ValidationError("Warranty has already expired.")
+                raise ValidationError(_("Warranty has already expired."))
 
 This returns a placeholder, not a real model — no table, no migration in the
 target app. Fields appear on the target model and their migrations are routed
@@ -28,6 +28,7 @@ import warnings
 from django.apps import apps as django_apps
 from django.db import models
 from django.db.models.base import ModelBase
+from django.utils.translation import gettext_lazy as _
 
 from horilla.inherit.extension_registry import INJECTION_MAP
 

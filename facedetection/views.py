@@ -117,7 +117,7 @@ class EmployeeFaceDetectionGetPostAPIView(APIView):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        raise serializers.ValidationError("Facedetection not yet started..")
+        raise serializers.ValidationError(_("Facedetection not yet started.."))
 
 
 def get_company(request):
@@ -164,7 +164,7 @@ def face_detection_config(request):
             facedetection.save()
             messages.success(request, _("facedetection config created successfully."))
         else:
-            messages.info(request, "Not valid")
+            messages.info(request, _("Not valid"))
     return render(request, "face_config.html", {"form": form})
 
 
