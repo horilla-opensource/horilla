@@ -129,7 +129,7 @@
             <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12 md:col-span-6 rounded-md border border-dark-50 p-5">
                     <div class="form-input-items">
-                        <label class="text-xs font-medium">{% trans "Name" %}</label>
+                        <label class="text-xs font-medium required-star">{% trans "Name" %}</label>
                         {{ form.name }}
                         {{ form.name.errors }}
                     </div>
@@ -325,10 +325,6 @@
                         <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
                             <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
                                 <label class="text-xs font-medium" for="id_approval">{% trans "Require Approval" %}</label>
-                                <span
-                                    class="oh-info"
-                                    title='{% trans "Do you need approval for leave from the authority?" %}'
-                                ></span>
                             </div>
                             <div class="oh-switch">
                                 <input type="checkbox" class="oh-switch__checkbox toggle-control yesOrNo" id="id_approval" checked>
@@ -339,10 +335,6 @@
                         <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
                             <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
                                 <label class="text-xs font-medium" for="id_attachment">{% trans "Require Attachment" %}</label>
-                                <span
-                                    class="oh-info"
-                                    title='{% trans "Do you need to attach a document for leave?" %}'
-                                ></span>
                             </div>
                             <div class="oh-switch">
                                 <input type="checkbox" class="oh-switch__checkbox toggle-control yesOrNo" id="id_attachment">
@@ -353,10 +345,6 @@
                         <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
                             <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
                                 <label class="text-xs font-medium" for="id_exclude_comp_leave">{% trans "Exclude Company Holidays" %}</label>
-                                <span
-                                    class="oh-info"
-                                    title='{% trans "Do you need to exclude company holidays from the requested leave days?" %}'
-                                ></span>
                             </div>
                             <div class="oh-switch">
                                 <input
@@ -371,10 +359,6 @@
                         <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
                             <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
                                 <label class="text-xs font-medium" for="id_exclude_public_leave">{% trans "Exclude Holidays" %}</label>
-                                <span
-                                    class="oh-info"
-                                    title='{% trans "Do you need to exclude public holidays from the requested leave days?" %}'
-                                ></span>
                             </div>
                             <div class="oh-switch">
                                 <input
@@ -388,7 +372,7 @@
 
                         <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
                             <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
-                                <label class="text-xs font-medium" for="">{% trans "Is Encashable" %}</label>
+                                <label class="text-xs font-medium" for="id_is_encashable">{% trans "Is Encashable" %}</label>
                                 <span
                                     class="oh-info"
                                     title='{% trans "Do you need to encash pending leave days?" %}'

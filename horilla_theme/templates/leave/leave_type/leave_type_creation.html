@@ -156,7 +156,7 @@
             <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12 md:col-span-6 rounded-md border border-dark-50 p-5">
                     <div class="form-input-items">
-                        <label class="text-xs font-medium">{% trans "Name" %}</label>
+                        <label class="text-xs font-medium required-star">{% trans "Name" %}</label>
                         {{ form.name }}
                         {{ form.name.errors }}
                     </div>
@@ -219,7 +219,7 @@
                             id="reset_based_id"
                             style="display: ruby"
                         >
-                            <label class="text-xs font-medium" for="id_reset_based">
+                            <label class="text-xs font-medium required-star" for="id_reset_based">
                                 {% trans "Reset Period" %}
                             </label>
                             <span class="oh-info" title='{% trans "The time period for the leave to reset." %}'></span>
@@ -228,19 +228,19 @@
                         {{ form.reset_based.errors }}
                     </div>
                     <div class="form-input-items hidden">
-                        <label class="text-xs font-medium" for="id_reset_month">{% trans "Reset Month" %}</label>
+                        <label class="text-xs font-medium required-star" for="id_reset_month">{% trans "Reset Month" %}</label>
                         {{ form.reset_month|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600" }}
                         {{ form.reset_month.errors }}
                     </div>
 
                     <div class="form-input-items hidden">
-                        <label class="text-xs font-medium" for="id_reset_day">{% trans "Reset Day" %}</label>
+                        <label class="text-xs font-medium required-star" for="id_reset_day">{% trans "Reset Day" %}</label>
                         {{ form.reset_day|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600" }}
                         {{ form.reset_day.errors }}
                     </div>
 
                     <div class="form-input-items hidden">
-                        <label class="text-xs font-medium" for="id_reset_weekend">{% trans "Reset Weekday" %}</label>
+                        <label class="text-xs font-medium required-star" for="id_reset_weekend">{% trans "Reset Weekday" %}</label>
                         {{ form.reset_weekend|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600" }}
                         {{ form.reset_weekend.errors }}
                     </div>
@@ -363,10 +363,6 @@
                         <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
                             <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
                                 <label class="text-xs font-medium" for="id_approval">{% trans "Require Approval" %}</label>
-                                <span
-                                    class="oh-info"
-                                    title='{% trans "Do you need approval for leave from the authority?" %}'
-                                ></span>
                             </div>
                             <div class="oh-switch">
                                 <input type="checkbox" class="oh-switch__checkbox toggle-control yesOrNo" id="id_approval" checked>
@@ -377,10 +373,6 @@
                         <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
                             <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
                                 <label class="text-xs font-medium" for="id_attachment">{% trans "Require Attachment" %}</label>
-                                <span
-                                    class="oh-info"
-                                    title='{% trans "Do you need to attach a document for leave?" %}'
-                                ></span>
                             </div>
                             <div class="oh-switch">
                                 <input type="checkbox" class="oh-switch__checkbox toggle-control yesOrNo" id="id_attachment">
@@ -391,10 +383,6 @@
                         <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
                             <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
                                 <label class="text-xs font-medium" for="id_exclude_comp_leave">{% trans "Exclude Company Holidays" %}</label>
-                                <span
-                                    class="oh-info"
-                                    title='{% trans "Do you need to exclude company holidays from the requested leave days?" %}'
-                                ></span>
                             </div>
                             <div class="oh-switch">
                                 <input
@@ -409,10 +397,6 @@
                         <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
                             <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
                                 <label class="text-xs font-medium" for="id_exclude_public_leave">{% trans "Exclude Holidays" %}</label>
-                                <span
-                                    class="oh-info"
-                                    title='{% trans "Do you need to exclude public holidays from the requested leave days?" %}'
-                                ></span>
                             </div>
                             <div class="oh-switch">
                                 <input
@@ -426,11 +410,7 @@
 
                         <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
                             <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
-                                <label class="text-xs font-medium" for="">{% trans "Is Encashable" %}</label>
-                                <span
-                                    class="oh-info"
-                                    title='{% trans "Do you need to encash pending leave days?" %}'
-                                ></span>
+                                <label class="text-xs font-medium" for="id_is_encashable">{% trans "Is Encashable" %}</label>
                             </div>
                             <div class="oh-switch">
                                 {{ form.is_encashable }}
