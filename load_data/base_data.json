@@ -3096,9 +3096,9 @@
       "created_by": null,
       "modified_by": null,
       "is_active": true,
-      "name": "Republic Day",
-      "start_date": "2025-01-26",
-      "end_date": "2025-01-26",
+      "name": "Good Friday",
+      "start_date": "2025-04-18",
+      "end_date": "2025-04-18",
       "recurring": false,
       "company_id": null
     }
@@ -3111,9 +3111,9 @@
       "created_by": null,
       "modified_by": null,
       "is_active": true,
-      "name": "Holi",
-      "start_date": "2025-01-20",
-      "end_date": "2025-01-20",
+      "name": "Easter Monday",
+      "start_date": "2025-04-21",
+      "end_date": "2025-04-21",
       "recurring": false,
       "company_id": null
     }
@@ -3126,9 +3126,9 @@
       "created_by": null,
       "modified_by": null,
       "is_active": true,
-      "name": "Vishu",
-      "start_date": "2025-01-14",
-      "end_date": "2025-01-14",
+      "name": "Founders' Day",
+      "start_date": "2025-06-01",
+      "end_date": "2025-06-01",
       "recurring": false,
       "company_id": null
     }
@@ -3142,8 +3142,8 @@
       "modified_by": null,
       "is_active": true,
       "name": "Eid al-Fitr",
-      "start_date": "2025-01-10",
-      "end_date": "2025-01-10",
+      "start_date": "2025-03-31",
+      "end_date": "2025-03-31",
       "recurring": false,
       "company_id": null
     }
@@ -3156,9 +3156,9 @@
       "created_by": null,
       "modified_by": null,
       "is_active": true,
-      "name": "Eid al-Adha ",
-      "start_date": "2025-01-19",
-      "end_date": "2025-01-19",
+      "name": "Eid al-Adha",
+      "start_date": "2025-06-07",
+      "end_date": "2025-06-07",
       "recurring": false,
       "company_id": null
     }
@@ -3172,8 +3172,8 @@
       "modified_by": null,
       "is_active": true,
       "name": "Labor Day",
-      "start_date": "2025-01-01",
-      "end_date": "2025-01-01",
+      "start_date": "2025-05-01",
+      "end_date": "2025-05-01",
       "recurring": false,
       "company_id": null
     }
@@ -3186,9 +3186,9 @@
       "created_by": null,
       "modified_by": null,
       "is_active": true,
-      "name": "Independence Day",
-      "start_date": "2025-01-15",
-      "end_date": "2025-01-15",
+      "name": "World Health Day",
+      "start_date": "2025-04-07",
+      "end_date": "2025-04-07",
       "recurring": false,
       "company_id": null
     }
@@ -3201,9 +3201,9 @@
       "created_by": null,
       "modified_by": null,
       "is_active": true,
-      "name": "Gandhi Jayanti ",
-      "start_date": "2025-10-02",
-      "end_date": "2025-10-02",
+      "name": "United Nations Day",
+      "start_date": "2025-10-24",
+      "end_date": "2025-10-24",
       "recurring": false,
       "company_id": null
     }
@@ -3217,8 +3217,8 @@
       "modified_by": null,
       "is_active": true,
       "name": "Children's Day",
-      "start_date": "2025-01-14",
-      "end_date": "2025-01-14",
+      "start_date": "2025-11-20",
+      "end_date": "2025-11-20",
       "recurring": false,
       "company_id": null
     }
@@ -3232,8 +3232,8 @@
       "modified_by": null,
       "is_active": true,
       "name": "Christmas",
-      "start_date": "2025-01-25",
-      "end_date": "2025-01-25",
+      "start_date": "2025-12-25",
+      "end_date": "2025-12-25",
       "recurring": false,
       "company_id": null
     }
