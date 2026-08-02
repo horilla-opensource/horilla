@@ -6,14 +6,14 @@
       "created_at": "2025-07-22T08:21:11.031Z",
       "created_by": 1,
       "modified_by": 1,
-      "is_active": false,
+      "is_active": true,
       "company": "Your Company",
       "hq": true,
-      "address": "ABCD street",
-      "country": "USA",
+      "address": "100 Market Street, Suite 400",
+      "country": "United States",
       "state": "Nevada",
-      "city": "las vegas",
-      "zip": "89036",
+      "city": "Las Vegas",
+      "zip": "89101",
       "icon": "base/icon/Horilla_2.png",
       "date_format": null,
       "time_format": null
@@ -26,14 +26,14 @@
       "created_at": "2025-07-16T05:03:00.993Z",
       "created_by": 1,
       "modified_by": 1,
-      "is_active": false,
+      "is_active": true,
       "company": "Your Company Inc.",
       "hq": false,
-      "address": "The Estate , 8th Floor",
+      "address": "The Estate, 8th Floor, MG Road",
       "country": "India",
       "state": "Karnataka",
-      "city": "Bangalore",
-      "zip": "560042",
+      "city": "Bengaluru",
+      "zip": "560001",
       "icon": "base/icon/Horilla_3.png",
       "date_format": null,
       "time_format": null
@@ -46,14 +46,14 @@
       "created_at": "2025-07-16T05:04:50.728Z",
       "created_by": 1,
       "modified_by": 1,
-      "is_active": false,
+      "is_active": true,
       "company": "Your Company Ltd.",
       "hq": false,
-      "address": "Alpha House",
+      "address": "Alpha House, 25 Borough High Street",
       "country": "United Kingdom",
-      "state": "City of London",
-      "city": "SE1 1LB",
-      "zip": "673589",
+      "state": "England",
+      "city": "London",
+      "zip": "SE1 1LB",
       "icon": "base/icon/Horilla_1.png",
       "date_format": null,
       "time_format": null
@@ -67,7 +67,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "department": "S/W Dept",
+      "department": "Engineering",
       "company_id": []
     }
   },
@@ -79,7 +79,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "department": "Sales Dept",
+      "department": "Sales",
       "company_id": []
     }
   },
@@ -91,7 +91,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "department": "Hr Dept",
+      "department": "Human Resources",
       "company_id": []
     }
   },
@@ -103,7 +103,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "department": "Marketing Dept",
+      "department": "Marketing",
       "company_id": []
     }
   },
@@ -115,7 +115,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "department": "Finance Dept",
+      "department": "Finance",
       "company_id": []
     }
   },
@@ -127,7 +127,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "department": "Managers",
+      "department": "Operations",
       "company_id": [
         1,
         2,
@@ -143,7 +143,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "job_position": "Odoo Dev",
+      "job_position": "Software Engineer",
       "department_id": 1,
       "company_id": []
     }
@@ -156,7 +156,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "job_position": "Django Dev",
+      "job_position": "Backend Engineer",
       "department_id": 1,
       "company_id": []
     }
@@ -169,7 +169,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "job_position": "Sales Man",
+      "job_position": "Sales Associate",
       "department_id": 2,
       "company_id": []
     }
@@ -273,7 +273,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "job_position": "Chief Financial Officer (CFO)",
+      "job_position": "Chief Financial Officer",
       "department_id": 5,
       "company_id": []
     }
@@ -325,7 +325,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "job_position": "System Admin",
+      "job_position": "System Administrator",
       "department_id": 1,
       "company_id": []
     }
@@ -338,7 +338,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "job_position": "React Dev",
+      "job_position": "Frontend Engineer",
       "department_id": 1,
       "company_id": []
     }
@@ -351,7 +351,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "job_position": "Flutter Dev",
+      "job_position": "Mobile Engineer",
       "department_id": 1,
       "company_id": []
     }
@@ -377,7 +377,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "job_position": "Sales Manage",
+      "job_position": "Sales Manager",
       "department_id": 2,
       "company_id": []
     }
@@ -456,7 +456,7 @@
       "modified_by": 1,
       "is_active": true,
       "job_position_id": 1,
-      "job_role": "Jnr Dev",
+      "job_role": "Junior Software Engineer",
       "company_id": []
     }
   },
@@ -469,7 +469,7 @@
       "modified_by": 1,
       "is_active": true,
       "job_position_id": 2,
-      "job_role": "Jnr Dev",
+      "job_role": "Junior Backend Engineer",
       "company_id": []
     }
   },
@@ -534,7 +534,7 @@
       "modified_by": 1,
       "is_active": true,
       "job_position_id": 5,
-      "job_role": "Jnr Manager",
+      "job_role": "Junior Manager",
       "company_id": []
     }
   },
@@ -547,7 +547,7 @@
       "modified_by": 1,
       "is_active": true,
       "job_position_id": 6,
-      "job_role": "Jnr Manager",
+      "job_role": "Junior Manager",
       "company_id": []
     }
   },
@@ -3328,8 +3328,8 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "🎉 Q2 2026 Performance Highlights — Thank You, Team!",
-      "description": "<p><strong>Dear Team,</strong></p>\n<p>We are thrilled to share that <strong>Q2 2026 has been our strongest quarter yet</strong>. Across all three companies, we achieved:</p>\n<ul>\n<li>✅ Revenue target exceeded by <strong>18%</strong></li>\n<li>✅ Customer satisfaction score reached <strong>4.7 / 5.0</strong></li>\n<li>✅ Product delivery on-time rate improved to <strong>94%</strong></li>\n<li>✅ Employee retention rate at an all-time high of <strong>96%</strong></li>\n</ul>\n<p>This success is a direct result of your dedication, collaboration, and hard work. We are proud of every one of you.</p>\n<p>The leadership team will be sharing detailed department-wise scorecards during the <strong>All-Hands Meeting on July 10</strong>. Stay tuned for the calendar invite.</p>\n<p>Thank you for making Horilla a great place to work and grow. 🚀</p>\n<p><em>— The Leadership Team</em></p>",
+      "title": "Q2 Performance Highlights — Thank You, Team!",
+      "description": "<p><strong>Dear Team,</strong></p><p>We are pleased to share strong quarterly results across all companies. Thank you for your dedication and collaboration.</p><p><em>— The Leadership Team</em></p>",
       "expire_date": "2025-08-31",
       "disable_comments": false,
       "attachments": [],
@@ -3346,8 +3346,8 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "📅 Mid-Year Performance Reviews — Schedule Now Open",
-      "description": "<p><strong>Important: Mid-Year Performance Review Cycle — July 2026</strong></p>\n<p>The mid-year performance review cycle is now open. Please complete the following by the deadlines below:</p>\n<table style=\"border-collapse:collapse; width:100%;\">\n<tr style=\"background:#f5f5f5;\"><th style=\"padding:8px; border:1px solid #ddd; text-align:left;\">Task</th><th style=\"padding:8px; border:1px solid #ddd; text-align:left;\">Deadline</th></tr>\n<tr><td style=\"padding:8px; border:1px solid #ddd;\">Self-assessment submission</td><td style=\"padding:8px; border:1px solid #ddd;\"><strong>July 12, 2026</strong></td></tr>\n<tr><td style=\"padding:8px; border:1px solid #ddd;\">Manager review and rating</td><td style=\"padding:8px; border:1px solid #ddd;\"><strong>July 19, 2026</strong></td></tr>\n<tr><td style=\"padding:8px; border:1px solid #ddd;\">1-on-1 review discussions</td><td style=\"padding:8px; border:1px solid #ddd;\"><strong>July 21–25, 2026</strong></td></tr>\n<tr><td style=\"padding:8px; border:1px solid #ddd;\">Final ratings submitted to HR</td><td style=\"padding:8px; border:1px solid #ddd;\"><strong>July 28, 2026</strong></td></tr>\n</table>\n<p style=\"margin-top:12px;\">Log in to Horilla → <strong>Performance</strong> → <strong>My Objectives</strong> to begin your self-assessment. If you have any questions, contact HR at <strong>hr@horilla.com</strong>.</p>\n<p><em>Missing the deadline may affect your appraisal cycle. Please prioritize this.</em></p>",
+      "title": "Mid-Year Performance Reviews — Schedule Now Open",
+      "description": "<p>Mid-year performance reviews are now open. Please complete self-assessments and schedule 1-on-1 discussions with your manager.</p>",
       "expire_date": "2025-07-28",
       "disable_comments": false,
       "attachments": [],
@@ -3364,8 +3364,8 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "🏖️ Annual Leave Encashment — Submit Before July 15",
-      "description": "<p><strong>From: Human Resources</strong></p>\n<p>As per company policy, unused annual leave from the previous cycle can be encashed once per year. This year's encashment window closes on <strong>July 15, 2026</strong>.</p>\n<p><strong>Eligibility:</strong></p>\n<ul>\n<li>Employees with more than <strong>1 year of service</strong></li>\n<li>Maximum encashable: <strong>5 leave days</strong> per employee</li>\n<li>Encashment will be processed in the <strong>July 2026 payroll</strong></li>\n</ul>\n<p><strong>How to apply:</strong></p>\n<ol>\n<li>Go to <strong>Leave → Leave Request</strong> in Horilla</li>\n<li>Select <strong>Leave Encashment</strong> as the type</li>\n<li>Submit before July 15, 2026</li>\n</ol>\n<p>For queries, reach out to your HR Business Partner or write to <strong>hr@horilla.com</strong>.</p>",
+      "title": "Annual Leave Encashment — Submit Before Deadline",
+      "description": "<p><strong>From: Human Resources</strong></p><p>Unused annual leave encashment requests must be submitted before the published deadline. Apply via Leave → Leave Request.</p>",
       "expire_date": "2025-07-15",
       "disable_comments": false,
       "attachments": [],
@@ -3382,8 +3382,8 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "🛡️ Mandatory Cybersecurity Awareness Training — Complete by July 20",
-      "description": "<p><strong>All employees must complete the Cybersecurity Awareness Training by July 20, 2026.</strong></p>\n<p>In partnership with our security team, we are rolling out mandatory annual cybersecurity training to protect company data and our customers' information.</p>\n<p><strong>Topics covered:</strong></p>\n<ul>\n<li>Phishing and social engineering attacks</li>\n<li>Password hygiene and multi-factor authentication</li>\n<li>Safe use of company devices and networks</li>\n<li>Incident reporting procedures</li>\n<li>Data classification and handling</li>\n</ul>\n<p><strong>Duration:</strong> Approximately 45 minutes (self-paced)</p>\n<p><strong>Access:</strong> Check your company email for the training link sent by <em>security@horilla.com</em>.</p>\n<p style=\"color:#c0392b;\"><strong>⚠️ Non-completion by July 20 will be escalated to your reporting manager.</strong></p>\n<p>Questions? Contact the IT Security team at <strong>security@horilla.com</strong>.</p>",
+      "title": "Mandatory Cybersecurity Awareness Training",
+      "description": "<p>All employees must complete cybersecurity awareness training by the published deadline. Topics include phishing, password hygiene, MFA, and incident reporting.</p>",
       "expire_date": "2025-07-20",
       "disable_comments": true,
       "attachments": [],
@@ -3400,8 +3400,8 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "🌟 Employee of the Month — July 2026",
-      "description": "<p>We are delighted to recognize our <strong>Employee of the Month for July 2026</strong>!</p>\n<p style=\"font-size:1.2em; text-align:center; padding:16px; background:#fff8e1; border-radius:8px; margin:16px 0;\">\n🏆 <strong>Emma Lee</strong> — Senior Software Engineer, Software Department\n</p>\n<p>Emma has gone above and beyond this quarter by:</p>\n<ul>\n<li>Leading the successful migration of our core API to the new microservices architecture — delivered 2 weeks ahead of schedule</li>\n<li>Mentoring 3 junior engineers through their onboarding process</li>\n<li>Identifying and resolving a critical production issue within 2 hours, preventing significant downtime</li>\n<li>Volunteering to document the entire backend codebase — a task that had been pending for over a year</li>\n</ul>\n<p>Emma will receive a <strong>₹5,000 gift voucher</strong>, a trophy, and a dedicated feature in our company newsletter.</p>\n<p>Please join us in congratulating Emma! Drop your wishes in the comments below. 👏</p>",
+      "title": "Employee of the Month",
+      "description": "<p>We are delighted to recognize outstanding contributions across Engineering and other departments.</p>",
       "expire_date": "2025-07-31",
       "disable_comments": false,
       "attachments": [],
@@ -3418,8 +3418,8 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "🏠 Updated Work-From-Home Policy — Effective August 1",
-      "description": "<p><strong>Updated Remote Work Policy — Effective August 1, 2026</strong></p>\n<p>After reviewing feedback from the employee survey and benchmarking with industry standards, we are updating our work-from-home policy:</p>\n<p><strong>New Policy (effective August 1, 2026):</strong></p>\n<ul>\n<li><strong>Software & Finance teams:</strong> Up to <strong>3 days WFH</strong> per week (increased from 2)</li>\n<li><strong>Sales & Marketing teams:</strong> Up to <strong>2 days WFH</strong> per week (unchanged)</li>\n<li><strong>HR team:</strong> Up to <strong>2 days WFH</strong> per week (increased from 1)</li>\n<li>WFH days must be pre-approved via Horilla's attendance module</li>\n<li>At least one anchor day (<strong>Wednesday</strong>) must be in-office for all teams</li>\n</ul>\n<p><strong>Guidelines:</strong></p>\n<ul>\n<li>Maintain core hours: <strong>10:00 AM – 4:00 PM</strong> on all days</li>\n<li>Ensure a professional, distraction-free environment during video calls</li>\n<li>WFH is a privilege — continued access depends on performance</li>\n</ul>\n<p>The full updated policy document has been shared to your email. Reach out to HR for any clarifications.</p>",
+      "title": "Updated Work-From-Home Policy",
+      "description": "<p>The remote work policy has been updated. Engineering &amp; Finance may take up to 3 WFH days per week; Sales, Marketing &amp; HR up to 2. Wednesday remains the in-office anchor day.</p>",
       "expire_date": "2025-08-31",
       "disable_comments": false,
       "attachments": [],
@@ -3436,8 +3436,8 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "💰 Q3 2026 Salary Revision — Effective July Payroll",
-      "description": "<p><strong>Dear Team,</strong></p>\n<p>We are pleased to announce the <strong>Q3 2026 salary revision</strong>, reflecting our commitment to recognizing performance and retaining top talent.</p>\n<p><strong>Key highlights:</strong></p>\n<ul>\n<li>Average increment across the organization: <strong>8.5%</strong></li>\n<li>High performers (rating 4.5+): <strong>12–15%</strong> increment</li>\n<li>All revisions are effective from <strong>July 1, 2026</strong> and will reflect in the July payroll</li>\n</ul>\n<p>Your updated offer letter / compensation letter will be available in Horilla under <strong>Profile → Documents</strong> by July 10, 2026.</p>\n<p><strong>Note:</strong> Salary details are strictly confidential. Please refrain from discussing your compensation with colleagues, as it may affect team morale and is a violation of company policy.</p>\n<p>We appreciate your continued contribution to our growth. 🙏</p>\n<p><em>— Finance & HR Team</em></p>",
+      "title": "Compensation Review Cycle",
+      "description": "<p>The compensation review cycle is underway. Updated letters will appear under Profile → Documents when available. Compensation details are confidential.</p>",
       "expire_date": "2025-07-31",
       "disable_comments": true,
       "attachments": [],
@@ -3454,8 +3454,8 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "🎊 Horilla Family Day — July 26, 2026",
-      "description": "<p>We are excited to announce the <strong>Annual Horilla Family Day on Saturday, July 26, 2026!</strong></p>\n<p>This is our annual celebration where we come together with our families for a day of fun, food, and team bonding.</p>\n<p><strong>Event Details:</strong></p>\n<ul>\n<li>📍 <strong>Venue:</strong> Palm Springs Resort, Bengaluru</li>\n<li>🕙 <strong>Time:</strong> 10:00 AM – 6:00 PM</li>\n<li>👨‍👩‍👧‍👦 <strong>Guests:</strong> Each employee may bring up to 3 family members</li>\n<li>🎡 <strong>Activities:</strong> Games, talent show, kids' zone, team quiz, awards ceremony</li>\n<li>🍽️ <strong>Meals:</strong> All meals provided. Please indicate dietary preferences while registering</li>\n</ul>\n<p><strong>Registration closes July 18.</strong> Register via Horilla → Events or reply to the email from hr@horilla.com.</p>\n<p>Transport will be arranged from the office. Details will be shared closer to the event.</p>\n<p>Let's make it a memorable day! 🎉</p>",
+      "title": "Company Family Day",
+      "description": "<p>Join us for Company Family Day. Guests, meals, and activities details will be shared by HR. Please register in advance.</p>",
       "expire_date": "2025-07-26",
       "disable_comments": false,
       "attachments": [],
@@ -3472,8 +3472,8 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "🔧 Office IT Infrastructure Upgrade — July 14 (No Disruption Expected)",
-      "description": "<p><strong>From: IT Department</strong></p>\n<p>We will be performing a scheduled network and server infrastructure upgrade on <strong>Sunday, July 14, 2026</strong> from 11:00 PM to 3:00 AM.</p>\n<p><strong>What to expect:</strong></p>\n<ul>\n<li>All internal services (Horilla HRMS, internal portals, VPN) will be <strong>unavailable</strong> during this window</li>\n<li>Office Wi-Fi and LAN will be briefly interrupted</li>\n<li>External email will remain functional</li>\n</ul>\n<p><strong>What's being upgraded:</strong></p>\n<ul>\n<li>Core network switches upgraded to 10Gbps backbone</li>\n<li>Database server RAM expanded from 64GB to 256GB</li>\n<li>Backup and disaster recovery systems overhauled</li>\n<li>TLS 1.3 enforced across all internal services</li>\n</ul>\n<p>Since this is a Sunday night window, no impact on work is expected. If you notice any issues post-upgrade on Monday morning, please contact <strong>IT Helpdesk at ext. 1001</strong> or <strong>it@horilla.com</strong>.</p>\n<p>Thank you for your patience and cooperation.</p>",
+      "title": "Scheduled IT Infrastructure Maintenance",
+      "description": "<p><strong>From: IT Department</strong></p><p>A planned infrastructure maintenance window will run this weekend. Internal systems may be briefly unavailable overnight.</p>",
       "expire_date": "2025-07-15",
       "disable_comments": true,
       "attachments": [],
@@ -3490,8 +3490,8 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "📢 New Referral Bonus Program — Earn Up to ₹25,000",
-      "description": "<p><strong>Introducing the Enhanced Employee Referral Program!</strong></p>\n<p>Our best hires come from our own team's network. To recognize this, we've significantly upgraded the referral bonus structure, effective immediately.</p>\n<p><strong>New Referral Bonus Structure:</strong></p>\n<table style=\"border-collapse:collapse; width:100%;\">\n<tr style=\"background:#e8f5e9;\"><th style=\"padding:8px; border:1px solid #ddd; text-align:left;\">Role Level</th><th style=\"padding:8px; border:1px solid #ddd; text-align:left;\">Bonus (on joining)</th><th style=\"padding:8px; border:1px solid #ddd; text-align:left;\">Retention Bonus (after 6 months)</th></tr>\n<tr><td style=\"padding:8px; border:1px solid #ddd;\">Junior / Associate</td><td style=\"padding:8px; border:1px solid #ddd;\">₹10,000</td><td style=\"padding:8px; border:1px solid #ddd;\">₹5,000</td></tr>\n<tr><td style=\"padding:8px; border:1px solid #ddd;\">Mid-level</td><td style=\"padding:8px; border:1px solid #ddd;\">₹15,000</td><td style=\"padding:8px; border:1px solid #ddd;\">₹7,500</td></tr>\n<tr><td style=\"padding:8px; border:1px solid #ddd;\">Senior / Lead</td><td style=\"padding:8px; border:1px solid #ddd;\">₹20,000</td><td style=\"padding:8px; border:1px solid #ddd;\">₹10,000</td></tr>\n<tr><td style=\"padding:8px; border:1px solid #ddd;\">Manager & above</td><td style=\"padding:8px; border:1px solid #ddd;\">₹25,000</td><td style=\"padding:8px; border:1px solid #ddd;\">₹12,500</td></tr>\n</table>\n<p style=\"margin-top:12px;\"><strong>How to refer:</strong></p>\n<ol>\n<li>Share the open positions page with your network: <a href=\"#\">careers.horilla.com</a></li>\n<li>Ask them to mention your name and employee ID in the application form</li>\n<li>HR will confirm your referral within 5 business days</li>\n</ol>\n<p>Open positions are listed on Horilla under <strong>Recruitment → Open Positions</strong>. Start referring today!</p>",
+      "title": "Employee Referral Program — Earn Referral Bonuses",
+      "description": "<p>Our employee referral program is open. Refer qualified candidates for open roles and earn a referral bonus upon successful hire.</p>",
       "expire_date": "2025-09-30",
       "disable_comments": false,
       "attachments": [],

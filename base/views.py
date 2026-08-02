@@ -401,6 +401,16 @@ def load_demo_database(request):
                 ]
 
                 # Load all data files, shifting dates relative to today
+                from pathlib import Path as _Path
+
+                load_dir_path = _Path(settings.BASE_DIR) / "load_data"
+                try:
+                    from base.demo_data.media import copy_demo_media
+
+                    copy_demo_media(load_dir_path)
+                except Exception:
+                    pass
+
                 for file in data_files:
                     file_path = path.join(settings.BASE_DIR, "load_data", file)
                     tmp = None
@@ -426,6 +436,21 @@ def load_demo_database(request):
                     finally:
                         if tmp and path.exists(tmp):
                             os.remove(tmp)
+
+                try:
+                    from base.demo_data import run_enterprise_demo_seeder
+
+                    run_enterprise_demo_seeder(
+                        load_dir=load_dir_path,
+                        copy_media=False,
+                        scrub_side_files=True,
+                    )
+                except Exception as e:
+                    messages.warning(
+                        request,
+                        _("Enterprise demo seeder could not finish: %(error)s")
+                        % {"error": e},
+                    )
 
                 normalize_demo_payslips()
 

@@ -1,5 +1,4 @@
 import os
-import shutil
 import tempfile
 from pathlib import Path
 
@@ -8,13 +7,16 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
+from base.demo_data import run_enterprise_demo_seeder
+from base.demo_data.media import copy_demo_media
+from base.demo_roles import assign_demo_user_groups
 from base.views import _shift_fixture_dates, normalize_demo_payslips
 
 
 class Command(BaseCommand):
     help = (
-        "Load demo fixture data with dates shifted relative to today. "
-        "Use --flush to wipe the database first (full demo reset)."
+        "Load demo fixture data with dates shifted relative to today, then apply "
+        "the enterprise demo seeder. Use --flush to wipe the database first."
     )
 
     def add_arguments(self, parser):
@@ -45,7 +47,16 @@ class Command(BaseCommand):
             call_command("flush", "--no-input", verbosity=0)
             self.stdout.write(self.style.SUCCESS("Database flushed."))
 
-        self._copy_demo_icons(load_dir=Path(settings.BASE_DIR) / "load_data")
+        load_dir = Path(settings.BASE_DIR) / "load_data"
+        media_stats = copy_demo_media(load_dir)
+        if media_stats.get("icons") or media_stats.get("avatars"):
+            self.stdout.write(
+                self.style.SUCCESS(
+                    "  Copied media: "
+                    f"{media_stats.get('icons', 0)} icon(s), "
+                    f"{media_stats.get('avatars', 0)} avatar(s)."
+                )
+            )
 
         data_files = [
             "user_data.json",
@@ -71,7 +82,6 @@ class Command(BaseCommand):
         ]
         data_files += [f for app, f in optional_apps if apps.is_installed(app)]
 
-        load_dir = Path(settings.BASE_DIR) / "load_data"
         loaded = 0
         errors = 0
 
@@ -103,34 +113,37 @@ class Command(BaseCommand):
                 if tmp and os.path.exists(tmp):
                     os.remove(tmp)
 
+        seed_result = run_enterprise_demo_seeder(
+            load_dir=load_dir, copy_media=False, scrub_side_files=True
+        )
+        self.stdout.write(
+            self.style.SUCCESS(
+                "  Enterprise seeder applied: "
+                f"companies={seed_result.get('companies', 0)}, "
+                f"announcements={seed_result.get('announcements', 0)}, "
+                f"org={seed_result.get('org', {})}."
+            )
+        )
+
         normalized = normalize_demo_payslips()
         if normalized:
             self.stdout.write(
                 self.style.SUCCESS(f"  Re-anchored {normalized} demo payslip(s).")
             )
 
+        try:
+            assigned = assign_demo_user_groups()
+            if assigned:
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        f"  Assigned demo roles to {assigned} membership(s)."
+                    )
+                )
+        except Exception as e:
+            self.stderr.write(self.style.WARNING(f"  Demo roles skipped: {e}"))
+
         self.stdout.write(
             self.style.SUCCESS(
                 f"\nDone. {loaded} fixture(s) loaded, {errors} error(s)."
             )
         )
-
-    def _copy_demo_icons(self, load_dir: Path):
-        """Copy bundled company icons to MEDIA_ROOT so fixture image paths resolve."""
-        icons_src = load_dir / "icons"
-        if not icons_src.exists():
-            return
-
-        dest_dir = Path(settings.MEDIA_ROOT) / "base" / "icon"
-        dest_dir.mkdir(parents=True, exist_ok=True)
-
-        copied = 0
-        for icon_file in icons_src.glob("*.png"):
-            dest = dest_dir / icon_file.name
-            shutil.copy2(icon_file, dest)
-            copied += 1
-
-        if copied:
-            self.stdout.write(
-                self.style.SUCCESS(f"  Copied {copied} company icon(s) to media.")
-            )

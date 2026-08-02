@@ -19,8 +19,14 @@
       "end_date": "2025-07-30",
       "optional_profile_image": false,
       "optional_resume": false,
-      "open_positions": [1, 2],
-      "recruitment_managers": [12, 1],
+      "open_positions": [
+        1,
+        2
+      ],
+      "recruitment_managers": [
+        12,
+        1
+      ],
       "survey_templates": [],
       "skills": []
     }
@@ -45,8 +51,12 @@
       "end_date": "2025-07-30",
       "optional_profile_image": false,
       "optional_resume": false,
-      "open_positions": [3],
-      "recruitment_managers": [68],
+      "open_positions": [
+        3
+      ],
+      "recruitment_managers": [
+        68
+      ],
       "survey_templates": [],
       "skills": []
     }
@@ -71,8 +81,14 @@
       "end_date": "2025-07-30",
       "optional_profile_image": false,
       "optional_resume": false,
-      "open_positions": [1, 2, 4],
-      "recruitment_managers": [1],
+      "open_positions": [
+        1,
+        2,
+        4
+      ],
+      "recruitment_managers": [
+        1
+      ],
       "survey_templates": [],
       "skills": []
     }
@@ -89,7 +105,9 @@
       "stage": "Interview",
       "stage_type": "interview",
       "sequence": 1,
-      "stage_managers": [1]
+      "stage_managers": [
+        1
+      ]
     }
   },
   {
@@ -104,7 +122,9 @@
       "stage": "Hired",
       "stage_type": "hired",
       "sequence": 2,
-      "stage_managers": [12]
+      "stage_managers": [
+        12
+      ]
     }
   },
   {
@@ -119,7 +139,9 @@
       "stage": "Cancelled",
       "stage_type": "cancelled",
       "sequence": 3,
-      "stage_managers": [12]
+      "stage_managers": [
+        12
+      ]
     }
   },
   {
@@ -134,7 +156,9 @@
       "stage": "Hired",
       "stage_type": "hired",
       "sequence": 1,
-      "stage_managers": [37]
+      "stage_managers": [
+        37
+      ]
     }
   },
   {
@@ -875,7 +899,9 @@
       "interview_time": "10:30:00",
       "description": "",
       "completed": false,
-      "employee_id": [1]
+      "employee_id": [
+        1
+      ]
     }
   },
   {
@@ -886,8 +912,8 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "Python Question Template",
-      "description": "Description",
+      "title": "Python Skills Assessment",
+      "description": "General Python proficiency questions for engineering roles.",
       "is_general_template": false,
       "company_id": 1
     }
@@ -900,8 +926,8 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "Odoo Developer Template",
-      "description": "For an Odoo developer interview exam, here are some types of questions that can be asked using the provided",
+      "title": "Software Engineer Assessment",
+      "description": "Structured interview assessment covering software engineering fundamentals, backend development, and problem-solving skills.",
       "is_general_template": false,
       "company_id": 1
     }
@@ -914,8 +940,8 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "Django Developer Template",
-      "description": "Here are some types of questions you can ask in a Django developer interview exam.",
+      "title": "Backend Engineer Assessment",
+      "description": "Interview assessment focused on backend frameworks, APIs, databases, and application architecture.",
       "is_general_template": false,
       "company_id": 1
     }
@@ -933,8 +959,12 @@
       "sequence": 0,
       "type": "text",
       "options": "",
-      "template_id": [1],
-      "recruitment_ids": [1],
+      "template_id": [
+        1
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -951,8 +981,12 @@
       "sequence": 0,
       "type": "text",
       "options": "",
-      "template_id": [1],
-      "recruitment_ids": [1],
+      "template_id": [
+        1
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -965,12 +999,16 @@
       "modified_by": 1,
       "is_active": true,
       "is_mandatory": true,
-      "question": "Have you worked with Odoo's ORM before ?",
+      "question": "Have you worked with an ORM framework before?",
       "sequence": 0,
       "type": "checkbox",
       "options": "",
-      "template_id": [2],
-      "recruitment_ids": [1],
+      "template_id": [
+        2
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -983,12 +1021,16 @@
       "modified_by": 1,
       "is_active": true,
       "is_mandatory": true,
-      "question": "Which Odoo module have you worked on the most?",
+      "question": "Which application modules have you worked on the most?",
       "sequence": 0,
       "type": "options",
       "options": "Sales, Inventory, Accounting, Human Resources",
-      "template_id": [2],
-      "recruitment_ids": [1],
+      "template_id": [
+        2
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -1001,12 +1043,16 @@
       "modified_by": 1,
       "is_active": true,
       "is_mandatory": true,
-      "question": "Which of the following are key features of OdooÆs ORM?",
+      "question": "Which of the following are key features of a modern ORM?",
       "sequence": 0,
       "type": "multiple",
       "options": "Data modeling, SQL query generation, Form building, Workflow automation",
-      "template_id": [2],
-      "recruitment_ids": [1],
+      "template_id": [
+        2
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -1019,12 +1065,16 @@
       "modified_by": 1,
       "is_active": true,
       "is_mandatory": false,
-      "question": "Explain how you would customize an Odoo report for a client.",
+      "question": "Explain how you would customize a business report for a client.",
       "sequence": 0,
       "type": "text",
       "options": "",
-      "template_id": [2],
-      "recruitment_ids": [1],
+      "template_id": [
+        2
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -1037,12 +1087,16 @@
       "modified_by": 1,
       "is_active": true,
       "is_mandatory": false,
-      "question": "How many years of experience do you have working with Odoo?",
+      "question": "How many years of professional software development experience do you have?",
       "sequence": 0,
       "type": "number",
       "options": "",
-      "template_id": [2],
-      "recruitment_ids": [1],
+      "template_id": [
+        2
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -1055,12 +1109,16 @@
       "modified_by": 1,
       "is_active": true,
       "is_mandatory": false,
-      "question": "Estimate your proficiency with Python in relation to Odoo development (0-100%).",
+      "question": "Estimate your proficiency with Python (0-100%).",
       "sequence": 0,
       "type": "percentage",
       "options": "",
-      "template_id": [2],
-      "recruitment_ids": [1],
+      "template_id": [
+        2
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -1073,12 +1131,16 @@
       "modified_by": 1,
       "is_active": true,
       "is_mandatory": true,
-      "question": "Rate your experience in using Odoo Studio on a scale of 1 to 5.",
+      "question": "Rate your experience with low-code customization tools on a scale of 1 to 5.",
       "sequence": 0,
       "type": "rating",
       "options": "",
-      "template_id": [2],
-      "recruitment_ids": [1],
+      "template_id": [
+        2
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -1095,8 +1157,12 @@
       "sequence": 0,
       "type": "checkbox",
       "options": "",
-      "template_id": [3],
-      "recruitment_ids": [2],
+      "template_id": [
+        3
+      ],
+      "recruitment_ids": [
+        2
+      ],
       "job_position_ids": []
     }
   },
@@ -1113,8 +1179,12 @@
       "sequence": 0,
       "type": "options",
       "options": "Writing custom queries, Query optimization, Database migrations, Managing relations between models",
-      "template_id": [3],
-      "recruitment_ids": [2],
+      "template_id": [
+        3
+      ],
+      "recruitment_ids": [
+        2
+      ],
       "job_position_ids": []
     }
   },
@@ -1131,8 +1201,12 @@
       "sequence": 0,
       "type": "options",
       "options": "Views, Models, Controllers, Templates",
-      "template_id": [3],
-      "recruitment_ids": [2],
+      "template_id": [
+        3
+      ],
+      "recruitment_ids": [
+        2
+      ],
       "job_position_ids": []
     }
   },
@@ -1149,8 +1223,12 @@
       "sequence": 0,
       "type": "text",
       "options": "",
-      "template_id": [3],
-      "recruitment_ids": [2],
+      "template_id": [
+        3
+      ],
+      "recruitment_ids": [
+        2
+      ],
       "job_position_ids": []
     }
   }
