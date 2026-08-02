@@ -5,7 +5,7 @@
     {% include "generic/horilla_form.html" %}
     <button hidden hx-target="#multiApprovalManager_0" hx-swap="outerHTML"
         hx-get="{% url 'add-more-approval-managers' %}" role="button" id="addmangerButton" style="color: green">
-        {% trans "Add more managers.." %}
+        {% trans "Add Manager" %}
     </button>
 </div>
 
@@ -23,13 +23,12 @@
 
         var divElement = document.createElement('div');
         divElement.id = 'multiApprovalManager_0';
-        divElement.className = 'pt-2';
-        divElement.style.textAlign = 'end';
+        divElement.className = 'pt-2 d-flex justify-content-end';
         var anchorElement = document.createElement('a');
         anchorElement.setAttribute('role', 'button');
         anchorElement.setAttribute('id', 'addmanger');
-        anchorElement.style.color = 'green';
-        anchorElement.innerText = 'Add more managers..';
+        anchorElement.className = 'oh-btn oh-btn--x-small oh-btn--success-outline';
+        anchorElement.innerHTML = '<ion-icon name="add-outline" class="me-1"></ion-icon>{% trans "Add Manager" %}';
 
         divElement.appendChild(anchorElement);
         var parentDiv = document.getElementById('id_multi_approval_manager_parent_div');

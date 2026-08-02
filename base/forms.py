@@ -204,8 +204,7 @@ class ModelForm(forms.ModelForm):
 
         for field_name, field in self.fields.items():
             widget = field.widget
-            label = _(field.label) if field.label else ""
-
+            label = _(field.label).title() if field.label else ""
             # Date field
             if isinstance(widget, forms.DateInput):
                 field.initial = today
@@ -236,25 +235,6 @@ class ModelForm(forms.ModelForm):
                     }
                 )
 
-            # ===================================== DISABLED FOR NOW. Rendering datetime field for attendance issue =====================================
-
-            # DateTime field
-            # elif isinstance(widget, forms.DateTimeInput):
-            #     field.initial = now.strftime("%Y-%m-%d %H:%M")
-            #     widget.input_type = "datetime-local"
-            #     widget.format = "%Y-%m-%dT%H:%M"
-            #     field.input_formats = ["%Y-%m-%dT%H:%M"]
-
-            #     existing_class = widget.attrs.get("class", default_input_class)
-            #     widget.attrs.update(
-            #         {
-            #             "class": f"{existing_class} form-control",
-            #             "placeholder": label,
-            #         }
-            #     )
-
-            # ==================================== DISABLED FOR NOW =====================================
-
             # Number, Email, Text, File, URL fields
             elif isinstance(
                 widget,
@@ -270,7 +250,7 @@ class ModelForm(forms.ModelForm):
                 widget.attrs.update(
                     {
                         "class": f"{existing_class} form-control",
-                        "placeholder": _(field.label.title()) if field.label else "",
+                        "placeholder": label,
                     }
                 )
 
@@ -299,6 +279,10 @@ class ModelForm(forms.ModelForm):
             ):
                 existing_class = widget.attrs.get("class", checkbox_class)
                 widget.attrs.update({"class": existing_class})
+
+            # Make the rendered field label title case everywhere
+            if field.label:
+                field.label = label
 
         # Set employee_id and company_id once
         if request:

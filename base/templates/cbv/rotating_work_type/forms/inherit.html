@@ -10,7 +10,7 @@
       hx-swap="outerHTML"
       hx-post="{% url 'add-remove-work-type-fields' %}"
       role="button"
-      style="color: green"
+      class="text-primary-600"
     >
       {% trans "Add more work types.." %}
     </button>
@@ -35,13 +35,12 @@
             var divElement = document.createElement('div');
             var test = {{ form.work_type_counts }} - 1;
             divElement.id = 'moreWorkTypeContainer_{{form.work_type_counts|add:2}}';
-            divElement.className = 'pt-2';
+            divElement.className = 'pt-2 text-primary-600';
             divElement.style.textAlign = 'end';
 
             var anchorElement = document.createElement('a');
             anchorElement.setAttribute('role', 'button');
             anchorElement.setAttribute('id', 'link');
-            anchorElement.style.color = 'green';
             anchorElement.innerText = 'Add more Work Types..';
 
             divElement.appendChild(anchorElement);

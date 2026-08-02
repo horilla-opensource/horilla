@@ -11,18 +11,21 @@
     hx-target="#{{ current_hx_target }}"
     hx-swap="outerHTML"
     id="delete-link"
+    title="{% trans 'Remove manager' %}"
   >
     <ion-icon name="trash-outline"></ion-icon>
   </a>
 </div>
-<div id="{{ next_hx_target }}" style="text-align: end">
+<div id="{{ next_hx_target }}" class="pt-2 d-flex justify-content-end">
   <a
     hx-target="#{{ next_hx_target }}"
     hx-swap="outerHTML"
     hx-get="{% url 'add-more-approval-managers' %}?managers_count={{ managers_count }}"
     role="button"
-    style="color: green"
-    >{% trans "Add more managers.." %}</a
+    class="oh-btn oh-btn--x-small oh-btn--success-outline"
+    >
+    <ion-icon name="add-outline" class="me-1"></ion-icon>
+    {% trans "Add Manager" %}</a
   >
 </div>
 {% else %}
@@ -38,18 +41,21 @@
     hx-target="#{{ current_hx_target }}"
     hx-swap="outerHTML"
     id="delete-link"
+    title="{% trans 'Remove manager' %}"
   >
     <ion-icon name="trash-outline"></ion-icon>
   </a>
 </div>
-<div id="{{ next_hx_target }}" style="text-align: end">
+<div id="{{ next_hx_target }}" class="pt-2 d-flex justify-content-end">
   <a
     hx-target="#{{ next_hx_target }}"
     hx-swap="outerHTML"
     hx-get="{% url 'add-more-approval-managers' %}"
     role="button"
-    style="color: green"
-    >{% trans "Add more managers.." %}</a
+    class="oh-btn oh-btn--x-small oh-btn--success-outline"
+    >
+    <ion-icon name="add-outline" class="me-1"></ion-icon>
+    {% trans "Add Manager" %}</a
   >
 </div>
 {% endif %}

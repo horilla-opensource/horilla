@@ -12,7 +12,7 @@
         role="button"
         id = "addmangerButton"
         style="color: green"
-        >{% trans "Add more managers.." %}</button>
+        >{% trans "Add Manager" %}</button>
 </div>
 
 <script>
@@ -49,13 +49,12 @@
         var managerid = "multiApprovalManager_" + managersCount
         var divElement = document.createElement('div');
         divElement.id = managerid;
-        divElement.className = 'pt-2';
-        divElement.style.textAlign = 'end';
+        divElement.className = 'pt-2 d-flex justify-content-end';
         var anchorElement = document.createElement('a');
         anchorElement.setAttribute('role', 'button');
         anchorElement.setAttribute('id', 'addmanger');
-        anchorElement.style.color = 'green';
-        anchorElement.innerText = 'Add more managers..';
+        anchorElement.className = 'oh-btn oh-btn--x-small oh-btn--success-outline';
+        anchorElement.innerHTML = '<ion-icon name="add-outline" class="me-1"></ion-icon>{% trans "Add Manager" %}';
 
         divElement.appendChild(anchorElement);
         var parentDiv = document.getElementById(parentDivId);
