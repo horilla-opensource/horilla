@@ -302,10 +302,9 @@ msgstr "Звіти"
 msgid "Toggle Options"
 msgstr "Перемкнути параметри"
 
-#, fuzzy
 #| msgid "create-deduction"
 msgid "create outline"
-msgstr "створити утримання"
+msgstr "create outline"
 
 msgid "Edit"
 msgstr "Редагувати"
@@ -587,10 +586,9 @@ msgstr "Дата запиту на актив"
 msgid "Create request"
 msgstr "Створити запит"
 
-#, fuzzy
 #| msgid "Dead line"
 msgid "add outline"
-msgstr "Кінцевий термін"
+msgstr "add outline"
 
 msgid "Create allocation"
 msgstr "Створити розподілення"
@@ -2818,10 +2816,9 @@ msgstr "Документ"
 msgid "Group Permissions"
 msgstr "Дозволи групи"
 
-#, fuzzy
 #| msgid "Dead line"
 msgid "search outline"
-msgstr "Кінцевий термін"
+msgstr "search outline"
 
 msgid "Group Assign"
 msgstr "Призначення групи"
@@ -2871,10 +2868,9 @@ msgstr "Зберегти пароль"
 msgid "Forgot password"
 msgstr "Забули пароль"
 
-#, fuzzy
 #| msgid "horilla-theme"
 msgid "Horilla"
-msgstr "тема horilla"
+msgstr "Horilla"
 
 msgid "Employee Permissions"
 msgstr "Дозволи співробітника"
@@ -3192,10 +3188,9 @@ msgstr "Ви впевнені, що хочете видалити це приз�
 msgid "Add more shift.."
 msgstr "Додати ще зміну.."
 
-#, fuzzy
 #| msgid "Save"
 msgid "Save 321"
-msgstr "Зберегти"
+msgstr "Зберегти 321"
 
 msgid "Rotating Shift Assign Update"
 msgstr "Оновлення призначення позмінної ротації"
@@ -3242,10 +3237,9 @@ msgstr "Експортувати призначення позмінної ро�
 msgid "Import Rotating Shift"
 msgstr "Імпортувати позмінну ротацію"
 
-#, fuzzy
 #| msgid "File Upload"
 msgid "cloud upload"
-msgstr "Завантаження файлу"
+msgstr "cloud upload"
 
 msgid "False"
 msgstr "Хибно"
@@ -3506,7 +3500,6 @@ msgstr "Затвердити цей запит на зміну?"
 msgid "Do you want to cancel this request?"
 msgstr "Скасувати цей запит?"
 
-#, fuzzy
 #| msgid "Cancel"
 msgid "cancel"
 msgstr "Скасувати"
@@ -3557,10 +3550,9 @@ msgstr "Попередня/поточна зміна"
 msgid "View Comment"
 msgstr "Переглянути коментар"
 
-#, fuzzy
 #| msgid "Dead line"
 msgid "eye outline"
-msgstr "Кінцевий термін"
+msgstr "eye outline"
 
 msgid "There are currently no shift requests to consider."
 msgstr "Наразі немає запитів на зміну для розгляду."
@@ -5829,10 +5821,9 @@ msgstr "Усього працівників"
 msgid "Incactive Employees"
 msgstr "Неактивні працівники"
 
-#, fuzzy
 #| msgid "Employees Chart"
 msgid "Employee Chart"
-msgstr "Діаграма співробітників"
+msgstr "Діаграма працівників"
 
 msgid "In"
 msgstr "Через"
@@ -6009,10 +6000,9 @@ msgstr "Інші вкладення"
 msgid "---Choose Job Role---"
 msgstr "---Виберіть посаду---"
 
-#, fuzzy
 #| msgid "settings"
 msgid "settings outline"
-msgstr "налаштування"
+msgstr "settings outline"
 
 msgid "Block Account"
 msgstr "Заблокувати обліковий запис"
@@ -6979,10 +6969,9 @@ msgstr "Скасувати вибір усіх FAQ"
 msgid "View Ticket"
 msgstr "Переглянути заявку"
 
-#, fuzzy
 #| msgid "helpdesk"
 msgid "Helpdesk"
-msgstr "служба підтримки"
+msgstr "Служба підтримки"
 
 msgid "oh-link--secondary"
 msgstr ""
@@ -7030,10 +7019,9 @@ msgstr "Останнє повідомлення:"
 msgid "27 Mar 2019"
 msgstr ""
 
-#, fuzzy
 #| msgid "Status"
 msgid "Status:"
-msgstr "Статус"
+msgstr "Статус:"
 
 msgid "Tags:"
 msgstr "Теги:"
@@ -7041,15 +7029,13 @@ msgstr "Теги:"
 msgid "Responsibility"
 msgstr "Відповідальність"
 
-#, fuzzy
 #| msgid "Based on"
 msgid "Raised on"
-msgstr "На основі"
+msgstr "Створено"
 
-#, fuzzy
 #| msgid "Range"
 msgid "Change"
-msgstr "Діапазон"
+msgstr "Змінити"
 
 msgid "Assigned to"
 msgstr "Призначено"
@@ -7057,10 +7043,9 @@ msgstr "Призначено"
 msgid "Assignees"
 msgstr "Виконавці"
 
-#, fuzzy
 #| msgid "All Tickets"
 msgid "Add Tickets"
-msgstr "Усі заявки"
+msgstr "Додати заявки"
 
 msgid "Do you want to archive this ticket?"
 msgstr "Бажаєте заархівувати цю заявку?"
@@ -7101,10 +7086,9 @@ msgstr " з"
 msgid "to"
 msgstr "на"
 
-#, fuzzy
 #| msgid "Attachments"
 msgid "Attach Files"
-msgstr "Вкладення"
+msgstr "Прикріпити файли"
 
 msgid "Ticket Info 123"
 msgstr "Інформація про заявку 123"
@@ -7124,10 +7108,9 @@ msgstr " Запити на компенсацію"
 msgid "File Upload"
 msgstr "Завантаження файлу"
 
-#, fuzzy
 #| msgid "Template as Attachment"
 msgid "Delete attachment"
-msgstr "Шаблон як вкладення"
+msgstr "Видалити вкладення"
 
 msgid "Till date"
 msgstr "До дати"
@@ -7144,10 +7127,9 @@ msgstr "Кінцевий термін"
 msgid "Ticket ID"
 msgstr "ID заявки"
 
-#, fuzzy
 #| msgid "archived"
 msgid "archive sharp"
-msgstr "архівовано"
+msgstr "archive sharp"
 
 msgid "Un Archive"
 msgstr "Розархівувати"
@@ -7456,10 +7438,9 @@ msgstr "Авторизувати Google Drive"
 msgid "Stop"
 msgstr "Зупинити"
 
-#, fuzzy
 #| msgid "Star"
 msgid "Start"
-msgstr "Зірка"
+msgstr "Почати"
 
 msgid "OAuth credentials file uploaded. Please authorize Google Drive access."
 msgstr ""
@@ -7537,10 +7518,9 @@ msgstr "Вибрані записи оновлено"
 msgid "No records selected"
 msgstr "Записи не вибрано"
 
-#, fuzzy
 #| msgid "Import"
 msgid "Imported"
-msgstr "Імпорт"
+msgstr "Імпортовано"
 
 msgid "Show Error Details"
 msgstr "Показати подробиці помилки"
@@ -7581,10 +7561,9 @@ msgstr "Потрібна дія"
 msgid "Select All Columns"
 msgstr "Вибрати всі стовпці"
 
-#, fuzzy
 #| msgid "Export Data"
 msgid "Exported Data"
-msgstr "Експорт даних"
+msgstr "Експортовані дані"
 
 msgid "Filters"
 msgstr "Фільтри"
@@ -7613,18 +7592,16 @@ msgstr ""
 msgid "arrow back circle outline"
 msgstr ""
 
-#, fuzzy
 #| msgid "Carryforward Expire in"
 msgid "arrow forward circle outline"
-msgstr "Термін дії перенесення закінчується через"
+msgstr "arrow forward circle outline"
 
 msgid "E-mail"
 msgstr "Ел. пошта"
 
-#, fuzzy
 #| msgid "Export Records"
 msgid "Import Records"
-msgstr "Експортувати записи"
+msgstr "Імпортувати записи"
 
 msgid "Import Help"
 msgstr "Довідка з імпорту"
@@ -7635,18 +7612,16 @@ msgstr "Розробити головну сторінку"
 msgid "Create wireframes and mockups for the new homepage design."
 msgstr "Створіть каркаси та макети для нового дизайну головної сторінки."
 
-#, fuzzy
 #| msgid "Priority"
 msgid "High Priority"
-msgstr "Пріоритет"
+msgstr "Високий пріоритет"
 
 msgid "May 16"
 msgstr ""
 
-#, fuzzy
 #| msgid "assigned as"
 msgid "Unassigned"
-msgstr "призначено як"
+msgstr "Не призначено"
 
 msgid "John Doe"
 msgstr ""
@@ -7657,31 +7632,27 @@ msgstr ""
 msgid "Robert Johnson"
 msgstr ""
 
-#, fuzzy
 #| msgid "Update compensation"
 msgid "Update Documentation"
-msgstr "Оновити компенсацію"
+msgstr "Оновити документацію"
 
 msgid "Review and update the API documentation for v2.0 release."
 msgstr "Перевірте й оновіть документацію API для випуску v2.0."
 
-#, fuzzy
 #| msgid "Priority"
 msgid "Medium Priority"
-msgstr "Пріоритет"
+msgstr "Середній пріоритет"
 
 msgid "May 20"
 msgstr ""
 
-#, fuzzy
 #| msgid "Add task"
 msgid "+ Add new task"
-msgstr "Додати завдання"
+msgstr "+ Додати нове завдання"
 
-#, fuzzy
 #| msgid " Task"
 msgid "New Task"
-msgstr " Завдання"
+msgstr "Нове завдання"
 
 msgid "Click to edit this task description."
 msgstr "Натисніть, щоб редагувати опис цього завдання."
@@ -7704,7 +7675,6 @@ msgstr "Скасувати весь вибір"
 msgid "Item"
 msgstr "Елемент"
 
-#, fuzzy
 #| msgid "Filter"
 msgid "filter"
 msgstr "Фільтр"
@@ -8199,25 +8169,21 @@ msgstr "Немає конфліктних запитів для скасован
 msgid "No clashed requestes found"
 msgstr "Конфліктних запитів не знайдено"
 
-#, fuzzy
 #| msgid "Leave request deleted."
 msgid "Leave Request Alert."
-msgstr "Заявку на відпустку видалено."
+msgstr "Сповіщення про заявку на відпустку."
 
-#, fuzzy
 #| msgid "Are you sure want to proceed with the request ?"
 msgid "Are you sure you want to proceed with the request?"
 msgstr "Ви впевнені, що бажаєте продовжити із запитом?"
 
-#, fuzzy
 #| msgid "Leave Request Update"
 msgid "Leave Request Report"
-msgstr "Оновлення заявки на відпустку"
+msgstr "Звіт за заявками на відпустку"
 
-#, fuzzy
 #| msgid "Company"
 msgid "Company Logo"
-msgstr "Компанія"
+msgstr "Логотип компанії"
 
 msgid "COMPANY:"
 msgstr "КОМПАНІЯ:"
@@ -8237,41 +8203,35 @@ msgstr "ПОШТОВИЙ ІНДЕКС:"
 msgid "LEAVE REPORT"
 msgstr "ЗВІТ ПРО ВІДПУСТКИ"
 
-#, fuzzy
 #| msgid "Leave"
 msgid "Leaves"
-msgstr "Відпустка"
+msgstr "Відпустки"
 
-#, fuzzy
 #| msgid "Create Period"
 msgid "Leave Periods"
-msgstr "Створити період"
+msgstr "Періоди відпусток"
 
 msgid "Used"
 msgstr "Використано"
 
-#, fuzzy
 #| msgid "Warning"
 msgid "Remaining"
-msgstr "Попередження"
+msgstr "Залишок"
 
-#, fuzzy
 #| msgid "Period"
 msgid "Period 1"
-msgstr "Період"
+msgstr "Період 1"
 
 msgid "End"
 msgstr "Кінець"
 
-#, fuzzy
 #| msgid "Period"
 msgid "Period 2"
-msgstr "Період"
+msgstr "Період 2"
 
-#, fuzzy
 #| msgid "Period"
 msgid "Period 3"
-msgstr "Період"
+msgstr "Період 3"
 
 msgid "* New hire (joined within the last year)"
 msgstr "* Новий працівник (приєднався протягом останнього року)"
@@ -8895,7 +8855,6 @@ msgstr ""
 msgid "Do You really want to reject the request?"
 msgstr "Ви дійсно хочете відхилити запит?"
 
-#, fuzzy
 #| msgid "Close"
 msgid "close"
 msgstr "Закрити"
@@ -8912,10 +8871,9 @@ msgstr ""
 msgid " Send Mail"
 msgstr " Надіслати лист"
 
-#, fuzzy
 #| msgid "Email Configuration"
 msgid "mail open outline"
-msgstr "Налаштування електронної пошти"
+msgstr "mail open outline"
 
 msgid "Do you want to delete this record"
 msgstr "Ви хочете видалити цей запис"
@@ -8929,25 +8887,21 @@ msgstr "Ви хочете видалити цей лист"
 msgid "No resignation has been created yet."
 msgstr "Заяв на звільнення ще не створено."
 
-#, fuzzy
 #| msgid "Add MoM"
 msgid "Add to"
-msgstr "Додати протокол"
+msgstr "Додати до"
 
-#, fuzzy
 #| msgid "offboarding"
 msgid "Add to offboarding"
-msgstr "звільнення"
+msgstr "Додати до звільнення"
 
-#, fuzzy
 #| msgid "Planned To Leave"
 msgid "Planned to leave on"
 msgstr "Планова дата звільнення"
 
-#, fuzzy
 #| msgid "Notice period ended"
 msgid "Notice period end"
-msgstr "Термін попередження закінчився"
+msgstr "Закінчення строку попередження"
 
 msgid "Resignation Request"
 msgstr "Заява на звільнення"
@@ -9274,14 +9228,15 @@ msgid ""
 "Your dedication is valued, and we wish you continued success. If you have "
 "questions or need assistance, feel free to ask. Best wishes for your "
 "journey! Kindly complete your profile when convenient."
-msgstr "Ми цінуємо вашу відданість і бажаємо подальших успіхів. Якщо у вас є запитання або потрібна допомога, звертайтеся. Бажаємо успіхів! Будь ласка, заповніть свій профіль, коли матимете можливість."
+msgstr ""
+"Ми цінуємо вашу відданість і бажаємо подальших успіхів. Якщо у вас є "
+"запитання або потрібна допомога, звертайтеся. Бажаємо успіхів! Будь ласка, "
+"заповніть свій профіль, коли матимете можливість."
 
-#, fuzzy
 #| msgid "employee-profile"
 msgid "Complete Profile"
-msgstr "employee-profile"
+msgstr "Заповнити профіль"
 
-#, fuzzy
 #| msgid "Bulk Stage Change"
 msgid "Bulk stage change"
 msgstr "Масова зміна етапу"
@@ -9322,7 +9277,6 @@ msgstr "Закрито"
 msgid "Candidate Name"
 msgstr "Ім'я кандидата"
 
-#, fuzzy
 #| msgid "Default Records Per Page"
 msgid "Default select example"
 msgstr "Кількість записів на сторінці за замовчуванням"
@@ -9330,10 +9284,9 @@ msgstr "Кількість записів на сторінці за замов�
 msgid "Welcome Aboard"
 msgstr "Ласкаво просимо до команди"
 
-#, fuzzy
 #| msgid "Upload Photo"
 msgid "User Photo"
-msgstr "Завантажити фото"
+msgstr "Фото користувача"
 
 msgid "Cancel Rejection"
 msgstr "Скасувати відхилення"
@@ -9944,10 +9897,9 @@ msgstr "Ця податкова категорія вже існує"
 msgid "Maximum income must be greater than minimum income."
 msgstr "Максимальний дохід має бути більшим за мінімальний."
 
-#, fuzzy
 #| msgid "Add MoM"
 msgid "Add More"
-msgstr "Додати протокол"
+msgstr "Додати ще"
 
 msgid "Amount Per Attendance"
 msgstr "Сума за присутність"
@@ -10141,12 +10093,10 @@ msgstr "№"
 msgid "One Time Date"
 msgstr "Дата одноразового платежу"
 
-#, fuzzy
 #| msgid "Installment Start Date"
 msgid "Installment paid, Click to view"
-msgstr "Дата початку виплат частинами"
+msgstr "Внесок сплачено, натисніть для перегляду"
 
-#, fuzzy
 #| msgid "Is settled"
 msgid "Loan Settled"
 msgstr "Погашено"
@@ -10172,12 +10122,10 @@ msgstr "Загальна кількість платежів"
 msgid "There are currently no loans to consider."
 msgstr "Наразі немає позик для розгляду."
 
-#, fuzzy
 #| msgid "Probation From"
 msgid "donation box"
-msgstr "Випробувальний термін з"
+msgstr "donation box"
 
-#, fuzzy
 #| msgid "Payslips"
 msgid "View Payslips"
 msgstr "Розрахункові листки"
@@ -10381,10 +10329,9 @@ msgstr "Звіт по розрахункових листках"
 msgid "Download report"
 msgstr "Завантажити звіт"
 
-#, fuzzy
 #| msgid "Logout"
 msgid "Logo"
-msgstr "Вийти"
+msgstr "Логотип"
 
 msgid "Employee Netpay :"
 msgstr "Чистий дохід співробітника:"
@@ -10946,30 +10893,25 @@ msgstr "Наразі немає OKR під загрозою."
 msgid "Feedback Answer"
 msgstr "Відповідь на відгук"
 
-#, fuzzy
 #| msgid "Stars"
 msgid "5 Stars"
-msgstr "Зірки"
+msgstr "5 зірок"
 
 msgid "Stars"
 msgstr "Зірки"
 
-#, fuzzy
 #| msgid "Stars"
 msgid "4 Stars"
-msgstr "Зірки"
+msgstr "4 зірки"
 
-#, fuzzy
 #| msgid "Stars"
 msgid "3 Stars"
-msgstr "Зірки"
+msgstr "3 зірки"
 
-#, fuzzy
 #| msgid "Stars"
 msgid "2 Stars"
-msgstr "Зірки"
+msgstr "2 зірки"
 
-#, fuzzy
 #| msgid "Star"
 msgid "1 Star"
 msgstr "Зірка"
@@ -11139,15 +11081,13 @@ msgstr "Ви бажаєте видалити це питання?"
 msgid "Add A Question"
 msgstr "Додати питання"
 
-#, fuzzy
 #| msgid "Option"
 msgid "Option #3"
-msgstr "Варіант"
+msgstr "Варіант №3"
 
-#, fuzzy
 #| msgid "Option"
 msgid "Option #4"
-msgstr "Варіант"
+msgstr "Варіант №4"
 
 msgid "Add Question"
 msgstr "Додати питання"
@@ -11239,7 +11179,6 @@ msgstr "Viewxxxxxxxxxxxx"
 msgid "Activites"
 msgstr "Активності"
 
-#, fuzzy
 #| msgid "Add Key Results"
 msgid "Add Key Result"
 msgstr "Додати ключові результати"
@@ -11889,7 +11828,6 @@ msgstr "Наразі немає доступних проєктів; будь л
 msgid "Project Manager"
 msgstr "Керівник проєкту"
 
-#, fuzzy
 #| msgid "Document"
 msgid "document"
 msgstr "Документ"
@@ -11897,15 +11835,13 @@ msgstr "Документ"
 msgid "\\"
 msgstr ""
 
-#, fuzzy
 #| msgid "Create Project Stage"
 msgid "Create a new Stage"
 msgstr "Створити етап проєкту"
 
-#, fuzzy
 #| msgid "Add Stage"
 msgid "Old Stage"
-msgstr "Додати етап"
+msgstr "Попередній етап"
 
 msgid "Timesheet"
 msgstr "Табель обліку часу"
@@ -11913,10 +11849,9 @@ msgstr "Табель обліку часу"
 msgid "Are you sure you want to delete this stage?"
 msgstr "Ви впевнені, що хочете видалити цей етап?"
 
-#, fuzzy
 #| msgid "task-all"
 msgid "task"
-msgstr "task-all"
+msgstr "завдання"
 
 msgid "There are currently no available tasks; please create a new one."
 msgstr "Наразі немає доступних завдань; будь ласка, створіть нове."
@@ -11985,15 +11920,13 @@ msgstr "Особистий табель обліку робочого часу"
 msgid "Week"
 msgstr "Тиждень"
 
-#, fuzzy
 #| msgid "Create task"
 msgid "Create a new task"
 msgstr "Створити завдання"
 
-#, fuzzy
 #| msgid "Ticket Details"
 msgid "Timesheet Details"
-msgstr "Деталі заявки"
+msgstr "Деталі табеля"
 
 msgid "Project updated"
 msgstr "Проєкт оновлено"
@@ -12345,23 +12278,20 @@ msgstr ""
 msgid "Resume"
 msgstr "Резюме"
 
-#, fuzzy
 #| msgid "Currency"
 msgid "Currently:"
-msgstr "Валюта"
+msgstr "Наразі:"
 
-#, fuzzy
 #| msgid "Range"
 msgid "Change:"
-msgstr "Діапазон"
+msgstr "Змінити:"
 
 msgid "e.g. Kerala"
 msgstr ""
 
-#, fuzzy
 #| msgid "Application Form"
 msgid "Registration Form"
-msgstr "Форма заявки"
+msgstr "Форма реєстрації"
 
 msgid "Are you sure you want to convert this candidate into an employee?"
 msgstr "Ви впевнені, що хочете перетворити цього кандидата на співробітника?"
@@ -12444,10 +12374,9 @@ msgstr "Запитів документів не знайдено."
 msgid "Add Note"
 msgstr "Додати нотатку"
 
-#, fuzzy
 #| msgid "Close"
 msgid "Close note"
-msgstr "Закрити"
+msgstr "Закрити примітку"
 
 msgid "No notes have been added for this candidate."
 msgstr "Для цього кандидата не додано жодної нотатки."
@@ -12509,28 +12438,24 @@ msgstr "Співбесід не знайдено."
 msgid " There are no ratings to display at the moment."
 msgstr " Наразі немає оцінок для відображення."
 
-#, fuzzy
 #| msgid "Check the credentials"
 msgid "Enter Credentials"
-msgstr "Перевірте облікові дані"
+msgstr "Введіть облікові дані"
 
-#, fuzzy
 #| msgid "Key Result"
 msgid "Show Result"
-msgstr "Ключовий результат"
+msgstr "Показати результат"
 
 msgid "Registration Success - OpenHRMS Dashboard"
 msgstr "Реєстрація успішна — панель OpenHRMS"
 
-#, fuzzy
 #| msgid "Connection Successful"
 msgid "Registration Success"
-msgstr "З'єднання успішне"
+msgstr "Реєстрацію успішно завершено"
 
-#, fuzzy
 #| msgid "Returned"
 msgid "Return home"
-msgstr "Повернено"
+msgstr "Повернутися на головну"
 
 msgid "Total Vacancies"
 msgstr "Всього вакансій"
@@ -12637,7 +12562,6 @@ msgstr "Скасовано"
 msgid "Add Recruitment"
 msgstr "Додати набір"
 
-#, fuzzy
 #| msgid "Add Candidate"
 msgid "Add Candidates"
 msgstr "Додати кандидата"
@@ -12681,15 +12605,13 @@ msgstr "Надіслати лист кільком кандидатам"
 msgid "Congrats..."
 msgstr "Вітаємо..."
 
-#, fuzzy
 #| msgid "Candidate view status updated"
 msgid "Candidate can view this note"
-msgstr "Статус перегляду кандидата оновлено"
+msgstr "Кандидат може переглядати цю примітку"
 
-#, fuzzy
 #| msgid "Candidate"
 msgid "Candidate can"
-msgstr "Кандидат"
+msgstr "Кандидат може"
 
 msgid "Switch to Ongoing Recruitments"
 msgstr "Перейти до поточних наборів"
@@ -12721,10 +12643,9 @@ msgstr ""
 msgid "&nbsp;"
 msgstr ""
 
-#, fuzzy
 #| msgid "Good"
 msgid "Good day!"
-msgstr "Добре"
+msgstr "Доброго дня!"
 
 msgid ""
 "I am pleased to inform you that you have been chosen to work with our "
@@ -12738,13 +12659,19 @@ msgid ""
 ". As a part of our employee policy, we provide free accommodation to all our "
 "employees, and hence you as part of your organization are also eligible for "
 "the same."
-msgstr ". Відповідно до політики для працівників ми надаємо безкоштовне проживання всім співробітникам, тому ви також маєте право на цю пільгу."
+msgstr ""
+". Відповідно до політики для працівників ми надаємо безкоштовне проживання "
+"всім співробітникам, тому ви також маєте право на цю пільгу."
 
 msgid ""
 "Attached hereto is the employment contract with all the required details, "
 "your offer letter, and accommodation details. Should you accept this offer, "
 "we expect you to revert back to this email within two days upon receipt."
-msgstr "До цього листа додано трудовий договір з усіма необхідними відомостями, вашу пропозицію роботи та інформацію про проживання. Якщо ви приймаєте цю пропозицію, просимо відповісти на цей лист протягом двох днів після отримання."
+msgstr ""
+"До цього листа додано трудовий договір з усіма необхідними відомостями, вашу "
+"пропозицію роботи та інформацію про проживання. Якщо ви приймаєте цю "
+"пропозицію, просимо відповісти на цей лист протягом двох днів після "
+"отримання."
 
 msgid "Welcome aboard! We look forward to having you on our team.&nbsp;"
 msgstr "Ласкаво просимо до команди! Ми раді бачити вас серед нас.&nbsp;"
@@ -12755,10 +12682,9 @@ msgstr "З повагою,"
 msgid "Adam Luis"
 msgstr ""
 
-#, fuzzy
 #| msgid "Manager"
 msgid "HR Manager"
-msgstr "Керівник"
+msgstr "Менеджер з персоналу"
 
 msgid ",&nbsp;"
 msgstr ""
@@ -12846,10 +12772,9 @@ msgstr "Наразі не додано жодної навички."
 msgid "There are currently no skill zone to consider."
 msgstr "Наразі немає зон навичок для розгляду."
 
-#, fuzzy
 #| msgid "Stages"
 msgid "4 Stages"
-msgstr "Етапи"
+msgstr "4 етапи"
 
 msgid "Do you want to Archive this Skill zone?"
 msgstr "Бажаєте архівувати цю зону навичок?"
@@ -12860,7 +12785,6 @@ msgstr "Бажаєте розархівувати цю зону навичок?"
 msgid "Do you want to delete this Skill zone?"
 msgstr "Бажаєте видалити цю зону навичок?"
 
-#, fuzzy
 #| msgid "Add Candidate"
 msgid "Add candidate"
 msgstr "Додати кандидата"
@@ -12958,10 +12882,9 @@ msgstr " Ви впевнені, що хочете видалити?"
 msgid "Mandatory Question"
 msgstr "Обов'язкове питання"
 
-#, fuzzy
 #| msgid "Failed to add user to biometric device."
 msgid "Failed to update question order."
-msgstr "Не вдалося додати користувача до біометричного пристрою."
+msgstr "Не вдалося оновити порядок запитань."
 
 msgid "Recruitment added."
 msgstr "Набір додано."
@@ -13244,15 +13167,13 @@ msgstr "Менеджер етапу"
 msgid "Choose Report"
 msgstr "Обрати звіт"
 
-#, fuzzy
 #| msgid "Stage not found"
 msgid "Page not found!"
-msgstr "Етап не знайдено"
+msgstr "Сторінку не знайдено!"
 
-#, fuzzy
 #| msgid "The contract could not be found."
 msgid "Oops! The page you are looking for could not be found."
-msgstr "Контракт не знайдено."
+msgstr "Отакої! Сторінку, яку ви шукаєте, не знайдено."
 
 msgid "Method Not Allowed!"
 msgstr "Метод не дозволено!"
@@ -13343,10 +13264,9 @@ msgstr "У вас немає дозволу"
 msgid "You dont have permission to the feature"
 msgstr "У вас немає дозволу на цю функцію"
 
-#, fuzzy
 #| msgid "Load Demo Data"
 msgid "Loading Demo Database"
-msgstr "Завантажити демо-дані"
+msgstr "Завантаження демонстраційної бази даних"
 
 msgid "Database Authentication"
 msgstr "Автентифікація бази даних"
@@ -13354,10 +13274,9 @@ msgstr "Автентифікація бази даних"
 msgid "Authenticate with your password to load demo database"
 msgstr "Введіть пароль для завантаження демонстраційної бази даних"
 
-#, fuzzy
 #| msgid "Database Authentication Failed"
 msgid "Database authentication password"
-msgstr "Помилка автентифікації бази даних"
+msgstr "Пароль автентифікації бази даних"
 
 msgid "Dashboard Charts"
 msgstr "Діаграми панелі керування"
@@ -13459,10 +13378,9 @@ msgstr "Ініціалізувати базу даних"
 msgid "Load Demo Data"
 msgstr "Завантажити демо-дані"
 
-#, fuzzy
 #| msgid "All Notifications"
 msgid "Toggle Notifications"
-msgstr "Усі сповіщення"
+msgstr "Перемкнути сповіщення"
 
 msgid "Notifications"
 msgstr "Сповіщення"
@@ -13479,12 +13397,10 @@ msgstr ""
 msgid "Dec 31, 2022, at 10:27AM"
 msgstr ""
 
-#, fuzzy
 #| msgid "View Attachments"
 msgid "View all comments"
-msgstr "Переглянути вкладення"
+msgstr "Переглянути всі коментарі"
 
-#, fuzzy
 #| msgid "All caught up!"
 msgid "All caught up"
 msgstr "Усе оброблено!"
@@ -13498,10 +13414,9 @@ msgstr "Наразі у вас немає нових сповіщень."
 msgid "Lizaveta Ivanovna"
 msgstr ""
 
-#, fuzzy
 #| msgid "Bank Information"
 msgid "Company Information"
-msgstr "Банківська інформація"
+msgstr "Інформація про компанію"
 
 msgid "Log out"
 msgstr "Вийти"
@@ -13509,10 +13424,9 @@ msgstr "Вийти"
 msgid "Access Denied."
 msgstr "Доступ заборонено."
 
-#, fuzzy
 #| msgid "The contract could not be found."
 msgid "The page you were looking for could not be found."
-msgstr "Контракт не знайдено."
+msgstr "Сторінку, яку ви шукали, не знайдено."
 
 msgid "ago by"
 msgstr "тому від"
@@ -13544,10 +13458,9 @@ msgstr "Підтвердити новий пароль"
 msgid "Reset my password"
 msgstr "Скинути мій пароль"
 
-#, fuzzy
 #| msgid "Password changed successfully"
 msgid "Forget Password Mail Send Successfully"
-msgstr "Пароль успішно змінено"
+msgstr "Лист для відновлення пароля успішно надіслано"
 
 msgid "All\tSettings"
 msgstr "Усі\tналаштування"
@@ -13624,20 +13537,17 @@ msgstr "Будь ласка, завантажте дійсний файл XLSX."
 msgid "Progress"
 msgstr "Прогрес"
 
-#, fuzzy
 #| msgid "Previous"
 msgid "Previous Page"
 msgstr "Попередня"
 
-#, fuzzy
 #| msgid "Net Pay"
 msgid "Next Page"
-msgstr "Чиста заробітна плата"
+msgstr "Наступна сторінка"
 
-#, fuzzy
 #| msgid "Jun"
 msgid "Run"
-msgstr "Чер"
+msgstr "Запустити"
 
 msgid "Click here to select the objects across all pages"
 msgstr "Натисніть тут, щоб вибрати об’єкти на всіх сторінках"
@@ -13646,10 +13556,9 @@ msgstr "Натисніть тут, щоб вибрати об’єкти на в
 msgid "Select all %(total_count)s %(module_name)s"
 msgstr "Вибрати всі %(total_count)s %(module_name)s"
 
-#, fuzzy
 #| msgid "Cancel Rejection"
 msgid "Clear selection"
-msgstr "Скасувати відхилення"
+msgstr "Очистити вибір"
 
 msgid "Breadcrumbs"
 msgstr "Навігаційний ланцюжок"
@@ -13661,47 +13570,41 @@ msgstr "Головна"
 msgid "Models in the %(name)s application"
 msgstr "Моделі в застосунку %(name)s"
 
-#, fuzzy
 #| msgid "Asset name"
 msgid "Model name"
-msgstr "Назва активу"
+msgstr "Назва моделі"
 
-#, fuzzy
 #| msgid "Add Fine"
 msgid "Add link"
-msgstr "Додати штраф"
+msgstr "Додати посилання"
 
 msgid "Change or view list link"
 msgstr "Посилання для зміни або перегляду списку"
 
-#, fuzzy
 #| msgid "You do not have permission to view the documents."
 msgid "You don’t have permission to view or edit anything."
-msgstr "У вас немає дозволу на перегляд документів."
+msgstr "У вас немає дозволу на перегляд або редагування."
 
 msgid "After you’ve created a user, you’ll be able to edit more user options."
 msgstr "Після створення користувача ви зможете редагувати додаткові параметри."
 
-#, fuzzy
 #| msgid "Error"
 msgid "Error:"
-msgstr "Помилка"
+msgstr "Помилка:"
 
-#, fuzzy
 #| msgid "Change Password"
 msgid "Change password"
 msgstr "Змінити пароль"
 
-#, fuzzy
 #| msgid "New password"
 msgid "Set password"
-msgstr "Новий пароль"
+msgstr "Установити пароль"
 
 msgid "Please correct the error below."
 msgid_plural "Please correct the errors below."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Будь ласка, виправте помилку нижче."
+msgstr[1] "Будь ласка, виправте помилки нижче."
+msgstr[2] "Будь ласка, виправте помилки нижче."
 
 #, python-format
 msgid "Enter a new password for the user <strong>%(username)s</strong>."
@@ -13710,17 +13613,17 @@ msgstr "Введіть новий пароль для користувача <st
 msgid ""
 "This action will <strong>enable</strong> password-based authentication for "
 "this user."
-msgstr "Ця дія <strong>увімкне</strong> автентифікацію за паролем для цього користувача."
+msgstr ""
+"Ця дія <strong>увімкне</strong> автентифікацію за паролем для цього "
+"користувача."
 
-#, fuzzy
 #| msgid "Database Authentication"
 msgid "Disable password-based authentication"
-msgstr "Автентифікація бази даних"
+msgstr "Вимкнути автентифікацію за паролем"
 
-#, fuzzy
 #| msgid "Database Authentication"
 msgid "Enable password-based authentication"
-msgstr "Автентифікація бази даних"
+msgstr "Увімкнути автентифікацію за паролем"
 
 msgid "Skip to main content"
 msgstr "Перейти до основного вмісту"
@@ -13728,12 +13631,10 @@ msgstr "Перейти до основного вмісту"
 msgid "Welcome,"
 msgstr "Вітаємо,"
 
-#, fuzzy
 #| msgid "View File"
 msgid "View site"
-msgstr "Переглянути файл"
+msgstr "Переглянути сайт"
 
-#, fuzzy
 #| msgid "Document"
 msgid "Documentation"
 msgstr "Документ"
@@ -13744,30 +13645,26 @@ msgstr "Адміністрування сайту Django"
 msgid "Django administration"
 msgstr "Адміністрування Django"
 
-#, fuzzy, python-format
+#, python-format
 #| msgid "Add notes"
 msgid "Add %(name)s"
-msgstr "Додати примітки"
+msgstr "Додати %(name)s"
 
-#, fuzzy
 #| msgid " View Note"
 msgid "View on site"
-msgstr " Переглянути нотатку"
+msgstr "Переглянути на сайті"
 
-#, fuzzy
 #| msgid "Hide Options"
 msgid "Hide counts"
 msgstr "Приховати варіанти"
 
-#, fuzzy
 #| msgid "Show Options"
 msgid "Show counts"
 msgstr "Показати варіанти"
 
-#, fuzzy
 #| msgid "Clear Filter"
 msgid "Clear all filters"
-msgstr "Очистити фільтр"
+msgstr "Очистити всі фільтри"
 
 msgid "Remove from sorting"
 msgstr "Вилучити із сортування"
@@ -13794,23 +13691,29 @@ msgid ""
 "related objects, but your account doesn't have permission to delete the "
 "following types of objects:"
 msgstr ""
+"Видалення %(object_name)s «%(escaped_object)s» призведе до видалення "
+"пов’язаних об’єктів, але ваш обліковий запис не має дозволу на видалення "
+"таких типів об’єктів:"
 
 #, python-format
 msgid ""
 "Deleting the %(object_name)s “%(escaped_object)s” would require deleting the "
 "following protected related objects:"
 msgstr ""
+"Видалення %(object_name)s «%(escaped_object)s» потребуватиме видалення таких "
+"захищених пов’язаних об’єктів:"
 
 #, python-format
 msgid ""
 "Are you sure you want to delete the %(object_name)s “%(escaped_object)s”? "
 "All of the following related items will be deleted:"
 msgstr ""
+"Ви впевнені, що хочете видалити %(object_name)s «%(escaped_object)s»? Усі "
+"наведені нижче пов’язані елементи буде видалено:"
 
-#, fuzzy
 #| msgid "Objectives"
 msgid "Objects"
-msgstr "Цілі"
+msgstr "Об’єкти"
 
 msgid "Yes, I’m sure"
 msgstr "Так, я впевнений(-а)"
@@ -13818,10 +13721,9 @@ msgstr "Так, я впевнений(-а)"
 msgid "No, take me back"
 msgstr "Ні, повернутися назад"
 
-#, fuzzy
 #| msgid "Select All Objectives"
 msgid "Delete multiple objects"
-msgstr "Вибрати всі цілі"
+msgstr "Видалити кілька об’єктів"
 
 #, python-format
 msgid ""
@@ -13829,21 +13731,27 @@ msgid ""
 "objects, but your account doesn't have permission to delete the following "
 "types of objects:"
 msgstr ""
+"Видалення вибраних %(objects_name)s призведе до видалення пов’язаних "
+"об’єктів, але ваш обліковий запис не має дозволу на видалення таких типів "
+"об’єктів:"
 
-#, fuzzy, python-format
+#, python-format
 #| msgid "would require managing the following related objects:"
 msgid ""
 "Deleting the selected %(objects_name)s would require deleting the following "
 "protected related objects:"
-msgstr "потребуватиме керування такими пов'язаними об'єктами:"
+msgstr ""
+"Видалення вибраних %(objects_name)s потребуватиме видалення таких захищених "
+"пов’язаних об’єктів:"
 
 #, python-format
 msgid ""
 "Are you sure you want to delete the selected %(objects_name)s? All of the "
 "following objects and their related items will be deleted:"
 msgstr ""
+"Ви впевнені, що хочете видалити вибрані %(objects_name)s? Усі наведені нижче "
+"об’єкти та пов’язані з ними елементи буде видалено:"
 
-#, fuzzy
 #| msgid "Delete"
 msgid "Delete?"
 msgstr "Видалити"
@@ -13852,37 +13760,30 @@ msgstr "Видалити"
 msgid " By %(filter_title)s "
 msgstr " За %(filter_title)s "
 
-#, fuzzy
 #| msgid "Rejection"
 msgid "Recent actions"
-msgstr "Відхилення"
+msgstr "Останні дії"
 
-#, fuzzy
 #| msgid " Actions"
 msgid "My actions"
 msgstr " Дії"
 
-#, fuzzy
 #| msgid "Not available"
 msgid "None available"
 msgstr "Недоступний"
 
-#, fuzzy
 #| msgid "Added "
 msgid "Added:"
 msgstr "Додано "
 
-#, fuzzy
 #| msgid "Range"
 msgid "Changed:"
-msgstr "Діапазон"
+msgstr "Змінено:"
 
-#, fuzzy
 #| msgid "Delete"
 msgid "Deleted:"
-msgstr "Видалити"
+msgstr "Видалено:"
 
-#, fuzzy
 #| msgid "Unknown"
 msgid "Unknown content"
 msgstr "Невідомо"
@@ -13892,25 +13793,28 @@ msgid ""
 "database tables have been created, and make sure the database is readable by "
 "the appropriate user."
 msgstr ""
+"Щось не так із встановленням вашої бази даних. Переконайтеся, що відповідні "
+"таблиці бази даних створено й що базу даних може читати відповідний "
+"користувач."
 
 #, python-format
 msgid ""
 "You are authenticated as %(username)s, but are not authorized to access this "
 "page. Would you like to login to a different account?"
-msgstr "Ви ввійшли як %(username)s, але не маєте права доступу до цієї сторінки. Бажаєте ввійти під іншим обліковим записом?"
+msgstr ""
+"Ви ввійшли як %(username)s, але не маєте права доступу до цієї сторінки. "
+"Бажаєте ввійти під іншим обліковим записом?"
 
 msgid "Forgotten your login credentials?"
 msgstr "Забули облікові дані для входу?"
 
-#, fuzzy
 #| msgid "Tomorrow"
 msgid "Arrow"
-msgstr "Завтра"
+msgstr "Стрілка"
 
-#, fuzzy
 #| msgid "configuration"
 msgid "Toggle navigation"
-msgstr "конфігурація"
+msgstr "Перемкнути навігацію"
 
 msgid "Sidebar"
 msgstr "Бічна панель"
@@ -13921,7 +13825,6 @@ msgstr "Почніть вводити текст для фільтрування
 msgid "Filter navigation items"
 msgstr "Фільтрувати пункти навігації"
 
-#, fuzzy
 #| msgid "Date & Time"
 msgid "Date/time"
 msgstr "Дата та час"
@@ -13930,25 +13833,25 @@ msgstr "Дата та час"
 msgid "Pagination %(name)s entries"
 msgstr "Пагінація записів %(name)s"
 
-#, fuzzy
 #| msgid "Country"
 msgid "entry"
 msgid_plural "entries"
-msgstr[0] "Країна"
-msgstr[1] "Країна"
-msgstr[2] "Країна"
+msgstr[0] "запис"
+msgstr[1] "записи"
+msgstr[2] "записів"
 
 msgid ""
 "This object doesn’t have a change history. It probably wasn’t added via this "
 "admin site."
-msgstr "Цей об’єкт не має історії змін. Імовірно, його не було додано через цей адміністративний сайт."
+msgstr ""
+"Цей об’єкт не має історії змін. Імовірно, його не було додано через цей "
+"адміністративний сайт."
 
-#, fuzzy, python-format
+#, python-format
 #| msgid "Pagination"
 msgid "Pagination %(name)s"
-msgstr "Пагінація"
+msgstr "Пагінація %(name)s"
 
-#, fuzzy
 #| msgid "Show All"
 msgid "Show all"
 msgstr "Показати все"
@@ -13956,26 +13859,25 @@ msgstr "Показати все"
 msgid "Popup closing…"
 msgstr "Закриття спливного вікна…"
 
-#, fuzzy, python-format
+#, python-format
 #| msgid "Batch name"
 msgid "Search %(name)s"
-msgstr "Назва партії"
+msgstr "Пошук %(name)s"
 
 #, python-format
 msgid "%(counter)s result"
 msgid_plural "%(counter)s results"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%(counter)s результат"
+msgstr[1] "%(counter)s результати"
+msgstr[2] "%(counter)s результатів"
 
 #, python-format
 msgid "%(full_result_count)s total"
 msgstr "Усього: %(full_result_count)s"
 
-#, fuzzy
 #| msgid "Save Changes"
 msgid "Save as new"
-msgstr "Зберегти зміни"
+msgstr "Зберегти як новий"
 
 msgid "Save and add another"
 msgstr "Зберегти й додати ще"
@@ -13983,19 +13885,18 @@ msgstr "Зберегти й додати ще"
 msgid "Save and continue editing"
 msgstr "Зберегти й продовжити редагування"
 
-#, fuzzy
 #| msgid "Can view"
 msgid "Save and view"
-msgstr "Може переглядати"
+msgstr "Зберегти й переглянути"
 
 #, python-format
 msgid "Change selected %(model)s"
 msgstr "Змінити вибраний об’єкт %(model)s"
 
-#, fuzzy, python-format
+#, python-format
 #| msgid "Add notes"
 msgid "Add another %(model)s"
-msgstr "Додати примітки"
+msgstr "Додати ще %(model)s"
 
 #, python-format
 msgid "Delete selected %(model)s"
@@ -14004,144 +13905,3 @@ msgstr "Видалити вибраний об’єкт %(model)s"
 #, python-format
 msgid "View selected %(model)s"
 msgstr "Переглянути вибраний об’єкт %(model)s"
-
-#~ msgid "Rotate every weekend"
-#~ msgstr "Чергування щовихідних"
-
-#~ msgid "Enable login block :"
-#~ msgstr "Увімкнути блокування входу:"
-
-#~ msgid "No image chosen."
-#~ msgstr "Зображення не вибрано."
-
-#~ msgid "LDAP to Horilla Employee Field Mapping"
-#~ msgstr "Відповідність полів LDAP та полів співробітника Horilla"
-
-#~ msgid "Horilla Employee Field"
-#~ msgstr "Поле співробітника Horilla"
-
-#~ msgid "LDAP Attribute Name"
-#~ msgstr "Назва атрибута LDAP"
-
-#~ msgid "LDAP Object Class"
-#~ msgstr "Клас об'єкта LDAP"
-
-#~ msgid "e.g., inetOrgPerson"
-#~ msgstr "напр., inetOrgPerson"
-
-#~ msgid "Import Users"
-#~ msgstr "Імпортувати користувачів"
-
-#~ msgid "Sorry,Compensatory leave is not enabled."
-#~ msgstr "На жаль, компенсаційна відпустка не увімкнена."
-
-#~ msgid "Are you sure want to remove this assignee?"
-#~ msgstr "Ви впевнені, що хочете видалити цього виконавця?"
-
-#~ msgid " Do you want to archive this device?"
-#~ msgstr " Ви бажаєте архівувати цей пристрій?"
-
-#~ msgid " Do you want to delete this device?"
-#~ msgstr " Ви бажаєте видалити цей пристрій?"
-
-#~ msgid "\"Use TLS\" and \"Use SSL\" are mutually exclusive, "
-#~ msgstr ""
-#~ "\"Використовувати TLS\" та \"Використовувати SSL\" є взаємовиключними, "
-
-#~ msgid "All FAQ"
-#~ msgstr "Усі поширені запитання"
-
-#~ msgid "Bonus Point Settings"
-#~ msgstr "Налаштування бонусних балів"
-
-#~ msgid "Bulk Delete"
-#~ msgstr "Масове видалення"
-
-#~ msgid "Do you want to archive this candidate from this skill zone"
-#~ msgstr "Ви бажаєте архівувати цього кандидата з цієї зони навичок"
-
-#~ msgid "Do you want to un-archive this candidate from this skill zone"
-#~ msgstr "Ви бажаєте розархівувати цього кандидата з цієї зони навичок"
-
-#~ msgid "Export Days"
-#~ msgstr "Дні експорту"
-
-#~ msgid "Export Objectives"
-#~ msgstr "Експорт цілей"
-
-#~ msgid "Export Tickets"
-#~ msgstr "Експорт тікетів"
-
-#~ msgid "Local Backup Automation Removed Successfully."
-#~ msgstr "Автоматизацію локального резервного копіювання успішно видалено."
-
-#~ msgid "Local backup automation setup updated."
-#~ msgstr ""
-#~ "Налаштування автоматизації локального резервного копіювання оновлено."
-
-#~ msgid "No department-specific vacancies currently."
-#~ msgstr "Наразі немає вакансій для цього відділу."
-
-#~ msgid "Open Positions By Department"
-#~ msgstr "Відкриті вакансії за відділами"
-
-#~ msgid "Replace Mail"
-#~ msgstr "Замінити лист"
-
-#~ msgid "Search in : Leave Type"
-#~ msgstr "Шукати в: Тип відпустки"
-
-#~ msgid "Search in : Status"
-#~ msgstr "Шукати в: Статус"
-
-#~ msgid "Task Assigner"
-#~ msgstr "Виконавець завдання"
-
-#~ msgid "Update Survey Template"
-#~ msgstr "Оновити шаблон опитування"
-
-#~ msgid "category"
-#~ msgstr "категорія"
-
-#~ msgid "title"
-#~ msgstr "назва"
-
-#~ msgid "360 Feedback"
-#~ msgstr "Зворотний зв'язок 360°"
-
-#~ msgid "Badge ID must be unique."
-#~ msgstr "Табельний номер має бути унікальним."
-
-#~ msgid "Badge ID must contain at least one digit."
-#~ msgstr "Табельний номер має містити щонайменше одну цифру."
-
-#~ msgid "Bank City"
-#~ msgstr "Місто банку"
-
-#~ msgid "Date Joining"
-#~ msgstr "Дата приєднання"
-
-#~ msgid "Dismissal"
-#~ msgstr "Звільнення"
-
-#~ msgid "Employee Bonus Point"
-#~ msgstr "Бонусні бали співробітника"
-
-#~ msgid "Encashments & Reimbursements"
-#~ msgstr "Компенсації та відшкодування"
-
-#~ msgid ""
-#~ "If is enabled, employees log in will be blocked based on period of "
-#~ "suspension or dismissal."
-#~ msgstr ""
-#~ "Якщо ввімкнено, вхід співробітників буде заблоковано на період "
-#~ "відсторонення або звільнення."
-
-#~ msgid "Is visible to all"
-#~ msgstr "Видно всім"
-
-#~ msgid "Salary Hour"
-#~ msgstr "Погодинна оплата"
-
-#~ msgid "Suspension"
-#~ msgstr "Відсторонення"

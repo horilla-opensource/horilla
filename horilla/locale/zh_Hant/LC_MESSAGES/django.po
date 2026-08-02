@@ -814,7 +814,7 @@ msgstr "過期日期"
 #, fuzzy
 #| msgid "Duration (sec)"
 msgid "Duration (HH:MM:SS)"
-msgstr "持續時間（秒）"
+msgstr "持續時間（時:分:秒）"
 
 msgid "Attendance Activity"
 msgstr "出勤活動"
@@ -872,7 +872,7 @@ msgstr "隨著時間的推移"
 #, fuzzy
 #| msgid "Approved"
 msgid "Approved By"
-msgstr "得到正式認可的"
+msgstr "核准人"
 
 msgid "Bulk-Requests"
 msgstr "批次請求"
@@ -915,7 +915,7 @@ msgstr "已建立新的出勤請求"
 #, fuzzy
 #| msgid "New attendance request created"
 msgid "New Attendance request updated"
-msgstr "已建立新的出勤請求"
+msgstr "新的出勤請求已更新"
 
 msgid "Attendance update request created."
 msgstr "出勤更新請求已建立。"
@@ -923,12 +923,12 @@ msgstr "出勤更新請求已建立。"
 #, fuzzy
 #| msgid "Update Attendances Request"
 msgid "Create Attendance Request"
-msgstr "更新出勤請求"
+msgstr "建立出勤請求"
 
 #, fuzzy
 #| msgid "Validated Attendances"
 msgid "Validate Attendances"
-msgstr "已驗證的出勤率"
+msgstr "驗證出勤"
 
 msgid "Hour Account"
 msgstr "小時帳戶"
@@ -963,7 +963,7 @@ msgstr "已驗證的出勤率"
 #, fuzzy
 #| msgid "work_type"
 msgid "work_type_id"
-msgstr "工作類型"
+msgstr "work_type_id"
 
 msgid "Add Attendances"
 msgstr "添加出勤"
@@ -971,7 +971,7 @@ msgstr "添加出勤"
 #, fuzzy
 #| msgid "Attendance added."
 msgid "Attendance Added"
-msgstr "出席人數已增加。"
+msgstr "出勤已新增。"
 
 msgid "Edit Attendance"
 msgstr "編輯出勤"
@@ -990,7 +990,7 @@ msgstr "減去天數"
 #, fuzzy
 #| msgid "Deducted From "
 msgid "Deducted From CFD"
-msgstr "扣除金額 "
+msgstr "自結轉天數扣除"
 
 msgid "Penalty amount"
 msgstr "罰款金額"
@@ -1001,7 +1001,7 @@ msgstr "建立日期"
 #, fuzzy
 #| msgid "Penalty"
 msgid "Penalty Type"
-msgstr "懲罰"
+msgstr "處罰類型"
 
 msgid "Attendance"
 msgstr "出勤"
@@ -1055,7 +1055,7 @@ msgstr "工作時間"
 #, fuzzy
 #| msgid "Work Records"
 msgid "Work Status"
-msgstr "工作記錄"
+msgstr "工作狀態"
 
 msgid "Allowed Time"
 msgstr "允許時間"
@@ -1117,17 +1117,17 @@ msgstr "聘用類型"
 #, fuzzy
 #| msgid "Overtime"
 msgid "Over time"
-msgstr "隨著時間的推移"
+msgstr "加班"
 
 #, fuzzy
 #| msgid "Hour account deleted."
 msgid "Hour account update"
-msgstr "小時帳戶已刪除。"
+msgstr "工時帳戶已更新。"
 
 #, fuzzy
 #| msgid "Attendance account added."
 msgid "Attendance account updated"
-msgstr "已新增考勤帳戶。"
+msgstr "出勤帳戶已更新。"
 
 #, fuzzy
 #| msgid "Attendance account added."
@@ -1140,7 +1140,7 @@ msgstr "類型"
 #, fuzzy
 #| msgid "Penalties"
 msgid "Penalities"
-msgstr "處罰"
+msgstr "罰則"
 
 #, fuzzy
 #| msgid "Late Come/Early Out"
@@ -1155,7 +1155,7 @@ msgstr "最低工時"
 #, fuzzy
 #| msgid "Check-In Date"
 msgid "Chen-in Date"
-msgstr "簽到日期"
+msgstr "簽入日期"
 
 #, fuzzy
 #| msgid "Check-Out Date"
@@ -1277,7 +1277,7 @@ msgstr "建立考勤批次"
 #, fuzzy
 #| msgid "Create attendance batch"
 msgid "Update attendance batch"
-msgstr "建立考勤批次"
+msgstr "更新出勤批次"
 
 msgid "Invalid format, it should be HH:MM:SS format"
 msgstr "格式無效，應為 HH:MM:SS 格式"
@@ -1362,12 +1362,12 @@ msgstr "批量考勤"
 #, fuzzy
 #| msgid "Overtime To Approve"
 msgid "Overtime Approve"
-msgstr "加班待批准"
+msgstr "核准加班"
 
 #, fuzzy
 #| msgid "Attendance To Validate"
 msgid "Attendance Validate"
-msgstr "出席驗證"
+msgstr "驗證出勤"
 
 msgid "Overtime In Second"
 msgstr "加班秒數"
@@ -1750,7 +1750,7 @@ msgstr "下載檔案時出錯"
 #, fuzzy
 #| msgid "Do you really want to delete this leave type?"
 msgid "Do you really want to delete all the selected activities?"
-msgstr "您確實要刪除此休假類型嗎？"
+msgstr "您確定要刪除所有選取的活動嗎？"
 
 msgid "Update Attendance condition "
 msgstr "更新考勤條件 "
@@ -1802,7 +1802,7 @@ msgstr "目前沒有員工休息。"
 #, fuzzy
 #| msgid "No Overtime to Validate...."
 msgid "No overtime records pending validation."
-msgstr "無需加班驗證...."
+msgstr "沒有待驗證的加班記錄。"
 
 #, fuzzy
 #| msgid "No attendance requests to validate."
@@ -2369,7 +2369,7 @@ msgstr "公告更新成功。"
 #, fuzzy
 #| msgid "The note has been successfully deleted."
 msgid "The file has been successfully deleted."
-msgstr "該註釋已成功刪除。"
+msgstr "檔案已成功刪除。"
 
 msgid "You commented a post."
 msgstr "您評論了一則貼文。"
@@ -2407,12 +2407,12 @@ msgstr "更新公司"
 #, fuzzy
 #| msgid "{} Holidays have been successfully deleted."
 msgid "Company have been successfully updated."
-msgstr "{} 假日已成功刪除。"
+msgstr "公司已成功更新。"
 
 #, fuzzy
 #| msgid "{} Holidays have been successfully deleted."
 msgid "Company have been successfully created."
-msgstr "{} 假日已成功刪除。"
+msgstr "公司已成功建立。"
 
 msgid "Based On Week"
 msgstr "基於週"
@@ -2451,12 +2451,12 @@ msgstr "進步"
 #, fuzzy
 #| msgid "Work Information"
 msgid "Update Work Information"
-msgstr "工作資訊"
+msgstr "更新工作資訊"
 
 #, fuzzy
 #| msgid "Work Information"
 msgid "Work Information Updated"
-msgstr "工作資訊"
+msgstr "工作資訊已更新。"
 
 msgid "Viewed By"
 msgstr "瀏覽者"
@@ -2490,7 +2490,7 @@ msgstr "更新員工輪班時間表"
 #, fuzzy
 #| msgid "Shift schedule created."
 msgid "Shift schedule Updated!."
-msgstr "已建立輪班時間表。"
+msgstr "班次排程已更新。"
 
 msgid "Employee Shift Schedule has been created successfully!"
 msgstr "員工輪班時間表已成功創建！"
@@ -2566,7 +2566,7 @@ msgstr "更新職位"
 #, fuzzy
 #| msgid "Job role has been created successfully!"
 msgid "Job role has been updated successfully!"
-msgstr "工作角色已成功建立！"
+msgstr "工作角色已成功更新！"
 
 msgid "Subject"
 msgstr "主題"
@@ -2583,22 +2583,22 @@ msgstr "郵件伺服器"
 #, fuzzy
 #| msgid "Mail Server"
 msgid "Create Mail Server"
-msgstr "郵件伺服器"
+msgstr "建立郵件伺服器"
 
 #, fuzzy
 #| msgid "Mail Server"
 msgid "Update Mail Server"
-msgstr "郵件伺服器"
+msgstr "更新郵件伺服器"
 
 #, fuzzy
 #| msgid "Task updated successfully.."
 msgid "Mail server updated successfully."
-msgstr "任務更新成功.."
+msgstr "郵件伺服器已成功更新。"
 
 #, fuzzy
 #| msgid "Skill Zone created successfully."
 msgid "Mail server created successfully."
-msgstr "技能區創建成功。"
+msgstr "郵件伺服器已成功建立。"
 
 msgid "Add Template"
 msgstr "新增模板"
@@ -2606,17 +2606,17 @@ msgstr "新增模板"
 #, fuzzy
 #| msgid "Duplicate Template"
 msgid "Update Template"
-msgstr "重複模板"
+msgstr "更新範本"
 
 #, fuzzy
 #| msgid "Asset Updated"
 msgid "Template Updated"
-msgstr "資產已更新"
+msgstr "範本已更新。"
 
 #, fuzzy
 #| msgid "Employee type created."
 msgid "Template created"
-msgstr "員工類型已建立。"
+msgstr "範本已建立。"
 
 msgid "Duplicate Template"
 msgstr "重複模板"
@@ -2624,7 +2624,7 @@ msgstr "重複模板"
 #, fuzzy
 #| msgid "Template"
 msgid "Template Added"
-msgstr "範本"
+msgstr "範本已新增。"
 
 msgid "Condition Field"
 msgstr "條件字段"
