@@ -220,11 +220,17 @@
                     </div>
                 {% endif %}
                 {% if actions %}
-                    <div class="oh-dropdown" x-data="{open: false}">
+                    <div class="oh-dropdown oh-profile-settings" x-data="{open: false}">
                         <button
-                            class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn py-0 px-2 mb-2"
+                            type="button"
+                            class="oh-btn oh-stop-prop oh-btn--transparent oh-profile-settings__trigger py-0 px-2 mb-2"
+                            :class="{ 'oh-profile-settings__trigger--active': open }"
                             @click="open = !open"
                             @click.outside="open = false"
+                            @keydown.escape="open = false"
+                            title="{% trans 'Settings' %}"
+                            aria-haspopup="true"
+                            :aria-expanded="open.toString()"
                         >
                             <ion-icon
                                 name="settings-outline"
@@ -234,27 +240,30 @@
                             ></ion-icon>
                         </button>
                         <div
-                            class="oh-dropdown__menu oh-dropdown__menu--right"
-                            style="min-width: 250px"
+                            class="oh-dropdown__menu oh-dropdown__menu--right oh-profile-settings__menu"
                             x-show="open"
+                            x-transition:enter="oh-profile-settings__fade-enter"
+                            x-transition:enter-start="oh-profile-settings__fade-enter-start"
+                            x-transition:enter-end="oh-profile-settings__fade-enter-end"
+                            x-transition:leave="oh-profile-settings__fade-leave"
+                            x-transition:leave-start="oh-profile-settings__fade-leave-start"
+                            x-transition:leave-end="oh-profile-settings__fade-leave-end"
                         >
-                            <ul class="oh-dropdown__items">
+                            <span class="oh-profile-settings__title">{% trans "Account Settings" %}</span>
+                            <ul class="oh-profile-settings__items">
                                 {% for action in actions %}
                                     {% if action.accessibility|accessibility:instance %}
-                                        <li class="oh-dropdown__item">
+                                        <li class="oh-profile-settings__item">
                                             <a
                                                 href="#"
-                                                class="oh-profile-dropdown-link"
+                                                class="oh-profile-settings__link"
+                                                @click="open = false"
                                                 {{action.attrs|format:instance|safe}}
                                             >
-                                                <img
-                                                    src="{{action.src}}"
-                                                    style="width: 20px; height: auto"
-                                                    title="{{action.title}}"
-                                                >
-                                                <button style="border: none; background: transparent">
-                                                    {{ action.title }}
-                                                </button>
+                                                <span class="oh-profile-settings__icon">
+                                                    <img src="{{action.src}}" alt="">
+                                                </span>
+                                                <span class="oh-profile-settings__label">{{ action.title }}</span>
                                             </a>
                                         </li>
                                     {% endif %}

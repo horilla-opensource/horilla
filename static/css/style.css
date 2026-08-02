@@ -902,3 +902,128 @@ form label {
 .swal2-styled.swal2-cancel{
     background-color : rgb(221, 51, 51);
 }
+
+/* ---------------------------------------------------------------- */
+/* Profile view "gear" settings dropdown (employee / candidate profile) */
+/* ---------------------------------------------------------------- */
+.oh-profile-settings__trigger {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s ease;
+}
+
+.oh-profile-settings__trigger:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+.oh-profile-settings__trigger--active {
+    background-color: rgba(228, 76, 51, 0.12);
+}
+
+.oh-profile-settings__trigger ion-icon {
+    transition: transform 0.2s ease, color 0.15s ease;
+}
+
+.oh-profile-settings__trigger--active ion-icon {
+    color: hsl(8, 77%, 56%);
+    transform: rotate(60deg);
+}
+
+.oh-profile-settings__menu {
+    top: calc(100% + 6px);
+    min-width: 250px;
+    padding: 0.5rem;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.oh-profile-settings__title {
+    display: block;
+    padding: 0.45rem 0.6rem 0.35rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.5;
+}
+
+.oh-profile-settings__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.oh-profile-settings__item {
+    margin: 1px 0;
+}
+
+.oh-profile-settings__link {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.5rem 0.6rem;
+    border-radius: 8px;
+    color: inherit !important;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none !important;
+    transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.oh-profile-settings__link:hover,
+.oh-profile-settings__link:focus-visible {
+    background-color: rgba(228, 76, 51, 0.09);
+    color: hsl(8, 61%, 45%) !important;
+    outline: none;
+}
+
+.oh-profile-settings__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.045);
+    transition: background-color 0.12s ease;
+}
+
+.oh-profile-settings__link:hover .oh-profile-settings__icon {
+    background-color: rgba(228, 76, 51, 0.14);
+}
+
+.oh-profile-settings__icon img {
+    width: 15px;
+    height: 15px;
+    object-fit: contain;
+}
+
+.oh-profile-settings__label {
+    line-height: 1.25;
+}
+
+.oh-profile-settings__fade-enter {
+    transition: opacity 0.12s ease-out, transform 0.12s ease-out;
+}
+.oh-profile-settings__fade-enter-start {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+}
+.oh-profile-settings__fade-enter-end {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+.oh-profile-settings__fade-leave {
+    transition: opacity 0.1s ease-in;
+}
+.oh-profile-settings__fade-leave-start {
+    opacity: 1;
+}
+.oh-profile-settings__fade-leave-end {
+    opacity: 0;
+}

@@ -71,22 +71,30 @@ class EmployeeProfileView(HorillaProfileView):
                     """,
                 },
                 {
-                    "title": _("Block Account"),
-                    "src": f"/{settings.STATIC_URL}images/ui/block-user.png",
-                    "accessibility": "employee.cbv.accessibility.block_account_accessibility",
-                    "attrs": """id="block-account" """,
-                },
-                {
-                    "title": _("Un-Block Account"),
-                    "src": f"/{settings.STATIC_URL}images/ui/unlock.png",
-                    "accessibility": "employee.cbv.accessibility.un_block_account_accessibility",
-                    "attrs": """id="block-account" """,
+                    "divider": True,
                 },
                 {
                     "title": _("Send password reset link"),
                     "src": f"/{settings.STATIC_URL}images/ui/key.png",
                     "accessibility": "employee.cbv.accessibility.password_reset_accessibility",
                     "attrs": """onclick="$('#reset-button').click();" """,
+                },
+                {
+                    "divider": True,
+                },
+                {
+                    "title": _("Block Account"),
+                    "src": f"/{settings.STATIC_URL}images/ui/block-user.png",
+                    "accessibility": "employee.cbv.accessibility.block_account_accessibility",
+                    "attrs": """id="block-account" """,
+                    "variant": "danger",
+                },
+                {
+                    "title": _("Un-Block Account"),
+                    "src": f"/{settings.STATIC_URL}images/ui/unlock.png",
+                    "accessibility": "employee.cbv.accessibility.un_block_account_accessibility",
+                    "attrs": """id="block-account" """,
+                    "variant": "success",
                 },
             ]
         elif employee.pk == kwargs.get("pk") and enable_profile_edit(request).get(

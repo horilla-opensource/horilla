@@ -457,3 +457,25 @@ body.dark .pvtFilterBox .pvtCheckContainer label:hover {
 body.dark .pvtFilterBox {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
+
+/* Profile "gear" settings dropdown - light backgrounds calibrated for
+   white panels are invisible on the near-black dark panels, so lighten
+   them here instead. */
+body.dark .oh-profile-settings__trigger:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+body.dark .oh-profile-settings__icon {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+body.dark .oh-profile-settings__link:hover {
+  color: var(--primary-300, #fcedeb) !important;
+}
+
+/* Gear settings dropdown in the newer Tailwind-based profile card
+   (horilla_theme/templates/generic/horilla_profile_view.html). */
+body.dark .oh-dropdown .border-secondary-100 {
+  border-color: #333333 !important;
+}
+body.dark .oh-dropdown .border-secondary-200 {
+  border-color: #444444 !important;
+}
