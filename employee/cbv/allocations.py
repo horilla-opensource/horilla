@@ -331,6 +331,7 @@ class WorkFormView(HorillaFormView):
     form_class = WorkInfo
     model = EmployeeWorkInformation
     template_name = "cbv/allocations/employee/form_structure.html"
+    restrict_company_field = False
 
     def init_form(self, *args, data=..., files=..., instance=None, **kwargs):
         instance = self.request.GET.get("instance_id", None)
