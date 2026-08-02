@@ -354,6 +354,14 @@
 .oh-sticky-table_dropdown {
   right: 0;
   width: max-content;
+
+  &:has(.oh-column-config) {
+    width: 280px;
+    min-width: 280px;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 12px;
+  }
 }
 
 .oh-sticy-dropdown-item {

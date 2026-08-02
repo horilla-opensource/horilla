@@ -1,98 +1,172 @@
 {% load i18n %}
-<form class="pt-5" hx-get="{% url 'toggle-columns' %}" hx-swap="none">
-    <input type="hidden" name="path" value="{{request.path_info}}">
-    <ul class="oh-dropdown__items toggleForm">
-        <li class="oh-dropdown__item oh-sticy-dropdown-item">
-            <span class="text-sm">{% trans "Select All" %}</span>
-            <span class="oh-table__checkbox">
-                <input
-                    type="checkbox"
-                    class="custom-checkbox toggle-select-all"
-                    onclick="var checked = $(this).is(':checked');
-					var $form = $(this).closest('form');
-					$form.find('.toggle-column-checkbox').each(function () {
-						$(this).prop('checked', checked);
-						$(this)
-							.siblings('input[type=hidden]')
-							.val(checked ? '' : 'off');
-					});
-					toggleAllColumnsVisibility($form[0], checked);
-					persistColumnToggle($form[0])"
-                >
-            </span>
-        </li>
+<form
+    class="oh-column-config"
+    hx-get="{% url 'toggle-columns' %}"
+    hx-swap="none"
+    role="group"
+    aria-label="{% trans 'Customize columns' %}"
+>
+    <input type="hidden" name="path" value="{{ request.path_info }}">
+
+    <div class="oh-column-config__header">
+        <div class="oh-column-config__title-wrap">
+            <span class="oh-column-config__title">{% trans "Columns" %}</span>
+            <span class="oh-column-config__subtitle">{% trans "Show, hide, or reorder" %}</span>
+        </div>
+        <span
+            class="oh-column-config__count"
+            data-column-count
+            aria-live="polite"
+        ></span>
+    </div>
+
+    <div class="oh-column-config__search">
+        <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+        <input
+            type="search"
+            class="oh-column-config__search-input"
+            placeholder="{% trans 'Search columns…' %}"
+            aria-label="{% trans 'Search columns' %}"
+            autocomplete="off"
+            oninput="
+                var q = this.value.trim().toLowerCase();
+                var $list = $(this).closest('.oh-column-config').find('.toggleForm');
+                $list.children('li').each(function () {
+                    var label = ($(this).attr('data-label') || '').toLowerCase();
+                    $(this).toggleClass('is-filtered-out', q !== '' && label.indexOf(q) === -1);
+                });
+                var visible = $list.children('li:not(.is-filtered-out)').length;
+                $(this).closest('.oh-column-config').find('[data-column-empty]')
+                    .toggleClass('is-visible', q !== '' && visible === 0);
+            "
+        >
+    </div>
+
+    <label class="oh-column-config__select-all">
+        <span class="oh-column-config__label">{% trans "Select All" %}</span>
+        <span class="oh-table__checkbox">
+            <input
+                type="checkbox"
+                class="custom-checkbox toggle-select-all"
+                aria-label="{% trans 'Select all columns' %}"
+                onclick="
+                    var checked = $(this).is(':checked');
+                    var $form = $(this).closest('form');
+                    $form.find('.toggle-column-checkbox').each(function () {
+                        $(this).prop('checked', checked);
+                        $(this).siblings('input[type=hidden]').val(checked ? '' : 'off');
+                    });
+                    toggleAllColumnsVisibility($form[0], checked);
+                    persistColumnToggle($form[0]);
+                    if (typeof window.__updateColumnConfigCount === 'function') {
+                        window.__updateColumnConfigCount($form[0]);
+                    }
+                "
+            >
+        </span>
+    </label>
+
+    <ul class="oh-dropdown__items oh-column-config__list toggleForm">
         {% for field in form.visible_fields %}
-            <li class="oh-dropdown__item oh-sticy-dropdown-item">
-                {% if forloop.counter  == 1 %}
-                    <span class="text-sm">{{ field.label }}</span>
-                {% else %}
-                    <div class="cursor-grab">
-                        <span class="text-secondary me-3 fs-5">≡</span>
-                        <span class="text-sm">{{ field.label }}</span>
-                    </div>
-                {% endif %}
+            <li
+                class="oh-column-config__item{% if forloop.first %} is-fixed{% else %} is-draggable{% endif %}"
+                data-label="{{ field.label }}"
+            >
+                <span class="oh-column-config__handle" aria-hidden="true">
+                    {% if forloop.first %}
+                        <ion-icon name="lock-closed-outline" title="{% trans 'Primary column' %}"></ion-icon>
+                    {% else %}
+                        <ion-icon name="reorder-two-outline"></ion-icon>
+                    {% endif %}
+                </span>
+                <span class="oh-column-config__label" title="{{ field.label }}">{{ field.label }}</span>
                 <span class="oh-table__checkbox">
                     <input
                         type="hidden"
-                        name="{{field.name}}"
+                        name="{{ field.name }}"
                         onchange="$(this).closest('form').find('[type=submit]').click()"
-                        {% if not field.initial %}
-                            value="false"
-                        {% endif %}
+                        {% if not field.initial %}value="false"{% endif %}
                     >
                     <input
                         type="checkbox"
                         class="custom-checkbox toggle-column-checkbox"
-                        id="toggle_{{field.name}}"
-                        {% if field.initial %}
-                            checked
-                        {% endif %}
-                        onclick="value = '';
-						if (!$(this).is(':checked')) {
-							value = 'off';
-						}
-						toggleColumnVisibility(this, '{{field.name}}', $(this).is(':checked'));
-						$(this)
-							.siblings('input[type=hidden]')
-							.val(value);
-						persistColumnToggle($(this).closest('form')[0]);
-						var $form = $(this).closest('form');
-						$form.find('.toggle-select-all').prop(
-							'checked',
-							$form.find('.toggle-column-checkbox').length === $form.find('.toggle-column-checkbox:checked').length
-						)"
+                        id="toggle_{{ field.name }}"
+                        aria-label="{{ field.label }}"
+                        {% if field.initial %}checked{% endif %}
+                        onclick="
+                            var value = '';
+                            if (!$(this).is(':checked')) {
+                                value = 'off';
+                            }
+                            toggleColumnVisibility(this, '{{ field.name }}', $(this).is(':checked'));
+                            $(this).siblings('input[type=hidden]').val(value);
+                            persistColumnToggle($(this).closest('form')[0]);
+                            var $form = $(this).closest('form');
+                            $form.find('.toggle-select-all').prop(
+                                'checked',
+                                $form.find('.toggle-column-checkbox').length ===
+                                    $form.find('.toggle-column-checkbox:checked').length
+                            );
+                            if (typeof window.__updateColumnConfigCount === 'function') {
+                                window.__updateColumnConfigCount($form[0]);
+                            }
+                        "
                     >
                 </span>
             </li>
         {% endfor %}
     </ul>
+
+    <p class="oh-column-config__empty" data-column-empty>
+        {% trans "No columns match your search" %}
+    </p>
+
+    <div class="oh-column-config__footer">
+        <ion-icon name="move-outline" aria-hidden="true"></ion-icon>
+        <span>{% trans "Drag rows to reorder columns" %}</span>
+    </div>
+
     <input type="submit" hidden>
 </form>
 
 <script>
-    $(".toggleForm").sortable({
-        items: "> li:not(:first)",
-        cancel: ":first",
-        stop: function () {
-            $(this).closest('form').find('[type=submit]').click();
-        }
-    });
-
-    // Keep "Select All"'s own initial state consistent with whatever the
-    // individual columns actually start checked/unchecked as (some columns
-    // can already be hidden from a previously saved preference). Scoped
-    // per-form via .each() since a page can have several of these dropdowns
-    // open at once (e.g. one per accordion group) - a plain combined
-    // selector would average their states together instead of keeping each
-    // instance independent.
     (function () {
-        $(".toggleForm").each(function () {
-            var $form = $(this).closest("form");
+        function updateColumnConfigCount(formEl) {
+            var $form = $(formEl);
+            var $columns = $form.find(".toggle-column-checkbox");
+            var total = $columns.length;
+            var checked = $columns.filter(":checked").length;
+            $form.find("[data-column-count]").text(checked + "/" + total);
+        }
+        window.__updateColumnConfigCount = updateColumnConfigCount;
+
+        $(".oh-column-config .toggleForm").each(function () {
+            var $list = $(this);
+            if ($list.data("sortable-bound")) {
+                return;
+            }
+            $list.data("sortable-bound", true);
+            $list.sortable({
+                items: "> li.is-draggable",
+                handle: ".oh-column-config__handle",
+                axis: "y",
+                tolerance: "pointer",
+                placeholder: "oh-column-config__placeholder",
+                forcePlaceholderSize: true,
+                stop: function () {
+                    $(this).closest("form").find("[type=submit]").click();
+                },
+            });
+        });
+
+        $(".oh-column-config").each(function () {
+            var $form = $(this);
             var $columns = $form.find(".toggle-column-checkbox");
             $form.find(".toggle-select-all").prop(
                 "checked",
                 $columns.length === $columns.filter(":checked").length
             );
+            updateColumnConfigCount(this);
         });
     })();
 </script>
