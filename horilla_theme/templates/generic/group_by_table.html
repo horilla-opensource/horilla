@@ -85,7 +85,7 @@
                             {% include "generic/quick_actions.html" with view_id=gvid root_view_id=view_id page_param_name=group.dynamic_name queryset=group.list margin_class="ml-0" hide_select=True group_select=True select_all_ids=group.list.paginator.object_list|id_list_json %}
                         {% endif %}
                         <div class="relative"{% if show_toggle_form %} x-data="{ open: false }"{% endif %}>
-                        <div class="h-[400px] overflow-hidden overflow-y-auto overflow-x-auto">
+                        <div class="max-h-[400px] overflow-hidden overflow-y-auto overflow-x-auto">
                             <table class="fixed-table w-full border-separate" data-bulk-select-option = "{{bulk_select_option|yesno:'true,false'}}">
                                 <thead class="sticky top-0 bg-[white] z-[1]">
                                     <tr class="border-b border-[#ececec]">
