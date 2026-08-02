@@ -1,7 +1,26 @@
-{% extends 'settings.html' %} {% load i18n %} {% block settings %}
-{% load static %}
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-    </form>
+{% extends 'settings.html' %}
+{% load i18n static %}
+{% block settings %}
+    <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+        <h2 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">
+            {% trans "LDAP Integration" %}
+        </h2>
+        <div class="p-4 pb-0">
+            <div class="grid grid-cols-12 gap-4 myform">
+                <div class="col-span-12 lg:col-span-6">
+                    <div class="mb-4">
+                        <p class="text-xs text-gray-500">
+                            {% trans "Configure LDAP settings to authenticate and sync employees from your directory server." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="px-4 pb-4">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+            </form>
+        </div>
+    </div>
 {% endblock settings %}
