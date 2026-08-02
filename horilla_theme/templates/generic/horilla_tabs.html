@@ -78,7 +78,7 @@
 								}"
                         >
                             <span
-                                class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center tab-badge"
+                                class="min-w-6 h-6 px-1 bg-primary-600 rounded-full text-white text-xs flex items-center justify-center tab-badge"
                                 id="badge-{{view_id}}{{forloop.counter}}"
                                 {% if tab.badge_label %}
                                     data-badge-label="{{tab.badge_label}}"
@@ -88,7 +88,7 @@
                                 {% endif %}
                                 onclick="event.stopPropagation()"
                             >
-                                {{ tab.badge|default:0 }}
+                                {% if tab.badge|default:0 > 999 %}999+{% else %}{{ tab.badge|default:0 }}{% endif %}
                             </span>
 
                             {{ tab.title }} {% if tab.actions %}

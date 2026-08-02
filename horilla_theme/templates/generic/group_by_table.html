@@ -8,7 +8,7 @@
         margin-top: 0;
     }
 </style>
-<div id="{{view_id|safe}}" class="bg-white p-4 rounded-md shadow-card relative" data-list-path="{{request.path}}">
+<div id="{{view_id|safe}}" class="bg-white p-4 rounded-md shadow-card relative" data-list-path="{{request.path}}" data-selected-instances-key="{{selected_instances_key_id}}">
     <script>
         if (!$(".HTV").length) {
         	$("#reloadMessagesButton").click();
@@ -61,7 +61,7 @@
                                 <ion-icon name="person-add-outline" class="me-1"></ion-icon>{% trans "Assign Leave" %}
                             </a>
                         {% endif %}
-                        <span class="icon text-xl font-bold">+</span>
+                        <ion-icon name="chevron-down-outline" class="icon text-lg"></ion-icon>
                     </div>
                 </div>
 

@@ -93,6 +93,7 @@ class AttendancesRequestListView(HorillaListView):
 
     filter_class = AttendanceFilters
     model = Attendance
+    quick_export = False
     columns = [
         (_("Employee"), "employee_id", "employee_id__get_avatar"),
         (_("Date"), "attendance_date"),
@@ -181,7 +182,6 @@ class AttendanceRequestListTab(AttendancesRequestListView):
     columns = [
         col for col in AttendancesRequestListView.columns if col[1] != "status_col"
     ]
-    option_method = "request_options"
     action_method = "request_actions"
     row_attrs = """
                 id = "requestedattendanceTr{get_instance_id}"
@@ -192,16 +192,6 @@ class AttendanceRequestListTab(AttendancesRequestListView):
                 hx-trigger ="click"
                 hx-target="#validateAttendanceRequestModalBody"
                 """
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if not (
-            self.request.user.has_perm("attendance.change_validateattendance")
-            or is_reportingmanager(self.request)
-        ):
-            context["action_method"] = ""
-            context["actions"] = []
-        return context
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -323,11 +313,22 @@ class AttendanceRequestNav(HorillaNavView):
                         hx-get="{reverse('request-new-attendance')}"
                         hx-target="#genericModalBody"
                         """
+        self.actions = [
+            {
+                "action": _("Export"),
+                "attrs": f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-target="#genericModalBody"
+                    hx-get="{reverse('attendences-navbar-export')}"
+                    style="cursor: pointer;"
+                """,
+            },
+        ]
         if self.request.user.has_perm(
             "attendance.add_attendanceovertime"
         ) or is_reportingmanager(self.request):
-
-            self.actions = [
+            self.actions += [
                 {
                     "action": _("Bulk Approve"),
                     "attrs": """
@@ -345,8 +346,6 @@ class AttendanceRequestNav(HorillaNavView):
                     """,
                 },
             ]
-        else:
-            self.actions = None
 
     nav_title = _("Attendances")
     filter_body_template = "cbv/attendances/attendances_filter_page.html"

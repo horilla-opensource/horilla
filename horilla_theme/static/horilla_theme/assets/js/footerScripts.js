@@ -689,7 +689,15 @@ $(".oh-modal__close").on("click", function () {
 
 $(document).on("click", ".oh-accordion-header", function (event) {
     event.stopImmediatePropagation();
-    $(this).closest(".oh-accordion").toggleClass("oh-accordion--show");
+    var $accordion = $(this).closest(".oh-accordion");
+    $accordion.toggleClass("oh-accordion--show");
+    var icon = this.querySelector("ion-icon.icon");
+    if (icon) {
+        icon.setAttribute(
+            "name",
+            $accordion.hasClass("oh-accordion--show") ? "chevron-up-outline" : "chevron-down-outline"
+        );
+    }
 });
 
 var avatarPreviewTimer = null;

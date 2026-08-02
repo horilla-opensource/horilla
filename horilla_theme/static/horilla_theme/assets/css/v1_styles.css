@@ -1796,19 +1796,6 @@ table .oh-btn-group a {
   display: none;
 }
 
-/* Plus/close indicator on the newer (no-after) accordion header used by
-   group_by_table.html — rotate the "+" glyph 45deg into an "x" so the
-   open/closed state is visually distinct, since this design has no
-   background-image chevron like the legacy accordion header does. */
-.oh-accordion-header .icon {
-  display: inline-block;
-  transition: transform 200ms ease;
-}
-
-.oh-accordion--show .oh-accordion-header .icon {
-  transform: rotate(45deg);
-}
-
 .oh-accordion--show .oh-accordion-body {
   display: block;
   opacity: 1;

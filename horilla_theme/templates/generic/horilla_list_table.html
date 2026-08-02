@@ -8,7 +8,7 @@
         margin-top: 0;
     }
 </style>
-<div id="{{ view_id|safe }}" class="hlv-container" data-list-path="{{request.path}}">
+<div id="{{ view_id|safe }}" class="hlv-container" data-list-path="{{request.path}}" data-selected-instances-key="{{selected_instances_key_id}}">
         <div
             class="oh-modal"
             id="bulkUpdateModal{{view_id|safe}}"
@@ -357,7 +357,7 @@
     var count = "{{queryset.paginator.count}}";
     var label = badge.attr("data-badge-label") || "";
     var title = count + " " + label;
-    badge.html(count);
+    badge.html(Number(count) > 999 ? "999+" : count);
     badge.attr("title", title);
     {% endif %}
   </script>

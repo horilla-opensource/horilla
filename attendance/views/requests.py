@@ -58,6 +58,19 @@ from horilla.http.response import HorillaRedirect
 from notifications.signals import notify
 
 
+def _clean_requested_data_none_strings(requested_data):
+    """
+    AttendanceRequestForm.clean() stringifies every value before storing
+    requested_data as JSON (see forms.py), turning an absent/None field such
+    as work_type_id or shift_id into the literal string "None" instead of
+    null. Convert any such literal "None" strings back to real None so they
+    don't get passed as-is to a FK field on Attendance.objects.update().
+    """
+    return {
+        key: None if value == "None" else value for key, value in requested_data.items()
+    }
+
+
 @login_required
 def request_attendance(request):
     """
@@ -472,16 +485,8 @@ def approve_validate_attendance_request(request, attendance_id):
     attendance.approved_by = request.user.employee_get
     attendance.save()
     if attendance.requested_data is not None:
-        requested_data = json.loads(attendance.requested_data)
-        requested_data["attendance_clock_out"] = (
-            None
-            if requested_data["attendance_clock_out"] == "None"
-            else requested_data["attendance_clock_out"]
-        )
-        requested_data["attendance_clock_out_date"] = (
-            None
-            if requested_data["attendance_clock_out_date"] == "None"
-            else requested_data["attendance_clock_out_date"]
+        requested_data = _clean_requested_data_none_strings(
+            json.loads(attendance.requested_data)
         )
         Attendance.objects.filter(id=attendance_id).update(**requested_data)
         # DUE TO AFFECT THE OVERTIME CALCULATION ON SAVE METHOD, SAVE THE INSTANCE ONCE MORE
@@ -575,9 +580,18 @@ def approve_validate_attendance_request(request, attendance_id):
         )
     if request.headers.get("HX-Request"):
         return HttpResponse(
-            """
+            f"""
             <script>
                 $('#validateAttendanceRequest').removeClass('oh-modal--show');
+                (function(id, storeKey) {{
+                    var ids = JSON.parse($('#' + storeKey).attr('data-ids') || '[]');
+                    var idx = ids.indexOf(String(id));
+                    if (idx > -1) {{
+                        ids.splice(idx, 1);
+                        $('#' + storeKey).attr('data-ids', JSON.stringify(ids));
+                        setStoredSelection(storeKey, ids);
+                    }}
+                }})({attendance_id}, 'selectedInstances');
                 $('.reload-record').click();
                 $('#reloadMessagesButton').click();
             </script>
@@ -627,9 +641,18 @@ def cancel_attendance_request(request, attendance_id):
         messages.error(request, _("Attendance request not found"))
     if request.headers.get("HX-Request"):
         return HttpResponse(
-            """
+            f"""
             <script>
                 $('#validateAttendanceRequest').removeClass('oh-modal--show');
+                (function(id, storeKey) {{
+                    var ids = JSON.parse($('#' + storeKey).attr('data-ids') || '[]');
+                    var idx = ids.indexOf(String(id));
+                    if (idx > -1) {{
+                        ids.splice(idx, 1);
+                        $('#' + storeKey).attr('data-ids', JSON.stringify(ids));
+                        setStoredSelection(storeKey, ids);
+                    }}
+                }})({attendance_id}, 'selectedInstances');
                 $('.reload-record').click();
                 $('#reloadMessagesButton').click();
             </script>
@@ -702,16 +725,8 @@ def bulk_approve_attendance_request(request):
         attendance.approved_by = request.user.employee_get
         attendance.save()
         if attendance.requested_data is not None:
-            requested_data = json.loads(attendance.requested_data)
-            requested_data["attendance_clock_out"] = (
-                None
-                if requested_data["attendance_clock_out"] == "None"
-                else requested_data["attendance_clock_out"]
-            )
-            requested_data["attendance_clock_out_date"] = (
-                None
-                if requested_data["attendance_clock_out_date"] == "None"
-                else requested_data["attendance_clock_out_date"]
+            requested_data = _clean_requested_data_none_strings(
+                json.loads(attendance.requested_data)
             )
             Attendance.objects.filter(id=attendance_id).update(**requested_data)
             # DUE TO AFFECT THE OVERTIME CALCULATION ON SAVE METHOD, SAVE THE INSTANCE ONCE MORE

@@ -6,10 +6,30 @@
 </style>
 {% is_manager_of request.user instance as can_manage %}
 <div class="flex items-center justify-center gap-1">
+    <a
+        title="{% trans 'Edit' %}"
+        class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
+        data-toggle="oh-modal-toggle"
+        data-target="#genericModal"
+        hx-get="{% url 'update-attendance-request' instance.id %}"
+        hx-target="#genericModalBody"
+    >
+        <ion-icon name="create-outline" role="img" class="md hydrated"></ion-icon>
+    </a>
+    <a
+        data-toggle="oh-modal-toggle"
+        data-target="#validateAttendanceRequest"
+        hx-get="{% url 'validate-attendance-request' instance.id %}"
+        hx-trigger="click"
+        hx-target="#validateAttendanceRequestModalBody"
+        class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
+        title="{% trans 'View' %}"
+    ><ion-icon name="eye-outline" role="img"></ion-icon>
+    </a>
     {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
         <a
             href="#"
-            class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300"
+            class="oh-btn oh-btn--success oh-btn--sq-sm"
             title="{% trans 'Approve' %}"
             onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                     Swal.fire({
@@ -23,24 +43,19 @@
                         cancelButtonText: '{% trans 'Cancel' %}'
                     }).then(function(result) {
                         if (result.isConfirmed) {
-                            htmx.ajax('GET', '{% url 'approve-validate-attendance-request' instance.id %}', {target: '#validateAttendanceRequestModalBody', swap: 'innerHTML'});
+                            htmx.ajax('POST', '{% url 'approve-validate-attendance-request' instance.id %}', {target: '#validateAttendanceRequestModalBody', swap: 'innerHTML'});
                         }
                     });
                 })({{ instance.id }}); return false"
         >
-            <img
-                class="filter brightness-0 invert"
-                src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
-                alt="{% trans 'Approve' %}"
-                width="13"
-            >
+            <ion-icon name="checkmark-outline"></ion-icon>
         </a>
     {% endif %}
 
     {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
         <a
             href="#"
-            class="h-8 w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
+            class="oh-btn oh-btn--danger oh-btn--sq-sm"
             title="{% trans 'Reject' %}"
             onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                     Swal.fire({
@@ -54,17 +69,12 @@
                         cancelButtonText: '{% trans 'Cancel' %}'
                     }).then(function(result) {
                         if (result.isConfirmed) {
-                            htmx.ajax('GET', '{% url 'cancel-validate-attendance-request' instance.id %}', {target: '#validateAttendanceRequestModalBody', swap: 'innerHTML'});
+                            htmx.ajax('POST', '{% url 'cancel-validate-attendance-request' instance.id %}', {target: '#validateAttendanceRequestModalBody', swap: 'innerHTML'});
                         }
                     });
                 })({{ instance.id }}); return false"
         >
-            <img
-                class="filter brightness-0 invert"
-                src="{% static 'horilla_theme/assets/img/icons/close.svg' %}"
-                alt="{% trans 'Reject' %}"
-                width="13"
-            >
+            <ion-icon name="close-circle-outline"></ion-icon>
         </a>
     {% endif %}
 </div>

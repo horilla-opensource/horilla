@@ -47,6 +47,11 @@ function hourAccountbulkDelete() {
                     },
                     success: function (response, textStatus, jqXHR) {
                         if (jqXHR.status === 200) {
+                            // Clear both the DOM attribute and the localStorage mirror
+                            // (selectSelected() restores from localStorage on load) so
+                            // the now-processed rows don't reappear as "selected" after
+                            // the reload below.
+                            clearSelection("selectedInstances");
                             location.reload();
                         }
                     },
@@ -90,6 +95,11 @@ function lateComeBulkDelete() {
                     },
                     success: function (response, textStatus, jqXHR) {
                         if (jqXHR.status === 200) {
+                            // Clear both the DOM attribute and the localStorage mirror
+                            // (selectSelected() restores from localStorage on load) so
+                            // the now-processed rows don't reappear as "selected" after
+                            // the reload below.
+                            clearSelection("selectedInstances");
                             location.reload();
                         }
                     },
@@ -131,6 +141,11 @@ function reqAttendanceBulkApprove() {
                     },
                     success: function (response, textStatus, jqXHR) {
                         if (jqXHR.status === 200) {
+                            // Clear both the DOM attribute and the localStorage mirror
+                            // (selectSelected() restores from localStorage on load) so
+                            // the now-processed rows don't reappear as "selected" after
+                            // the reload below.
+                            clearSelection("selectedInstances");
                             location.reload();
                         }
                     },
@@ -173,6 +188,11 @@ function reqAttendanceBulkReject() {
                     },
                     success: function (response, textStatus, jqXHR) {
                         if (jqXHR.status === 200) {
+                            // Clear both the DOM attribute and the localStorage mirror
+                            // (selectSelected() restores from localStorage on load) so
+                            // the now-processed rows don't reappear as "selected" after
+                            // the reload below.
+                            clearSelection("selectedInstances");
                             location.reload();
                         }
                     },

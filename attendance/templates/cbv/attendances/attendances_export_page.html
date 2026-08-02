@@ -13,7 +13,12 @@
         action="{%url 'attendance-info-export' %}"
         method="get"
         onsubmit="event.stopPropagation();
-            $(this).find('[name=instance_ids]').val($('#selectedInstances').attr('data-ids') || '[]');
+            (function(form){
+                var activeTab = document.querySelector('.oh-tabs__content--active');
+                var listEl = (activeTab || document).querySelector('[data-selected-instances-key]');
+                var key = (listEl && listEl.getAttribute('data-selected-instances-key')) || 'selectedInstances';
+                $(form).find('[name=instance_ids]').val($('#' + key).attr('data-ids') || '[]');
+            })(this);
             $(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show')"
         id="attendanceExportForm"
         class="oh-profile-section pt-2"
