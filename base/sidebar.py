@@ -188,54 +188,65 @@ class GeneralSettings:
                 {
                     "text": _("Default Expire Days"),
                     "description": _("Auto-expiry days for announcements"),
+                    "anchor": "setting-default-expire-days",
                 },
                 {
                     "text": _("Default Records Per Page"),
                     "description": _("Rows shown per page"),
+                    "anchor": "setting-default-records-per-page",
                 },
                 {
                     "text": _("Badge ID Prefix"),
                     "description": _("Prefix added to employee badge IDs e.g. EMP0001"),
+                    "anchor": "setting-badge-id-prefix",
                 },
                 {
                     "text": _("Currency Symbol"),
                     "description": _("Symbol shown for monetary values e.g. $ €"),
+                    "anchor": "setting-currency-symbol",
                 },
                 {
                     "text": _("Currency Position"),
                     "description": _(
                         "Whether symbol appears before or after the amount"
                     ),
+                    "anchor": "setting-currency-position",
                 },
                 {
                     "text": _("Date Format"),
                     "description": _("How dates are displayed across the system"),
+                    "anchor": "setting-date-format",
                 },
                 {
                     "text": _("Time Format"),
                     "description": _("12-hour or 24-hour display format"),
+                    "anchor": "setting-time-format",
                 },
                 {
                     "text": _("Restrict Login Account"),
                     "description": _("Allow admins to block or unblock employee login"),
+                    "anchor": "setting-restrict-login-account",
                 },
                 {
                     "text": _("Restrict Profile Edit"),
                     "description": _(
                         "Prevent employees from editing their own profile"
                     ),
+                    "anchor": "setting-restrict-profile-edit",
                 },
                 {
                     "text": _("Work Information Tracking"),
                     "description": _(
                         "Enable tracking of changes to employee work information fields"
                     ),
+                    "anchor": "setting-work-info-tracking",
                 },
                 {
                     "text": _("Tracking Fields"),
                     "description": _(
                         "Select which work information fields are recorded in change history"
                     ),
+                    "anchor": "setting-tracking-fields",
                 },
                 {
                     "text": _("Enable Languages"),

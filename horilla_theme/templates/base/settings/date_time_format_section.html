@@ -1,5 +1,5 @@
 {% load i18n %}
-<div class="col-span-12 lg:col-span-6">
+<div class="col-span-12 lg:col-span-6" id="setting-date-format">
     {% if perms.base.change_company %}
         <div class="flex space-x-2 pb-1">
             <label>{% trans "Date Format" %}</label>
@@ -43,7 +43,7 @@
         </div>
     {% endif %}
 </div>
-<div class="col-span-12 lg:col-span-6">
+<div class="col-span-12 lg:col-span-6" id="setting-time-format">
     {% if perms.base.change_company %}
         <div class="flex space-x-2 pb-1">
             <label>{% trans "Time Format" %}</label>

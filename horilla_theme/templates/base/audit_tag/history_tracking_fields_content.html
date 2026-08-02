@@ -1,5 +1,5 @@
 {% load i18n %}
-<div class="col-span-12 lg:col-span-6">
+<div class="col-span-12 lg:col-span-6" id="setting-work-info-tracking">
     <form
         action="{% url 'history-field-settings' %}"
         method="post"
@@ -41,7 +41,7 @@
     </form>
 </div>
 {% if history_tracking_instance.work_info_track %}
-    <div class="col-span-12 lg:col-span-6">
+    <div class="col-span-12 lg:col-span-6" id="setting-tracking-fields">
         <form
             action="{% url 'history-field-settings' %}"
             method="post"

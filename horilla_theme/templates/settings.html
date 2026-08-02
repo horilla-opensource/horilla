@@ -114,7 +114,28 @@
         </div>
     </div>
 
+    <style>
+        @keyframes settingsAnchorFlash {
+            0%   { background-color: var(--color-primary-100, #fde8e4); box-shadow: 0 0 0 3px var(--color-primary-200, #fde8e4); }
+            100% { background-color: transparent; box-shadow: 0 0 0 3px transparent; }
+        }
+        .settings-anchor-highlight {
+            animation: settingsAnchorFlash 1.8s ease-out;
+            border-radius: 6px;
+        }
+    </style>
     <script>
+        function scrollToSearchedSetting() {
+        	if (!window.location.hash) return;
+        	var id = decodeURIComponent(window.location.hash.slice(1));
+        	var el = document.getElementById(id);
+        	if (!el) return;
+        	el.scrollIntoView({ behavior: "smooth", block: "center" });
+        	el.classList.add("settings-anchor-highlight");
+        	setTimeout(function () {
+        		el.classList.remove("settings-anchor-highlight");
+        	}, 1800);
+        }
         $(function () {
         	$(".accordion-btn-stng").on("click", function (e) {
         		e.preventDefault();
@@ -231,6 +252,7 @@
         $(document).ready(function () {
         	activateSettingsMenu();
         	enhanceSettingsForms();
+        	scrollToSearchedSetting();
         });
         document.body.addEventListener("click", function (ev) {
         	const link = ev.target && ev.target.closest(".accordion-panel a[href]");
@@ -394,7 +416,9 @@
                 $input.val("");
                 $clear.addClass("hidden");
                 restoreAccordion();
-                const norm  = url.replace(/\/+$/, "");
+                const hashIndex = url.indexOf("#");
+                const baseUrl   = hashIndex === -1 ? url : url.slice(0, hashIndex);
+                const norm      = baseUrl.replace(/\/+$/, "");
                 const $link = $(".accordion-panel a[href]").filter(function () {
                     return ($(this).attr("href") || "").replace(/\/+$/, "") === norm;
                 }).first();

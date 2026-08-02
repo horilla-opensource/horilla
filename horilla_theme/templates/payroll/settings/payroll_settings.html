@@ -16,7 +16,7 @@
         {% csrf_token %}
 
         <div class="flex align-center gap-2 items-start">
-            <div class="w-full">
+            <div class="w-full" id="setting-currency-symbol">
                 <label>{% trans "Currency Symbol" %}</label>
                 <p class="text-xs text-gray-500 mt-1">
                     {% trans "Symbol shown for monetary values (e.g. $, €)." %}
@@ -31,7 +31,7 @@
                     id="id_currency_symbol"
                 >
             </div>
-            <div class="w-full">
+            <div class="w-full" id="setting-currency-position">
                 <label> {% trans "Position" %}</label>
                 <p class="text-xs text-gray-500 mt-1">
                     {% trans "Whether the symbol appears before (prefix) or after (suffix)." %}

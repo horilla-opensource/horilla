@@ -1,5 +1,5 @@
 {% load i18n %}
-<div class="col-span-12 lg:col-span-6">
+<div class="col-span-12 lg:col-span-6" id="setting-restrict-login-account">
     <form
         hx-post="{% url 'enable-account-block-unblock' %}"
         hx-swap="none"
@@ -37,7 +37,7 @@
         </div>
     </form>
 </div>
-<div class="col-span-12 lg:col-span-6">
+<div class="col-span-12 lg:col-span-6" id="setting-restrict-profile-edit">
     <form
         id="enableProfileEditForm"
         hx-post="{% url 'enable-profile-edit-feature' %}"

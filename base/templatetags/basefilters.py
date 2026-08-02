@@ -367,13 +367,14 @@ def settings_search_index():
                     if not text or key in seen:
                         continue
                     seen.add(key)
+                    anchor = str(entry.get("anchor", ""))
                     entries.append(
                         {
                             "text": text,
                             "description": description,
                             "section": section,
                             "page": page,
-                            "url": url,
+                            "url": f"{url}#{anchor}" if anchor else url,
                         }
                     )
             else:
