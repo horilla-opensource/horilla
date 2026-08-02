@@ -16,6 +16,7 @@
     {% comment %} $(this).find('.label').hide('slow'); {% endcomment %}
     "
     >
+      {% if queryset.paginator.count %}
       <div class="oh-checkpoint-badge text-success quick-bulk-action"
         onclick="
         addToSelectedId({{select_all_ids|safe}},'{{selected_instances_key_id}}');
@@ -32,6 +33,7 @@
         {% comment %} <ion-icon style="font;font-size: 1rem;" name="checkmark-done-circle" style="font"></ion-icon> {% endcomment %}
         ({{queryset.paginator.count}})
       </div>
+      {% endif %}
       <div
       id="unselect_{{view_id}}"
       class="oh-checkpoint-badge text-secondary d-none quick-bulk-action"

@@ -25,7 +25,7 @@
             (<span id="count_{{ view_id }}">0</span>)
         </button>
 
-        {% if not hide_select %}
+        {% if not hide_select and queryset.paginator.count %}
             <button
                 id="select_{{ view_id }}"
                 data-total-count="{{ queryset.paginator.count }}"
@@ -38,7 +38,7 @@
                 <span class="label">{% trans 'Select' %}</span>
                 ({{ queryset.paginator.count }})
             </button>
-        {% elif group_select %}
+        {% elif group_select and queryset.paginator.count %}
             <button
                 id="select_{{ view_id }}"
                 data-total-count="{{ queryset.paginator.count }}"
