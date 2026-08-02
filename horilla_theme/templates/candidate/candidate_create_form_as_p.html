@@ -1,51 +1,163 @@
 {% load i18n %} {% load basefilters %}{% load widget_tweaks %}
 {{ form.non_field_errors }}
+{{ form.load }}
 
-<div class="row">
-    {% for field in form %}
-        {% if field.name != 'profile' and field.name != 'country' and field.name != 'state' and field.name != 'badge_id' %}
-            <div class="col-lg-6">
-                <div class="oh-input__group">
-                    <label class="oh-label {% if field.field.required %}required-star{% endif %}" for="{{field.id_for_label}}"
-                        title="{{ field.help_text }}">
-                        {{ field.label }}
+<div id="candidateFormFields">
+    <div class="border border-[#ebebeb] rounded-md mb-5">
+        <h3 class="text-sm font-semibold bg-[#f3f3f3] px-3 py-3 text-[#333] flex items-center justify-between gap-2 flex-wrap rounded-t-md">
+            {% trans "Basic Identity" %}
+        </h3>
+        <div class="grid grid-cols-3 gap-x-4 gap-y-2 emp-grid-3 px-3 py-3">
+            <div>
+                <label class="block text-xs font-medium text-color-600 mb-1" for="{{ form.name.id_for_label }}">
+                    {{ form.name.label }} {% if form.name.field.required %}<span class="text-primary-600">*</span>{% endif %}
+                </label>
+                {{ form.name|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                {{ form.name.errors }}
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-color-600 mb-1" for="{{ form.recruitment_id.id_for_label }}">
+                    {{ form.recruitment_id.label }} {% if form.recruitment_id.field.required %}<span class="text-primary-600">*</span>{% endif %}
+                </label>
+                {{ form.recruitment_id|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 appearance-none" }}
+                {{ form.recruitment_id.errors }}
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-color-600 mb-1" for="{{ form.job_position_id.id_for_label }}">
+                    {{ form.job_position_id.label }} {% if form.job_position_id.field.required %}<span class="text-primary-600">*</span>{% endif %}
+                </label>
+                {{ form.job_position_id|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 appearance-none" }}
+                {{ form.job_position_id.errors }}
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-color-600 mb-1" for="{{ form.source.id_for_label }}">
+                    {{ form.source.label }} {% if form.source.field.required %}<span class="text-primary-600">*</span>{% endif %}
+                </label>
+                {{ form.source|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 appearance-none" }}
+                {{ form.source.errors }}
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-color-600 mb-1" for="{{ form.portfolio.id_for_label }}">
+                    {{ form.portfolio.label }} {% if form.portfolio.field.required %}<span class="text-primary-600">*</span>{% endif %}
+                </label>
+                {{ form.portfolio|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                {{ form.portfolio.errors }}
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-color-600 mb-1" for="{{ form.resume.id_for_label }}">
+                    {{ form.resume.label }} {% if form.resume.field.required %}<span class="text-primary-600">*</span>{% endif %}
+                </label>
+                {{ form.resume|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                {{ form.resume.errors }}
+            </div>
+        </div>
+    </div>
+
+    <div class="border border-[#ebebeb] rounded-md mb-5">
+        <h3 class="text-sm font-semibold bg-[#f3f3f3] px-3 py-3 text-[#333] flex items-center justify-between gap-2 flex-wrap rounded-t-md">
+            {% trans "Contact & Address" %}
+        </h3>
+        <div class="px-3 py-3">
+            <div class="grid grid-cols-2 gap-x-4 gap-y-2 mb-2">
+                <div>
+                    <label class="block text-xs font-medium text-color-600 mb-1" for="{{ form.email.id_for_label }}">
+                        {{ form.email.label }} {% if form.email.field.required %}<span class="text-primary-600">*</span>{% endif %}
                     </label>
-
-                    {% if field.field.widget.input_type == 'checkbox' %}
-                        <div class="oh-switch" style="width: 30px;">{{ field|add_class:'oh-switch__checkbox' }}</div>
-                    {% else %}
-                        {{ field|add_class:'form-control' }}
-                    {% endif %}
-
-                    {{ field.errors }}
+                    {{ form.email|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                    {{ form.email.errors }}
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-color-600 mb-1" for="{{ form.mobile.id_for_label }}">
+                        {{ form.mobile.label }} {% if form.mobile.field.required %}<span class="text-primary-600">*</span>{% endif %}
+                    </label>
+                    {{ form.mobile|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                    {{ form.mobile.errors }}
                 </div>
             </div>
-        {% elif field.name == 'country' %}
-            <div class="row">
-                <div class="col-lg-6">
-                    <label class="oh-label" for="{{form.country.id_for_label}}">{{form.country.label}}</label>
-                    <select name="country" class="w-100 oh-select-2" id="id_country"
-                        data-selected="{{ form.country.value|default:'' }}">
+            <div class="mb-2">
+                <label class="block text-xs font-medium text-color-600 mb-1" for="{{ form.address.id_for_label }}">
+                    {{ form.address.label }} {% if form.address.field.required %}<span class="text-primary-600">*</span>{% endif %}
+                </label>
+                {{ form.address|add_class:"emp-input w-full px-3 py-2 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 resize-y" }}
+                {{ form.address.errors }}
+            </div>
+            <div class="grid grid-cols-4 gap-x-4 gap-y-2 emp-grid-4">
+                <div>
+                    <label class="block text-xs font-medium text-color-600 mb-1" for="id_country">{% trans "Country" %}</label>
+                    <select name="country" id="id_country" class="emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 oh-select-2" data-selected="{{ form.country.value|default:'' }}">
+                        <option value="{{ form.instance.country }}" selected>{{ form.instance.country }}</option>
                     </select>
-                    {{form.country.errors}}
-                    <span class="dropdown-wrapper" aria-hidden="true"></span>
-                    </span>
+                    {{ form.country.errors }}
                 </div>
-                <div class="col-lg-6">
-                    <label class="oh-label d-block" for="{{form.state.id_for_label}}">{{form.state.label}}</label>
-                    <select name="state" class="w-100 oh-select-2" id="id_state"
-                        data-selected="{{ form.state.value|default:'' }}">
+                <div>
+                    <label class="block text-xs font-medium text-color-600 mb-1" for="id_state">{% trans "State" %}</label>
+                    <select name="state" id="id_state" class="emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 oh-select-2" data-selected="{{ form.state.value|default:'' }}">
+                        <option value="{{ form.instance.state }}" selected>{{ form.instance.state }}</option>
                     </select>
-                    {{form.state.errors}}
+                    {{ form.state.errors }}
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-color-600 mb-1" for="{{ form.zip.id_for_label }}">
+                        {{ form.zip.label }} {% if form.zip.field.required %}<span class="text-primary-600">*</span>{% endif %}
+                    </label>
+                    {{ form.zip|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                    {{ form.zip.errors }}
                 </div>
             </div>
-        {% endif %}
-    {% endfor %}
+        </div>
+    </div>
+
+    <div class="border border-[#ebebeb] rounded-md mb-5">
+        <h3 class="text-sm font-semibold bg-[#f3f3f3] px-3 py-3 text-[#333] flex items-center justify-between gap-2 flex-wrap rounded-t-md">
+            {% trans "Personal Details" %}
+        </h3>
+        <div class="grid grid-cols-3 gap-x-4 gap-y-2 emp-grid-3 px-3 py-3">
+            <div>
+                <label class="block text-xs font-medium text-color-600 mb-1" for="{{ form.dob.id_for_label }}">
+                    {{ form.dob.label }} {% if form.dob.field.required %}<span class="text-primary-600">*</span>{% endif %}
+                </label>
+                {{ form.dob|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                {{ form.dob.errors }}
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-color-600 mb-1" for="{{ form.gender.id_for_label }}">
+                    {{ form.gender.label }} {% if form.gender.field.required %}<span class="text-primary-600">*</span>{% endif %}
+                </label>
+                {{ form.gender|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 appearance-none" }}
+                {{ form.gender.errors }}
+            </div>
+        </div>
+    </div>
+
+    <div class="border border-[#ebebeb] rounded-md mb-5">
+        <h3 class="text-sm font-semibold bg-[#f3f3f3] px-3 py-3 text-[#333] flex items-center justify-between gap-2 flex-wrap rounded-t-md">
+            {% trans "Referral & Status" %}
+        </h3>
+        <div class="grid grid-cols-3 gap-x-4 gap-y-2 emp-grid-3 px-3 py-3">
+            <div>
+                <label class="block text-xs font-medium text-color-600 mb-1" for="{{ form.referral.id_for_label }}">
+                    {{ form.referral.label }} {% if form.referral.field.required %}<span class="text-primary-600">*</span>{% endif %}
+                </label>
+                {{ form.referral|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 appearance-none" }}
+                {{ form.referral.errors }}
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-color-600 mb-1">{{ form.canceled.label }}</label>
+                <div class="oh-switch" style="width: 30px;">{{ form.canceled|add_class:"oh-switch__checkbox" }}</div>
+                {{ form.canceled.errors }}
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-color-600 mb-1">{{ form.is_active.label }}</label>
+                <div class="oh-switch" style="width: 30px;">{{ form.is_active|add_class:"oh-switch__checkbox" }}</div>
+                {{ form.is_active.errors }}
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
     $(document).ready(function () {
-        $(".row").find("select").select2({
+        $("#candidateFormFields select").select2({
             width: '100%'
         });
     });
