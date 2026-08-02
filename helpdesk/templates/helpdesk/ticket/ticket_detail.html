@@ -821,6 +821,7 @@
             $.ajax({
                 type: "post",
                 url: `/helpdesk/change-ticket-status/${ticketID}/`,
+                headers: {"HX-Request": "true"},
                 data: {
                     csrfmiddlewaretoken: getCookie("csrftoken"),
                     "status": status,
@@ -843,6 +844,14 @@
                     </div>`
                         )
                     }
+                },
+                error: function () {
+                    $("#ohMessages").append(`
+                <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated oh-alert--danger">
+                {% trans "Something went wrong, the status was not updated." %}
+                </div>
+                </div>`);
                 },
             });
         }

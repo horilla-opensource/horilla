@@ -9,6 +9,7 @@ $(`.change-ticket`).mouseup(function (e) {
                 $.ajax({
                     type: "post",
                     url: `/helpdesk/change-ticket-status/${ticketID}/`,
+                    headers: {"HX-Request": "true"},
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         "status": status,

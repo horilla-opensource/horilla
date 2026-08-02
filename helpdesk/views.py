@@ -685,6 +685,8 @@ def change_ticket_status(request, ticket_id):
     ):
         if ticket.status != status:
             ticket.status = status
+            if ticket.status == "resolved":
+                ticket.resolved_date = datetime.today()
             ticket.save()
             time = datetime.now()
             time = time.strftime("%b. %d, %Y, %I:%M %p")
@@ -722,9 +724,8 @@ def change_ticket_status(request, ticket_id):
                 type="status_change",
             )
             mail_thread.start()
-
-        if ticket.status == "resolved":
-            ticket.resolved_date = datetime.today()
+        else:
+            response = {"errors": "noChange"}
     else:
         response = {
             "type": "danger",
