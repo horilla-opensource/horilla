@@ -752,7 +752,7 @@
           annotations: { yaxis: [{ y: 8, borderColor: '#f59e0b', strokeDashArray: 4,
             label: { text: '{% trans "Target" %}', style: { color: '#f59e0b', fontSize: '10px' } } }] },
           theme: { mode: themeMode() },
-          tooltip: { theme: themeMode(), y: { formatter: function (v) { return v.toFixed(1) + ' hrs'; } } },
+          tooltip: { theme: themeMode(), y: { formatter: function (v) { return v.toFixed(1) + ' {% trans "hrs" %}'; } } },
           grid: { borderColor: gridColor(), strokeDashArray: 4 },
         });
         workHoursChart.render();
@@ -785,7 +785,7 @@
           var title = '';
           var onClick = '';
           if (day.status === 'present' || day.status === 'late') {
-            title = day.hours.toFixed(1) + ' hrs';
+            title = day.hours.toFixed(1) + ' {% trans "hrs" %}';
           }
           if (day.status !== 'empty' && day.status !== 'future' && day.status !== 'weekend') {
             onClick = ' onclick="window.location.href=\'{% url "view-my-attendance" %}?attendance_date=' + day.date + '\'" style="cursor:pointer"';

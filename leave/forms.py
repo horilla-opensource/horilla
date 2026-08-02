@@ -826,12 +826,13 @@ class LeaveAllocationBulkForm(BaseModelForm):
 
     def clean(self):
         """
-        Clean method for validating the form data.
+        self.instance.employee_id = Employee.objects.filter(id__in=employee_ids).first()
         """
         cleaned_data = super().clean()
         employee_ids = self.data.getlist("employee_id")
         self.errors.pop("employee_id", None)
-        self.instance.employee_id = Employee.objects.filter(id__in=employee_ids).first()
+
+    def save(self, commit=True):
         if not employee_ids:
             raise ValidationError({"employee_id": _("Employee not chosen")})
         return cleaned_data

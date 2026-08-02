@@ -862,7 +862,7 @@ class Allowance(HorillaModel):
     )
     include_active_employees = models.BooleanField(
         default=False,
-        verbose_name=_("Include all active employees"),
+        verbose_name=_("Include All Employees"),
         help_text=_("Target allowance to all active employees in the company"),
     )
     specific_employees = models.ManyToManyField(
@@ -1423,7 +1423,7 @@ class Deduction(HorillaModel):
     )
     include_active_employees = models.BooleanField(
         default=False,
-        verbose_name=_("Include all active employees"),
+        verbose_name=_("Include All Employees"),
         help_text=_("Target deduction to all active employees in the company"),
     )
     specific_employees = models.ManyToManyField(

@@ -217,6 +217,8 @@ sidebar_urls = [
     "color-theme-view",
     "survey-template-preview",
     "system-preferences-view",
+    "default-export-access",
+    "encashment-settings-view",
     "attendance-rule-view",
     "leave-rules-view",
     "restrict-leaves-view",

@@ -1044,7 +1044,7 @@
 
             function updateRefreshText() {
                 const mins = Math.floor((Date.now() - lastRefresh) / 60000);
-                refreshText.textContent = mins < 1 ? 'Just now' : mins + 'm ago';
+                refreshText.textContent = mins < 1 ? '{% trans "Just now" %}' : mins + '{% trans "m ago" %}';
             }
             setInterval(updateRefreshText, 30000);
 

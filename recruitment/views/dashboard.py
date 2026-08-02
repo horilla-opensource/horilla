@@ -328,7 +328,7 @@ def candidate_status(_request):
     joined_candidates = Candidate.objects.filter(offer_letter_status="joined").count()
 
     data_set = []
-    labels = ["Not Sent", "Sent", "Accepted", "Rejected", "Joined"]
+    labels = [_("Not Sent"), _("Sent"), _("Accepted"), _("Rejected"), _("Joined")]
     data = [
         not_sent_candidates,
         sent_candidates,

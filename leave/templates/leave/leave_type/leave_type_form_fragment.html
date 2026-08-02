@@ -133,7 +133,7 @@
         <div class="grid grid-cols-12 gap-4">
             <div class="col-span-12 md:col-span-6 rounded-md border border-dark-50 p-5">
                 <div class="form-input-items">
-                    <label class="text-xs font-medium required-star">{% trans "Name" %}</label>
+                    <label class="text-xs font-medium required-star">{{ form.name.label }}</label>
                     {{ form.name }} {{ form.name.errors }}
                 </div>
 
@@ -153,7 +153,7 @@
                         class="flex items-center gap-1 pb-2 overflow-visible relative"
                         style="display: ruby"
                     >
-                        <label class="text-xs font-medium" for="id_reset">{% trans "Limit Leave Days" %}</label>
+                        <label class="text-xs font-medium" for="id_reset">{{ form.limit_leave.label }}</label>
                         <span
                             class="oh-info"
                             title="{% trans 'Do you want to limit leave days for this leave type?' %}"
@@ -166,7 +166,7 @@
                 </div>
                 <div class="form-input-items">
                     <div class="totalDaysContainer" style="display: block">
-                        <label class="text-xs font-medium{% if form.count.field.required %} required-star{% endif %}" for="">{% trans "Total Days" %}</label>
+                        <label class="text-xs font-medium{% if form.count.field.required %} required-star{% endif %}" for="">{{ form.count.label }}</label>
                         {{ form.count|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600" }}
                         {{ form.count.errors }}
                     </div>
@@ -186,7 +186,7 @@
                         class="flex items-center gap-1 pb-2 overflow-visible relative"
                         style="display: ruby"
                     >
-                        <label class="text-xs font-medium" for="id_reset">{% trans "Reset" %}</label>
+                        <label class="text-xs font-medium" for="id_reset">{{ form.reset.label }}</label>
                         <span
                             class="oh-info"
                             title="{% trans 'Do you need to reset leaves based on conditions?' %}"
@@ -204,7 +204,7 @@
                         style="display: ruby"
                     >
                         <label class="text-xs font-medium required-star" for="id_reset_based">
-                            {% trans "Reset Period" %}
+                            {{ form.reset_based.label }}
                         </label>
                         <span
                             class="oh-info"
@@ -215,19 +215,19 @@
                     {{ form.reset_based.errors }}
                 </div>
                 <div class="form-input-items hidden">
-                    <label class="text-xs font-medium" for="id_reset_month">{% trans "Reset Month" %}</label>
+                    <label class="text-xs font-medium" for="id_reset_month">{{ form.reset_month.label }}</label>
                     {{ form.reset_month|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600" }}
                     {{ form.reset_month.errors }}
                 </div>
 
                 <div class="form-input-items hidden">
-                    <label class="text-xs font-medium required-star" for="id_reset_day">{% trans "Reset Day" %}</label>
+                    <label class="text-xs font-medium required-star" for="id_reset_day">{{ form.reset_day.label }}</label>
                     {{ form.reset_day|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600" }}
                     {{ form.reset_day.errors }}
                 </div>
 
                 <div class="form-input-items hidden">
-                    <label class="text-xs font-medium required-star" for="id_reset_weekend">{% trans "Reset Weekday" %}</label>
+                    <label class="text-xs font-medium required-star" for="id_reset_weekend">{{ form.reset_weekend.label }}</label>
                     {{ form.reset_weekend|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600" }}
                     {{ form.reset_weekend.errors }}
                 </div>
@@ -236,7 +236,7 @@
                     <label
                         class="text-xs font-medium required-star"
                         for="id_custom_reset_days"
-                    >{% trans "Custom Reset Days" %}</label>
+                    >{{ form.custom_reset_days.label }}</label>
                     {{ form.custom_reset_days|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600" }}
                     {{ form.custom_reset_days.errors }}
                 </div>
@@ -248,7 +248,7 @@
                         style="display: ruby"
                     >
                         <label class="text-xs font-medium" for="">
-                            {% trans "Carryforward Type" %}
+                            {{ form.carryforward_type.label }}
                         </label>
                         <span
                             class="oh-info"
@@ -268,7 +268,7 @@
                             class="text-xs font-medium"
                             for="id_carryforward_max"
                         >
-                            {% trans "Carryforward Max" %}
+                            {{ form.carryforward_max.label }}
                         </label>
                     </div>
                     {{ form.carryforward_max|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600" }}
@@ -284,7 +284,7 @@
                             class="text-xs font-medium"
                             for="id_carryforward_expire_in"
                         >
-                            {% trans "Carryforward Expire In" %}
+                            {{ form.carryforward_expire_in.label }}
                         </label>
                         <span
                             class="oh-info"
@@ -304,7 +304,7 @@
                             class="text-xs font-medium"
                             for="id_carryforward_expire_period"
                         >
-                            {% trans "Carryforward Expire Period" %}
+                        {{ form.carryforward_expire_period.label }}
                         </label>
                         <span
                             class="oh-info me-3"
@@ -324,7 +324,7 @@
                             for="id_carryforward_expire_date"
                             class="text-xs font-medium"
                         >
-                            {% trans "Carryforward Expire Date" %}
+                            {{ form.carryforward_expire_date.label }}
                         </label>
                         <span
                             class="oh-info me-3"
@@ -379,7 +379,7 @@
                             class="flex items-center gap-1 pb-2 overflow-visible relative"
                             style="display: ruby"
                         >
-                            <label class="text-xs font-medium" for="id_approval">{% trans "Require Approval" %}</label>
+                            <label class="text-xs font-medium" for="id_approval">{{ form.require_approval.label }}</label>
                         </div>
                         <div class="oh-switch">
                             <input
@@ -397,7 +397,7 @@
                             class="flex items-center gap-1 pb-2 overflow-visible relative"
                             style="display: ruby"
                         >
-                            <label class="text-xs font-medium" for="id_attachment">{% trans "Require Attachment" %}</label>
+                            <label class="text-xs font-medium" for="id_attachment">{{ form.require_attachment.label }}</label>
                         </div>
                         <div class="oh-switch">
                             <input
@@ -414,7 +414,7 @@
                             class="flex items-center gap-1 pb-2 overflow-visible relative"
                             style="display: ruby"
                         >
-                            <label class="text-xs font-medium{% if form.exclude_company_leave.field.required %} required-star{% endif %}" for="id_exclude_comp_leave">{% trans "Exclude Company Holidays" %}</label>
+                            <label class="text-xs font-medium{% if form.exclude_company_leave.field.required %} required-star{% endif %}" for="id_exclude_comp_leave">{{ form.exclude_company_leave.label }}</label>
                         </div>
                         <div class="oh-switch">
                             <input
@@ -431,7 +431,7 @@
                             class="flex items-center gap-1 pb-2 overflow-visible relative"
                             style="display: ruby"
                         >
-                            <label class="text-xs font-medium{% if form.exclude_holiday.field.required %} required-star{% endif %}" for="id_exclude_public_leave">{% trans "Exclude Holidays" %}</label>
+                            <label class="text-xs font-medium{% if form.exclude_holiday.field.required %} required-star{% endif %}" for="id_exclude_public_leave">{{ form.exclude_holiday.label }}</label>
                         </div>
                         <div class="oh-switch">
                             <input
@@ -448,7 +448,7 @@
                             class="flex items-center gap-1 pb-2 overflow-visible relative"
                             style="display: ruby"
                         >
-                            <label class="text-xs font-medium" for="id_is_encashable">{% trans "Is Encashable" %}</label>
+                            <label class="text-xs font-medium" for="id_is_encashable">{{ form.is_encashable.label }}</label>
                         </div>
                         <div class="oh-switch">
                             {{ form.is_encashable }}

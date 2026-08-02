@@ -239,10 +239,10 @@ def ess_leave_requests(request):
         qs = qs[:10]
 
         status_labels = {
-            "requested": "Pending",
-            "approved": "Approved",
-            "rejected": "Rejected",
-            "cancelled": "Cancelled",
+            "requested": _("Pending"),
+            "approved": _("Approved"),
+            "rejected": _("Rejected"),
+            "cancelled": _("Cancelled"),
         }
         for lr in qs:
             results.append(

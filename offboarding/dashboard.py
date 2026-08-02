@@ -10,6 +10,7 @@ from django.apps import apps
 from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.translation import gettext as _
 
 from horilla.decorators import login_required, permission_required
 
@@ -152,17 +153,17 @@ def offboarding_resignation_status(request):
     statuses = [
         {
             "status": "requested",
-            "label": "Requested",
+            "label": _("Requested"),
             "count": base.filter(status="requested").count(),
         },
         {
             "status": "approved",
-            "label": "Approved",
+            "label": _("Approved"),
             "count": base.filter(status="approved").count(),
         },
         {
             "status": "rejected",
-            "label": "Rejected",
+            "label": _("Rejected"),
             "count": base.filter(status="rejected").count(),
         },
     ]

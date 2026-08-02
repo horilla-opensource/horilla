@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-16 14:20+0530\n"
+"POT-Creation-Date: 2026-08-02 22:34+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,6 +37,9 @@ msgstr ""
 msgid "Exclude Employees"
 msgstr ""
 
+msgid "Permissions"
+msgstr ""
+
 msgid "Job Position"
 msgstr ""
 
@@ -62,9 +65,6 @@ msgid "Tags"
 msgstr ""
 
 msgid "Groups"
-msgstr ""
-
-msgid "Permissions"
 msgstr ""
 
 msgid "Default Accessibility"
@@ -784,6 +784,12 @@ msgstr ""
 msgid "Reset"
 msgstr ""
 
+msgid "Auto-refresh ON (5 min)"
+msgstr ""
+
+msgid "Auto-refresh OFF"
+msgstr ""
+
 #, fuzzy
 #| msgid "update-deduction"
 msgid "Total Assets"
@@ -904,7 +910,7 @@ msgstr ""
 msgid "Assign Date Lesser Or Equal"
 msgstr ""
 
-msgid "Filter"
+msgid "Apply"
 msgstr ""
 
 msgid "ellipsis vertical sharp"
@@ -929,11 +935,16 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
+msgid "Filter"
+msgstr ""
+
 msgid "Group By"
 msgstr ""
 
-msgid "Field"
-msgstr ""
+#, fuzzy
+#| msgid "type-update"
+msgid "Fields"
+msgstr "Update"
 
 #, fuzzy
 #| msgid "recruitment"
@@ -1863,8 +1874,13 @@ msgid "Late Come Early Out"
 msgstr "Track Late Come & Early Out"
 
 #, fuzzy
+#| msgid "view-policies"
+msgid "Time Policies"
+msgstr "Policies"
+
+#, fuzzy
 #| msgid "attendance"
-msgid "Attendance Rule"
+msgid "Attendance Rules"
 msgstr "Attendance"
 
 msgid "Enable Check In / Check Out"
@@ -1912,44 +1928,6 @@ msgstr ""
 
 msgid "Restrict attendance marking to a geographic area"
 msgstr ""
-
-#, fuzzy
-#| msgid "view-policies"
-msgid "Time Policies"
-msgstr "Policies"
-
-#, fuzzy
-#| msgid "shift-request-view"
-msgid "Worked Hours Auto Approve"
-msgstr "Shift Requests"
-
-msgid "At-work hours threshold before attendance is auto-validated"
-msgstr ""
-
-#, fuzzy
-#| msgid "shift-request-view"
-msgid "Minimum Overtime to Approve"
-msgstr "Shift Requests"
-
-msgid "Minimum overtime hours required for approval"
-msgstr ""
-
-msgid "Maximum Overtime Per Day"
-msgstr ""
-
-msgid "Cap on overtime hours per day"
-msgstr ""
-
-msgid "Buffer time allowed for late arrivals before marking as late"
-msgstr ""
-
-msgid "Grace Time Allowed"
-msgstr ""
-
-#, fuzzy
-#| msgid "configuration"
-msgid "Duration of the grace period in minutes"
-msgstr "Configuration"
 
 msgid "Validate the attendance"
 msgstr ""
@@ -2005,13 +1983,7 @@ msgstr ""
 msgid "Work Info"
 msgstr ""
 
-msgid "In Time"
-msgstr ""
-
 msgid "Validated?"
-msgstr ""
-
-msgid "Out Time"
 msgstr ""
 
 msgid "OT Approved?"
@@ -2400,12 +2372,6 @@ msgstr ""
 msgid "ago"
 msgstr ""
 
-msgid "Auto-refresh ON (5 min)"
-msgstr ""
-
-msgid "Auto-refresh OFF"
-msgstr ""
-
 msgid "Present Today"
 msgstr ""
 
@@ -2605,6 +2571,11 @@ msgid "Assign Shifts"
 msgstr "Assigned Leaves"
 
 #, fuzzy
+#| msgid "configuration"
+msgid "Validation Condition"
+msgstr "Configuration"
+
+#, fuzzy
 #| msgid "shift"
 msgid "Shifts"
 msgstr "Shift"
@@ -2751,9 +2722,6 @@ msgstr ""
 msgid ""
 "Configure the location and radius within which employees are allowed to mark "
 "their attendance."
-msgstr ""
-
-msgid "Configure attendance validation break points and grace time buffers."
 msgstr ""
 
 msgid "Download"
@@ -2923,13 +2891,13 @@ msgstr ""
 msgid "Edit Request"
 msgstr ""
 
+msgid "Field"
+msgstr ""
+
 msgid "Current Value"
 msgstr ""
 
 msgid "Requested Value"
-msgstr ""
-
-msgid " Are you sure want to cancel the request?"
 msgstr ""
 
 msgid "New Attendances Request"
@@ -3076,6 +3044,11 @@ msgstr "Attendance Requests"
 msgid "Attendance Does not exists.."
 msgstr ""
 
+#, fuzzy, python-format
+#| msgid "user-request-view"
+msgid "%(success_count)s attendances deleted successfully."
+msgstr "My Leave Requests"
+
 msgid "Hour account deleted."
 msgstr ""
 
@@ -3157,7 +3130,16 @@ msgstr "Attendances"
 msgid "You cannot validate your own attendance."
 msgstr ""
 
+#, fuzzy, python-format
+#| msgid "attendance-view"
+msgid "%(employee)s %(date)s Attendance validated."
+msgstr "Attendances"
+
 msgid "You cannot approve your own overtime."
+msgstr ""
+
+#, python-format
+msgid "%(employee)s's %(date)s overtime approved"
 msgstr ""
 
 #, fuzzy
@@ -3214,11 +3196,6 @@ msgstr ""
 msgid "File deleted successfully"
 msgstr ""
 
-#, fuzzy
-#| msgid "work-records"
-msgid "Work Records Status"
-msgstr "Work Records"
-
 msgid "enabled"
 msgstr ""
 
@@ -3230,6 +3207,16 @@ msgstr ""
 
 msgid "Check In/Check Out has been successfully {}."
 msgstr ""
+
+#, fuzzy
+#| msgid "type-view"
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "Leave Types"
+
+#, fuzzy, python-format
+#| msgid "employee"
+msgid "IP addresses already exist: %(ips)s"
+msgstr "Employee"
 
 #, fuzzy
 #| msgid "shift-request-view"
@@ -3308,6 +3295,10 @@ msgstr "Recruitment"
 msgid "Announcement created successfully to all employees in "
 msgstr "Shift Requests"
 
+#, python-format
+msgid "File type %(ext)s is not allowed for security reasons."
+msgstr ""
+
 msgid "Is Hq"
 msgstr ""
 
@@ -3321,6 +3312,9 @@ msgid "City"
 msgstr ""
 
 msgid "Zip"
+msgstr ""
+
+msgid "Companies"
 msgstr ""
 
 #, fuzzy
@@ -3391,6 +3385,9 @@ msgstr ""
 msgid "Manager"
 msgstr ""
 
+msgid "Departments"
+msgstr ""
+
 #, fuzzy
 #| msgid "department-update"
 msgid "Create Department"
@@ -3410,6 +3407,12 @@ msgid "Department has been created successfully!"
 msgstr ""
 
 msgid "Employee Shift"
+msgstr ""
+
+msgid "Weekly Full Time"
+msgstr ""
+
+msgid "Full Time"
 msgstr ""
 
 msgid "Shift Schedule"
@@ -3484,11 +3487,6 @@ msgstr ""
 msgid "Public Holidays"
 msgstr "Recruitment"
 
-#, fuzzy
-#| msgid "employee"
-msgid "Employee Specific"
-msgstr "Employee"
-
 msgid "Create Holiday"
 msgstr ""
 
@@ -3516,6 +3514,9 @@ msgid "Update Job Position"
 msgstr "Creation"
 
 msgid "Job position updated."
+msgstr ""
+
+msgid "Job Roles"
 msgstr ""
 
 #, fuzzy
@@ -3964,16 +3965,16 @@ msgstr ""
 msgid "Work type Request Created"
 msgstr "Work Type Requests"
 
-msgid "Employee is not working in the selected company."
+msgid "You do not have access to that company."
+msgstr ""
+
+msgid "You do not have permission to switch the company."
 msgstr ""
 
 msgid "Profile Edit Access"
 msgstr ""
 
 msgid "Add your company profile — name, logo and timezone."
-msgstr ""
-
-msgid "Departments"
 msgstr ""
 
 msgid "Create the departments your employees will belong to."
@@ -4010,6 +4011,12 @@ msgstr "Employee"
 msgid "Add your first employee to bring everything together."
 msgstr ""
 
+msgid "You dont have permission."
+msgstr ""
+
+msgid "Your account is not linked to an employee record."
+msgstr ""
+
 msgid "After"
 msgstr ""
 
@@ -4021,9 +4028,50 @@ msgid "---Choose {label}---"
 msgstr ""
 
 #, fuzzy
+#| msgid "employee"
+msgid "Group name"
+msgstr "Employee"
+
+msgid "Give this group a clear name, e.g. HR Managers or Finance Team."
+msgstr ""
+
+#, fuzzy
+#| msgid "department-update"
+msgid "e.g. HR Managers"
+msgstr "Update"
+
+msgid "Search and select who should belong to this group."
+msgstr ""
+
+#, fuzzy
 #| msgid "recruitment"
 msgid "Invalid group ID."
 msgstr "Recruitment"
+
+msgid ""
+"Members get this group's permissions only in the selected companies. Leave "
+"empty for all companies you can manage."
+msgstr ""
+
+#, fuzzy
+#| msgid "employee"
+msgid "Search employees..."
+msgstr "Employee"
+
+msgid ""
+"Members get this group's permissions only in the selected companies. You can "
+"only assign companies you already have access to. Leave empty for all of "
+"those companies."
+msgstr ""
+
+msgid "You cannot assign this group for companies you do not manage."
+msgstr ""
+
+msgid "File size should be less than 5MB."
+msgstr ""
+
+msgid "Unsupported file extension."
+msgstr ""
 
 msgid ""
 "Assigning a manager here also reflects in the Helpdesk department managers "
@@ -4035,6 +4083,10 @@ msgstr ""
 msgid "This employee is not from %(department)s."
 msgstr "Rotating Work Type Assigns"
 
+#, python-format
+msgid "Job position already exists under %(dep)s"
+msgstr ""
+
 #, fuzzy
 #| msgid "shift-request-view"
 msgid "Job position has been created successfully!"
@@ -4044,6 +4096,10 @@ msgid "Job position already exists under {}"
 msgstr ""
 
 msgid "Job role has been created successfully!"
+msgstr ""
+
+#, python-format
+msgid "Role already exists under %(position)s"
 msgstr ""
 
 #, fuzzy
@@ -4098,6 +4154,14 @@ msgstr ""
 msgid "Re-Enter Password"
 msgstr ""
 
+#, fuzzy
+#| msgid "recruitment"
+msgid "Incorrect old password."
+msgstr "Recruitment"
+
+msgid "New password must be different from the old password."
+msgstr ""
+
 msgid "New password and confirm password do not match"
 msgstr ""
 
@@ -4121,6 +4185,16 @@ msgstr ""
 
 msgid "Enter your password."
 msgstr ""
+
+#, fuzzy
+#| msgid "employee"
+msgid "Username already exists."
+msgstr "Employee"
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Incorrect password."
+msgstr "Recruitment"
 
 msgid "Enter Strong Password"
 msgstr ""
@@ -4172,6 +4246,11 @@ msgid ""
 msgstr ""
 
 #, fuzzy
+#| msgid "feedback-creation"
+msgid "Description is required."
+msgstr "Creation"
+
+#, fuzzy
 #| msgid "recruitment"
 msgid "Attachments"
 msgstr "Recruitment"
@@ -4184,22 +4263,6 @@ msgstr ""
 
 msgid "End date should not be earlier than the start date."
 msgstr ""
-
-msgid "Select an assigning type for this specific holiday."
-msgstr ""
-
-#, fuzzy
-#| msgid "company"
-msgid "Select at least one department."
-msgstr "Company"
-
-msgid "Select at least one job position."
-msgstr ""
-
-#, fuzzy
-#| msgid "company"
-msgid "Select at least one employee."
-msgstr "Company"
 
 msgid "Male"
 msgstr ""
@@ -4240,6 +4303,9 @@ msgstr ""
 msgid "Cancelled & Rejected"
 msgstr ""
 
+msgid "You dont have access to export this data"
+msgstr ""
+
 msgid "An employee related to this user's credentials does not exist."
 msgstr ""
 
@@ -4270,19 +4336,34 @@ msgstr ""
 msgid "Invalid format,  excepted HH:MM"
 msgstr ""
 
-msgid "Companies"
+msgid "User"
 msgstr ""
+
+msgid "Group"
+msgstr ""
+
+#, fuzzy
+#| msgid "employee-permission-assign"
+msgid "Company group assignment"
+msgstr "Employee Permissions"
+
+#, fuzzy
+#| msgid "employee-permission-assign"
+msgid "Company group assignments"
+msgstr "Employee Permissions"
 
 #, fuzzy
 #| msgid "employee"
 msgid "This department already exists in this company"
 msgstr "Employee"
 
-msgid "Job Roles"
-msgstr ""
-
 msgid "Work Types"
 msgstr ""
+
+#, fuzzy
+#| msgid "employee"
+msgid "This work type already exists in this company"
+msgstr "Employee"
 
 #, fuzzy
 #| msgid "company"
@@ -4316,6 +4397,11 @@ msgstr ""
 msgid "Employee Types"
 msgstr ""
 
+#, fuzzy
+#| msgid "employee"
+msgid "This employee type already exists in this company"
+msgstr "Employee"
+
 msgid "Employee Shift Day"
 msgstr ""
 
@@ -4324,6 +4410,11 @@ msgstr ""
 
 msgid "Employee Shifts"
 msgstr ""
+
+#, fuzzy
+#| msgid "employee"
+msgid "This employee shift already exists in this company"
+msgstr "Employee"
 
 msgid "Night Shift"
 msgstr ""
@@ -4397,6 +4488,11 @@ msgstr ""
 
 msgid "Permanent Request"
 msgstr ""
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "The request entry cannot be deleted."
+msgstr "My Leave Requests"
 
 msgid "End date must be greater than or equal to start date"
 msgstr ""
@@ -4510,9 +4606,6 @@ msgid "End value must be greater than the start value in a range."
 msgstr ""
 
 msgid "Multiple Approval Managers"
-msgstr ""
-
-msgid "User"
 msgstr ""
 
 #, fuzzy
@@ -4696,41 +4789,54 @@ msgstr ""
 msgid "Select which work information fields are recorded in change history"
 msgstr ""
 
-msgid "Employee Permission"
-msgstr ""
-
-msgid "Assign individual Django permissions to employees"
-msgstr ""
-
 #, fuzzy
-#| msgid "employee-permission-assign"
-msgid "Assign Permission"
-msgstr "Employee Permissions"
+#| msgid "recruitment"
+msgid "Enable Languages"
+msgstr "Recruitment"
 
-msgid "Grant or revoke specific access rights per employee"
+msgid ""
+"Restrict which languages appear in the navbar language switcher for this "
+"company"
 msgstr ""
 
 #, fuzzy
 #| msgid "feedback-creation"
-msgid "Accessibility Restriction"
+msgid "Accessibility Restrictions"
 msgstr "Creation"
 
 msgid "Control which user roles can see which menu items"
 msgstr ""
 
-msgid "User Group"
-msgstr ""
+#, fuzzy
+#| msgid "employee"
+msgid "Default Export Access"
+msgstr "Employee"
 
-msgid "Create and manage Django permission groups"
-msgstr ""
-
-msgid "Group Permissions"
+msgid ""
+"Control the default data export behavior for the currently selected company"
 msgstr ""
 
 #, fuzzy
-#| msgid "assign-view"
-msgid "Assign permissions to a user group"
-msgstr "Assigned Leaves"
+#| msgid "employee-permission-assign"
+msgid "Roles and Permissions"
+msgstr "Employee Permissions"
+
+msgid "Create reusable roles and assign direct employee permissions"
+msgstr ""
+
+msgid "Roles"
+msgstr ""
+
+msgid "Create and manage reusable permission roles"
+msgstr ""
+
+#, fuzzy
+#| msgid "employee-permission-assign"
+msgid "Employee Permissions"
+msgstr "Employee Permissions"
+
+msgid "Grant or revoke specific access rights per employee"
+msgstr ""
 
 #, fuzzy
 #| msgid "employee"
@@ -4868,33 +4974,6 @@ msgstr ""
 
 #, fuzzy
 #| msgid "recruitment"
-msgid "Public Holiday"
-msgstr "Recruitment"
-
-msgid "Name of the public holiday"
-msgstr ""
-
-msgid "Holiday Start Date"
-msgstr ""
-
-#, fuzzy
-#| msgid "type-view"
-msgid "Holiday End Date"
-msgstr "Leave Types"
-
-msgid "End date"
-msgstr ""
-
-#, fuzzy
-#| msgid "recruitment"
-msgid "Recurring Holiday"
-msgstr "Recruitment"
-
-msgid "Whether this holiday repeats every year"
-msgstr ""
-
-#, fuzzy
-#| msgid "recruitment"
 msgid "Mail"
 msgstr "Recruitment"
 
@@ -4940,11 +5019,6 @@ msgstr ""
 msgid "Use the triggering user's name as the sender display name"
 msgstr ""
 
-#, fuzzy
-#| msgid "employee"
-msgid "Mail Template"
-msgstr "Employee"
-
 msgid "Create reusable email body templates"
 msgstr ""
 
@@ -4968,7 +5042,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "mail-automations"
-msgid "Mail Automation"
+msgid "Mail Automations"
 msgstr "Mail Automations"
 
 msgid "Trigger automated emails on model events"
@@ -4997,40 +5071,6 @@ msgstr ""
 #| msgid "configuration"
 msgid "Send via Email Notification or Both"
 msgstr "Configuration"
-
-#, fuzzy
-#| msgid "type-update"
-msgid "Approvals"
-msgstr "Update"
-
-#, fuzzy
-#| msgid "multiple-approval-condition"
-msgid "Multiple Approval"
-msgstr "Multiple Approval Condition"
-
-#, fuzzy
-#| msgid "multiple-approval-condition"
-msgid "Configure multi-level approval rules by condition"
-msgstr "Multiple Approval Condition"
-
-#, fuzzy
-#| msgid "multiple-approval-condition"
-msgid "Approval Condition Field"
-msgstr "Multiple Approval Condition"
-
-msgid "Which field is evaluated for the approval condition"
-msgstr ""
-
-msgid "Approval Condition Operator"
-msgstr ""
-
-#, fuzzy
-#| msgid "multiple-approval-condition"
-msgid "Comparison operator for the approval condition"
-msgstr "Multiple Approval Condition"
-
-msgid "Who approves when the condition is met"
-msgstr ""
 
 #, fuzzy
 #| msgid "department-update"
@@ -5267,6 +5307,20 @@ msgstr "Recruitment"
 msgid "WhatsApp Meta phone number identifier"
 msgstr ""
 
+#, python-format
+msgid "You are banned until %(banned_until)s. Please try again later."
+msgstr ""
+
+#, python-format
+msgid ""
+"You have been banned for %(minutes)s minutes due to multiple failed login "
+"attempts."
+msgstr ""
+
+#, python-format
+msgid "You have %(attempts)s login attempt(s) left before a temporary ban."
+msgstr ""
+
 #, fuzzy
 #| msgid "recruitment"
 msgid "Create "
@@ -5426,14 +5480,27 @@ msgstr ""
 msgid "Document"
 msgstr ""
 
+msgid "Group Permissions"
+msgstr ""
+
 msgid "search outline"
 msgstr ""
 
 msgid "Group Assign"
 msgstr ""
 
-msgid "Group"
+msgid ""
+"Name the group, then optionally choose what members can do. You can edit "
+"permissions later."
 msgstr ""
+
+msgid "What can this group do? (optional)"
+msgstr ""
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Create group"
+msgstr "Recruitment"
 
 msgid "Reveal"
 msgstr ""
@@ -5444,8 +5511,24 @@ msgstr ""
 msgid "users in this group"
 msgstr ""
 
+#, fuzzy
+#| msgid "user-request-view"
+msgid "Do you want to delete this group permission?"
+msgstr "My Leave Requests"
+
 msgid "There is no employee group at this moment."
 msgstr ""
+
+#, python-format
+msgid ""
+"Choose employees for \"%(name)s\". Saving adds the selected employees "
+"without removing existing members."
+msgstr ""
+
+#, fuzzy
+#| msgid "department-update"
+msgid "Save members"
+msgstr "Update"
 
 msgid "Are you sure you want to delete this group?"
 msgstr ""
@@ -5479,11 +5562,6 @@ msgstr ""
 msgid "Horilla"
 msgstr "Theme Customization"
 
-#, fuzzy
-#| msgid "employee-permission-assign"
-msgid "Employee Permissions"
-msgstr "Employee Permissions"
-
 msgid "Assign"
 msgstr ""
 
@@ -5507,6 +5585,9 @@ msgstr ""
 #| msgid "onboarding"
 msgid "Can delete"
 msgstr "Onboarding"
+
+msgid "Manage reusable roles and direct employee permissions from one place."
+msgstr ""
 
 msgid "Two Factor Authentication"
 msgstr ""
@@ -6062,11 +6143,154 @@ msgstr ""
 msgid "24 Hr. (e.g., 06:00 or 18:00)"
 msgstr ""
 
+msgid ""
+"Control the default data export behavior for the currently selected company."
+msgstr ""
+
+msgid "Allow All Users to Export Data"
+msgstr ""
+
+msgid ""
+"When enabled, every user of this company can export data from any module. "
+"When disabled, only users (or superusers) with the appropriate export "
+"permission for a module can export its data."
+msgstr ""
+
+msgid "Allow every user of this company to export data from any module."
+msgstr ""
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "Are you sure you want to allow all users to export data?"
+msgstr "My Leave Requests"
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid ""
+"Are you sure you want to restrict data export to users with export "
+"permission?"
+msgstr "My Leave Requests"
+
 msgid "Define company-observed public holidays and recurring holiday dates."
 msgstr ""
 
 msgid "Import Holidays"
 msgstr ""
+
+#, fuzzy
+#| msgid "company"
+msgid "All Companies (Default)"
+msgstr "Company"
+
+#, fuzzy
+#| msgid "company-update"
+msgid "Company Settings"
+msgstr "Update"
+
+msgid "These language settings only apply to the selected company."
+msgstr ""
+
+#, fuzzy
+#| msgid "company"
+msgid "Selected Company"
+msgstr "Company"
+
+msgid "Languages Enabled"
+msgstr ""
+
+#, fuzzy
+#| msgid "configuration"
+msgid "Default configuration"
+msgstr "Configuration"
+
+msgid "Loading language settings…"
+msgstr ""
+
+msgid ""
+"Since only one company exists, these settings will automatically apply to it."
+msgstr ""
+
+#, python-format
+msgid ""
+"Employees belonging to \"%(company_name)s\" will only see the languages "
+"enabled below in their language switcher."
+msgstr ""
+
+msgid ""
+"You're editing the default language configuration, used by any company that "
+"hasn't set its own languages."
+msgstr ""
+
+msgid ""
+"Changing to another company loads that company's own language configuration."
+msgstr ""
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Current Company"
+msgstr "Recruitment"
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Languages Available"
+msgstr "Recruitment"
+
+#, fuzzy
+#| msgid "configuration"
+msgid "Configured On"
+msgstr "Configuration"
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Not yet"
+msgstr "Recruitment"
+
+msgid "Managing Languages For"
+msgstr ""
+
+#, fuzzy
+#| msgid "settings"
+msgid "Search languages…"
+msgstr "Settings"
+
+msgid "Search languages"
+msgstr ""
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Selected"
+msgstr "Recruitment"
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Enable All"
+msgstr "Recruitment"
+
+msgid "Disable All"
+msgstr ""
+
+msgid "No languages have been enabled."
+msgstr ""
+
+msgid "Employees will not be able to switch languages."
+msgstr ""
+
+#, fuzzy
+#| msgid "assign-view"
+msgid "Available languages"
+msgstr "Assigned Leaves"
+
+#, python-format
+msgid "Enable %(label)s"
+msgstr ""
+
+msgid "No languages match your search."
+msgstr ""
+
+#, fuzzy
+#| msgid "type-update"
+msgid "Unsaved changes"
+msgstr "Update"
 
 msgid ""
 "Create and manage reusable email templates for system notifications and "
@@ -6090,11 +6314,6 @@ msgstr "Shift Requests"
 #| msgid "shift-request-view"
 msgid "There are currently no email templates available."
 msgstr "Shift Requests"
-
-msgid ""
-"Configure department-based conditions and manager sequences for multi-level "
-"request approvals."
-msgstr ""
 
 msgid ""
 "Configure system defaults, display formatting, and data access controls."
@@ -6164,12 +6383,6 @@ msgstr ""
 msgid "Are you sure you want to delete this schedule?"
 msgstr ""
 
-msgid "Weekly Full Time"
-msgstr ""
-
-msgid "Full Time"
-msgstr ""
-
 msgid "Are you sure you want to delete this shift?"
 msgstr ""
 
@@ -6232,8 +6445,10 @@ msgstr ""
 msgid "Hint: Type '{' to get sender or receiver data"
 msgstr ""
 
-msgid "Add more managers.."
-msgstr ""
+#, fuzzy
+#| msgid "department-update"
+msgid "Add Manager"
+msgstr "Update"
 
 #, fuzzy
 #| msgid "rotating-shift-assign"
@@ -6265,10 +6480,10 @@ msgstr ""
 msgid "Are you sure you want to delete this shift request?"
 msgstr ""
 
-msgid "Are you available for this shift reallocation?"
+msgid "Do you want to approve this request?"
 msgstr ""
 
-msgid "Do you want to approve this request?"
+msgid "Are you available for this shift reallocation?"
 msgstr ""
 
 msgid "Are you not available for this shift reallocation?"
@@ -6328,11 +6543,6 @@ msgstr ""
 msgid "There are no holidays at the moments."
 msgstr ""
 
-#, fuzzy
-#| msgid "employee"
-msgid "Applicable Employees"
-msgstr "Employee"
-
 msgid "Selected Holidays"
 msgstr ""
 
@@ -6350,10 +6560,15 @@ msgstr ""
 msgid "Save Duplicate"
 msgstr "Update"
 
+#, fuzzy
+#| msgid "department-update"
+msgid "Remove manager"
+msgstr "Update"
+
 msgid "Multiple Approval Condition"
 msgstr ""
 
-msgid "Apply"
+msgid "Add more managers.."
 msgstr ""
 
 msgid "There are currently no multiple approvals to consider."
@@ -6713,6 +6928,9 @@ msgid "Additional info"
 msgstr ""
 
 msgid "Schedule date"
+msgstr ""
+
+msgid "End date"
 msgstr ""
 
 msgid "Recruitment managers"
@@ -7091,9 +7309,9 @@ msgid "employee"
 msgstr "Employee"
 
 #, fuzzy
-#| msgid "work-records"
-msgid "work-structure"
-msgstr "Work Records"
+#| msgid "gmeet-setting"
+msgid "employee-settings"
+msgstr "General Settings"
 
 msgid "onboarding"
 msgstr "Onboarding"
@@ -7486,6 +7704,33 @@ msgstr "Product Tours"
 msgid "templates-periods"
 msgstr "Templates & Periods"
 
+msgid "system-preferences-view"
+msgstr "System Preferences"
+
+msgid "default-export-access"
+msgstr "Default Export Access"
+
+msgid "attendance-rule-view"
+msgstr "Attendance Rule"
+
+msgid "leave-rules-view"
+msgstr "Leave Rules"
+
+msgid "encashment-settings-view"
+msgstr "Encashment Settings"
+
+msgid "offboarding-rules-view"
+msgstr "Offboarding Rules"
+
+msgid "company-leaves-view"
+msgstr "Weekly Off Days"
+
+msgid "mail-templates-view"
+msgstr "Mail Template"
+
+msgid "mail-automations-view"
+msgstr "Mail Automation"
+
 #, fuzzy
 #| msgid "employee"
 msgid "Employee Work Info"
@@ -7575,10 +7820,22 @@ msgstr ""
 msgid "Feedback Status"
 msgstr ""
 
+#, python-format
+msgid "An error occured : %(e)s"
+msgstr ""
+
 #, fuzzy
 #| msgid "shift-request-view"
 msgid "Database loaded successfully."
 msgstr "Shift Requests"
+
+#, python-format
+msgid "Assigned demo roles to %(count)s employee memberships."
+msgstr ""
+
+#, python-format
+msgid "Demo roles could not be assigned: %(error)s"
+msgstr ""
 
 msgid "Database Authentication Failed"
 msgstr ""
@@ -7609,13 +7866,31 @@ msgstr ""
 msgid "If your account exists, a password reset link has been sent"
 msgstr ""
 
+msgid "Something went wrong....."
+msgstr ""
+
 #, fuzzy
 #| msgid "shift-request-view"
 msgid "Username changed successfully"
 msgstr "Shift Requests"
 
-msgid "User group created."
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "OTP verified successfully."
+msgstr "Shift Requests"
+
+msgid "OTP expired. Please request a new one."
 msgstr ""
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "Invalid OTP."
+msgstr "My Leave Requests"
+
+#, fuzzy
+#| msgid "company-create"
+msgid "Role created."
+msgstr "Companies"
 
 #, fuzzy
 #| msgid "employee"
@@ -7644,7 +7919,23 @@ msgstr ""
 msgid "Required parameters are missing"
 msgstr ""
 
-msgid "User group assigned."
+#, fuzzy
+#| msgid "rotating-shift-update"
+msgid "Role members updated."
+msgstr "Update"
+
+msgid "Role members added."
+msgstr ""
+
+#, fuzzy
+#| msgid "rotating-work-type-assign"
+msgid "Employee removed from the group."
+msgstr "Rotating Work Type Assigns"
+
+msgid "Company removed from the employee's assignment."
+msgstr ""
+
+msgid "Unable to remove employee from the group."
 msgstr ""
 
 msgid "The {} has been deleted successfully."
@@ -7652,6 +7943,11 @@ msgstr ""
 
 msgid "{} not found."
 msgstr ""
+
+#, fuzzy, python-format
+#| msgid "recruitment"
+msgid "%(model__meta_verbose_name)s object does not exist."
+msgstr "Recruitment"
 
 msgid "Test mail from Horilla"
 msgstr ""
@@ -7681,6 +7977,16 @@ msgstr ""
 
 msgid "Primary Mail server configuration replaced"
 msgstr ""
+
+#, fuzzy
+#| msgid "department-update"
+msgid "Template updated"
+msgstr "Update"
+
+#, fuzzy
+#| msgid "department-update"
+msgid "Template deleted"
+msgstr "Update"
 
 msgid "Company has been created successfully!"
 msgstr ""
@@ -7713,6 +8019,9 @@ msgid "Rotating work type assigned."
 msgstr ""
 
 msgid "Rotating work type assign updated."
+msgstr ""
+
+msgid "Already on record is active"
 msgstr ""
 
 msgid "un-archived"
@@ -7786,6 +8095,9 @@ msgid "Rotating shift assigned."
 msgstr ""
 
 msgid "Rotating shift assign updated."
+msgstr ""
+
+msgid "something went wrong...."
 msgstr ""
 
 #, fuzzy
@@ -7923,6 +8235,11 @@ msgstr ""
 msgid "Shifts have been approved."
 msgstr ""
 
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Shift request deleted"
+msgstr "Shift Requests"
+
 msgid "You cannot delete this shift request."
 msgstr ""
 
@@ -7988,6 +8305,11 @@ msgstr ""
 
 msgid "Profile edit accessibility feature has been removed."
 msgstr ""
+
+#, fuzzy
+#| msgid "rotating-shift-update"
+msgid "Language settings have been updated."
+msgstr "Update"
 
 msgid "Tag has been created successfully!"
 msgstr ""
@@ -8110,6 +8432,19 @@ msgid "Penalty deleted suucessfully"
 msgstr "Shift Requests"
 
 #, fuzzy
+#| msgid "candidate-view"
+msgid "Missing app_label"
+msgstr "Candidates"
+
+#, python-format
+msgid "%(app_verbose_name)s enabled"
+msgstr ""
+
+#, python-format
+msgid "%(app_verbose_name)s disabled"
+msgstr ""
+
+#, fuzzy
 #| msgid "attendance"
 msgid "Biometric Devices"
 msgstr "Attendance"
@@ -8166,6 +8501,12 @@ msgid "Employee Name"
 msgstr ""
 
 msgid "15 characters max."
+msgstr ""
+
+msgid "Maximum 15 characters allowed for Name in COSEC Biometric Device"
+msgstr ""
+
+msgid "When the Validity field is enabled, a Validity End Date is required."
 msgstr ""
 
 #, fuzzy
@@ -8862,6 +9203,11 @@ msgid "No employee found matching the query."
 msgstr ""
 
 #, fuzzy
+#| msgid "recruitment"
+msgid "Send password reset link"
+msgstr "Recruitment"
+
+#, fuzzy
 #| msgid "view-allowance"
 msgid "Block Account"
 msgstr "Allowances"
@@ -8871,12 +9217,16 @@ msgstr "Allowances"
 msgid "Un-Block Account"
 msgstr "Allowances"
 
-#, fuzzy
-#| msgid "recruitment"
-msgid "Send password reset link"
-msgstr "Recruitment"
-
 msgid "Edit Profile"
+msgstr ""
+
+msgid "Employee ID"
+msgstr ""
+
+msgid "Email"
+msgstr ""
+
+msgid "Date of Joining"
 msgstr ""
 
 msgid "About"
@@ -8927,13 +9277,7 @@ msgstr ""
 msgid "Add Profile Edit Access"
 msgstr ""
 
-msgid "Email"
-msgstr ""
-
 msgid "Badge Id"
-msgstr ""
-
-msgid "Date of Joining"
 msgstr ""
 
 msgid "Work Information"
@@ -9092,6 +9436,12 @@ msgstr ""
 msgid "Profile Image"
 msgstr ""
 
+msgid "Potential XSS content detected."
+msgstr ""
+
+msgid "Inactive"
+msgstr ""
+
 msgid "Expected working"
 msgstr ""
 
@@ -9217,11 +9567,30 @@ msgstr "Onboarding"
 msgid "Can view Birthdays"
 msgstr "Assigned Leaves"
 
+#, fuzzy, python-format
+#| msgid "employee"
+msgid "Mail sent to %(employee)s"
+msgstr "Employee"
+
+#, python-format
+msgid "Email not set for %(employee)s"
+msgstr ""
+
 msgid "Policies Not Found"
 msgstr ""
 
+#, fuzzy
+#| msgid "type-update"
+msgid "Policies deleted"
+msgstr "Update"
+
 msgid "No Policy found matching the query."
 msgstr ""
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Attachments added"
+msgstr "Recruitment"
 
 msgid "Disciplinary action taken."
 msgstr ""
@@ -9244,11 +9613,6 @@ msgid "Organization Chart"
 msgstr "Organizational Chart"
 
 #, fuzzy
-#| msgid "work-records"
-msgid "Work Structure"
-msgstr "Work Records"
-
-#, fuzzy
 #| msgid "user-request-view"
 msgid "Work Requests"
 msgstr "My Leave Requests"
@@ -9260,6 +9624,11 @@ msgstr "Work Records"
 
 msgid "Policies & Discipline"
 msgstr ""
+
+#, fuzzy
+#| msgid "configuration"
+msgid "Configuration"
+msgstr "Configuration"
 
 #, fuzzy
 #| msgid "settings"
@@ -9405,11 +9774,24 @@ msgstr ""
 msgid "No Documents available at the moment"
 msgstr "Shift Requests"
 
-msgid "ellipsis vertical"
+msgid "file"
 msgstr ""
+
+msgid "Max size of the file"
+msgstr ""
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "No records available at the moment"
+msgstr "Shift Requests"
 
 msgid "Export Individual Data"
 msgstr ""
+
+#, fuzzy
+#| msgid "update-deduction"
+msgid "Allocations"
+msgstr "Update"
 
 msgid "Do you want to archive this employee?"
 msgstr ""
@@ -9491,6 +9873,9 @@ msgstr ""
 msgid "No documents found."
 msgstr "Shift Requests"
 
+msgid "Personal Information"
+msgstr ""
+
 msgid "Upload Photo"
 msgstr ""
 
@@ -9511,9 +9896,6 @@ msgstr "Employee"
 #| msgid "work-records"
 msgid "All records"
 msgstr "Work Records"
-
-msgid "Inactive"
-msgstr ""
 
 #, fuzzy
 #| msgid "employee"
@@ -9735,6 +10117,16 @@ msgstr ""
 #, fuzzy
 #| msgid "employee"
 msgid "---Choose Job Role---"
+msgstr "Employee"
+
+#, fuzzy
+#| msgid "employee-profile"
+msgid "Employee Profile"
+msgstr "Profile"
+
+#, fuzzy
+#| msgid "employee"
+msgid "Employee Detail View"
 msgstr "Employee"
 
 #, fuzzy
@@ -10001,6 +10393,9 @@ msgstr ""
 msgid "Add points"
 msgstr "Assigned Leaves"
 
+msgid "ellipsis vertical"
+msgstr ""
+
 msgid "Balance points to redeem:"
 msgstr ""
 
@@ -10076,12 +10471,6 @@ msgstr ""
 msgid "Upload "
 msgstr ""
 
-msgid "file"
-msgstr ""
-
-msgid "Max size of the file"
-msgstr ""
-
 msgid "Reason"
 msgstr ""
 
@@ -10124,6 +10513,11 @@ msgstr ""
 msgid "Approve cancellation request"
 msgstr ""
 
+#, fuzzy
+#| msgid "user-request-view"
+msgid "Do You really want to Approve this request?"
+msgstr "My Leave Requests"
+
 msgid "No Leave requests have been generated."
 msgstr ""
 
@@ -10143,9 +10537,6 @@ msgid "No Payslips have been generated."
 msgstr ""
 
 msgid "No feedbacks have been created."
-msgstr ""
-
-msgid "Personal Information"
 msgstr ""
 
 msgid "None"
@@ -10255,6 +10646,9 @@ msgid "Update Shift Request"
 msgstr ""
 
 msgid "Update Note"
+msgstr ""
+
+msgid "Employee is not working in the selected company."
 msgstr ""
 
 msgid "Profile updated."
@@ -10383,6 +10777,11 @@ msgstr "Onboarding"
 msgid "You can't archive the last superuser."
 msgstr ""
 
+#, fuzzy, python-format
+#| msgid "employee"
+msgid "%(employee)s is %(message)s"
+msgstr "Employee"
+
 msgid "Related data found for {}."
 msgstr ""
 
@@ -10429,6 +10828,11 @@ msgstr ""
 
 msgid "Error Occured {}"
 msgstr ""
+
+#, fuzzy, python-format
+#| msgid "onboarding"
+msgid "%(created_count)s employees created."
+msgstr "Onboarding"
 
 msgid ""
 "Failed to read file. Please ensure it is a valid CSV or Excel file. : {}"
@@ -10477,6 +10881,14 @@ msgid "Payroll app not installed"
 msgstr ""
 
 #, fuzzy
+#| msgid "shift-request-view"
+msgid "Initial prefix updated successfully."
+msgstr "Shift Requests"
+
+msgid "There was an error updating the prefix."
+msgstr ""
+
+#, fuzzy
 #| msgid "configuration"
 msgid "Facedetection Configuration"
 msgstr "Configuration"
@@ -10484,10 +10896,21 @@ msgstr "Configuration"
 msgid "Start"
 msgstr ""
 
+msgid "Only one FaceDetection can have a null company_id."
+msgstr ""
+
+msgid "Facedetection not yet started.."
+msgstr ""
+
 #, fuzzy
 #| msgid "shift-request-view"
 msgid "facedetection config created successfully."
 msgstr "Shift Requests"
+
+#, fuzzy
+#| msgid "assign-view"
+msgid "Not valid"
+msgstr "Assigned Leaves"
 
 #, fuzzy
 #| msgid "shift-request-view"
@@ -10498,6 +10921,25 @@ msgstr "Shift Requests"
 #| msgid "configuration"
 msgid "Geofence Configuration"
 msgstr "Configuration"
+
+msgid "Only one GeoFencing can have a null company_id."
+msgstr ""
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "Invalid location coordinates."
+msgstr "My Leave Requests"
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "Invalid Location"
+msgstr "My Leave Requests"
+
+msgid "Access Denied.."
+msgstr ""
+
+msgid "Geofencing is not yet started.."
+msgstr ""
 
 #, fuzzy
 #| msgid "shift-request-view"
@@ -10607,13 +11049,18 @@ msgstr ""
 msgid "New"
 msgstr ""
 
-msgid "Are you sure you want to delete this tag?"
-msgstr ""
+#, fuzzy
+#| msgid "department-update"
+msgid "Department Managers"
+msgstr "Update"
 
 #, fuzzy
 #| msgid "helpdesk"
 msgid "Helpdesk Tags"
 msgstr "Help Desk"
+
+msgid "Are you sure you want to delete this tag?"
+msgstr ""
 
 msgid "Ticket type has been updated successfully!"
 msgstr ""
@@ -10631,6 +11078,9 @@ msgid "The Ticket created successfully."
 msgstr ""
 
 msgid "The Ticket updated successfully."
+msgstr ""
+
+msgid "Sorry, something went wrong!"
 msgstr ""
 
 #, fuzzy
@@ -10685,11 +11135,6 @@ msgid "Others"
 msgstr ""
 
 #, fuzzy
-#| msgid "department-update"
-msgid "Department Managers"
-msgstr "Update"
-
-#, fuzzy
 #| msgid "type-update"
 msgid "Ticket Types"
 msgstr "Update"
@@ -10732,31 +11177,13 @@ msgstr ""
 msgid "Helpdesk"
 msgstr "Help Desk"
 
-#, fuzzy
-#| msgid "department-update"
-msgid "Helpdesk Department Manager"
-msgstr "Update"
-
-msgid "Assign managers responsible for helpdesk tickets per department"
+msgid "Assign managers responsible for helpdesk tickets per department."
 msgstr ""
 
-msgid "Define categories of helpdesk tickets"
+msgid "Create tags for classifying helpdesk tickets."
 msgstr ""
 
-#, fuzzy
-#| msgid "type-update"
-msgid "Ticket Prefix"
-msgstr "Update"
-
-msgid "Short prefix used in ticket IDs"
-msgstr ""
-
-#, fuzzy
-#| msgid "helpdesk"
-msgid "Helpdesk Tag"
-msgstr "Help Desk"
-
-msgid "Create tags for classifying helpdesk tickets"
+msgid "Define categories of helpdesk tickets."
 msgstr ""
 
 #, fuzzy
@@ -11059,6 +11486,9 @@ msgstr "Recruitment"
 msgid "Are you sure you want to delete this file?"
 msgstr ""
 
+msgid "Something went wrong, the status was not updated."
+msgstr ""
+
 msgid "Ticket Id"
 msgstr ""
 
@@ -11080,6 +11510,10 @@ msgid "Select All Tickets"
 msgstr ""
 
 msgid "Unselect All Tickets"
+msgstr ""
+
+#, python-format
+msgid "Mail not sent to %(employee)s"
 msgstr ""
 
 msgid "The FAQ category has been deleted successfully."
@@ -11211,6 +11645,15 @@ msgstr ""
 msgid "Ticket type can not delete"
 msgstr "Employee"
 
+#, fuzzy, python-format
+#| msgid "shift-request-view"
+msgid "Automation '%(faq_obj_question)s' created successfully."
+msgstr "Shift Requests"
+
+#, python-format
+msgid "Automation '%(faq_obj_question)s' already exists."
+msgstr ""
+
 #, fuzzy
 #| msgid "shift-request-view"
 msgid "File(s) uploaded successfully."
@@ -11233,6 +11676,80 @@ msgstr ""
 
 msgid "Modified By"
 msgstr ""
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "Invalid asset."
+msgstr "My Leave Requests"
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "Invalid Choice"
+msgstr "My Leave Requests"
+
+#, fuzzy
+#| msgid "employee"
+msgid "Already Returned"
+msgstr "Employee"
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Old password is incorrect."
+msgstr "Recruitment"
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "There is already a leave request for this date range."
+msgstr "Shift Requests"
+
+msgid "There is a mismatch in the breakdown of the start date and end date."
+msgstr ""
+
+msgid "Employee doesn't have enough leave days.."
+msgstr ""
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Nothing to approve."
+msgstr "Shift Requests"
+
+msgid "If 'is_fixed' is True, 'amount' must be a positive number."
+msgstr ""
+
+msgid "If 'is_fixed' is False, 'based_on' is required."
+msgstr ""
+
+msgid ""
+"If 'based_on' is 'attendance', 'per_attendance_fixed_amount' is required."
+msgstr ""
+
+msgid "If 'based_on' is 'shift_id', 'shift_id' is required."
+msgstr ""
+
+msgid "If 'based_on' is 'work_type_id', 'work_type_id' is required."
+msgstr ""
+
+msgid ""
+"If 'is_condition_based' is True, 'field', 'value', and 'condition' are "
+"required."
+msgstr ""
+
+msgid "If 'has_max_limit' is True, 'maximum_amount' is required."
+msgstr ""
+
+msgid "Nothing to reject."
+msgstr ""
+
+msgid "Nothing to cancel."
+msgstr ""
+
+msgid "Access Denied."
+msgstr ""
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Nothing to approve"
+msgstr "Shift Requests"
 
 msgid "Are you sure you want to delete this history tag ?"
 msgstr ""
@@ -11345,6 +11862,11 @@ msgstr "Company"
 msgid "Edit Fields"
 msgstr ""
 
+#, fuzzy
+#| msgid "horilla-theme"
+msgid "Horilla Bot"
+msgstr "Theme Customization"
+
 msgid "Why this change?"
 msgstr ""
 
@@ -11362,6 +11884,11 @@ msgstr "Theme Customization"
 
 msgid "Users"
 msgstr ""
+
+#, fuzzy
+#| msgid "mail-automations"
+msgid "Automations"
+msgstr "Mail Automations"
 
 msgid "Also Sent to"
 msgstr ""
@@ -11422,6 +11949,11 @@ msgid ""
 "trigger the automation)"
 msgstr ""
 
+#, fuzzy
+#| msgid "employee"
+msgid "Mail Template"
+msgstr "Employee"
+
 msgid "Also Send to"
 msgstr ""
 
@@ -11473,10 +12005,32 @@ msgstr ""
 msgid "Trigger"
 msgstr ""
 
+#, fuzzy, python-format
+#| msgid "shift-request-view"
+msgid "Automation '%(automation_obj_title)s' added successfully."
+msgstr "Shift Requests"
+
+#, python-format
+msgid "Automation '%(automation_obj_title)s' already exists."
+msgstr ""
+
 #, fuzzy
 #| msgid "shift-request-view"
 msgid "No matching query found."
 msgstr "Shift Requests"
+
+#, fuzzy
+#| msgid "mail-automations"
+msgid "Automation deleted"
+msgstr "Mail Automations"
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Automations refreshed successfully."
+msgstr "Shift Requests"
+
+msgid "Automation method not available to refresh."
+msgstr ""
 
 msgid "Enable to backup database to server."
 msgstr ""
@@ -11495,6 +12049,16 @@ msgstr ""
 msgid "The directory does not exist."
 msgstr "Recruitment"
 
+#, fuzzy
+#| msgid "configuration"
+msgid "Please select any backup option."
+msgstr "Configuration"
+
+#, fuzzy
+#| msgid "configuration"
+msgid "Please select any backup automate option."
+msgstr "Configuration"
+
 msgid "Negative value is not accepatable."
 msgstr ""
 
@@ -11509,6 +12073,14 @@ msgstr ""
 
 msgid "Enable to backup all media files to Gdrive"
 msgstr ""
+
+msgid "Please provide a valid OAuth credentials file (must be valid JSON)."
+msgstr ""
+
+#, fuzzy
+#| msgid "type-view"
+msgid "Please provide a valid OAuth credentials file."
+msgstr "Leave Types"
 
 msgid "Specify the path in the server were the backup files should keep"
 msgstr ""
@@ -11907,8 +12479,13 @@ msgstr ""
 
 #, fuzzy
 #| msgid "configuration"
-msgid "LDAP Configuration"
+msgid "LDAP Integration"
 msgstr "Configuration"
+
+msgid ""
+"Configure LDAP settings to authenticate and sync employees from your "
+"directory server."
+msgstr ""
 
 #, fuzzy
 #| msgid "shift-request-view"
@@ -11922,6 +12499,11 @@ msgstr ""
 #| msgid "configuration"
 msgid "Duration in minutes"
 msgstr "Configuration"
+
+#, fuzzy
+#| msgid "employee"
+msgid "Meeting with this Event already exists"
+msgstr "Employee"
 
 #, fuzzy
 #| msgid "attendance-view"
@@ -11942,6 +12524,57 @@ msgid "Enable Google meet"
 msgstr ""
 
 msgid "Enable this to integrate Google meet to Horilla."
+msgstr ""
+
+msgid "Schedule and join Google Meet video calls directly from Horilla."
+msgstr ""
+
+#, fuzzy
+#| msgid "employee"
+msgid "Google Cloud Credential not found."
+msgstr "Employee"
+
+msgid "Successfully authenticated with Google credentials."
+msgstr ""
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Google Cloud Credential deleted successfully."
+msgstr "Shift Requests"
+
+#, python-format
+msgid "Error deleting Google Cloud Credential: %(e)s"
+msgstr ""
+
+msgid "Google Credential not found. Please authenticate first."
+msgstr ""
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Google Meet deleted successfully."
+msgstr "Shift Requests"
+
+#, fuzzy
+#| msgid "configuration"
+msgid "Google Meeting not found."
+msgstr "Configuration"
+
+#, python-format
+msgid "Error deleting Google Meeting: %(e)s"
+msgstr ""
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Meeting created successfully"
+msgstr "Shift Requests"
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Meeting updated successfully"
+msgstr "Shift Requests"
+
+#, python-format
+msgid "Error creating/updating Google Meeting: %(error)s"
 msgstr ""
 
 #, fuzzy
@@ -12107,6 +12740,25 @@ msgid "Deduct From Carryforward"
 msgstr ""
 
 #, fuzzy
+#| msgid "work-records"
+msgid "Export Work Records"
+msgstr "Work Records"
+
+#, fuzzy
+#| msgid "employee"
+msgid "File name:"
+msgstr "Employee"
+
+msgid "Format:"
+msgstr ""
+
+msgid "Excel (.xlsx)"
+msgstr ""
+
+msgid "CSV (.csv)"
+msgstr ""
+
+#, fuzzy
 #| msgid "attendance"
 msgid "On Leave, But Attendance Exist"
 msgstr "Attendance"
@@ -12126,15 +12778,98 @@ msgid ""
 "updated."
 msgstr ""
 
-#, fuzzy
-#| msgid "user-request-view"
-msgid "Do you want to delete this group permission?"
-msgstr "My Leave Requests"
+msgid ""
+"A role is a named set of employees who share the same access. Create a role, "
+"add members, then turn permissions on or off."
+msgstr ""
 
 #, fuzzy
-#| msgid "shift-request-view"
-msgid "There are no employee groups at this moment."
-msgstr "Shift Requests"
+#| msgid "create-allowance"
+msgid "Create a role"
+msgstr "Creation"
+
+#, fuzzy
+#| msgid "employee"
+msgid "Add employees (Members)"
+msgstr "Employee"
+
+msgid "Set what they can do (Permissions)"
+msgstr ""
+
+#, fuzzy
+#| msgid "employee"
+msgid "Search roles..."
+msgstr "Employee"
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Create role"
+msgstr "Recruitment"
+
+#, fuzzy
+#| msgid "onboarding"
+msgid "Loading…"
+msgstr "Onboarding"
+
+#, fuzzy
+#| msgid "department-update"
+msgid "Role members"
+msgstr "Update"
+
+msgid "Server error."
+msgstr ""
+
+#, fuzzy
+#| msgid "employee"
+msgid "Role name"
+msgstr "Employee"
+
+msgid "Members"
+msgstr ""
+
+msgid "People in this role get all of its permissions."
+msgstr ""
+
+msgid "No one is in this role yet."
+msgstr ""
+
+msgid ""
+"Pick a module on the left, then turn Create / View / Edit / Delete on. Use "
+"View only or Full access for faster setup. Changes save automatically."
+msgstr ""
+
+msgid "Click to rename"
+msgstr ""
+
+#, fuzzy
+#| msgid "employee-permission-assign"
+msgid "permissions"
+msgstr "Employee Permissions"
+
+msgid ""
+"Delete this role? Employees will keep their accounts, but will no longer get "
+"permissions from this role."
+msgstr ""
+
+#, fuzzy
+#| msgid "onboarding"
+msgid "Delete role"
+msgstr "Onboarding"
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "No roles yet"
+msgstr "My Leave Requests"
+
+msgid ""
+"Create a group, add employees, then choose what they can access. You can "
+"change this anytime."
+msgstr ""
+
+#, fuzzy
+#| msgid "department-update"
+msgid "Create your first group"
+msgstr "Update"
 
 #, fuzzy
 #| msgid "onboarding"
@@ -12144,21 +12879,167 @@ msgstr "Onboarding"
 msgid "Next Page"
 msgstr ""
 
+#, python-format
+msgid "Remove %(cname)s from %(name)s's assignment?"
+msgstr ""
+
+#, fuzzy
+#| msgid "company"
+msgid "Remove this company"
+msgstr "Company"
+
+#, fuzzy
+#| msgid "assign-view"
+msgid "No company assignments"
+msgstr "Assigned Leaves"
+
+#, python-format
+msgid "Remove %(name)s from this group?"
+msgstr ""
+
+#, fuzzy
+#| msgid "view-allowance"
+msgid "Remove from group"
+msgstr "Allowances"
+
+#, python-format
+msgid "Edit members of \"%(name)s\""
+msgstr ""
+
+#, fuzzy, python-format
+#| msgid "assign-view"
+msgid "Add members to \"%(name)s\""
+msgstr "Assigned Leaves"
+
+msgid ""
+"Update employees or companies for this role. Saving applies the selected "
+"employees to the selected companies."
+msgstr ""
+
+msgid ""
+"Search and pick employees below. Saving adds the selected employees to this "
+"role for the selected companies."
+msgstr ""
+
+#, python-format
+msgid "%(counter)s member currently in this role."
+msgid_plural "%(counter)s members currently in this role."
+msgstr[0] ""
+msgstr[1] ""
+
+#, fuzzy
+#| msgid "employee"
+msgid "Employees in this role"
+msgstr "Employee"
+
+#, fuzzy
+#| msgid "employee"
+msgid "Employees to add"
+msgstr "Employee"
+
+msgid "Use search or filters to find people quickly."
+msgstr ""
+
+#, fuzzy
+#| msgid "assign-view"
+msgid "Save changes"
+msgstr "Assigned Leaves"
+
+#, fuzzy
+#| msgid "department-update"
+msgid "Add members"
+msgstr "Update"
+
 #, fuzzy
 #| msgid "recruitment"
 msgid "Forgot Password ?"
 msgstr "Recruitment"
 
 #, fuzzy
-#| msgid "shift-request-view"
-msgid "No records available at the moment"
-msgstr "Shift Requests"
+#| msgid "employee-permission-assign"
+msgid "User Permissions"
+msgstr "Employee Permissions"
+
+msgid "Review or assign permissions directly to individual employees."
+msgstr ""
+
+msgid ""
+"Permissions assigned directly to an employee here apply in all companies. "
+"Use Roles to grant company-specific permissions."
+msgstr ""
+
+msgid "Search module or feature…"
+msgstr ""
+
+#, fuzzy
+#| msgid "job-position-view"
+msgid "Search permissions"
+msgstr "Job Position"
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "selected"
+msgstr "Recruitment"
+
+msgid "No features match your search."
+msgstr ""
+
+msgid ""
+"Permissions from this employee's groups in the selected company (plus any "
+"direct permissions)."
+msgstr ""
+
+msgid "Only allow viewing"
+msgstr ""
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "View only"
+msgstr "Recruitment"
+
+msgid "Allow create, view, edit, delete and other actions"
+msgstr ""
+
+msgid "Full access"
+msgstr ""
+
+#, fuzzy
+#| msgid "type-update"
+msgid "Clear all in this module"
+msgstr "Update"
+
+msgid "Clear"
+msgstr ""
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Select all for this module"
+msgstr "Recruitment"
+
+msgid "Feature"
+msgstr ""
+
+#, fuzzy
+#| msgid "attendance-view"
+msgid "Can export"
+msgstr "Attendances"
+
+msgid "Extra actions defined for this feature"
+msgstr ""
+
+msgid "Select all for this feature"
+msgstr ""
 
 msgid "New Username"
 msgstr ""
 
 msgid "Number of records shown per page across all list views."
 msgstr ""
+
+#, fuzzy
+#| msgid "company"
+msgid "Search company"
+msgstr "Company"
 
 msgid "user"
 msgstr ""
@@ -12230,6 +13111,20 @@ msgstr ""
 
 msgid "Submit Application"
 msgstr ""
+
+msgid "Basic Identity"
+msgstr ""
+
+msgid "Contact & Address"
+msgstr ""
+
+msgid "Personal Details"
+msgstr ""
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "Referral & Status"
+msgstr "My Leave Requests"
 
 #, fuzzy
 #| msgid "department-update"
@@ -12440,9 +13335,6 @@ msgstr ""
 msgid "Do you want to delete this project?"
 msgstr ""
 
-msgid "Members"
-msgstr ""
-
 #, fuzzy
 #| msgid "feedback-creation"
 msgid "No Description Available"
@@ -12497,9 +13389,6 @@ msgid "Do You really want to approve the request"
 msgstr ""
 
 msgid "Do You really want to reject the request?"
-msgstr ""
-
-msgid "mail open outline"
 msgstr ""
 
 msgid "Do you want to delete this record"
@@ -12685,6 +13574,89 @@ msgstr "Employee"
 msgid "Charts"
 msgstr ""
 
+#, fuzzy
+#| msgid "employee"
+msgid "Add New Employee"
+msgstr "Employee"
+
+msgid "Enter the details to create a new employee profile."
+msgstr ""
+
+#, fuzzy
+#| msgid "employee"
+msgid "Employee photo"
+msgstr "Employee"
+
+msgid "Upload JPG, PNG or SVG"
+msgstr ""
+
+msgid "max 5MB"
+msgstr ""
+
+msgid "Remove photo"
+msgstr ""
+
+#, fuzzy
+#| msgid "onboarding"
+msgid "Save & Continue"
+msgstr "Onboarding"
+
+#, fuzzy
+#| msgid "configuration"
+msgid "Account Information"
+msgstr "Configuration"
+
+msgid "Update employee information across all sections."
+msgstr ""
+
+#, fuzzy
+#| msgid "department-update"
+msgid "Change Photo"
+msgstr "Update"
+
+#, fuzzy
+#| msgid "job-position-view"
+msgid "Position"
+msgstr "Job Position"
+
+#, fuzzy
+#| msgid "employee"
+msgid "Employment Details"
+msgstr "Employee"
+
+#, fuzzy
+#| msgid "asset-request-allocation-view"
+msgid "Reporting & Location"
+msgstr "Asset Requests & Allocations"
+
+#, fuzzy
+#| msgid "configuration"
+msgid "Contact & Compensation"
+msgstr "Configuration"
+
+msgid "Create tags used to group and filter employees."
+msgstr ""
+
+msgid "Manage employee categories such as permanent or contract."
+msgstr ""
+
+msgid "Set up rotating shift patterns for employees."
+msgstr ""
+
+#, fuzzy
+#| msgid "rotating-work-type-assign"
+msgid "Set up rotating work type patterns for employees."
+msgstr "Rotating Work Type Assigns"
+
+msgid "Configure day-wise schedules linked to each shift."
+msgstr ""
+
+msgid "Create and manage shift definitions used across the organization."
+msgstr ""
+
+msgid "Define work modes such as office, remote, or hybrid."
+msgstr ""
+
 msgid "Feedback Answer"
 msgstr ""
 
@@ -12796,22 +13768,10 @@ msgstr ""
 msgid "No answers yet."
 msgstr ""
 
-msgid "Hide Questions"
-msgstr ""
-
-msgid "Show Questions"
-msgstr ""
-
 msgid "Question Type"
 msgstr ""
 
 msgid "Question"
-msgstr ""
-
-msgid "Hide Options"
-msgstr ""
-
-msgid "Show Options"
 msgstr ""
 
 msgid "Do you want to delete the question?"
@@ -12824,6 +13784,11 @@ msgstr "Update"
 
 msgid "Add A Question"
 msgstr ""
+
+#, fuzzy
+#| msgid "employee"
+msgid "Enter question here"
+msgstr "Employee"
 
 msgid "Add Question"
 msgstr ""
@@ -12843,11 +13808,6 @@ msgstr "Recruitment"
 
 msgid "Questions"
 msgstr ""
-
-#, fuzzy
-#| msgid "onboarding"
-msgid "Dashboard Charts"
-msgstr "Onboarding"
 
 #, fuzzy
 #| msgid "recruitment"
@@ -12891,6 +13851,41 @@ msgid "Reset link will be sent to your registered email"
 msgstr ""
 
 #, fuzzy
+#| msgid "dashboard"
+msgid "Customize columns"
+msgstr "Dashboard"
+
+msgid "Columns"
+msgstr ""
+
+msgid "Show, hide, or reorder"
+msgstr ""
+
+#, fuzzy
+#| msgid "settings"
+msgid "Search columns…"
+msgstr "Settings"
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Search columns"
+msgstr "Recruitment"
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Select all columns"
+msgstr "Recruitment"
+
+msgid "Primary column"
+msgstr ""
+
+msgid "No columns match your search"
+msgstr ""
+
+msgid "Drag rows to reorder columns"
+msgstr ""
+
+#, fuzzy
 #| msgid "configuration"
 msgid "Delete Confirmation"
 msgstr "Configuration"
@@ -12928,11 +13923,6 @@ msgstr ""
 msgid "Select All Columns"
 msgstr "Recruitment"
 
-#, fuzzy
-#| msgid "employee"
-msgid "File name:"
-msgstr "Employee"
-
 msgid "Save And Add Another"
 msgstr ""
 
@@ -12941,19 +13931,48 @@ msgstr ""
 msgid "Records"
 msgstr "Work Records"
 
+msgid "Assign Leave"
+msgstr ""
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "No filtered records found at the moment"
+msgstr "Shift Requests"
+
 msgid "→"
 msgstr ""
 
 msgid "Restore previous state"
 msgstr ""
 
+msgid "This will revert the object to a previous state."
+msgstr ""
+
 msgid "Revert"
 msgstr ""
 
 #, fuzzy
-#| msgid "employee"
-msgid "No history"
-msgstr "Employee"
+#| msgid "onboarding"
+msgid "Deleted"
+msgstr "Onboarding"
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "No history has been recorded for this record."
+msgstr "Shift Requests"
+
+msgid "Settings"
+msgstr ""
+
+#, fuzzy
+#| msgid "settings"
+msgid "Account Settings"
+msgstr "Settings"
+
+#, fuzzy
+#| msgid "department-update"
+msgid "Manage Tabs"
+msgstr "Update"
 
 msgid "Items"
 msgstr ""
@@ -12967,6 +13986,13 @@ msgid "Click Here or Drag and drop your file here"
 msgstr ""
 
 msgid "Show All"
+msgstr ""
+
+msgid "Enter a page number and press Enter"
+msgstr ""
+
+#, python-format
+msgid "Filter (%(counter)s)"
 msgstr ""
 
 #, fuzzy
@@ -13013,6 +14039,11 @@ msgstr ""
 
 msgid "Send"
 msgstr ""
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "Do you want to delete the automation?"
+msgstr "My Leave Requests"
 
 #, fuzzy
 #| msgid "attendance"
@@ -13284,11 +14315,6 @@ msgid "View all →"
 msgstr "Employee"
 
 #, fuzzy
-#| msgid "onboarding"
-msgid "Loading…"
-msgstr "Onboarding"
-
-#, fuzzy
 #| msgid "type-view"
 msgid "My Upcoming Leaves"
 msgstr "Leave Types"
@@ -13380,19 +14406,13 @@ msgstr "Leave Allocation Requests"
 msgid "Create Leave Type"
 msgstr ""
 
-msgid "Is paid"
+msgid "Is Paid"
 msgstr ""
 
 msgid "Limit Leave Days"
 msgstr ""
 
 msgid "Do you want to limit leave days for this leave type?"
-msgstr ""
-
-msgid "Require Approval"
-msgstr ""
-
-msgid "Do you need approval for leave from the authority?"
 msgstr ""
 
 msgid "Do you need to reset leaves based on conditions?"
@@ -13411,6 +14431,12 @@ msgid "Reset Day"
 msgstr ""
 
 msgid "Reset Weekday"
+msgstr ""
+
+msgid "Custom Reset Days"
+msgstr ""
+
+msgid "Custom reset interval in days"
 msgstr ""
 
 msgid "Carryforward Type"
@@ -13453,22 +14479,16 @@ msgstr ""
 msgid "Choose Icon"
 msgstr "Employee"
 
-msgid "Require Attachment"
+msgid "Require Approval"
 msgstr ""
 
-msgid "Do you need to attach a document for leave?"
+msgid "Require Attachment"
 msgstr ""
 
 msgid "Exclude Company Holidays"
 msgstr ""
 
-msgid "Do you need to exclude company holidays from the requested leave days?"
-msgstr ""
-
 msgid "Exclude Holidays"
-msgstr ""
-
-msgid "Do you need to exclude public holidays from the requested leave days?"
 msgstr ""
 
 #, fuzzy
@@ -13476,18 +14496,11 @@ msgstr ""
 msgid "Is Encashable"
 msgstr "Recruitment"
 
-msgid "Do you need to encash pending leave days?"
+msgid "Update Leave Type"
 msgstr ""
 
-#, fuzzy
-#| msgid "employee"
-msgid "Assign to Employees"
-msgstr "Employee"
-
-#, fuzzy
-#| msgid "rotating-work-type-assign"
-msgid "choose employees to assign this leave type"
-msgstr "Rotating Work Type Assigns"
+msgid "Do you need to encash pending leave days?"
+msgstr ""
 
 #, fuzzy
 #| msgid "recruitment"
@@ -13664,9 +14677,6 @@ msgstr ""
 msgid "Profile Setup"
 msgstr ""
 
-msgid "Personal Details"
-msgstr ""
-
 msgid "Bank Details"
 msgstr ""
 
@@ -13715,6 +14725,29 @@ msgstr ""
 
 msgid "Hey there, welcome to our team. Let's get you started."
 msgstr ""
+
+msgid "Zoom in"
+msgstr ""
+
+msgid "Zoom out"
+msgstr ""
+
+msgid "Pan up"
+msgstr ""
+
+msgid "Pan left"
+msgstr ""
+
+msgid "Pan right"
+msgstr ""
+
+msgid "Pan down"
+msgstr ""
+
+#, fuzzy
+#| msgid "candidates-view"
+msgid "No organization data available"
+msgstr "Candidates"
 
 #, fuzzy
 #| msgid "view-payroll-dashboard"
@@ -14005,13 +15038,7 @@ msgstr "Leave Allocation Requests"
 msgid "Symbol shown for monetary values (e.g. $, €)."
 msgstr ""
 
-#, fuzzy
-#| msgid "job-position-view"
-msgid "Position"
-msgstr "Job Position"
-
-msgid ""
-"Whether the symbol appears before (prefix) or after (suffix) the amount."
+msgid "Whether the symbol appears before (prefix) or after (suffix)."
 msgstr ""
 
 msgid "Company these currency settings apply to."
@@ -14112,9 +15139,6 @@ msgstr ""
 msgid "Total vacancies"
 msgstr ""
 
-msgid "close"
-msgstr ""
-
 #, fuzzy
 #| msgid "recruitment-view"
 msgid "Recruitment Details"
@@ -14154,13 +15178,170 @@ msgstr "Employee"
 msgid "Asset Reports"
 msgstr "Employee"
 
+msgid "Filters"
+msgstr ""
+
+msgid "Expand"
+msgstr ""
+
+#, fuzzy
+#| msgid "update-deduction"
+msgid "Add more filter"
+msgstr "Update"
+
+#, fuzzy
+#| msgid "type-update"
+msgid "Applied Filters"
+msgstr "Update"
+
+#, fuzzy
+#| msgid "employee"
+msgid "Template name"
+msgstr "Employee"
+
+msgid "Save Current Arrangement"
+msgstr ""
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "No saved templates yet."
+msgstr "My Leave Requests"
+
 msgid "Export Table"
+msgstr ""
+
+msgid "As PDF"
+msgstr ""
+
+msgid "As Excel"
+msgstr ""
+
+msgid "As CSV"
+msgstr ""
+
+#, fuzzy
+#| msgid "employee"
+msgid "View As"
+msgstr "Employee"
+
+msgid ""
+"Drag fields between the boxes below to change how this report is grouped."
+msgstr ""
+
+#, fuzzy
+#| msgid "create-allowance"
+msgid "Delete this saved template?"
+msgstr "Creation"
+
+msgid "Please enter a template name."
+msgstr ""
+
+msgid "Nothing to save yet."
+msgstr ""
+
+msgid "Click to expand or collapse"
+msgstr ""
+
+#, fuzzy
+#| msgid "assign-view"
+msgid "Available Fields"
+msgstr "Assigned Leaves"
+
+msgid "Rows"
+msgstr ""
+
+#, fuzzy
+#| msgid "key-result-creation"
+msgid "Totals"
+msgstr "Key Result"
+
+#, fuzzy
+#| msgid "type-update"
+msgid "Applied Filters: "
+msgstr "Update"
+
+#, fuzzy
+#| msgid "employee"
+msgid "Asset User"
+msgstr "Employee"
+
+msgid "Asset User Badge Id"
+msgstr ""
+
+msgid "Equals"
+msgstr ""
+
+msgid "Not Equals"
+msgstr ""
+
+msgid "Is Empty"
+msgstr ""
+
+#, fuzzy
+#| msgid "view-allowance"
+msgid "Greater Than"
+msgstr "Allowances"
+
+msgid "Less Than"
+msgstr ""
+
+msgid "Between"
+msgstr ""
+
+msgid "Before"
+msgstr ""
+
+msgid "Yesterday"
+msgstr ""
+
+msgid "Last Week"
+msgstr ""
+
+msgid "Last Year"
+msgstr ""
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Select Field"
+msgstr "Recruitment"
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Select Operator"
+msgstr "Recruitment"
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Select one or more"
+msgstr "Recruitment"
+
+msgid "OR"
+msgstr ""
+
+msgid "AND"
+msgstr ""
+
+msgid "Click to toggle AND/OR"
+msgstr ""
+
+#, fuzzy
+#| msgid "type-view"
+msgid "Enter value"
+msgstr "Leave Types"
+
+msgid "No value needed"
 msgstr ""
 
 #, fuzzy
 #| msgid "attendance"
 msgid "Attendance Reports"
 msgstr "Attendance"
+
+msgid "In Time"
+msgstr ""
+
+msgid "Out Time"
+msgstr ""
 
 #, fuzzy
 #| msgid "employee"
@@ -14173,96 +15354,59 @@ msgid "Leave Reports"
 msgstr "My Leave Requests"
 
 #, fuzzy
+#| msgid "employee"
+msgid "Choose Report"
+msgstr "Employee"
+
+#, fuzzy
 #| msgid "assign-view"
 msgid "Available Leave"
 msgstr "Assigned Leaves"
 
+#, fuzzy
+#| msgid "assign-view"
+msgid "Available Leave Reports"
+msgstr "Assigned Leaves"
+
+msgid "Start Date Breakdown"
+msgstr ""
+
+msgid "End Date Breakdown"
+msgstr ""
+
 msgid "Carryforward Days"
 msgstr ""
 
-msgid "Available Days Greater or Equal"
-msgstr ""
-
-msgid "Available Days Less Than or Equal"
-msgstr ""
-
-msgid "Carryforward Days Greater or Equal"
-msgstr ""
-
-msgid "Carryforward Days Less Than or Equal"
-msgstr ""
-
-msgid "Total Leave Days Greater or Equal"
-msgstr ""
-
-msgid "Total Leave Days Less Than or Equal"
-msgstr ""
+#, fuzzy
+#| msgid "type-update"
+msgid "Reset Date"
+msgstr "Update"
 
 #, fuzzy
-#| msgid "employee"
-msgid "Choose Report"
-msgstr "Employee"
+#| msgid "type-view"
+msgid "Expired Date"
+msgstr "Leave Types"
 
 #, fuzzy
 #| msgid "employee"
 msgid "Payroll Reports"
 msgstr "Employee"
 
-msgid "Start Date From"
-msgstr ""
-
-msgid "Start Date Till"
-msgstr ""
-
-msgid "End Date From"
-msgstr ""
-
-msgid "End Date Till"
-msgstr ""
-
-msgid "Gross Pay Less Than or Equal"
-msgstr ""
-
-msgid "Gross Pay Greater or Equal"
-msgstr ""
-
-msgid "Deduction Less Than or Equal"
-msgstr ""
-
-msgid "Deduction Greater or Equal"
-msgstr ""
-
-msgid "Net Pay Less Than or Equal"
-msgstr ""
-
-msgid "Net Pay Greater or Equal"
-msgstr ""
-
 msgid "Allowance & Deduction"
 msgstr ""
 
 #, fuzzy
-#| msgid "view-allowance"
-msgid "Allowance Greater than"
-msgstr "Allowances"
-
-#, fuzzy
-#| msgid "view-allowance"
-msgid "Allowance Less than"
-msgstr "Allowances"
-
-msgid "Deduction Greater than"
-msgstr ""
-
-#, fuzzy
 #| msgid "update-deduction"
-msgid "Deduction Less than"
+msgid "Allowance & Deduction Reports"
 msgstr "Update"
+
+msgid "Contract Wage"
+msgstr ""
 
 msgid "Performance Reports"
 msgstr ""
 
-msgid "Objective"
+msgid "Objectives"
 msgstr ""
 
 #, fuzzy
@@ -14273,13 +15417,56 @@ msgstr "Employee"
 msgid "Feedback"
 msgstr ""
 
+#, fuzzy
+#| msgid "employee"
+msgid "Employee Objective Reports"
+msgstr "Employee"
+
+#, fuzzy
+#| msgid "feedback-answer-get"
+msgid "Feedback Reports"
+msgstr "Answer"
+
+#, fuzzy
+#| msgid "department-update"
+msgid "Manager Badge Id"
+msgstr "Update"
+
+#, fuzzy
+#| msgid "assign-view"
+msgid "Assignee Badge Id"
+msgstr "Assigned Leaves"
+
+#, fuzzy
+#| msgid "department-update"
+msgid "Assignee Department"
+msgstr "Update"
+
+#, fuzzy
+#| msgid "feedback-creation"
+msgid "Assignee Job Position"
+msgstr "Creation"
+
+#, fuzzy
+#| msgid "create-allowance"
+msgid "Assignee Job Role"
+msgstr "Creation"
+
 msgid "Feedback Title"
 msgstr ""
+
+#, fuzzy
+#| msgid "employee"
+msgid "Employee Badge Id"
+msgstr "Employee"
 
 msgid "Subordinate"
 msgstr ""
 
-msgid "Objectives"
+msgid "Start Value"
+msgstr ""
+
+msgid "Target Value"
 msgstr ""
 
 #, fuzzy
@@ -14288,6 +15475,27 @@ msgid "Candidate Reports"
 msgstr "Attendances"
 
 msgid "Candidate"
+msgstr ""
+
+msgid "Onboarding"
+msgstr ""
+
+#, fuzzy
+#| msgid "recruitment-report"
+msgid "Recruitment Reports"
+msgstr "Recruitment Reports"
+
+#, fuzzy
+#| msgid "onboarding"
+msgid "Onboarding Reports"
+msgstr "Onboarding"
+
+#, fuzzy
+#| msgid "type-update"
+msgid "Date Of Birth"
+msgstr "Update"
+
+msgid "Source"
 msgstr ""
 
 msgid "Offer Status"
@@ -14299,19 +15507,18 @@ msgstr ""
 msgid "Is Canceled"
 msgstr ""
 
+#, fuzzy
+#| msgid "recruitment-view"
+msgid "Recruitment Status"
+msgstr "Recruitments"
+
+msgid "Vacancy"
+msgstr ""
+
 msgid "Is Closed"
 msgstr ""
 
-msgid "Unknown"
-msgstr ""
-
 msgid "Is Published"
-msgstr ""
-
-msgid "Till End Date"
-msgstr ""
-
-msgid "Onboarding"
 msgstr ""
 
 msgid "Stage"
@@ -14320,15 +15527,25 @@ msgstr ""
 msgid "Task"
 msgstr ""
 
-msgid "Candidates"
-msgstr ""
-
 #, fuzzy
 #| msgid "department-update"
 msgid "Stage Manager"
 msgstr "Update"
 
+#, fuzzy
+#| msgid "department-update"
+msgid "Stage Manager Badge Id"
+msgstr "Update"
+
 msgid "Task Manager"
+msgstr ""
+
+#, fuzzy
+#| msgid "department-update"
+msgid "Task Manager Badge Id"
+msgstr "Update"
+
+msgid "Candidates"
 msgstr ""
 
 msgid "Review document upload requests and submit required files from HR."
@@ -14341,9 +15558,6 @@ msgid "Submit and manage your shift change requests for approval."
 msgstr ""
 
 msgid "Submit and manage requests to change your work type assignment."
-msgstr ""
-
-msgid "Settings"
 msgstr ""
 
 msgid "Company-specific settings"
@@ -14375,13 +15589,12 @@ msgstr "Recruitment"
 msgid "Enable this to integrate linkedin to Horilla."
 msgstr ""
 
-msgid "Prefix added to every auto-generated employee badge ID (e.g. PEP0001)."
+msgid ""
+"Post job openings directly to LinkedIn and manage applicants from Horilla."
 msgstr ""
 
-#, fuzzy
-#| msgid "candidate-update"
-msgid "Add candidate"
-msgstr "Update"
+msgid "Prefix added to every auto-generated employee badge ID (e.g. PEP0001)."
+msgstr ""
 
 msgid "Do you want to archive this skill zone ?"
 msgstr ""
@@ -14396,6 +15609,11 @@ msgstr ""
 
 msgid "Added on"
 msgstr ""
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "View resume"
+msgstr "My Leave Requests"
 
 msgid "Do you want to remove this candidate"
 msgstr ""
@@ -14458,24 +15676,49 @@ msgstr "Onboarding"
 msgid "Title must be at least 3 characters."
 msgstr ""
 
+#, python-format
+msgid ""
+"Showing group permissions for %(company)s. Switch company to see permissions "
+"in another company."
+msgstr ""
+
+msgid "Showing combined group permissions across assigned companies."
+msgstr ""
+
+#, fuzzy, python-format
+#| msgid "shift-request-view"
+msgid "No groups assigned for %(company)s."
+msgstr "Shift Requests"
+
+msgid "Basic"
+msgstr ""
+
+msgid "years"
+msgstr ""
+
+msgid "Emergency contact"
+msgstr ""
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Contact number"
+msgstr "Recruitment"
+
+#, fuzzy
+#| msgid "update-deduction"
+msgid "Relation"
+msgstr "Update"
+
 #, fuzzy
 #| msgid "recruitment"
 msgid "Current Shifeet"
 msgstr "Recruitment"
-
-msgid "Kanban View"
-msgstr ""
 
 msgid "Add task"
 msgstr ""
 
 msgid "Do you really want to delete this task?"
 msgstr ""
-
-#, fuzzy
-#| msgid "employee"
-msgid "List View"
-msgstr "Employee"
 
 #, fuzzy
 #| msgid "employee"
@@ -14534,29 +15777,6 @@ msgstr ""
 #| msgid "shift"
 msgid "Shift Roster"
 msgstr "Shift"
-
-msgid "Create tags used to group and filter employees."
-msgstr ""
-
-msgid "Manage employee categories such as permanent or contract."
-msgstr ""
-
-msgid "Set up rotating shift patterns for employees."
-msgstr ""
-
-#, fuzzy
-#| msgid "rotating-work-type-assign"
-msgid "Set up rotating work type patterns for employees."
-msgstr "Rotating Work Type Assigns"
-
-msgid "Configure day-wise schedules linked to each shift."
-msgstr ""
-
-msgid "Create and manage shift definitions used across the organization."
-msgstr ""
-
-msgid "Define work modes such as office, remote, or hybrid."
-msgstr ""
 
 #, fuzzy
 #| msgid "leave-allocation-request-view"
@@ -14829,11 +16049,13 @@ msgstr "Update"
 msgid "Step deleted"
 msgstr "Onboarding"
 
-msgid "Sorry, something went wrong!"
-msgstr ""
-
 msgid "Feature is not enabled on the settings"
 msgstr ""
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "History reverted"
+msgstr "My Leave Requests"
 
 #, fuzzy
 #| msgid "rotating-shift-update"
@@ -14844,6 +16066,21 @@ msgstr "Update"
 #| msgid "candidates-view"
 msgid "No records selected"
 msgstr "Candidates"
+
+#, fuzzy
+#| msgid "job-position-view"
+msgid "You dont have permission"
+msgstr "Job Position"
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "No record found..."
+msgstr "Shift Requests"
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Matching query does not exists."
+msgstr "Recruitment"
 
 #, fuzzy
 #| msgid "roster"
@@ -14864,13 +16101,18 @@ msgstr ""
 msgid "I acknowledge, I wont be able to revert this "
 msgstr ""
 
-msgid "Filters"
+msgid "Group by"
 msgstr ""
 
 #, fuzzy
 #| msgid "type-update"
 msgid "Save filter"
 msgstr "Update"
+
+#, fuzzy
+#| msgid "create-deduction"
+msgid "time outline"
+msgstr "Creation"
 
 msgid "Restore the previous state"
 msgstr ""
@@ -14936,13 +16178,30 @@ msgstr "Employee"
 msgid "Click to edit this task description."
 msgstr ""
 
-msgid "Filter and Choose"
-msgstr ""
+#, fuzzy
+#| msgid "employee"
+msgid "Filter Saved"
+msgstr "Employee"
 
 #, fuzzy
-#| msgid "recruitment"
-msgid "Selected"
-msgstr "Recruitment"
+#| msgid "user-request-view"
+msgid "Invalid model parameter format."
+msgstr "My Leave Requests"
+
+#, python-format
+msgid "Deleted %(instance)s"
+msgstr ""
+
+#, python-format
+msgid "You don't have permission to delete %(instance)s"
+msgstr ""
+
+#, python-format
+msgid "Cannot delete : %(instance)s"
+msgstr ""
+
+msgid "Filter and Choose"
+msgstr ""
 
 msgid "Unselect All"
 msgstr ""
@@ -14959,6 +16218,16 @@ msgid "Page 1 of 1"
 msgstr ""
 
 msgid "Taken Leaves"
+msgstr ""
+
+#, fuzzy
+#| msgid "assign-view"
+msgid "Add Available Days"
+msgstr "Assigned Leaves"
+
+msgid ""
+"Adds this value to each selected record's existing Available Days, instead "
+"of replacing it."
 msgstr ""
 
 msgid "All Assigned Leaves"
@@ -15026,6 +16295,11 @@ msgstr "Leave Allocation Requests"
 msgid "Leave allocation requests"
 msgstr ""
 
+#, fuzzy
+#| msgid "update-deduction"
+msgid "Bulk Allocate Leave"
+msgstr "Update"
+
 msgid "Leave Allocation Requests"
 msgstr ""
 
@@ -15046,6 +16320,10 @@ msgstr "Leave Allocation Requests"
 #| msgid "leave-allocation-request-view"
 msgid "New leave allocation request created"
 msgstr "Leave Allocation Requests"
+
+#, python-format
+msgid "Leave allocated for %(count)s employee(s)"
+msgstr ""
 
 #, fuzzy
 #| msgid "recruitment"
@@ -15113,9 +16391,6 @@ msgid "Maximum Carryforward"
 msgstr ""
 
 msgid "Carryforward Expires In"
-msgstr ""
-
-msgid "Assign Leave"
 msgstr ""
 
 #, fuzzy, python-brace-format
@@ -15251,12 +16526,6 @@ msgstr "Onboarding"
 msgid "Leave Type Conditions"
 msgstr "Configuration"
 
-msgid "Is Paid"
-msgstr ""
-
-msgid "Custom reset interval in days"
-msgstr ""
-
 msgid ""
 "Specifies how leave days are paid: fully, half, unpaid, or custom percentage"
 msgstr ""
@@ -15278,12 +16547,6 @@ msgid "Compensatory Leave Request already exists."
 msgstr ""
 
 msgid "CarryForward Expired Date"
-msgstr ""
-
-msgid "Start Date Breakdown"
-msgstr ""
-
-msgid "End Date Breakdown"
 msgstr ""
 
 #, fuzzy
@@ -15311,7 +16574,18 @@ msgstr "Shift Requests"
 msgid "Requests cannot be made for past dates."
 msgstr ""
 
+msgid ""
+"The requested days for this leave type is zero. Please check the selected "
+"dates, breakdown and the leave type's holiday/company leave exclusion "
+"settings."
+msgstr ""
+
 msgid "Does not have sufficient leave balance for the requested dates."
+msgstr ""
+
+msgid ""
+"You cannot request leave for this date range. The requested dates are "
+"restricted. Please contact admin."
 msgstr ""
 
 msgid "The {} leave request cannot be deleted !"
@@ -15405,39 +16679,28 @@ msgstr ""
 msgid "Only admins can create leave requests for past dates"
 msgstr "Shift Requests"
 
-msgid "Create blackout periods when leave cannot be taken"
-msgstr ""
-
-msgid "Blackout Period Title"
-msgstr ""
-
-#, fuzzy
-#| msgid "feedback-creation"
-msgid "Name of the leave restriction period"
-msgstr "Creation"
-
-#, fuzzy
-#| msgid "employee"
-msgid "Blackout Start Date"
-msgstr "Employee"
-
-#, fuzzy
-#| msgid "feedback-creation"
-msgid "Start date of the leave restriction"
-msgstr "Creation"
-
-msgid "Blackout End Date"
-msgstr ""
-
-#, fuzzy
-#| msgid "feedback-creation"
-msgid "End date of the leave restriction"
-msgstr "Creation"
-
 #, fuzzy
 #| msgid "attendance-view"
 msgid "Half day Attendance need to validate"
 msgstr "Attendances"
+
+msgid "Available Days Greater or Equal"
+msgstr ""
+
+msgid "Available Days Less Than or Equal"
+msgstr ""
+
+msgid "Carryforward Days Greater or Equal"
+msgstr ""
+
+msgid "Carryforward Days Less Than or Equal"
+msgstr ""
+
+msgid "Total Leave Days Greater or Equal"
+msgstr ""
+
+msgid "Total Leave Days Less Than or Equal"
+msgstr ""
 
 msgid "Export Assigned Leaves"
 msgstr ""
@@ -15458,6 +16721,9 @@ msgstr ""
 #| msgid "shift-request-view"
 msgid "Leave Request Alert."
 msgstr "Shift Requests"
+
+msgid "has interview in the requested date."
+msgstr ""
 
 #, fuzzy
 #| msgid "user-request-view"
@@ -15483,6 +16749,19 @@ msgstr "Department"
 msgid "Same Job Position"
 msgstr "Job Position"
 
+#, fuzzy
+#| msgid "user-request-view"
+msgid "Cannot submit leave request"
+msgstr "My Leave Requests"
+
+msgid ""
+"The selected dates result in 0 leave days for this leave type. Please adjust "
+"the dates, breakdown or leave type."
+msgstr ""
+
+msgid "OK"
+msgstr ""
+
 msgid "has an interview in this requested date range."
 msgstr ""
 
@@ -15493,6 +16772,16 @@ msgstr ""
 #| msgid "user-request-view"
 msgid "Clashed Leave Requests"
 msgstr "My Leave Requests"
+
+msgid ""
+"Define the different types of leave employees can request, along with "
+"payment and carry-forward rules."
+msgstr ""
+
+msgid ""
+"Configure department-based conditions and manager sequences for multi-level "
+"request approvals."
+msgstr ""
 
 msgid "Carryforward Expire in"
 msgstr ""
@@ -15555,6 +16844,11 @@ msgstr ""
 msgid "No employees have taken leave today."
 msgstr ""
 
+#, fuzzy
+#| msgid "user-request-view"
+msgid "Are you sure you want to delete this record?"
+msgstr "My Leave Requests"
+
 msgid "Reject Leave Allocation Request"
 msgstr ""
 
@@ -15610,6 +16904,23 @@ msgstr ""
 #| msgid "user-request-view"
 msgid "Pending Leaves Requests"
 msgstr "My Leave Requests"
+
+msgid ""
+"The selected dates result in 0 leave days for this leave type. This request "
+"cannot be submitted."
+msgstr ""
+
+#, python-format
+msgid ""
+"\n"
+"                The selected dates include a company holiday: %(names)s.\n"
+"            "
+msgid_plural ""
+"\n"
+"                The selected dates include company holidays: %(names)s.\n"
+"            "
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Select All Requests"
 msgstr ""
@@ -15747,7 +17058,16 @@ msgstr "My Leave Requests"
 msgid "Add Condition"
 msgstr "Configuration"
 
-msgid "Choose employees to assign this leave type"
+msgid "Do you need to attach a document for leave?"
+msgstr ""
+
+msgid "Do you need approval for leave from the authority?"
+msgstr ""
+
+msgid "Do you need to exclude company holidays from the requested leave days?"
+msgstr ""
+
+msgid "Do you need to exclude public holidays from the requested leave days?"
 msgstr ""
 
 msgid "Eligibility conditions"
@@ -15757,9 +17077,6 @@ msgid "Eligibility conditions can be configured after saving the leave type."
 msgstr ""
 
 msgid "No leave types have been created yet."
-msgstr ""
-
-msgid "Custom Reset Days"
 msgstr ""
 
 msgid "Do you really want to delete this leave type?"
@@ -15833,9 +17150,6 @@ msgid "Leave type not found"
 msgstr ""
 
 msgid "Leave type is updated successfully.."
-msgstr ""
-
-msgid "Update Leave Type"
 msgstr ""
 
 msgid "Leave type deleted successfully.."
@@ -16273,6 +17587,11 @@ msgstr ""
 msgid "Task To"
 msgstr "Employee"
 
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "You cannot edit a request that has been rejected/approved"
+msgstr "Shift Requests"
+
 msgid "Ongoing"
 msgstr ""
 
@@ -16364,6 +17683,9 @@ msgid "Show managing records"
 msgstr ""
 
 msgid "Do you want to delete this offboarding user?"
+msgstr ""
+
+msgid "mail open outline"
 msgstr ""
 
 msgid "checkmark"
@@ -16617,6 +17939,14 @@ msgid "Stage saved"
 msgstr ""
 
 #, fuzzy
+#| msgid "shift-request-view"
+msgid "Sequence Updated Successfully"
+msgstr "Shift Requests"
+
+msgid "Error Updating Sequence.."
+msgstr ""
+
+#, fuzzy
 #| msgid "employee"
 msgid "Employee saved"
 msgstr "Employee"
@@ -16713,6 +18043,11 @@ msgid ""
 "%(name)s's resignation letter is already rejected and cannot be modified."
 msgstr ""
 
+#, fuzzy, python-format
+#| msgid "shift-request-view"
+msgid "Resignation request has been %(status)s"
+msgstr "Shift Requests"
+
 #, fuzzy
 #| msgid "shift-request-view"
 msgid "Resignation Request setting has been {} successfully."
@@ -16800,11 +18135,6 @@ msgstr "Pipeline"
 
 msgid "Rating"
 msgstr ""
-
-#, fuzzy
-#| msgid "update-deduction"
-msgid "Allocations"
-msgstr "Update"
 
 #, fuzzy
 #| msgid "employee"
@@ -16937,9 +18267,6 @@ msgstr ""
 msgid "Candidate already added to onboarding"
 msgstr "Attendances"
 
-msgid "OK"
-msgstr ""
-
 msgid "Send Portal / Start Onboarding"
 msgstr ""
 
@@ -16978,6 +18305,12 @@ msgid "Send Portal Link"
 msgstr ""
 
 msgid "Is closed"
+msgstr ""
+
+msgid "Start Date From"
+msgstr ""
+
+msgid "Till End Date"
 msgstr ""
 
 msgid "Taks"
@@ -17227,6 +18560,25 @@ msgstr ""
 msgid "%(recruitment)s has no stage.."
 msgstr ""
 
+#, fuzzy
+#| msgid "attendance"
+msgid "Please choose candidates"
+msgstr "Attendance"
+
+#, fuzzy, python-format
+#| msgid "user-request-view"
+msgid "%(candidate)s has already been converted to employee."
+msgstr "My Leave Requests"
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Portal link sent to the candidate"
+msgstr "Shift Requests"
+
+#, python-format
+msgid "Mail not sent to %(candidate_name)s"
+msgstr ""
+
 msgid "User with email-id already exists.."
 msgstr ""
 
@@ -17324,6 +18676,24 @@ msgstr "Attendances"
 msgid "Task status updated successfully."
 msgstr "Shift Requests"
 
+#, fuzzy
+#| msgid "attendance-view"
+msgid "candidate or status is missing"
+msgstr "Attendances"
+
+msgid "Please Pass valid status"
+msgstr ""
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Status of offer letter updated successfully"
+msgstr "Shift Requests"
+
+#, fuzzy
+#| msgid "candidate-reject-reasons"
+msgid "Candidate reject reason saved"
+msgstr "Candidate Reject Reason"
+
 msgid "Candidate removed from rejected list"
 msgstr ""
 
@@ -17331,6 +18701,32 @@ msgstr ""
 #| msgid "attendance-view"
 msgid "Candidate is not in rejected list"
 msgstr "Attendances"
+
+msgid "No offer letters selected for status update."
+msgstr ""
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "offer letter status updated successfully"
+msgstr "Shift Requests"
+
+msgid "Status already in {} status"
+msgstr ""
+
+#, fuzzy
+#| msgid "attendance-view"
+msgid "Candidate doesnot exist"
+msgstr "Attendances"
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "No candidates selected for deletion."
+msgstr "Shift Requests"
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "candidate deleted successfully"
+msgstr "Shift Requests"
 
 msgid "Token Expire"
 msgstr ""
@@ -17353,6 +18749,9 @@ msgstr ""
 msgid "Refresh Token"
 msgstr ""
 
+msgid "Not configured outlook"
+msgstr ""
+
 msgid "Token not refreshed, Login required"
 msgstr ""
 
@@ -17360,6 +18759,11 @@ msgstr ""
 #| msgid "shift-request-view"
 msgid "Token refreshed successfully"
 msgstr "Shift Requests"
+
+#, fuzzy
+#| msgid "attendance-view"
+msgid "Mail not sent"
+msgstr "Attendances"
 
 msgid "Mail sent"
 msgstr ""
@@ -17384,6 +18788,9 @@ msgstr ""
 msgid "Asset Fine"
 msgstr "Employee"
 
+msgid "Asset fine added"
+msgstr ""
+
 msgid "Contracts"
 msgstr ""
 
@@ -17399,11 +18806,6 @@ msgstr ""
 #, fuzzy
 #| msgid "type-view"
 msgid "Ending Date"
-msgstr "Leave Types"
-
-#, fuzzy
-#| msgid "type-view"
-msgid "Expired Date"
 msgstr "Leave Types"
 
 #, fuzzy
@@ -17425,6 +18827,11 @@ msgstr "Shift Requests"
 #| msgid "shift-request-view"
 msgid "Filing StatusCreated Successfully"
 msgstr "Shift Requests"
+
+#, fuzzy
+#| msgid "employee"
+msgid "Tax Brackets"
+msgstr "Employee"
 
 #, fuzzy
 #| msgid "employee"
@@ -17582,19 +18989,25 @@ msgstr "Shift Requests"
 msgid "Reimbursement created successfully"
 msgstr "Shift Requests"
 
+msgid "Payslip Auto Generation"
+msgstr ""
+
 msgid "Payslip Batch"
 msgstr ""
 
 msgid "You need to choose the employee."
 msgstr ""
 
-msgid "Contract Wage"
-msgstr ""
-
 msgid "Rate must be greater than 0"
 msgstr ""
 
 msgid "Rate must be less than 100"
+msgstr ""
+
+msgid "Installment start date should be greater than or equal to provided date"
+msgstr ""
+
+msgid "Installments needs to be a positive integer"
 msgstr ""
 
 #, fuzzy
@@ -17614,6 +19027,9 @@ msgid "Not enough carryforward days to redeem"
 msgstr ""
 
 msgid "Not enough available days to redeem"
+msgstr ""
+
+msgid "Tax code is empty."
 msgstr ""
 
 msgid "Value must be greater than zero"
@@ -17682,8 +19098,10 @@ msgid ""
 "payslips             if the date between the payslip period"
 msgstr ""
 
-msgid "Include all active employees"
-msgstr ""
+#, fuzzy
+#| msgid "employee"
+msgid "Include All Employees"
+msgstr "Employee"
 
 msgid "Target allowance to all active employees in the company"
 msgstr ""
@@ -17969,6 +19387,11 @@ msgid ""
 "days"
 msgstr ""
 
+#, fuzzy
+#| msgid "recruitment"
+msgid "Reimbursement deleted"
+msgstr "Recruitment"
+
 msgid "Notice period in days"
 msgstr ""
 
@@ -18003,20 +19426,6 @@ msgid "Maximum income must be greater than minimum income."
 msgstr ""
 
 msgid "Encashments & Reimbursements"
-msgstr ""
-
-msgid "Payslip Auto Generation"
-msgstr ""
-
-#, fuzzy
-#| msgid "create-allowance"
-msgid "Auto Generate Payslip"
-msgstr "Creation"
-
-msgid "Automatically generate payslips on a set day each month"
-msgstr ""
-
-msgid "Day of the month payslips are auto-generated"
 msgstr ""
 
 #, fuzzy
@@ -18080,6 +19489,13 @@ msgstr ""
 msgid "Basic Salary Greater or Equal"
 msgstr ""
 
+#, python-format
+msgid "Tax Rate (%%)"
+msgstr ""
+
+msgid "No tax brackets added"
+msgstr ""
+
 msgid "out of"
 msgstr ""
 
@@ -18097,10 +19513,42 @@ msgstr ""
 msgid "Is settled"
 msgstr ""
 
+msgid ""
+"Automatically generate payslips for employees on a scheduled day of the "
+"month."
+msgstr ""
+
 msgid "Do you want to sent the payslip by mail?"
 msgstr ""
 
 msgid "Are you sure you want to delete this payslip?"
+msgstr ""
+
+msgid "Start Date Till"
+msgstr ""
+
+msgid "End Date From"
+msgstr ""
+
+msgid "End Date Till"
+msgstr ""
+
+msgid "Gross Pay Less Than or Equal"
+msgstr ""
+
+msgid "Gross Pay Greater or Equal"
+msgstr ""
+
+msgid "Deduction Less Than or Equal"
+msgstr ""
+
+msgid "Deduction Greater or Equal"
+msgstr ""
+
+msgid "Net Pay Less Than or Equal"
+msgstr ""
+
+msgid "Net Pay Greater or Equal"
 msgstr ""
 
 msgid "Mail Sent"
@@ -18192,9 +19640,6 @@ msgstr ""
 msgid "Send via mail "
 msgstr ""
 
-msgid "Employee ID"
-msgstr ""
-
 msgid "Bank Acc./Cheque No."
 msgstr ""
 
@@ -18279,6 +19724,11 @@ msgid "No files available at the moment."
 msgstr "Shift Requests"
 
 #, fuzzy
+#| msgid "user-request-view"
+msgid "Do you want to delete this attachment?"
+msgstr "My Leave Requests"
+
+#, fuzzy
 #| msgid "shift-request-view"
 msgid "No comments available at the moment."
 msgstr "Shift Requests"
@@ -18354,6 +19804,10 @@ msgstr ""
 msgid "Deduction not found"
 msgstr ""
 
+#, python-format
+msgid "%(emp_count)s payslip saved as draft"
+msgstr ""
+
 msgid ""
 "When this payslip is run, the payslip start date will be updated to match "
 "the employee contract start date."
@@ -18375,6 +19829,16 @@ msgstr ""
 msgid "Payslip data not found for the specified employee and date range."
 msgstr ""
 
+#, fuzzy
+#| msgid "mail-server-conf"
+msgid "Email server is not configured"
+msgstr "Mail Server"
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Mail processing"
+msgstr "Recruitment"
+
 msgid "Payslip not found"
 msgstr ""
 
@@ -18385,20 +19849,57 @@ msgid "No active contract found for  {} during this payslip period"
 msgstr ""
 
 #, fuzzy
+#| msgid "type-update"
+msgid "Loan created/updated"
+msgstr "Update"
+
+#, fuzzy
 #| msgid "attendance-view"
 msgid "Loan not found."
 msgstr "Attendances"
 
-msgid "Asset fine added"
-msgstr ""
+#, fuzzy
+#| msgid "onboarding"
+msgid "Loan account deleted"
+msgstr "Onboarding"
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "Loan account cannot be deleted"
+msgstr "My Leave Requests"
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Installment amount updated successfully"
+msgstr "Shift Requests"
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Cannot change paid installments "
+msgstr "Recruitment"
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Reimbursement saved successfully"
+msgstr "Shift Requests"
 
 msgid "Please check the data you provided."
 msgstr ""
 
 #, fuzzy
+#| msgid "recruitment"
+msgid "Reimbursements deleted"
+msgstr "Recruitment"
+
+#, fuzzy
 #| msgid "shift-request-view"
 msgid "Reimbursement request not found."
 msgstr "Shift Requests"
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Attachment deleted"
+msgstr "Recruitment"
 
 msgid "Filing status created successfully "
 msgstr ""
@@ -18476,6 +19977,9 @@ msgstr ""
 msgid "Payroll settings updated."
 msgstr ""
 
+msgid "There was an error updating the currency."
+msgstr ""
+
 msgid "Payslip not found."
 msgstr ""
 
@@ -18551,10 +20055,7 @@ msgstr ""
 msgid "Payslip auto generate not found."
 msgstr ""
 
-msgid "Start Value"
-msgstr ""
-
-msgid "Target Value"
+msgid "Performance"
 msgstr ""
 
 msgid "Progress Percentage"
@@ -18612,9 +20113,6 @@ msgstr "Shift Requests"
 msgid "Feedback Created Successfully"
 msgstr "Shift Requests"
 
-msgid "Performance"
-msgstr ""
-
 msgid "Update Feedback"
 msgstr ""
 
@@ -18654,11 +20152,6 @@ msgstr "Settings"
 #| msgid "settings"
 msgid "Update Meeting"
 msgstr "Settings"
-
-#, fuzzy
-#| msgid "shift-request-view"
-msgid "Meeting updated successfully"
-msgstr "Shift Requests"
 
 msgid "Meeting added successfully"
 msgstr ""
@@ -18766,6 +20259,9 @@ msgstr ""
 msgid "Are you sure you want to delete\tthis Key result?"
 msgstr ""
 
+msgid "Objective"
+msgstr ""
+
 msgid "Create Period"
 msgstr ""
 
@@ -18847,13 +20343,44 @@ msgstr ""
 msgid "Due Next Month"
 msgstr ""
 
+msgid "The start date must be before the end date."
+msgstr ""
+
 msgid "Key result"
 msgstr ""
+
+msgid "Managers is a required field"
+msgstr ""
+
+#, fuzzy
+#| msgid "employee"
+msgid "Assign employees and start date"
+msgstr "Employee"
 
 msgid "Enter a title"
 msgstr ""
 
 msgid "Enter a description"
+msgstr ""
+
+msgid "Current value cannot be greater than target value"
+msgstr ""
+
+msgid "Target value cannot be less than current value"
+msgstr ""
+
+msgid "Start date should be after Objective start date"
+msgstr ""
+
+msgid "End date should be below Objective end date"
+msgstr ""
+
+#, fuzzy
+#| msgid "employee"
+msgid "Employee Objective not found"
+msgstr "Employee"
+
+msgid "Target value should be greater than zero"
 msgstr ""
 
 msgid "Is Cyclic Feedback"
@@ -18871,7 +20398,13 @@ msgstr ""
 msgid "Question template is required when answer employees are choosed"
 msgstr ""
 
-msgid "This 'Bonus for' is not in the Model's status"
+msgid "For Objective and Key Result, 'Applicable For' must be 'Owner'."
+msgstr ""
+
+msgid "For Objective and Key Result, 'Bonus For' must be 'Closing'."
+msgstr ""
+
+msgid "For Task and Project, 'Applicable For' must be 'Members' or 'Managers'."
 msgstr ""
 
 msgid "Bonus point must be greater than zero"
@@ -18940,6 +20473,9 @@ msgstr ""
 msgid ""
 "The key result progress type is in percentage, so the target value cannot "
 "exceed 100."
+msgstr ""
+
+msgid "The start value can't be greater than current value or target value."
 msgstr ""
 
 msgid "Text"
@@ -19020,17 +20556,6 @@ msgstr "Employee"
 #| msgid "update-deduction"
 msgid "360 Feedback"
 msgstr "Update"
-
-#, fuzzy
-#| msgid "onboarding"
-msgid "Performance Setup"
-msgstr "Onboarding"
-
-msgid "Configure bonus points awarded for objectives tasks and projects"
-msgstr ""
-
-msgid "Points awarded for performance milestones"
-msgstr ""
 
 msgid "Feedback Subject"
 msgstr ""
@@ -19151,6 +20676,21 @@ msgstr ""
 msgid "Are you sure want to remove this assignee?"
 msgstr ""
 
+#, fuzzy
+#| msgid "user-request-view"
+msgid "Do you want to Unarchive this Employee objective?"
+msgstr "My Leave Requests"
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "Do you want to archive this Employee objective?"
+msgstr "My Leave Requests"
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "Do you Want to delete this employee objective?"
+msgstr "My Leave Requests"
+
 msgid "Is Archived"
 msgstr ""
 
@@ -19163,7 +20703,13 @@ msgstr ""
 msgid "Create and manage reusable objective templates for performance cycles."
 msgstr ""
 
+msgid "Configure review periods that define key result tracking timelines."
+msgstr ""
+
 msgid "Do you want to delete this question template?"
+msgstr ""
+
+msgid "Define question templates used in 360 feedback and review meetings."
 msgstr ""
 
 msgid "Due Date"
@@ -19222,9 +20768,6 @@ msgstr ""
 msgid "There are no anonymous feedbacks available."
 msgstr ""
 
-msgid "Yesterday"
-msgstr ""
-
 msgid "Review Cycle"
 msgstr ""
 
@@ -19252,6 +20795,18 @@ msgstr "Recruitment"
 #| msgid "recruitment"
 msgid "Option d"
 msgstr "Recruitment"
+
+msgid "Hide Questions"
+msgstr ""
+
+msgid "Show Questions"
+msgstr ""
+
+msgid "Show Options"
+msgstr ""
+
+msgid "Hide Options"
+msgstr ""
 
 msgid "Total Question"
 msgstr ""
@@ -19377,11 +20932,6 @@ msgstr "Creation"
 #| msgid "create-allowance"
 msgid "Create Objectives"
 msgstr "Creation"
-
-#, fuzzy
-#| msgid "employee"
-msgid "Objective Template"
-msgstr "Employee"
 
 msgid "None."
 msgstr ""
@@ -19565,9 +21115,6 @@ msgstr "Shift Requests"
 #| msgid "shift-request-view"
 msgid "Assignee removed successfully."
 msgstr "Shift Requests"
-
-msgid "You dont have permission."
-msgstr ""
 
 #, python-format
 msgid "Objective %(objective)s status updated"
@@ -19775,11 +21322,6 @@ msgstr ""
 msgid "Feedback not found."
 msgstr ""
 
-#, fuzzy
-#| msgid "onboarding"
-msgid "Deleted"
-msgstr "Onboarding"
-
 msgid "You are don't have permissions."
 msgstr ""
 
@@ -19799,6 +21341,14 @@ msgid "No Employee Key Result found matching the query."
 msgstr ""
 
 msgid "Key result sattus changed to {}."
+msgstr ""
+
+#, fuzzy
+#| msgid "type-update"
+msgid "Value updated"
+msgstr "Update"
+
+msgid "You dont have permission to update the current value"
 msgstr ""
 
 #, fuzzy
@@ -19828,6 +21378,11 @@ msgstr "Multiple Approval Condition"
 #, python-format
 msgid "Questions for meeting %(meeting)s has been answered successfully!."
 msgstr ""
+
+#, fuzzy
+#| msgid "job-position-view"
+msgid "Bonus Point Setting deleted"
+msgstr "Job Position"
 
 #, fuzzy
 #| msgid "shift-request-view"
@@ -20222,13 +21777,22 @@ msgstr ""
 msgid "The specified project does not exist."
 msgstr "Recruitment"
 
-msgid "No project IDs were provided."
-msgstr ""
-
 msgid "Could not retrieve project IDs."
 msgstr ""
 
 msgid "Invalid value for 'is_active'. Use 'true' or 'false'."
+msgstr ""
+
+#, fuzzy, python-format
+#| msgid "shift-request-view"
+msgid "%(project)s is %(message)s successfully."
+msgstr "Shift Requests"
+
+#, python-format
+msgid "Permission denied or project not found: ID %(project_id)s"
+msgstr ""
+
+msgid "No project IDs were provided."
 msgstr ""
 
 #, fuzzy, python-brace-format
@@ -20303,6 +21867,10 @@ msgid "Task updated successfully"
 msgstr ""
 
 msgid "Missing required parameter: ids"
+msgstr ""
+
+#, python-format
+msgid "%(task)s is %(message)s"
 msgstr ""
 
 #, python-format
@@ -20463,11 +22031,6 @@ msgid "Skill zone"
 msgstr "Creation"
 
 #, fuzzy
-#| msgid "candidate-reject-reasons"
-msgid "Candidate reject reason saved"
-msgstr "Candidate Reject Reason"
-
-#, fuzzy
 #| msgid "type-view"
 msgid "Interview Table"
 msgstr "Leave Types"
@@ -20564,9 +22127,6 @@ msgstr ""
 msgid "Is Published?"
 msgstr ""
 
-msgid "Vacancy"
-msgstr ""
-
 msgid "Optional Profile Image?"
 msgstr ""
 
@@ -20608,6 +22168,11 @@ msgstr "Update"
 
 #, fuzzy
 #| msgid "create-allowance"
+msgid "Skill"
+msgstr "Creation"
+
+#, fuzzy
+#| msgid "create-allowance"
 msgid "Create Skill Zone"
 msgstr "Creation"
 
@@ -20636,11 +22201,6 @@ msgstr "Shift Requests"
 
 msgid "Candidate added successfully."
 msgstr ""
-
-#, fuzzy
-#| msgid "create-allowance"
-msgid "Skill"
-msgstr "Creation"
 
 msgid "Are you sure want to delete this skill?"
 msgstr ""
@@ -20707,6 +22267,11 @@ msgid "Is Mandatory"
 msgstr ""
 
 #, fuzzy
+#| msgid "user-request-view"
+msgid "Invalid candidate selected."
+msgstr "My Leave Requests"
+
+#, fuzzy
 #| msgid "create-allowance"
 msgid "Skill Zones"
 msgstr "Creation"
@@ -20715,6 +22280,9 @@ msgid "Interview date cannot be in the past."
 msgstr ""
 
 msgid "Interview time cannot be in the past."
+msgstr ""
+
+msgid "Invalid input: Only digits and spaces are allowed."
 msgstr ""
 
 msgid "File must be a PDF."
@@ -20784,9 +22352,6 @@ msgstr ""
 msgid "Referral"
 msgstr ""
 
-msgid "Source"
-msgstr ""
-
 msgid "Start Onboard"
 msgstr ""
 
@@ -20851,6 +22416,11 @@ msgstr ""
 msgid "Recruitment Survey"
 msgstr "Recruitments"
 
+#, fuzzy
+#| msgid "attendance-view"
+msgid "Candidate Portal"
+msgstr "Attendances"
+
 msgid "Allow candidates to track their recruitment pipeline status"
 msgstr ""
 
@@ -20861,15 +22431,6 @@ msgstr ""
 #| msgid "recruitment"
 msgid "Allow candidates to view their recruitment rating"
 msgstr "Recruitment"
-
-msgid "Candidate Reject Reason"
-msgstr ""
-
-msgid "Define reasons for rejecting a candidate"
-msgstr ""
-
-msgid "Manage the list of skills available for candidates and employees"
-msgstr ""
 
 msgid "Delete image"
 msgstr ""
@@ -21087,11 +22648,25 @@ msgstr ""
 msgid "Are you sure you want to unarchive this recruitment?"
 msgstr ""
 
+msgid "Unknown"
+msgstr ""
+
 msgid "Are you sure you want to remove this recruitment manager?"
 msgstr ""
 
 msgid "Jobs"
 msgstr ""
+
+msgid "Define reasons for rejecting a candidate."
+msgstr ""
+
+msgid "Manage the list of skills available for candidates and employees."
+msgstr ""
+
+#, fuzzy
+#| msgid "department-update"
+msgid "Define the recruitment pipeline stages."
+msgstr "Update"
 
 msgid "Are sure want to remove this manager?"
 msgstr ""
@@ -21463,6 +23038,11 @@ msgstr ""
 msgid "Do you want to delete this Skill zone?"
 msgstr ""
 
+#, fuzzy
+#| msgid "candidate-update"
+msgid "Add candidate"
+msgstr "Update"
+
 msgid "Do you want to un archive this skill zone?"
 msgstr ""
 
@@ -21588,6 +23168,10 @@ msgstr ""
 msgid "You cannot delete %(candidate_obj)s"
 msgstr ""
 
+#, python-format
+msgid "%(candidate_obj)s is %(message)s"
+msgstr ""
+
 msgid "Application saved."
 msgstr ""
 
@@ -21665,6 +23249,9 @@ msgstr "Shift Requests"
 msgid "LinkedIn Account deactivated successfully."
 msgstr "Shift Requests"
 
+msgid "Linkedin data deleted"
+msgstr ""
+
 #, fuzzy
 #| msgid "shift-request-view"
 msgid "LinkedIn connection success."
@@ -21724,6 +23311,25 @@ msgstr "Employee"
 msgid "Invalid Recruitment ID"
 msgstr "Recruitment"
 
+#, python-format
+msgid "%(field_label)s: %(error)s"
+msgstr ""
+
+#, fuzzy
+#| msgid "user-request-view"
+msgid "This template group cannot be deleted"
+msgstr "My Leave Requests"
+
+#, fuzzy
+#| msgid "department-update"
+msgid "Template group deleted"
+msgstr "Update"
+
+#, fuzzy
+#| msgid "action-type"
+msgid "Question added"
+msgstr "Disciplinary Action Type"
+
 #, fuzzy
 #| msgid "recruitment"
 msgid "The recruitment entry you are trying to edit does not exist."
@@ -21758,6 +23364,16 @@ msgstr "Shift Requests"
 msgid "Recruitment un-archived successfully."
 msgstr "Shift Requests"
 
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Recruitment closed successfully"
+msgstr "Shift Requests"
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Recruitment reopend successfully"
+msgstr "Shift Requests"
+
 msgid "No change detected."
 msgstr ""
 
@@ -21774,16 +23390,49 @@ msgstr "Shift Requests"
 msgid "Candidate view status updated"
 msgstr "Update"
 
+#, fuzzy
+#| msgid "candidate-update"
+msgid "Candidate Added"
+msgstr "Update"
+
+#, fuzzy
+#| msgid "request-attendance-view"
+msgid "Job position field is required"
+msgstr "Attendance Requests"
+
 msgid "No Meeting found matching the query"
 msgstr ""
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Interviewer removed succesfully."
+msgstr "Shift Requests"
 
 msgid "Candidate Does not exists.."
 msgstr ""
 
 #, fuzzy
 #| msgid "user-request-view"
+msgid "This candidate is already converted to an employee."
+msgstr "My Leave Requests"
+
+#, fuzzy
+#| msgid "employee"
+msgid "User instance with this mail already exists"
+msgstr "Employee"
+
+#, fuzzy
+#| msgid "user-request-view"
 msgid "Candidate has been successfully converted into an employee."
 msgstr "My Leave Requests"
+
+msgid "An error occurred while creating employee data."
+msgstr ""
+
+#, fuzzy
+#| msgid "employee"
+msgid "An employee with this email already exists"
+msgstr "Employee"
 
 #, fuzzy
 #| msgid "shift-request-view"
@@ -21794,6 +23443,16 @@ msgstr "Shift Requests"
 #| msgid "employee"
 msgid "Scheduled Interview not found"
 msgstr "Employee"
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Interview updated successfully."
+msgstr "Shift Requests"
+
+#, fuzzy
+#| msgid "candidate-view"
+msgid "Mail sent to candidate"
+msgstr "Candidates"
 
 msgid "Missing Sequence"
 msgstr ""
@@ -21825,6 +23484,11 @@ msgstr ""
 msgid "Candidate unarchived successfully.."
 msgstr ""
 
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Candidate Added to skill zone successfully"
+msgstr "Shift Requests"
+
 msgid "Application Tracking is enabled "
 msgstr ""
 
@@ -21837,11 +23501,78 @@ msgstr ""
 msgid "Rating visibility is disabled "
 msgstr ""
 
+msgid "You have been logged out."
+msgstr ""
+
+#, fuzzy
+#| msgid "recruitment"
+msgid "Reject reason saved"
+msgstr "Recruitment"
+
 msgid "No Reject Reason found matching the query."
 msgstr ""
 
 msgid "No message"
 msgstr ""
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Skill created successfully"
+msgstr "Shift Requests"
+
+#, fuzzy, python-format
+#| msgid "onboarding"
+msgid "%(title)s is deleted."
+msgstr "Onboarding"
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Candidate rejection deleted successfully"
+msgstr "Shift Requests"
+
+#, fuzzy
+#| msgid "attendance-view"
+msgid "Candidate rejection not found"
+msgstr "Attendances"
+
+msgid "Error occurred while deleting candidate rejection"
+msgstr ""
+
+#, fuzzy
+#| msgid "view-allowance"
+msgid "Allowance Greater than"
+msgstr "Allowances"
+
+#, fuzzy
+#| msgid "view-allowance"
+msgid "Allowance Less than"
+msgstr "Allowances"
+
+msgid "Deduction Greater than"
+msgstr ""
+
+#, fuzzy
+#| msgid "update-deduction"
+msgid "Deduction Less than"
+msgstr "Update"
+
+msgid "report_slug, name and config are all required."
+msgstr ""
+
+#, fuzzy
+#| msgid "employee"
+msgid "Template saved."
+msgstr "Employee"
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Template not found."
+msgstr "Shift Requests"
+
+#, fuzzy
+#| msgid "department-update"
+msgid "Template deleted."
+msgstr "Update"
 
 #, fuzzy
 #| msgid "attendance-view"
@@ -22073,6 +23804,11 @@ msgid "Database authentication password"
 msgstr ""
 
 #, fuzzy
+#| msgid "onboarding"
+msgid "Dashboard Charts"
+msgstr "Onboarding"
+
+#, fuzzy
 #| msgid "update-deduction"
 msgid "Quick Action"
 msgstr "Update"
@@ -22154,9 +23890,6 @@ msgstr ""
 msgid "View all comments"
 msgstr "Employee"
 
-msgid "Access Denied."
-msgstr ""
-
 msgid "The page you were looking for could not be found."
 msgstr ""
 
@@ -22173,9 +23906,6 @@ msgid "You have no new notifications at the moment."
 msgstr ""
 
 msgid "Mark as read"
-msgstr ""
-
-msgid "Clear"
 msgstr ""
 
 msgid "View all notifications"
@@ -22208,10 +23938,21 @@ msgstr "Settings"
 msgid "General Settings"
 msgstr "Settings"
 
+msgid "User Group"
+msgstr ""
+
 msgid "Date & Time Format"
 msgstr ""
 
+#, fuzzy
+#| msgid "configuration"
+msgid "LDAP Configuration"
+msgstr "Configuration"
+
 msgid "Base"
+msgstr ""
+
+msgid "Candidate Reject Reason"
 msgstr ""
 
 msgid "Linkedin Integration"
@@ -22633,6 +24374,11 @@ msgid "Crediential created successfully"
 msgstr "Shift Requests"
 
 #, fuzzy
+#| msgid "settings"
+msgid "Crediential deleted."
+msgstr "Settings"
+
+#, fuzzy
 #| msgid "shift-request-view"
 msgid "Message sent successfully"
 msgstr "Shift Requests"
@@ -22656,6 +24402,11 @@ msgstr ""
 msgid "Enable this to integrate Whatsapp to Horilla."
 msgstr ""
 
+msgid ""
+"Send HR notifications and updates directly through WhatsApp for better "
+"visibility."
+msgstr ""
+
 msgid "Create Message Template and Flows"
 msgstr ""
 
@@ -22664,6 +24415,176 @@ msgstr ""
 
 msgid "Phone number"
 msgstr ""
+
+#, fuzzy
+#| msgid "shift-request-view"
+msgid "Message templates and flows created successfully."
+msgstr "Shift Requests"
+
+#, fuzzy
+#~| msgid "shift-request-view"
+#~ msgid "Worked Hours Auto Approve"
+#~ msgstr "Shift Requests"
+
+#, fuzzy
+#~| msgid "shift-request-view"
+#~ msgid "Minimum Overtime to Approve"
+#~ msgstr "Shift Requests"
+
+#, fuzzy
+#~| msgid "configuration"
+#~ msgid "Duration of the grace period in minutes"
+#~ msgstr "Configuration"
+
+#, fuzzy
+#~| msgid "work-records"
+#~ msgid "Work Records Status"
+#~ msgstr "Work Records"
+
+#, fuzzy
+#~| msgid "employee"
+#~ msgid "Employee Specific"
+#~ msgstr "Employee"
+
+#, fuzzy
+#~| msgid "company"
+#~ msgid "Select at least one department."
+#~ msgstr "Company"
+
+#, fuzzy
+#~| msgid "company"
+#~ msgid "Select at least one employee."
+#~ msgstr "Company"
+
+#, fuzzy
+#~| msgid "assign-view"
+#~ msgid "Assign permissions to a user group"
+#~ msgstr "Assigned Leaves"
+
+#, fuzzy
+#~| msgid "recruitment"
+#~ msgid "Public Holiday"
+#~ msgstr "Recruitment"
+
+#, fuzzy
+#~| msgid "type-view"
+#~ msgid "Holiday End Date"
+#~ msgstr "Leave Types"
+
+#, fuzzy
+#~| msgid "recruitment"
+#~ msgid "Recurring Holiday"
+#~ msgstr "Recruitment"
+
+#, fuzzy
+#~| msgid "type-update"
+#~ msgid "Approvals"
+#~ msgstr "Update"
+
+#, fuzzy
+#~| msgid "multiple-approval-condition"
+#~ msgid "Multiple Approval"
+#~ msgstr "Multiple Approval Condition"
+
+#, fuzzy
+#~| msgid "multiple-approval-condition"
+#~ msgid "Configure multi-level approval rules by condition"
+#~ msgstr "Multiple Approval Condition"
+
+#, fuzzy
+#~| msgid "multiple-approval-condition"
+#~ msgid "Approval Condition Field"
+#~ msgstr "Multiple Approval Condition"
+
+#, fuzzy
+#~| msgid "multiple-approval-condition"
+#~ msgid "Comparison operator for the approval condition"
+#~ msgstr "Multiple Approval Condition"
+
+#, fuzzy
+#~| msgid "employee"
+#~ msgid "Applicable Employees"
+#~ msgstr "Employee"
+
+#, fuzzy
+#~| msgid "work-records"
+#~ msgid "work-structure"
+#~ msgstr "Work Records"
+
+#, fuzzy
+#~| msgid "work-records"
+#~ msgid "Work Structure"
+#~ msgstr "Work Records"
+
+#, fuzzy
+#~| msgid "department-update"
+#~ msgid "Helpdesk Department Manager"
+#~ msgstr "Update"
+
+#, fuzzy
+#~| msgid "type-update"
+#~ msgid "Ticket Prefix"
+#~ msgstr "Update"
+
+#, fuzzy
+#~| msgid "helpdesk"
+#~ msgid "Helpdesk Tag"
+#~ msgstr "Help Desk"
+
+#, fuzzy
+#~| msgid "shift-request-view"
+#~ msgid "There are no employee groups at this moment."
+#~ msgstr "Shift Requests"
+
+#, fuzzy
+#~| msgid "employee"
+#~ msgid "No history"
+#~ msgstr "Employee"
+
+#, fuzzy
+#~| msgid "rotating-work-type-assign"
+#~ msgid "choose employees to assign this leave type"
+#~ msgstr "Rotating Work Type Assigns"
+
+#, fuzzy
+#~| msgid "employee"
+#~ msgid "List View"
+#~ msgstr "Employee"
+
+#, fuzzy
+#~| msgid "feedback-creation"
+#~ msgid "Name of the leave restriction period"
+#~ msgstr "Creation"
+
+#, fuzzy
+#~| msgid "employee"
+#~ msgid "Blackout Start Date"
+#~ msgstr "Employee"
+
+#, fuzzy
+#~| msgid "feedback-creation"
+#~ msgid "Start date of the leave restriction"
+#~ msgstr "Creation"
+
+#, fuzzy
+#~| msgid "feedback-creation"
+#~ msgid "End date of the leave restriction"
+#~ msgstr "Creation"
+
+#, fuzzy
+#~| msgid "create-allowance"
+#~ msgid "Auto Generate Payslip"
+#~ msgstr "Creation"
+
+#, fuzzy
+#~| msgid "onboarding"
+#~ msgid "Performance Setup"
+#~ msgstr "Onboarding"
+
+#, fuzzy
+#~| msgid "employee"
+#~ msgid "Objective Template"
+#~ msgstr "Employee"
 
 #, fuzzy
 #~| msgid "user-request-view"
@@ -22741,27 +24662,6 @@ msgstr ""
 #~ msgid "holidays-view"
 #~ msgstr "Public Holidays"
 
-#~ msgid "company-leaves-view"
-#~ msgstr "Weekly Off Days"
-
-#~ msgid "mail-templates-view"
-#~ msgstr "Mail Template"
-
-#~ msgid "mail-automations-view"
-#~ msgstr "Mail Automation"
-
-#~ msgid "system-preferences-view"
-#~ msgstr "System Preferences"
-
-#~ msgid "attendance-rule-view"
-#~ msgstr "Attendance Rule"
-
-#~ msgid "leave-rules-view"
-#~ msgstr "Leave Rules"
-
-#~ msgid "offboarding-rules-view"
-#~ msgstr "Offboarding Rules"
-
 #~ msgid "time-policies-view"
 #~ msgstr "Time Policies"
 
@@ -22805,11 +24705,6 @@ msgstr ""
 #, fuzzy
 #~| msgid "candidate-view"
 #~ msgid "Missing command."
-#~ msgstr "Candidates"
-
-#, fuzzy
-#~| msgid "candidate-view"
-#~ msgid "Missing parameter"
 #~ msgstr "Candidates"
 
 #, fuzzy
@@ -22895,11 +24790,6 @@ msgstr ""
 #, fuzzy
 #~| msgid "type-view"
 #~ msgid "Small integer"
-#~ msgstr "Leave Types"
-
-#, fuzzy
-#~| msgid "type-view"
-#~ msgid "Enter a valid date."
 #~ msgstr "Leave Types"
 
 #, fuzzy
@@ -23047,11 +24937,6 @@ msgstr ""
 #~ msgid "{project} Un-Archived successfully."
 #~ msgstr "Shift Requests"
 
-#, fuzzy, python-brace-format
-#~| msgid "shift-request-view"
-#~ msgid "{project} Archived successfully."
-#~ msgstr "Shift Requests"
-
 #, fuzzy
 #~| msgid "update-deduction"
 #~ msgid "Add more managers.. 321"
@@ -23123,11 +25008,6 @@ msgstr ""
 #~ msgstr "Creation"
 
 #, fuzzy
-#~| msgid "update-deduction"
-#~ msgid "action"
-#~ msgstr "Update"
-
-#, fuzzy
 #~| msgid "type-update"
 #~ msgid "Updated {repr:s}"
 #~ msgstr "Update"
@@ -23142,11 +25022,6 @@ msgstr ""
 #, fuzzy
 #~| msgid "department-update"
 #~ msgid "Task Mangers"
-#~ msgstr "Update"
-
-#, fuzzy
-#~| msgid "type-update"
-#~ msgid "{} Projects deleted"
 #~ msgstr "Update"
 
 #, fuzzy
@@ -23178,11 +25053,6 @@ msgstr ""
 #~| msgid "user-request-view"
 #~ msgid "Header Request ID"
 #~ msgstr "My Leave Requests"
-
-#, fuzzy, python-format
-#~| msgid "onboarding"
-#~ msgid "%(task)s deleted."
-#~ msgstr "Onboarding"
 
 #, fuzzy
 #~| msgid "shift-request-view"
@@ -23252,3 +25122,32 @@ msgstr ""
 
 #~ msgid "user-group-update"
 #~ msgstr "Update"
+
+# Dashboard i18n — status/chart labels (auto-appended)
+
+msgid "Not Assigned"
+msgstr "Not Assigned"
+
+msgid "Not Specified"
+msgstr "Not Specified"
+
+msgid "Inside Software"
+msgstr "Inside Software"
+
+msgid "m ago"
+msgstr "m ago"
+
+msgid "hrs"
+msgstr "hrs"
+
+msgid "Bonus Encashment"
+msgstr "Bonus Encashment"
+
+msgid "Review"
+msgstr "Review"
+
+msgid "No data for this week"
+msgstr "No data for this week"
+
+msgid "Chart error"
+msgstr "Chart error"

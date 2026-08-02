@@ -135,7 +135,7 @@
                     </div>
 
                     <div class="form-input-items">
-                        <label class="text-xs font-medium">{% trans "Is paid" %}</label>
+                        <label class="text-xs font-medium">{% trans "Is Paid" %}</label>
                         {{ form.payment }}
                         {{ form.payment.errors }}
                     </div>
@@ -319,7 +319,7 @@
                             <img
                                 id="imagePreview"
                                 class="mt-3 w-10 h-10 object-cover rounded border border-[#0000001c] hidden"
-                                alt="Preview"
+                                alt="{% trans 'Preview' %}"
                             >
                         </div>
                         <div class="flex items-center justify-between mb-2 resetContainer form-input-items">

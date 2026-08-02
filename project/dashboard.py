@@ -9,6 +9,7 @@ from datetime import date, timedelta
 from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _
 
 from horilla.decorators import login_required
 from project.cbv.cbv_decorators import is_projectmanager_or_member_or_perms
@@ -97,12 +98,12 @@ def project_status_distribution(request):
     counts = []
     keys = []
     label_map = {
-        "new": "New",
-        "in_progress": "In Progress",
-        "completed": "Completed",
-        "on_hold": "On Hold",
-        "cancelled": "Cancelled",
-        "expired": "Expired",
+        "new": _("New"),
+        "in_progress": _("In Progress"),
+        "completed": _("Completed"),
+        "on_hold": _("On Hold"),
+        "cancelled": _("Cancelled"),
+        "expired": _("Expired"),
     }
     for row in qs:
         labels.append(label_map.get(row["status"], row["status"]))
@@ -128,10 +129,10 @@ def project_task_status(request):
         .annotate(count=Count("id"))
     )
     label_map = {
-        "to_do": "To Do",
-        "in_progress": "In Progress",
-        "completed": "Completed",
-        "expired": "Expired",
+        "to_do": _("To Do"),
+        "in_progress": _("In Progress"),
+        "completed": _("Completed"),
+        "expired": _("Expired"),
     }
     labels = []
     counts = []

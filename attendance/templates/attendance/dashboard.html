@@ -1315,7 +1315,7 @@
 
             function updateRefreshText() {
                 const mins = Math.floor((Date.now() - lastRefresh) / 60000);
-                refreshText.textContent = mins < 1 ? '{% trans "Just now" %}' : mins + 'm {% trans "ago" %}';
+                refreshText.textContent = mins < 1 ? '{% trans "Just now" %}' : mins + '{% trans "m ago" %}';
             }
             setInterval(updateRefreshText, 30000);
 
@@ -1614,7 +1614,7 @@
                         grid: GRID,
                         dataLabels: { enabled: false },
                         legend: { ...LEGEND_STYLE, position: 'top', horizontalAlign: 'right' },
-                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' hrs' } },
+                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' {% trans "hrs" %}' } },
                         states: { hover: { filter: { type: 'darken', value: 0.85 } } },
                     });
                 }).catch(() => { document.querySelector("#chart-hours").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });

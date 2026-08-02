@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.translation import gettext as _
 
 from employee.models import Employee
 from horilla.methods import handle_no_permission
@@ -125,7 +126,7 @@ def recruitment_offer_status(request):
     from recruitment.models import Candidate
 
     statuses = ["not_sent", "sent", "accepted", "rejected", "joined"]
-    labels = ["Not Sent", "Sent", "Accepted", "Rejected", "Joined"]
+    labels = [_("Not Sent"), _("Sent"), _("Accepted"), _("Rejected"), _("Joined")]
     data = []
 
     base_qs = Candidate.objects.filter(is_active=True)
@@ -305,9 +306,9 @@ def recruitment_source_of_hire(request):
 
     try:
         source_labels = {
-            "application": "Application Form",
-            "software": "Inside Software",
-            "other": "Other",
+            "application": _("Application Form"),
+            "software": _("Inside Software"),
+            "other": _("Other"),
         }
 
         for key, label in source_labels.items():
@@ -318,7 +319,7 @@ def recruitment_source_of_hire(request):
         referral_count = base_qs.filter(referral__isnull=False).count()
         if referral_count > 0:
             sources.append(
-                {"source": "Referral", "key": "referral", "count": referral_count}
+                {"source": _("Referral"), "key": "referral", "count": referral_count}
             )
 
         not_set_count = base_qs.filter(
@@ -326,7 +327,11 @@ def recruitment_source_of_hire(request):
         ).count()
         if not_set_count > 0:
             sources.append(
-                {"source": "Not Specified", "key": "not_set", "count": not_set_count}
+                {
+                    "source": _("Not Specified"),
+                    "key": "not_set",
+                    "count": not_set_count,
+                }
             )
 
         sources.sort(key=lambda x: x["count"], reverse=True)
@@ -500,9 +505,9 @@ def recruitment_source_conversion(request):
     sources = []
     try:
         source_choices = [
-            ("application", "Application Form"),
-            ("software", "Inside Software"),
-            ("other", "Other"),
+            ("application", _("Application Form")),
+            ("software", _("Inside Software")),
+            ("other", _("Other")),
         ]
         for key, label in source_choices:
             total = candidates.filter(source=key).count()
@@ -528,7 +533,7 @@ def recruitment_source_conversion(request):
         if total_ref > 0:
             sources.append(
                 {
-                    "source": "Referral",
+                    "source": _("Referral"),
                     "total": total_ref,
                     "hired": hired_ref,
                     "rate": round((hired_ref / total_ref * 100), 1),
@@ -550,7 +555,7 @@ def recruitment_source_conversion(request):
             )
             sources.append(
                 {
-                    "source": "Not Specified",
+                    "source": _("Not Specified"),
                     "total": total_ns,
                     "hired": hired_ns,
                     "rate": round((hired_ns / total_ns * 100), 1),

@@ -2076,7 +2076,7 @@
 
             function updateRefreshText() {
                 const mins = Math.floor((Date.now() - lastRefresh) / 60000);
-                refreshText.textContent = mins < 1 ? 'Just now' : mins + 'm ago';
+                refreshText.textContent = mins < 1 ? '{% trans "Just now" %}' : mins + '{% trans "m ago" %}';
             }
             setInterval(updateRefreshText, 30000);
 
@@ -2234,7 +2234,7 @@
                         sub.textContent = `{% trans "Weekly rate" %} — ${fromInput.value} → ${toInput.value}`;
                     }
                     renderChart('attendance-trend', document.querySelector("#chart-attendance-trend"), {
-                        series: [{ name: 'Attendance Rate', data: data.weeks.map(w => w.rate) }],
+                        series: [{ name: '{% trans "Attendance Rate" %}', data: data.weeks.map(w => w.rate) }],
                         chart: { type: 'area', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                             dropShadow: { enabled: true, top: 4, blur: 10, opacity: 0.12, color: '#6366f1' } },
                         colors: ['#6366f1'],
@@ -2246,7 +2246,7 @@
                         xaxis: { ...XAXIS_STYLE, categories: data.weeks.map(w => w.week) },
                         yaxis: { ...YAXIS_STYLE, min: 0, max: 100, labels: { ...YAXIS_STYLE.labels, formatter: v => v + '%' } },
                         grid: GRID,
-                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + '% attendance' } },
+                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + '% {% trans "attendance" %}' } },
                     });
                 });
             }
@@ -2258,7 +2258,7 @@
                 fetch("{% url 'dashboard-department-headcount' %}")
                 .then(r => r.json())
                 .then(data => {
-                    if (!data.departments.length) { document.querySelector("#chart-departments").innerHTML = emptyHtml('No department data'); return; }
+                    if (!data.departments.length) { document.querySelector("#chart-departments").innerHTML = emptyHtml('{% trans "No department data" %}'); return; }
                     renderChart('departments', document.querySelector("#chart-departments"), {
                         series: data.departments.map(d => d.count),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
@@ -2274,7 +2274,7 @@
                             labels: { show: true,
                                 name: { fontSize: '13px', fontWeight: 700, color: textColor, offsetY: -4 },
                                 value: { fontSize: '22px', fontWeight: 800, color: textColor, offsetY: 4 },
-                                total: { show: true, label: 'Total', color: subTextColor, fontSize: '12px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                                total: { show: true, label: '{% trans "Total" %}', color: subTextColor, fontSize: '12px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
                         stroke: { width: 3, colors: [cardBg] },
                         dataLabels: { enabled: false },
                         legend: { ...LEGEND_STYLE },
@@ -2289,7 +2289,7 @@
                 fetch("{% url 'dashboard-gender-split' %}")
                 .then(r => r.json())
                 .then(data => {
-                    if (!data.genders.length) { document.querySelector("#chart-gender").innerHTML = emptyHtml('No data'); return; }
+                    if (!data.genders.length) { document.querySelector("#chart-gender").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
                     const gc = { 'Male': '#3b82f6', 'Female': '#ec4899', 'Other': '#a855f7', 'Not Specified': '#94a3b8' };
                     const genderKeys = { 'Male': 'male', 'Female': 'female', 'Other': 'other', 'Not Specified': '' };
                     renderChart('gender', document.querySelector("#chart-gender"), {
@@ -2321,9 +2321,9 @@
                 .then(data => {
                     if (data.no_permission) { hideCard('leave_breakdown'); return; }
                     document.getElementById('leave-month').textContent = data.month;
-                    if (!data.breakdown.length) { document.querySelector("#chart-leave").innerHTML = emptyHtml('No leave data this month'); return; }
+                    if (!data.breakdown.length) { document.querySelector("#chart-leave").innerHTML = emptyHtml('{% trans "No leave data this month" %}'); return; }
                     renderChart('leave-breakdown', document.querySelector("#chart-leave"), {
-                        series: [{ name: 'Requests', data: data.breakdown.map(b => b.count) }],
+                        series: [{ name: '{% trans "Requests" %}', data: data.breakdown.map(b => b.count) }],
                         chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {
                                 if (!PERM.leave) return;
@@ -2338,7 +2338,7 @@
                         grid: GRID,
                         dataLabels: { enabled: true, formatter: (v, { dataPointIndex: i }) => v + ' (' + data.breakdown[i].days + 'd)', style: { fontSize: '11px', fontWeight: 600 }, offsetX: 0 },
                         legend: { show: false },
-                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' requests' } },
+                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' {% trans "requests" %}' } },
                         states: { hover: { filter: { type: 'darken', value: 0.85 } } },
                     });
                 });
@@ -2351,7 +2351,7 @@
                 fetch("/employee/dashboard-employee")
                 .then(r => r.json())
                 .then(data => {
-                    if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-employee-status").innerHTML = emptyHtml('No data'); return; }
+                    if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-employee-status").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
                     const sc = { 'Active': '#22c55e', 'Inactive': '#ef4444' };
                     renderChart('employee-status', document.querySelector("#chart-employee-status"), {
                         series: data.dataSet[0].data,
@@ -2371,7 +2371,7 @@
                             dataLabels: {
                                 name: { fontSize: '12px', fontWeight: 600, color: textColor, offsetY: -4 },
                                 value: { fontSize: '20px', fontWeight: 800, color: textColor, offsetY: 4 },
-                                total: { show: true, label: 'Total', color: subTextColor, fontSize: '11px', fontWeight: 600,
+                                total: { show: true, label: '{% trans "Total" %}', color: subTextColor, fontSize: '11px', fontWeight: 600,
                                     formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) }
                             }
                         } },
@@ -2389,7 +2389,7 @@
                 .then(r => r.json())
                 .then(data => {
                     if (data.no_permission) { hideCard('attendance_overview'); return; }
-                    if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-attendance-overview").innerHTML = emptyHtml('No attendance records available'); return; }
+                    if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-attendance-overview").innerHTML = emptyHtml('{% trans "No attendance records available" %}'); return; }
                     renderChart('attendance-overview', document.querySelector("#chart-attendance-overview"), {
                         series: data.dataSet.map(d => ({ name: d.label, data: d.data })),
                         chart: { type: 'bar', height: 320, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: false, animations: ANIM,
@@ -2415,7 +2415,7 @@
                         tooltip: { ...TOOLTIP_STYLE },
                         states: { hover: { filter: { type: 'darken', value: 0.85 } } },
                     });
-                }).catch(() => { document.querySelector("#chart-attendance-overview").innerHTML = emptyHtml('Unable to load attendance data'); });
+                }).catch(() => { document.querySelector("#chart-attendance-overview").innerHTML = emptyHtml('{% trans "Unable to load attendance data" %}'); });
             }
             loadAttendanceOverview();
 
@@ -2425,7 +2425,7 @@
                 .then(r => r.json())
                 .then(data => {
                     if (data.no_permission) { hideCard('department_overtime'); return; }
-                    if (!data.labels || !data.labels.length || !data.dataset || !data.dataset.length) { document.querySelector("#chart-overtime").innerHTML = emptyHtml('No overtime data'); return; }
+                    if (!data.labels || !data.labels.length || !data.dataset || !data.dataset.length) { document.querySelector("#chart-overtime").innerHTML = emptyHtml('{% trans "No overtime data" %}'); return; }
                     renderChart('overtime', document.querySelector("#chart-overtime"), {
                         series: data.dataset[0].data,
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
@@ -2440,13 +2440,13 @@
                             labels: { show: true,
                                 name: { fontSize: '13px', fontWeight: 700, color: textColor },
                                 value: { fontSize: '20px', fontWeight: 800, color: textColor, formatter: v => parseFloat(v).toFixed(1) + 'h' },
-                                total: { show: true, label: 'Total Hrs', color: subTextColor, fontSize: '11px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0).toFixed(1) + 'h' } } } } },
+                                total: { show: true, label: '{% trans "Total Hrs" %}', color: subTextColor, fontSize: '11px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0).toFixed(1) + 'h' } } } } },
                         stroke: { width: 3, colors: [cardBg] },
                         dataLabels: { enabled: false },
                         legend: { ...LEGEND_STYLE },
-                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v.toFixed(1) + ' hrs' } },
+                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v.toFixed(1) + ' {% trans "hrs" %}' } },
                     });
-                }).catch(() => { document.querySelector("#chart-overtime").innerHTML = emptyHtml('No overtime data'); });
+                }).catch(() => { document.querySelector("#chart-overtime").innerHTML = emptyHtml('{% trans "No overtime data" %}'); });
             }
             loadDepartmentOvertime();
             {% endif %}
@@ -2458,7 +2458,7 @@
                 .then(r => r.json())
                 .then(data => {
                     if (data.no_permission) { hideCard('leave_trends'); return; }
-                    if (!data.labels || !data.labels.length) { document.querySelector("#chart-leave-trend").innerHTML = emptyHtml('No data for this week'); return; }
+                    if (!data.labels || !data.labels.length) { document.querySelector("#chart-leave-trend").innerHTML = emptyHtml('{% trans "No data for this week" %}'); return; }
                     const seriesArr = Array.isArray(data.dataset) ? data.dataset : [data.dataset];
                     renderChart('leave-trend', document.querySelector("#chart-leave-trend"), {
                         series: seriesArr.map(s => ({ name: s.label || 'Leaves', data: s.data })),
@@ -2472,9 +2472,9 @@
                         xaxis: { ...XAXIS_STYLE, categories: data.labels },
                         yaxis: { ...YAXIS_STYLE, min: 0, tickAmount: 4 },
                         grid: GRID,
-                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' leave(s)' } },
+                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' {% trans "leave(s)" %}' } },
                     });
-                }).catch(() => { document.querySelector("#chart-leave-trend").innerHTML = emptyHtml('No data for this week'); });
+                }).catch(() => { document.querySelector("#chart-leave-trend").innerHTML = emptyHtml('{% trans "No data for this week" %}'); });
             }
             loadLeaveOverPeriod();
             {% endif %}
@@ -2493,7 +2493,7 @@
                 })
                 .then(data => {
                     if (!data) return;
-                    if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-pipeline").innerHTML = emptyHtml('No active recruitments'); return; }
+                    if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-pipeline").innerHTML = emptyHtml('{% trans "No active recruitments" %}'); return; }
                     try {
                         renderChart('pipeline', document.querySelector("#chart-pipeline"), {
                             series: data.dataSet.map(r => ({ name: r.label, data: r.data })),
@@ -2521,7 +2521,7 @@
                                 }
                             },
                         });
-                    } catch(e) { document.querySelector("#chart-pipeline").innerHTML = emptyHtml('Chart error: ' + e.message); }
+                    } catch(e) { document.querySelector("#chart-pipeline").innerHTML = emptyHtml('{% trans "Chart error" %}: ' + e.message); }
                 }).catch(() => { hideCard('recruitment_pipeline'); });
             }
             loadRecruitmentPipeline();
@@ -2539,7 +2539,7 @@
                 })
                 .then(data => {
                     if (!data) return;
-                    if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-hiring").innerHTML = emptyHtml('No hiring data'); return; }
+                    if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-hiring").innerHTML = emptyHtml('{% trans "No hiring data" %}'); return; }
                     renderChart('hiring', document.querySelector("#chart-hiring"), {
                         series: [{ name: data.dataSet[0].label || 'Joined', data: data.dataSet[0].data }],
                         chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
@@ -2565,7 +2565,7 @@
                         yaxis: { ...YAXIS_STYLE },
                         grid: GRID,
                         dataLabels: { enabled: true, style: { fontSize: '11px', fontWeight: 700, colors: ['#fff'] }, background: { enabled: false } },
-                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' employee(s)' } },
+                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' {% trans "employee(s)" %}' } },
                         states: { hover: { filter: { type: 'darken', value: 0.85 } } },
                     });
                 }).catch(() => { hideCard('hiring_timeline'); });
@@ -2580,7 +2580,7 @@
                 .then(r => r.json())
                 .then(data => {
                     if (data.no_permission) { hideCard('leave_by_department'); return; }
-                    if (!data.labels || !data.labels.length || !data.data || !data.data.length) { document.querySelector("#chart-leave-dept").innerHTML = emptyHtml('No leave data'); return; }
+                    if (!data.labels || !data.labels.length || !data.data || !data.data.length) { document.querySelector("#chart-leave-dept").innerHTML = emptyHtml('{% trans "No leave data" %}'); return; }
                     renderChart('leave-dept', document.querySelector("#chart-leave-dept"), {
                         series: data.data,
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
@@ -2596,13 +2596,13 @@
                             labels: { show: true,
                                 name: { fontSize: '13px', fontWeight: 700, color: textColor },
                                 value: { fontSize: '20px', fontWeight: 800, color: textColor },
-                                total: { show: true, label: 'Total', color: subTextColor, fontSize: '11px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                                total: { show: true, label: '{% trans "Total" %}', color: subTextColor, fontSize: '11px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
                         stroke: { width: 3, colors: [cardBg] },
                         dataLabels: { enabled: false },
                         legend: { ...LEGEND_STYLE },
                         tooltip: { ...TOOLTIP_STYLE },
                     });
-                }).catch(() => { document.querySelector("#chart-leave-dept").innerHTML = emptyHtml('No leave data'); });
+                }).catch(() => { document.querySelector("#chart-leave-dept").innerHTML = emptyHtml('{% trans "No leave data" %}'); });
             }
             loadLeaveByDepartment();
 
@@ -2612,21 +2612,21 @@
                 .then(r => r.json())
                 .then(data => {
                     if (data.no_permission) { hideCard('department_leave_days'); return; }
-                    if (!data.labels || !data.labels.length || !data.dataset || !data.dataset.length) { document.querySelector("#chart-leave-days").innerHTML = emptyHtml('No leave data this month'); return; }
+                    if (!data.labels || !data.labels.length || !data.dataset || !data.dataset.length) { document.querySelector("#chart-leave-days").innerHTML = emptyHtml('{% trans "No leave data this month" %}'); return; }
                     renderChart('leave-days', document.querySelector("#chart-leave-days"), {
-                        series: [{ name: 'Leave Days', data: data.dataset[0].data }],
+                        series: [{ name: '{% trans "Leave Days" %}', data: data.dataset[0].data }],
                         chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM },
                         colors: ['#3b82f6','#6366f1','#a855f7','#06b6d4','#14b8a6','#ec4899','#f59e0b','#22c55e','#ef4444','#f97316'],
                         plotOptions: { bar: { borderRadius: 8, borderRadiusApplication: 'end', horizontal: true, barHeight: '50%', distributed: true } },
                         xaxis: { ...XAXIS_STYLE, categories: data.labels },
                         yaxis: { labels: { style: { colors: textColor, fontSize: '11px', fontWeight: 500 } } },
                         grid: GRID,
-                        dataLabels: { enabled: true, formatter: v => v + ' days', style: { fontSize: '11px', fontWeight: 600 }, offsetX: 0 },
+                        dataLabels: { enabled: true, formatter: v => v + ' {% trans "days" %}', style: { fontSize: '11px', fontWeight: 600 }, offsetX: 0 },
                         legend: { show: false },
-                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' day(s)' } },
+                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' {% trans "day(s)" %}' } },
                         states: { hover: { filter: { type: 'darken', value: 0.85 } } },
                     });
-                }).catch(() => { document.querySelector("#chart-leave-days").innerHTML = emptyHtml('No leave data this month'); });
+                }).catch(() => { document.querySelector("#chart-leave-days").innerHTML = emptyHtml('{% trans "No leave data this month" %}'); });
             }
             loadDepartmentLeaveDays();
             {% endif %}
@@ -2744,9 +2744,9 @@
                                 text: `${data.total_active || ''} {% trans "active recruitments" %} · ${data.total_candidates || ''} {% trans "total" %} · ${data.hired || ''} {% trans "hired" %}`,
                                 align: 'right', style: { fontSize: '11px', color: subTextColor }
                             },
-                            tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' candidate(s)' } },
+                            tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' {% trans "candidate(s)" %}' } },
                         });
-                    } catch(e) { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('Chart error: ' + e.message); }
+                    } catch(e) { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('{% trans "Chart error" %}: ' + e.message); }
                 }).catch(e => { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('{% trans "Failed to load recruitment data" %}'); });
             }
             loadRecruitmentFunnel();

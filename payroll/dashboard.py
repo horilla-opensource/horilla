@@ -11,6 +11,7 @@ from django.db.models import Count, FloatField, Q, Sum
 from django.db.models.functions import Coalesce
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.translation import gettext as _
 
 from horilla.decorators import permission_required
 
@@ -235,20 +236,24 @@ def payroll_status_pipeline(request):
     statuses = [
         {
             "status": "draft",
-            "label": "Draft",
+            "label": _("Draft"),
             "count": qs.filter(status="draft").count(),
         },
         {
             "status": "review_ongoing",
-            "label": "Review",
+            "label": _("Review"),
             "count": qs.filter(status="review_ongoing").count(),
         },
         {
             "status": "confirmed",
-            "label": "Confirmed",
+            "label": _("Confirmed"),
             "count": qs.filter(status="confirmed").count(),
         },
-        {"status": "paid", "label": "Paid", "count": qs.filter(status="paid").count()},
+        {
+            "status": "paid",
+            "label": _("Paid"),
+            "count": qs.filter(status="paid").count(),
+        },
     ]
 
     return JsonResponse({"statuses": statuses, "total": qs.count()})
@@ -477,9 +482,9 @@ def payroll_reimbursement_summary(request):
         )
 
         type_labels = {
-            "reimbursement": "Reimbursement",
-            "bonus_encashment": "Bonus Encashment",
-            "leave_encashment": "Leave Encashment",
+            "reimbursement": _("Reimbursement"),
+            "bonus_encashment": _("Bonus Encashment"),
+            "leave_encashment": _("Leave Encashment"),
         }
 
         for item in type_data:
@@ -571,7 +576,7 @@ def payroll_component_breakdown(request):
                 "net_deductions",
             ]:
                 for item in ps.pay_head_data.get(key, []):
-                    title = item.get("title", "Unknown")
+                    title = item.get("title", _("Unknown"))
                     amount = float(item.get("amount", 0))
                     if title not in comp_map:
                         comp_map[title] = {

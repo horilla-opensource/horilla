@@ -548,7 +548,7 @@ def dashboard_leave_breakdown(request):
         for item in data:
             breakdown.append(
                 {
-                    "type": item["leave_type_id__name"] or "Unknown",
+                    "type": item["leave_type_id__name"] or _("Unknown"),
                     "count": item["count"],
                     "days": float(item["total_days"] or 0),
                 }
@@ -604,16 +604,16 @@ def dashboard_gender_split(request):
         )
 
         gender_map = {
-            "male": "Male",
-            "female": "Female",
-            "other": "Other",
-            "": "Not Specified",
+            "male": _("Male"),
+            "female": _("Female"),
+            "other": _("Other"),
+            "": _("Not Specified"),
         }
         for item in data:
             genders.append(
                 {
                     "gender": gender_map.get(
-                        item["gender"], item["gender"] or "Not Specified"
+                        item["gender"], item["gender"] or _("Not Specified")
                     ),
                     "count": item["count"],
                 }

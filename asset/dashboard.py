@@ -10,6 +10,7 @@ from django.db.models import Count, DecimalField, Q, Sum
 from django.db.models.functions import Coalesce
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.translation import gettext as _
 
 from horilla.decorators import login_required, permission_required
 
@@ -112,17 +113,17 @@ def asset_status_distribution(request):
     statuses = [
         {
             "status": "In use",
-            "label": "In Use",
+            "label": _("In Use"),
             "count": Asset.objects.filter(asset_status="In use").count(),
         },
         {
             "status": "Available",
-            "label": "Available",
+            "label": _("Available"),
             "count": Asset.objects.filter(asset_status="Available").count(),
         },
         {
             "status": "Not-Available",
-            "label": "Not Available",
+            "label": _("Not Available"),
             "count": Asset.objects.filter(asset_status="Not-Available").count(),
         },
     ]
@@ -178,17 +179,17 @@ def asset_request_status(request):
     statuses = [
         {
             "status": "Requested",
-            "label": "Requested",
+            "label": _("Requested"),
             "count": requests_qs.filter(asset_request_status="Requested").count(),
         },
         {
             "status": "Approved",
-            "label": "Approved",
+            "label": _("Approved"),
             "count": requests_qs.filter(asset_request_status="Approved").count(),
         },
         {
             "status": "Rejected",
-            "label": "Rejected",
+            "label": _("Rejected"),
             "count": requests_qs.filter(asset_request_status="Rejected").count(),
         },
     ]

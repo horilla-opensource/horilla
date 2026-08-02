@@ -11,6 +11,7 @@ from django.db.models import Count, F, FloatField, Q, Sum
 from django.db.models.functions import Coalesce
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.translation import gettext as _
 
 from horilla.decorators import permission_required
 
@@ -210,7 +211,7 @@ def leave_type_distribution(request):
             types.append(
                 {
                     "id": item["leave_type_id"],
-                    "type": item["leave_type_id__name"] or "Unknown",
+                    "type": item["leave_type_id__name"] or _("Unknown"),
                     "payment": item["leave_type_id__payment"] or "unpaid",
                     "count": item["count"],
                     "days": round(float(item["total_days"] or 0), 1),
@@ -306,7 +307,7 @@ def leave_utilization_rate(request):
 
             utilization.append(
                 {
-                    "type": item["leave_type_id__name"] or "Unknown",
+                    "type": item["leave_type_id__name"] or _("Unknown"),
                     "allocated": round(allocated, 1),
                     "used": round(used, 1),
                     "remaining": round(available, 1),

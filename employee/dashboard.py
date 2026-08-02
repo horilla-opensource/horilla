@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.translation import gettext as _
 
 
 def _parse_period(request):
@@ -109,9 +110,9 @@ def employee_by_gender(request):
         "gender", flat=True
     )
     counts = Counter(gender_list)
-    gender_labels = {"male": "Male", "female": "Female", "other": "Other"}
+    gender_labels = {"male": _("Male"), "female": _("Female"), "other": _("Other")}
     genders = [
-        {"gender": g, "label": gender_labels.get(g, g or "Unknown"), "count": c}
+        {"gender": g, "label": gender_labels.get(g, g or _("Unknown")), "count": c}
         for g, c in counts.items()
         if c > 0 and g
     ]

@@ -9,6 +9,7 @@ from datetime import date, timedelta
 from django.db.models import Avg, Count, F, Q
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _
 
 from horilla.decorators import login_required, permission_required
 
@@ -140,11 +141,11 @@ def helpdesk_status_distribution(request):
     """Ticket count by status, for tickets created in the picker range."""
     statuses = []
     status_choices = [
-        ("new", "New"),
-        ("in_progress", "In Progress"),
-        ("on_hold", "On Hold"),
-        ("resolved", "Resolved"),
-        ("canceled", "Canceled"),
+        ("new", _("New")),
+        ("in_progress", _("In Progress")),
+        ("on_hold", _("On Hold")),
+        ("resolved", _("Resolved")),
+        ("canceled", _("Canceled")),
     ]
     qs = _period_tickets(request)
 
@@ -160,7 +161,11 @@ def helpdesk_status_distribution(request):
 def helpdesk_priority_distribution(request):
     """Ticket count by priority, for tickets created in the picker range."""
     priorities = []
-    priority_choices = [("low", "Low"), ("medium", "Medium"), ("high", "High")]
+    priority_choices = [
+        ("low", _("Low")),
+        ("medium", _("Medium")),
+        ("high", _("High")),
+    ]
     qs = _period_tickets(request)
 
     for priority, label in priority_choices:

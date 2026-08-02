@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _
 
 from horilla.methods import handle_no_permission
 
@@ -158,11 +159,11 @@ def onboarding_task_status(request):
 
     statuses = []
     task_choices = [
-        ("todo", "Todo"),
-        ("scheduled", "Scheduled"),
-        ("ongoing", "Ongoing"),
-        ("stuck", "Stuck"),
-        ("done", "Done"),
+        ("todo", _("Todo")),
+        ("scheduled", _("Scheduled")),
+        ("ongoing", _("Ongoing")),
+        ("stuck", _("Stuck")),
+        ("done", _("Done")),
     ]
 
     for status, label in task_choices:
