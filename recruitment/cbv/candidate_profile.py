@@ -55,6 +55,7 @@ class CandidateProfileView(HorillaProfileView):
             "src": f"/{settings.STATIC_URL}images/ui/edit_btn.png",
             "attrs": """
                         onclick="
+                        event.preventDefault();
                         window.location.href='{get_update_url}' "
                     """,
         },

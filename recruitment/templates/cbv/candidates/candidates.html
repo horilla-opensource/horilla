@@ -87,6 +87,15 @@
             var path = window.location.pathname.replace(/\/$/, "");
             return path.indexOf("/recruitment/profile/recruitment/candidate-view/") !== -1;
         }
+        // The Edit action also swaps into #listContainer (hx-push-url takes
+        // the address bar to this path), same as the detail/profile views --
+        // without matching it here the list's nav bar/filter tags stay
+        // visible above the edit form since they live in a sibling
+        // (#candidateListNavBar), which the Edit swap never touches.
+        function isCandidateEditPath() {
+            var path = window.location.pathname.replace(/\/$/, "");
+            return /\/recruitment\/candidate-update\/\d+$/.test(path);
+        }
         function getHtmxSwapTarget(e) {
             if (!e || !e.detail) {
                 return null;
@@ -112,7 +121,8 @@
             var hide =
                 hasProfile ||
                 isCandidateDetailPath() ||
-                isCandidateProfilePath();
+                isCandidateProfilePath() ||
+                isCandidateEditPath();
             if (hide) {
                 document.body.classList.add("recruitment-candidate-detail");
                 nav.style.display = "none";

@@ -5,8 +5,8 @@
         <a
             class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             title="{% trans 'Edit' %}"
-            href="{% url 'rec-candidate-update' instance.id %}?onboarding=True&container=true"
-            hx-get="{% url 'rec-candidate-update' instance.id %}?onboarding=True&container=true"
+            href="{% url 'rec-candidate-update' instance.id %}?container=true"
+            hx-get="{% url 'rec-candidate-update' instance.id %}?container=true"
             hx-target="#listContainer"
             hx-swap="innerHTML"
             hx-push-url="true"

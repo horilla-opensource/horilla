@@ -56,7 +56,7 @@
             if (window.history && history.pushState) {
               history.pushState({}, '', '{% url 'candidate-view' %}');
             }
-            var listHtml = '<div hx-get=&quot;/recruitment/nav-candidate/?&quot; hx-trigger=&quot;load&quot;></div>'
+            var listHtml = '<div id=&quot;candidateListNavBar&quot;><div hx-get=&quot;/recruitment/nav-candidate/?&quot; hx-trigger=&quot;load&quot;></div></div>'
               + '<div class=&quot;oh-checkpoint-badge mb-2&quot; id=&quot;selectedInstances&quot; data-ids=&quot;[]&quot; data-clicked=&quot;&quot; style=&quot;display: none&quot;></div>'
               + '<div class=&quot;oh-wrapper&quot; id=&quot;listContainer&quot;><div class=&quot;animated-background&quot;></div></div>';
             var container = document.getElementById('candidateMainContainer');

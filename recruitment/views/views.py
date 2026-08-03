@@ -1457,7 +1457,11 @@ def candidate(request):
                     )
                 container_reload_script = (
                     "$('#candidateMainContainer').html("
-                    '\'<div hx-get="/recruitment/nav-candidate/?" hx-trigger="load"></div>\' + '
+                    # The id="candidateListNavBar" wrapper must match the page
+                    # template (candidates.html) — syncCandidateListNavBar()
+                    # looks it up by id, so rebuilding the container without it
+                    # breaks nav-bar hiding on every later edit-form open.
+                    '\'<div id="candidateListNavBar"><div hx-get="/recruitment/nav-candidate/?" hx-trigger="load"></div></div>\' + '
                     '\'<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>\' + '
                     '\'<div class="oh-wrapper" id="listContainer"><div class="animated-background"></div></div>\''
                     ");"
@@ -2029,13 +2033,36 @@ def candidate_update(request, cand_id, **kwargs):
                                 "if (b) { b.click(); } }, 100);"
                             )
                         else:
+                            _recruitment_candidates_url = reverse("candidate-view")
                             container_reload_script = (
+                                "if (window.history && history.pushState) { "
+                                f"history.pushState({{}}, '', '{_recruitment_candidates_url}'); "
+                                "}"
+                                # Deferred a tick: this response is itself the
+                                # htmx swap target's (#candidateMainContainer)
+                                # new content, so replacing that same
+                                # container's HTML synchronously here races
+                                # htmx's own swap/settle bookkeeping on it --
+                                # observed as a "removeChild: not a child of
+                                # this node" console error. Queuing it as a
+                                # separate task lets htmx finish settling the
+                                # current swap first.
+                                "setTimeout(function () {"
                                 "$('#candidateMainContainer').html("
-                                '\'<div hx-get="/recruitment/nav-candidate/?" hx-trigger="load"></div>\' + '
+                                # Must match candidates.html's real markup --
+                                # missing the id="candidateListNavBar" wrapper
+                                # here left that element absent from the DOM
+                                # after every save, so syncCandidateListNavBar()
+                                # (in candidates.html) could never find it again
+                                # to hide it on the next Edit, leaving the
+                                # search/filter/Create toolbar visible over
+                                # the edit form from the second edit onward.
+                                '\'<div id="candidateListNavBar"><div hx-get="/recruitment/nav-candidate/?" hx-trigger="load"></div></div>\' + '
                                 '\'<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>\' + '
                                 '\'<div class="oh-wrapper" id="listContainer"><div class="animated-background"></div></div>\''
                                 ");"
                                 "htmx.process($('#candidateMainContainer')[0]);"
+                                "}, 0);"
                             )
                     else:
                         container_reload_script = "$('#applyFilter').click();"
