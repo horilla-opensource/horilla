@@ -1513,6 +1513,17 @@
                 column.width = maxLength + 3;
             });
 
+            // The company banner needs real width regardless of the pivot's
+            // data: the 60px logo floats over column A and the name/address
+            // block fills the merged A:B (indented past the logo), so a
+            // narrow pivot must not shrink these two columns below that.
+            if ('{{company}}' !== 'all') {
+                const logoColumn = worksheet.getColumn(baseCol);
+                const addressColumn = worksheet.getColumn(baseCol + 1);
+                logoColumn.width = Math.max(logoColumn.width || 0, 12);
+                addressColumn.width = Math.max(addressColumn.width || 0, 45);
+            }
+
 
             const buffer = await workbook.xlsx.writeBuffer();
             const blob = new Blob([buffer], {
