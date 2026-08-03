@@ -59,7 +59,7 @@ msgid "Company"
 msgstr ""
 
 msgid "Shift"
-msgstr ""
+msgstr "Shift"
 
 msgid "Tags"
 msgstr ""
@@ -123,7 +123,7 @@ msgid "Status"
 msgstr ""
 
 msgid "Assets"
-msgstr ""
+msgstr "Assets"
 
 msgid "Asset Batch Number"
 msgstr ""
@@ -557,7 +557,7 @@ msgid "Asset Requests"
 msgstr "My Leave Requests"
 
 msgid "Dashboard"
-msgstr ""
+msgstr "Dashboard"
 
 #, fuzzy
 #| msgid "asset-request-allocation-view"
@@ -1393,7 +1393,7 @@ msgid "Penalty Account"
 msgstr ""
 
 msgid "Offline"
-msgstr ""
+msgstr "Offline"
 
 msgid "Online"
 msgstr ""
@@ -2373,10 +2373,10 @@ msgid "ago"
 msgstr ""
 
 msgid "Present Today"
-msgstr ""
+msgstr "Present Today"
 
 msgid "rate"
-msgstr ""
+msgstr "rate"
 
 msgid "On Time"
 msgstr ""
@@ -4001,15 +4001,13 @@ msgid "Mail Server"
 msgstr ""
 
 msgid "Configure an outgoing mail server so Horilla can send emails."
-msgstr ""
+msgstr "Configure an outgoing mail server so Horilla can send emails."
 
-#, fuzzy
-#| msgid "employee"
 msgid "First Employee"
-msgstr "Employee"
+msgstr "First Employee"
 
 msgid "Add your first employee to bring everything together."
-msgstr ""
+msgstr "Add your first employee to bring everything together."
 
 msgid "You dont have permission."
 msgstr ""
@@ -4472,10 +4470,8 @@ msgstr ""
 msgid "Published On"
 msgstr ""
 
-#, fuzzy
-#| msgid "employee"
 msgid "Total Employees"
-msgstr "Employee"
+msgstr "Total Employees"
 
 msgid "Roster Publish Log"
 msgstr ""
@@ -6095,7 +6091,7 @@ msgid "Select Date Format:"
 msgstr ""
 
 msgid "How dates are displayed across the system for the selected company."
-msgstr ""
+msgstr "How dates are displayed across the system for the selected company."
 
 msgid "Day, Month, Year (e.g., 30-12-2023)"
 msgstr ""
@@ -6135,7 +6131,7 @@ msgid "Select Time Format:"
 msgstr ""
 
 msgid "How times are displayed across the system for the selected company."
-msgstr ""
+msgstr "How times are displayed across the system for the selected company."
 
 msgid "12 Hr. (e.g., 06:00 AM or 06:00 PM)"
 msgstr ""
@@ -6317,7 +6313,7 @@ msgstr "Shift Requests"
 
 msgid ""
 "Configure system defaults, display formatting, and data access controls."
-msgstr ""
+msgstr "Configure system defaults, display formatting, and data access controls."
 
 #, fuzzy
 #| msgid "settings"
@@ -6325,16 +6321,16 @@ msgid "General Defaults"
 msgstr "Settings"
 
 msgid "Formatting & Localization"
-msgstr ""
+msgstr "Formatting & Localization"
 
 msgid "Data & Access Controls"
-msgstr ""
+msgstr "Data & Access Controls"
 
 msgid "HR setup checklist"
 msgstr ""
 
 msgid "Get started with Horilla HR"
-msgstr ""
+msgstr "Get started with Horilla HR"
 
 #, python-format
 msgid ""
@@ -6342,9 +6338,12 @@ msgid ""
 "                            %(done)s of %(total)s steps complete\n"
 "                        "
 msgstr ""
+"\n"
+"                            %(done)s of %(total)s steps complete\n"
+"                        "
 
 msgid "finish setup to unlock your full HR system"
-msgstr ""
+msgstr "finish setup to unlock your full HR system"
 
 msgid "Dismiss setup checklist"
 msgstr ""
@@ -6361,13 +6360,16 @@ msgid ""
 "                            Next: %(title)s\n"
 "                        "
 msgstr ""
+"\n"
+"                            Next: %(title)s\n"
+"                        "
 
 #, python-format
 msgid "Set up %(title)s"
-msgstr ""
+msgstr "Set up %(title)s"
 
 msgid "Set up now"
-msgstr ""
+msgstr "Set up now"
 
 #, fuzzy
 #| msgid "onboarding"
@@ -7135,7 +7137,7 @@ msgid "Payment"
 msgstr ""
 
 msgid "dashboard"
-msgstr "Dashboard"
+msgstr "dashboard"
 
 msgid "pipeline"
 msgstr "Pipeline"
@@ -7317,7 +7319,7 @@ msgid "onboarding"
 msgstr "Onboarding"
 
 msgid "settings"
-msgstr "Settings"
+msgstr "settings"
 
 msgid "department-view"
 msgstr "Department"
@@ -9446,7 +9448,7 @@ msgid "Expected working"
 msgstr ""
 
 msgid "On Leave"
-msgstr ""
+msgstr "On Leave"
 
 msgid "Waiting Approval"
 msgstr ""
@@ -11172,10 +11174,8 @@ msgstr ""
 msgid "FAQs"
 msgstr ""
 
-#, fuzzy
-#| msgid "helpdesk"
 msgid "Helpdesk"
-msgstr "Help Desk"
+msgstr "Helpdesk"
 
 msgid "Assign managers responsible for helpdesk tickets per department."
 msgstr ""
@@ -12709,7 +12709,7 @@ msgstr "My Leave Requests"
 msgid ""
 "Number of days after which an announcement automatically expires when no "
 "expiry date is set."
-msgstr ""
+msgstr "Number of days after which an announcement automatically expires when no expiry date is set."
 
 #, fuzzy
 #| msgid "employee"
@@ -13034,7 +13034,7 @@ msgid "New Username"
 msgstr ""
 
 msgid "Number of records shown per page across all list views."
-msgstr ""
+msgstr "Number of records shown per page across all list views."
 
 #, fuzzy
 #| msgid "company"
@@ -15036,10 +15036,10 @@ msgid "No Comments have been added for this reimbursement request"
 msgstr "Leave Allocation Requests"
 
 msgid "Symbol shown for monetary values (e.g. $, €)."
-msgstr ""
+msgstr "Symbol shown for monetary values (e.g. $, €)."
 
 msgid "Whether the symbol appears before (prefix) or after (suffix)."
-msgstr ""
+msgstr "Whether the symbol appears before (prefix) or after (suffix)."
 
 msgid "Company these currency settings apply to."
 msgstr ""
@@ -15561,7 +15561,7 @@ msgid "Submit and manage requests to change your work type assignment."
 msgstr ""
 
 msgid "Company-specific settings"
-msgstr ""
+msgstr "Company-specific settings"
 
 #, python-format
 msgid ""
@@ -15570,11 +15570,13 @@ msgid ""
 "%(company_name)s company specifically.\n"
 "                        "
 msgstr ""
+"\n"
+"                            You are currently setting these settings for the "
+"%(company_name)s company specifically.\n"
+"                        "
 
-#, fuzzy
-#| msgid "settings"
 msgid "Search settings…"
-msgstr "Settings"
+msgstr "Search settings…"
 
 #, fuzzy
 #| msgid "shift-request-view"
@@ -15594,7 +15596,7 @@ msgid ""
 msgstr ""
 
 msgid "Prefix added to every auto-generated employee badge ID (e.g. PEP0001)."
-msgstr ""
+msgstr "Prefix added to every auto-generated employee badge ID (e.g. PEP0001)."
 
 msgid "Do you want to archive this skill zone ?"
 msgstr ""
@@ -17646,10 +17648,8 @@ msgstr ""
 msgid "Stuck"
 msgstr ""
 
-#, fuzzy
-#| msgid "onboarding"
 msgid "Offboarding"
-msgstr "Onboarding"
+msgstr "Offboarding"
 
 #, fuzzy
 #| msgid "attendance"
@@ -18414,7 +18414,7 @@ msgid "Recruitments"
 msgstr ""
 
 msgid "Active hiring"
-msgstr ""
+msgstr "Active hiring"
 
 #, fuzzy
 #| msgid "onboarding"
@@ -23599,18 +23599,14 @@ msgstr ""
 msgid "Trying to connect..."
 msgstr ""
 
-#, fuzzy
-#| msgid "department-update"
 msgid "Department Headcount"
-msgstr "Update"
+msgstr "Department Headcount"
 
-#, fuzzy
-#| msgid "department"
 msgid "Top 10 departments"
-msgstr "Department"
+msgstr "Top 10 departments"
 
 msgid "Daily leaves — current week"
-msgstr ""
+msgstr "Daily leaves — current week"
 
 #, fuzzy
 #| msgid "employee"
@@ -23710,20 +23706,16 @@ msgstr "Attendances"
 msgid "this month"
 msgstr ""
 
-#, fuzzy
-#| msgid "attendance"
 msgid "No new joiners"
-msgstr "Attendance"
+msgstr "No new joiners"
 
 #, fuzzy
 #| msgid "onboarding"
 msgid "No pending"
 msgstr "Onboarding"
 
-#, fuzzy
-#| msgid "recruitment"
 msgid "Open Recruitments"
-msgstr "Recruitment"
+msgstr "Open Recruitments"
 
 #, fuzzy
 #| msgid "type-view"

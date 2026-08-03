@@ -54,7 +54,7 @@ msgid "Company"
 msgstr "Entreprise"
 
 msgid "Shift"
-msgstr "Maj"
+msgstr "Quart"
 
 msgid "Tags"
 msgstr "Tags"
@@ -2172,20 +2172,14 @@ msgstr ""
 msgid "Toggle visibility"
 msgstr "Visibilité des notes"
 
-#, fuzzy
-#| msgid "Tag"
 msgid "ago"
 msgstr "Étiquette"
 
-#, fuzzy
-#| msgid "Present"
 msgid "Present Today"
-msgstr "Présent"
+msgstr "Présents aujourd'hui"
 
-#, fuzzy
-#| msgid "Generate"
 msgid "rate"
-msgstr "Générer"
+msgstr "taux"
 
 msgid "On Time"
 msgstr "À l'heure"
@@ -3629,15 +3623,13 @@ msgid "Mail Server"
 msgstr "Serveur de messagerie"
 
 msgid "Configure an outgoing mail server so Horilla can send emails."
-msgstr ""
+msgstr "Configurez un serveur de messagerie sortant pour que Horilla puisse envoyer des e-mails."
 
-#, fuzzy
-#| msgid "Import Employee"
 msgid "First Employee"
-msgstr "Importer un employé"
+msgstr "Premier employé"
 
 msgid "Add your first employee to bring everything together."
-msgstr ""
+msgstr "Ajoutez votre premier employé pour tout finaliser."
 
 msgid "You dont have permission."
 msgstr "Vous n'avez pas la permission."
@@ -4094,10 +4086,8 @@ msgstr "Est publié"
 msgid "Published On"
 msgstr "Est publié"
 
-#, fuzzy
-#| msgid "Export Employees"
 msgid "Total Employees"
-msgstr "Exporter les employés"
+msgstr "Employés totaux"
 
 #, fuzzy
 #| msgid "Is Published"
@@ -5620,10 +5610,8 @@ msgstr ""
 msgid "Select Date Format:"
 msgstr "Sélectionnez le format de la date :"
 
-#, fuzzy
-#| msgid "How dates are displayed across the system"
 msgid "How dates are displayed across the system for the selected company."
-msgstr "Comment les dates sont affichées dans le système"
+msgstr "Comment les dates sont affichées dans le système pour l'entreprise sélectionnée."
 
 msgid "Day, Month, Year (e.g., 30-12-2023)"
 msgstr "Day, Mois, Année (par exemple, 30-12-2023)"
@@ -5664,10 +5652,8 @@ msgstr ""
 msgid "Select Time Format:"
 msgstr "Sélectionnez le format de l'heure :"
 
-#, fuzzy
-#| msgid "How dates are displayed across the system"
 msgid "How times are displayed across the system for the selected company."
-msgstr "Comment les dates sont affichées dans le système"
+msgstr "Comment les heures sont affichées dans le système pour l'entreprise sélectionnée."
 
 msgid "12 Hr. (e.g., 06:00 AM or 06:00 PM)"
 msgstr "12 heures (ex. : 06h00 ou 18h00)"
@@ -5868,7 +5854,7 @@ msgstr "Il n'y a actuellement aucun modèle d'e-mail disponible."
 
 msgid ""
 "Configure system defaults, display formatting, and data access controls."
-msgstr ""
+msgstr "Configurez les valeurs par défaut, le formatage et les contrôles d'accès."
 
 #, fuzzy
 #| msgid "General Settings"
@@ -5876,16 +5862,16 @@ msgid "General Defaults"
 msgstr "Paramètres généraux"
 
 msgid "Formatting & Localization"
-msgstr ""
+msgstr "Formatage et localisation"
 
 msgid "Data & Access Controls"
-msgstr ""
+msgstr "Contrôles des données et d'accès"
 
 msgid "HR setup checklist"
 msgstr ""
 
 msgid "Get started with Horilla HR"
-msgstr ""
+msgstr "Démarrez avec Horilla HR"
 
 #, python-format
 msgid ""
@@ -5893,9 +5879,12 @@ msgid ""
 "                            %(done)s of %(total)s steps complete\n"
 "                        "
 msgstr ""
+"\n"
+"                            %(done)s sur %(total)s étapes terminées\n"
+"                        "
 
 msgid "finish setup to unlock your full HR system"
-msgstr ""
+msgstr "Terminez la configuration pour débloquer tout votre système RH"
 
 msgid "Dismiss setup checklist"
 msgstr ""
@@ -5914,13 +5903,16 @@ msgid ""
 "                            Next: %(title)s\n"
 "                        "
 msgstr ""
+"\n"
+"                            Suivant : %(title)s\n"
+"                        "
 
 #, python-format
 msgid "Set up %(title)s"
-msgstr ""
+msgstr "Configurer %(title)s"
 
 msgid "Set up now"
-msgstr ""
+msgstr "Configurer maintenant"
 
 #, fuzzy
 #| msgid "Completed"
@@ -6849,7 +6841,7 @@ msgid "onboarding"
 msgstr "embarquement"
 
 msgid "settings"
-msgstr "Réglages"
+msgstr "Paramètres"
 
 msgid "department-view"
 msgstr "Vue du service"
@@ -10430,7 +10422,7 @@ msgid "FAQs"
 msgstr "Foire aux questions"
 
 msgid "Helpdesk"
-msgstr "Service d'assistance"
+msgstr "Assistance"
 
 msgid "Assign managers responsible for helpdesk tickets per department."
 msgstr ""
@@ -11952,7 +11944,7 @@ msgstr "Êtes-vous sûr de vouloir supprimer ce commentaire?"
 msgid ""
 "Number of days after which an announcement automatically expires when no "
 "expiry date is set."
-msgstr ""
+msgstr "Nombre de jours après lesquels une annonce expire automatiquement si aucune date d'expiration n'est définie."
 
 msgid "Tracking ID"
 msgstr "ID de suivi"
@@ -12282,7 +12274,7 @@ msgid "New Username"
 msgstr "Nouveau nom d'utilisateur"
 
 msgid "Number of records shown per page across all list views."
-msgstr ""
+msgstr "Nombre d'enregistrements affichés par page dans toutes les listes."
 
 #, fuzzy
 #| msgid "Search in : Company"
@@ -14173,15 +14165,11 @@ msgstr "demande de remboursement"
 msgid "No Comments have been added for this reimbursement request"
 msgstr "Aucun commentaire n'a été ajouté pour cette demande de remboursement"
 
-#, fuzzy
-#| msgid "Symbol shown for monetary values e.g. $ €"
 msgid "Symbol shown for monetary values (e.g. $, €)."
-msgstr "Symbole affiché pour les valeurs monétaires, par ex. $ €"
+msgstr "Symbole affiché pour les valeurs monétaires (p. ex. $, €)."
 
-#, fuzzy
-#| msgid "Whether symbol appears before or after the amount"
 msgid "Whether the symbol appears before (prefix) or after (suffix)."
-msgstr "Si le symbole apparaît avant ou après le montant"
+msgstr "Si le symbole apparaît avant (préfixe) ou après (suffixe)."
 
 msgid "Company these currency settings apply to."
 msgstr ""
@@ -14692,7 +14680,7 @@ msgid "Submit and manage requests to change your work type assignment."
 msgstr ""
 
 msgid "Company-specific settings"
-msgstr ""
+msgstr "Paramètres spécifiques à l'entreprise"
 
 #, python-format
 msgid ""
@@ -14701,11 +14689,13 @@ msgid ""
 "%(company_name)s company specifically.\n"
 "                        "
 msgstr ""
+"\n"
+"                            Vous configurez actuellement ces paramètres spécifiquement pour l'entreprise "
+"%(company_name)s.\n"
+"                        "
 
-#, fuzzy
-#| msgid "settings"
 msgid "Search settings…"
-msgstr "Réglages"
+msgstr "Rechercher des paramètres…"
 
 #, fuzzy
 #| msgid "No rating found."
@@ -14722,10 +14712,8 @@ msgid ""
 "Post job openings directly to LinkedIn and manage applicants from Horilla."
 msgstr ""
 
-#, fuzzy
-#| msgid "Prefix added to employee badge IDs e.g. EMP0001"
 msgid "Prefix added to every auto-generated employee badge ID (e.g. PEP0001)."
-msgstr "Préfixe ajouté aux identifiants de badge des employés, par ex. EMP0001"
+msgstr "Préfixe ajouté à chaque identifiant de badge employé généré automatiquement (p. ex. PEP0001)."
 
 msgid "Do you want to archive this skill zone ?"
 msgstr "Voulez-vous archiver cette zone de compétence ?"
@@ -16637,7 +16625,7 @@ msgid "Stuck"
 msgstr "Bloqué"
 
 msgid "Offboarding"
-msgstr "Off-boarding"
+msgstr "Départ"
 
 msgid "Resignation Letters"
 msgstr "Lettres de démission"
@@ -17347,10 +17335,8 @@ msgstr ""
 msgid "Recruitments"
 msgstr "Recrutement"
 
-#, fuzzy
-#| msgid "Active"
 msgid "Active hiring"
-msgstr "Actif"
+msgstr "Recrutement actif"
 
 #, fuzzy
 #| msgid "Onboarding Stages"
@@ -22051,18 +22037,14 @@ msgstr ""
 msgid "Trying to connect..."
 msgstr "Tentative de connexion..."
 
-#, fuzzy
-#| msgid "Department Total Amount"
 msgid "Department Headcount"
-msgstr "Montant total du service"
+msgstr "Effectifs par département"
 
-#, fuzzy
-#| msgid "department"
 msgid "Top 10 departments"
-msgstr "service"
+msgstr "Top 10 des départements"
 
 msgid "Daily leaves — current week"
-msgstr ""
+msgstr "Congés quotidiens — semaine en cours"
 
 #, fuzzy
 #| msgid "Employee tag"
@@ -22171,25 +22153,19 @@ msgstr "Approbation des heures supplémentaires"
 msgid "Leave Analytics"
 msgstr "Quitter l'analyse hebdomadaire"
 
-#, fuzzy
-#| msgid "This Month"
 msgid "this month"
 msgstr "Ce mois-ci"
 
-#, fuzzy
-#| msgid "Todays's New Joiners"
 msgid "No new joiners"
-msgstr "Les nouveaux adhérents d'aujourd'hui"
+msgstr "Aucun nouveau collaborateur"
 
 #, fuzzy
 #| msgid "Pending"
 msgid "No pending"
 msgstr "En attente"
 
-#, fuzzy
-#| msgid "Open Recruitment"
 msgid "Open Recruitments"
-msgstr "Recrutement Ouvert"
+msgstr "Recrutements ouverts"
 
 #, fuzzy
 #| msgid "Expired"

@@ -56,7 +56,7 @@ msgid "Company"
 msgstr "Şirket"
 
 msgid "Shift"
-msgstr "Shift"
+msgstr "Vardiya"
 
 msgid "Tags"
 msgstr "Etiketler"
@@ -484,7 +484,7 @@ msgid "Asset Requests"
 msgstr "Varlık İstekleri"
 
 msgid "Dashboard"
-msgstr "Kontrol Paneli"
+msgstr "Gösterge Paneli"
 
 msgid "Requests & Allocation"
 msgstr "Talepler ve Tahsis"
@@ -2177,20 +2177,14 @@ msgstr ""
 msgid "Toggle visibility"
 msgstr "Derecelendirme Görünürlüğü"
 
-#, fuzzy
-#| msgid "Tag"
 msgid "ago"
 msgstr "Etiket"
 
-#, fuzzy
-#| msgid "Present"
 msgid "Present Today"
-msgstr "Mevcut"
+msgstr "Bugün Mevcut"
 
-#, fuzzy
-#| msgid "Generate"
 msgid "rate"
-msgstr "Oluştur"
+msgstr "oran"
 
 msgid "On Time"
 msgstr "Zamanında"
@@ -3647,15 +3641,13 @@ msgid "Mail Server"
 msgstr "E-Posta Sunucusu"
 
 msgid "Configure an outgoing mail server so Horilla can send emails."
-msgstr ""
+msgstr "Horilla'nın e-posta gönderebilmesi için giden posta sunucusunu yapılandırın."
 
-#, fuzzy
-#| msgid "Import Employee"
 msgid "First Employee"
-msgstr "İthalat Çalışanı"
+msgstr "İlk Çalışan"
 
 msgid "Add your first employee to bring everything together."
-msgstr ""
+msgstr "Her şeyi bir araya getirmek için ilk çalışanınızı ekleyin."
 
 msgid "You dont have permission."
 msgstr "İznin yok."
@@ -4111,10 +4103,8 @@ msgstr "Yayınlandı"
 msgid "Published On"
 msgstr "Yayınlandı"
 
-#, fuzzy
-#| msgid "Export Employees"
 msgid "Total Employees"
-msgstr "İhracat Çalışanları"
+msgstr "Toplam Çalışan"
 
 #, fuzzy
 #| msgid "Is Published"
@@ -5634,10 +5624,8 @@ msgstr ""
 msgid "Select Date Format:"
 msgstr "Tarih Formatını Seç:"
 
-#, fuzzy
-#| msgid "How dates are displayed across the system"
 msgid "How dates are displayed across the system for the selected company."
-msgstr "Tarihler sistem genelinde nasıl görüntülenir?"
+msgstr "Seçili şirket için tarihlerin sistem genelinde nasıl görüntüleneceği."
 
 msgid "Day, Month, Year (e.g., 30-12-2023)"
 msgstr "Gün, Ay, Yıl (ör. 30-12-2023)"
@@ -5676,10 +5664,8 @@ msgstr "Tam Gün Adı, Tam Ay Adı, Gün, Yıl (ör. Pazartesi, 1 Ocak 2023)"
 msgid "Select Time Format:"
 msgstr "Zaman Formatını Seç:"
 
-#, fuzzy
-#| msgid "How dates are displayed across the system"
 msgid "How times are displayed across the system for the selected company."
-msgstr "Tarihler sistem genelinde nasıl görüntülenir?"
+msgstr "Seçili şirket için saatlerin sistem genelinde nasıl görüntüleneceği."
 
 msgid "12 Hr. (e.g., 06:00 AM or 06:00 PM)"
 msgstr "12 saat (örneğin, 06:00 veya 06:00)"
@@ -5880,7 +5866,7 @@ msgstr "Şu anda mevcut e-posta şablonları bulunmamaktadır."
 
 msgid ""
 "Configure system defaults, display formatting, and data access controls."
-msgstr ""
+msgstr "Sistem varsayılanlarını, görüntü biçimlendirmesini ve veri erişim kontrollerini yapılandırın."
 
 #, fuzzy
 #| msgid "General Settings"
@@ -5888,16 +5874,16 @@ msgid "General Defaults"
 msgstr "Genel Ayarlar"
 
 msgid "Formatting & Localization"
-msgstr ""
+msgstr "Biçimlendirme ve Yerelleştirme"
 
 msgid "Data & Access Controls"
-msgstr ""
+msgstr "Veri ve Erişim Kontrolleri"
 
 msgid "HR setup checklist"
 msgstr ""
 
 msgid "Get started with Horilla HR"
-msgstr ""
+msgstr "Horilla HR ile başlayın"
 
 #, python-format
 msgid ""
@@ -5905,9 +5891,12 @@ msgid ""
 "                            %(done)s of %(total)s steps complete\n"
 "                        "
 msgstr ""
+"\n"
+"                            %(done)s / %(total)s adım tamamlandı\n"
+"                        "
 
 msgid "finish setup to unlock your full HR system"
-msgstr ""
+msgstr "Tam HR sisteminin kilidini açmak için kurulumu tamamlayın"
 
 msgid "Dismiss setup checklist"
 msgstr ""
@@ -5926,13 +5915,16 @@ msgid ""
 "                            Next: %(title)s\n"
 "                        "
 msgstr ""
+"\n"
+"                            Sonraki: %(title)s\n"
+"                        "
 
 #, python-format
 msgid "Set up %(title)s"
-msgstr ""
+msgstr "%(title)s kur"
 
 msgid "Set up now"
-msgstr ""
+msgstr "Şimdi kur"
 
 #, fuzzy
 #| msgid "Completed"
@@ -6682,7 +6674,7 @@ msgid "Payment"
 msgstr "Ödeme"
 
 msgid "dashboard"
-msgstr "yönetim paneli"
+msgstr "Gösterge Paneli"
 
 msgid "pipeline"
 msgstr "komut zinciri"
@@ -6864,7 +6856,7 @@ msgid "onboarding"
 msgstr "Işe Başlama"
 
 msgid "settings"
-msgstr "ayarlar"
+msgstr "Ayarlar"
 
 msgid "department-view"
 msgstr "Departman görünümü"
@@ -10473,7 +10465,7 @@ msgid "FAQs"
 msgstr "SSS"
 
 msgid "Helpdesk"
-msgstr "Yardım masası"
+msgstr "Yardım Masası"
 
 msgid "Assign managers responsible for helpdesk tickets per department."
 msgstr ""
@@ -12003,7 +11995,7 @@ msgstr "Bu yorumu silmek istediğinizden emin misiniz?"
 msgid ""
 "Number of days after which an announcement automatically expires when no "
 "expiry date is set."
-msgstr ""
+msgstr "Son kullanma tarihi ayarlanmadığında duyurunun otomatik olarak sona ereceği gün sayısı."
 
 msgid "Tracking ID"
 msgstr "İzleme Kimliği"
@@ -12326,7 +12318,7 @@ msgid "New Username"
 msgstr "Yeni Kullanıcı Adı"
 
 msgid "Number of records shown per page across all list views."
-msgstr ""
+msgstr "Tüm liste görünümlerinde sayfa başına gösterilen kayıt sayısı."
 
 #, fuzzy
 #| msgid "Search in : Company"
@@ -14205,15 +14197,11 @@ msgstr "Geri ödeme talebi"
 msgid "No Comments have been added for this reimbursement request"
 msgstr "Bu geri ödeme talebi için herhangi bir yorum eklenmedi"
 
-#, fuzzy
-#| msgid "Symbol shown for monetary values e.g. $ €"
 msgid "Symbol shown for monetary values (e.g. $, €)."
-msgstr "Parasal değerler için gösterilen sembol; $ €"
+msgstr "Parasal değerler için gösterilen sembol (örn. $, €)."
 
-#, fuzzy
-#| msgid "Whether symbol appears before or after the amount"
 msgid "Whether the symbol appears before (prefix) or after (suffix)."
-msgstr "Sembolün miktardan önce mi yoksa sonra mı görüneceği"
+msgstr "Sembolün tutardan önce (önek) mi sonra (sonek) mi görüneceği."
 
 msgid "Company these currency settings apply to."
 msgstr ""
@@ -14723,7 +14711,7 @@ msgid "Submit and manage requests to change your work type assignment."
 msgstr ""
 
 msgid "Company-specific settings"
-msgstr ""
+msgstr "Şirkete özel ayarlar"
 
 #, python-format
 msgid ""
@@ -14732,11 +14720,13 @@ msgid ""
 "%(company_name)s company specifically.\n"
 "                        "
 msgstr ""
+"\n"
+"                            Bu ayarları şu anda özellikle "
+"%(company_name)s şirketi için yapılandırıyorsunuz.\n"
+"                        "
 
-#, fuzzy
-#| msgid "settings"
 msgid "Search settings…"
-msgstr "ayarlar"
+msgstr "Ayarlarda ara…"
 
 #, fuzzy
 #| msgid "No rating found."
@@ -14753,10 +14743,8 @@ msgid ""
 "Post job openings directly to LinkedIn and manage applicants from Horilla."
 msgstr ""
 
-#, fuzzy
-#| msgid "Prefix added to employee badge IDs e.g. EMP0001"
 msgid "Prefix added to every auto-generated employee badge ID (e.g. PEP0001)."
-msgstr "Çalışan rozet kimliklerine önek eklendi, ör. EMP0001"
+msgstr "Otomatik oluşturulan her çalışan rozet kimliğine eklenen önek (örn. PEP0001)."
 
 msgid "Do you want to archive this skill zone ?"
 msgstr "Bu yetenek alanını arşivlemek ister misin?"
@@ -16650,7 +16638,7 @@ msgid "Stuck"
 msgstr "Başa Dön"
 
 msgid "Offboarding"
-msgstr "Dışarı Çıkış"
+msgstr "İşten Ayrılma"
 
 msgid "Resignation Letters"
 msgstr "İstifa Mektupları"
@@ -17362,10 +17350,8 @@ msgstr ""
 msgid "Recruitments"
 msgstr "Alımlar"
 
-#, fuzzy
-#| msgid "Active"
 msgid "Active hiring"
-msgstr "Aktif"
+msgstr "Aktif işe alım"
 
 #, fuzzy
 #| msgid "Onboarding Stages"
@@ -22082,18 +22068,14 @@ msgstr ""
 msgid "Trying to connect..."
 msgstr "Bağlantı kurmaya çalışıyorum..."
 
-#, fuzzy
-#| msgid "Department Total Amount"
 msgid "Department Headcount"
-msgstr "Bölüm Toplam Miktarı"
+msgstr "Departman Bazlı Personel"
 
-#, fuzzy
-#| msgid "department"
 msgid "Top 10 departments"
-msgstr "bölüm"
+msgstr "İlk 10 departman"
 
 msgid "Daily leaves — current week"
-msgstr ""
+msgstr "Günlük izinler — bu hafta"
 
 #, fuzzy
 #| msgid "Employee tag"
@@ -22202,25 +22184,19 @@ msgstr "Devam süresi uzatma onayı"
 msgid "Leave Analytics"
 msgstr "Haftalık İzin Analizleri"
 
-#, fuzzy
-#| msgid "This Month"
 msgid "this month"
 msgstr "Bu Ay"
 
-#, fuzzy
-#| msgid "Todays's New Joiners"
 msgid "No new joiners"
-msgstr "Bugünün Yeni Katılımcıları"
+msgstr "Yeni katılan yok"
 
 #, fuzzy
 #| msgid "Pending"
 msgid "No pending"
 msgstr "Beklemede"
 
-#, fuzzy
-#| msgid "Open Recruitment"
 msgid "Open Recruitments"
-msgstr "Açık Alım"
+msgstr "Açık İşe Alımlar"
 
 #, fuzzy
 #| msgid "Expired"

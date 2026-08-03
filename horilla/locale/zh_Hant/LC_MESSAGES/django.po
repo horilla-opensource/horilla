@@ -54,7 +54,7 @@ msgid "Company"
 msgstr "公司"
 
 msgid "Shift"
-msgstr "輪班"
+msgstr "班次"
 
 msgid "Tags"
 msgstr "標籤"
@@ -2158,20 +2158,14 @@ msgstr ""
 msgid "Toggle visibility"
 msgstr "評級可見度"
 
-#, fuzzy
-#| msgid "Tag"
 msgid "ago"
 msgstr "標籤"
 
-#, fuzzy
-#| msgid "Present"
 msgid "Present Today"
-msgstr "出席"
+msgstr "今日出勤"
 
-#, fuzzy
-#| msgid "Generate"
 msgid "rate"
-msgstr "產生"
+msgstr "率"
 
 msgid "On Time"
 msgstr "準時"
@@ -3601,15 +3595,13 @@ msgid "Mail Server"
 msgstr "郵件伺服器"
 
 msgid "Configure an outgoing mail server so Horilla can send emails."
-msgstr ""
+msgstr "設定外寄郵件伺服器，以便 Horilla 可以傳送電子郵件。"
 
-#, fuzzy
-#| msgid "Import Employee"
 msgid "First Employee"
-msgstr "導入員工"
+msgstr "首位員工"
 
 msgid "Add your first employee to bring everything together."
-msgstr ""
+msgstr "新增首位員工以完成整體設定。"
 
 msgid "You dont have permission."
 msgstr "您沒有權限。"
@@ -4058,10 +4050,8 @@ msgstr "已發布"
 msgid "Published On"
 msgstr "已發布"
 
-#, fuzzy
-#| msgid "Export Employees"
 msgid "Total Employees"
-msgstr "出口員工"
+msgstr "員工總數"
 
 #, fuzzy
 #| msgid "Is Published"
@@ -5537,10 +5527,8 @@ msgstr ""
 msgid "Select Date Format:"
 msgstr "選擇日期格式："
 
-#, fuzzy
-#| msgid "How dates are displayed across the system"
 msgid "How dates are displayed across the system for the selected company."
-msgstr "日期如何在系統中顯示"
+msgstr "所選公司在系統中如何顯示日期。"
 
 msgid "Day, Month, Year (e.g., 30-12-2023)"
 msgstr "日、月、年（例如，2023 年 12 月 30 日）"
@@ -5579,10 +5567,8 @@ msgstr "全日名、全月名稱、日、年（例如，2023 年 1 月 1 日，�
 msgid "Select Time Format:"
 msgstr "選擇時間格式："
 
-#, fuzzy
-#| msgid "How dates are displayed across the system"
 msgid "How times are displayed across the system for the selected company."
-msgstr "日期如何在系統中顯示"
+msgstr "所選公司在系統中如何顯示時間。"
 
 msgid "12 Hr. (e.g., 06:00 AM or 06:00 PM)"
 msgstr "12 小時（例如，上午 06:00 或下午 06:00）"
@@ -5779,7 +5765,7 @@ msgstr "目前沒有電子郵件範本。"
 
 msgid ""
 "Configure system defaults, display formatting, and data access controls."
-msgstr ""
+msgstr "設定系統預設值、顯示格式與資料存取控制。"
 
 #, fuzzy
 #| msgid "General Settings"
@@ -5787,18 +5773,16 @@ msgid "General Defaults"
 msgstr "常規設定"
 
 msgid "Formatting & Localization"
-msgstr ""
+msgstr "格式與本地化"
 
 msgid "Data & Access Controls"
-msgstr ""
+msgstr "資料與存取控制"
 
 msgid "HR setup checklist"
 msgstr ""
 
-#, fuzzy
-#| msgid "Get started with Django"
 msgid "Get started with Horilla HR"
-msgstr "開始使用 Django"
+msgstr "開始使用 Horilla HR"
 
 #, python-format
 msgid ""
@@ -5806,9 +5790,12 @@ msgid ""
 "                            %(done)s of %(total)s steps complete\n"
 "                        "
 msgstr ""
+"\n"
+"                            已完成 %(done)s / %(total)s 步\n"
+"                        "
 
 msgid "finish setup to unlock your full HR system"
-msgstr ""
+msgstr "完成設定以解鎖完整的 HR 系統"
 
 msgid "Dismiss setup checklist"
 msgstr ""
@@ -5827,13 +5814,16 @@ msgid ""
 "                            Next: %(title)s\n"
 "                        "
 msgstr ""
+"\n"
+"                            下一步：%(title)s\n"
+"                        "
 
 #, python-format
 msgid "Set up %(title)s"
-msgstr ""
+msgstr "設定 %(title)s"
 
 msgid "Set up now"
-msgstr ""
+msgstr "立即設定"
 
 #, fuzzy
 #| msgid "Completed"
@@ -8738,7 +8728,7 @@ msgid "Expected working"
 msgstr "預期工作"
 
 msgid "On Leave"
-msgstr "休假"
+msgstr "請假中"
 
 msgid "Waiting Approval"
 msgstr "等待批准"
@@ -11784,7 +11774,7 @@ msgstr "您確定要刪除該公司嗎？"
 msgid ""
 "Number of days after which an announcement automatically expires when no "
 "expiry date is set."
-msgstr ""
+msgstr "未設定到期日時，公告自動過期的天數。"
 
 msgid "Tracking ID"
 msgstr "追蹤 ID"
@@ -12109,7 +12099,7 @@ msgid "New Username"
 msgstr "輸入新使用者名稱"
 
 msgid "Number of records shown per page across all list views."
-msgstr ""
+msgstr "所有列表檢視中每頁顯示的記錄數。"
 
 #, fuzzy
 #| msgid "Search in : Company"
@@ -13981,15 +13971,11 @@ msgstr "的報銷請求"
 msgid "No Comments have been added for this reimbursement request"
 msgstr "尚未為該員工添加任何註釋"
 
-#, fuzzy
-#| msgid "Symbol shown for monetary values e.g. $ €"
 msgid "Symbol shown for monetary values (e.g. $, €)."
-msgstr "顯示貨幣價值的符號，例如$ 歐元"
+msgstr "貨幣金額顯示的符號（例如 $、€）。"
 
-#, fuzzy
-#| msgid "Whether symbol appears before or after the amount"
 msgid "Whether the symbol appears before (prefix) or after (suffix)."
-msgstr "符號出現在金額之前還是之後"
+msgstr "符號顯示在金額之前（前綴）還是之後（後綴）。"
 
 msgid "Company these currency settings apply to."
 msgstr ""
@@ -14497,7 +14483,7 @@ msgid "Submit and manage requests to change your work type assignment."
 msgstr ""
 
 msgid "Company-specific settings"
-msgstr ""
+msgstr "公司專屬設定"
 
 #, python-format
 msgid ""
@@ -14506,11 +14492,13 @@ msgid ""
 "%(company_name)s company specifically.\n"
 "                        "
 msgstr ""
+"\n"
+"                            您目前正在為公司 "
+"%(company_name)s 專門設定這些選項。\n"
+"                        "
 
-#, fuzzy
-#| msgid "Search Queries"
 msgid "Search settings…"
-msgstr "搜尋查詢"
+msgstr "搜尋設定…"
 
 #, fuzzy
 #| msgid "No rating found."
@@ -14527,10 +14515,8 @@ msgid ""
 "Post job openings directly to LinkedIn and manage applicants from Horilla."
 msgstr ""
 
-#, fuzzy
-#| msgid "Prefix added to employee badge IDs e.g. EMP0001"
 msgid "Prefix added to every auto-generated employee badge ID (e.g. PEP0001)."
-msgstr "加到員工徽章 ID 的前綴，例如電磁脈衝0001"
+msgstr "自動產生的員工工號前綴（例如 PEP0001）。"
 
 msgid "Do you want to archive this skill zone ?"
 msgstr "您想存檔該技能區嗎？"
@@ -17133,10 +17119,8 @@ msgstr ""
 msgid "Recruitments"
 msgstr "招募"
 
-#, fuzzy
-#| msgid "Active"
 msgid "Active hiring"
-msgstr "積極的"
+msgstr "正在招聘"
 
 #, fuzzy
 #| msgid "Onboarding Stages"
@@ -21757,18 +21741,14 @@ msgstr ""
 msgid "Trying to connect..."
 msgstr "正在嘗試連接..."
 
-#, fuzzy
-#| msgid "Department Total Amount"
 msgid "Department Headcount"
-msgstr "部門總金額"
+msgstr "部門人數"
 
-#, fuzzy
-#| msgid "department"
 msgid "Top 10 departments"
-msgstr "部門"
+msgstr "前 10 個部門"
 
 msgid "Daily leaves — current week"
-msgstr ""
+msgstr "每日請假 — 本週"
 
 #, fuzzy
 #| msgid "Employee tag"
@@ -21877,25 +21857,19 @@ msgstr "考勤加班審批"
 msgid "Leave Analytics"
 msgstr "每週休假分析"
 
-#, fuzzy
-#| msgid "This Month"
 msgid "this month"
 msgstr "本月"
 
-#, fuzzy
-#| msgid "Todays's New Joiners"
 msgid "No new joiners"
-msgstr "今日出席人數"
+msgstr "本月無新人"
 
 #, fuzzy
 #| msgid "Pending"
 msgid "No pending"
 msgstr "待辦的"
 
-#, fuzzy
-#| msgid "Open Recruitment"
 msgid "Open Recruitments"
-msgstr "公開招聘"
+msgstr "進行中的招聘"
 
 #, fuzzy
 #| msgid "Expired"

@@ -55,7 +55,7 @@ msgid "Company"
 msgstr "الشركة"
 
 msgid "Shift"
-msgstr "الوردية"
+msgstr "وردية"
 
 msgid "Tags"
 msgstr "الوسوم"
@@ -2161,20 +2161,14 @@ msgstr ""
 msgid "Toggle visibility"
 msgstr "رؤية التقييم"
 
-#, fuzzy
-#| msgid "Tag"
 msgid "ago"
 msgstr "الوسم"
 
-#, fuzzy
-#| msgid "Present"
 msgid "Present Today"
-msgstr "حاضر"
+msgstr "الحاضرون اليوم"
 
-#, fuzzy
-#| msgid "Generate"
 msgid "rate"
-msgstr "انشاء"
+msgstr "معدل"
 
 msgid "On Time"
 msgstr "في الوقت المحدد"
@@ -3605,15 +3599,13 @@ msgid "Mail Server"
 msgstr "خادم البريد"
 
 msgid "Configure an outgoing mail server so Horilla can send emails."
-msgstr ""
+msgstr "قم بتكوين خادم بريد صادر حتى يتمكن Horilla من إرسال رسائل البريد الإلكتروني."
 
-#, fuzzy
-#| msgid "Import Employee"
 msgid "First Employee"
-msgstr "استيراد موظف"
+msgstr "أول موظف"
 
 msgid "Add your first employee to bring everything together."
-msgstr ""
+msgstr "أضف أول موظف لإكمال الإعداد."
 
 msgid "You dont have permission."
 msgstr "ليس لديك صلاحية."
@@ -4062,10 +4054,8 @@ msgstr "هل تم النشر"
 msgid "Published On"
 msgstr "هل تم النشر"
 
-#, fuzzy
-#| msgid "Export Employees"
 msgid "Total Employees"
-msgstr "تصدير الموظفين"
+msgstr "إجمالي الموظفين"
 
 #, fuzzy
 #| msgid "Is Published"
@@ -5546,10 +5536,8 @@ msgstr ""
 msgid "Select Date Format:"
 msgstr "حدد تنسيق التاريخ:"
 
-#, fuzzy
-#| msgid "How dates are displayed across the system"
 msgid "How dates are displayed across the system for the selected company."
-msgstr "كيف يتم عرض التواريخ عبر النظام"
+msgstr "كيف تُعرض التواريخ عبر النظام للشركة المحددة."
 
 msgid "Day, Month, Year (e.g., 30-12-2023)"
 msgstr "يوم، شهر، سنة (مثال: 30-12-2023)"
@@ -5590,10 +5578,8 @@ msgstr ""
 msgid "Select Time Format:"
 msgstr "حدد تنسيق الوقت:"
 
-#, fuzzy
-#| msgid "How dates are displayed across the system"
 msgid "How times are displayed across the system for the selected company."
-msgstr "كيف يتم عرض التواريخ عبر النظام"
+msgstr "كيف تُعرض الأوقات عبر النظام للشركة المحددة."
 
 msgid "12 Hr. (e.g., 06:00 AM or 06:00 PM)"
 msgstr "12 ساعة (مثال: 06:00 ص أو 06:00 م)"
@@ -5788,7 +5774,7 @@ msgstr "لا توجد قوالب بريد إلكتروني متاحة حاليا
 
 msgid ""
 "Configure system defaults, display formatting, and data access controls."
-msgstr ""
+msgstr "قم بتكوين إعدادات النظام الافتراضية وتنسيق العرض وضوابط الوصول إلى البيانات."
 
 #, fuzzy
 #| msgid "General Settings"
@@ -5796,16 +5782,16 @@ msgid "General Defaults"
 msgstr "الإعدادات العامة"
 
 msgid "Formatting & Localization"
-msgstr ""
+msgstr "التنسيق والتوطين"
 
 msgid "Data & Access Controls"
-msgstr ""
+msgstr "ضوابط البيانات والوصول"
 
 msgid "HR setup checklist"
 msgstr ""
 
 msgid "Get started with Horilla HR"
-msgstr ""
+msgstr "ابدأ مع Horilla HR"
 
 #, python-format
 msgid ""
@@ -5813,9 +5799,12 @@ msgid ""
 "                            %(done)s of %(total)s steps complete\n"
 "                        "
 msgstr ""
+"\n"
+"                            تم إكمال %(done)s من %(total)s خطوات\n"
+"                        "
 
 msgid "finish setup to unlock your full HR system"
-msgstr ""
+msgstr "أكمل الإعداد لفتح نظام الموارد البشرية بالكامل"
 
 msgid "Dismiss setup checklist"
 msgstr ""
@@ -5834,13 +5823,16 @@ msgid ""
 "                            Next: %(title)s\n"
 "                        "
 msgstr ""
+"\n"
+"                            التالي: %(title)s\n"
+"                        "
 
 #, python-format
 msgid "Set up %(title)s"
-msgstr ""
+msgstr "إعداد %(title)s"
 
 msgid "Set up now"
-msgstr ""
+msgstr "إعداد الآن"
 
 #, fuzzy
 #| msgid "Completed"
@@ -11808,7 +11800,7 @@ msgstr "هل تريد حذف هذا التوظيف؟"
 msgid ""
 "Number of days after which an announcement automatically expires when no "
 "expiry date is set."
-msgstr ""
+msgstr "عدد الأيام التي بعدها تنتهي صلاحية الإعلان تلقائيًا عند عدم تعيين تاريخ انتهاء."
 
 msgid "Tracking ID"
 msgstr "رقم التتبع"
@@ -12138,7 +12130,7 @@ msgid "New Username"
 msgstr "اسم مستخدم جديد"
 
 msgid "Number of records shown per page across all list views."
-msgstr ""
+msgstr "عدد السجلات المعروضة في كل صفحة عبر جميع طرق عرض القوائم."
 
 #, fuzzy
 #| msgid "Search in : Company"
@@ -14017,15 +14009,11 @@ msgstr "طلب مبلغ مسترد لـ"
 msgid "No Comments have been added for this reimbursement request"
 msgstr "لم تتم إضافة أي تعليقات لطلب المبلغ المسترد هذا"
 
-#, fuzzy
-#| msgid "Symbol shown for monetary values e.g. $ €"
 msgid "Symbol shown for monetary values (e.g. $, €)."
-msgstr "الرمز الموضح للقيم النقدية، على سبيل المثال. $ €"
+msgstr "الرمز المعروض للقيم النقدية (مثل $، €)."
 
-#, fuzzy
-#| msgid "Whether symbol appears before or after the amount"
 msgid "Whether the symbol appears before (prefix) or after (suffix)."
-msgstr "ما إذا كان الرمز يظهر قبل المبلغ أو بعده"
+msgstr "ما إذا كان الرمز يظهر قبل المبلغ (بادئة) أو بعده (لاحقة)."
 
 msgid "Company these currency settings apply to."
 msgstr ""
@@ -14535,7 +14523,7 @@ msgid "Submit and manage requests to change your work type assignment."
 msgstr ""
 
 msgid "Company-specific settings"
-msgstr ""
+msgstr "إعدادات خاصة بالشركة"
 
 #, python-format
 msgid ""
@@ -14544,11 +14532,13 @@ msgid ""
 "%(company_name)s company specifically.\n"
 "                        "
 msgstr ""
+"\n"
+"                            أنت تقوم حاليًا بضبط هذه الإعدادات خصيصًا لشركة "
+"%(company_name)s.\n"
+"                        "
 
-#, fuzzy
-#| msgid "settings"
 msgid "Search settings…"
-msgstr "الإعدادات"
+msgstr "البحث في الإعدادات…"
 
 #, fuzzy
 #| msgid "No rating found."
@@ -14565,10 +14555,8 @@ msgid ""
 "Post job openings directly to LinkedIn and manage applicants from Horilla."
 msgstr ""
 
-#, fuzzy
-#| msgid "Prefix added to employee badge IDs e.g. EMP0001"
 msgid "Prefix added to every auto-generated employee badge ID (e.g. PEP0001)."
-msgstr "تمت إضافة البادئة إلى معرفات شارة الموظف، على سبيل المثال. EMP0001"
+msgstr "البادئة المضافة إلى كل معرّف شارة موظف يُنشأ تلقائيًا (مثل PEP0001)."
 
 msgid "Do you want to archive this skill zone ?"
 msgstr "هل تريد أرشفة منطقة المهارات هذه؟"
@@ -17178,10 +17166,8 @@ msgstr ""
 msgid "Recruitments"
 msgstr "عمليات التوظيف"
 
-#, fuzzy
-#| msgid "Active"
 msgid "Active hiring"
-msgstr "نشط"
+msgstr "توظيف نشط"
 
 #, fuzzy
 #| msgid "Onboarding Stages"
@@ -21810,18 +21796,14 @@ msgstr ""
 msgid "Trying to connect..."
 msgstr "جاري محاولة الاتصال..."
 
-#, fuzzy
-#| msgid "Department Total Amount"
 msgid "Department Headcount"
-msgstr "إجمالي المبلغ للقسم"
+msgstr "عدد الموظفين حسب القسم"
 
-#, fuzzy
-#| msgid "department"
 msgid "Top 10 departments"
-msgstr "القسم"
+msgstr "أفضل 10 أقسام"
 
 msgid "Daily leaves — current week"
-msgstr ""
+msgstr "الإجازات اليومية — الأسبوع الحالي"
 
 #, fuzzy
 #| msgid "Employee tag"
@@ -21930,25 +21912,19 @@ msgstr "الموافقة على الوقت الإضافي للحضور"
 msgid "Leave Analytics"
 msgstr "تحليلات الإجازات الأسبوعية"
 
-#, fuzzy
-#| msgid "This Month"
 msgid "this month"
 msgstr "هذا الشهر"
 
-#, fuzzy
-#| msgid "Todays's New Joiners"
 msgid "No new joiners"
-msgstr "المنضمون الجدد اليوم"
+msgstr "لا يوجد موظفون جدد"
 
 #, fuzzy
 #| msgid "Pending"
 msgid "No pending"
 msgstr "معلق"
 
-#, fuzzy
-#| msgid "Open Recruitment"
 msgid "Open Recruitments"
-msgstr "التوظيف المفتوح"
+msgstr "توظيفات مفتوحة"
 
 #, fuzzy
 #| msgid "Expired"

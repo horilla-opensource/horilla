@@ -527,7 +527,7 @@ msgid "Asset Requests"
 msgstr "Запити на активи"
 
 msgid "Dashboard"
-msgstr "Дашборд"
+msgstr "Панель"
 
 msgid "Requests & Allocation"
 msgstr "Запити та розподіл"
@@ -2277,20 +2277,14 @@ msgstr ""
 msgid "Toggle visibility"
 msgstr "Видимість рейтингу"
 
-#, fuzzy
-#| msgid "Tag"
 msgid "ago"
 msgstr "Тег"
 
-#, fuzzy
-#| msgid "Present"
 msgid "Present Today"
-msgstr "Присутній"
+msgstr "Сьогодні присутні"
 
-#, fuzzy
-#| msgid "Generate"
 msgid "rate"
-msgstr "Створити"
+msgstr "рівень"
 
 msgid "On Time"
 msgstr "Вчасно"
@@ -3899,15 +3893,13 @@ msgid "Mail Server"
 msgstr "Поштовий сервер"
 
 msgid "Configure an outgoing mail server so Horilla can send emails."
-msgstr ""
+msgstr "Налаштуйте вихідний поштовий сервер, щоб Horilla міг надсилати листи."
 
-#, fuzzy
-#| msgid "Import Employee"
 msgid "First Employee"
-msgstr "Імпорт співробітника"
+msgstr "Перший працівник"
 
 msgid "Add your first employee to bring everything together."
-msgstr ""
+msgstr "Додайте першого працівника, щоб усе запрацювало."
 
 msgid "You dont have permission."
 msgstr "У вас немає дозволу."
@@ -5885,10 +5877,8 @@ msgstr ""
 msgid "Select Date Format:"
 msgstr "Оберіть формат дати:"
 
-#, fuzzy
-#| msgid "How dates are displayed across the system"
 msgid "How dates are displayed across the system for the selected company."
-msgstr "Як дати відображаються в системі"
+msgstr "Як дати відображаються в системі для вибраної компанії."
 
 msgid "Day, Month, Year (e.g., 30-12-2023)"
 msgstr "День, місяць, рік (напр., 30-12-2023)"
@@ -5929,10 +5919,8 @@ msgstr ""
 msgid "Select Time Format:"
 msgstr "Виберіть формат часу:"
 
-#, fuzzy
-#| msgid "How dates are displayed across the system"
 msgid "How times are displayed across the system for the selected company."
-msgstr "Як дати відображаються в системі"
+msgstr "Як час відображається в системі для вибраної компанії."
 
 msgid "12 Hr. (e.g., 06:00 AM or 06:00 PM)"
 msgstr "12-годинний (напр., 06:00 AM або 06:00 PM)"
@@ -6134,7 +6122,7 @@ msgstr "Наразі немає доступних шаблонів електр
 
 msgid ""
 "Configure system defaults, display formatting, and data access controls."
-msgstr ""
+msgstr "Налаштуйте системні значення за замовчуванням, форматування та контроль доступу."
 
 #, fuzzy
 #| msgid "General Settings"
@@ -6142,16 +6130,16 @@ msgid "General Defaults"
 msgstr "Загальні налаштування"
 
 msgid "Formatting & Localization"
-msgstr ""
+msgstr "Форматування та локалізація"
 
 msgid "Data & Access Controls"
-msgstr ""
+msgstr "Контроль даних і доступу"
 
 msgid "HR setup checklist"
 msgstr ""
 
 msgid "Get started with Horilla HR"
-msgstr ""
+msgstr "Початок роботи з Horilla HR"
 
 #, python-format
 msgid ""
@@ -6159,9 +6147,12 @@ msgid ""
 "                            %(done)s of %(total)s steps complete\n"
 "                        "
 msgstr ""
+"\n"
+"                            %(done)s з %(total)s кроків виконано\n"
+"                        "
 
 msgid "finish setup to unlock your full HR system"
-msgstr ""
+msgstr "Завершіть налаштування, щоб відкрити повну HR-систему"
 
 msgid "Dismiss setup checklist"
 msgstr ""
@@ -6180,13 +6171,16 @@ msgid ""
 "                            Next: %(title)s\n"
 "                        "
 msgstr ""
+"\n"
+"                            Далі: %(title)s\n"
+"                        "
 
 #, python-format
 msgid "Set up %(title)s"
-msgstr ""
+msgstr "Налаштувати %(title)s"
 
 msgid "Set up now"
-msgstr ""
+msgstr "Налаштувати зараз"
 
 #, fuzzy
 #| msgid "Completed"
@@ -6934,7 +6928,7 @@ msgid "Payment"
 msgstr "Платіж"
 
 msgid "dashboard"
-msgstr "панель керування"
+msgstr "Панель"
 
 msgid "pipeline"
 msgstr "воронка підбору"
@@ -7118,7 +7112,7 @@ msgid "onboarding"
 msgstr "адаптація"
 
 msgid "settings"
-msgstr "налаштування"
+msgstr "Налаштування"
 
 msgid "department-view"
 msgstr "перегляд відділу"
@@ -12386,7 +12380,7 @@ msgstr "Ви впевнені, що хочете видалити цю комп�
 msgid ""
 "Number of days after which an announcement automatically expires when no "
 "expiry date is set."
-msgstr ""
+msgstr "Кількість днів, після яких оголошення автоматично закінчується, якщо дату завершення не вказано."
 
 #, fuzzy
 #| msgid "Tracking Id"
@@ -12727,7 +12721,7 @@ msgid "New Username"
 msgstr "Введіть нове ім'я користувача"
 
 msgid "Number of records shown per page across all list views."
-msgstr ""
+msgstr "Кількість записів на сторінці в усіх списках."
 
 #, fuzzy
 #| msgid "Search in : Company"
@@ -14712,15 +14706,11 @@ msgstr "запит на компенсацію витрат"
 msgid "No Comments have been added for this reimbursement request"
 msgstr "Для цього працівника не додано жодних приміток"
 
-#, fuzzy
-#| msgid "Symbol shown for monetary values e.g. $ €"
 msgid "Symbol shown for monetary values (e.g. $, €)."
-msgstr "Символ, показаний для грошових значень, напр. $ €"
+msgstr "Символ для грошових значень (напр. $, €)."
 
-#, fuzzy
-#| msgid "Whether symbol appears before or after the amount"
 msgid "Whether the symbol appears before (prefix) or after (suffix)."
-msgstr "Чи з’являється символ до чи після суми"
+msgstr "Чи з’являється символ перед сумою (префікс) чи після (суфікс)."
 
 msgid "Company these currency settings apply to."
 msgstr ""
@@ -15241,7 +15231,7 @@ msgid "Submit and manage requests to change your work type assignment."
 msgstr ""
 
 msgid "Company-specific settings"
-msgstr ""
+msgstr "Налаштування для компанії"
 
 #, python-format
 msgid ""
@@ -15250,11 +15240,13 @@ msgid ""
 "%(company_name)s company specifically.\n"
 "                        "
 msgstr ""
+"\n"
+"                            Зараз ви налаштовуєте ці параметри спеціально для компанії "
+"%(company_name)s.\n"
+"                        "
 
-#, fuzzy
-#| msgid "settings"
 msgid "Search settings…"
-msgstr "налаштування"
+msgstr "Пошук налаштувань…"
 
 #, fuzzy
 #| msgid "No penalties found"
@@ -15273,10 +15265,8 @@ msgid ""
 "Post job openings directly to LinkedIn and manage applicants from Horilla."
 msgstr ""
 
-#, fuzzy
-#| msgid "Prefix added to employee badge IDs e.g. EMP0001"
 msgid "Prefix added to every auto-generated employee badge ID (e.g. PEP0001)."
-msgstr ""
+msgstr "Префікс для кожного автоматично згенерованого ID бейджа працівника (напр. PEP0001)."
 "Префікс, доданий до ідентифікаторів бейджів співробітників, напр. EMP0001"
 
 msgid "Do you want to archive this skill zone ?"
@@ -17996,10 +17986,8 @@ msgstr ""
 msgid "Recruitments"
 msgstr "Підбір персоналу"
 
-#, fuzzy
-#| msgid "Active"
 msgid "Active hiring"
-msgstr "Активний"
+msgstr "Активний найм"
 
 #, fuzzy
 #| msgid "Onboarding Stages"
@@ -22967,18 +22955,14 @@ msgstr "Переконайтеся, що ви надсилаєте корект�
 msgid "Trying to connect..."
 msgstr "Спроба підключення..."
 
-#, fuzzy
-#| msgid "Department Total Amount"
 msgid "Department Headcount"
-msgstr "Загальна сума по відділу"
+msgstr "Чисельність за відділами"
 
-#, fuzzy
-#| msgid "department"
 msgid "Top 10 departments"
-msgstr "відділ"
+msgstr "Топ-10 відділів"
 
 msgid "Daily leaves — current week"
-msgstr ""
+msgstr "Щоденні відпустки — поточний тиждень"
 
 #, fuzzy
 #| msgid "Employee tag"
@@ -23087,23 +23071,19 @@ msgstr "Погодження понаднормових"
 msgid "Leave Analytics"
 msgstr "Тижнева аналітика відпусток"
 
-#, fuzzy
-#| msgid "This Month"
 msgid "this month"
 msgstr "Цього місяця"
 
 msgid "No new joiners"
-msgstr ""
+msgstr "Немає нових співробітників"
 
 #, fuzzy
 #| msgid "Pending"
 msgid "No pending"
 msgstr "Очікується"
 
-#, fuzzy
-#| msgid "Open Recruitment"
 msgid "Open Recruitments"
-msgstr "Відкритий набір"
+msgstr "Відкриті вакансії"
 
 #, fuzzy
 #| msgid "Expired"
