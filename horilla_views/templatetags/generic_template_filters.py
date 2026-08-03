@@ -150,6 +150,30 @@ def linkify(value, user=None):
     return value
 
 
+@register.filter(name="employee_profile_url")
+def employee_profile_url(obj):
+    """
+    Return the employee individual-view URL for the employee a record belongs
+    to — the record's `employee_id` FK, or the record itself when it already
+    is an Employee. Returns "" when the record has no employee (e.g. Leave
+    Type), letting templates fall back to plain text.
+
+    Used by the generic detail-view modal to make the employee-name heading a
+    link to that employee's profile.
+    """
+    from django.urls import NoReverseMatch, reverse
+
+    from employee.models import Employee
+
+    employee = obj if isinstance(obj, Employee) else getattr(obj, "employee_id", None)
+    if isinstance(employee, Employee):
+        try:
+            return reverse("employee-view-individual", kwargs={"obj_id": employee.pk})
+        except NoReverseMatch:
+            return ""
+    return ""
+
+
 @register.filter(name="format")
 def format(string: str, instance: object):
     """

@@ -215,7 +215,23 @@
                         type="button"
                         title="{% trans 'Back' %}"
                         class="inline-flex items-center gap-1.5 rounded-xl border border-secondary-200 bg-white px-3.5 py-2 text-sm font-medium text-color-600 shadow-sm transition-all hover:border-primary-500 hover:text-primary-600"
-                        onclick="var navBar = document.getElementById('employeeListNavBar');
+                        onclick="var returnPage = null, returnModal = null, returnFor = null;
+                            try {
+                                returnPage = sessionStorage.getItem('detailViewReturnPage');
+                                returnModal = sessionStorage.getItem('detailViewReturnModal');
+                                returnFor = sessionStorage.getItem('detailViewReturnFor');
+                            } catch (e) {}
+                            if (returnPage && returnFor === window.location.pathname) {
+                                try {
+                                    sessionStorage.removeItem('detailViewReturnPage');
+                                    sessionStorage.removeItem('detailViewReturnModal');
+                                    sessionStorage.removeItem('detailViewReturnFor');
+                                    if (returnModal) { sessionStorage.setItem('reopenDetailModal', returnModal); }
+                                } catch (e) {}
+                                window.location.href = returnPage;
+                                return;
+                            }
+                            var navBar = document.getElementById('employeeListNavBar');
                             var list = document.getElementById('listContainer');
                             if (navBar && list) {
                                 if (window.history && history.pushState) {

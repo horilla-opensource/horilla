@@ -46,6 +46,33 @@
 >
     <div class="oh-modal__dialog" id="genericModalBody"></div>
 </div>
+<script>
+    // Returning from an employee profile that was opened via the name link
+    // in a detail-view modal: the profile's Back button stashes the modal's
+    // own URL under `reopenDetailModal` before navigating here, so the exact
+    // detail view the user left is restored instead of just the bare list.
+    // The key is consumed immediately, so a plain revisit never re-triggers it.
+    document.addEventListener("DOMContentLoaded", function () {
+        var reopenUrl = null;
+        try {
+            reopenUrl = sessionStorage.getItem("reopenDetailModal");
+            if (reopenUrl) {
+                sessionStorage.removeItem("reopenDetailModal");
+            }
+        } catch (e) {}
+        if (!reopenUrl || !window.htmx) {
+            return;
+        }
+        htmx.ajax("GET", reopenUrl, {
+            target: "#genericModalBody",
+            swap: "innerHTML",
+        });
+        var modal = document.getElementById("genericModal");
+        if (modal) {
+            modal.classList.add("oh-modal--show");
+        }
+    });
+</script>
 
 <div
     style="z-index: 1022"
