@@ -10,6 +10,7 @@ from typing import Any
 from urllib.parse import parse_qs, parse_qsl, urlencode, urlparse, urlunparse
 
 import pandas as pd
+from auditlog.registry import auditlog
 from bs4 import BeautifulSoup
 from django import forms
 from django.contrib import messages
@@ -65,6 +66,19 @@ from horilla_views.templatetags.generic_template_filters import getattribute
 logger = logging.getLogger(__name__)
 
 _dynamic_url_routes_registered: set = set()
+
+
+def model_has_audit_tracking(model) -> bool:
+    """
+    Cheap, in-memory check for whether ``model`` actually has history
+    tracking wired up, as opposed to merely inheriting the unconditional
+    ``horilla_history`` field every ``HorillaModel`` subclass gets.
+    """
+    return (
+        hasattr(model, "history_set")
+        or hasattr(model, "history")
+        or auditlog.contains(model)
+    )
 
 
 def register_dynamic_url(route: str, view, name: str = None) -> None:
@@ -356,7 +370,11 @@ class HorillaListView(ListView):
 
         self.columns = updated_column
 
-        if self.history_tracking and issubclass(self.model, HorillaModel):
+        if (
+            self.history_tracking
+            and issubclass(self.model, HorillaModel)
+            and model_has_audit_tracking(self.model)
+        ):
             self.columns += [(_("History"), "get_model_history")]
         self.visible_column = list(self.columns)
 

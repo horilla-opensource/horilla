@@ -2,7 +2,7 @@
 <div id="generic-history-container">
     <button
         hidden
-        hx-get="{{ request.path }}"
+        hx-get="{{ request.get_full_path }}"
         class="reload-record"
         hx-target="#generic-history-container"
         hx-swap="outerHTML"
@@ -16,7 +16,7 @@
                 class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md flip-rtl hydrated"
             ></ion-icon>
         </a>
-        <span class="oh-activity-sidebar__title fw-bold">{{ object }}'s Logs</span>
+        <span class="oh-activity-sidebar__title fw-bold">{{ object }}{% trans "'s Logs" %}</span>
     </div>
 
     {% if tracking %}
