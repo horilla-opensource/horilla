@@ -56,7 +56,7 @@ pytz
 PyYAML
 pyzk==0.9
 qrcode
-reportlab==4.0.9
+reportlab==5.0.0
 requests
 responses
 setuptools
