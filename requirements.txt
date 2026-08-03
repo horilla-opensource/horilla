@@ -32,7 +32,7 @@ et-xmlfile
 geopy
 google-api-python-client
 google-auth-oauthlib
-google-cloud-storage==3.0.0
+google-cloud-storage==3.13.0
 html5lib
 Jinja2
 idna
