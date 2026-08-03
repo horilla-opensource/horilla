@@ -52,7 +52,8 @@
                 onclick="
                     var checked = $(this).is(':checked');
                     var $form = $(this).closest('form');
-                    $form.find('.toggle-column-checkbox').each(function () {
+                    // Primary (first/fixed) column stays visible — never unselect it.
+                    $form.find('.toggle-column-checkbox:not(:disabled)').each(function () {
                         $(this).prop('checked', checked);
                         $(this).siblings('input[type=hidden]').val(checked ? '' : 'off');
                     });
@@ -85,14 +86,15 @@
                         type="hidden"
                         name="{{ field.name }}"
                         onchange="$(this).closest('form').find('[type=submit]').click()"
-                        {% if not field.initial %}value="false"{% endif %}
+                        {% if forloop.first %}{% elif not field.initial %}value="false"{% endif %}
                     >
                     <input
                         type="checkbox"
                         class="custom-checkbox toggle-column-checkbox"
                         id="toggle_{{ field.name }}"
                         aria-label="{{ field.label }}"
-                        {% if field.initial %}checked{% endif %}
+                        {% if forloop.first or field.initial %}checked{% endif %}
+                        {% if forloop.first %}disabled title="{% trans 'Primary column is always visible' %}"{% endif %}
                         onclick="
                             var value = '';
                             if (!$(this).is(':checked')) {
@@ -102,10 +104,10 @@
                             $(this).siblings('input[type=hidden]').val(value);
                             persistColumnToggle($(this).closest('form')[0]);
                             var $form = $(this).closest('form');
+                            var $toggleable = $form.find('.toggle-column-checkbox:not(:disabled)');
                             $form.find('.toggle-select-all').prop(
                                 'checked',
-                                $form.find('.toggle-column-checkbox').length ===
-                                    $form.find('.toggle-column-checkbox:checked').length
+                                $toggleable.length === $toggleable.filter(':checked').length
                             );
                             if (typeof window.__updateColumnConfigCount === 'function') {
                                 window.__updateColumnConfigCount($form[0]);
@@ -161,10 +163,14 @@
 
         $(".oh-column-config").each(function () {
             var $form = $(this);
-            var $columns = $form.find(".toggle-column-checkbox");
+            // Keep primary column checked even if an older preference hid it.
+            $form.find(".oh-column-config__item.is-fixed .toggle-column-checkbox")
+                .prop({ checked: true, disabled: true })
+                .siblings("input[type=hidden]").val("");
+            var $toggleable = $form.find(".toggle-column-checkbox:not(:disabled)");
             $form.find(".toggle-select-all").prop(
                 "checked",
-                $columns.length === $columns.filter(":checked").length
+                $toggleable.length === $toggleable.filter(":checked").length
             );
             updateColumnConfigCount(this);
         });

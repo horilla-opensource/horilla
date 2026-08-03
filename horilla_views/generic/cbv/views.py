@@ -367,7 +367,16 @@ class HorillaListView(ListView):
                 user_id=self.request.user, path=self.request.path_info
             ).first()
             if existing_instance:
-                hidden_fields = existing_instance.excluded_columns
+                hidden_fields = list(existing_instance.excluded_columns or [])
+
+        # Primary (first) column must always remain visible.
+        if self.columns:
+            primary_name = (
+                self.columns[0][1]
+                if isinstance(self.columns[0], tuple)
+                else self.columns[0]
+            )
+            hidden_fields = [f for f in hidden_fields if f != primary_name]
 
         if not self.default_columns:
             self.default_columns = [

@@ -80,9 +80,14 @@ class ToggleColumn(View):
         query_dict = dict(query_dict)
         del query_dict["path"]
 
-        hidden_fields = [key for key, value in query_dict.items() if value[0]]
-
         field_order = [key for key, v in query_dict.items()]
+        # First column in order is the primary/fixed column — always keep it visible.
+        primary_column = field_order[0] if field_order else None
+        hidden_fields = [
+            key
+            for key, value in query_dict.items()
+            if value[0] and key != primary_column
+        ]
 
         existing_instance = models.ToggleColumn.objects.filter(
             user_id=self.request.user, path=path

@@ -3223,6 +3223,15 @@ ul.errorlist ul.errorlist li {
   cursor: default;
 }
 
+.oh-column-config__item.is-fixed .oh-table__checkbox {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.oh-column-config__item.is-fixed .toggle-column-checkbox {
+  cursor: not-allowed;
+}
+
 .oh-column-config__handle {
   display: inline-flex;
   align-items: center;

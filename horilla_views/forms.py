@@ -48,6 +48,9 @@ class ToggleColumnForm(forms.Form):
             if not hidden_fields:
                 if default_columns and column not in default_columns:
                     initial = False
+            # First column is the primary/fixed column — always visible.
+            if columns and column == columns[0]:
+                initial = True
             self.fields[column[1]] = forms.BooleanField(
                 label=column[0], initial=initial
             )

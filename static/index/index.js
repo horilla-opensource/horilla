@@ -286,8 +286,9 @@ function toggleAllColumnsVisibility(formEl, visible) {
     // input[type="checkbox"] in this same form but has no id to derive a
     // field name from, so including it here threw on `.attr("id").replace(...)`
     // and aborted the loop before any real column got toggled.
+    // Skip the disabled primary column — it must stay visible.
     $(formEl)
-        .find(".toggle-column-checkbox")
+        .find(".toggle-column-checkbox:not(:disabled)")
         .each(function () {
             toggleColumnVisibility(this, $(this).attr("id").replace("toggle_", ""), visible);
         });
