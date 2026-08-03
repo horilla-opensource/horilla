@@ -6439,8 +6439,6 @@ def update_language_settings(request):
         instance.enabled_languages = selected_languages
         instance.save()
         messages.success(request, _("Language settings have been updated."))
-        if request.META.get("HTTP_HX_REQUEST"):
-            return HttpResponse()
         return redirect(system_preferences_settings_view)
     return HttpResponse(status=405)
 
