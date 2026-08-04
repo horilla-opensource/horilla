@@ -296,7 +296,7 @@ class LeaveAllocationRequestDetailView(HorillaDetailedView):
             (_("History"), "history_col", True),
             (_("Attachment"), "attachment_col", True),
             (_("Description"), "description"),
-            (_("Reject Reason"), "reject_col", True),
+            (_("Rejection Reason"), "reject_col", True),
         ]
 
     cols = {

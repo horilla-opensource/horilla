@@ -1,9 +1,10 @@
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: horillatw\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-02 22:34+0530\n"
-"PO-Revision-Date: 2025-07-31 06:12\n"
+"PO-Revision-Date: 2026-08-04 09:08+0000\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Traditional\n"
 "Language: zh_TW\n"
@@ -11,11 +12,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Crowdin-Project: horillatw\n"
-"X-Crowdin-Project-ID: 813444\n"
-"X-Crowdin-Language: zh-TW\n"
 "X-Crowdin-File: django.po\n"
 "X-Crowdin-File-ID: 1\n"
+"X-Crowdin-Language: zh-TW\n"
+"X-Crowdin-Project: horillatw\n"
+"X-Crowdin-Project-ID: 813444\n"
 
 msgid "Default Employee View"
 msgstr "預設員工檢視"
@@ -95,8 +96,8 @@ msgid "feature"
 msgstr "功能"
 
 msgid ""
-"If skip all the category fields in the form, then all normal users/employees "
-"can access the feature"
+"If skip all the category fields in the form, then all normal users/employees"
+" can access the feature"
 msgstr "如果跳過表單中的所有類別欄位，則所有普通用戶/員工均可存取此功能"
 
 msgid "Accessibility filter saved"
@@ -392,9 +393,6 @@ msgstr "可用"
 msgid "Not-Available"
 msgstr "不可用"
 
-msgid "Current User"
-msgstr "目前用戶"
-
 msgid "Purchase Date"
 msgstr "購買日期"
 
@@ -429,7 +427,7 @@ msgid "Healthy"
 msgstr "良好"
 
 msgid "Assigned To"
-msgstr "已分配給"
+msgstr "領用人"
 
 msgid "Assigned By"
 msgstr "指派人"
@@ -1091,9 +1089,6 @@ msgstr "過期日期"
 msgid "Duration (HH:MM:SS)"
 msgstr "持續時間（時:分:秒）"
 
-msgid "Attendance Activity"
-msgstr "出勤活動"
-
 msgid "Shift Day"
 msgstr "輪班日"
 
@@ -1186,9 +1181,6 @@ msgstr "建立出勤請求"
 
 msgid "Validate Attendances"
 msgstr "驗證出勤"
-
-msgid "Hour Account"
-msgstr "小時帳戶"
 
 msgid "Attendance Report"
 msgstr "出勤記錄"
@@ -1602,9 +1594,6 @@ msgstr "待處理秒數"
 msgid "Overtime Seconds"
 msgstr "加班秒數"
 
-msgid "Hour Accounts"
-msgstr "小時帳戶"
-
 msgid "Year must be an integer value between 1900 and 2100"
 msgstr "年份必須是 1900 至 2100 之間的整數值"
 
@@ -1667,20 +1656,8 @@ msgstr "草稿"
 msgid "Day percentage must be between 0.0 and 1.0"
 msgstr "天數百分比必須介於 0.0 和 1.0 之間"
 
-msgid "Work Record"
-msgstr "工作記錄"
-
-msgid "Work Records"
-msgstr "工作記錄"
-
 msgid "Attendance Requests"
 msgstr "出勤請求"
-
-msgid "Attendance Activities"
-msgstr "出勤活動"
-
-msgid "Late Come Early Out"
-msgstr "遲到早退"
 
 msgid "Time Policies"
 msgstr "時間政策"
@@ -1699,9 +1676,6 @@ msgstr "工作追蹤器"
 
 msgid "Show live at-work hours in the navbar inside the check-in button"
 msgstr "在簽到按鈕內的導覽列中顯示即時工作時間"
-
-msgid "Track Late Come & Early Out"
-msgstr "追蹤遲到和早退"
 
 msgid "Track late arrivals and early departures of employees"
 msgstr "追蹤員工遲到和早退"
@@ -1924,9 +1898,6 @@ msgid ""
 "The attendances for this employee in %(month_name)s has not been validated."
 msgstr "該員工在 %(month_name)s 的出勤情況尚未得到驗證。"
 
-msgid "Export Hour Accounts"
-msgstr "匯出工時帳戶"
-
 msgid "Worked Hours Greater or Equal"
 msgstr "工作時間大於或等於"
 
@@ -2070,11 +2041,6 @@ msgstr ""
 
 msgid "Monthly trend — last 6 months"
 msgstr ""
-
-#, fuzzy
-#| msgid "Late Come Early Out"
-msgid "Late Come & Early Out"
-msgstr "遲到早退"
 
 #, fuzzy
 #| msgid "Name of the department"
@@ -2389,12 +2355,6 @@ msgstr "編輯允許的 IP"
 msgid "Add Allowed IPs"
 msgstr "新增允許的 IP"
 
-msgid "Export Late Come Early Out"
-msgstr "出口遲到早出"
-
-msgid "Late Come/Early Out"
-msgstr "遲到/早退"
-
 msgid "Penalties"
 msgstr "處罰"
 
@@ -2468,11 +2428,9 @@ msgid "Time Runner"
 msgstr "時間運行器"
 
 msgid ""
-"By enabling this feature user's will be able to see their current day worked "
-"hours in live on the navbar (inside the check in button)."
-msgstr ""
-"透過啟用此功能，使用者將能夠在導覽列（簽到按鈕內）上即時查看他們當前的工作時"
-"間。"
+"By enabling this feature user's will be able to see their current day worked"
+" hours in live on the navbar (inside the check in button)."
+msgstr "透過啟用此功能，使用者將能夠在導覽列（簽到按鈕內）上即時查看他們當前的工作時間。"
 
 msgid ""
 "By enabling this, you track the late comes and early outs of employees in "
@@ -2513,8 +2471,8 @@ msgid ""
 msgstr "允許員工使用人臉偵測來標記出勤狀況"
 
 msgid ""
-"Configure the location and radius within which employees are allowed to mark "
-"their attendance."
+"Configure the location and radius within which employees are allowed to mark"
+" their attendance."
 msgstr ""
 
 msgid "Download"
@@ -3068,7 +3026,7 @@ msgid "Based On Week Day"
 msgstr "根據工作日"
 
 msgid "Weekly Off Days"
-msgstr "每週休息日"
+msgstr "週休日"
 
 msgid "Create Company Leaves"
 msgstr "創建公司休假"
@@ -3651,8 +3609,8 @@ msgid "Search employees..."
 msgstr "搜尋範圍：員工"
 
 msgid ""
-"Members get this group's permissions only in the selected companies. You can "
-"only assign companies you already have access to. Leave empty for all of "
+"Members get this group's permissions only in the selected companies. You can"
+" only assign companies you already have access to. Leave empty for all of "
 "those companies."
 msgstr ""
 
@@ -4121,7 +4079,8 @@ msgstr "默默失敗"
 msgid "Primary Mail Server"
 msgstr "主郵件伺服器"
 
-msgid "By enabling this the display name will take from who triggered the mail"
+msgid ""
+"By enabling this the display name will take from who triggered the mail"
 msgstr "啟用後，顯示名稱將使用觸發郵件人員的名稱。"
 
 msgid "Use dynamic display name"
@@ -4131,8 +4090,8 @@ msgid "Email Send Timeout (seconds)"
 msgstr "電子郵件發送超時（秒）"
 
 msgid ""
-"\"Use TLS\" and \"Use SSL\" are mutually exclusive, so only set one of those "
-"settings to True."
+"\"Use TLS\" and \"Use SSL\" are mutually exclusive, so only set one of those"
+" settings to True."
 msgstr "「使用 TLS」和「使用 SSL」是互斥的，因此只能將其中一個設定設為 True。"
 
 msgid "Email Configuration"
@@ -4162,8 +4121,8 @@ msgid "Please specify condition value range"
 msgstr "請指定條件值範圍"
 
 msgid ""
-"Please enter a valid numeric value for the starting value when the condition "
-"field is Leave Requested Days."
+"Please enter a valid numeric value for the starting value when the condition"
+" field is Leave Requested Days."
 msgstr "當條件欄位為休假申請天數時，請輸入有效的數值作為起始值。"
 
 msgid ""
@@ -4233,12 +4192,6 @@ msgstr "假期"
 
 msgid "Holidays"
 msgstr "假期"
-
-msgid "Company Leave"
-msgstr "公司休假"
-
-msgid "Company Leaves"
-msgstr "公司休假"
 
 msgid "Leave type"
 msgstr "休假類型"
@@ -4346,9 +4299,6 @@ msgid ""
 "Restrict which languages appear in the navbar language switcher for this "
 "company"
 msgstr "限制該公司的導覽列語言切換器中顯示的語言"
-
-msgid "Accessibility Restrictions"
-msgstr "輔助功能限制"
 
 msgid "Control which user roles can see which menu items"
 msgstr "控制哪些使用者角色可以查看哪些選單項"
@@ -4564,9 +4514,6 @@ msgstr "出貨管道"
 msgid "Send via Email Notification or Both"
 msgstr "透過電子郵件通知發送或兩者都發送"
 
-msgid "Theme Manager"
-msgstr "主題管理器"
-
 msgid "Color Theme"
 msgstr "顏色主題"
 
@@ -4582,11 +4529,8 @@ msgstr "使用預設調色板自訂 UI 外觀"
 msgid "Integrations"
 msgstr "間隔時長"
 
-msgid "Gdrive Backup"
-msgstr "Gdrive 備份"
-
 msgid "Google Drive Backup"
-msgstr "Google雲端硬碟備份"
+msgstr "Google Drive 備份"
 
 msgid "Back up the database and media to Google Drive"
 msgstr "將資料庫和媒體備份到 Google Drive"
@@ -4626,11 +4570,6 @@ msgstr "定時備份"
 
 msgid "Schedule an automatic backup at a fixed time each day"
 msgstr "安排每天固定時間自動備份"
-
-#, fuzzy
-#| msgid "Enable Linkedin"
-msgid "Linkedin"
-msgstr "啟用面"
 
 msgid "LinkedIn Integration"
 msgstr "銀行資訊"
@@ -4717,11 +4656,6 @@ msgstr "重定向 URI"
 
 msgid "Authorised OAuth redirect URIs for Google Meet"
 msgstr "Google Meet 的授權 OAuth 重定向 URI"
-
-#, fuzzy
-#| msgid "WhatsApp"
-msgid "Whatsapp"
-msgstr "WhatsApp"
 
 msgid "WhatsApp"
 msgstr "WhatsApp"
@@ -4860,7 +4794,8 @@ msgstr "強調"
 msgid "Employee Account Restrictions"
 msgstr "員工帳戶限制"
 
-msgid "By enabling this feature, you can block or unblock an employee account."
+msgid ""
+"By enabling this feature, you can block or unblock an employee account."
 msgstr "啟用此功能，您可以封鎖或取消封鎖員工帳戶。"
 
 msgid ""
@@ -5092,10 +5027,9 @@ msgstr "我的儀表板"
 msgid "Back"
 msgstr "後退"
 
-#, fuzzy
 #| msgid "Leave Clash"
 msgid "Leave Balance"
-msgstr "休假衝突"
+msgstr "假期餘額"
 
 #, fuzzy
 #| msgid "Available days"
@@ -5269,8 +5203,8 @@ msgid "Sending email..."
 msgstr "傳送郵件"
 
 msgid ""
-"Configure outgoing email servers used for system notifications and automated "
-"messages."
+"Configure outgoing email servers used for system notifications and automated"
+" messages."
 msgstr ""
 
 msgid "This mail is assigned as primary mail.Replace primary mail to delete"
@@ -5513,8 +5447,8 @@ msgstr "您確定要刪除此輪換工作類型嗎？"
 #, fuzzy
 #| msgid "Choose which models are recorded in the audit log"
 msgid ""
-"Manage history tags and configure which models and fields are tracked in the "
-"audit log."
+"Manage history tags and configure which models and fields are tracked in the"
+" audit log."
 msgstr "選擇在審核日誌中記錄哪些模型"
 
 msgid ""
@@ -5578,8 +5512,7 @@ msgstr "24 小時（例如 06:00 或 18:00）"
 
 #, fuzzy
 #| msgid ""
-#| "Control the default data export behavior for the currently selected "
-#| "company"
+#| "Control the default data export behavior for the currently selected company"
 msgid ""
 "Control the default data export behavior for the currently selected company."
 msgstr "控制目前所選公司的預設資料匯出行為"
@@ -5597,14 +5530,14 @@ msgid "Allow every user of this company to export data from any module."
 msgstr ""
 
 #, fuzzy
-#| msgid "Are you sure you want to allow all employees to edit their profiles?"
+#| msgid ""
+#| "Are you sure you want to allow all employees to edit their profiles?"
 msgid "Are you sure you want to allow all users to export data?"
 msgstr "您確定要刪除這個職位嗎？"
 
 #, fuzzy
 #| msgid ""
-#| "Are you sure you want to restrict all employees from editing their "
-#| "profiles?"
+#| "Are you sure you want to restrict all employees from editing their profiles?"
 msgid ""
 "Are you sure you want to restrict data export to users with export "
 "permission?"
@@ -5648,7 +5581,8 @@ msgid "Loading language settings…"
 msgstr ""
 
 msgid ""
-"Since only one company exists, these settings will automatically apply to it."
+"Since only one company exists, these settings will automatically apply to "
+"it."
 msgstr ""
 
 #, python-format
@@ -7297,7 +7231,8 @@ msgstr "拒絕存取：您的帳戶已被封鎖。"
 msgid "Invalid username or password."
 msgstr "使用者名稱或密碼無效。"
 
-msgid "This user is archived. Please contact the manager for more information."
+msgid ""
+"This user is archived. Please contact the manager for more information."
 msgstr "此用戶已被封存。請聯絡管理員以了解更多資訊。"
 
 msgid "Login successful."
@@ -8019,8 +7954,8 @@ msgid "The password is required for ZKTeco Biometric Device."
 msgstr "ZKTeco 生物辨識設備需要密碼"
 
 msgid ""
-"The password must be an integer (numeric) value "
-"for                            ZKTeco Biometric Device."
+"The password must be an integer (numeric) value for"
+"                            ZKTeco Biometric Device."
 msgstr "ZKTeco 生物辨識設備的密碼必須是整數（數字）值"
 
 msgid "The Username is required for the selected biometric device."
@@ -8042,13 +7977,13 @@ msgid "The API Secret is required for Anviz Biometric Device."
 msgstr "Anviz 生物辨識裝置需要 API 密鑰。"
 
 msgid ""
-"Authentication failed. Please check your API "
-"Url                                    , API Key and API Secret."
+"Authentication failed. Please check your API Url"
+"                                    , API Key and API Secret."
 msgstr "身份驗證失敗。請檢查您的 API URL、API Key 和 API Secret。"
 
 msgid ""
-"Authentication failed. Please check your API Url , API "
-"Key                                and API Secret."
+"Authentication failed. Please check your API Url , API Key"
+"                                and API Secret."
 msgstr "身份驗證失敗。請檢查您的 API URL、API Key 和 API Secret。"
 
 msgid "Biometric Device"
@@ -8246,8 +8181,7 @@ msgstr "未找到生物辨識設備"
 msgid ""
 "Bulk log fetching is currently available only for ZKTeco / eSSL devices. "
 "Support for other biometric systems will be added soon."
-msgstr ""
-"目前僅支援從 ZKTeco / eSSL 裝置大量擷取日誌。其他生物辨識系統將很快獲得支援。"
+msgstr "目前僅支援從 ZKTeco / eSSL 裝置大量擷取日誌。其他生物辨識系統將很快獲得支援。"
 
 msgid "Logs Fetched Successfully"
 msgstr "資產刪除成功"
@@ -8259,8 +8193,8 @@ msgid "Double-check the provided API Url, Username, and Password"
 msgstr "請再次確認提供的 API URL、使用者名稱和密碼。"
 
 msgid ""
-"Failed to establish a connection. Please verify the accuracy of the "
-"IP                    Address , Port No. and Password of the device."
+"Failed to establish a connection. Please verify the accuracy of the IP"
+"                    Address , Port No. and Password of the device."
 msgstr "無法建立連線。請驗證設備的IP位址、連接埠號碼和密碼是否正確。"
 
 msgid "Biometric device not found"
@@ -8282,8 +8216,8 @@ msgid "Biometric user data updated successfully"
 msgstr "生物辨識用戶資料更新成功"
 
 msgid ""
-"This date cannot be used as the Validity End Date "
-"for                                the COSEC Biometric."
+"This date cannot be used as the Validity End Date for"
+"                                the COSEC Biometric."
 msgstr "此日期不能用作 COSEC 生物辨識的有效期限結束日期。"
 
 msgid "Biometric user not found"
@@ -8864,9 +8798,6 @@ msgstr "紀律處分已刪除。"
 
 msgid "Organization Chart"
 msgstr "組織結構圖"
-
-msgid "Work Requests"
-msgstr "工作要求"
 
 msgid "Work Schedules"
 msgstr "工作時間表"
@@ -10245,7 +10176,7 @@ msgid "Others"
 msgstr "其他"
 
 msgid "Ticket Types"
-msgstr "單據"
+msgstr "工單類型"
 
 msgid "Forward To"
 msgstr "轉發至"
@@ -10806,8 +10737,8 @@ msgstr "如果停用「固定」字段，則需要「基於」字段。"
 
 #, fuzzy
 #| msgid ""
-#| "If based on is attendance,                         then per attendance "
-#| "fixed amount must be filled."
+#| "If based on is attendance,                         then per attendance fixed"
+#| " amount must be filled."
 msgid ""
 "If 'based_on' is 'attendance', 'per_attendance_fixed_amount' is required."
 msgstr "如果基於出席率，則每次出勤必須填寫固定金額。"
@@ -10926,10 +10857,8 @@ msgstr "新增字段"
 #, python-format
 msgid ""
 "\n"
-"                Select the fields of <strong>%(app_label)s.%(model_name)s</"
-"strong>\n"
-"                that should be recorded in the audit log. Leave the list "
-"empty to\n"
+"                Select the fields of <strong>%(app_label)s.%(model_name)s</strong>\n"
+"                that should be recorded in the audit log. Leave the list empty to\n"
 "                track every field.\n"
 "            "
 msgstr ""
@@ -10941,10 +10870,8 @@ msgstr "保存過濾器"
 
 msgid ""
 "\n"
-"                Choose which models should record their changes in the audit "
-"log.\n"
-"                The default models (Employee, Employee Work Information, "
-"Employee\n"
+"                Choose which models should record their changes in the audit log.\n"
+"                The default models (Employee, Employee Work Information, Employee\n"
 "                Bank Details) are always tracked and cannot be removed.\n"
 "            "
 msgstr ""
@@ -10998,8 +10925,8 @@ msgid "Mail To"
 msgstr "郵件日誌"
 
 msgid ""
-"Fill mail template details (receiver/instance, `self` will be the person who "
-"triggers the automation)"
+"Fill mail template details (receiver/instance, `self` will be the person who"
+" triggers the automation)"
 msgstr "填寫郵件範本詳細資料（收件人/執行個體，`self` 為觸發自動化的人員）"
 
 msgid "Mail Details"
@@ -11401,7 +11328,8 @@ msgid "active until"
 msgstr ""
 
 msgid ""
-"Stop serving this template after this datetime. Leave blank = no restriction."
+"Stop serving this template after this datetime. Leave blank = no "
+"restriction."
 msgstr ""
 
 #, fuzzy
@@ -11545,9 +11473,6 @@ msgstr "格式"
 
 msgid "Max size (In MB)"
 msgstr "最大尺寸（單位：MB）"
-
-msgid "Reject Reason"
-msgstr "拒絕原因"
 
 msgid "Notify Before"
 msgstr "在此日期前通知"
@@ -11833,7 +11758,8 @@ msgid "Prevent employees from editing their own profile details."
 msgstr "防止員工編輯自己的個人資料"
 
 #, fuzzy
-#| msgid "Enable tracking of changes to employee work information fields"
+#| msgid ""
+#| "Enable tracking of changes to employee work information fields"
 msgid ""
 "Save a history record whenever an employee's work information is updated."
 msgstr "啟用對員工工作資訊欄位的變更的追蹤"
@@ -11844,8 +11770,8 @@ msgid ""
 msgstr ""
 
 msgid ""
-"A role is a named set of employees who share the same access. Create a role, "
-"add members, then turn permissions on or off."
+"A role is a named set of employees who share the same access. Create a role,"
+" add members, then turn permissions on or off."
 msgstr ""
 
 #, fuzzy
@@ -11914,8 +11840,8 @@ msgid "permissions"
 msgstr "權限"
 
 msgid ""
-"Delete this role? Employees will keep their accounts, but will no longer get "
-"permissions from this role."
+"Delete this role? Employees will keep their accounts, but will no longer get"
+" permissions from this role."
 msgstr ""
 
 #, fuzzy
@@ -12488,8 +12414,8 @@ msgid "Offer Acceptance Rate"
 msgstr "錄取率（OAR）"
 
 msgid ""
-"Offer Acceptance Rate = ( Onboarding candidates / Total Hired Candidates ) * "
-"100"
+"Offer Acceptance Rate = ( Onboarding candidates / Total Hired Candidates ) *"
+" 100"
 msgstr ""
 
 msgid "Skill Zone Status"
@@ -13432,8 +13358,8 @@ msgid "Carryforward Expire Date"
 msgstr "結轉到期日"
 
 msgid ""
-"The date on which carryforward leave resets to 0. After this reset, the date "
-"will be updated to the next expiration period."
+"The date on which carryforward leave resets to 0. After this reset, the date"
+" will be updated to the next expiration period."
 msgstr "結轉假期重設為 0 的日期。重置後，日期將更新為下一個到期期限。"
 
 msgid "Icon"
@@ -13899,20 +13825,19 @@ msgid "Basic Pay"
 msgstr "基本工資"
 
 msgid ""
-"Some deductions will update basic pay before payslip calculation starts, eg: "
-"LOP is Deduducted from basic pay if `Deduct leave from basic pay` field is "
+"Some deductions will update basic pay before payslip calculation starts, eg:"
+" LOP is Deduducted from basic pay if `Deduct leave from basic pay` field is "
 "enabled on the contract, and also with the update compensation deduction "
 "through"
 msgstr ""
-"一些扣除將在工資單計算開始之前更新基本工資，例如：如果合約中啟用了「從基本工"
-"資中扣除休假」字段，則從基本工資中扣除 LOP，並且通過更新薪酬扣除"
+"一些扣除將在工資單計算開始之前更新基本工資，例如：如果合約中啟用了「從基本工資中扣除休假」字段，則從基本工資中扣除 LOP，並且通過更新薪酬扣除"
 
 msgid "Total Gross Pay"
 msgstr "總工資"
 
 msgid ""
-"Some Deduction will update the total gross pay using the deductions that are "
-"enabled update compensation"
+"Some Deduction will update the total gross pay using the deductions that are"
+" enabled update compensation"
 msgstr "部分扣除將使用啟用的更新補償扣除來更新總工資"
 
 msgid "Add Deduction"
@@ -13953,9 +13878,7 @@ msgid ""
 "main calculation begins, such as from the basic pay or gross pay, while "
 "others are deducted after calculating the net pay."
 msgstr ""
-"有些扣除額未計入總扣除額，因為它們是作為更新後的薪酬給出的。這些扣除額可能在"
-"主要計算開始之前應用，例如從基本工資或總工資中扣除，而其他扣除額則在計算淨工"
-"資後扣除。"
+"有些扣除額未計入總扣除額，因為它們是作為更新後的薪酬給出的。這些扣除額可能在主要計算開始之前應用，例如從基本工資或總工資中扣除，而其他扣除額則在計算淨工資後扣除。"
 
 msgid "Custom Payment Leave Details"
 msgstr ""
@@ -14056,9 +13979,7 @@ msgstr "公開招聘訊息"
 msgid ""
 "We're hiring! Join our team and be part of a vibrant workplace where your "
 "talents make a difference. Here are the open Recruitments...."
-msgstr ""
-"我們正在招募！加入我們的團隊，加入我們充滿活力的職場，讓你的才華發揮更大作"
-"用。以下是公開招募資訊…"
+msgstr "我們正在招募！加入我們的團隊，加入我們充滿活力的職場，讓你的才華發揮更大作用。以下是公開招募資訊…"
 
 msgid "Applied"
 msgstr "應用"
@@ -14084,7 +14005,8 @@ msgstr "應徵者自我追蹤"
 msgid "Application Tracking"
 msgstr "應用程式追蹤"
 
-msgid "By enabling the feature candidates can track their recruitment progress"
+msgid ""
+"By enabling the feature candidates can track their recruitment progress"
 msgstr "透過啟用該功能，應徵者可以追蹤他們的招募進度"
 
 msgid "Rating Visiblity"
@@ -14473,7 +14395,8 @@ msgstr "應徵者"
 msgid "Review document upload requests and submit required files from HR."
 msgstr ""
 
-msgid "Requests from colleagues asking you to cover or take over their shifts."
+msgid ""
+"Requests from colleagues asking you to cover or take over their shifts."
 msgstr ""
 
 msgid "Submit and manage your shift change requests for approval."
@@ -14488,13 +14411,11 @@ msgstr "公司專屬設定"
 #, python-format
 msgid ""
 "\n"
-"                            You are currently setting these settings for the "
-"%(company_name)s company specifically.\n"
+"                            You are currently setting these settings for the %(company_name)s company specifically.\n"
 "                        "
 msgstr ""
 "\n"
-"                            您目前正在為公司 "
-"%(company_name)s 專門設定這些選項。\n"
+"                            您目前正在為公司 %(company_name)s 專門設定這些選項。\n"
 "                        "
 
 msgid "Search settings…"
@@ -14537,9 +14458,6 @@ msgstr "查看請求"
 
 msgid "Do you want to remove this candidate"
 msgstr "您是否要刪除此應徵者"
-
-msgid "Skill Zone"
-msgstr "技能區"
 
 msgid "Candidate Filter"
 msgstr "候選篩選器"
@@ -14590,8 +14508,8 @@ msgstr "標題必須至少包含 3 個字符"
 
 #, python-format
 msgid ""
-"Showing group permissions for %(company)s. Switch company to see permissions "
-"in another company."
+"Showing group permissions for %(company)s. Switch company to see permissions"
+" in another company."
 msgstr ""
 
 msgid "Showing combined group permissions across assigned companies."
@@ -14774,8 +14692,8 @@ msgstr ""
 
 msgid ""
 "Where this tour applies. With 'URL name' enter the resolver name (e.g. "
-"'dashboard'); with 'Path starts with' enter a path prefix (e.g. '/"
-"employee/'). Leave blank to allow on any page."
+"'dashboard'); with 'Path starts with' enter a path prefix (e.g. "
+"'/employee/'). Leave blank to allow on any page."
 msgstr ""
 
 #, fuzzy
@@ -14865,8 +14783,8 @@ msgid "Step page"
 msgstr ""
 
 msgid ""
-"Optional: for multi-page tours, the URL name this step lives on. Leave blank "
-"to use the tour's page."
+"Optional: for multi-page tours, the URL name this step lives on. Leave blank"
+" to use the tour's page."
 msgstr ""
 
 #, fuzzy
@@ -15155,9 +15073,6 @@ msgid ""
 "of replacing it."
 msgstr ""
 
-msgid "All Assigned Leaves"
-msgstr "所有已分配的假期"
-
 msgid "Leave Reset Date"
 msgstr "休假重置日期"
 
@@ -15310,9 +15225,6 @@ msgstr "您的休假天數不足以提出請求。"
 
 msgid "There is already a leave request for this date range"
 msgstr "員工已在此日期範圍內提出休假申請。"
-
-msgid "Restrict Leaves"
-msgstr "限制休假"
 
 msgid "Create Restricted Day"
 msgstr "創建限制日"
@@ -15483,8 +15395,8 @@ msgstr "休假類型已指派給員工。"
 #, fuzzy, python-brace-format
 #| msgid "Leave type has already been assigned to the employee."
 msgid ""
-"'{leave_type}' can only be assigned once per employment and has already been "
-"assigned to this employee."
+"'{leave_type}' can only be assigned once per employment and has already been"
+" assigned to this employee."
 msgstr "休假類型已指派給員工。"
 
 #, python-brace-format
@@ -15513,9 +15425,6 @@ msgstr ""
 
 msgid "My Leave Requests"
 msgstr "我的休假申請"
-
-msgid "Assigned Leave"
-msgstr "指定休假"
 
 msgid "Leave Rules"
 msgstr "請假規則"
@@ -15599,8 +15508,8 @@ msgid "Cannot submit leave request"
 msgstr "的休假請求"
 
 msgid ""
-"The selected dates result in 0 leave days for this leave type. Please adjust "
-"the dates, breakdown or leave type."
+"The selected dates result in 0 leave days for this leave type. Please adjust"
+" the dates, breakdown or leave type."
 msgstr ""
 
 msgid "OK"
@@ -15866,8 +15775,8 @@ msgid "Eligibility Conditions"
 msgstr "狀態"
 
 msgid ""
-"Only employees matching all conditions below will be eligible for this leave "
-"type."
+"Only employees matching all conditions below will be eligible for this leave"
+" type."
 msgstr ""
 
 #, fuzzy
@@ -16081,9 +15990,6 @@ msgstr "休假類型已指派給員工。"
 
 msgid "Invalid date format. Please use YYYY-MM-DD or a supported format."
 msgstr "日期格式無效。請使用 YYYY-MM-DD 或支援的格式。"
-
-msgid "Assigned Leaves"
-msgstr "指定休假"
 
 msgid "Restricted day created successfully.."
 msgstr "限制日創建成功.."
@@ -16966,7 +16872,7 @@ msgid "Do you want to add this candidate to onboarding stage?"
 msgstr "您要刪除該應徵者嗎？"
 
 msgid "Start Onboarding"
-msgstr "開始登機"
+msgstr "開始入職引導"
 
 msgid "Added to Onobarding"
 msgstr "添加到離職"
@@ -17531,9 +17437,6 @@ msgstr "最高收入"
 msgid "Loan"
 msgstr "貸款"
 
-msgid "Advanced Salary"
-msgstr "預支薪資"
-
 msgid "Fine"
 msgstr "美好的"
 
@@ -17548,12 +17451,6 @@ msgstr "總分期付款"
 
 msgid "Progress Bar"
 msgstr "進步"
-
-msgid "Loan / Advanced Salary"
-msgstr "貸款/預支薪資"
-
-msgid "Loan / Advanced Sarlary"
-msgstr "貸款/預支薪資"
 
 msgid "Loan Updated Successfully"
 msgstr "應徵者更新成功。"
@@ -17645,7 +17542,8 @@ msgstr "費率必須大於 0"
 msgid "Rate must be less than 100"
 msgstr "費率必須小於 100"
 
-msgid "Installment start date should be greater than or equal to provided date"
+msgid ""
+"Installment start date should be greater than or equal to provided date"
 msgstr "分期付款開始日期應大於或等於提供的日期"
 
 msgid "Installments needs to be a positive integer"
@@ -17729,8 +17627,8 @@ msgid "Title of the allowance"
 msgstr "津貼名稱"
 
 msgid ""
-"The one-time allowance in which the allowance will apply to the "
-"payslips             if the date between the payslip period"
+"The one-time allowance in which the allowance will apply to the payslips"
+"             if the date between the payslip period"
 msgstr "一次性津貼，津貼將適用於薪資單，如果薪資期間的日期"
 
 #, fuzzy
@@ -17748,8 +17646,8 @@ msgid "Target allowance to the specific employees"
 msgstr "針對特定員工發放津貼"
 
 msgid ""
-"To ignore the allowance to the employees when target them by all "
-"employees             or through condition-based"
+"To ignore the allowance to the employees when target them by all employees"
+"             or through condition-based"
 msgstr "當所有員工或以條件為基礎的方式針對員工時，忽略員工的津貼"
 
 msgid "This field is used to calculate the taxable allowances"
@@ -17769,7 +17667,8 @@ msgstr "要指定津貼是否固定"
 msgid "Fixed amount for this allowance"
 msgstr "此津貼的固定金額"
 
-msgid "If the allowance is not fixed then specifies how the allowance provided"
+msgid ""
+"If the allowance is not fixed then specifies how the allowance provided"
 msgstr "如果津貼不固定，則指定如何提供津貼"
 
 msgid "The percentage of based on"
@@ -17842,8 +17741,8 @@ msgid ""
 msgstr "如果基於條件，則必須填寫所有欄位（欄位、值、條件）。"
 
 msgid ""
-"If based on is attendance,                         then per attendance fixed "
-"amount must be filled."
+"If based on is attendance,                         then per attendance fixed"
+" amount must be filled."
 msgstr "如果基於出席率，則每次出勤必須填寫固定金額。"
 
 msgid "If based on is shift, then shift must be filled."
@@ -17865,8 +17764,8 @@ msgid "Title of the deduction"
 msgstr "扣除項目名稱"
 
 msgid ""
-"The one-time deduction in which the deduction will apply to the "
-"payslips             if the date between the payslip period"
+"The one-time deduction in which the deduction will apply to the payslips"
+"             if the date between the payslip period"
 msgstr "一次性扣除，扣除將適用於工資單，如果工資單期間的日期"
 
 msgid "Target deduction to all active employees in the company"
@@ -17876,8 +17775,8 @@ msgid "Target deduction to the specific employees"
 msgstr "針對特定員工進行定向扣除"
 
 msgid ""
-"To ignore the deduction to the employees when target them by all "
-"employees             or through condition-based"
+"To ignore the deduction to the employees when target them by all employees"
+"             or through condition-based"
 msgstr "當所有員工或透過基於條件的"
 
 msgid "To specify the deduction is tax or normal deduction"
@@ -17887,8 +17786,7 @@ msgid ""
 "To find taxable gross,             taxable_gross = (basic_pay + "
 "taxable_deduction)-pre_tax_deductions "
 msgstr ""
-"要計算應稅總額，taxable_gross = (basic_pay + taxable_deduction)-"
-"pre_tax_deductions "
+"要計算應稅總額，taxable_gross = (basic_pay + taxable_deduction)-pre_tax_deductions "
 
 msgid ""
 "This field is used to target deduction         to the specific employees "
@@ -17899,8 +17797,8 @@ msgid "Basic pay"
 msgstr "基本工資"
 
 msgid ""
-"Update compensation is used to update                    pay-head before any "
-"other deduction calculation starts"
+"Update compensation is used to update                    pay-head before any"
+" other deduction calculation starts"
 msgstr "更新薪資用於在任何其他扣除計算開始之前更新工資頭"
 
 msgid "To specify, the deduction is fixed or not"
@@ -17909,7 +17807,8 @@ msgstr "要說明的是，扣除額是固定的還是不固定的"
 msgid "Fixed amount for this deduction"
 msgstr "此項扣除的固定金額"
 
-msgid "If the deduction is not fixed then specifies how the deduction provided"
+msgid ""
+"If the deduction is not fixed then specifies how the deduction provided"
 msgstr "如果扣除額不固定，則指定如何提供扣除額"
 
 msgid "Employee rate"
@@ -18009,9 +17908,8 @@ msgid "Bonus points"
 msgstr "獎勵積分"
 
 msgid ""
-"The employee don't have that much "
-"leaves                                         to encash in CFD / Available "
-"days"
+"The employee don't have that much leaves"
+"                                         to encash in CFD / Available days"
 msgstr "員工沒有剩餘假期可以結轉兌現或核銷考勤"
 
 msgid "Reimbursement deleted"
@@ -18306,8 +18204,7 @@ msgstr "有薪休假"
 #, python-format
 msgid ""
 "Partial\n"
-"                                                deduction — "
-"%(partial_pay_days)s day(s) on a partially paid leave\n"
+"                                                deduction — %(partial_pay_days)s day(s) on a partially paid leave\n"
 "                                                type"
 msgstr ""
 
@@ -18920,7 +18817,8 @@ msgstr ""
 msgid "For Objective and Key Result, 'Bonus For' must be 'Closing'."
 msgstr ""
 
-msgid "For Task and Project, 'Applicable For' must be 'Members' or 'Managers'."
+msgid ""
+"For Task and Project, 'Applicable For' must be 'Members' or 'Managers'."
 msgstr ""
 
 msgid "Bonus point must be greater than zero"
@@ -19017,8 +18915,8 @@ msgid "Answerable Employees"
 msgstr "負責任的員工"
 
 msgid ""
-"Select the employees who can respond to question template in this meeting's, "
-"if any are added."
+"Select the employees who can respond to question template in this meeting's,"
+" if any are added."
 msgstr "選擇可以回答本次會議問題範本的員工（如果已新增）。"
 
 msgid "Project"
@@ -19951,14 +19849,8 @@ msgstr "未選擇員工"
 msgid "Are you sure you want to delete this time sheet?"
 msgstr "您確定要刪除此班次嗎？"
 
-msgid "Time Sheet"
-msgstr "工時表"
-
-msgid "Time Sheets"
-msgstr "工時表"
-
 msgid "Timesheet"
-msgstr "時間"
+msgstr "工時表"
 
 msgid "Do you want to archive this project?"
 msgstr "您想要存檔此目標嗎？"
@@ -20285,9 +20177,6 @@ msgstr "查看應徵者自我跟踪"
 msgid "Survey"
 msgstr "問券調查"
 
-msgid "Reject Reasons"
-msgstr "拒絕原因"
-
 msgid "Are you sure want to delete this reason?"
 msgstr "您確定要刪除該原因嗎？"
 
@@ -20395,9 +20284,6 @@ msgstr "範本"
 
 msgid "Sequence"
 msgstr "順序"
-
-msgid "Open Jobs"
-msgstr "空缺職位"
 
 msgid "Vaccancy"
 msgstr "空缺"
@@ -20510,9 +20396,6 @@ msgstr "是強制性的"
 msgid "Invalid candidate selected."
 msgstr "選擇的候選人無效。"
 
-msgid "Skill Zones"
-msgstr "技能區域"
-
 msgid "Interview date cannot be in the past."
 msgstr "面試日期不能是過去的日期。"
 
@@ -20543,8 +20426,8 @@ msgid "LinkedIn Account"
 msgstr "罰款金額"
 
 msgid ""
-"To publish a recruitment in Linkedin, if active is false then it             "
-"will not post on LinkedIn."
+"To publish a recruitment in Linkedin, if active is false then it"
+"             will not post on LinkedIn."
 msgstr "在網站上發布招聘訊息，如果是虛假的則不會出現在公開招聘頁面上。"
 
 msgid "Profile image not mandatory for candidate creation"
@@ -20582,9 +20465,6 @@ msgstr "內部軟體"
 
 msgid "Referral"
 msgstr "推薦"
-
-msgid "Start Onboard"
-msgstr "開始登機"
 
 msgid "Converted"
 msgstr "已轉換"
@@ -20946,8 +20826,8 @@ msgid "Example: Candidate asked to reschedule interview to Friday."
 msgstr ""
 
 msgid ""
-"Notes are shared with your hiring team. Enable candidate visibility per note "
-"if needed."
+"Notes are shared with your hiring team. Enable candidate visibility per note"
+" if needed."
 msgstr ""
 
 #, fuzzy
@@ -21083,7 +20963,6 @@ msgstr "轉換率"
 msgid "Hire rate per candidate source"
 msgstr "創建應徵者"
 
-#, fuzzy
 #| msgid "Interview"
 msgid "Interviews"
 msgstr "面試"
@@ -21188,9 +21067,9 @@ msgid ". For the position of"
 msgstr "職位名稱"
 
 msgid ""
-". As a part of our employee policy, we provide free accommodation to all our "
-"employees, and hence you as part of your organization are also eligible for "
-"the same."
+". As a part of our employee policy, we provide free accommodation to all our"
+" employees, and hence you as part of your organization are also eligible for"
+" the same."
 msgstr ""
 
 msgid ""
@@ -22306,8 +22185,8 @@ msgstr ""
 
 #, python-format
 msgid ""
-"Deleting the %(object_name)s “%(escaped_object)s” would require deleting the "
-"following protected related objects:"
+"Deleting the %(object_name)s “%(escaped_object)s” would require deleting the"
+" following protected related objects:"
 msgstr ""
 
 #, python-format
@@ -22397,15 +22276,15 @@ msgid "Unknown content"
 msgstr "未知"
 
 msgid ""
-"Something’s wrong with your database installation. Make sure the appropriate "
-"database tables have been created, and make sure the database is readable by "
-"the appropriate user."
+"Something’s wrong with your database installation. Make sure the appropriate"
+" database tables have been created, and make sure the database is readable "
+"by the appropriate user."
 msgstr ""
 
 #, python-format
 msgid ""
-"You are authenticated as %(username)s, but are not authorized to access this "
-"page. Would you like to login to a different account?"
+"You are authenticated as %(username)s, but are not authorized to access this"
+" page. Would you like to login to a different account?"
 msgstr ""
 
 msgid "Forgotten your login credentials?"
@@ -22446,8 +22325,8 @@ msgid_plural "entries"
 msgstr[0] "日誌條目"
 
 msgid ""
-"This object doesn’t have a change history. It probably wasn’t added via this "
-"admin site."
+"This object doesn’t have a change history. It probably wasn’t added via this"
+" admin site."
 msgstr ""
 
 #, fuzzy, python-format
@@ -22596,6 +22475,325 @@ msgstr "帳號"
 msgid "Message templates and flows created successfully."
 msgstr "訊息模板和流創建成功。"
 
+# Dashboard i18n — status/chart labels (auto-appended)
+msgid "Not Assigned"
+msgstr "未指派"
+
+msgid "Not Specified"
+msgstr "未指定"
+
+msgid "Inside Software"
+msgstr "系統內部"
+
+msgid "m ago"
+msgstr " 分鐘前"
+
+msgid "hrs"
+msgstr "小時"
+
+msgid "Bonus Encashment"
+msgstr "獎金兌現"
+
+msgid "Review"
+msgstr "審核"
+
+msgid "No data for this week"
+msgstr "本週暫無資料"
+
+msgid "Chart error"
+msgstr "圖表錯誤"
+
+#: terminology-rename:1
+msgid "Late Arrival & Early Departure"
+msgstr "遲到與早退"
+
+#: terminology-rename:1
+msgid "Late Arrival"
+msgstr "遲到"
+
+#: terminology-rename:1
+msgid "Early Departure"
+msgstr "早退"
+
+#: terminology-rename:1
+msgid "Track Late Arrival & Early Departure"
+msgstr "追蹤遲到與早退"
+
+#: terminology-rename:1
+msgid "Export Late Arrival & Early Departure"
+msgstr "匯出遲到與早退"
+
+#: terminology-rename:1
+msgid "Salary Advance"
+msgstr "預支薪資"
+
+#: terminology-rename:1
+msgid "Loans & Salary Advances"
+msgstr "貸款與預支薪資"
+
+#: terminology-rename:1
+msgid "Talent Pool"
+msgstr "人才庫"
+
+#: terminology-rename:1
+msgid "Talent Pools"
+msgstr "人才庫"
+
+#: terminology-rename:1
+msgid "Hours Balance"
+msgstr "工時餘額"
+
+#: terminology-rename:1
+msgid "Hours Balances"
+msgstr "工時餘額"
+
+#: terminology-rename:1
+msgid "Export Hours Balances"
+msgstr "匯出工時餘額"
+
+#: terminology-rename:1
+msgid "Leave Balances"
+msgstr "假期餘額"
+
+#: terminology-rename:1
+msgid "All Leave Balances"
+msgstr "全部假期餘額"
+
+#: terminology-rename:1
+msgid "Export Leave Balances"
+msgstr "匯出假期餘額"
+
+#: terminology-rename:1
+msgid "Import Leave Balances"
+msgstr "匯入假期餘額"
+
+#: terminology-rename:1
+msgid "Restricted Leave Periods"
+msgstr "限制休假時段"
+
+#: terminology-rename:1
+msgid "Menu Access Restrictions"
+msgstr "選單存取限制"
+
+#: terminology-rename:1
+msgid "Open Positions"
+msgstr "空缺職位"
+
+#: terminology-rename:1
+msgid "Rejection Reasons"
+msgstr "拒絕原因"
+
+#: terminology-rename:1
+msgid "Candidate Rejection Reason"
+msgstr "候選人拒絕原因"
+
+#: terminology-rename:1
+msgid "Review Periods"
+msgstr "考核週期"
+
+#: terminology-rename:1
+msgid "Review Period Name"
+msgstr "考核週期名稱"
+
+#: terminology-rename:1
+msgid "Question Templates"
+msgstr "問題範本"
+
+#: terminology-rename:1
+msgid "Bonus Point Settings"
+msgstr "獎勵積分設定"
+
+#: terminology-rename:1
+msgid "Requests"
+msgstr "申請"
+
+#: terminology-rename:1
+msgid "Daily Work Status"
+msgstr "每日出勤狀態"
+
+#: terminology-rename:1
+msgid "Check-in / Check-out Log"
+msgstr "打卡紀錄"
+
+#: terminology-rename:1
+msgid "Import Check-in / Check-out Log"
+msgstr "匯入打卡紀錄"
+
+#: terminology-rename:1
+msgid "Income Tax"
+msgstr "所得稅"
+
+#: terminology-rename:1
+msgid "Appearance"
+msgstr "外觀"
+
+#: terminology-rename:1
+msgid "Email Servers"
+msgstr "郵件伺服器"
+
+#: terminology-rename:1
+msgid "Email Templates"
+msgstr "郵件範本"
+
+#: terminology-rename:1
+msgid "Email Automations"
+msgstr "郵件自動化"
+
+#: terminology-rename:1
+msgid "Google Drive Folder ID"
+msgstr "Google Drive 資料夾 ID"
+
+#: terminology-rename:1
+msgid "LinkedIn"
+msgstr "LinkedIn"
+
+#: terminology-rename:1
+msgid "WhatsApp Credentials"
+msgstr "WhatsApp 憑證"
+
+#: terminology-rename:1
+msgid "WhatsApp Integration"
+msgstr "WhatsApp 整合"
+
+#: terminology-rename:1
+msgid "Timesheets"
+msgstr "工時表"
+
+#: terminology-rename:1
+msgid "Update Timesheet"
+msgstr "更新工時表"
+
+#: terminology-rename:1
+msgid "Holiday / Weekly Off"
+msgstr "假日 / 週休日"
+
+#: terminology-rename:1
+msgid "Exclude Weekly Off Days"
+msgstr "排除週休日"
+
+#: terminology-rename:1
+msgid "Create Weekly Off Days"
+msgstr "建立週休日"
+
+#: terminology-rename:1
+msgid "Update Weekly Off Days"
+msgstr "更新週休日"
+
+#: terminology-rename:1
+msgid "Weekly Off Day"
+msgstr "週休日"
+
+#~ msgid "Current User"
+#~ msgstr "目前用戶"
+
+#~ msgid "Attendance Activity"
+#~ msgstr "出勤活動"
+
+#~ msgid "Hour Account"
+#~ msgstr "小時帳戶"
+
+#~ msgid "Hour Accounts"
+#~ msgstr "小時帳戶"
+
+#~ msgid "Work Record"
+#~ msgstr "工作記錄"
+
+#~ msgid "Work Records"
+#~ msgstr "工作記錄"
+
+#~ msgid "Attendance Activities"
+#~ msgstr "出勤活動"
+
+#~ msgid "Late Come Early Out"
+#~ msgstr "遲到早退"
+
+#~ msgid "Track Late Come & Early Out"
+#~ msgstr "追蹤遲到和早退"
+
+#~ msgid "Export Hour Accounts"
+#~ msgstr "匯出工時帳戶"
+
+#, fuzzy
+#~ msgid "Late Come & Early Out"
+#~ msgstr "遲到早退"
+
+#~ msgid "Export Late Come Early Out"
+#~ msgstr "出口遲到早出"
+
+#~ msgid "Late Come/Early Out"
+#~ msgstr "遲到/早退"
+
+#~ msgid "Company Leave"
+#~ msgstr "公司休假"
+
+#~ msgid "Company Leaves"
+#~ msgstr "公司休假"
+
+#~ msgid "Accessibility Restrictions"
+#~ msgstr "輔助功能限制"
+
+#~ msgid "Theme Manager"
+#~ msgstr "主題管理器"
+
+#~ msgid "Gdrive Backup"
+#~ msgstr "Gdrive 備份"
+
+#, fuzzy
+#~ msgid "Linkedin"
+#~ msgstr "啟用面"
+
+#, fuzzy
+#~ msgid "Whatsapp"
+#~ msgstr "WhatsApp"
+
+#~ msgid "Work Requests"
+#~ msgstr "工作要求"
+
+#~ msgid "Reject Reason"
+#~ msgstr "拒絕原因"
+
+#~ msgid "Skill Zone"
+#~ msgstr "技能區"
+
+#~ msgid "All Assigned Leaves"
+#~ msgstr "所有已分配的假期"
+
+#~ msgid "Restrict Leaves"
+#~ msgstr "限制休假"
+
+#~ msgid "Assigned Leave"
+#~ msgstr "指定休假"
+
+#~ msgid "Assigned Leaves"
+#~ msgstr "指定休假"
+
+#~ msgid "Advanced Salary"
+#~ msgstr "預支薪資"
+
+#~ msgid "Loan / Advanced Salary"
+#~ msgstr "貸款/預支薪資"
+
+#~ msgid "Loan / Advanced Sarlary"
+#~ msgstr "貸款/預支薪資"
+
+#~ msgid "Time Sheet"
+#~ msgstr "工時表"
+
+#~ msgid "Time Sheets"
+#~ msgstr "工時表"
+
+#~ msgid "Reject Reasons"
+#~ msgstr "拒絕原因"
+
+#~ msgid "Open Jobs"
+#~ msgstr "空缺職位"
+
+#~ msgid "Skill Zones"
+#~ msgstr "技能區域"
+
+#~ msgid "Start Onboard"
+#~ msgstr "開始登機"
+
 #~ msgid "Asset View"
 #~ msgstr "資產視圖"
 
@@ -22628,7 +22826,6 @@ msgstr "訊息模板和流創建成功。"
 #~ "entered "
 #~ msgstr "您沒有填寫工作資訊或沒有輸入員工詳細資訊 "
 
-#~| msgid "Work Records"
 #~ msgid "Work Records Status"
 #~ msgstr "工作記錄狀態"
 
@@ -22674,11 +22871,9 @@ msgstr "訊息模板和流創建成功。"
 #~ msgid "Port No."
 #~ msgstr "連接埠號"
 
-#~| msgid "Are you sure you want to delete this disciplinary action?"
 #~ msgid " Are you sure you want to delete this disciplinary action?"
 #~ msgstr "您確定要刪除此紀律處分嗎？"
 
-#~| msgid "Are you sure you want to delete this Document Request?"
 #~ msgid " Are you sure you want to delete this Document Request?"
 #~ msgstr "您確定要刪除此文件請求嗎？"
 
@@ -22694,7 +22889,6 @@ msgstr "訊息模板和流創建成功。"
 #~ msgid "Help Desk"
 #~ msgstr "服務台"
 
-#~| msgid "Is pretax"
 #~ msgid "Is paid"
 #~ msgstr "是稅前"
 
@@ -22773,11 +22967,9 @@ msgstr "訊息模板和流創建成功。"
 #~ msgid "User Leave"
 #~ msgstr "用戶休假"
 
-#~| msgid "onboarding-view"
 #~ msgid "Onboarding view"
 #~ msgstr "入職視圖"
 
-#~| msgid "candidates-view"
 #~ msgid "Candidates view"
 #~ msgstr "應徵者總覽"
 
@@ -22820,11 +23012,9 @@ msgstr "訊息模板和流創建成功。"
 #~ msgid "Employer Contributions"
 #~ msgstr "雇主繳款"
 
-#~| msgid "Contract Created"
 #~ msgid "Contracts Expired"
 #~ msgstr "合約創建"
 
-#~| msgid "Number of contracts expiring in "
 #~ msgid "Number of contracts expired in "
 #~ msgstr "到期合約數量 "
 
@@ -22841,13 +23031,12 @@ msgstr "訊息模板和流創建成功。"
 #~ msgstr "銀行帳戶/支票號碼："
 
 #~ msgid ""
-#~ "Some deductions will update basic pay before payslip calculation starts, "
-#~ "eg: LOP is Deduducted from basic pay if \"Deduct leave from basic pay\" "
-#~ "field is enabled on the contract, and also with the update compensation "
-#~ "deduction through"
+#~ "Some deductions will update basic pay before payslip calculation starts, eg:"
+#~ " LOP is Deduducted from basic pay if \"Deduct leave from basic pay\" field "
+#~ "is enabled on the contract, and also with the update compensation deduction "
+#~ "through"
 #~ msgstr ""
-#~ "一些扣除將在工資單計算開始之前更新基本工資，例如：如果合約中啟用了「從基本"
-#~ "工資中扣除休假」字段，則從基本工資中扣除 LOP，並且通過更新薪酬扣除"
+#~ "一些扣除將在工資單計算開始之前更新基本工資，例如：如果合約中啟用了「從基本工資中扣除休假」字段，則從基本工資中扣除 LOP，並且通過更新薪酬扣除"
 
 #~ msgid "Total Net Payable "
 #~ msgstr "應付淨額總計 "
@@ -22858,7 +23047,6 @@ msgstr "訊息模板和流創建成功。"
 #~ msgid "This 'Bonus for' is not in the Model's status"
 #~ msgstr "此「獎金」不屬於模特兒身份"
 
-#~| msgid "employee-bonus-point"
 #~ msgid "Employee Bonus Point"
 #~ msgstr "員工獎勵積分"
 
@@ -22873,17 +23061,14 @@ msgstr "訊息模板和流創建成功。"
 #~ msgid "Objective Progress %% (LTE)"
 #~ msgstr "目標進度 %%（小於或等於）"
 
-#~| msgid "End Date Till"
 #~ msgid "End Date TTill"
 #~ msgstr "結束日期"
 
 #, python-format
-#~| msgid "Progress Type"
 #~ msgid "KR Progress %% (GTE)"
 #~ msgstr "進度類型"
 
 #, python-format
-#~| msgid "Progress Type"
 #~ msgid "KR Progress %% (LTE)"
 #~ msgstr "進度類型"
 
@@ -22905,7 +23090,6 @@ msgstr "訊息模板和流創建成功。"
 #~ msgid "Selected Objectives"
 #~ msgstr "選定的目標"
 
-#~| msgid "The {} has been deleted successfully."
 #~ msgid "The time sheet has been deleted successfully"
 #~ msgstr "{} 已成功刪除。"
 
@@ -22996,7 +23180,6 @@ msgstr "訊息模板和流創建成功。"
 #~ msgid "Details 123231"
 #~ msgstr "詳細資訊"
 
-#~| msgid "Add more managers.."
 #~ msgid "Add more managers.. 321"
 #~ msgstr "增加更多經理.."
 
@@ -23006,46 +23189,36 @@ msgstr "訊息模板和流創建成功。"
 #~ msgid "Is From Onboarding"
 #~ msgstr "來自入職訓練"
 
-#~| msgid "Configuration"
 #~ msgid "Configurations"
 #~ msgstr "配置"
 
-#~| msgid "Choose employees to assign this leave type"
 #~ msgid "choose employees to assign this leave type"
 #~ msgstr "選擇要指派此休假類型的員工"
 
-#~| msgid "Create Employee Objective"
 #~ msgid "Search by Employee or Objective..."
 #~ msgstr "建立員工目標"
 
-#~| msgid "Export Payslips"
 #~ msgid "Total Payslips"
 #~ msgstr "匯出薪資單"
 
-#~| msgid "Basic Pay Deductions"
 #~ msgid " Basic Pay Deductions"
 #~ msgstr "基本工資扣除"
 
-#~| msgid "Gross Pay Deductions"
 #~ msgid " Gross Pay Deductions"
 #~ msgstr "總工資扣除額"
 
-#~| msgid "Net Pay Deductions"
 #~ msgid " Net Pay Deductions"
 #~ msgstr "淨工資扣除額"
 
-#~| msgid "Asset View"
 #~ msgid "List View"
 #~ msgstr "資產視圖"
 
-#~| msgid "Scheduled Interviews"
 #~ msgid "'s Scheduled Interviews"
 #~ msgstr "預約面試"
 
 #~ msgid "record_type_name"
 #~ msgstr "記錄類型名稱"
 
-#~| msgid "Access Denied: Your account is blocked."
 #~ msgid "Access Denied: Your login credentials are currently blocked."
 #~ msgstr "拒絕存取：您的帳戶已被封鎖。"
 
@@ -24156,32 +24329,3 @@ msgstr "訊息模板和流創建成功。"
 
 #~ msgid "Employee instance already exist"
 #~ msgstr "員工實例已存在"
-
-# Dashboard i18n — status/chart labels (auto-appended)
-
-msgid "Not Assigned"
-msgstr "未指派"
-
-msgid "Not Specified"
-msgstr "未指定"
-
-msgid "Inside Software"
-msgstr "系統內部"
-
-msgid "m ago"
-msgstr " 分鐘前"
-
-msgid "hrs"
-msgstr "小時"
-
-msgid "Bonus Encashment"
-msgstr "獎金兌現"
-
-msgid "Review"
-msgstr "審核"
-
-msgid "No data for this week"
-msgstr "本週暫無資料"
-
-msgid "Chart error"
-msgstr "圖表錯誤"

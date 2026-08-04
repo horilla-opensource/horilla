@@ -78,16 +78,16 @@ class LocalBackupSetupForm(ModelForm):
 
 
 class GdriveBackupSetupForm(ModelForm):
-    verbose_name = "Gdrive Backup"
+    verbose_name = _("Google Drive Backup")
     backup_db = forms.BooleanField(
         required=False,
         label="Backup DB",
-        help_text=_("Enable to backup database to Gdrive"),
+        help_text=_("Enable to backup database to Google Drive"),
     )
     backup_media = forms.BooleanField(
         required=False,
         label="Backup Media",
-        help_text=_("Enable to backup all media files to Gdrive"),
+        help_text=_("Enable to backup all media files to Google Drive"),
     )
     interval = forms.BooleanField(
         required=False,

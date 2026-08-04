@@ -964,7 +964,7 @@ class LeaveRequest(HorillaModel):
     approved_available_days = models.FloatField(default=0)
     approved_carryforward_days = models.FloatField(default=0)
     reject_reason = models.TextField(
-        blank=True, verbose_name=_("Reject Reason"), max_length=255
+        blank=True, verbose_name=_("Rejection Reason"), max_length=255
     )
     history = HorillaAuditLog(
         related_name="history_set",

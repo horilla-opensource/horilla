@@ -912,8 +912,8 @@ def export_data(request, model, form_class, filter_class, file_name, perm=None):
         "cancelled": _("Cancelled"),
         "rejected": _("Rejected"),
         "cancelled_and_rejected": _("Cancelled & Rejected"),
-        "late_come": _("Late Come"),
-        "early_out": _("Early Out"),
+        "late_come": _("Late Arrival"),
+        "early_out": _("Early Departure"),
     }
     employee = request.user.employee_get
 

@@ -687,7 +687,7 @@ class LoanAccountForm(ModelForm):
     LoanAccountForm
     """
 
-    verbose_name = "Loan / Advanced Sarlary"
+    verbose_name = _("Loans & Salary Advances")
     cols = {
         "description": 12,
     }

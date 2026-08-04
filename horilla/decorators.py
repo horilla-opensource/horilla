@@ -359,7 +359,9 @@ def install_required(function):
             else:
                 messages.info(
                     request,
-                    _("Please enable the Track Late Come & Early Out from settings"),
+                    _(
+                        "Please enable the Track Late Arrival & Early Departure from settings"
+                    ),
                 )
                 return HorillaRedirect(request)
         selected_company = request.session.get("selected_company")

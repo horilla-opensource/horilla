@@ -853,7 +853,7 @@ class Attendance(HorillaModel):
 
     def create_ot(self):
         """
-        Create a new Hour Account instance if it doesn't exist for a specific month and year.
+        Create a new Hours Balance instance if it doesn't exist for a specific month and year.
         Returns:
             AttendanceOverTime: The created or fetched AttendanceOverTime instance.
         """
@@ -1052,8 +1052,8 @@ class AttendanceOverTime(HorillaModel):
 
         unique_together = [("employee_id"), ("month"), ("year")]
         ordering = ["-year", "-month_sequence"]
-        verbose_name = _("Hour Account")
-        verbose_name_plural = _("Hour Accounts")
+        verbose_name = _("Hours Balance")
+        verbose_name_plural = _("Hours Balances")
 
     def __str__(self):
         return f"{self.employee_id} - {self.month}"
@@ -1250,8 +1250,8 @@ class AttendanceLateComeEarlyOut(HorillaModel):
     """
 
     choices = [
-        ("late_come", _("Late Come")),
-        ("early_out", _("Early Out")),
+        ("late_come", _("Late Arrival")),
+        ("early_out", _("Early Departure")),
     ]
 
     attendance_id = models.ForeignKey(
@@ -1298,8 +1298,8 @@ class AttendanceLateComeEarlyOut(HorillaModel):
         Display work type
         """
         choices = [
-            ("late_come", _("Late Come")),
-            ("early_out", _("Early Out")),
+            ("late_come", _("Late Arrival")),
+            ("early_out", _("Early Departure")),
         ]
         return dict(choices).get(self.type)
 
@@ -1588,7 +1588,7 @@ class WorkRecords(models.Model):
         ("FDP", _("Present")),
         ("HDP", _("Half Day Present")),
         ("ABS", _("Absent")),
-        ("HD", _("Holiday/Company Leave")),
+        ("HD", _("Holiday / Weekly Off")),
         ("CONF", _("Conflict")),
         ("DFT", _("Draft")),
     ]
@@ -1665,6 +1665,6 @@ class WorkRecords(models.Model):
         )
 
     class Meta:
-        verbose_name = _("Work Record")
-        verbose_name_plural = _("Work Records")
+        verbose_name = _("Daily Work Status")
+        verbose_name_plural = _("Daily Work Status")
         # unique_together = ['date', 'employee_id']

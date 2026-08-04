@@ -144,7 +144,7 @@ class Asset(HorillaModel):
         on_delete=models.PROTECT,
         null=True,
         blank=True,
-        verbose_name=_("Current User"),
+        verbose_name=_("Assigned To"),
     )
     asset_description = models.TextField(
         null=True, blank=True, max_length=255, verbose_name=_("Description")

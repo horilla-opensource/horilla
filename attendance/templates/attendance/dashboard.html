@@ -942,11 +942,11 @@
                         class="am-chart-card"
                         data-chart-id="late_early"
                         data-chart-section="alerts"
-                        data-chart-label="{% trans 'Late Come & Early Out' %}"
+                        data-chart-label="{% trans 'Late Arrival & Early Departure' %}"
                     >
                         <div class="am-chart-card__header">
                             <div>
-                                <div class="am-chart-card__title">{% trans "Late Come & Early Out" %}</div>
+                                <div class="am-chart-card__title">{% trans "Late Arrival & Early Departure" %}</div>
                                 <div class="am-chart-card__subtitle" id="late-early-subtitle">
                                     {% trans "Today — by department" %}
                                 </div>
@@ -1422,10 +1422,10 @@
                 </a>
                 <a href="{% url 'late-come-early-out-view' %}" class="am-kpi-card">
                     <div class="am-kpi-card__icon am-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-                    <div class="am-kpi-card__label">{% trans "Late Come" %}</div>
+                    <div class="am-kpi-card__label">{% trans "Late Arrival" %}</div>
                     <div class="am-kpi-card__value">${data.late_come}</div>
                     <div class="am-kpi-card__sub">${data.early_out > 0
-                                ? '<span class="am-badge am-badge--red">' + data.early_out + ' {% trans "early out" %}</span>'
+                                ? '<span class="am-badge am-badge--red">' + data.early_out + ' {% trans "early departure" %}</span>'
                                 : '<span style="opacity:0.5">{% trans "No early outs" %}</span>'}</div>
                 </a>
                 <a href="{% url 'attendance-view' %}?attendance_validated=unknown" class="am-kpi-card">
@@ -1525,8 +1525,8 @@
                     const earlyMap = {}; data.early_out.forEach(d => { earlyMap[d.department] = d.count; });
                     renderChart('late-early', document.querySelector("#chart-late-early"), {
                         series: [
-                            { name: '{% trans "Late Come" %}', data: allDepts.map(d => lateMap[d] || 0) },
-                            { name: '{% trans "Early Out" %}', data: allDepts.map(d => earlyMap[d] || 0) },
+                            { name: '{% trans "Late Arrival" %}', data: allDepts.map(d => lateMap[d] || 0) },
+                            { name: '{% trans "Early Departure" %}', data: allDepts.map(d => earlyMap[d] || 0) },
                         ],
                         chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: true, animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {

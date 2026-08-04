@@ -1314,7 +1314,7 @@ def dashboard_attendance(request):
     """
     labels = [
         _("On Time"),
-        _("Late Come"),
+        _("Late Arrival"),
         _("On Break"),
     ]
     data_set = []

@@ -29,7 +29,7 @@ from horilla_views.generic.cbv.views import (
 @method_decorator(login_required, name="dispatch")
 class HourAccount(TemplateView):
     """
-    Hour Account
+    Hours Balance
     """
 
     template_name = "cbv/hour_account/hour_account.html"
@@ -166,7 +166,7 @@ class HourAccountNav(HorillaNavView):
 
         self.actions = actions
 
-    nav_title = _("Hour Account")
+    nav_title = _("Hours Balance")
     filter_instance = AttendanceOverTimeFilter()
     filter_body_template = "cbv/hour_account/hour_filter.html"
     filter_form_context_name = "form"
@@ -247,7 +247,7 @@ class HourAccountFormView(HorillaFormView):
     model = AttendanceOverTime
     form_class = AttendanceOverTimeForm
     # template_name = "cbv/recruitment/forms/create_form.html"
-    new_display_title = _("Hour Account")
+    new_display_title = _("Hours Balance")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-02 22:34+0530\n"
-"PO-Revision-Date: 2026-01-12 12:35+0300\n"
+"PO-Revision-Date: 2026-08-04 09:08+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr\n"
@@ -92,18 +92,18 @@ msgid ""
 "Only those normal users/employees with any category mentioned in the form "
 "can access the"
 msgstr ""
-"Sadece formda belirtilen herhangi bir kategoriye sahip normal kullanıcılar/"
-"çalışanlar"
+"Sadece formda belirtilen herhangi bir kategoriye sahip normal "
+"kullanıcılar/çalışanlar"
 
 msgid "feature"
 msgstr "özellik"
 
 msgid ""
-"If skip all the category fields in the form, then all normal users/employees "
-"can access the feature"
+"If skip all the category fields in the form, then all normal users/employees"
+" can access the feature"
 msgstr ""
-"Formdaki tüm kategori alanlarını atlarsanız, tüm normal kullanıcılar/"
-"çalışanlar özelliğe erişebilir"
+"Formdaki tüm kategori alanlarını atlarsanız, tüm normal "
+"kullanıcılar/çalışanlar özelliğe erişebilir"
 
 msgid "Accessibility filter saved"
 msgstr "Erişilebilirlik filtresi kaydedildi"
@@ -400,9 +400,6 @@ msgstr "Mevcut"
 msgid "Not-Available"
 msgstr "Mevcut Değil"
 
-msgid "Current User"
-msgstr "Şu anki kullanıcı"
-
 msgid "Purchase Date"
 msgstr "Satınalma tarihi"
 
@@ -437,7 +434,7 @@ msgid "Healthy"
 msgstr "Sağlıklı"
 
 msgid "Assigned To"
-msgstr "Atandı"
+msgstr "Atanan Kişi"
 
 msgid "Assigned By"
 msgstr "Atanmış"
@@ -1099,9 +1096,6 @@ msgstr "Çıkış Tarihi"
 msgid "Duration (HH:MM:SS)"
 msgstr "Süre (HH:MM:SS)"
 
-msgid "Attendance Activity"
-msgstr "Katılım Etkinliği"
-
 msgid "Shift Day"
 msgstr "Vardiya Günü"
 
@@ -1196,9 +1190,6 @@ msgstr "Katılım Talebini Güncelleme"
 
 msgid "Validate Attendances"
 msgstr "Katılımları Doğrulayın"
-
-msgid "Hour Account"
-msgstr "Saat Hesabı"
 
 msgid "Attendance Report"
 msgstr "Katılım Raporu"
@@ -1462,8 +1453,8 @@ msgstr "Seçilmeyen çalışan"
 
 #, fuzzy
 #| msgid ""
-#| "<span title='Do not Auto Validate Attendance if an Employee Works More "
-#| "Than this Amount of Duration'>{}</span>"
+#| "<span title='Do not Auto Validate Attendance if an Employee Works More Than "
+#| "this Amount of Duration'>{}</span>"
 msgid ""
 "Do not Auto Validate Attendance if an Employee Works More Than this Amount "
 "of Duration"
@@ -1618,9 +1609,6 @@ msgstr "Bekleyen İkinci Gruplar"
 msgid "Overtime Seconds"
 msgstr "Uzatma İkinci Saniyeleri"
 
-msgid "Hour Accounts"
-msgstr "Saat Hesapları"
-
 msgid "Year must be an integer value between 1900 and 2100"
 msgstr "Yıl, 1900 ile 2100 arasında tam sayı değeri olmalıdır"
 
@@ -1685,20 +1673,8 @@ msgstr "Taslak"
 msgid "Day percentage must be between 0.0 and 1.0"
 msgstr "Gün yüzdesi 0.0 ile 1.0 arasında olmalı"
 
-msgid "Work Record"
-msgstr "Çalışma Kaydı"
-
-msgid "Work Records"
-msgstr "Çalışma Kayıtları"
-
 msgid "Attendance Requests"
 msgstr "Katılım Talepleri"
-
-msgid "Attendance Activities"
-msgstr "Katılım Etkinlikleri"
-
-msgid "Late Come Early Out"
-msgstr "Geç Erken Çık"
 
 msgid "Time Policies"
 msgstr "Zaman Politikaları"
@@ -1719,9 +1695,6 @@ msgid "Show live at-work hours in the navbar inside the check-in button"
 msgstr ""
 "Check-in düğmesinin içindeki gezinme çubuğunda canlı çalışma saatlerini "
 "gösterin"
-
-msgid "Track Late Come & Early Out"
-msgstr "Geç Dönüş ve Erken Çıkış Parçasını Takip Et"
 
 msgid "Track late arrivals and early departures of employees"
 msgstr "Çalışanların geç gelişlerini ve erken ayrılışlarını takip edin"
@@ -1945,9 +1918,6 @@ msgid ""
 "The attendances for this employee in %(month_name)s has not been validated."
 msgstr "Bu çalışanın %(month_name)s'deki katılımları doğrulanmamıştır."
 
-msgid "Export Hour Accounts"
-msgstr "İhracat Saati Hesapları"
-
 msgid "Worked Hours Greater or Equal"
 msgstr "Çalışma Saatleri Büyük veya Eşit"
 
@@ -2091,11 +2061,6 @@ msgstr ""
 
 msgid "Monthly trend — last 6 months"
 msgstr ""
-
-#, fuzzy
-#| msgid "Late Come Early Out"
-msgid "Late Come & Early Out"
-msgstr "Geç Erken Çık"
 
 #, fuzzy
 #| msgid "Name of the department"
@@ -2408,12 +2373,6 @@ msgstr "İzin verilen IP'leri Düzenle"
 msgid "Add Allowed IPs"
 msgstr "İzin verilen IP'ler Ekle"
 
-msgid "Export Late Come Early Out"
-msgstr "İhracat Geç Erken Çık"
-
-msgid "Late Come/Early Out"
-msgstr "Geç Gelme/Erken Çıkış"
-
 msgid "Penalties"
 msgstr "Penaltılar"
 
@@ -2469,8 +2428,8 @@ msgid ""
 "By enabling 'Deduct from carry forward' leave will cut/deduct from carry "
 "forward days"
 msgstr ""
-"'Carry Forward'dan Çek' seçeneğini etkinleştirerek izin transfer günlerinden "
-"kesilir/düşülür"
+"'Carry Forward'dan Çek' seçeneğini etkinleştirerek izin transfer günlerinden"
+" kesilir/düşülür"
 
 msgid ""
 "Configure attendance tracking, check-in/out, biometric and IP restriction "
@@ -2489,8 +2448,8 @@ msgid "Time Runner"
 msgstr "Time Runner"
 
 msgid ""
-"By enabling this feature user's will be able to see their current day worked "
-"hours in live on the navbar (inside the check in button)."
+"By enabling this feature user's will be able to see their current day worked"
+" hours in live on the navbar (inside the check in button)."
 msgstr ""
 "Bu özelliği etkinleştirdiğinizde, kullanıcılar navbarda (check-in butonunun "
 "içinde) mevcut çalışma saatlerini canlı olarak görebilecekler."
@@ -2541,8 +2500,8 @@ msgstr ""
 "Çalışanların yüz algılamayı kullanarak katılımı işaretlemesine izin verin"
 
 msgid ""
-"Configure the location and radius within which employees are allowed to mark "
-"their attendance."
+"Configure the location and radius within which employees are allowed to mark"
+" their attendance."
 msgstr ""
 
 msgid "Download"
@@ -3641,7 +3600,8 @@ msgid "Mail Server"
 msgstr "E-Posta Sunucusu"
 
 msgid "Configure an outgoing mail server so Horilla can send emails."
-msgstr "Horilla'nın e-posta gönderebilmesi için giden posta sunucusunu yapılandırın."
+msgstr ""
+"Horilla'nın e-posta gönderebilmesi için giden posta sunucusunu yapılandırın."
 
 msgid "First Employee"
 msgstr "İlk Çalışan"
@@ -3697,8 +3657,8 @@ msgid "Search employees..."
 msgstr "Ara: Çalışan"
 
 msgid ""
-"Members get this group's permissions only in the selected companies. You can "
-"only assign companies you already have access to. Leave empty for all of "
+"Members get this group's permissions only in the selected companies. You can"
+" only assign companies you already have access to. Leave empty for all of "
 "those companies."
 msgstr ""
 
@@ -3759,7 +3719,8 @@ msgstr "Her döndürme"
 msgid ""
 "Automatic punch out time is required when automatic punch out is enabled."
 msgstr ""
-"Otomatik punch out etkinleştirildiğinde otomatik punch out süresi gereklidir."
+"Otomatik punch out etkinleştirildiğinde otomatik punch out süresi "
+"gereklidir."
 
 msgid "Automatic punch out time cannot be earlier than the end time."
 msgstr "Otomatik çıkış süresi, bitiş zamanından erken olamaz."
@@ -4174,7 +4135,8 @@ msgstr "Sessizce Başarısız Olun"
 msgid "Primary Mail Server"
 msgstr "Birincil Posta Sunucusu"
 
-msgid "By enabling this the display name will take from who triggered the mail"
+msgid ""
+"By enabling this the display name will take from who triggered the mail"
 msgstr ""
 "Bunu etkinleştirdiğinizde, gösterim adı postayı tetikleyen kişiden alır"
 
@@ -4187,11 +4149,11 @@ msgid "Email Send Timeout (seconds)"
 msgstr "E-posta Gönderme Zaman Aşımı (saniyeler)"
 
 msgid ""
-"\"Use TLS\" and \"Use SSL\" are mutually exclusive, so only set one of those "
-"settings to True."
+"\"Use TLS\" and \"Use SSL\" are mutually exclusive, so only set one of those"
+" settings to True."
 msgstr ""
-"\"TLS kullan\" ve \"SSL kullan\" birbirini dışlıyor, bu yüzden bu ayarlardan "
-"sadece birini Doğru olarak ayarlayın."
+"\"TLS kullan\" ve \"SSL kullan\" birbirini dışlıyor, bu yüzden bu ayarlardan"
+" sadece birini Doğru olarak ayarlayın."
 
 msgid "Email Configuration"
 msgstr "E-posta Yapılandırması"
@@ -4222,8 +4184,8 @@ msgid "Please specify condition value range"
 msgstr "Lütfen koşul değer aralığını belirtin"
 
 msgid ""
-"Please enter a valid numeric value for the starting value when the condition "
-"field is Leave Requested Days."
+"Please enter a valid numeric value for the starting value when the condition"
+" field is Leave Requested Days."
 msgstr ""
 "Lütfen koşul alanı Talep Edilen Günler olduğunda başlangıç değeri için "
 "geçerli bir sayısal değer girin."
@@ -4251,7 +4213,8 @@ msgid "Show Comments to All"
 msgstr "Herkese Yorumları Göster"
 
 msgid "If enabled, all employees can view each other's comments."
-msgstr "Etkinleştirilirse, tüm çalışanlar birbirlerinin yorumlarını görebilir."
+msgstr ""
+"Etkinleştirilirse, tüm çalışanlar birbirlerinin yorumlarını görebilir."
 
 msgid "Announcement"
 msgstr "Duyuru"
@@ -4297,12 +4260,6 @@ msgstr "Tatil"
 
 msgid "Holidays"
 msgstr "Tatiller"
-
-msgid "Company Leave"
-msgstr "Şirket İzni"
-
-msgid "Company Leaves"
-msgstr "Şirketin Ayrılması"
 
 msgid "Leave type"
 msgstr "İzin türü"
@@ -4420,9 +4377,6 @@ msgid ""
 msgstr ""
 "Bu şirket için gezinme çubuğu dil değiştiricisinde hangi dillerin "
 "görüneceğini kısıtlayın"
-
-msgid "Accessibility Restrictions"
-msgstr "Erişilebilirlik Kısıtlamaları"
 
 msgid "Control which user roles can see which menu items"
 msgstr ""
@@ -4646,9 +4600,6 @@ msgstr "Teslimat Kanalı"
 msgid "Send via Email Notification or Both"
 msgstr "E-posta Bildirimi veya Her İkisi ile Gönder"
 
-msgid "Theme Manager"
-msgstr "Tema Yöneticisi"
-
 msgid "Color Theme"
 msgstr "Renk Teması"
 
@@ -4665,9 +4616,6 @@ msgstr ""
 
 msgid "Integrations"
 msgstr "Entegrasyonları"
-
-msgid "Gdrive Backup"
-msgstr "Gdrive Yedeklemesi"
 
 msgid "Google Drive Backup"
 msgstr "Google Drive Yedekleme"
@@ -4710,9 +4658,6 @@ msgstr "Sabit Zamanlı Yedekleme"
 
 msgid "Schedule an automatic backup at a fixed time each day"
 msgstr "Her gün sabit bir saatte otomatik yedekleme planlayın"
-
-msgid "Linkedin"
-msgstr "Linkedin"
 
 msgid "LinkedIn Integration"
 msgstr "LinkedIn Entegrasyonu"
@@ -4798,9 +4743,6 @@ msgstr "URI'leri yönlendir"
 msgid "Authorised OAuth redirect URIs for Google Meet"
 msgstr "Google Meet için Yetkili OAuth yönlendirme URI'leri"
 
-msgid "Whatsapp"
-msgstr "Whatsapp"
-
 msgid "WhatsApp"
 msgstr "WhatsApp"
 
@@ -4834,7 +4776,7 @@ msgid "Token for verifying WhatsApp webhook callbacks"
 msgstr "WhatsApp webhook geri aramalarını doğrulamak için belirteç"
 
 msgid "Enable WhatsApp"
-msgstr "WhatsApp'ı etkinleştir"
+msgstr "WhatsApp'ı Etkinleştir"
 
 msgid "Activate WhatsApp Business API integration"
 msgstr "WhatsApp Business API entegrasyonunu etkinleştirin"
@@ -4940,7 +4882,8 @@ msgstr "Vurgulama"
 msgid "Employee Account Restrictions"
 msgstr "Çalışan Hesabı Kısıtlamaları"
 
-msgid "By enabling this feature, you can block or unblock an employee account."
+msgid ""
+"By enabling this feature, you can block or unblock an employee account."
 msgstr ""
 "Bu özelliği etkinleştirerek, bir çalışan hesabını engelleyebilir veya "
 "bloktan çıkarabilirsiniz."
@@ -4955,8 +4898,8 @@ msgstr ""
 msgid ""
 "Are you sure you want to restrict all employees from editing their profiles?"
 msgstr ""
-"Tüm çalışanların profillerini düzenlemelerini kısıtlamak istediğinizden emin "
-"misiniz?"
+"Tüm çalışanların profillerini düzenlemelerini kısıtlamak istediğinizden emin"
+" misiniz?"
 
 msgid "Are you sure you want to allow all employees to edit their profiles?"
 msgstr ""
@@ -5183,10 +5126,9 @@ msgstr "Kontrol Panelim"
 msgid "Back"
 msgstr "Geri"
 
-#, fuzzy
 #| msgid "Leave Clash"
 msgid "Leave Balance"
-msgstr "Çıkma Çatışması"
+msgstr "İzin Bakiyesi"
 
 #, fuzzy
 #| msgid "Available days"
@@ -5362,8 +5304,8 @@ msgid "Sending email..."
 msgstr "E-posta göndermek..."
 
 msgid ""
-"Configure outgoing email servers used for system notifications and automated "
-"messages."
+"Configure outgoing email servers used for system notifications and automated"
+" messages."
 msgstr ""
 
 msgid "This mail is assigned as primary mail.Replace primary mail to delete"
@@ -5610,8 +5552,8 @@ msgstr "Bu dönen iş türünü silmek istediğinizden emin misiniz?"
 #, fuzzy
 #| msgid "Choose which models are recorded in the audit log"
 msgid ""
-"Manage history tags and configure which models and fields are tracked in the "
-"audit log."
+"Manage history tags and configure which models and fields are tracked in the"
+" audit log."
 msgstr "Denetim günlüğüne hangi modellerin kaydedileceğini seçin"
 
 msgid ""
@@ -5675,8 +5617,7 @@ msgstr "24 Saat (örneğin, 06:00 veya 18:00)"
 
 #, fuzzy
 #| msgid ""
-#| "Control the default data export behavior for the currently selected "
-#| "company"
+#| "Control the default data export behavior for the currently selected company"
 msgid ""
 "Control the default data export behavior for the currently selected company."
 msgstr ""
@@ -5696,7 +5637,8 @@ msgid "Allow every user of this company to export data from any module."
 msgstr ""
 
 #, fuzzy
-#| msgid "Are you sure you want to allow all employees to edit their profiles?"
+#| msgid ""
+#| "Are you sure you want to allow all employees to edit their profiles?"
 msgid "Are you sure you want to allow all users to export data?"
 msgstr ""
 "Tüm çalışanların profillerini düzenlemesine izin vermek istediğinizden emin "
@@ -5704,14 +5646,13 @@ msgstr ""
 
 #, fuzzy
 #| msgid ""
-#| "Are you sure you want to restrict all employees from editing their "
-#| "profiles?"
+#| "Are you sure you want to restrict all employees from editing their profiles?"
 msgid ""
 "Are you sure you want to restrict data export to users with export "
 "permission?"
 msgstr ""
-"Tüm çalışanların profillerini düzenlemelerini kısıtlamak istediğinizden emin "
-"misiniz?"
+"Tüm çalışanların profillerini düzenlemelerini kısıtlamak istediğinizden emin"
+" misiniz?"
 
 msgid "Define company-observed public holidays and recurring holiday dates."
 msgstr ""
@@ -5751,7 +5692,8 @@ msgid "Loading language settings…"
 msgstr ""
 
 msgid ""
-"Since only one company exists, these settings will automatically apply to it."
+"Since only one company exists, these settings will automatically apply to "
+"it."
 msgstr ""
 
 #, python-format
@@ -5866,7 +5808,9 @@ msgstr "Şu anda mevcut e-posta şablonları bulunmamaktadır."
 
 msgid ""
 "Configure system defaults, display formatting, and data access controls."
-msgstr "Sistem varsayılanlarını, görüntü biçimlendirmesini ve veri erişim kontrollerini yapılandırın."
+msgstr ""
+"Sistem varsayılanlarını, görüntü biçimlendirmesini ve veri erişim "
+"kontrollerini yapılandırın."
 
 #, fuzzy
 #| msgid "General Settings"
@@ -7402,7 +7346,8 @@ msgstr "Erişim Reddedildi: Hesabınız engellendi."
 msgid "Invalid username or password."
 msgstr "Geçersiz kullanıcı adı veya şifre."
 
-msgid "This user is archived. Please contact the manager for more information."
+msgid ""
+"This user is archived. Please contact the manager for more information."
 msgstr ""
 "Bu kullanıcı arşivlenmiştir. Daha fazla bilgi için lütfen yöneticiyle "
 "iletişime geçin."
@@ -8125,8 +8070,8 @@ msgid "The password is required for ZKTeco Biometric Device."
 msgstr "ZKTeco Biyometrik Cihaz için şifre gereklidir."
 
 msgid ""
-"The password must be an integer (numeric) value "
-"for                            ZKTeco Biometric Device."
+"The password must be an integer (numeric) value for"
+"                            ZKTeco Biometric Device."
 msgstr ""
 "Şifre, ZKTeco Biyometrik Cihaz için tam sayı (sayısal) bir değer olmalıdır."
 
@@ -8149,15 +8094,15 @@ msgid "The API Secret is required for Anviz Biometric Device."
 msgstr "API Secret, Anviz Biyometrik Cihaz için gereklidir."
 
 msgid ""
-"Authentication failed. Please check your API "
-"Url                                    , API Key and API Secret."
+"Authentication failed. Please check your API Url"
+"                                    , API Key and API Secret."
 msgstr ""
 "Kimlik doğrulama başarısız oldu. Lütfen API URL'lerinizi, API Anahtarınızı "
 "ve API Sırrınızı kontrol edin."
 
 msgid ""
-"Authentication failed. Please check your API Url , API "
-"Key                                and API Secret."
+"Authentication failed. Please check your API Url , API Key"
+"                                and API Secret."
 msgstr ""
 "Kimlik doğrulama başarısız oldu. Lütfen API URL'lerinizi, API Anahtarınızı "
 "ve API Sırrınızı kontrol edin."
@@ -8344,7 +8289,8 @@ msgid "e-Time Office test connection successful."
 msgstr "e-Time Office test bağlantısı başarılı."
 
 msgid "Double-check the provided API Url, Username, and Password: {}"
-msgstr "Verilen API URL'sini, Kullanıcı Adı ve Şifreyi tekrar kontrol edin: {}"
+msgstr ""
+"Verilen API URL'sini, Kullanıcı Adı ve Şifreyi tekrar kontrol edin: {}"
 
 msgid "Connection error"
 msgstr "Bağlantı hatası"
@@ -8370,8 +8316,8 @@ msgstr ""
 "Sağlanan API URL'sini, kullanıcı adını ve şifresini tekrar kontrol edin"
 
 msgid ""
-"Failed to establish a connection. Please verify the accuracy of the "
-"IP                    Address , Port No. and Password of the device."
+"Failed to establish a connection. Please verify the accuracy of the IP"
+"                    Address , Port No. and Password of the device."
 msgstr "Bağlantı kuramadı. Lütfen IP Adresi, Port No. ve cihazın şifresi."
 
 msgid "Biometric device not found"
@@ -8393,8 +8339,8 @@ msgid "Biometric user data updated successfully"
 msgstr "Biyometrik kullanıcı verileri başarıyla güncellendi"
 
 msgid ""
-"This date cannot be used as the Validity End Date "
-"for                                the COSEC Biometric."
+"This date cannot be used as the Validity End Date for"
+"                                the COSEC Biometric."
 msgstr ""
 "Bu tarih, COSEC Biyometrisi için Geçerlilik Son Tarihi olarak kullanılamaz."
 
@@ -8906,8 +8852,8 @@ msgstr "daha az"
 
 msgid "greater than or equal"
 msgstr ""
-"yanıtı, belirli sayıdan fazla veya bu sayıya eşit bir sipariş sayısına sahip "
-"nesnelerle sınırla"
+"yanıtı, belirli sayıdan fazla veya bu sayıya eşit bir sipariş sayısına sahip"
+" nesnelerle sınırla"
 
 msgid "less than or equal"
 msgstr ""
@@ -9003,9 +8949,6 @@ msgstr "Disiplin cezası kaldırıldı."
 
 msgid "Organization Chart"
 msgstr "Organizasyon Şeması"
-
-msgid "Work Requests"
-msgstr "İş Talepleri"
 
 msgid "Work Schedules"
 msgstr "Çalışma Programları"
@@ -9696,8 +9639,8 @@ msgid ""
 "This employee doesn't have an active contract. Please check the employee's "
 "contract"
 msgstr ""
-"Bu çalışanın aktif bir sözleşmesi yok. Lütfen çalışanın sözleşmesini kontrol "
-"edin"
+"Bu çalışanın aktif bir sözleşmesi yok. Lütfen çalışanın sözleşmesini kontrol"
+" edin"
 
 msgid "Is Pretax"
 msgstr "Vergi Öncesi"
@@ -10433,7 +10376,7 @@ msgid "Others"
 msgstr "Diğer"
 
 msgid "Ticket Types"
-msgstr "Bilet türleri"
+msgstr "Destek Talebi Türleri"
 
 msgid "Forward To"
 msgstr "İlerleyen Sayfa"
@@ -11006,8 +10949,8 @@ msgstr "'Sabit' alanı devre dışı bırakılıyorsa, 'Temelli' alanı gereklid
 
 #, fuzzy
 #| msgid ""
-#| "If based on is attendance,                         then per attendance "
-#| "fixed amount must be filled."
+#| "If based on is attendance,                         then per attendance fixed"
+#| " amount must be filled."
 msgid ""
 "If 'based_on' is 'attendance', 'per_attendance_fixed_amount' is required."
 msgstr ""
@@ -11128,10 +11071,8 @@ msgstr "Alan Ekle"
 #, python-format
 msgid ""
 "\n"
-"                Select the fields of <strong>%(app_label)s.%(model_name)s</"
-"strong>\n"
-"                that should be recorded in the audit log. Leave the list "
-"empty to\n"
+"                Select the fields of <strong>%(app_label)s.%(model_name)s</strong>\n"
+"                that should be recorded in the audit log. Leave the list empty to\n"
 "                track every field.\n"
 "            "
 msgstr ""
@@ -11143,10 +11084,8 @@ msgstr "Kaydetme filtresi"
 
 msgid ""
 "\n"
-"                Choose which models should record their changes in the audit "
-"log.\n"
-"                The default models (Employee, Employee Work Information, "
-"Employee\n"
+"                Choose which models should record their changes in the audit log.\n"
+"                The default models (Employee, Employee Work Information, Employee\n"
 "                Bank Details) are always tracked and cannot be removed.\n"
 "            "
 msgstr ""
@@ -11202,8 +11141,8 @@ msgid "Mail To"
 msgstr "E-Posta Kayıtları"
 
 msgid ""
-"Fill mail template details (receiver/instance, `self` will be the person who "
-"triggers the automation)"
+"Fill mail template details (receiver/instance, `self` will be the person who"
+" triggers the automation)"
 msgstr ""
 "Posta şablonu detaylarını doldurun (alıcı/instance, 'ben' otomasyonu "
 "tetikleyen kişi olacak)"
@@ -11376,8 +11315,8 @@ msgstr "Düzenli zaman aralıklarında otomatik yedeklemeyi etkinleştirin"
 
 msgid "Please provide a valid OAuth credentials file (must be valid JSON)."
 msgstr ""
-"Lütfen geçerli bir OAuth kimlik bilgileri dosyası sağlayın (geçerli bir JSON "
-"olmalıdır)."
+"Lütfen geçerli bir OAuth kimlik bilgileri dosyası sağlayın (geçerli bir JSON"
+" olmalıdır)."
 
 msgid "Please provide a valid OAuth credentials file."
 msgstr "Lütfen geçerli bir OAuth kimlik bilgileri dosyası sağlayın."
@@ -11639,7 +11578,8 @@ msgid "active until"
 msgstr ""
 
 msgid ""
-"Stop serving this template after this datetime. Leave blank = no restriction."
+"Stop serving this template after this datetime. Leave blank = no "
+"restriction."
 msgstr ""
 
 #, fuzzy
@@ -11784,9 +11724,6 @@ msgstr "Biçim"
 msgid "Max size (In MB)"
 msgstr "Maksimum boyut (MB cinsinden)"
 
-msgid "Reject Reason"
-msgstr "Red Nedeni"
-
 msgid "Notify Before"
 msgstr "Önceden bildir"
 
@@ -11877,7 +11814,8 @@ msgstr "Toplantı başarıyla güncellendi"
 
 #, python-format
 msgid "Error creating/updating Google Meeting: %(error)s"
-msgstr "Google Toplantısı oluşturulurken/güncellenirken hata oluştu: %(error)s"
+msgstr ""
+"Google Toplantısı oluşturulurken/güncellenirken hata oluştu: %(error)s"
 
 msgid "Is Default"
 msgstr "Varsayılan"
@@ -11995,7 +11933,9 @@ msgstr "Bu yorumu silmek istediğinizden emin misiniz?"
 msgid ""
 "Number of days after which an announcement automatically expires when no "
 "expiry date is set."
-msgstr "Son kullanma tarihi ayarlanmadığında duyurunun otomatik olarak sona ereceği gün sayısı."
+msgstr ""
+"Son kullanma tarihi ayarlanmadığında duyurunun otomatik olarak sona ereceği "
+"gün sayısı."
 
 msgid "Tracking ID"
 msgstr "İzleme Kimliği"
@@ -12052,7 +11992,8 @@ msgid "Prevent employees from editing their own profile details."
 msgstr "Çalışanların kendi profillerini düzenlemelerini engelleyin"
 
 #, fuzzy
-#| msgid "Enable tracking of changes to employee work information fields"
+#| msgid ""
+#| "Enable tracking of changes to employee work information fields"
 msgid ""
 "Save a history record whenever an employee's work information is updated."
 msgstr ""
@@ -12064,8 +12005,8 @@ msgid ""
 msgstr ""
 
 msgid ""
-"A role is a named set of employees who share the same access. Create a role, "
-"add members, then turn permissions on or off."
+"A role is a named set of employees who share the same access. Create a role,"
+" add members, then turn permissions on or off."
 msgstr ""
 
 #, fuzzy
@@ -12134,8 +12075,8 @@ msgid "permissions"
 msgstr "İzinler"
 
 msgid ""
-"Delete this role? Employees will keep their accounts, but will no longer get "
-"permissions from this role."
+"Delete this role? Employees will keep their accounts, but will no longer get"
+" permissions from this role."
 msgstr ""
 
 #, fuzzy
@@ -12708,8 +12649,8 @@ msgid "Offer Acceptance Rate"
 msgstr "Teklif Kabul Oranı"
 
 msgid ""
-"Offer Acceptance Rate = ( Onboarding candidates / Total Hired Candidates ) * "
-"100"
+"Offer Acceptance Rate = ( Onboarding candidates / Total Hired Candidates ) *"
+" 100"
 msgstr ""
 
 msgid "Skill Zone Status"
@@ -13647,8 +13588,8 @@ msgid "Carryforward Expire Date"
 msgstr "Devam Etme Süresi"
 
 msgid ""
-"The date on which carryforward leave resets to 0. After this reset, the date "
-"will be updated to the next expiration period."
+"The date on which carryforward leave resets to 0. After this reset, the date"
+" will be updated to the next expiration period."
 msgstr ""
 "Taşıma izni tarihi sıfırlanır. Bu sıfırlamadan sonra, tarih bir sonraki son "
 "kullanma süresine güncellenecektir."
@@ -14120,8 +14061,8 @@ msgid "Basic Pay"
 msgstr "Temel Maaş"
 
 msgid ""
-"Some deductions will update basic pay before payslip calculation starts, eg: "
-"LOP is Deduducted from basic pay if `Deduct leave from basic pay` field is "
+"Some deductions will update basic pay before payslip calculation starts, eg:"
+" LOP is Deduducted from basic pay if `Deduct leave from basic pay` field is "
 "enabled on the contract, and also with the update compensation deduction "
 "through"
 msgstr ""
@@ -14134,8 +14075,8 @@ msgid "Total Gross Pay"
 msgstr "Toplam Brüt Maaş"
 
 msgid ""
-"Some Deduction will update the total gross pay using the deductions that are "
-"enabled update compensation"
+"Some Deduction will update the total gross pay using the deductions that are"
+" enabled update compensation"
 msgstr ""
 "Bazı indirimler, etkinleştirilmiş indirimler kullanılarak toplam brüt maaşı "
 "günceller, güncelleme tazminatını günceller"
@@ -14310,7 +14251,8 @@ msgstr "Aday Kendi Takibi"
 msgid "Application Tracking"
 msgstr "Başvuru Takibi"
 
-msgid "By enabling the feature candidates can track their recruitment progress"
+msgid ""
+"By enabling the feature candidates can track their recruitment progress"
 msgstr ""
 "Özelliği etkinleştirerek adaylar işe alım ilerlemelerini takip edebilir"
 
@@ -14701,7 +14643,8 @@ msgstr "Adaylar"
 msgid "Review document upload requests and submit required files from HR."
 msgstr ""
 
-msgid "Requests from colleagues asking you to cover or take over their shifts."
+msgid ""
+"Requests from colleagues asking you to cover or take over their shifts."
 msgstr ""
 
 msgid "Submit and manage your shift change requests for approval."
@@ -14716,13 +14659,11 @@ msgstr "Şirkete özel ayarlar"
 #, python-format
 msgid ""
 "\n"
-"                            You are currently setting these settings for the "
-"%(company_name)s company specifically.\n"
+"                            You are currently setting these settings for the %(company_name)s company specifically.\n"
 "                        "
 msgstr ""
 "\n"
-"                            Bu ayarları şu anda özellikle "
-"%(company_name)s şirketi için yapılandırıyorsunuz.\n"
+"                            Bu ayarları şu anda özellikle %(company_name)s şirketi için yapılandırıyorsunuz.\n"
 "                        "
 
 msgid "Search settings…"
@@ -14744,7 +14685,9 @@ msgid ""
 msgstr ""
 
 msgid "Prefix added to every auto-generated employee badge ID (e.g. PEP0001)."
-msgstr "Otomatik oluşturulan her çalışan rozet kimliğine eklenen önek (örn. PEP0001)."
+msgstr ""
+"Otomatik oluşturulan her çalışan rozet kimliğine eklenen önek (örn. "
+"PEP0001)."
 
 msgid "Do you want to archive this skill zone ?"
 msgstr "Bu yetenek alanını arşivlemek ister misin?"
@@ -14765,9 +14708,6 @@ msgstr "Görüntüleme istekleri"
 
 msgid "Do you want to remove this candidate"
 msgstr "Bu adayı çıkarmak ister misin?"
-
-msgid "Skill Zone"
-msgstr "Yetenek Bölgesi"
 
 msgid "Candidate Filter"
 msgstr "Aday Filtresi"
@@ -14818,8 +14758,8 @@ msgstr "Başlık en az 3 karakter olmalı"
 
 #, python-format
 msgid ""
-"Showing group permissions for %(company)s. Switch company to see permissions "
-"in another company."
+"Showing group permissions for %(company)s. Switch company to see permissions"
+" in another company."
 msgstr ""
 
 msgid "Showing combined group permissions across assigned companies."
@@ -14982,8 +14922,8 @@ msgstr ""
 
 msgid ""
 "Where this tour applies. With 'URL name' enter the resolver name (e.g. "
-"'dashboard'); with 'Path starts with' enter a path prefix (e.g. '/"
-"employee/'). Leave blank to allow on any page."
+"'dashboard'); with 'Path starts with' enter a path prefix (e.g. "
+"'/employee/'). Leave blank to allow on any page."
 msgstr ""
 
 #, fuzzy
@@ -15069,8 +15009,8 @@ msgid "Step page"
 msgstr ""
 
 msgid ""
-"Optional: for multi-page tours, the URL name this step lives on. Leave blank "
-"to use the tour's page."
+"Optional: for multi-page tours, the URL name this step lives on. Leave blank"
+" to use the tour's page."
 msgstr ""
 
 #, fuzzy
@@ -15364,9 +15304,6 @@ msgid ""
 "of replacing it."
 msgstr ""
 
-msgid "All Assigned Leaves"
-msgstr "Tüm Atanan İzinler"
-
 msgid "Leave Reset Date"
 msgstr "Bırak Sıfırlama Tarihi"
 
@@ -15522,9 +15459,6 @@ msgstr "Talebi yapmak için yeterli izin gününüz yok"
 msgid "There is already a leave request for this date range"
 msgstr "Bu tarih aralığı için zaten bir izin talebi var"
 
-msgid "Restrict Leaves"
-msgstr "Yaprakları Kısıtla"
-
 msgid "Create Restricted Day"
 msgstr "Kısıtlı Gün Oluşturun"
 
@@ -15558,7 +15492,7 @@ msgid "Payment percentage must be between 0 and 100."
 msgstr "Gün yüzdesi 0.0 ile 1.0 arasında olmalı"
 
 msgid "Rejection Reason"
-msgstr "Ret Nedeni"
+msgstr "Red Nedeni"
 
 msgid "Yearly"
 msgstr "Yıllık"
@@ -15698,8 +15632,8 @@ msgstr "İzin türü zaten çalışana atanmıştır"
 #, fuzzy, python-brace-format
 #| msgid "Leave type has already been assigned to the employee."
 msgid ""
-"'{leave_type}' can only be assigned once per employment and has already been "
-"assigned to this employee."
+"'{leave_type}' can only be assigned once per employment and has already been"
+" assigned to this employee."
 msgstr "İzin türü zaten çalışana atanmıştır."
 
 #, python-brace-format
@@ -15729,9 +15663,6 @@ msgstr ""
 msgid "My Leave Requests"
 msgstr "İzin Taleplerim"
 
-msgid "Assigned Leave"
-msgstr "Atanmış İzin"
-
 msgid "Leave Rules"
 msgstr "Kurallardan Ayrıl"
 
@@ -15742,7 +15673,8 @@ msgid "Restrict Past Date Leave"
 msgstr "Geçmiş Tarihli İzinleri Kısıtla"
 
 msgid "Only admins can create leave requests for past dates"
-msgstr "Yalnızca yöneticiler geçmiş tarihler için izin istekleri oluşturabilir"
+msgstr ""
+"Yalnızca yöneticiler geçmiş tarihler için izin istekleri oluşturabilir"
 
 msgid "Half day Attendance need to validate"
 msgstr "Yarım günlük katılımın onaylanması gerekiyor"
@@ -15814,8 +15746,8 @@ msgid "Cannot submit leave request"
 msgstr "izin talebi"
 
 msgid ""
-"The selected dates result in 0 leave days for this leave type. Please adjust "
-"the dates, breakdown or leave type."
+"The selected dates result in 0 leave days for this leave type. Please adjust"
+" the dates, breakdown or leave type."
 msgstr ""
 
 msgid "OK"
@@ -16083,8 +16015,8 @@ msgid "Eligibility Conditions"
 msgstr ""
 
 msgid ""
-"Only employees matching all conditions below will be eligible for this leave "
-"type."
+"Only employees matching all conditions below will be eligible for this leave"
+" type."
 msgstr ""
 
 #, fuzzy
@@ -16304,9 +16236,6 @@ msgid "Invalid date format. Please use YYYY-MM-DD or a supported format."
 msgstr ""
 "Geçersiz tarih formatı. Lütfen YYYY-MM-DD veya desteklenen bir format "
 "kullanın."
-
-msgid "Assigned Leaves"
-msgstr "Atanan İzinler"
 
 msgid "Restricted day created successfully.."
 msgstr "Kısıtlı gün başarılı bir şekilde oluşturuldu.."
@@ -17195,7 +17124,7 @@ msgid "Do you want to add this candidate to onboarding stage?"
 msgstr "Bu adayı işe alım aşamasına eklemek ister misiniz?"
 
 msgid "Start Onboarding"
-msgstr "Onboarding'e Başlayın"
+msgstr "İşe Alıştırma Sürecini Başlat"
 
 msgid "Added to Onobarding"
 msgstr "Onobarding'e eklendi"
@@ -17706,7 +17635,7 @@ msgid "Asset fine added"
 msgstr "Varlık cezası eklendi"
 
 msgid "Contracts"
-msgstr "Sözleşme"
+msgstr "Sözleşmeler"
 
 msgid "Deduct From Basic Pay"
 msgstr "Temel Maaştan Düşüm"
@@ -17764,9 +17693,6 @@ msgstr "Max. Gelir"
 msgid "Loan"
 msgstr "Kredi"
 
-msgid "Advanced Salary"
-msgstr "İkins Maaş"
-
 msgid "Fine"
 msgstr "İnce"
 
@@ -17781,12 +17707,6 @@ msgstr "Toatal Bölümleri"
 
 msgid "Progress Bar"
 msgstr "İlerleme çubuğu"
-
-msgid "Loan / Advanced Salary"
-msgstr "Kredi / Peşin Maaş"
-
-msgid "Loan / Advanced Sarlary"
-msgstr "Kredi / Gelişmiş Sigorta"
 
 msgid "Loan Updated Successfully"
 msgstr "Kredi Başarıyla Güncellendi"
@@ -17879,7 +17799,8 @@ msgstr "Oran 0'dan büyük olmalı"
 msgid "Rate must be less than 100"
 msgstr "Oran 100'den az olmalı"
 
-msgid "Installment start date should be greater than or equal to provided date"
+msgid ""
+"Installment start date should be greater than or equal to provided date"
 msgstr ""
 "Taksit başlangıç ​​tarihi, belirtilen tarihten büyük veya bu tarihe eşit "
 "olmalıdır"
@@ -17969,8 +17890,8 @@ msgid "Title of the allowance"
 msgstr "Ödenin başlığı"
 
 msgid ""
-"The one-time allowance in which the allowance will apply to the "
-"payslips             if the date between the payslip period"
+"The one-time allowance in which the allowance will apply to the payslips"
+"             if the date between the payslip period"
 msgstr ""
 "Ödenmenin maaş bordrolarına uygulanacağı tek seferlik ödenlik, eğer maaş "
 "bordrosu dönemi arasındaki tarihte"
@@ -17990,8 +17911,8 @@ msgid "Target allowance to the specific employees"
 msgstr "Belirli çalışanlara hedef izin"
 
 msgid ""
-"To ignore the allowance to the employees when target them by all "
-"employees             or through condition-based"
+"To ignore the allowance to the employees when target them by all employees"
+"             or through condition-based"
 msgstr ""
 "Tüm çalışanlar tarafından veya koşullara dayalı olarak çalışanlara yönelik "
 "ödeneği görmezden gelmek"
@@ -18004,8 +17925,8 @@ msgid ""
 "This field is used to target allowance         to the specific employees "
 "when the condition satisfies with the employee's information"
 msgstr ""
-"Bu alan, koşul çalışanın bilgilerini karşıladığında belirli çalışanlara izin "
-"hedeflemek için kullanılır"
+"Bu alan, koşul çalışanın bilgilerini karşıladığında belirli çalışanlara izin"
+" hedeflemek için kullanılır"
 
 msgid "The related field of the employees"
 msgstr "Çalışanların ilgili alanı"
@@ -18016,7 +17937,8 @@ msgstr "Belirtmek gerekirse, ödenecek sabit mi yoksa değil mi"
 msgid "Fixed amount for this allowance"
 msgstr "Bu ödenin sabit tutarı"
 
-msgid "If the allowance is not fixed then specifies how the allowance provided"
+msgid ""
+"If the allowance is not fixed then specifies how the allowance provided"
 msgstr "Eğer izin sabit değilse, izin nasıl sağlandığını belirtir"
 
 msgid "The percentage of based on"
@@ -18095,8 +18017,8 @@ msgid ""
 msgstr "Koşul temelliyse, tüm alanlar (alan, değer, koşul) doldurulmalıdır."
 
 msgid ""
-"If based on is attendance,                         then per attendance fixed "
-"amount must be filled."
+"If based on is attendance,                         then per attendance fixed"
+" amount must be filled."
 msgstr ""
 "Katılım oranına göre ayarlanırsa, katılım başına sabit bir tutar "
 "doldurulmalıdır."
@@ -18120,8 +18042,8 @@ msgid "Title of the deduction"
 msgstr "Çıkarımın başlığı"
 
 msgid ""
-"The one-time deduction in which the deduction will apply to the "
-"payslips             if the date between the payslip period"
+"The one-time deduction in which the deduction will apply to the payslips"
+"             if the date between the payslip period"
 msgstr ""
 "Bir kerelik indirim, maaş bordroları arasındaki tarihte maaş bordrolarına "
 "uygulanacak"
@@ -18133,8 +18055,8 @@ msgid "Target deduction to the specific employees"
 msgstr "Belirli çalışanlara hedef indirim"
 
 msgid ""
-"To ignore the deduction to the employees when target them by all "
-"employees             or through condition-based"
+"To ignore the deduction to the employees when target them by all employees"
+"             or through condition-based"
 msgstr ""
 "Tüm çalışanlar tarafından veya koşullara dayalı olarak çalışanlara yönelik "
 "kesintileri görmezden gelmek"
@@ -18160,8 +18082,8 @@ msgid "Basic pay"
 msgstr "Temel maaş"
 
 msgid ""
-"Update compensation is used to update                    pay-head before any "
-"other deduction calculation starts"
+"Update compensation is used to update                    pay-head before any"
+" other deduction calculation starts"
 msgstr ""
 "Güncelleme tazminatı, diğer tüm indirim hesaplamaları başlamadan önce maaş "
 "başlığını güncellemek için kullanılır"
@@ -18172,7 +18094,8 @@ msgstr "Belirtmek gerekirse, çıkarım sabit mi yoksa değil mi"
 msgid "Fixed amount for this deduction"
 msgstr "Bu indirim için sabit tutar"
 
-msgid "If the deduction is not fixed then specifies how the deduction provided"
+msgid ""
+"If the deduction is not fixed then specifies how the deduction provided"
 msgstr "Eğer indirim sabit değilse, çıkarımın nasıl sağlandığını belirtir"
 
 msgid "Employee rate"
@@ -18276,9 +18199,8 @@ msgid "Bonus points"
 msgstr "Ekstra puanlar"
 
 msgid ""
-"The employee don't have that much "
-"leaves                                         to encash in CFD / Available "
-"days"
+"The employee don't have that much leaves"
+"                                         to encash in CFD / Available days"
 msgstr "Çalışanın CFD / Mevcut günlerde çok fazla izni yok"
 
 msgid "Reimbursement deleted"
@@ -18581,8 +18503,7 @@ msgstr "Ücretli Günler"
 #, python-format
 msgid ""
 "Partial\n"
-"                                                deduction — "
-"%(partial_pay_days)s day(s) on a partially paid leave\n"
+"                                                deduction — %(partial_pay_days)s day(s) on a partially paid leave\n"
 "                                                type"
 msgstr ""
 
@@ -19206,7 +19127,8 @@ msgstr ""
 msgid "For Objective and Key Result, 'Bonus For' must be 'Closing'."
 msgstr ""
 
-msgid "For Task and Project, 'Applicable For' must be 'Members' or 'Managers'."
+msgid ""
+"For Task and Project, 'Applicable For' must be 'Members' or 'Managers'."
 msgstr ""
 
 msgid "Bonus point must be greater than zero"
@@ -19313,8 +19235,8 @@ msgid "Answerable Employees"
 msgstr "Sorumlu Çalışanlar"
 
 msgid ""
-"Select the employees who can respond to question template in this meeting's, "
-"if any are added."
+"Select the employees who can respond to question template in this meeting's,"
+" if any are added."
 msgstr ""
 "Bu toplantıda soru şablonuna yanıt verebilecek çalışanları seçin, eğer "
 "eklendiyse."
@@ -20260,14 +20182,8 @@ msgstr "Bu projeye dahil olmayan çalışan"
 msgid "Are you sure you want to delete this time sheet?"
 msgstr "Bu zaman çizelgesini silmek istediğinizden emin misiniz?"
 
-msgid "Time Sheet"
-msgstr "Zaman Çizelgesi"
-
-msgid "Time Sheets"
-msgstr "Zaman Çizelgeleri"
-
 msgid "Timesheet"
-msgstr "Zaman Çizelgesi"
+msgstr "Çalışma Çizelgesi"
 
 msgid "Do you want to archive this project?"
 msgstr "Bu projeyi arşivlemek ister misiniz?"
@@ -20595,9 +20511,6 @@ msgstr "Adayların kendi takibi görüntüleyin"
 msgid "Survey"
 msgstr "Anket"
 
-msgid "Reject Reasons"
-msgstr "Nedenleri Reddet"
-
 msgid "Are you sure want to delete this reason?"
 msgstr "Bu sebepten emin misin?"
 
@@ -20706,9 +20619,6 @@ msgstr "Şablon kaydedildi"
 msgid "Sequence"
 msgstr "Sekans"
 
-msgid "Open Jobs"
-msgstr "Açık Işler"
-
 msgid "Vaccancy"
 msgstr "Vaccancy"
 
@@ -20725,7 +20635,7 @@ msgid "Optional Resume?"
 msgstr "İsteğe Bağlı Özgeçmiş mi?"
 
 msgid "Skills"
-msgstr "Beceriler"
+msgstr "Yetkinlikler"
 
 msgid "New Skill Created Successfully"
 msgstr "Başarıyla Yaratılan Yeni Beceri"
@@ -20820,9 +20730,6 @@ msgstr "Zorunludur"
 msgid "Invalid candidate selected."
 msgstr "Geçersiz aday seçildi."
 
-msgid "Skill Zones"
-msgstr "Yetenek Bölgeleri"
-
 msgid "Interview date cannot be in the past."
 msgstr "Mülakat tarihi geçmişte kalamaz."
 
@@ -20855,8 +20762,8 @@ msgid "LinkedIn Account"
 msgstr "LinkedIn Hesabı"
 
 msgid ""
-"To publish a recruitment in Linkedin, if active is false then it             "
-"will not post on LinkedIn."
+"To publish a recruitment in Linkedin, if active is false then it"
+"             will not post on LinkedIn."
 msgstr ""
 "LinkedIn'de bir işe alım yayınlamak için, aktif kelimesi yanlışsa "
 "LinkedIn'de yayınlanmaz."
@@ -20896,9 +20803,6 @@ msgstr "Yazılım içi"
 
 msgid "Referral"
 msgstr "Referans"
-
-msgid "Start Onboard"
-msgstr "Gemide Başla"
 
 msgid "Converted"
 msgstr "Dönüştürülmüş"
@@ -21183,8 +21087,8 @@ msgstr ""
 
 #, fuzzy
 #| msgid ""
-#| "If none are selected, the feature will be available to all normal users "
-#| "and employees."
+#| "If none are selected, the feature will be available to all normal users and "
+#| "employees."
 msgid "Manage the list of skills available for candidates and employees."
 msgstr ""
 "Eğer hiçbiri seçilmezse, özellik tüm normal kullanıcılar ve çalışanlar için "
@@ -21270,8 +21174,8 @@ msgid "Example: Candidate asked to reschedule interview to Friday."
 msgstr ""
 
 msgid ""
-"Notes are shared with your hiring team. Enable candidate visibility per note "
-"if needed."
+"Notes are shared with your hiring team. Enable candidate visibility per note"
+" if needed."
 msgstr ""
 
 #, fuzzy
@@ -21409,10 +21313,9 @@ msgstr "Dönüşüm Oranı"
 msgid "Hire rate per candidate source"
 msgstr "Aday Yarat"
 
-#, fuzzy
 #| msgid "Interview"
 msgid "Interviews"
-msgstr "Görüşme"
+msgstr "Mülakatlar"
 
 #, fuzzy
 #| msgid "Open Job Listings"
@@ -21514,9 +21417,9 @@ msgid ". For the position of"
 msgstr "İş pozisyonunun adı"
 
 msgid ""
-". As a part of our employee policy, we provide free accommodation to all our "
-"employees, and hence you as part of your organization are also eligible for "
-"the same."
+". As a part of our employee policy, we provide free accommodation to all our"
+" employees, and hence you as part of your organization are also eligible for"
+" the same."
 msgstr ""
 
 msgid ""
@@ -22196,7 +22099,7 @@ msgid "No pending"
 msgstr "Beklemede"
 
 msgid "Open Recruitments"
-msgstr "Açık İşe Alımlar"
+msgstr "Açık İşe Alım Süreçleri"
 
 #, fuzzy
 #| msgid "Expired"
@@ -22633,8 +22536,8 @@ msgstr ""
 
 #, python-format
 msgid ""
-"Deleting the %(object_name)s “%(escaped_object)s” would require deleting the "
-"following protected related objects:"
+"Deleting the %(object_name)s “%(escaped_object)s” would require deleting the"
+" following protected related objects:"
 msgstr ""
 
 #, python-format
@@ -22724,15 +22627,15 @@ msgid "Unknown content"
 msgstr "Bilinmeyen"
 
 msgid ""
-"Something’s wrong with your database installation. Make sure the appropriate "
-"database tables have been created, and make sure the database is readable by "
-"the appropriate user."
+"Something’s wrong with your database installation. Make sure the appropriate"
+" database tables have been created, and make sure the database is readable "
+"by the appropriate user."
 msgstr ""
 
 #, python-format
 msgid ""
-"You are authenticated as %(username)s, but are not authorized to access this "
-"page. Would you like to login to a different account?"
+"You are authenticated as %(username)s, but are not authorized to access this"
+" page. Would you like to login to a different account?"
 msgstr ""
 
 msgid "Forgotten your login credentials?"
@@ -22774,8 +22677,8 @@ msgstr[0] "Ülke"
 msgstr[1] "Ülke"
 
 msgid ""
-"This object doesn’t have a change history. It probably wasn’t added via this "
-"admin site."
+"This object doesn’t have a change history. It probably wasn’t added via this"
+" admin site."
 msgstr ""
 
 #, fuzzy, python-format
@@ -22930,6 +22833,322 @@ msgstr "Telefon numarası"
 
 msgid "Message templates and flows created successfully."
 msgstr "Mesaj şablonları ve akışları başarıyla oluşturuldu."
+
+msgid "Not Assigned"
+msgstr "Atanmamış"
+
+msgid "Not Specified"
+msgstr "Belirtilmemiş"
+
+msgid "Inside Software"
+msgstr "Yazılım içinde"
+
+msgid "m ago"
+msgstr " dk önce"
+
+msgid "hrs"
+msgstr "saat"
+
+msgid "Bonus Encashment"
+msgstr "Bonus nakde çevirme"
+
+msgid "Review"
+msgstr "İnceleme"
+
+msgid "No data for this week"
+msgstr "Bu hafta için veri yok"
+
+msgid "Chart error"
+msgstr "Grafik hatası"
+
+#: terminology-rename:1
+msgid "Late Arrival & Early Departure"
+msgstr "Geç Kalma ve Erken Çıkış"
+
+#: terminology-rename:1
+msgid "Late Arrival"
+msgstr "Geç Kalma"
+
+#: terminology-rename:1
+msgid "Early Departure"
+msgstr "Erken Çıkış"
+
+#: terminology-rename:1
+msgid "Track Late Arrival & Early Departure"
+msgstr "Geç Kalma ve Erken Çıkışı Takip Et"
+
+#: terminology-rename:1
+msgid "Export Late Arrival & Early Departure"
+msgstr "Geç Kalma ve Erken Çıkışı Dışa Aktar"
+
+#: terminology-rename:1
+msgid "Salary Advance"
+msgstr "Maaş Avansı"
+
+#: terminology-rename:1
+msgid "Loans & Salary Advances"
+msgstr "Krediler ve Maaş Avansları"
+
+#: terminology-rename:1
+msgid "Talent Pool"
+msgstr "Yetenek Havuzu"
+
+#: terminology-rename:1
+msgid "Talent Pools"
+msgstr "Yetenek Havuzları"
+
+#: terminology-rename:1
+msgid "Hours Balance"
+msgstr "Saat Bakiyesi"
+
+#: terminology-rename:1
+msgid "Hours Balances"
+msgstr "Saat Bakiyeleri"
+
+#: terminology-rename:1
+msgid "Export Hours Balances"
+msgstr "Saat Bakiyelerini Dışa Aktar"
+
+#: terminology-rename:1
+msgid "Leave Balances"
+msgstr "İzin Bakiyeleri"
+
+#: terminology-rename:1
+msgid "All Leave Balances"
+msgstr "Tüm İzin Bakiyeleri"
+
+#: terminology-rename:1
+msgid "Export Leave Balances"
+msgstr "İzin Bakiyelerini Dışa Aktar"
+
+#: terminology-rename:1
+msgid "Import Leave Balances"
+msgstr "İzin Bakiyelerini İçe Aktar"
+
+#: terminology-rename:1
+msgid "Restricted Leave Periods"
+msgstr "İzin Kısıtlama Dönemleri"
+
+#: terminology-rename:1
+msgid "Menu Access Restrictions"
+msgstr "Menü Erişim Kısıtlamaları"
+
+#: terminology-rename:1
+msgid "Open Positions"
+msgstr "Açık Pozisyonlar"
+
+#: terminology-rename:1
+msgid "Rejection Reasons"
+msgstr "Red Nedenleri"
+
+#: terminology-rename:1
+msgid "Candidate Rejection Reason"
+msgstr "Aday Red Nedeni"
+
+#: terminology-rename:1
+msgid "Review Periods"
+msgstr "Değerlendirme Dönemleri"
+
+#: terminology-rename:1
+msgid "Review Period Name"
+msgstr "Değerlendirme Dönemi Adı"
+
+#: terminology-rename:1
+msgid "Question Templates"
+msgstr "Soru Şablonları"
+
+#: terminology-rename:1
+msgid "Bonus Point Settings"
+msgstr "Bonus Puan Ayarları"
+
+#: terminology-rename:1
+msgid "Requests"
+msgstr "Talepler"
+
+#: terminology-rename:1
+msgid "Daily Work Status"
+msgstr "Günlük Çalışma Durumu"
+
+#: terminology-rename:1
+msgid "Check-in / Check-out Log"
+msgstr "Giriş/Çıkış Kaydı"
+
+#: terminology-rename:1
+msgid "Import Check-in / Check-out Log"
+msgstr "Giriş/Çıkış Kaydını İçe Aktar"
+
+#: terminology-rename:1
+msgid "Income Tax"
+msgstr "Gelir Vergisi"
+
+#: terminology-rename:1
+msgid "Appearance"
+msgstr "Görünüm"
+
+#: terminology-rename:1
+msgid "Email Servers"
+msgstr "E-posta Sunucuları"
+
+#: terminology-rename:1
+msgid "Email Templates"
+msgstr "E-posta Şablonları"
+
+#: terminology-rename:1
+msgid "Email Automations"
+msgstr "E-posta Otomasyonları"
+
+#: terminology-rename:1
+msgid "Google Drive Folder ID"
+msgstr "Google Drive Klasör Kimliği"
+
+#: terminology-rename:1
+msgid "LinkedIn"
+msgstr "LinkedIn"
+
+#: terminology-rename:1
+msgid "WhatsApp Credentials"
+msgstr "WhatsApp Kimlik Bilgileri"
+
+#: terminology-rename:1
+msgid "WhatsApp Integration"
+msgstr "WhatsApp Entegrasyonu"
+
+#: terminology-rename:1
+msgid "Timesheets"
+msgstr "Çalışma Çizelgeleri"
+
+#: terminology-rename:1
+msgid "Update Timesheet"
+msgstr "Çalışma Çizelgesini Güncelle"
+
+#: terminology-rename:1
+msgid "Holiday / Weekly Off"
+msgstr "Tatil / Haftalık İzin Günü"
+
+#: terminology-rename:1
+msgid "Exclude Weekly Off Days"
+msgstr "Haftalık İzin Günlerini Hariç Tut"
+
+#: terminology-rename:1
+msgid "Create Weekly Off Days"
+msgstr "Haftalık İzin Günleri Oluştur"
+
+#: terminology-rename:1
+msgid "Update Weekly Off Days"
+msgstr "Haftalık İzin Günlerini Güncelle"
+
+#: terminology-rename:1
+msgid "Weekly Off Day"
+msgstr "Haftalık İzin Günü"
+
+#~ msgid "Current User"
+#~ msgstr "Şu anki kullanıcı"
+
+#~ msgid "Attendance Activity"
+#~ msgstr "Katılım Etkinliği"
+
+#~ msgid "Hour Account"
+#~ msgstr "Saat Hesabı"
+
+#~ msgid "Hour Accounts"
+#~ msgstr "Saat Hesapları"
+
+#~ msgid "Work Record"
+#~ msgstr "Çalışma Kaydı"
+
+#~ msgid "Work Records"
+#~ msgstr "Çalışma Kayıtları"
+
+#~ msgid "Attendance Activities"
+#~ msgstr "Katılım Etkinlikleri"
+
+#~ msgid "Late Come Early Out"
+#~ msgstr "Geç Erken Çık"
+
+#~ msgid "Track Late Come & Early Out"
+#~ msgstr "Geç Dönüş ve Erken Çıkış Parçasını Takip Et"
+
+#~ msgid "Export Hour Accounts"
+#~ msgstr "İhracat Saati Hesapları"
+
+#, fuzzy
+#~ msgid "Late Come & Early Out"
+#~ msgstr "Geç Erken Çık"
+
+#~ msgid "Export Late Come Early Out"
+#~ msgstr "İhracat Geç Erken Çık"
+
+#~ msgid "Late Come/Early Out"
+#~ msgstr "Geç Gelme/Erken Çıkış"
+
+#~ msgid "Company Leave"
+#~ msgstr "Şirket İzni"
+
+#~ msgid "Company Leaves"
+#~ msgstr "Şirketin Ayrılması"
+
+#~ msgid "Accessibility Restrictions"
+#~ msgstr "Erişilebilirlik Kısıtlamaları"
+
+#~ msgid "Theme Manager"
+#~ msgstr "Tema Yöneticisi"
+
+#~ msgid "Gdrive Backup"
+#~ msgstr "Gdrive Yedeklemesi"
+
+#~ msgid "Linkedin"
+#~ msgstr "Linkedin"
+
+#~ msgid "Whatsapp"
+#~ msgstr "Whatsapp"
+
+#~ msgid "Work Requests"
+#~ msgstr "İş Talepleri"
+
+#~ msgid "Reject Reason"
+#~ msgstr "Red Nedeni"
+
+#~ msgid "Skill Zone"
+#~ msgstr "Yetenek Bölgesi"
+
+#~ msgid "All Assigned Leaves"
+#~ msgstr "Tüm Atanan İzinler"
+
+#~ msgid "Restrict Leaves"
+#~ msgstr "Yaprakları Kısıtla"
+
+#~ msgid "Assigned Leave"
+#~ msgstr "Atanmış İzin"
+
+#~ msgid "Assigned Leaves"
+#~ msgstr "Atanan İzinler"
+
+#~ msgid "Advanced Salary"
+#~ msgstr "İkins Maaş"
+
+#~ msgid "Loan / Advanced Salary"
+#~ msgstr "Kredi / Peşin Maaş"
+
+#~ msgid "Loan / Advanced Sarlary"
+#~ msgstr "Kredi / Gelişmiş Sigorta"
+
+#~ msgid "Time Sheet"
+#~ msgstr "Zaman Çizelgesi"
+
+#~ msgid "Time Sheets"
+#~ msgstr "Zaman Çizelgeleri"
+
+#~ msgid "Reject Reasons"
+#~ msgstr "Nedenleri Reddet"
+
+#~ msgid "Open Jobs"
+#~ msgstr "Açık Işler"
+
+#~ msgid "Skill Zones"
+#~ msgstr "Yetenek Bölgeleri"
+
+#~ msgid "Start Onboard"
+#~ msgstr "Gemide Başla"
 
 #~ msgid "Request and Allocation"
 #~ msgstr "Talep ve Tahsis"
@@ -23220,10 +23439,10 @@ msgstr "Mesaj şablonları ve akışları başarıyla oluşturuldu."
 #~ msgstr "Banka Hesabı/Çek No. :"
 
 #~ msgid ""
-#~ "Some deductions will update basic pay before payslip calculation starts, "
-#~ "eg: LOP is Deduducted from basic pay if \"Deduct leave from basic pay\" "
-#~ "field is enabled on the contract, and also with the update compensation "
-#~ "deduction through"
+#~ "Some deductions will update basic pay before payslip calculation starts, eg:"
+#~ " LOP is Deduducted from basic pay if \"Deduct leave from basic pay\" field "
+#~ "is enabled on the contract, and also with the update compensation deduction "
+#~ "through"
 #~ msgstr ""
 #~ "Bazı indirimler, maaş bordrosu hesaplaması başlamadan önce temel maaşı "
 #~ "günceller, örneğin: sözleşmede \"Temel ücretten izin düşük\" alanı "
@@ -23343,30 +23562,3 @@ msgstr "Mesaj şablonları ve akışları başarıyla oluşturuldu."
 
 #~ msgid "Mail not send to %(candidate_name)s"
 #~ msgstr "Posta %(candidate_name)s adresine gönderilemiyor"
-
-msgid "Not Assigned"
-msgstr "Atanmamış"
-
-msgid "Not Specified"
-msgstr "Belirtilmemiş"
-
-msgid "Inside Software"
-msgstr "Yazılım içinde"
-
-msgid "m ago"
-msgstr " dk önce"
-
-msgid "hrs"
-msgstr "saat"
-
-msgid "Bonus Encashment"
-msgstr "Bonus nakde çevirme"
-
-msgid "Review"
-msgstr "İnceleme"
-
-msgid "No data for this week"
-msgstr "Bu hafta için veri yok"
-
-msgid "Chart error"
-msgstr "Grafik hatası"

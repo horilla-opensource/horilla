@@ -116,7 +116,7 @@ class CredentialNav(HorillaNavView):
             hx-get = "{reverse('whatsapp-credential-create')}"
         """
 
-    nav_title = _("Whatsapp Credentials")
+    nav_title = _("WhatsApp Credentials")
     search_swap_target = "#listContainer"
     filter_instance = CredentialsViewFilter()
 

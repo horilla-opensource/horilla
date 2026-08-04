@@ -58,7 +58,7 @@ BREADCRUMB_URL_NAMES = {
     "helpdesk": "Helpdesk",
     "policies-discipline": "Policies & Discipline",
     "work-schedules": "Work Schedules",
-    "requests": "Work Requests",
+    "requests": "Requests",
     "employee-settings-view": "Configuration",
     "recruitment-settings-view": "Configuration",
     "helpdesk-settings-view": "Configuration",

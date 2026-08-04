@@ -12,7 +12,7 @@ class HorillaThemeConfig(AppConfig):
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "horilla_theme"
-    verbose_name = _("Theme Manager")
+    verbose_name = _("Appearance")
 
     def ready(self):
         """Run app initialization logic (executed after Django setup).

@@ -16,7 +16,7 @@ from horilla_views.generic.cbv.views import HorillaTabView, TemplateView
 @method_decorator(login_required, name="dispatch")
 class RecruitmentSettingsView(TemplateView):
     """
-    page for recruitment settings (Reject Reason / Skill tabs)
+    page for recruitment settings (Rejection Reason / Skill tabs)
     """
 
     template_name = "cbv/recruitment_settings/recruitment_settings_main.html"
@@ -36,11 +36,11 @@ class RecruitmentSettingsTabView(HorillaTabView):
                 "url": f"{reverse('recruitment-settings-stage-tab')}",
             },
             {
-                "title": _("Reject Reason"),
+                "title": _("Rejection Reasons"),
                 "url": f"{reverse('recruitment-settings-reject-reason-tab')}",
             },
             {
-                "title": _("Skill"),
+                "title": _("Skills"),
                 "url": f"{reverse('recruitment-settings-skill-tab')}",
             },
         ]

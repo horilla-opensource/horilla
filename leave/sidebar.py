@@ -38,12 +38,12 @@ SUBMENUS = [
         "redirect": reverse_lazy("leave-allocation-request-view"),
     },
     {
-        "menu": _("Assigned Leave"),
+        "menu": _("Leave Balances"),
         "redirect": reverse_lazy("assign-view"),
         "accessibility": "leave.sidebar.assign_accessibility",
     },
     {
-        "menu": _("Restrict Leaves"),
+        "menu": _("Restricted Leave Periods"),
         "redirect": reverse_lazy("restrict-view"),
         "accessibility": "leave.sidebar.restrict_leave_accessibility",
     },
@@ -53,7 +53,7 @@ SUBMENUS = [
         # "accessibility": "leave.sidebar.holiday_accessibility",
     },
     {
-        "menu": _("Company Leaves"),
+        "menu": _("Weekly Off Days"),
         "redirect": reverse_lazy("company-leave-view"),
         "accessibility": "leave.sidebar.company_leave_accessibility",
     },

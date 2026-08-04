@@ -129,7 +129,7 @@
                                                             id="defaultAccessibility"
                                                             href="{% url 'user-accessibility' %}"
                                                             class="oh-inner-sidebar__link oh-dropdown__link"
-                                                        >{% trans "Accessibility Restrictions" %}</a>
+                                                        >{% trans "Menu Access Restrictions" %}</a>
                                                     {% endif %}
                                                 </div>
                                                 <div class="oh-input-group">
@@ -174,7 +174,7 @@
                                                             id="date"
                                                             href="{% url 'mail-server-conf' %}"
                                                             class="oh-inner-sidebar__link oh-dropdown__link"
-                                                        >{% trans "Mail Servers" %}</a>
+                                                        >{% trans "Email Servers" %}</a>
                                                     </div>
                                                 {% elif perms.base.view_dynamicemailconfiguration and "outlook_auth"|app_installed %}
                                                     <div class="oh-input-group">
@@ -191,7 +191,7 @@
                                                             id="date"
                                                             href="{% url 'gdrive' %}"
                                                             class="oh-inner-sidebar__link oh-dropdown__link"
-                                                        >{% trans "Gdrive Backup" %}</a>
+                                                        >{% trans "Google Drive Backup" %}</a>
                                                     {% endif %}
                                                 </div>
                                                 {% if "horilla_ldap"|app_installed %}
@@ -297,7 +297,7 @@
                                                                 id="candidateRejectReasons"
                                                                 href="{% url 'candidate-reject-reasons' %}"
                                                                 class="oh-inner-sidebar__link oh-dropdown__link"
-                                                            >{% trans "Candidate Reject Reason" %}</a>
+                                                            >{% trans "Candidate Rejection Reason" %}</a>
                                                         {% endif %}
                                                     </div>
                                                     <div class="oh-input-group">
@@ -315,7 +315,7 @@
                                                                 id="skills"
                                                                 href="{% url 'linkedin-integration-setting' %}"
                                                                 class="oh-inner-sidebar__link oh-dropdown__link"
-                                                            >{% trans "Linkedin Integration" %}</a>
+                                                            >{% trans "LinkedIn Integration" %}</a>
                                                         {% endif %}
                                                     </div>
                                                 </div>
@@ -437,7 +437,7 @@
                                                                 id="trackLateComeEalryOut"
                                                                 href="{% url 'track-late-come-early-out' %}"
                                                                 class="oh-inner-sidebar__link oh-dropdown__link"
-                                                            >{% trans "Track Late Come & Early Out" %}</a>
+                                                            >{% trans "Track Late Arrival & Early Departure" %}</a>
                                                         {% endif %}
                                                     </div>
                                                     <div class="oh-input-group">
@@ -654,7 +654,7 @@
                                         <div class="oh-accordion ms-2">
                                             <div class="oh-accordion-header" style="font-size: 16px">
                                                 <ion-icon name="headset" class="me-2"></ion-icon>
-                                                {% trans "Whatsapp Configuration" %}
+                                                {% trans "WhatsApp Configuration" %}
                                             </div>
                                             <div class="oh-accordion-body">
                                                 <div class="row">
@@ -665,7 +665,7 @@
                                                                     id="whatsapp_credentials"
                                                                     href="{% url 'whatsapp-credential-view' %}"
                                                                     class="oh-inner-sidebar__link oh-dropdown__link"
-                                                                >{% trans "Whatsapp Credentials" %}</a>
+                                                                >{% trans "WhatsApp Credentials" %}</a>
                                                             {% endif %}
                                                         </div>
                                                     </div>

@@ -1063,7 +1063,7 @@ class SkillZoneCreateForm(BaseModelForm):
 class SkillZoneCandidateForm(ModelForm):
 
     cols = {"skill_zone_id": 12, "candidate_id": 12, "reason": 12}
-    verbose_name = "Skill Zone Candidate"
+    verbose_name = "Talent Pool Candidate"
     candidate_id = forms.ModelMultipleChoiceField(
         queryset=Candidate.objects.all(),
         widget=forms.SelectMultiple,
@@ -1144,9 +1144,9 @@ class SkillZoneCandidateForm(ModelForm):
 
 class ToSkillZoneForm(ModelForm):
 
-    verbose_name = "Add To Skill Zone"
+    verbose_name = "Add to Talent Pool"
     skill_zone_ids = forms.ModelMultipleChoiceField(
-        queryset=SkillZone.objects.all(), label=_("Skill Zones")
+        queryset=SkillZone.objects.all(), label=_("Talent Pools")
     )
 
     cols = {"reason": 12, "skill_zone_ids": 12}
@@ -1165,7 +1165,7 @@ class ToSkillZoneForm(ModelForm):
         ]
         error_messages = {
             NON_FIELD_ERRORS: {
-                "unique_together": "This candidate alreay exist in this skill zone",
+                "unique_together": "This candidate alreay exist in this talent pool",
             }
         }
 
@@ -1206,7 +1206,7 @@ class RejectReasonForm(ModelForm):
 
     cols = {"title": 12, "description": 12, "company_id": 12}
 
-    verbose_name = "Reject Reason"
+    verbose_name = _("Rejection Reason")
 
     class Meta:
         model = RejectReason

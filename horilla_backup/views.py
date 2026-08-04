@@ -165,11 +165,11 @@ def gdrive_Backup_stop_or_start(request):
         if gdive_backup.active == True:
             gdive_backup.active = False
             stop_gdrive_backup_job()
-            message = "Gdrive Backup Automation Stopped Successfully."
+            message = "Google Drive Backup Automation Stopped Successfully."
         else:
             gdive_backup.active = True
             start_gdrive_backup_job()
-            message = "Gdrive Backup Automation Started Successfully."
+            message = "Google Drive Backup Automation Started Successfully."
         gdive_backup.save()
         messages.success(request, _(message))
     return redirect("gdrive")
@@ -191,5 +191,7 @@ def gdrive_Backup_delete(request):
         gdrive_backup = GoogleDriveBackup.objects.first()
         gdrive_backup.delete()
         stop_gdrive_backup_job()
-        messages.success(request, _("Gdrive Backup Automation Removed Successfully."))
+        messages.success(
+            request, _("Google Drive Backup Automation Removed Successfully.")
+        )
     return redirect("gdrive")

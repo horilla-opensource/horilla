@@ -8255,7 +8255,7 @@ def company_leave_creation(request):
 @permission_required("base.view_companyleaves")
 def company_leaves_settings_view(request):
     """
-    Company Leaves ("Weekly Off Days") settings page. Migrated from the
+    Weekly Off Days ("Weekly Off Days") settings page. Migrated from the
     Configuration menu into Settings > Organization; reuses the existing
     nav/list HTMX endpoints.
     """

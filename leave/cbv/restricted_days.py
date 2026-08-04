@@ -26,7 +26,7 @@ from leave.models import RestrictLeave
 @method_decorator(login_required, name="dispatch")
 class RestrictedDaysView(TemplateView):
     """
-    Standalone Restrict Leaves page.
+    Standalone Restricted Leave Periods page.
     """
 
     template_name = "cbv/restricted_days/restricted_days.html"
@@ -107,7 +107,7 @@ class RestrictedDaysNav(HorillaNavView):
                 }
             ]
 
-    nav_title = _("Restrict Leaves")
+    nav_title = _("Restricted Leave Periods")
     filter_instance = RestrictLeaveFilter()
     filter_body_template = "cbv/restricted_days/filter.html"
     search_swap_target = "#restrictLeavesListContainer"

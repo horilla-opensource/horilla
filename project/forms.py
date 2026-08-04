@@ -216,7 +216,7 @@ class TaskAllForm(ModelForm):
 
 class TimeSheetForm(ModelForm):
     """
-    Form for Time Sheet model
+    Form for Timesheet model
     """
 
     cols = {"description": 12}

@@ -36,21 +36,21 @@ SUBMENUS = [
         "redirect": reverse_lazy("request-attendance-view"),
     },
     {
-        "menu": _("Hour Account"),
+        "menu": _("Hours Balance"),
         "redirect": reverse_lazy("attendance-overtime-view"),
         "accessibility": "attendance.sidebar.hour_account_accessibility",
     },
     {
-        "menu": _("Work Records"),
+        "menu": _("Daily Work Status"),
         "redirect": reverse_lazy("work-records"),
         "accessibility": "attendance.sidebar.work_record_accessibility",
     },
     {
-        "menu": _("Attendance Activities"),
+        "menu": _("Check-in / Check-out Log"),
         "redirect": reverse_lazy("attendance-activity-view"),
     },
     {
-        "menu": _("Late Come Early Out"),
+        "menu": _("Late Arrival & Early Departure"),
         "redirect": reverse_lazy("late-come-early-out-view"),
         "accessibility": "attendance.sidebar.tracking_accessibility",
     },
@@ -189,7 +189,7 @@ class AttendanceSettings:
                     ),
                 },
                 {
-                    "text": _("Track Late Come & Early Out"),
+                    "text": _("Track Late Arrival & Early Departure"),
                     "description": _(
                         "Track late arrivals and early departures of employees"
                     ),

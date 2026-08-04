@@ -199,7 +199,7 @@ class OnboardingCandidatesNav(HorillaNavView):
         ("probation_end", _("Probation End")),
         ("offer_letter_status", _("Offer Letter Status")),
         ("rejected_candidate__reject_reason_id", _("Rejected Reason")),
-        ("skillzonecandidate_set__skill_zone_id", _("Skill Zone")),
+        ("skillzonecandidate_set__skill_zone_id", _("Talent Pool")),
     ]
 
     actions = [

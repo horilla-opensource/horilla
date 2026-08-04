@@ -719,7 +719,9 @@ class Candidate(HorillaModel):
         blank=True,
         verbose_name=_("Source"),
     )
-    start_onboard = models.BooleanField(default=False, verbose_name=_("Start Onboard"))
+    start_onboard = models.BooleanField(
+        default=False, verbose_name=_("Start Onboarding")
+    )
     hired = models.BooleanField(default=False, verbose_name=_("Hired"))
     canceled = models.BooleanField(default=False, verbose_name=_("Canceled"))
     converted = models.BooleanField(default=False, verbose_name=_("Converted"))
@@ -999,7 +1001,7 @@ class Candidate(HorillaModel):
 
     def get_add_to_skill(self):
         """
-        This method to get add to skill zone employee url
+        This method to get add to talent pool employee url
         """
         url = reverse_lazy("to-skill-zone", kwargs={"cand_id": self.pk})
         return url
@@ -1422,8 +1424,8 @@ class RejectReason(HorillaModel):
         return self.id
 
     class Meta:
-        verbose_name = _("Reject Reason")
-        verbose_name_plural = _("Reject Reasons")
+        verbose_name = _("Rejection Reason")
+        verbose_name_plural = _("Rejection Reasons")
 
 
 class RejectedCandidate(HorillaModel):
@@ -1649,7 +1651,7 @@ class SkillZone(HorillaModel):
     Model for talent pool
     """
 
-    title = models.CharField(max_length=50, verbose_name="Skill Zone")
+    title = models.CharField(max_length=50, verbose_name="Talent Pool")
     description = models.TextField(verbose_name=_("Description"), max_length=255)
     company_id = models.ForeignKey(
         Company,
@@ -1661,8 +1663,8 @@ class SkillZone(HorillaModel):
     objects = HorillaCompanyManager()
 
     class Meta:
-        verbose_name = _("Skill Zone")
-        verbose_name_plural = _("Skill Zones")
+        verbose_name = _("Talent Pool")
+        verbose_name_plural = _("Talent Pools")
 
     def get_active(self):
         return SkillZoneCandidate.objects.filter(is_active=True, skill_zone_id=self)
@@ -1686,7 +1688,7 @@ class SkillZone(HorillaModel):
 
     def get_skill_zone_url(self):
         """
-        This method returns the skill zone URL with the title as a query parameter.
+        This method returns the talent pool URL with the title as a query parameter.
         """
         base_url = reverse("skill-zone-view")
         query_string = urlencode({"search": self.title})
@@ -1700,7 +1702,7 @@ class SkillZoneCandidate(HorillaModel):
 
     skill_zone_id = models.ForeignKey(
         SkillZone,
-        verbose_name=_("Skill Zone"),
+        verbose_name=_("Talent Pool"),
         related_name="skillzonecandidate_set",
         on_delete=models.PROTECT,
         null=True,
@@ -1739,7 +1741,7 @@ class SkillZoneCandidate(HorillaModel):
         if duplicate_exists:
             raise ValidationError(
                 _(
-                    f"Candidate {self.candidate_id} already exists in Skill Zone {self.skill_zone_id}."
+                    f"Candidate {self.candidate_id} already exists in Talent Pool {self.skill_zone_id}."
                 )
             )
 
@@ -1977,7 +1979,7 @@ class CandidateDocument(HorillaModel):
         choices=STATUS, max_length=10, default="requested", verbose_name=_("Status")
     )
     reject_reason = models.TextField(
-        blank=True, null=True, max_length=255, verbose_name=_("Reject Reason")
+        blank=True, null=True, max_length=255, verbose_name=_("Rejection Reason")
     )
 
     def __str__(self):

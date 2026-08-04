@@ -2663,7 +2663,7 @@ def create_candidate_rating(request, cand_id):
 
 
 # ///////////////////////////////////////////////
-# skill zone
+# talent pool
 # ///////////////////////////////////////////////
 
 
@@ -2671,7 +2671,7 @@ def create_candidate_rating(request, cand_id):
 @manager_can_enter(perm="recruitment.view_skillzone")
 def skill_zone_view(request):
     """
-    This method is used to show Skill zone view
+    This method is used to show Talent pool view
     """
     candidates = SkillZoneCandFilter(request.GET).qs.filter(is_active=True)
     skill_groups = group_by_queryset(
@@ -2724,14 +2724,14 @@ def skill_zone_view(request):
 @manager_can_enter(perm="recruitment.add_skillzone")
 def skill_zone_create(request):
     """
-    This method is used to create Skill zone.
+    This method is used to create Talent pool.
     """
     form = SkillZoneCreateForm()
     if request.method == "POST":
         form = SkillZoneCreateForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, _("Skill Zone created successfully."))
+            messages.success(request, _("Talent Pool created successfully."))
             form = SkillZoneCreateForm()
 
     return render(
@@ -2746,7 +2746,7 @@ def skill_zone_create(request):
 @manager_can_enter(perm="recruitment.change_skillzone")
 def skill_zone_update(request, sz_id):
     """
-    This method is used to update Skill zone.
+    This method is used to update Talent pool.
     """
     skill_zone = SkillZone.objects.get(id=sz_id)
     form = SkillZoneCreateForm(instance=skill_zone)
@@ -2754,7 +2754,7 @@ def skill_zone_update(request, sz_id):
         form = SkillZoneCreateForm(request.POST, instance=skill_zone)
         if form.is_valid():
             form.save()
-            messages.success(request, _("Skill Zone updated successfully."))
+            messages.success(request, _("Talent Pool updated successfully."))
     return render(
         request,
         "skill_zone/skill_zone_form.html",
@@ -2766,22 +2766,22 @@ def skill_zone_update(request, sz_id):
 @manager_can_enter(perm="recruitment.delete_skillzone")
 def skill_zone_delete(request, sz_id):
     """
-    function used to delete Skill zone.
+    function used to delete Talent pool.
 
     Parameters:
     request (HttpRequest): The HTTP request object.
-    sz_id : Skill zone id
+    sz_id : Talent pool id
 
     Returns:
-    GET : return Skill zone view template
+    GET : return Talent pool view template
     """
     try:
         skill_zone = SkillZone.find(sz_id)
         if skill_zone:
             skill_zone.delete()
-            messages.success(request, _("Skill zone deleted successfully.."))
+            messages.success(request, _("Talent pool deleted successfully."))
         else:
-            messages.error(request, _("Skill zone not found."))
+            messages.error(request, _("Talent pool not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
     if request.META.get("HTTP_HX_REQUEST") == "true":
@@ -2797,14 +2797,14 @@ def skill_zone_delete(request, sz_id):
 @manager_can_enter(perm="recruitment.change_skillzone")
 def skill_zone_archive(request, sz_id):
     """
-    function used to archive or un-archive Skill zone.
+    function used to archive or un-archive Talent pool.
 
     Parameters:
     request (HttpRequest): The HTTP request object.
-    sz_id : Skill zone id
+    sz_id : Talent pool id
 
     Returns:
-    GET : return Skill zone view template
+    GET : return Talent pool view template
     """
     skill_zone = SkillZone.find(sz_id)
     if skill_zone:
@@ -2817,7 +2817,7 @@ def skill_zone_archive(request, sz_id):
             for i in skill_zone_candidates:
                 i.is_active = False
                 i.save()
-            messages.success(request, _("Skill zone archived successfully.."))
+            messages.success(request, _("Talent pool archived successfully."))
         else:
             skill_zone.is_active = True
             skill_zone_candidates = SkillZoneCandidate.objects.filter(
@@ -2826,10 +2826,10 @@ def skill_zone_archive(request, sz_id):
             for i in skill_zone_candidates:
                 i.is_active = True
                 i.save()
-            messages.success(request, _("Skill zone unarchived successfully.."))
+            messages.success(request, _("Talent pool unarchived successfully."))
         skill_zone.save()
     else:
-        messages.error(request, _("Skill zone not found."))
+        messages.error(request, _("Talent pool not found."))
     if request.META.get("HTTP_HX_REQUEST") == "true":
         response = HttpResponse(status=204)
         response["HX-Trigger"] = "skillZoneContainerReload"
@@ -2842,7 +2842,7 @@ def skill_zone_archive(request, sz_id):
 @manager_can_enter(perm="recruitment.view_skillzone")
 def skill_zone_filter(request):
     """
-    This method is used to filter and show Skill zone view.
+    This method is used to filter and show Talent pool view.
     """
     template = "skill_zone/skill_zone_list.html"
     if request.GET.get("view") == "card":
@@ -2900,14 +2900,14 @@ def skill_zone_filter(request):
 @manager_can_enter(perm="recruitment.view_skillzonecandidate")
 def skill_zone_cand_card_view(request, sz_id):
     """
-    This method is used to show Skill zone candidates.
+    This method is used to show Talent pool candidates.
 
     Parameters:
     request (HttpRequest): The HTTP request object.
-    sz_cand_id : Skill zone id
+    sz_cand_id : Talent pool id
 
     Returns:
-    GET : return Skill zone candidate view template
+    GET : return Talent pool candidate view template
     """
     skill_zone = SkillZone.objects.get(id=sz_id)
     template = "skill_zone_cand/skill_zone_cand_view.html"
@@ -2927,14 +2927,14 @@ def skill_zone_cand_card_view(request, sz_id):
 @manager_can_enter(perm="recruitment.add_skillzonecandidate")
 def skill_zone_candidate_create(request, sz_id):
     """
-    This method is used to add candidates to a Skill zone.
+    This method is used to add candidates to a Talent pool.
 
     Parameters:
     request (HttpRequest): The HTTP request object.
-    sz_cand_id : Skill zone id
+    sz_cand_id : Talent pool id
 
     Returns:
-    GET : return Skill zone candidate create template
+    GET : return Talent pool candidate create template
     """
     skill_zone = SkillZone.objects.get(id=sz_id)
     template = "skill_zone_cand/skill_zone_cand_form.html"
@@ -2954,14 +2954,14 @@ def skill_zone_candidate_create(request, sz_id):
 @manager_can_enter(perm="recruitment.change_skillzonecandidate")
 def skill_zone_cand_edit(request, sz_cand_id):
     """
-    This method is used to edit candidates in a Skill zone.
+    This method is used to edit candidates in a Talent pool.
 
     Parameters:
     request (HttpRequest): The HTTP request object.
-    sz_cand_id : Skill zone candidate id
+    sz_cand_id : Talent pool candidate id
 
     Returns:
-    GET : return Skill zone candidate edit template
+    GET : return Talent pool candidate edit template
     """
     skill_zone_cand = SkillZoneCandidate.objects.filter(id=sz_cand_id).first()
     template = "skill_zone_cand/skill_zone_cand_form.html"
@@ -2979,21 +2979,21 @@ def skill_zone_cand_edit(request, sz_cand_id):
 @manager_can_enter(perm="recruitment.delete_skillzonecandidate")
 def skill_zone_cand_delete(request, sz_cand_id):
     """
-    function used to delete Skill zone candidate.
+    function used to delete Talent pool candidate.
 
     Parameters:
     request (HttpRequest): The HTTP request object.
-    sz_cand_id : Skill zone candidate id
+    sz_cand_id : Talent pool candidate id
 
     Returns:
-    GET : return Skill zone view template
+    GET : return Talent pool view template
     """
 
     try:
         SkillZoneCandidate.objects.get(id=sz_cand_id).delete()
-        messages.success(request, _("Skill zone deleted successfully.."))
+        messages.success(request, _("Talent pool deleted successfully."))
     except SkillZoneCandidate.DoesNotExist:
-        messages.error(request, _("Skill zone not found."))
+        messages.error(request, _("Talent pool not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
     if request.META.get("HTTP_HX_REQUEST") == "true":
@@ -3008,7 +3008,7 @@ def skill_zone_cand_delete(request, sz_cand_id):
 @manager_can_enter(perm="recruitment.view_skillzonecandidate")
 def skill_zone_cand_filter(request):
     """
-    This method is used to filter the skill zone candidates
+    This method is used to filter the talent pool candidates
     """
     template = "skill_zone_cand/skill_zone_cand_card.html"
     if request.GET.get("view") == "list":
@@ -3036,14 +3036,14 @@ def skill_zone_cand_filter(request):
 @manager_can_enter(perm="recruitment.delete_skillzonecandidate")
 def skill_zone_cand_archive(request, sz_cand_id):
     """
-    function used to archive or un-archive Skill zone candidate.
+    function used to archive or un-archive Talent pool candidate.
 
     Parameters:
     request (HttpRequest): The HTTP request object.
-    sz_cand_id : Skill zone candidate id
+    sz_cand_id : Talent pool candidate id
 
     Returns:
-    GET : return Skill zone candidate view template
+    GET : return Talent pool candidate view template
     """
     try:
         skill_zone_cand = SkillZoneCandidate.objects.get(id=sz_cand_id)
@@ -3066,14 +3066,14 @@ def skill_zone_cand_archive(request, sz_cand_id):
 @manager_can_enter(perm="recruitment.delete_skillzonecandidate")
 def skill_zone_cand_delete(request, sz_cand_id):
     """
-    function used to delete Skill zone candidate.
+    function used to delete Talent pool candidate.
 
     Parameters:
     request (HttpRequest): The HTTP request object.
-    sz_cand_id : Skill zone candidate id
+    sz_cand_id : Talent pool candidate id
 
     Returns:
-    GET : return Skill zone view template
+    GET : return Talent pool view template
     """
     try:
         SkillZoneCandidate.objects.get(id=sz_cand_id).delete()
@@ -3093,7 +3093,7 @@ def skill_zone_cand_delete(request, sz_cand_id):
 @hx_request_required
 def to_skill_zone(request, cand_id):
     """
-    This method is used to Add candidate into skill zone
+    This method is used to Add candidate into talent pool
     Args:
         cand_id : candidate instance id
     """
@@ -3127,7 +3127,7 @@ def to_skill_zone(request, cand_id):
                     zone_candidate.skill_zone_id = zone
                     zone_candidate.reason = form.cleaned_data["reason"]
                     zone_candidate.save()
-            messages.success(request, _("Candidate Added to skill zone successfully"))
+            messages.success(request, _("Candidate added to talent pool successfully"))
             return HorillaRedirect(request)
     return render(request, template, {"form": form, "cand_id": cand_id})
 
@@ -3393,7 +3393,7 @@ def delete_reject_reason(request):
     """
     id = request.GET.get("id")
     if not (reason := RejectReason.find(id)):
-        messages.error(request, _("No Reject Reason found matching the query."))
+        messages.error(request, _("No Rejection Reason found matching the query."))
         return HttpResponse("<script>$('.reload-record').click();</script>")
 
     is_last = RejectReason.objects.count() == 1

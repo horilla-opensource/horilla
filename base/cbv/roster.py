@@ -575,7 +575,7 @@ class RosterTemplateDownloadView(View):
                 if cl.based_on_week_day == week_day and (
                     not cl.based_on_week or cl.based_on_week == week_no
                 ):
-                    off_dates[d] = "Company Leave"
+                    off_dates[d] = "Weekly Off Day"
                     break
 
         selected_company = request.session.get("selected_company")
@@ -661,7 +661,7 @@ class RosterTemplateDownloadView(View):
                     c.value = "OFF"
                     c.fill = off_fill
                     c.font = off_font
-                    if off_reason != "Company Leave":
+                    if off_reason != "Weekly Off Day":
                         c.comment = Comment(f"Holiday: {off_reason}", "Horilla")
                 elif d.weekday() >= 5:
                     c.fill = weekend_fill

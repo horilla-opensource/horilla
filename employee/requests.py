@@ -1,7 +1,7 @@
 """
 employee/requests.py
 
-Work Requests landing page with tabbed shift, inbox, work type, and document sections.
+Requests landing page with tabbed shift, inbox, work type, and document sections.
 """
 
 from django.contrib.auth.decorators import login_required
@@ -11,7 +11,7 @@ from django.shortcuts import render
 @login_required
 def requests_view(request):
     """
-    Work Requests landing page with tabbed shift, inbox, work type, and document sections.
+    Requests landing page with tabbed shift, inbox, work type, and document sections.
     """
     return render(request, "requests/requests.html")
 

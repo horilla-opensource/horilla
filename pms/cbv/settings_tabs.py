@@ -71,19 +71,19 @@ class PerformanceSettingsTabView(HorillaTabView):
                 "badge": objective_template_count,
             },
             {
-                "title": _("Question Template"),
+                "title": _("Question Templates"),
                 "url": with_query(
                     reverse("performance-settings-question-template-tab")
                 ),
                 "badge": question_template_count,
             },
             {
-                "title": _("Period"),
+                "title": _("Review Periods"),
                 "url": with_query(reverse("performance-settings-period-tab")),
                 "badge": period_count,
             },
             {
-                "title": _("Bonus Point Setting"),
+                "title": _("Bonus Point Settings"),
                 "url": with_query(reverse("performance-settings-bonus-point-tab")),
                 "badge": bonus_point_count,
             },

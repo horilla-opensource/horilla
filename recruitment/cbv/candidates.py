@@ -541,7 +541,7 @@ class CardCandidates(HorillaCardView):
             """,
         },
         {
-            "action": _("Add to Skill Zone"),
+            "action": _("Add to Talent Pool"),
             "accessibility": "recruitment.cbv.accessibility.add_skill_zone",
             "attrs": """
                 data-toggle="oh-modal-toggle"
@@ -769,7 +769,7 @@ class CandidateNav(HorillaNavView):
         ("probation_end", _("Probation End")),
         ("offer_letter_status", _("Offer Letter Status")),
         ("rejected_candidate__reject_reason_id", _("Reject reason")),
-        ("skillzonecandidate_set", _("Skill zone")),
+        ("skillzonecandidate_set", _("Talent pool")),
     ]
 
 
@@ -883,7 +883,7 @@ class ToSkillZoneFormView(HorillaFormView):
 
     model = SkillZoneCandidate
     form_class = ToSkillZoneForm
-    new_display_title = _("Add To Skill Zone")
+    new_display_title = _("Add to Talent Pool")
 
     def get_context_data(self, **kwargs):
         """
@@ -940,7 +940,7 @@ class ToSkillZoneFormView(HorillaFormView):
                     zone_candidate.skill_zone_id = zone
                     zone_candidate.reason = self.form.cleaned_data["reason"]
                     zone_candidate.save()
-            message = "Candidate Added to skill zone successfully"
+            message = "Candidate added to talent pool successfully"
             messages.success(self.request, _(message))
             return self.HttpResponse()
         return super().form_valid(form)

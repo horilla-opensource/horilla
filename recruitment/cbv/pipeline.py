@@ -330,7 +330,7 @@ class CandidateList(HorillaListView):
             """,
         },
         {
-            "action": _("Add to Skill Zone"),
+            "action": _("Add to Talent Pool"),
             "icon": "heart-circle-outline",
             "attrs": """
                 class="oh-btn oh-btn--light-bkg oh-btn--sq-sm disabled"
@@ -532,7 +532,7 @@ class CandidateCard(HorillaKanbanView):
             """,
         },
         {
-            "action": "Add to Skill Zone",
+            "action": "Add to Talent Pool",
             "accessibility": "recruitment.cbv.accessibility.add_skill_zone",
             "attrs": """
                 data-toggle="oh-modal-toggle"

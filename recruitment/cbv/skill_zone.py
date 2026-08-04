@@ -1,5 +1,5 @@
 """
-this page is handling the cbv methods of skill zone page
+this page is handling the cbv methods of talent pool page
 """
 
 from django.contrib import messages
@@ -18,26 +18,26 @@ from recruitment.models import Candidate, SkillZone, SkillZoneCandidate
 @method_decorator(manager_can_enter("recruitment.add_skillzone"), name="dispatch")
 class SkillZoneFormView(HorillaFormView):
     """
-    form view for create skill zone
+    form view for create talent pool
     """
 
     form_class = SkillZoneCreateForm
     model = SkillZone
-    new_display_title = _("Create Skill Zone")
+    new_display_title = _("Create Talent Pool")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.form.instance.pk:
-            self.form_class.verbose_name = _("Update Skill Zone")
+            self.form_class.verbose_name = _("Update Talent Pool")
 
         return context
 
     def form_valid(self, form: SkillZoneCreateForm) -> HttpResponse:
         if form.is_valid():
             if form.instance.pk:
-                message = _("Skill Zone updated successfully.")
+                message = _("Talent Pool updated successfully.")
             else:
-                message = _("Skill Zone created successfully")
+                message = _("Talent Pool created successfully")
             form.save()
 
             messages.success(self.request, _(message))
@@ -51,12 +51,12 @@ class SkillZoneFormView(HorillaFormView):
 )
 class SkillZoneCandidateFormView(HorillaFormView):
     """
-    form view for create skill zone candidate
+    form view for create talent pool candidate
     """
 
     form_class = SkillZoneCandidateForm
     model = SkillZoneCandidate
-    new_display_title = _("Add Candidate to  skill zone")
+    new_display_title = _("Add Candidate to Talent Pool")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -68,7 +68,7 @@ class SkillZoneCandidateFormView(HorillaFormView):
             ].queryset.filter(id=cand_id)
 
         # if self.form.instance.pk:
-        #     self.form_class.verbose_name = _("Update Skill Zone")
+        #     self.form_class.verbose_name = _("Update Talent Pool")
         return context
 
     def form_valid(self, form: SkillZoneCandidateForm) -> HttpResponse:
@@ -89,7 +89,7 @@ class SkillZoneCandidateFormView(HorillaFormView):
 )
 class SkillZoneProfileListView(HorillaListView):
     """
-    Skill Zone Candidate profile List View
+    Talent Pool Candidate profile List View
     """
 
     model = SkillZoneCandidate

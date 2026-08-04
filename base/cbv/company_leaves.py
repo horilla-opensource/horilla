@@ -27,7 +27,7 @@ from horilla_views.generic.cbv.views import (
 @method_decorator(login_required, name="dispatch")
 class CompanyLeavesView(TemplateView):
     """
-    Standalone Company Leaves page. For admins it has been migrated into
+    Standalone Weekly Off Days page. For admins it has been migrated into
     Settings > Organization, so users with the manage permission are redirected
     there; employees without the permission keep the read-only list view.
     """
@@ -133,21 +133,21 @@ class CompanyleaveFormView(HorillaFormView):
 
     form_class = CompanyLeaveForm
     model = CompanyLeaves
-    new_display_title = _("Create Company Leaves")
+    new_display_title = _("Create Weekly Off Days")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.form.instance.pk:
-            self.form_class.verbose_name = _("Update Company Leaves")
+            self.form_class.verbose_name = _("Update Weekly Off Days")
 
         return context
 
     def form_valid(self, form: CompanyLeaveForm) -> HttpResponse:
         if form.is_valid():
             if form.instance.pk:
-                message = _("Company Leave Updated Successfully")
+                message = _("Weekly Off Day Updated Successfully")
             else:
-                message = _("New Company Leave Created Successfully")
+                message = _("New Weekly Off Day Created Successfully")
             form.save()
 
             messages.success(self.request, message)

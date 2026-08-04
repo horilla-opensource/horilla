@@ -2040,7 +2040,7 @@ def assign_leave_type_import(request):
         context = {
             "created_count": len(assign_leave_dicts) - len(error_list),
             "error_count": len(error_list),
-            "model": _("Assigned Leaves"),
+            "model": _("Leave Balances"),
             "path_info": path_info,
         }
         html = render_to_string("import_popup.html", context)
@@ -4849,7 +4849,7 @@ def leave_rules_settings_view(request):
 @permission_required("leave.view_restrictleave")
 def restrict_leaves_settings_view(request):
     """
-    Restrict Leaves settings page. Migrated from the main Leave navigation into
+    Restricted Leave Periods settings page. Migrated from the main Leave navigation into
     Settings > Leave; reuses the existing nav/list HTMX endpoints.
     """
     return render(

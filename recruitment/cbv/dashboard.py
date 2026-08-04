@@ -24,7 +24,7 @@ from recruitment.models import Candidate, Recruitment, SkillZone
 )
 class SkillZoneStatusList(HorillaListView):
     """
-    List view for skill zone status in recruitment dashboard
+    List view for talent pool status in recruitment dashboard
     """
 
     def __init__(self, **kwargs: Any) -> None:
@@ -34,7 +34,7 @@ class SkillZoneStatusList(HorillaListView):
     model = SkillZone
     filter_class = SkillZoneFilter
     columns = [
-        (_("Skill Zone"), "title", "get_avatar"),
+        (_("Talent Pool"), "title", "get_avatar"),
         (_("No. of Candidates"), "candidate_count_display"),
     ]
     bulk_select_option = False

@@ -53,7 +53,7 @@ class GoogleDriveBackup(models.Model):
     )
     gdrive_folder_id = models.CharField(
         max_length=255,
-        verbose_name=_("Gdrive Folder ID"),
+        verbose_name=_("Google Drive Folder ID"),
         help_text=_(
             "Google Drive folder ID where backups will be stored. The authenticated user must have write access to this folder."
         ),

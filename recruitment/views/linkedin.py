@@ -50,7 +50,7 @@ def delete_linkedin_account(request, pk, return_redirect=True):
     try:
         if return_redirect:
             LinkedInAccount.objects.get(id=pk).delete()
-            messages.success(request, _("Linkedin data deleted"))
+            messages.success(request, _("LinkedIn data deleted"))
             return redirect(reverse("linkedin-setting-list"))
     except Exception as e:
         logger.error(e)

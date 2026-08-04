@@ -36,7 +36,7 @@ SUBMENUS = [
         "redirect": reverse_lazy("organisation-chart"),
     },
     {
-        "menu": _("Work Requests"),
+        "menu": _("Requests"),
         "redirect": reverse_lazy("requests-view"),
         "accessibility": "employee.sidebar.requests_accessibility",
     },

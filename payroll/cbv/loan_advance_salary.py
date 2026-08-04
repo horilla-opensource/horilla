@@ -49,7 +49,7 @@ class LoansGenericTab(HorillaTabView):
                 "url": f"{reverse('loan-tab-list-view')}",
             },
             {
-                "title": _("Advanced Salary"),
+                "title": _("Salary Advance"),
                 "url": f"{reverse('advanced-salary-list-view')}",
             },
             {
@@ -167,7 +167,7 @@ class LoanNavView(HorillaNavView):
              data-toggle="oh-modal-toggle"
          """
 
-    nav_title = _("Loan / Advanced Salary")
+    nav_title = _("Loans & Salary Advances")
     filter_body_template = "cbv/loan/loan_filter.html"
     filter_instance = LoanAccountFilter()
     filter_form_context_name = "form"
@@ -207,7 +207,7 @@ class LoanFormView(HorillaFormView):
 
     form_class = LoanAccountForm
     model = LoanAccount
-    new_display_title = _("Loan / Advanced Sarlary")
+    new_display_title = _("Loans & Salary Advances")
 
     def form_valid(self, form: LoanAccountForm) -> HttpResponse:
         if form.is_valid():

@@ -1,5 +1,5 @@
 """
-CBV of time sheet page
+CBV of timesheet page
 """
 
 from typing import Any
@@ -40,7 +40,7 @@ from project.models import Project, Task, TimeSheet
 )
 class TimeSheetView(TemplateView):
     """
-    for time sheet page
+    for timesheet page
     """
 
     template_name = "cbv/timesheet/timesheet.html"
@@ -338,7 +338,7 @@ class TimeSheetFormView(HorillaFormView):
                 ("dynamic_create", "Dynamic create")
             )
             task_id = self.request.GET.get("task_id")
-            self.form_class.verbose_name = _("Update Time Sheet")
+            self.form_class.verbose_name = _("Update Timesheet")
         # If the timesheet create from task or project
         if project:
             if self.request.user.is_superuser or self.request.user.has_perm(
@@ -394,7 +394,7 @@ class TimeSheetFormView(HorillaFormView):
             if form.instance.pk:
                 message = _(f"{self.form.instance} Updated")
             else:
-                message = _("New time sheet created")
+                message = _("New timesheet created")
             form.save()
             messages.success(self.request, _(message))
             return self.HttpResponse()

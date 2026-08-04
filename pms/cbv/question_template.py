@@ -96,7 +96,7 @@ class QuestionTemplateNav(HorillaNavView):
                             hx-get="{reverse('question-template-creation')}"
                             """
 
-    nav_title = _("Question Template")
+    nav_title = _("Question Templates")
     filter_instance = QuestionTemplateFilter()
     search_swap_target = "#listContainer"
     template_name = "generic/inline_nav.html"

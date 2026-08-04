@@ -33,7 +33,7 @@ SUBMENUS = [
     #     "accessibility": "payroll.sidebar.deduction_accessibility",
     # },
     {
-        "menu": _("Loan / Advanced Salary"),
+        "menu": _("Loans & Salary Advances"),
         "redirect": reverse("view-loan"),
         "accessibility": "payroll.sidebar.loan_accessibility",
     },
@@ -42,12 +42,12 @@ SUBMENUS = [
         "redirect": reverse("view-reimbursement"),
     },
     {
-        "menu": _("Contract"),
+        "menu": _("Contracts"),
         "redirect": reverse("view-contract"),
         "accessibility": "payroll.sidebar.dasbhoard_accessibility",
     },
     {
-        "menu": _("Federal Tax"),
+        "menu": _("Income Tax"),
         "redirect": reverse("filing-status-view"),
         "accessibility": "payroll.sidebar.federal_tax_accessibility",
     },

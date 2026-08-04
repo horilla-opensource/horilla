@@ -146,7 +146,7 @@ class AttendanceActivityNavView(HorillaNavView):
             actions = None
         self.actions = actions
 
-    nav_title = _("Attendance Activity")
+    nav_title = _("Check-in / Check-out Log")
     filter_body_template = "cbv/attendance_activity/filter.html"
     filter_instance = AttendanceActivityFilter()
     filter_form_context_name = "form"

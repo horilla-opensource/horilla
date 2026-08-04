@@ -258,7 +258,7 @@ class CompensatoryGenericDetailView(HorillaDetailedView):
         (_("Created By"), "created_by__employee_get"),
         (_("Attendance Dates"), "compensatory_date"),
         (_("Description"), "description"),
-        (_("Reject Reason"), "compensatory_detail_reject_reason", True),
+        (_("Rejection Reason"), "compensatory_detail_reject_reason", True),
     ]
 
 

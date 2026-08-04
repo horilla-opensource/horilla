@@ -1494,16 +1494,16 @@ def drag_and_drop_stage(request):
 @login_required
 def time_sheet_view(request):
     """
-    View function to display time sheets based on user permissions.
+    View function to display timesheets based on user permissions.
 
-    If the user is a superuser, all time sheets will be shown.
-    Otherwise, only the time sheets for the current user will be displayed.
+    If the user is a superuser, all timesheets will be shown.
+    Otherwise, only the timesheets for the current user will be displayed.
 
     Parameters:
         request (HttpRequest): The HTTP request object.
 
     Returns:
-        HttpResponse: The rendered HTTP response displaying the time sheets.
+        HttpResponse: The rendered HTTP response displaying the timesheets.
     """
     form = TimeSheetFilter()
     view_type = "card"
@@ -1635,17 +1635,17 @@ def get_tasks_in_timesheet(request):
 @login_required
 def time_sheet_creation(request):
     """
-    View function to handle the creation of a new time sheet.
+    View function to handle the creation of a new timesheet.
 
     If the request method is POST and the submitted form is valid,
-    a new time sheet will be created and saved.
+    a new timesheet will be created and saved.
 
     Parameters:
         request (HttpRequest): The HTTP request object.
 
     Returns:
         HttpResponse: The rendered HTTP response displaying the form or
-        redirecting to a new page after successful time sheet creation.
+        redirecting to a new page after successful timesheet creation.
     """
     user = request.user.employee_get
     form = TimeSheetForm(initial={"employee_id": user}, request=request)
@@ -1666,7 +1666,7 @@ def time_sheet_creation(request):
 @hx_request_required
 def time_sheet_project_creation(request):
     """
-    View function to handle the creation of a new project from time sheet form.
+    View function to handle the creation of a new project from timesheet form.
 
     If the request method is POST and the submitted form is valid,
     a new project will be created and saved.
@@ -1693,17 +1693,17 @@ def time_sheet_project_creation(request):
 @login_required
 def time_sheet_task_creation(request):
     """
-    View function to handle the creation of a new task from time sheet form.
+    View function to handle the creation of a new task from timesheet form.
 
     If the request method is GET, it initializes the task form with the
     provided project ID as an initial value.
     If the request method is POST and the submitted form is valid,
-    a new task time sheet will be created and saved.
+    a new task timesheet will be created and saved.
 
     Returns:
         HttpResponse or JsonResponse: Depending on the request type, it returns
         either an HTTP response rendering the form or a JSON response with the
-        created task time sheet's ID and name in case of successful creation,
+        created task timesheet's ID and name in case of successful creation,
         or the validation errors in case of an invalid form submission.
     """
     if request.method == "GET":
@@ -1734,15 +1734,15 @@ def time_sheet_task_creation(request):
 @login_required
 def time_sheet_update(request, time_sheet_id):
     """
-    Update an existing time sheet.
+    Update an existing timesheet.
 
     Args:
         request: The HTTP request object.
-        time sheet_id: The ID of the time sheet to update.
+        timesheet_id: The ID of the timesheet to update.
 
     Returns:
-        If the request method is POST and the form is valid, redirects to the time sheet view.
-        Otherwise, renders the time sheet update form.
+        If the request method is POST and the form is valid, redirects to the timesheet view.
+        Otherwise, renders the timesheet update form.
 
     """
     if time_sheet_update_permissions(request, time_sheet_id):
@@ -1776,14 +1776,14 @@ def time_sheet_update(request, time_sheet_id):
 @login_required
 def time_sheet_delete(request, time_sheet_id):
     """
-    View function to handle the deletion of a time sheet.
+    View function to handle the deletion of a timesheet.
 
     Parameters:
         request (HttpRequest): The HTTP request object.
-        time_sheet_id (int): The ID of the time sheet to be deleted.
+        time_sheet_id (int): The ID of the timesheet to be deleted.
 
     Returns:
-        HorillaRedirect: A redirect response to the time sheet view page.
+        HorillaRedirect: A redirect response to the timesheet view page.
     """
     if time_sheet_delete_permissions(request, time_sheet_id):
         timesheet = TimeSheet.objects.filter(id=time_sheet_id).first()
@@ -1791,7 +1791,7 @@ def time_sheet_delete(request, time_sheet_id):
             messages.error(request, _("Timesheet not found."))
             return HorillaRedirect(request)
         timesheet.delete()
-        messages.success(request, _("The time sheet has been deleted successfully."))
+        messages.success(request, _("The timesheet has been deleted successfully."))
         view_type = "card"
         if request.GET.get("view") == "list":
             view_type = "list"

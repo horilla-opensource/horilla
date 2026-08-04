@@ -870,8 +870,8 @@ def attendance_overview(request):
 
     data_set = [
         {"label": _("On Time"), "data": on_time_series},
-        {"label": _("Late Come"), "data": late_series},
-        {"label": _("Early Out"), "data": early_series},
+        {"label": _("Late Arrival"), "data": late_series},
+        {"label": _("Early Departure"), "data": early_series},
     ]
     return JsonResponse(
         {

@@ -31,7 +31,7 @@ SUBMENUS = [
         "accessibility": "recruitment.sidebar.pipeline_accessibility",
     },
     {
-        "menu": _("Open Jobs"),
+        "menu": _("Open Recruitments"),
         "redirect": reverse("open-recruitments"),
         "accessibility": "recruitment.sidebar.recruitment_accessibility",
     },
@@ -45,7 +45,7 @@ SUBMENUS = [
         "match_prefixes": ["/recruitment/candidate-update/"],
     },
     {
-        "menu": _("Interview"),
+        "menu": _("Interviews"),
         "redirect": reverse("interview-view"),
         "accessibility": "recruitment.sidebar.interview_accessibility",
     },
@@ -60,7 +60,7 @@ SUBMENUS = [
         "accessibility": "recruitment.sidebar.survey_accessibility",
     },
     {
-        "menu": _("Skill Zone"),
+        "menu": _("Talent Pool"),
         "redirect": reverse("skill-zone-view"),
         "accessibility": "recruitment.sidebar.skill_zone_accessibility",
     },

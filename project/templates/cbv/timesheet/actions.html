@@ -20,7 +20,7 @@
             <a
                 class="oh-btn oh-btn--danger w-100"
                 hx-delete="{% url 'delete-time-sheet' instance.id %}?view=list&task_id={{ request.task_id }}&employee_id=request.user.employee_get.id"
-                hx-confirm="{% trans 'Do you want to delete this time sheet?' %}"
+                hx-confirm="{% trans 'Do you want to delete this timesheet?' %}"
                 hx-target="#TaskTimesheetTarget"
             >
                 <ion-icon
@@ -34,7 +34,7 @@
             <a
                 class="oh-btn oh-btn--danger w-100"
                 href="{% url 'delete-time-sheet' instance.id %}?view=list"
-                onclick="confirm(`{% trans 'Do you want to delete this time sheet?' %}`)"
+                onclick="confirm(`{% trans 'Do you want to delete this timesheet?' %}`)"
             >
                 <ion-icon
                 name="trash-outline"

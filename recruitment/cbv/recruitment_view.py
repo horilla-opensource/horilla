@@ -70,7 +70,7 @@ class RecruitmentList(HorillaListView):
     columns = [
         (_("Recruitment"), "recruitment_column"),
         (_("Managers"), "managers_column"),
-        (_("Open Jobs"), "open_job_col"),
+        (_("Open Positions"), "open_job_col"),
         (_("Vaccancy"), "vacancy"),
         (_("Total Hires"), "tot_hires"),
         (_("Start Date"), "start_date"),
@@ -397,7 +397,7 @@ class RecruitmentDetailView(HorillaDetailedView):
         super().__init__(**kwargs)
         self.body = [
             (_("Managers"), "managers_detail"),
-            (_("Open Jobs"), "open_job_detail"),
+            (_("Open Positions"), "open_job_detail"),
             (_("Vaccancy"), "vacancy"),
             (_("Total Hires"), "tot_hires"),
             (_("Start Date"), "start_date"),

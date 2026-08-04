@@ -42,7 +42,7 @@ class RejectReasonListView(HorillaListView):
     show_toggle_form = False
 
     columns = [
-        (_("Reject Reasons"), "title"),
+        (_("Rejection Reasons"), "title"),
         (_("Description"), "description"),
     ]
 
@@ -103,7 +103,7 @@ class RejectReasonNav(HorillaNavView):
                                 hx-get="{reverse('create-reject-reason-view')}"
                                 """
 
-    nav_title = _("Reject Reasons")
+    nav_title = _("Rejection Reasons")
     filter_instance = RejectReasonFilter()
     search_swap_target = "#rejectReasonListContainer"
 

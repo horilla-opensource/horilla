@@ -2746,8 +2746,8 @@ class TrackLateComeEarlyOut(HorillaModel):
     objects = HorillaCompanyManager()
 
     class Meta:
-        verbose_name = _("Track Late Come Early Out")
-        verbose_name_plural = _("Track Late Come Early Outs")
+        verbose_name = _("Track Late Arrival & Early Departure")
+        verbose_name_plural = _("Track Late Arrival & Early Departure")
 
     def __str__(self):
         tracking = _("enabled") if self.is_enable else _("disabled")
@@ -2920,8 +2920,8 @@ class CompanyLeaves(HorillaModel):
 
     class Meta:
         unique_together = ("based_on_week", "based_on_week_day")
-        verbose_name = _("Company Leave")
-        verbose_name_plural = _("Company Leaves")
+        verbose_name = _("Weekly Off Day")
+        verbose_name_plural = _("Weekly Off Days")
 
     def __str__(self):
         return f"{dict(WEEK_DAYS).get(self.based_on_week_day)} | {dict(WEEKS).get(self.based_on_week)}"
@@ -2941,7 +2941,7 @@ class CompanyLeaves(HorillaModel):
         for return title
         """
 
-        title = "Company Leaves"
+        title = "Weekly Off Days"
         return title
 
     def detail_view_actions(self):

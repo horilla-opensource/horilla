@@ -306,7 +306,7 @@ class CandidateFilter(HorillaFilterSet):
             "interview_date": interview_date_label,
             "scheduled_from": f"{interview_date_label} From",
             "scheduled_till": f"{interview_date_label} Till",
-            "rejected_candidate__reject_reason_id": _("Reject Reason"),
+            "rejected_candidate__reject_reason_id": _("Rejection Reason"),
             "job_position_id__department_id": _("Department"),
             "stage_id__stage_type": _("Stage Type"),
             "stage_id__stage_managers": _("Stage Managers"),
@@ -617,8 +617,8 @@ class CandidateReGroup:
         ("joining_date", "Date Joining"),
         ("probation_end", "Probation End"),
         ("offer_letter_status", "Offer Letter Status"),
-        ("rejected_candidate__reject_reason_id", "Reject Reason"),
-        ("skillzonecandidate_set__skill_zone_id", "Skill Zone"),
+        ("rejected_candidate__reject_reason_id", "Rejection Reason"),
+        ("skillzonecandidate_set__skill_zone_id", "Talent Pool"),
     ]
 
 
@@ -754,7 +754,7 @@ class SkillZoneCandFilter(HorillaFilterSet):
 
     def cand_search(self, queryset, _, value):
         """
-        This method to include candidate when search skill zone
+        This method to include candidate when search talent pool
         """
         return (
             queryset.filter(candidate_id__name__icontains=value)

@@ -181,7 +181,7 @@ CandidateProfileView.add_tab(
             "accessibility": "recruitment.cbv.accessibility.empl_scheduled_interview_accessibility",
         },
         {
-            "title": _("Skill Zone"),
+            "title": _("Talent Pool"),
             "view": skill_zone.SkillZoneProfileListView.as_view(),
             "accessibility": "recruitment.cbv.accessibility.if_manager_accessibility",
         },

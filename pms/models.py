@@ -29,7 +29,7 @@ class Period(HorillaModel):
     """this is a period model used for creating period"""
 
     period_name = models.CharField(
-        max_length=150, unique=True, verbose_name=_("Period Name")
+        max_length=150, unique=True, verbose_name=_("Review Period Name")
     )
     start_date = models.DateField()
     end_date = models.DateField()

@@ -30,7 +30,7 @@ def convert_emp(request, instance, user_perm):
 
 def add_skill_zone(request, instance, user_perm):
     """
-    Add skill zone  accessibility
+    Add talent pool  accessibility
     """
 
     mails = list(Candidate.objects.values_list("email", flat=True))

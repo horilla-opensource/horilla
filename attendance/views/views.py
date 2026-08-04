@@ -1102,7 +1102,7 @@ def attendance_activity_import(request):
             context = {
                 "created_count": created_activity_count,
                 "error_count": len(import_error_dicts),
-                "model": _("Attendance Activity"),
+                "model": _("Check-in / Check-out Log"),
                 "path_info": path_info,
             }
             html = render_to_string("import_popup.html", context)
@@ -2845,7 +2845,7 @@ def work_record_export(request):
     df = pd.DataFrame(data_rows, columns=columns)
 
     export_format = request.GET.get("format", "xlsx")
-    file_name = request.GET.get("file_name") or "Work Record Status"
+    file_name = request.GET.get("file_name") or "Daily Work Status"
 
     if export_format == "csv":
         csv_output = io.StringIO()

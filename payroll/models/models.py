@@ -513,7 +513,7 @@ class WorkRecord(models.Model):
         ("FDP", _("Present")),
         ("HDP", _("Half Day Present")),
         ("ABS", _("Absent")),
-        ("HD", _("Holiday/Company Leave")),
+        ("HD", _("Holiday / Weekly Off")),
         ("CONF", _("Conflict")),
         ("DFT", _("Draft")),
     ]
@@ -2096,7 +2096,7 @@ class LoanAccount(HorillaModel):
 
     loan_type = [
         ("loan", _("Loan")),
-        ("advanced_salary", _("Advanced Salary")),
+        ("advanced_salary", _("Salary Advance")),
         ("fine", _("Penalty / Fine")),
     ]
     title = models.CharField(max_length=100)

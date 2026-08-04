@@ -63,7 +63,7 @@ class BonusPointSettingNavView(views.HorillaNavView):
                 data-target="#genericModal"
             """
 
-    nav_title = _("Bonus Point Setting")
+    nav_title = _("Bonus Point Settings")
     search_url = reverse_lazy("bonus-point-setting-list-view")
     search_swap_target = "#bonusPointSettingListContainer"
     template_name = "generic/inline_nav.html"

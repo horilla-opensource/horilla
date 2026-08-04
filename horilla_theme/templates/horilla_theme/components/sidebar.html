@@ -696,7 +696,7 @@
           // Restore active-link highlight in flyout
           var path = window.location.pathname;
           flyoutListEl.querySelectorAll("a[href]").forEach(function (a) {
-            // Some submenu links (e.g. Hour Account) have a query string baked
+            // Some submenu links (e.g. Hours Balance) have a query string baked
             // into their href (?year=2026) by a server-side accessibility
             // hook. location.pathname never includes the query string, so
             // strip it from href before comparing or it can never match.
@@ -796,7 +796,7 @@
           var path = window.location.pathname;
           var matchedBtn = null;
           document.querySelectorAll(".sidebar-subnav-link").forEach(function (link) {
-            // Strip any query string (e.g. Hour Account's ?year=2026) before
+            // Strip any query string (e.g. Hours Balance's ?year=2026) before
             // comparing — location.pathname never includes one.
             var href = (link.getAttribute("href") || "").split("?")[0];
             var extraPrefixes = (link.dataset.matchPrefixes || "").split(",").filter(Boolean);
@@ -894,7 +894,7 @@
           var path = window.location.pathname;
           var matchedBtn = null;
           document.querySelectorAll(".sidebar-subnav-link").forEach(function (link) {
-            // Strip any query string (e.g. Hour Account's ?year=2026) before
+            // Strip any query string (e.g. Hours Balance's ?year=2026) before
             // comparing — location.pathname never includes one.
             var href = (link.getAttribute("href") || "").split("?")[0];
             if (href && href !== "/" && path.startsWith(href)) {

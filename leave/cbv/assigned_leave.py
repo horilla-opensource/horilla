@@ -215,7 +215,7 @@ class AssignedLeaveNavView(HorillaNavView):
                     hx-get="{reverse_lazy('assign')}"
                 """
 
-    nav_title = _("All Assigned Leaves")
+    nav_title = _("All Leave Balances")
     filter_instance = AssignedLeaveFilter()
     filter_form_context_name = "form"
     filter_body_template = "cbv/assigned_leave/assigned_filter.html"

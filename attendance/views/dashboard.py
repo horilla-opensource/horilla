@@ -338,8 +338,8 @@ def dashboard_attendance(request):
 
     labels = [
         _("On Time"),
-        _("Late Come"),
-        _("Early Out"),
+        _("Late Arrival"),
+        _("Early Departure"),
     ]
     # initializing values
     data_set = []

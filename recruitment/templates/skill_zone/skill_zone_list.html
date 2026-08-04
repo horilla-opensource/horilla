@@ -47,7 +47,7 @@
                                         <form
                                             hx-post="{% url 'skill-zone-archive' skill_zone.grouper.id %}"
                                             hx-swap="none"
-                                            hx-confirm="{% trans 'Do you want to archive this skill zone ?' %}"
+                                            hx-confirm="{% trans 'Do you want to archive this talent pool?' %}"
                                         >
                                             {% csrf_token %}
                                             <button
@@ -63,7 +63,7 @@
                                         <form
                                             hx-post="{% url 'skill-zone-archive' skill_zone.grouper.id %}"
                                             hx-swap="none"
-                                            hx-confirm="{% trans 'Do you want to un archive this skill zone?' %}"
+                                            hx-confirm="{% trans 'Do you want to unarchive this talent pool?' %}"
                                         >
                                             {% csrf_token %}
                                             <button
@@ -81,7 +81,7 @@
                                     <form
                                         hx-post="{% url 'skill-zone-delete' skill_zone.grouper.id %}?view=list"
                                         hx-swap="none"
-                                        hx-confirm="{% trans 'Are you sure want to delete this skill zone?' %}"
+                                        hx-confirm="{% trans 'Are you sure you want to delete this talent pool?' %}"
                                     >
                                         {% csrf_token %}
                                         <button
@@ -172,14 +172,14 @@
                                                                 </button>
                                                             {% endif %}
                                                             {% comment %} {% if sz_candidate.is_active %}
-                                                        <form action="{% url 'skill-zone-cand-archive' sz_candidate.id  %}"  title="{% trans 'Archive' %}" onsubmit="return confirm('{% trans "Do you want to archive this candidate from this skill zone" %}')" method='post'
+                                                        <form action="{% url 'skill-zone-cand-archive' sz_candidate.id  %}"  title="{% trans 'Archive' %}" onsubmit="return confirm('{% trans "Do you want to archive this candidate from this talent pool" %}')" method='post'
                                                             class="w-50">
                                                             {% csrf_token %}
                                                             <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                                                                 ><ion-icon name="archive"></ion-icon></button>
                                                         </form>
                                                     {% else %}
-                                                        <form action="{% url 'skill-zone-cand-archive' sz_candidate.id  %}"  title="{% trans 'Un Archive' %}" onsubmit="return confirm('{% trans "Do you want to un-archive this candidate from this skill zone" %}')" method='post'
+                                                        <form action="{% url 'skill-zone-cand-archive' sz_candidate.id  %}"  title="{% trans 'Un Archive' %}" onsubmit="return confirm('{% trans "Do you want to unarchive this candidate from this talent pool" %}')" method='post'
                                                             class="w-50">
                                                             {% csrf_token %}
                                                             <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"

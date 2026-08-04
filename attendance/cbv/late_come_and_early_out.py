@@ -175,7 +175,7 @@ class LateComeAndEarlyOutListNav(HorillaNavView):
 
         self.actions = actions
 
-    nav_title = _("Late Come/Early Out ")
+    nav_title = _("Late Arrival & Early Departure")
     filter_instance = LateComeEarlyOutFilter()
     filter_body_template = "cbv/late_come_and_early_out/late_early_filter.html"
     filter_form_context_name = "form"

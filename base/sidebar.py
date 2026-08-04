@@ -6,7 +6,7 @@ Settings menu registrations for the base app.
 Sections registered:
   - General       : general settings, permissions, tags, mail
   - Base          : department, job position, job role, company
-  - Theme Manager : color theme (only when horilla_theme is installed)
+  - Appearance : color theme (only when horilla_theme is installed)
   - Integrations  : gdrive, linkedin, ldap, google meet, whatsapp
 """
 
@@ -258,12 +258,12 @@ class GeneralSettings:
             ],
         },
         {
-            "label": _("Accessibility Restrictions"),
+            "label": _("Menu Access Restrictions"),
             "url": reverse_lazy("user-accessibility"),
             "accessibility": accessibility_restriction_accessibility,
             "search_entries": [
                 {
-                    "text": _("Accessibility Restrictions"),
+                    "text": _("Menu Access Restrictions"),
                     "description": _(
                         "Control which user roles can see which menu items"
                     ),
@@ -457,11 +457,11 @@ class BaseSettings:
 
 @settings_menu.register
 class MailSettings:
-    title = _("Mail")
+    title = _("Email")
     order = 3
     items = [
         {
-            "label": _("Mail Servers"),
+            "label": _("Email Servers"),
             "url": reverse_lazy("mail-server-conf"),
             "accessibility": mail_server_accessibility,
             "search_entries": [
@@ -512,12 +512,12 @@ class MailSettings:
             ],
         },
         {
-            "label": _("Mail Templates"),
+            "label": _("Email Templates"),
             "url": reverse_lazy("mail-templates-view"),
             "accessibility": mail_template_accessibility,
             "search_entries": [
                 {
-                    "text": _("Mail Templates"),
+                    "text": _("Email Templates"),
                     "description": _("Create reusable email body templates"),
                 },
                 {"text": _("Template Title"), "description": _("Name of the template")},
@@ -528,12 +528,12 @@ class MailSettings:
             ],
         },
         {
-            "label": _("Mail Automations"),
+            "label": _("Email Automations"),
             "url": reverse_lazy("mail-automations-view"),
             "accessibility": mail_automation_accessibility,
             "search_entries": [
                 {
-                    "text": _("Mail Automations"),
+                    "text": _("Email Automations"),
                     "description": _("Trigger automated emails on model events"),
                 },
                 {
@@ -556,13 +556,13 @@ class MailSettings:
 
 
 # ---------------------------------------------------------------------------
-# 5. Theme Manager section (only when horilla_theme is installed)
+# 5. Appearance section (only when horilla_theme is installed)
 # ---------------------------------------------------------------------------
 
 
 @settings_menu.register
 class ThemeManagerSettings:
-    title = _("Theme Manager")
+    title = _("Appearance")
     order = 10
     condition = lambda self, request: apps.is_installed("horilla_theme")
     items = [
@@ -599,7 +599,7 @@ class IntegrationsSettings:
     order = 11
     items = [
         {
-            "label": _("Gdrive Backup"),
+            "label": _("Google Drive Backup"),
             "url": reverse_lazy("gdrive"),
             "accessibility": gdrive_accessibility,
             "search_entries": [
@@ -612,7 +612,7 @@ class IntegrationsSettings:
                     "description": _("Google OAuth 2.0 credentials JSON"),
                 },
                 {
-                    "text": _("Gdrive Folder ID"),
+                    "text": _("Google Drive Folder ID"),
                     "description": _("Google Drive folder where backups are stored"),
                 },
                 {
@@ -638,7 +638,7 @@ class IntegrationsSettings:
             ],
         },
         {
-            "label": _("Linkedin"),
+            "label": _("LinkedIn"),
             "url": reverse_lazy("linkedin-integration-setting"),
             "accessibility": linkedin_accessibility,
             "search_entries": [
@@ -717,7 +717,7 @@ class IntegrationsSettings:
             ],
         },
         {
-            "label": _("Whatsapp"),
+            "label": _("WhatsApp"),
             "url": reverse_lazy("whatsapp-credential-view"),
             "accessibility": whatsapp_accessibility,
             "search_entries": [

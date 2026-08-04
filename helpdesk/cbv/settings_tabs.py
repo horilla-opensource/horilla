@@ -56,7 +56,7 @@ class HelpdeskSettingsTabView(HorillaTabView):
                 "badge": department_manager_count,
             },
             {
-                "title": _("Ticket Type"),
+                "title": _("Ticket Types"),
                 "url": with_query(reverse("helpdesk-settings-ticket-type-tab")),
                 "badge": ticket_type_count,
             },

@@ -100,7 +100,7 @@ class PeriodNav(HorillaNavView):
                             hx-get="{reverse('period-create')}"
                             """
 
-    nav_title = _("Period")
+    nav_title = _("Review Periods")
     filter_instance = PeriodFilter()
     search_swap_target = "#listContainer"
     template_name = "generic/inline_nav.html"

@@ -670,7 +670,7 @@ class TimeSheet(HorillaModel):
         This method to get delete url
         """
         url = reverse_lazy("delete-time-sheet", kwargs={"time_sheet_id": self.pk})
-        message = _("Are you sure you want to delete this time sheet?")
+        message = _("Are you sure you want to delete this timesheet?")
         return f"'{url}'" + "," + f"'{message}'"
 
     def detail_view(self):
@@ -681,5 +681,5 @@ class TimeSheet(HorillaModel):
         return url
 
     class Meta:
-        verbose_name = _("Time Sheet")
-        verbose_name_plural = _("Time Sheets")
+        verbose_name = _("Timesheet")
+        verbose_name_plural = _("Timesheets")
