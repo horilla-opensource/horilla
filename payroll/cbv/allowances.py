@@ -206,6 +206,7 @@ class AllowanceNavView(HorillaNavView):
     filter_body_template = "cbv/allowances/allowance_filter.html"
     filter_form_context_name = "form"
     search_swap_target = "#listContainer"
+    template_name = "generic/inline_nav.html"
 
 
 @method_decorator(login_required, name="dispatch")

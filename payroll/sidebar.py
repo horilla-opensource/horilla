@@ -22,16 +22,16 @@ SUBMENUS = [
         "menu": _("Payslips"),
         "redirect": reverse("view-payslip"),
     },
-    {
-        "menu": _("Allowances"),
-        "redirect": reverse("view-allowance"),
-        "accessibility": "payroll.sidebar.allowance_accessibility",
-    },
-    {
-        "menu": _("Deductions"),
-        "redirect": reverse("view-deduction"),
-        "accessibility": "payroll.sidebar.deduction_accessibility",
-    },
+    # {
+    #     "menu": _("Allowances"),
+    #     "redirect": reverse("view-allowance"),
+    #     "accessibility": "payroll.sidebar.allowance_accessibility",
+    # },
+    # {
+    #     "menu": _("Deductions"),
+    #     "redirect": reverse("view-deduction"),
+    #     "accessibility": "payroll.sidebar.deduction_accessibility",
+    # },
     {
         "menu": _("Loan / Advanced Salary"),
         "redirect": reverse("view-loan"),

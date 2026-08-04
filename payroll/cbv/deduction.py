@@ -36,7 +36,7 @@ class DeductionNav(HorillaNavView):
             self.create_attrs = f"""
                             href="#"
                             hx-get="{reverse('create-deduction')}"
-                            hx-target="#listContainer"
+                            hx-target="#deductionListContainer"
                             hx-swap="innerHTML"
                             """
         self.view_types = [
@@ -62,7 +62,8 @@ class DeductionNav(HorillaNavView):
     filter_body_template = "cbv/deduction/filter.html"
     filter_instance = DeductionFilter()
     filter_form_context_name = "form"
-    search_swap_target = "#listContainer"
+    search_swap_target = "#deductionListContainer"
+    template_name = "generic/inline_nav.html"
 
 
 @method_decorator(login_required, name="dispatch")
@@ -258,7 +259,7 @@ class DeductionCardView(HorillaCardView):
             "attrs": """
             class="oh-dropdown__link"
             hx-get="{get_update_url}"
-            hx-target="#listContainer"
+            hx-target="#deductionListContainer"
             hx-swap="innerHTML"
             """,
         },

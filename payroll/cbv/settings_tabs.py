@@ -32,10 +32,38 @@ class PayrollSettingsTabView(HorillaTabView):
         super().__init__(**kwargs)
         self.tabs = [
             {
+                "title": _("Allowances"),
+                "url": f"{reverse("payroll-settings-allowance-tab")}",
+            },
+            {
+                "title": _("Deductions"),
+                "url": f"{reverse('payroll-settings-deduction-tab')}",
+            },
+            {
                 "title": _("Payslip Auto Generation"),
                 "url": f"{reverse('payroll-settings-auto-payslip-tab')}",
             },
         ]
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
+class PayrollSettingsAllowanceTab(TemplateView):
+    """
+    payslip auto generation tab content, embeds the existing nav + list
+    """
+
+    template_name = "cbv/payroll_settings/allowance_tab.html"
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
+class PayrollSettingsDeductionTab(TemplateView):
+    """
+    payslip auto generation tab content, embeds the existing nav + list
+    """
+
+    template_name = "cbv/payroll_settings/deduction_tab.html"
 
 
 @method_decorator(login_required, name="dispatch")

@@ -213,6 +213,16 @@ urlpatterns = [
         name="payroll-settings-tab-view",
     ),
     path(
+        "payroll-settings-allowance-tab/",
+        settings_tabs.PayrollSettingsAllowanceTab.as_view(),
+        name="payroll-settings-allowance-tab",
+    ),
+    path(
+        "payroll-settings-deduction-tab/",
+        settings_tabs.PayrollSettingsDeductionTab.as_view(),
+        name="payroll-settings-deduction-tab",
+    ),
+    path(
         "payroll-settings-auto-payslip-tab/",
         settings_tabs.PayrollSettingsAutoPayslipTab.as_view(),
         name="payroll-settings-auto-payslip-tab",
