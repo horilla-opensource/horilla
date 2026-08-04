@@ -32,7 +32,7 @@ def generate_groups(request, groupers, queryset, page_name, group_field, is_fk_f
         for grouper in groupers:
             group_queryset = queryset.filter(**{group_field: grouper.id})
             # to avoid zero records groupings
-            if group_queryset.count():
+            if group_queryset.exists():
                 group_info = {
                     "grouper": grouper,
                     "list": record_queryset_paginator(
@@ -47,7 +47,7 @@ def generate_groups(request, groupers, queryset, page_name, group_field, is_fk_f
         for grouper in groupers:
             group_queryset = queryset.filter(**{group_field: grouper})
             # to avoid zero records groupings
-            if group_queryset.count():
+            if group_queryset.exists():
                 group = {
                     "grouper": grouper,
                     "list": record_queryset_paginator(
@@ -85,7 +85,16 @@ def group_by_queryset(
             field_obj = model_copy._meta.get_field(field)
             model_copy = field_obj.related_model
         if model_copy:
-            groupers = model_copy.objects.all()
+            active_ids = [
+                g
+                for g in dict.fromkeys(queryset.values_list(group_field, flat=True))
+                if g is not None
+            ]
+            groupers = (
+                model_copy.objects.filter(id__in=active_ids)
+                if active_ids
+                else model_copy.objects.none()
+            )
             groups = generate_groups(
                 request,
                 groupers,
@@ -96,30 +105,30 @@ def group_by_queryset(
             )
         else:
             groupers = [
-                item
-                for index, item in enumerate(
-                    queryset.values_list(group_field, flat=True)
-                )
-                if item not in queryset.values_list(group_field, flat=True)[:index]
+                g
+                for g in dict.fromkeys(queryset.values_list(group_field, flat=True))
+                if g is not None
             ]
             groups = generate_groups(
                 request, groupers, queryset, page_name, group_field, is_fk_field=False
             )
 
     else:
-        # making unique | not using set(groupers) due to ordering issue
-        groupers = [
-            item
-            for index, item in enumerate(queryset.values_list(group_field, flat=True))
-            if item not in queryset.values_list(group_field, flat=True)[:index]
+        raw_groupers = [
+            g
+            for g in dict.fromkeys(queryset.values_list(group_field, flat=True))
+            if g is not None
         ]
-        related_model = queryset.model._meta.get_field(group_field).related_model
-        if related_model:
-            groupers = related_model.objects.filter(id__in=groupers)
+        related_model = getattr(
+            queryset.model._meta.get_field(group_field), "related_model", None
+        )
+        if related_model and raw_groupers:
+            groupers = related_model.objects.filter(id__in=raw_groupers)
+        else:
+            groupers = raw_groupers
         groups = generate_groups(
             request, groupers, queryset, page_name, group_field, is_fk_field=False
         )
 
-        # getting related queryset
     groups = Paginator(groups, records_per_page)
     return groups.get_page(page)

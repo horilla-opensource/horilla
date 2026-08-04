@@ -84,9 +84,15 @@ def sidebar(request):
 
 
 def get_MENUS(request):
+    # Rebuild at most once per request — accessibility checks hit the DB.
+    cached = getattr(request, "_horilla_menus", None)
+    if cached is not None:
+        return {"sidebar": cached}
     ALL_MENUS[request.session.session_key] = []
     sidebar(request)
-    return {"sidebar": ALL_MENUS.get(request.session.session_key)}
+    menus = ALL_MENUS.get(request.session.session_key)
+    request._horilla_menus = menus
+    return {"sidebar": menus}
 
 
 def load_ldap_settings():

@@ -286,60 +286,163 @@
 </script>
 
 <script>
-    // Site-wide: grouped/accordion list views (generic/group_by_table.html,
-    // e.g. Hours Balances) reload their ENTIRE accordion whenever a single
-    // group's own pagination is used (each group's page-jump control targets
-    // the shared outer container). The server only marks the first group open
-    // by default, so every OTHER group the user had manually expanded would
-    // collapse back on that reload. Capture which groups were open right
-    // before the swap and re-open them once the new content lands.
+    // Keep grouped list accordions open across HTMX reloads (nested pagination,
+    // filters, etc.). List containers often get a fresh DOM node via outerHTML
+    // swap, so in-memory state keyed by element id is unreliable — persist by
+    // data-list-path in sessionStorage and re-apply after settle.
     (function () {
-        var openGroupsByContainerId = {};
+        var STORAGE_PREFIX = "hlv-open-groups:";
 
-        function captureOpenGroups(target) {
-            if (!target || !target.id) {
-                return;
+        function listPathFrom(el) {
+            if (!el) {
+                return null;
             }
-            var headers = target.querySelectorAll(".oh-accordion.oh-accordion--show > .oh-accordion-header[data-group]");
-            if (headers.length) {
-                openGroupsByContainerId[target.id] = Array.prototype.map.call(headers, function (header) {
-                    return header.getAttribute("data-group");
-                });
+            if (el.getAttribute && el.getAttribute("data-list-path")) {
+                return el.getAttribute("data-list-path");
+            }
+            if (el.querySelector) {
+                var nested = el.querySelector("[data-list-path]");
+                if (nested) {
+                    return nested.getAttribute("data-list-path");
+                }
+            }
+            if (el.closest) {
+                var parent = el.closest("[data-list-path]");
+                if (parent) {
+                    return parent.getAttribute("data-list-path");
+                }
+            }
+            return null;
+        }
+
+        function containerForPath(path) {
+            if (!path) {
+                return null;
+            }
+            var nodes = document.querySelectorAll("[data-list-path]");
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].getAttribute("data-list-path") === path) {
+                    return nodes[i];
+                }
+            }
+            return null;
+        }
+
+        function readStored(path) {
+            try {
+                return JSON.parse(sessionStorage.getItem(STORAGE_PREFIX + path) || "[]");
+            } catch (e) {
+                return [];
             }
         }
 
-        function restoreOpenGroups(containerId) {
-            var indices = openGroupsByContainerId[containerId];
-            if (!indices) {
+        function writeStored(path, indices) {
+            try {
+                sessionStorage.setItem(STORAGE_PREFIX + path, JSON.stringify(indices || []));
+            } catch (e) {
+                /* ignore quota / private mode */
+            }
+        }
+
+        function openIndicesIn(container) {
+            if (!container || !container.querySelectorAll) {
+                return [];
+            }
+            return Array.prototype.map.call(
+                container.querySelectorAll(
+                    ".oh-accordion.oh-accordion--show > .oh-accordion-header[data-group]"
+                ),
+                function (header) {
+                    return header.getAttribute("data-group");
+                }
+            );
+        }
+
+        function captureFrom(target) {
+            var path = listPathFrom(target);
+            var container = containerForPath(path) || target;
+            if (!path || !container || !container.querySelectorAll) {
                 return;
             }
-            var container = document.getElementById(containerId);
+            // Always persist (including []) so closing every group sticks
+            // across the next reload instead of restoring a stale set.
+            writeStored(path, openIndicesIn(container));
+        }
+
+        function restorePath(path) {
+            var indices = readStored(path);
+            if (!indices.length) {
+                return;
+            }
+            var container = containerForPath(path);
             if (!container) {
                 return;
             }
+            // Prefer stored open groups over the server's default "first open".
+            container.querySelectorAll(".oh-accordion.oh-accordion--show").forEach(function (el) {
+                el.classList.remove("oh-accordion--show");
+            });
             indices.forEach(function (idx) {
-                var header = container.querySelector('.oh-accordion-header[data-group="' + idx + '"]');
+                var header = container.querySelector(
+                    '.oh-accordion-header[data-group="' + idx + '"]'
+                );
                 if (header) {
-                    header.closest(".oh-accordion").classList.add("oh-accordion--show");
+                    var accordion = header.closest(".oh-accordion");
+                    accordion.classList.add("oh-accordion--show");
+                    var icon = header.querySelector("ion-icon.icon");
+                    if (icon) {
+                        icon.setAttribute("name", "chevron-up-outline");
+                    }
                 }
             });
         }
 
-        // Captured on beforeRequest (not beforeSwap): a separate site-wide
-        // loading-indicator handler wipes the target's content down to a
-        // skeleton div as soon as the request starts, so by the time
-        // beforeSwap fires the old accordion state is already gone. This
-        // script is loaded in <head>, ahead of that handler (loaded in the
-        // footer), so it observes the DOM before the wipe happens.
+        function restoreAllKnown() {
+            Object.keys(sessionStorage).forEach(function (key) {
+                if (key.indexOf(STORAGE_PREFIX) === 0) {
+                    restorePath(key.slice(STORAGE_PREFIX.length));
+                }
+            });
+        }
+
+        // Capture before the request so nested pagination / filter reloads
+        // keep whichever groups were expanded.
         document.addEventListener("htmx:beforeRequest", function (evt) {
-            captureOpenGroups(evt.detail.target);
+            captureFrom(evt.detail.target);
         });
 
-        document.addEventListener("htmx:afterSwap", function (evt) {
-            var id = evt.detail.target && evt.detail.target.id;
-            if (id) {
-                restoreOpenGroups(id);
+        document.addEventListener("htmx:afterSettle", function (evt) {
+            var path = listPathFrom(evt.detail.target) || listPathFrom(evt.target);
+            if (path) {
+                restorePath(path);
+            } else {
+                restoreAllKnown();
             }
         });
+
+        // Persist whenever the user opens/closes a grouped-list accordion.
+        // footerScripts toggles the class first; read state on the next tick.
+        document.addEventListener(
+            "click",
+            function (evt) {
+                var header = evt.target && evt.target.closest
+                    ? evt.target.closest(".oh-accordion-header[data-group]")
+                    : null;
+                if (!header) {
+                    return;
+                }
+                var path = listPathFrom(header);
+                if (!path) {
+                    return;
+                }
+                setTimeout(function () {
+                    var container = containerForPath(path);
+                    if (container) {
+                        writeStored(path, openIndicesIn(container));
+                    }
+                }, 0);
+            },
+            true
+        );
     })();
 </script>

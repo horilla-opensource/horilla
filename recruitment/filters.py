@@ -475,13 +475,21 @@ class SkillsFilter(FilterSet):
 
 class RejectReasonFilter(FilterSet):
 
-    search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
+    search = django_filters.CharFilter(method="filter_search")
 
     class Meta:
         model = RejectReason
         fields = [
             "title",
         ]
+
+    def filter_search(self, queryset, _, value):
+        value = (value or "").strip()
+        if not value:
+            return queryset
+        return queryset.filter(
+            Q(title__icontains=value) | Q(description__icontains=value)
+        )
 
 
 class StageFilter(HorillaFilterSet):
@@ -513,37 +521,32 @@ class StageFilter(HorillaFilterSet):
 
     def filter_by_name(self, queryset, _, value):
         """
-        Filter queryset by first name or last name.
+        Filter queryset by stage title, recruitment title, managers, or candidates.
         """
-        # Split the search value into first name and last name
+        from django.db.models import Q
+
+        value = (value or "").strip()
+        if not value:
+            return queryset
+
         parts = value.split()
         first_name = parts[0]
         last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
-        recruitment_query = (
-            queryset.filter(recruitment_id__title__icontains=value)
-            | queryset.filter(candidate__name__icontains=value)
-            | queryset.filter(
-                recruitment_id__stage_set__candidate__name__icontains=value
-            )
+
+        query = (
+            Q(stage__icontains=value)
+            | Q(recruitment_id__title__icontains=value)
+            | Q(candidate__name__icontains=value)
         )
-        # Filter the queryset by first name and last name
-        stage_queryset = queryset.filter(stage__icontains=value)
         if first_name and last_name:
-            queryset = queryset.filter(
+            query |= Q(
                 stage_managers__employee_first_name__icontains=first_name,
                 stage_managers__employee_last_name__icontains=last_name,
             )
         elif first_name:
-            queryset = queryset.filter(
-                stage_managers__employee_first_name__icontains=first_name
-            )
-        elif last_name:
-            queryset = queryset.filter(
-                stage_managers__employee_last_name__icontains=last_name
-            )
+            query |= Q(stage_managers__employee_first_name__icontains=first_name)
 
-        queryset = queryset | stage_queryset | recruitment_query
-        return queryset.distinct()
+        return queryset.filter(query).distinct()
 
     def pipeline_search(self, queryset, _, value):
         """

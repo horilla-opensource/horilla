@@ -34,6 +34,42 @@
         <div class="animated-background"></div>
     </div>
 
+    <div
+        class="oh-modal"
+        id="assetHistoryExport"
+        role="dialog"
+        aria-labelledby="assetHistoryExport"
+        aria-hidden="true"
+    >
+        <div class="oh-modal__dialog" style="max-width: 750px">
+            <div class="oh-modal__dialog-header">
+                <h2 class="oh-modal__dialog-title" id="assetHistoryExportLabel">
+                    {% trans "Export Asset History" %}
+                </h2>
+                <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+                <div class="oh-modal__dialog-body p-0 pt-2" id="assetHistoryExportModalBody">
+                    <form
+                        action="{% url 'asset-history-export' %}"
+                        method="get"
+                        onsubmit="event.stopPropagation();
+                            $(this).find('[name=instance_ids]').val(
+                                (typeof ensureSelectionStore === 'function'
+                                    ? ensureSelectionStore('selectedInstances')
+                                    : $('#selectedInstances')
+                                ).attr('data-ids') || '[]'
+                            );
+                            $(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+                        id="assetHistoryExportForm"
+                    >
+                        {% csrf_token %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{% static 'cbv/work_type_request/work_request_bulk_action.js' %}"></script>
     <script>
         function enlargeImage(src,$element) {

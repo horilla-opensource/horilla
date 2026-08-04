@@ -7,11 +7,11 @@
         {{view.kanban_attrs|format:instance|safe}}
     >
 
-        <div class="p-[20px] rounded-[5px] text-sm relative bg-white mb-2">
+        <div class="p-2 px-3 rounded-[6px] text-xs relative bg-white mb-1.5 shadow-sm hover:shadow-md transition-shadow">
             {% if actions or view.action_method %}
             <div
                 x-data="{ open: false }"
-                class="absolute inline-block dropdown-wrapper right-5 top-5 w-3"
+                class="absolute inline-block dropdown-wrapper right-2.5 top-2.5 w-3"
                 @click.outside="open = false"
                 title="{% trans 'Actions' %}"
                 onclick="event.stopPropagation()"
@@ -48,24 +48,24 @@
             {% endif %}
 
             <div
-                class="flex items-center gap-5 mb-3 pb-1 border-b border-b-[#565e6c13]"
+                class="flex items-center gap-2 mb-1 pb-0.5 border-b border-b-[#565e6c13] min-w-0"
             >
                 {% if details.image_src %}
-                    <div class="relative flex items-center w-max">
+                    <div class="relative flex items-center w-max flex-shrink-0">
                         <img
                             src="{{details.image_src|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}"
-                            class="w-11 h-11 rounded-full"
+                            class="w-7 h-7 rounded-full object-cover"
                             alt="{% trans 'Employee' %}"
                         />
                     </div>
                 {% endif %}
                 {% if details.title %}
-                <div>
+                <div class="min-w-0 flex-1 pr-3">
                     <span
-                        class="block"
+                        class="block truncate"
                         data-type="label"
                     >
-                        <h5 class="font-bold text-base">
+                        <h5 class="font-bold text-xs text-gray-900 leading-tight truncate" title="{{details.title|format:instance}}">
                             {{details.title|format:instance}}
                         </h5>
                         <input name="group_id" id="" hidden />
@@ -76,12 +76,12 @@
 
             {% for key, value in details.items %}
                 {% if key != "image_src" and key != "title" %}
-                <div class="flex gap-2 items-center relative mb-2">
-                    <span class="font-medium text-xs text-[#565E6C]"
+                <div class="flex gap-1 items-center relative mb-0.5 min-w-0 leading-none">
+                    <span class="font-medium text-[11px] text-[#565E6C] flex-shrink-0"
                         >{{key|title}} : </span
                     >
-                    <p class="text-xs font-semibold flex items-center gap-2">
-                        <span>{{value|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}</span>
+                    <p class="text-[11px] font-semibold flex items-center gap-1 truncate text-gray-800 min-w-0" title="{{value|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}">
+                        <span class="truncate">{{value|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}</span>
                     </p>
                 </div>
                 {% endif %}

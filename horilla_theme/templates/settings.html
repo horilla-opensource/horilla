@@ -82,7 +82,12 @@
                                 data-id="{{ section.title|slugify }}"
                             >
                                 {{ section.title }}
-                                <span class="icon text-xl font-bold">+</span>
+                                <ion-icon
+                                    name="chevron-down-outline"
+                                    class="icon oh-tabs__movable-fold-icon text-lg"
+                                    role="img"
+                                    aria-hidden="true"
+                                ></ion-icon>
                             </button>
                             <div class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
                                 <div class="py-3">
@@ -125,6 +130,14 @@
         }
     </style>
     <script>
+        function setSettingsFoldIcon($icon, isOpen) {
+        	if (!$icon || !$icon.length) return;
+        	$icon.attr(
+        		"name",
+        		isOpen ? "chevron-up-outline" : "chevron-down-outline"
+        	);
+        }
+
         function scrollToSearchedSetting() {
         	if (!window.location.hash) return;
         	var id = decodeURIComponent(window.location.hash.slice(1));
@@ -147,15 +160,15 @@
         			$(".accordion-panel")
         				.addClass("max-h-0")
         				.removeClass("max-h-[9999px]");
-        			$(".accordion-btn-stng .icon").text("+");
+        			setSettingsFoldIcon($(".accordion-btn-stng .icon"), false);
 
         			$panel.removeClass("max-h-0").addClass("max-h-[9999px]");
-        			$button.find(".icon").text("-");
+        			setSettingsFoldIcon($button.find(".icon"), true);
 
         			localStorage.setItem("openAccordion", panelId);
         		} else {
         			$panel.addClass("max-h-0").removeClass("max-h-[9999px]");
-        			$button.find(".icon").text("+");
+        			setSettingsFoldIcon($button.find(".icon"), false);
         			localStorage.removeItem("openAccordion");
         		}
         	});
@@ -170,7 +183,7 @@
         		const $panel = $button.next(".accordion-panel");
         		if ($panel.length) {
         			$panel.removeClass("max-h-0").addClass("max-h-[9999px]");
-        			$button.find(".icon").text("-");
+        			setSettingsFoldIcon($button.find(".icon"), true);
         		}
         	}
         });
@@ -242,7 +255,7 @@
         		const panel = active.closest(".accordion-panel");
         		if (panel.length) {
         			panel.removeClass("max-h-0").addClass("max-h-[9999px]");
-        			panel.prev(".accordion-btn-stng").find(".icon").text("-");
+        			setSettingsFoldIcon(panel.prev(".accordion-btn-stng").find(".icon"), true);
         			// persist so the next page load reopens the same accordion
         			const panelId = panel.prev(".accordion-btn-stng").data("id");
         			if (panelId) localStorage.setItem("openAccordion", panelId);
@@ -307,12 +320,12 @@
                 $(".accordion-panel li").show();
                 $empty.addClass("hidden");
                 $(".accordion-panel").addClass("max-h-0").removeClass("max-h-[9999px]");
-                $(".accordion-btn-stng .icon").text("+");
+                setSettingsFoldIcon($(".accordion-btn-stng .icon"), false);
                 const saved = localStorage.getItem("openAccordion");
                 if (saved) {
                     const $btn = $(`.accordion-btn-stng[data-id="${saved}"]`);
                     $btn.next(".accordion-panel").removeClass("max-h-0").addClass("max-h-[9999px]");
-                    $btn.find(".icon").text("-");
+                    setSettingsFoldIcon($btn.find(".icon"), true);
                 }
             }
 
@@ -335,7 +348,7 @@
                     if (itemHit) {
                         $section.show();
                         $section.find(".accordion-panel").removeClass("max-h-0").addClass("max-h-[9999px]");
-                        $section.find(".accordion-btn-stng .icon").text("-");
+                        setSettingsFoldIcon($section.find(".accordion-btn-stng .icon"), true);
                         anyVisible = true;
                     } else {
                         $section.hide();

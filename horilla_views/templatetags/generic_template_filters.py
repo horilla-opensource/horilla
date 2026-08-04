@@ -68,6 +68,21 @@ def selected_format(date, company: object = None) -> str:
     return date
 
 
+@register.filter(name="cell_tooltip")
+def cell_tooltip(value) -> str:
+    """
+    Tooltip text for a list-table cell: plain text collapsed to single spaces.
+    Cells rendering interactive widgets get no tooltip — stripping their tags
+    would concatenate hidden text (e.g. every option of a select).
+    """
+    from django.utils.html import strip_tags
+
+    text = str(value)
+    if re.search(r"<\s*(select|input|textarea|button|form)\b", text, re.IGNORECASE):
+        return ""
+    return re.sub(r"\s+", " ", strip_tags(text)).strip()
+
+
 @register.filter(name="getattribute")
 def getattribute(value, attr: str):
     """

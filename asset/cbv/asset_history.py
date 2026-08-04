@@ -9,8 +9,14 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from asset.filters import AssetHistoryFilter
+from asset.forms import AssetHistoryExportForm
 from asset.models import AssetAssignment
-from horilla_views.cbv_methods import login_required, permission_required
+from base.methods import export_data
+from horilla_views.cbv_methods import (
+    hx_request_required,
+    login_required,
+    permission_required,
+)
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaListView,
@@ -38,6 +44,8 @@ class AssetHistorylistView(HorillaListView):
 
     filter_class = AssetHistoryFilter
     model = AssetAssignment
+    # Actions dropdown Export covers selected/filtered export (employee list pattern).
+    quick_export = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -76,6 +84,19 @@ class AssetHistoryNavView(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("asset-history-list")
+        if self.request.user.has_perm("asset.view_assetassignment"):
+            self.actions = [
+                {
+                    "action": _("Export"),
+                    "attrs": f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#assetHistoryExport"
+                    hx-get="{reverse('asset-history-export-form')}"
+                    hx-target="#assetHistoryExportForm"
+                    style="cursor: pointer;"
+                    """,
+                },
+            ]
 
     nav_title = _("Asset History")
     filter_body_template = "cbv/asset_history/asset_history_filter.html"
@@ -89,6 +110,44 @@ class AssetHistoryNavView(HorillaNavView):
         ("assigned_date", _("Assigned Date")),
         ("return_date", _("Returned Date")),
     ]
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
+@method_decorator(permission_required("asset.view_assetassignment"), name="dispatch")
+class AssetHistoryExportFormView(TemplateView):
+    """
+    Load export column/filter form into the Actions > Export modal.
+    """
+
+    template_name = "cbv/asset_history/asset_history_export.html"
+
+    def get_context_data(self, **kwargs: Any):
+        context = super().get_context_data(**kwargs)
+        context["export_form"] = AssetHistoryExportForm()
+        context["export_filter"] = AssetHistoryFilter(
+            queryset=AssetAssignment.objects.all()
+        )
+        return context
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("asset.view_assetassignment"), name="dispatch")
+class AssetHistoryExportView(TemplateView):
+    """
+    Download Asset History Excel — selected rows when instance_ids present,
+    otherwise filtered queryset (same convention as employee export).
+    """
+
+    def get(self, request, *args, **kwargs):
+        return export_data(
+            request=request,
+            model=AssetAssignment,
+            filter_class=AssetHistoryFilter,
+            form_class=AssetHistoryExportForm,
+            file_name="Asset_History",
+            perm="asset.view_assetassignment",
+        )
 
 
 @method_decorator(login_required, name="dispatch")

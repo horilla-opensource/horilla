@@ -535,6 +535,16 @@ def filter_pagination_asset_category(request):
     page_number = request.GET.get("page")
     asset_categories = asset_category_paginator.get_page(page_number)
 
+    # Badge count should reflect active search/filters, not the unfiltered total.
+    filter_data = request.GET.copy()
+    for key in ("page", "category", "type", "asset_list", "dashboard"):
+        filter_data.pop(key, None)
+    for category in asset_categories:
+        category.filtered_asset_count = AssetFilter(
+            filter_data,
+            queryset=Asset.objects.filter(asset_category_id=category.pk),
+        ).qs.count()
+
     data_dict = parse_qs(previous_data)
     get_key_instances(Asset, data_dict)  # 882
 
@@ -1415,7 +1425,15 @@ def asset_export_excel(request):
             messages.warning(request, _("There are no assets to export."))
             return redirect("asset-category-view")  # or some other URL
 
-        queryset = AssetExportFilter(request.POST, queryset=queryset_all).qs
+        selected_ids = eval_validate(request.POST.get("ids", "[]"))
+        if selected_ids:
+            queryset = queryset_all.filter(id__in=selected_ids)
+        else:
+            queryset = AssetExportFilter(request.POST, queryset=queryset_all).qs
+
+        if not queryset.exists():
+            messages.warning(request, _("There are no assets to export."))
+            return redirect("asset-category-view")
 
         # Convert the queryset to a Pandas DataFrame
         data = {

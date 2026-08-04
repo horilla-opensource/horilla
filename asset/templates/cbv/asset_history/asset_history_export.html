@@ -1,0 +1,81 @@
+{% load i18n %}
+{% load static %}
+<input type="hidden" name="instance_ids">
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Excel columns" %}</div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label">
+                            <input type="checkbox" id="select-all-fields">
+                            {% trans "Select All" %}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                {% for field in export_form.selected_fields %}
+                    <div class="col-sm-12 col-md-12 col-lg-4">
+                        <div class="oh-input-group">
+                            <label class="oh-label">{{ field }}</label>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Asset History" %}</div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{ export_filter.form.assigned_to_employee_id.id_for_label }}"
+                        >{% trans "Allocated User" %}</label>
+                        {{ export_filter.form.assigned_to_employee_id }}
+                    </div>
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{ export_filter.form.asset_id.id_for_label }}"
+                        >{% trans "Asset" %}</label>
+                        {{ export_filter.form.asset_id }}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{ export_filter.form.assigned_date.id_for_label }}"
+                        >{% trans "Asset Allocated Date" %}</label>
+                        {{ export_filter.form.assigned_date }}
+                    </div>
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{ export_filter.form.return_status.id_for_label }}"
+                        >{% trans "Status" %}</label>
+                        {{ export_filter.form.return_status }}
+                    </div>
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{ export_filter.form.return_date.id_for_label }}"
+                        >{% trans "Return Date" %}</label>
+                        {{ export_filter.form.return_date }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="oh-dropdown__filter-footer">
+    <button class="oh-btn oh-btn--secondary oh-btn--small w-100" type="submit">
+        {% trans "Export" %}
+    </button>
+</div>
+<script src="{% static '/base/filter.js' %}"></script>

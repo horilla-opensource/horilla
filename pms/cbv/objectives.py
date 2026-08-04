@@ -93,9 +93,13 @@ class ObjectivesList(HorillaListView):
     ]
 
     header_attrs = {
-        "title_col": """
-                      style="width:200px !important;"
-                      """
+        "title_col": 'style="min-width:260px;width:28% !important;"',
+        "manager_col": 'style="width:110px;max-width:130px;"',
+        "key_res_col": 'style="width:110px;max-width:130px;"',
+        "assingnees_col": 'style="width:110px;max-width:130px;"',
+        "duration_col": 'style="width:100px;max-width:120px;"',
+        "description": 'style="min-width:180px;width:22%;"',
+        "action": 'style="width:160px;"',
     }
     row_attrs = """
                 id="tr{get_instance_id}"
@@ -858,7 +862,7 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
             self.actions.append(
                 {
                     "action": _("History"),
-                    "icon": "hourglass-outline",
+                    "icon": "time-outline",
                     "attrs": """
                 hx-get='{get_history_url}'
                 hx-target="#genericOffCanvas"

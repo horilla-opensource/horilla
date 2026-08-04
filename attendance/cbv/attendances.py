@@ -328,6 +328,7 @@ class ValidateAttendancesList(AttendancesListView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("validate-attendance-tab")
+        self.option_method = None
 
     def get_queryset(self):
         if not self.queryset:
@@ -341,7 +342,7 @@ class ValidateAttendancesList(AttendancesListView):
         return self.queryset
 
     selected_instances_key_id = "validateselectedInstances"
-    action_method = "validate_button"
+    action_method = "validate_actions"
     row_attrs = """
                 hx-get='{validate_detail_view}?instance_ids={ordered_ids}'
                 hx-target="#genericModalBody"
@@ -368,7 +369,8 @@ class OTAttendancesList(AttendancesListView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("ot-attendance-tab")
-        self.action_method = "ot_approve"
+        self.action_method = "ot_actions"
+        self.option_method = None
         self.ordered_ids_key = "overtime_instance_ids"
 
     def get_queryset(self):
@@ -414,6 +416,9 @@ class ValidatedAttendancesList(AttendancesListView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("validated-attendance-tab")
+        if self.option_method:
+            self.action_method = self.option_method
+            self.option_method = None
 
     def get_queryset(self):
 

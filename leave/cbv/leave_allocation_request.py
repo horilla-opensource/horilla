@@ -214,7 +214,8 @@ class LeaveAllocationRequests(LeaveAllocationRequestList):
         )
         return queryset
 
-    action_method = "confirm_col"
+    option_method = None
+    action_method = "allocation_tab_actions"
 
     row_attrs = """
                 {diff_cell}

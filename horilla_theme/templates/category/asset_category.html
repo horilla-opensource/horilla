@@ -16,14 +16,19 @@
                         class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs"
                         id="asset-count{{asset_category.id}}"
                         data-category-id="{{asset_category.id}}"
-                        title="{{asset_category.asset_set.count}} {% trans 'Assets' %}"
+                        title="{{asset_category.filtered_asset_count}} {% trans 'Assets' %}"
                     >
-                        {{ asset_category.asset_set.count }}
+                        {{ asset_category.filtered_asset_count }}
                     </span>
                     {{ asset_category }}
                 </div>
                 <div class="flex items-center gap-5">
-                    <span class="icon text-lg font-bold w-4 text-center">+</span>
+                    <ion-icon
+                        name="chevron-down-outline"
+                        class="icon oh-tabs__movable-fold-icon text-lg"
+                        role="img"
+                        aria-hidden="true"
+                    ></ion-icon>
                     <span onclick="event.stopPropagation()">
                         <div class="inline-block dropdown-wrapper text-md">
                             <a class="cursor-pointer dropdown-toggle block w-4" title="{% trans 'Actions' %}">

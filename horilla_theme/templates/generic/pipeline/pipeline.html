@@ -5,11 +5,11 @@
   <div id="{{selected_instances_key_name}}{{ group.id }}" data-ids="[]"></div>
   <div class="oh-tabs__movable-area mb-2">
     <div class="oh-tabs__movable group">
-      <div class="oh-tabs__movable-header bg-primary-100 text-primary-600 group-hover:bg-primary-200"  style="cursor:pointer;" onclick="var i=$(this).find('.movable-toggle-icon'); i.text(i.text()=='+' ? '−' : '+'); $(this).parent().find('.oh-tabs__movable-body').toggleClass('d-none');">
+      <div class="oh-tabs__movable-header bg-primary-100 text-primary-600 group-hover:bg-primary-200" style="cursor:pointer;" onclick="var icon = this.querySelector('.movable-toggle-icon'); if (icon) { var name = icon.getAttribute('name'); icon.setAttribute('name', name === 'chevron-down-outline' ? 'chevron-up-outline' : 'chevron-down-outline'); } $(this).parent().find('.oh-tabs__movable-body').toggleClass('d-none');">
         <span class="oh-tabs__movable-title">{{group}}</span>
 
         <div class="flex items-center gap-4">
-          <span class="movable-toggle-icon text-lg font-bold w-4 text-center">−</span>
+          <ion-icon name="chevron-down-outline" class="movable-toggle-icon icon text-lg"></ion-icon>
 
           <div onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
             <div style="cursor: pointer;" onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">

@@ -8,7 +8,7 @@
         margin-top: 0;
     }
 </style>
-<div id="{{view_id|safe}}" class="bg-white p-4 rounded-md shadow-card relative" data-list-path="{{request.path}}" data-selected-instances-key="{{selected_instances_key_id}}">
+<div id="{{view_id|safe}}" class="hlv-container bg-white p-4 rounded-md shadow-card relative" data-list-path="{{request.path}}" data-selected-instances-key="{{selected_instances_key_id}}">
     <script>
         if (!$(".HTV").length) {
         	$("#reloadMessagesButton").click();
@@ -34,7 +34,7 @@
         {% for group in groups %}
         {% with group_idx=forloop.counter|stringformat:"s" %}
         {% with gvid=view_id|add:"-"|add:group_idx %}
-            <div class="oh-accordion border border-primary-300 rounded-md {% if forloop.first %}oh-accordion--show{% endif %}">
+            <div class="oh-accordion border border-primary-300 rounded-md {% if group.dynamic_name in request.GET or forloop.first %}oh-accordion--show{% endif %}">
                 <div
                     class="oh-accordion-header no-after w-full flex justify-between items-center px-4 py-2 bg-primary-100 text-primary-600 text-sm transition-all"
                     data-field="{{saved_filters.field}}"
@@ -402,7 +402,7 @@
                         class="text-xs hover:text-primary-600 transition duration-300"
                         hx-target="#{{view_id}}"
                         hx-swap="outerHTML"
-                        hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ groups.previous_page_number }}"
+                        hx-get="{{search_url}}?{{pd|default:saved_filters.urlencode}}&page={{ groups.previous_page_number }}"
                     >
                         <i class="fa-solid fa-arrow-left"></i>
                     </button>
@@ -414,7 +414,7 @@
                         class="text-xs hover:text-primary-600 transition duration-300"
                         hx-target="#{{view_id}}"
                         hx-swap="outerHTML"
-                        hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ groups.next_page_number }}"
+                        hx-get="{{search_url}}?{{pd|default:saved_filters.urlencode}}&page={{ groups.next_page_number }}"
                     >
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
@@ -440,6 +440,23 @@
                 $table.find('th.action-col-header, td.action-col-cell').hide();
             }
         });
+
+        // Re-apply open groups for this list after the fragment lands (covers
+        // cases where the global afterSettle listener ran against a stale target).
+        try {
+            var path = $("#{{view_id|safe}}").attr("data-list-path");
+            var raw = path ? sessionStorage.getItem("hlv-open-groups:" + path) : null;
+            var open = raw ? JSON.parse(raw) : [];
+            if (open.length) {
+                var $root = $("#{{view_id|safe}}");
+                $root.find(".oh-accordion.oh-accordion--show").removeClass("oh-accordion--show");
+                open.forEach(function (idx) {
+                    var $header = $root.find('.oh-accordion-header[data-group="' + idx + '"]');
+                    $header.closest(".oh-accordion").addClass("oh-accordion--show");
+                    $header.find("ion-icon.icon").attr("name", "chevron-up-outline");
+                });
+            }
+        } catch (e) {}
     });
 </script>
 <script>

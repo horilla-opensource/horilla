@@ -58,7 +58,20 @@ class RecruitmentTabView(HorillaTabView):
         recruitments = self.filter_class(self.request.GET).qs.filter(
             is_active=True, closed=False
         )
-        view_type = self.request.GET.get("view", "card")
+        view_type = self.request.GET.get("view")
+        if not view_type and self.request.user and self.request.user.is_authenticated:
+            active_view = (
+                models.ActiveView.objects.filter(created_by=self.request.user)
+                .filter(
+                    models.Q(path=self.request.path)
+                    | models.Q(path=reverse("cbv-pipeline"))
+                )
+                .first()
+            )
+            if active_view and active_view.type:
+                view_type = active_view.type
+        if not view_type:
+            view_type = "card"
         CACHE.set(
             self.request.session.session_key + "pipeline",
             {
@@ -76,6 +89,7 @@ class RecruitmentTabView(HorillaTabView):
         add_cand_perm = self.request.user.has_perm("recruitment.add_candidate")
         delete_perm = self.request.user.has_perm("recruitment.delete_recruitment")
         add_stage_perm = self.request.user.has_perm("recruitment.add_stage")
+        stage_qs = GetStages.filter_class(self.request.GET).qs
         for rec in recruitments:
             rec_manager_perm = recruitment_manages(self.request.user, rec)
             stage_manage_perm = stage_manages(self.request.user, rec)
@@ -92,7 +106,7 @@ class RecruitmentTabView(HorillaTabView):
 
             self.query_params["view"] = view_type
             tab["badge_label"] = _("Stages")
-            tab["badge"] = rec.stage_set.filter(is_active=True).count()
+            tab["badge"] = stage_qs.filter(recruitment_id=rec.pk).count()
             tab["actions"] = []
             if rec_manager_perm or change_perm:
                 if add_stage_perm or rec_manager_perm or change_perm:
@@ -235,7 +249,27 @@ class GetStages(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["stages"] = self.stages
+        stages_list = list(self.stages)
+        cache_key = self.request.session.session_key + "pipeline"
+        cache = CACHE.get(cache_key) or {}
+        candidates_qs = cache.get("candidates")
+        if candidates_qs is False or candidates_qs is None:
+            candidates_qs = CandidateList.filter_class(self.request.GET).qs.filter(
+                is_active=True
+            )
+
+        from django.db.models import Count
+
+        counts = (
+            candidates_qs.filter(stage_id__in=[s.id for s in stages_list])
+            .values("stage_id")
+            .annotate(total=Count("id"))
+        )
+        count_map = {item["stage_id"]: item["total"] for item in counts}
+        for stage in stages_list:
+            stage.candidate_count = count_map.get(stage.id, 0)
+
+        context["stages"] = stages_list
         context["view_id"] = get_short_uuid(6, "hsv")
         context["rec_id"] = kwargs["rec_id"]
         return context
@@ -262,7 +296,6 @@ class CandidateList(HorillaListView):
 
     custom_empty_template = "cbv/pipeline/empty.html"
     header_attrs = {
-        "action": """ style="width:400px;" """,
         "mobile": """ style="width:100px;" """,
         "Stage": """ style="width:100px;" """,
         "get_interview_count": """ style="width:200px;" """,

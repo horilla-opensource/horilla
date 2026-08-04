@@ -65,13 +65,59 @@ function handleSidebarToggle() {
     }, 50);
 }
 
+function ensureSelectionStore(storeKey) {
+    if (!storeKey) storeKey = "selectedInstances";
+    var $store = $(`#${storeKey}`);
+    if (!$store.length) {
+        $("body").append(
+            `<div id="${storeKey}" class="oh-checkpoint-badge mb-2" data-ids="[]" data-clicked="" style="display:none"></div>`
+        );
+        $store = $(`#${storeKey}`);
+    }
+    return $store;
+}
+
 function addToSelectedId(newIds, storeKey) {
-    ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
+    storeKey = storeKey || "selectedInstances";
+    var $store = ensureSelectionStore(storeKey);
+    if (!Array.isArray(newIds)) {
+        try {
+            newIds = JSON.parse(newIds || "[]");
+        } catch (e) {
+            newIds = [];
+        }
+    }
+    ids = JSON.parse($store.attr("data-ids") || "[]").map(String);
 
     ids = [...ids, ...newIds.map(String)];
     ids = Array.from(new Set(ids));
-    $(`#${storeKey}`).attr("data-ids", JSON.stringify(ids));
+    $store.attr("data-ids", JSON.stringify(ids));
     setStoredSelection(storeKey, ids);
+}
+
+/**
+ * Select-all helper used by list toolbars. Prefer data-select-ids on the
+ * button so huge id lists are not inlined as fragile onclick JS.
+ */
+function hlvSelectAllRecords(btn, viewSelector, storeKey) {
+    storeKey = storeKey || "selectedInstances";
+    var ids = [];
+    try {
+        ids = JSON.parse($(btn).attr("data-select-ids") || "[]");
+    } catch (e) {
+        ids = [];
+    }
+    addToSelectedId(ids, storeKey);
+    selectSelected(viewSelector, storeKey);
+    var viewId = (viewSelector || "").replace(/^#/, "");
+    reloadSelectedCount($(`#count_${viewId}`), storeKey);
+    reloadSelectedCount($(`.count_${viewId}`), storeKey);
+    // Nested accordion panels lock max-height after the first load — grow
+    // them so Unselect / Export chrome that appears after Select stays visible.
+    var $panel = $(viewSelector).closest(".accordion-panel");
+    if ($panel.length && $panel[0].style.maxHeight) {
+        $panel[0].style.maxHeight = $panel[0].scrollHeight + "px";
+    }
 }
 
 // Used by the "Unselect"/"Unselect All Records" actions so the clear is
@@ -80,8 +126,37 @@ function addToSelectedId(newIds, storeKey) {
 // right after clicking Unselect could race ahead of the localStorage write
 // and bring the old selection back.
 function clearSelection(storeKey) {
-    $(`#${storeKey}`).attr("data-ids", "[]");
+    ensureSelectionStore(storeKey).attr("data-ids", "[]");
     setStoredSelection(storeKey, []);
+}
+
+/**
+ * Clear list-row selections when switching Horilla tabs. Lists may use a
+ * custom store (#selectedTickets, etc.) instead of #selectedInstances — the
+ * generic tab onclick used to only clear selectedInstances, so selections
+ * from one tab (e.g. My Tickets) leaked into another (Suggested Tickets).
+ */
+function clearSelectionsOnTabSwitch(viewRootId) {
+    var keys = { selectedInstances: true };
+    if (document.getElementById("selectedTickets")) {
+        keys.selectedTickets = true;
+    }
+    var $root = viewRootId ? $(`#${viewRootId}`) : $(document);
+    $root.find("[data-selected-instances-key]").each(function () {
+        var key = $(this).attr("data-selected-instances-key");
+        if (key) keys[key] = true;
+    });
+    Object.keys(keys).forEach(function (key) {
+        clearSelection(key);
+    });
+    $root.find(".list-table-row, .bulk-list-table-row").prop("checked", false);
+    $root.find(".highlight-selected").removeClass("highlight-selected");
+    $root.find('[id^="unselect_"], [id^="bulk_udate_"], .hlv-export-trigger').addClass("d-none");
+    $root.find('[id^="select_"]').removeClass("d-none");
+    $root.find('[id^="count_"]').text("0");
+    $root.find('[class*="count_"]').filter(function () {
+        return /(?:^|\s)count_/.test(this.className);
+    }).text("0");
 }
 
 // Row-selection checkboxes only ever lived in a DOM attribute, so a browser
@@ -253,7 +328,13 @@ function syncBulkSelectAllCheckbox(viewId) {
 // hx-on::after-request). Column *reordering* (drag-and-drop) still reloads
 // normally, since re-ordering actual table cells isn't a simple show/hide.
 function toggleColumnVisibility(checkboxEl, fieldName, visible) {
-    var $th = $(`th[id$="-${fieldName}-header"]`);
+    // Scope to this list only. HorillaTabView keeps visited tabs in the DOM,
+    // so a global th[id$=...] lookup can match History (or any column) from
+    // another tab and wrongly skip the reload this list needs.
+    // Group-by tables also use .hlv-container; fall back to [data-list-path]
+    // for any list markup that only has the path attribute.
+    var $container = $(checkboxEl).closest(".hlv-container, [data-list-path]");
+    var $th = $container.find(`th[id$="-${fieldName}-header"]`);
     if (!$th.length) {
         // This column was never rendered server-side in the first place —
         // it wasn't part of the page's current visible-column set, so
@@ -262,9 +343,9 @@ function toggleColumnVisibility(checkboxEl, fieldName, visible) {
         // persistColumnToggle below); turning an already-absent column OFF
         // is a no-op either way.
         if (visible) {
-            window.__hlvNeedsColumnReload = $(checkboxEl)
-                .closest(".hlv-container")
-                .attr("data-list-path");
+            window.__hlvNeedsColumnReload =
+                $container.attr("data-list-path") ||
+                $container.closest("[data-list-path]").attr("data-list-path");
         }
         return;
     }
@@ -314,15 +395,17 @@ function persistColumnToggle(formEl) {
             var path = window.__hlvNeedsColumnReload;
             window.__hlvNeedsColumnReload = null;
             window.__hlvReopenDropdown = path;
-            $(`.hlv-container[data-list-path="${path}"]`)
-                .find(".reload-record")
-                .click();
+            var $list = $(`.hlv-container[data-list-path="${path}"]`);
+            if (!$list.length) {
+                $list = $(`[data-list-path="${path}"]`);
+            }
+            $list.find(".reload-record").first().click();
         }
     });
 }
 
 function selectSelected(viewId, storeKey = "selectedInstances") {
-    var $store = $(`#${storeKey}`);
+    var $store = ensureSelectionStore(storeKey);
     if (!_hlvSelectionRestored[storeKey]) {
         _hlvSelectionRestored[storeKey] = true;
         if (!JSON.parse($store.attr("data-ids") || "[]").length) {
@@ -339,10 +422,19 @@ function selectSelected(viewId, storeKey = "selectedInstances") {
     // up in a Set - not the other way around, which re-queried the DOM twice
     // per selected id and made "Select All" scale with total selection size
     // instead of rows-per-page.
-    ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
+    // Prefer the .hlv-container node when view_id is duplicated (e.g. export
+    // modal wrappers reused the same id historically).
+    var $scope = $(viewId).filter(".hlv-container");
+    if (!$scope.length) {
+        $scope = $(viewId).has(".list-table-row");
+    }
+    if (!$scope.length) {
+        $scope = $(viewId).first();
+    }
+    ids = JSON.parse($store.attr("data-ids") || "[]");
     var _hlvIdSet = new Set(ids.map(String));
-    var $hlvRows = $(
-        `${viewId} .oh-sticky-table__tbody .list-table-row,${viewId} tbody .list-table-row`
+    var $hlvRows = $scope.find(
+        `.oh-sticky-table__tbody .list-table-row, tbody .list-table-row`
     );
     $hlvRows.each(function () {
         if (_hlvIdSet.has(String($(this).val()))) {
@@ -361,8 +453,10 @@ function selectSelected(viewId, storeKey = "selectedInstances") {
     // old ones, so every row toggle re-ran all of them - the exact cause of
     // "Select All" getting slower the more it's used in a session.
     $hlvRows.off("change.hlvSelectSync").on("change.hlvSelectSync", function (e) {
-        id = $(this).val();
-        ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
+        id = String($(this).val());
+        ids = JSON.parse(
+            ensureSelectionStore(storeKey).attr("data-ids") || "[]"
+        ).map(String);
 
         // Convert to Set to ensure uniqueness, then back to array
         ids = Array.from(new Set(ids));
@@ -381,7 +475,7 @@ function selectSelected(viewId, storeKey = "selectedInstances") {
         }
 
         // Update the data attribute with the modified array
-        $(`#${storeKey}`).attr("data-ids", JSON.stringify(ids));
+        ensureSelectionStore(storeKey).attr("data-ids", JSON.stringify(ids));
         setStoredSelection(storeKey, ids);
 
         // Update count and show/hide buttons after every change. A grouped
@@ -391,26 +485,22 @@ function selectSelected(viewId, storeKey = "selectedInstances") {
         // group's Unselect/Export/Update buttons never reflect a change made
         // via a row checkbox (only the group's own "Select" button, whose
         // onclick targets its own gvid directly, updated correctly).
-        if (viewId) {
-            $(viewId).find('[id^="count_"]').each(function () {
-                reloadSelectedCount($(this), storeKey);
-            });
-            $(viewId).find('[class*="count_"]').each(function () {
-                reloadSelectedCount($(this), storeKey);
-            });
-        }
+        $scope.find('[id^="count_"]').each(function () {
+            reloadSelectedCount($(this), storeKey);
+        });
+        $scope.find('[class*="count_"]').each(function () {
+            reloadSelectedCount($(this), storeKey);
+        });
 
         syncBulkSelectAllCheckbox(viewId);
     });
 
-    if (viewId) {
-        $(viewId).find('[id^="count_"]').each(function () {
-            reloadSelectedCount($(this), storeKey);
-        });
-        $(viewId).find('[class*="count_"]').each(function () {
-            reloadSelectedCount($(this), storeKey);
-        });
-    }
+    $scope.find('[id^="count_"]').each(function () {
+        reloadSelectedCount($(this), storeKey);
+    });
+    $scope.find('[class*="count_"]').each(function () {
+        reloadSelectedCount($(this), storeKey);
+    });
 }
 
 // Switch General Tab
@@ -526,7 +616,9 @@ function highlightRow(checkbox) {
 }
 
 function reloadSelectedCount(targetElement, storeKey = "selectedInstances") {
-    var count = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]").length;
+    var count = JSON.parse(
+        ensureSelectionStore(storeKey).attr("data-ids") || "[]"
+    ).length;
     id = targetElement.attr("id");
     if (id) {
         id = id.split("count_")[1];
@@ -561,13 +653,27 @@ function removeHighlight() {
 }
 
 function removeId(element, storeKey = "selectedInstances") {
-    id = element.val();
-    ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
+    id = String(element.val());
+    ids = JSON.parse(
+        ensureSelectionStore(storeKey).attr("data-ids") || "[]"
+    ).map(String);
     var index = ids.indexOf(id);
     if (index > -1) {
         ids.splice(index, 1);
     }
-    $(`#${storeKey}`).attr("data-ids", JSON.stringify(ids));
+    ensureSelectionStore(storeKey).attr("data-ids", JSON.stringify(ids));
+    setStoredSelection(storeKey, ids);
+}
+
+function addId(element, storeKey = "selectedInstances") {
+    id = String(element.val());
+    ids = JSON.parse(
+        ensureSelectionStore(storeKey).attr("data-ids") || "[]"
+    ).map(String);
+    if (!ids.includes(id)) {
+        ids.push(id);
+    }
+    ensureSelectionStore(storeKey).attr("data-ids", JSON.stringify(ids));
     setStoredSelection(storeKey, ids);
 }
 function bulkStageUpdate(canIds, stageId, preStageId) {

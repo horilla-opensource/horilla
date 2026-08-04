@@ -783,8 +783,10 @@ class EmployeeCard(HorillaCardView):
     details = {
         "image_src": "get_avatar",
         "title": "{employee_name_with_badge_id}",
-        "subtitle": "<span class='oh-kanban-card__subtitle'>{get_email}</span><span class='oh-kanban-card__subtitle'>{employee_work_info__job_position_id}</span><span class='oh-kanban-card__subtitle'>{offline_online}</span>",
+        "subtitle": "<span class='oh-kanban-card__subtitle'>{get_email}</span><span class='oh-kanban-card__subtitle'>{employee_work_info__job_position_id}</span>",
     }
+
+    custom_body_template = "cbv/employees_view/card_body.html"
 
     card_attrs = """
                 {diff_cell}

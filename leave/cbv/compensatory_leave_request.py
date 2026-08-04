@@ -191,6 +191,8 @@ class MyCompensatoryLeaveTab(CompensatoryListView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("my-compensatory-tab")
+        self.option_method = None
+        self.action_method = "compensatory_options"
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -217,6 +219,7 @@ class CompensatoryLeaveTab(CompensatoryListView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("compensatory-list")
+        self.option_method = None
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -226,7 +229,7 @@ class CompensatoryLeaveTab(CompensatoryListView):
 
         return queryset
 
-    action_method = "compensatory_confirm_actions"
+    action_method = "compensatory_tab_actions"
     row_attrs = """
                 {is_compensatory_request_rejected},
                 hx-get='{compensatory_detail_view}?instance_ids={ordered_ids}'

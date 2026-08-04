@@ -1,5 +1,5 @@
-<span title="{{instance.email}}">
-    {{instance.email|truncatechars:10}}
+<span title="{{instance.email}}" class="oh-mail-ellipsis">
+    {{instance.email}}
 </span>
 {% if instance.get_last_sent_mail %}
   <span title="{{ instance.get_last_sent_mail.subject }} | {{ instance.get_last_sent_mail.get_status_display }}"

@@ -54,6 +54,46 @@ class ReimbursementsAndEncashmentsTabView(HorillaTabView):
             },
         ]
 
+    def get_context_data(self, **kwargs):
+        from payroll.filters import ReimbursementFilter
+        from payroll.models.models import Reimbursement
+
+        qs = Reimbursement.objects.all()
+        if self.request.GET.get("search"):
+            qs = ReimbursementFilter(
+                data=self.request.GET, queryset=qs, request=self.request
+            ).qs
+
+        reimb_count = filter_own_records(
+            self.request, qs.filter(type="reimbursement"), "payroll.view_reimbursement"
+        ).count()
+        leave_encash_count = filter_own_records(
+            self.request,
+            qs.filter(type="leave_encashment"),
+            "payroll.view_reimbursement",
+        ).count()
+        bonus_encash_count = filter_own_records(
+            self.request,
+            qs.filter(type="bonus_encashment"),
+            "payroll.view_reimbursement",
+        ).count()
+
+        reimb_url = reverse("list-reimbursement")
+        leave_url = reverse("list-leave-encash")
+        bonus_url = reverse("list-bonus-encash")
+
+        for tab in self.tabs:
+            url = tab.get("url", "")
+            if reimb_url in url:
+                tab["badge"] = reimb_count
+            elif leave_url in url:
+                tab["badge"] = leave_encash_count
+            elif bonus_url in url:
+                tab["badge"] = bonus_encash_count
+
+        context = super().get_context_data(**kwargs)
+        return context
+
 
 @method_decorator(login_required, name="dispatch")
 class ReimbursementsAndEncashmentsListView(HorillaListView):

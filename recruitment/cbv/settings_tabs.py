@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 from horilla_views.cbv_methods import hx_request_required, login_required
 from horilla_views.generic.cbv.views import HorillaTabView, TemplateView
+from recruitment.models import RejectReason, Skill, Stage
 
 
 @method_decorator(login_required, name="dispatch")
@@ -34,14 +35,17 @@ class RecruitmentSettingsTabView(HorillaTabView):
             {
                 "title": _("Stages"),
                 "url": f"{reverse('recruitment-settings-stage-tab')}",
+                "badge": Stage.objects.count(),
             },
             {
                 "title": _("Rejection Reasons"),
                 "url": f"{reverse('recruitment-settings-reject-reason-tab')}",
+                "badge": RejectReason.objects.count(),
             },
             {
                 "title": _("Skills"),
                 "url": f"{reverse('recruitment-settings-skill-tab')}",
+                "badge": Skill.objects.count(),
             },
         ]
 

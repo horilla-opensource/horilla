@@ -252,7 +252,10 @@
             .addClass("max-h-0")
             .removeClass("is-ug-open max-h-[9999px]")
             .css("max-height", "");
-        $panel.prev(".accordion-btn-gp").find(".icon").text("+");
+        var $icon = $panel.prev(".accordion-btn-gp").find(".icon");
+        if ($icon.length) {
+            $icon.attr("name", "chevron-down-outline");
+        }
     };
 
     window.openUserGroupPanel = function ($panel) {
@@ -263,7 +266,10 @@
             .removeClass("max-h-0")
             .addClass("is-ug-open")
             .css("max-height", "");
-        $panel.prev(".accordion-btn-gp").find(".icon").text("−");
+        var $icon = $panel.prev(".accordion-btn-gp").find(".icon");
+        if ($icon.length) {
+            $icon.attr("name", "chevron-up-outline");
+        }
 
         // Lazy-load members + permissions once (avoids huge first paint)
         var $body = $panel.find(".ug-detail-body");

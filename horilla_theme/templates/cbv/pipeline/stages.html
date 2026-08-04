@@ -4,9 +4,14 @@
   <div id="selectedCandidateRecords{{ stage.id }}" data-ids="[]"></div>
   <div class="oh-tabs__movable-area mb-2">
     <div class="oh-tabs__movable">
-      <div class="oh-tabs__movable-header" style="cursor:pointer;"  onclick="$(this).parent().find('.oh-tabs__movable-body').toggleClass('d-none');">
-        <span class"oh-tabs__movable-title">{{stage.stage}}</span>
+      <div class="oh-tabs__movable-header" style="cursor:pointer;"  onclick="$(this).parent().find('.oh-tabs__movable-body').toggleClass('d-none'); var foldIcon = this.querySelector('.oh-tabs__movable-fold-icon'); if(foldIcon){foldIcon.setAttribute('name', foldIcon.getAttribute('name') === 'chevron-up-outline' ? 'chevron-down-outline' : 'chevron-up-outline');}">
+        <span class"oh-tabs__movable-title" style="display:flex;align-items:center;gap:0.5rem;">
+          <span class="stage-count-badge w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs">0</span>
+          {{stage.stage}}
+        </span>
 
+        <div class="d-flex align-items-center">
+        <ion-icon name="chevron-up-outline" class="oh-tabs__movable-fold-icon me-2"></ion-icon>
         <div onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
           <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" class="text-primary-600" @click="open = !open" @click.outside="open = false" title="{% trans 'Actions' %}">
               <ion-icon name="ellipsis-vertical" role="img" class="md hydrated" aria-label="{% trans 'ellipsis vertical' %}"></ion-icon>
@@ -42,6 +47,7 @@
                 </ul>
               </div>
         </div>
+        </div>
       </div>
       <div
       class="oh-tabs__movable-body position-relative"
@@ -60,5 +66,46 @@
     var title = count + " " + label;
     badge.html(count);
     badge.attr("title", title);
+
+    function syncStageCandidateCounts() {
+      var totalTabCandidates = 0;
+      var hasDataCounts = false;
+      $(".oh-tabs__movable-body").each(function () {
+        var count = $(this).find("[data-total-count]").attr("data-total-count");
+        if (count !== undefined) {
+          hasDataCounts = true;
+          totalTabCandidates += parseInt(count) || 0;
+          var movable = $(this).closest(".oh-tabs__movable");
+          movable
+            .find(".stage-count-badge")
+            .text(Number(count) > 999 ? "999+" : count)
+            .attr("title", count);
+          if (!this.hasAttribute("data-count-loaded")) {
+            this.setAttribute("data-count-loaded", "1");
+            if (Number(count) === 0) {
+              $(this).addClass("d-none");
+              var icon = movable.find(".oh-tabs__movable-fold-icon")[0];
+              if (icon) icon.setAttribute("name", "chevron-down-outline");
+            }
+          }
+        }
+      });
+      if (hasDataCounts) {
+        var tabId = $("#{{view_id}}").closest(".oh-tabs__content").attr("id");
+        if (tabId) {
+          var badge = $(`#badge-${tabId}`);
+          if (badge.length) {
+            badge.text(totalTabCandidates > 999 ? "999+" : totalTabCandidates);
+            var label = badge.attr("data-badge-label") || "";
+            badge.attr("title", totalTabCandidates + " " + label);
+          }
+        }
+      }
+    }
+    if (!window.stageCandidateCountSyncBound) {
+      window.stageCandidateCountSyncBound = true;
+      document.body.addEventListener("htmx:afterSettle", syncStageCandidateCounts);
+    }
+    syncStageCandidateCounts();
   </script>
 </div>

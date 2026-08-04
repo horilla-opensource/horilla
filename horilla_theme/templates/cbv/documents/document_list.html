@@ -228,7 +228,7 @@
                             <button
                                 class="text-xs hover:text-primary-600 transition duration-300"
                                 hx-target="#{{view_id}}"
-                                hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ queryset.previous_page_number }}"
+                                hx-get="{{search_url}}?{{pd|default:saved_filters.urlencode}}&page={{ queryset.previous_page_number }}"
                             >
                                 <i class="fa-solid fa-arrow-left"></i>
                             </button>
@@ -238,7 +238,7 @@
                             <button
                                 class="text-xs hover:text-primary-600 transition duration-300"
                                 hx-target="#{{view_id}}"
-                                hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ queryset.next_page_number }}"
+                                hx-get="{{search_url}}?{{pd|default:saved_filters.urlencode}}&page={{ queryset.next_page_number }}"
                             >
                                 <i class="fa-solid fa-arrow-right"></i>
                             </button>
@@ -275,7 +275,6 @@
 
 <script>
     $("ul[data-search-url] a").click(function (e) {
-    	e.preventDefault();
     	const url =  $(this).attr("hx-get")
     	const $urlObj = $('<a>', { href: url });
     	const searchParams = new URLSearchParams($urlObj[0].search);

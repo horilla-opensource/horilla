@@ -625,7 +625,7 @@ class ShiftAllocationFormView(HorillaFormView):
 
     model = ShiftRequest
     form_class = ShiftAllocationForm
-    new_display_title = _("Shift Request")
+    new_display_title = _("Shift Swap Request")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

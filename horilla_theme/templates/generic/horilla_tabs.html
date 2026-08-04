@@ -71,6 +71,12 @@
                             data-tab-url="{{tab.url}}"
                             data-path="{{request.path}}"
                             onclick="switchTab($(this));
+								if (typeof clearSelectionsOnTabSwitch === 'function') {
+									clearSelectionsOnTabSwitch('{{view_id|escapejs}}');
+								} else if (typeof clearSelection === 'function') {
+									clearSelection('selectedInstances');
+									if ($('#selectedTickets').length) { clearSelection('selectedTickets'); }
+								}
 								var tabContentEl = document.querySelector('#{{view_id}}{{forloop.counter}}');
 								if (!$(this).attr('data-loaded') || !tabContentEl || !tabContentEl.innerHTML.trim()) {
 									htmx.ajax('GET', '{{tab.url}}', {target: '#{{view_id}}{{forloop.counter}}', source: this});

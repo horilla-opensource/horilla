@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.core.paginator import Paginator
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
 
@@ -27,6 +29,22 @@ def record_queryset_paginator(request, queryset, page_name, records_per_page=10)
     return result_page
 
 
+def _page_from_list(items, page_name, request, records_per_page, total_count=None):
+    """Build a Page from an already-fetched list (optionally with a larger total)."""
+    page_number = request.GET.get(page_name) if request else None
+    # Paginator over the full in-memory list for this grouper; when total_count is
+    # larger we still only have the current page slice in `items`.
+    paginator = Paginator(
+        items if total_count is None else range(total_count), records_per_page
+    )
+    result_page = paginator.get_page(page_number)
+    if total_count is not None:
+        result_page.object_list = items
+    else:
+        result_page.object_list = list(result_page.object_list)
+    return result_page
+
+
 def generate_groups(
     request,
     groupers,
@@ -38,30 +56,42 @@ def generate_groups(
 ):
     """
     groups generating method
+
+    For FK groupers, fetch all rows for the visible groupers in one query, then
+    split in Python — avoids per-group COUNT/SELECT round-trips.
     """
     groups = []
     if is_fk_field:
+        grouper_ids = [grouper.id for grouper in groupers]
+        if not grouper_ids:
+            return groups
+
+        # Preserve select_related / prefetch_related from the parent queryset.
+        rows = list(queryset.filter(**{f"{group_field}__in": grouper_ids}))
+        grouped = defaultdict(list)
+        fk_attname = queryset.model._meta.get_field(group_field).attname
+        for row in rows:
+            grouped[getattr(row, fk_attname)].append(row)
+
         for grouper in groupers:
-            group_queryset = queryset.filter(**{group_field: grouper.id})
-            # to avoid zero records groupings
-            if group_queryset.count():
-                group_info = {
+            group_rows = grouped.get(grouper.id, [])
+            groups.append(
+                {
                     "grouper": grouper,
-                    "list": record_queryset_paginator(
-                        request,
-                        group_queryset,
+                    "list": _page_from_list(
+                        group_rows,
                         f"dynamic_page_{page_name}{grouper.id}",
+                        request,
                         records_per_page,
                     ),
                     "dynamic_name": f"dynamic_page_{page_name}{grouper.id}",
                 }
-                groups.append(group_info)
+            )
     else:
         for grouper in groupers:
             group_queryset = queryset.filter(**{group_field: grouper})
-            # to avoid zero records groupings
-            if group_queryset.count():
-                group = {
+            groups.append(
+                {
                     "grouper": grouper,
                     "list": record_queryset_paginator(
                         request,
@@ -73,8 +103,31 @@ def generate_groups(
                         " ", "_"
                     ),
                 }
-                groups.append(group)
+            )
     return groups
+
+
+def _ordered_unique(values):
+    """Preserve first-seen order while dropping nulls/duplicates."""
+    return [g for g in dict.fromkeys(values) if g is not None]
+
+
+def _page_of_groupers(grouper_keys, page, records_per_page):
+    """
+    Paginate grouper keys first so generate_groups only runs for the
+    visible page (avoids N exists/count queries for every recruitment).
+    """
+    paginator = Paginator(grouper_keys, records_per_page)
+    page_obj = paginator.get_page(page)
+    return page_obj, list(page_obj.object_list)
+
+
+def _resolve_fk_groupers(model, ids):
+    """Fetch related objects and keep the values_list encounter order."""
+    if not ids:
+        return []
+    by_id = model.objects.in_bulk(ids)
+    return [by_id[i] for i in ids if i in by_id]
 
 
 def group_by_queryset(
@@ -95,7 +148,6 @@ def group_by_queryset(
         getattr(model, group_field, None), ForwardManyToOneDescriptor
     )
     model_copy = model
-    field_obj = None
 
     # getting request from the thread locals
     request = getattr(_thread_locals, "request", None)
@@ -104,7 +156,9 @@ def group_by_queryset(
             field_obj = model_copy._meta.get_field(field)
             model_copy = field_obj.related_model
         if model_copy:
-            groupers = model_copy.objects.filter()
+            active_ids = _ordered_unique(queryset.values_list(group_field, flat=True))
+            page_obj, page_ids = _page_of_groupers(active_ids, page, records_per_page)
+            groupers = _resolve_fk_groupers(model_copy, page_ids)
             groups = generate_groups(
                 request,
                 groupers,
@@ -115,16 +169,13 @@ def group_by_queryset(
                 records_per_page=records_per_page,
             )
         else:
-            groupers = [
-                item
-                for index, item in enumerate(
-                    queryset.values_list(group_field, flat=True)
-                )
-                if item not in queryset.values_list(group_field, flat=True)[:index]
-            ]
+            groupers = _ordered_unique(queryset.values_list(group_field, flat=True))
+            page_obj, page_groupers = _page_of_groupers(
+                groupers, page, records_per_page
+            )
             groups = generate_groups(
                 request,
-                groupers,
+                page_groupers,
                 queryset,
                 page_name,
                 group_field,
@@ -133,16 +184,15 @@ def group_by_queryset(
             )
 
     else:
-        # making unique | not using set(groupers) due to ordering issue
-        groupers = [
-            item
-            for index, item in enumerate(queryset.values_list(group_field, flat=True))
-            if item not in queryset.values_list(group_field, flat=True)[:index]
-        ]
-        # getting related queryset
-        related_model = queryset.model._meta.get_field(group_field).related_model
-        if related_model:
-            groupers = related_model.objects.filter(id__in=groupers)
+        raw_groupers = _ordered_unique(queryset.values_list(group_field, flat=True))
+        related_model = getattr(
+            queryset.model._meta.get_field(group_field), "related_model", None
+        )
+        page_obj, page_keys = _page_of_groupers(raw_groupers, page, records_per_page)
+        if related_model and page_keys:
+            groupers = _resolve_fk_groupers(related_model, page_keys)
+        else:
+            groupers = page_keys
         groups = generate_groups(
             request,
             groupers,
@@ -153,5 +203,7 @@ def group_by_queryset(
             records_per_page=records_per_page,
         )
 
-    groups = Paginator(groups, records_per_page)
-    return groups.get_page(page)
+    # Keep paginator metadata (count/num_pages) for all groupers while only
+    # materializing the current page of group payloads.
+    page_obj.object_list = groups
+    return page_obj

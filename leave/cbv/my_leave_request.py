@@ -86,7 +86,7 @@ class MainParentListView(HorillaListView):
         (_("Status"), "custom_status_col"),
     ]
 
-    option_method = "cancel_confirmation_action"
+    option_method = None
     action_method = "leave_actions"
     sortby_mapping = [
         (_("Leave Type"), "leave_type_id__name", "leave_type_id__get_avatar"),

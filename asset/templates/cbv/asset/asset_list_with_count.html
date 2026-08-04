@@ -1,0 +1,21 @@
+{% load i18n %}
+<script>
+    if (typeof ensureSelectionStore === "function") {
+        ensureSelectionStore("selectedInstances");
+    } else if (!$("#selectedInstances").length) {
+        $("body").append(
+            '<div id="selectedInstances" class="oh-checkpoint-badge mb-2" data-ids="[]" data-clicked="" style="display:none"></div>'
+        );
+    }
+</script>
+{% include "generic/horilla_list_table.html" %}
+<script>
+    (function () {
+        var count = "{{ queryset.paginator.count }}";
+        var $badge = $("#asset-count{{ asset_category_id }}");
+        if ($badge.length) {
+            $badge.html(Number(count) > 999 ? "999+" : count);
+            $badge.attr("title", count + " {% trans 'Assets' %}");
+        }
+    })();
+</script>

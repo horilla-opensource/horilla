@@ -1803,6 +1803,33 @@ table .oh-btn-group a {
   /* max-height: 400px; */
 }
 
+.oh-accordion--show .accordion-chevron {
+  transform: rotate(180deg);
+}
+
+/* Nested HLV tables inside category/accordion panels must not use the
+   full-viewport max-height — that inflated the panel and left a large empty
+   band around the pagination toolbar. */
+.accordion-panel .heightContainer,
+.accordion-panel .hlv-container .heightContainer {
+  max-height: 300px !important;
+}
+
+.accordion-panel > .hlv-container {
+  padding-top: 0.25rem;
+}
+
+/* Compact, vertically centered list pagination control */
+.hlv-pagination {
+  line-height: 1;
+}
+
+.hlv-pagination input[type="number"] {
+  margin: 0;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
 /* The "Filter" dropdown (nav bars + attendance work record view) is loaded
    via htmx into the page after the initial load, so its Tailwind CDN
    utility classes (min-w-[400px] p-3) can briefly render unstyled until the
@@ -4548,4 +4575,43 @@ a,
 
 .sha h3 {
   text-align: left !important;
+}
+
+/* Email text: ellipsize instead of clipping; tighter cap when many columns are enabled */
+.oh-mail-ellipsis {
+  display: inline-block;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+.fixed-table:has(thead th:nth-child(7)) .oh-mail-ellipsis {
+  max-width: 160px;
+}
+
+/* Pipeline stage tables: size columns by cell content, not by heading width.
+   Headers may wrap; sparse columns may shrink below the default 85px floor;
+   body cells stay on one line so real content still defends its width. */
+.oh-tabs__movable-body .fixed-table thead th {
+  min-width: unset !important;
+  white-space: normal;
+}
+.oh-tabs__movable-body .fixed-table tbody td {
+  white-space: nowrap;
+}
+/* Columns whose widgets (selects, star ratings) can't defend their own
+   width in content-based sizing get an explicit floor on the header cell */
+.oh-tabs__movable-body .fixed-table thead th[id$="-stage_drop_down-header"],
+.oh-tabs__movable-body .fixed-table thead th[id$="-rating_bar-header"] {
+  min-width: 110px !important;
+}
+/* Email keeps a readable width regardless */
+th[id$="-mail_indication-header"] {
+  width: 280px;
+  min-width: 250px !important;
+}
+.fixed-table:has(thead th:nth-child(7)) th[id$="-mail_indication-header"] {
+  width: 210px;
+  min-width: 170px !important;
 }

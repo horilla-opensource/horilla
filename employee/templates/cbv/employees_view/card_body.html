@@ -1,0 +1,27 @@
+{% load i18n %}
+<div class="flex gap-4 pt-1">
+    {% if instance.get_avatar %}
+    <div class="relative flex-shrink-0 w-11 h-11">
+        <img
+            src="{{ instance.get_avatar }}"
+            data-src="{{ instance.get_avatar }}"
+            class="w-11 h-11 rounded-full avatar-thumb object-cover"
+            alt="{% trans 'Employee' %}"
+        >
+        <span
+            class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white"
+            style="background-color: {% if instance.check_online %}#22c55e{% else %}#ef4444{% endif %};"
+            title="{% if instance.check_online %}{% trans 'Online' %}{% else %}{% trans 'Offline' %}{% endif %}"
+        ></span>
+    </div>
+    {% endif %}
+    <div class="min-w-0">
+        <h5 class="mb-1 font-medium text-sm truncate">{{ instance.employee_name_with_badge_id }}</h5>
+        <div class="text-xs text-[#565E6C] mb-1 grid">
+            <span class="truncate">{{ instance.get_email }}</span>
+            {% if instance.employee_work_info.job_position_id %}
+            <span class="truncate">{{ instance.employee_work_info.job_position_id }}</span>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -184,12 +184,13 @@ def is_recruitmentmanager(request, rec_id=False):
 def pipeline_grouper(request, recruitments):
     groups = []
     for rec in recruitments:
-        stages = StageFilter(request.GET, queryset=rec.stage_set.all()).qs.order_by(
+        stages_qs = StageFilter(request.GET, queryset=rec.stage_set.all()).qs.order_by(
             "sequence"
         )
+        stages = list(stages_qs)
         all_stages_grouper = []
         data = {"recruitment": rec, "stages": []}
-        for stage in stages.order_by("sequence"):
+        for stage in stages:
             all_stages_grouper.append({"grouper": stage, "list": []})
             stage_candidates = CandidateFilter(
                 request.GET,

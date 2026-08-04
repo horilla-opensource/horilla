@@ -515,6 +515,30 @@ class Attendance(HorillaModel):
             context={"instance": self, "minot": minot},
         )
 
+    def validate_actions(self):
+        """
+        combined actions column for validate tab: validate + edit + delete
+        """
+
+        return render_template(
+            path="cbv/attendances/validate_actions.html",
+            context={"instance": self},
+        )
+
+    def ot_actions(self):
+        """
+        combined actions column for OT tab: approve OT + edit + delete
+        """
+        minot = strtime_seconds("00:30")
+        condition = AttendanceValidationCondition.objects.first()
+        if condition is not None:
+            minot = strtime_seconds(condition.minimum_overtime_to_approve)
+
+        return render_template(
+            path="cbv/attendances/ot_actions.html",
+            context={"instance": self, "minot": minot},
+        )
+
     def validate_detail_actions(self):
         """
         detail view actions of validate tab

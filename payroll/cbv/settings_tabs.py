@@ -33,7 +33,7 @@ class PayrollSettingsTabView(HorillaTabView):
         self.tabs = [
             {
                 "title": _("Allowances"),
-                "url": f"{reverse("payroll-settings-allowance-tab")}",
+                "url": f"{reverse('payroll-settings-allowance-tab')}",
             },
             {
                 "title": _("Deductions"),

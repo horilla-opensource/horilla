@@ -172,8 +172,27 @@ else:
             "PASSWORD": env("DB_PASSWORD", default=""),
             "HOST": env("DB_HOST", default=""),
             "PORT": env("DB_PORT", default=""),
+            "OPTIONS": {
+                "timeout": 30,  # seconds to wait on a locked DB before raising OperationalError
+            },
         }
     }
+
+# SQLite: enable WAL so reads (list/search) don't block session writes from
+# concurrent requests like notification polling.
+from django.db.backends.signals import connection_created
+
+
+def _configure_sqlite_connection(sender, connection, **kwargs):
+    if connection.vendor != "sqlite":
+        return
+    with connection.cursor() as cursor:
+        cursor.execute("PRAGMA journal_mode=WAL;")
+        cursor.execute("PRAGMA synchronous=NORMAL;")
+        cursor.execute("PRAGMA busy_timeout=30000;")
+
+
+connection_created.connect(_configure_sqlite_connection)
 
 # ========================================
 # CACHE (optional Redis when REDIS_URL is set)

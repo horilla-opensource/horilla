@@ -58,6 +58,34 @@ class LoansGenericTab(HorillaTabView):
             },
         ]
 
+    def get_context_data(self, **kwargs):
+        qs = LoanAccount.objects.all()
+        filter_class = LoanAccountFilter
+        if filter_class:
+            qs = filter_class(
+                data=self.request.GET, queryset=qs, request=self.request
+            ).qs
+
+        loan_count = qs.filter(type="loan").count()
+        adv_count = qs.filter(type="advanced_salary").count()
+        fine_count = qs.filter(type="fine").count()
+
+        loan_url = reverse("loan-tab-list-view")
+        adv_url = reverse("advanced-salary-list-view")
+        fine_url = reverse("fines-list-view")
+
+        for tab in self.tabs:
+            url = tab.get("url", "")
+            if loan_url in url:
+                tab["badge"] = loan_count
+            elif adv_url in url:
+                tab["badge"] = adv_count
+            elif fine_url in url:
+                tab["badge"] = fine_count
+
+        context = super().get_context_data(**kwargs)
+        return context
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required("payroll.view_loanaccount"), name="dispatch")

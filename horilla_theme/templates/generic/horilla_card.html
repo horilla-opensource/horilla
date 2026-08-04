@@ -1,5 +1,5 @@
 {% load static i18n generic_template_filters i18n %}
-<div id="{{view_id|safe}}">
+<div id="{{view_id|safe}}" data-total-count="{{queryset.paginator.count|default:0}}">
     <script>
         if (!$(".HTV").length) {
             reloadMessage(null);
@@ -19,9 +19,7 @@
         {% include "generic/filter_tags.html" %}
     {% endif %}
     {% if queryset|length %}
-        {% if bulk_select_option %}
-            {% include "generic/quick_actions.html" %}
-        {% endif %}
+        {% include "generic/quick_actions.html" %}
         <div class="bg-white rounded-md shadow-card">
             <div class="h-[calc(100vh_-_210px)] overflow-hidden overflow-y-auto overflow-x-auto">
                 <div id="gridView" class="p-5">
@@ -135,37 +133,6 @@
         {% endif %}
     {% endif %}
 
-    {% if queryset.paginator.count %}
-        <div class="flex justify-between items-center mt-4 w-full inset-0">
-            <p class="text-[#666]">
-                {% trans "Page" %}
-                {{ queryset.number }}
-                {% trans "of" %}
-                {{ queryset.paginator.num_pages }}
-            </p>
-            <div class="flex gap-3 text-[#666] items-center">
-                {% if queryset.has_previous %}
-                    <button
-                        class="text-xs hover:text-primary-600 transition duration-300"
-                        hx-target="#{{view_id}}"
-                        hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ queryset.previous_page_number }}"
-                    >
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </button>
-                {% endif %}
-                {{ queryset.number }} / {{ queryset.paginator.num_pages }}
-                {% if queryset.has_next %}
-                    <button
-                        class="text-xs hover:text-primary-600 transition duration-300"
-                        hx-target="#{{view_id}}"
-                        hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ queryset.next_page_number }}"
-                    >
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                {% endif %}
-            </div>
-        </div>
-    {% endif %}
 </div>
 
 <script>

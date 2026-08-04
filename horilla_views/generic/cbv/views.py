@@ -16,7 +16,6 @@ from django import forms
 from django.contrib import messages
 from django.core.cache import cache as CACHE
 from django.core.exceptions import FieldDoesNotExist
-from django.core.paginator import Page
 from django.db import transaction
 from django.db.models import CharField, F
 from django.db.models.functions import Cast
@@ -244,7 +243,7 @@ class HorillaListView(ListView):
                     self.request.session["hlv_selected_ids"] = selected_ids
                     self.request.session["prev_path"] = self.request.path
 
-                if "filter_applied" in query_dict.keys():
+                if "filter_applied" in query_dict.keys() or "search" in query_dict:
                     update_saved_filter_cache(self.request, CACHE)
                 elif CACHE.get(
                     str(self.request.session.session_key) + self.request.path + "cbv"
@@ -488,36 +487,38 @@ class HorillaListView(ListView):
             if not self._saved_filters.get("field"):
                 for instance in queryset:
                     ordered_ids.append(str(instance.pk))
-        except:
+        except Exception:
             pass
 
-        self.request.session[self.ordered_ids_key] = ordered_ids
-        context["queryset"] = paginator_qry(
-            queryset, self._saved_filters.get("page"), self.records_per_page
-        )
+        # Avoid marking the session modified when nothing changed — concurrent
+        # notification polls were failing with SQLite "database is locked".
+        session_key = self.ordered_ids_key
+        if self.request.session.get(session_key) != ordered_ids:
+            self.request.session[session_key] = ordered_ids
 
         if request and self._saved_filters.get("field"):
             field = self._saved_filters.get("field")
             self.template_name = "generic/group_by_table.html"
-            if isinstance(queryset, Page):
-                queryset = self.filter_class(
-                    request.GET, queryset=self.get_queryset()
-                ).qs
-
+            # Skip flat list COUNT/pagination — group_by paginates groupers itself.
+            # Keep a tiny queryset so bulk-select chrome (`queryset|length`) still works.
+            context["queryset"] = queryset[:1]
             try:
-                groups = group_by_queryset(
-                    queryset, field, self._saved_filters.get("page"), "page"
+                context["groups"] = group_by_queryset(
+                    queryset,
+                    field,
+                    self._saved_filters.get("page"),
+                    "page",
+                    records_per_page=10,
                 )
-                context["groups"] = paginator_qry(
-                    groups, self._saved_filters.get("page"), 10
-                )
-            except:
+            except Exception:
                 self.template_name = "generic/horilla_list_table.html"
-
-            # for group in context["groups"]:
-            #     for instance in group["list"]:
-            #         instance.ordered_ids = ordered_ids
-            #         ordered_ids.append(str(instance.pk))
+                context["queryset"] = paginator_qry(
+                    queryset, self._saved_filters.get("page"), self.records_per_page
+                )
+        else:
+            context["queryset"] = paginator_qry(
+                queryset, self._saved_filters.get("page"), self.records_per_page
+            )
 
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaListView] = context
         self.export_path = (
@@ -1796,7 +1797,7 @@ class HorillaCardView(ListView):
             self.queryset = super().get_queryset()
             if self.filter_class:
                 query_dict = self.request.GET
-                if "filter_applied" in query_dict.keys():
+                if "filter_applied" in query_dict.keys() or "search" in query_dict:
                     update_saved_filter_cache(self.request, CACHE)
                 elif CACHE.get(
                     str(self.request.session.session_key) + self.request.path + "cbv"
@@ -1842,6 +1843,7 @@ class HorillaCardView(ListView):
         context["card_status_indications"] = self.card_status_indications
         context["custom_body_template"] = self.custom_body_template
         context["custom_empty_template"] = self.custom_empty_template
+        context["saved_filters"] = self._saved_filters
 
         if self.show_filter_tags:
             data_dict = parse_qs(self._saved_filters.urlencode())
@@ -2291,6 +2293,7 @@ class HorillaNavView(TemplateView):
     view_types: list = []
     create_attrs: str = """"""
     apply_first_filter = True
+    default_group_by: str = ""
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -2361,6 +2364,7 @@ class HorillaNavView(TemplateView):
         context["create_attrs"] = self.create_attrs
         context["search_in"] = self.search_in
         context["apply_first_filter"] = self.apply_first_filter
+        context["default_group_by"] = self.default_group_by
         context["filter_instance_context_name"] = self.filter_instance
         last_filter = CACHE.get(
             self.request.session.session_key

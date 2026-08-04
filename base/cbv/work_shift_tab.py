@@ -86,6 +86,21 @@ class WorkAndShiftTabView(HorillaTabView):
                 ],
             },
             {
+                "title": _("Shift Allocation"),
+                "url": f"{reverse('allocated-shift-view')}",
+                "actions": [
+                    {
+                        "action": _("Add Shift Allocation"),
+                        "attrs": f"""
+                                hx-get="{reverse('shift-request-reallocate')}?emp_id={pk}",
+                                hx-target="#genericModalBody"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#genericModal"
+                        """,
+                    }
+                ],
+            },
+            {
                 "title": _("Rotating Shift"),
                 "url": f"{reverse('rotating-shift-individual-tab-view',kwargs={'pk': pk})}",
                 "actions": [

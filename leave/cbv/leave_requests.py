@@ -131,8 +131,8 @@ class LeaveRequestsListView(HorillaListView):
         (_("Status"), "status"),
     ]
 
-    action_method = "confirmation_col"
-    option_method = "actions_col"
+    action_method = "leave_tab_actions"
+    option_method = None
 
     header_attrs = {
         "leave_requests_custom_emp_col": """ style="width:200px !important;" """,

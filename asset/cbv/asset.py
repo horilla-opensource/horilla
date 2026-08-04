@@ -18,6 +18,7 @@ class AssetListView(HorillaListView):
 
     model = Asset
     filter_class = AssetFilter
+    template_name = "cbv/asset/asset_list_with_count.html"
     columns = [
         (_("Asset Name"), "asset_name_display"),
         (_("Status"), "asset_status_col"),
@@ -25,12 +26,25 @@ class AssetListView(HorillaListView):
         "asset_lot_number_id",
     ]
     show_filter_tags = False
-    bulk_select_option = False
+    bulk_select_option = True
+    quick_export = True
     action_method = "action_column"
     header_attrs = {
         "asset_name": "style='width:200px !important;'",
         "action": "style='width:130px !important;'",
     }
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        cat_id = kwargs.get("cat_id", "")
+        self.view_id = f"assetCategoryAssetList{cat_id}"
+
+    def get_context_data(self, **kwargs: Any):
+        context = super().get_context_data(**kwargs)
+        # Nested under asset-category accordion — keep the toolbar tight.
+        context["margin_class"] = "ml-0 mr-0"
+        context["asset_category_id"] = self.kwargs.get("cat_id")
+        return context
 
     def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
         return (

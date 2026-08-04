@@ -313,7 +313,6 @@
   {% endif %}
   <script>
     $("ul[data-search-url] a").click(function (e) {
-      e.preventDefault();
       const url =  $(this).attr("hx-get")
       const $urlObj = $('<a>', { href: url });
       const searchParams = new URLSearchParams($urlObj[0].search);

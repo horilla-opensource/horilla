@@ -1,8 +1,22 @@
 
 {% load i18n %}
 <div class=" {% if instance.status == 'rejected' %} diff-cell{% endif %}" onclick="event.stopPropagation()">
-    {% if instance.status == 'requested'%}
-        <div class="flex items-center justify-center gap-1">
+    <div class="flex items-center justify-center gap-1">
+        {% if instance.status == 'approved' and instance.end_date >= current_date %}
+            <a data-toggle="oh-modal-toggle"
+                data-target="#cancelModal"
+                hx-get="{% url 'user-request-cancel' instance.id %}"
+                hx-target="#cancelForm"
+                title="{% trans 'Cancel' %}"
+                class="oh-btn oh-btn--light-bkg oh-btn--danger oh-btn--sq-sm">
+                <ion-icon name="close-circle-outline"></ion-icon>
+            </a>
+        {% else %}
+            <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" title="{% trans 'Cancel' %}" disabled>
+                <ion-icon name="close-circle-outline"></ion-icon>
+            </button>
+        {% endif %}
+        {% if instance.status == 'requested'%}
             <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
                 data-target="#genericModal" hx-get="{% url 'user-request-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
                 hx-target="#genericModalBody">
@@ -16,16 +30,14 @@
                 >
                 <ion-icon name="trash-outline"></ion-icon>
             </a>
-        </div>
-    {% else %}
-        <div class="flex items-center justify-center gap-1">
+        {% else %}
             <button
-                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled>
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" title="{% trans 'Edit' %}" disabled>
                 <ion-icon name="create-outline" ></ion-icon>
             </button>
-            <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled>
+            <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" title="{% trans 'Delete' %}" disabled>
                 <ion-icon name="trash-outline"></ion-icon>
             </button>
-        </div>
-    {% endif %}
+        {% endif %}
+    </div>
 </div>

@@ -167,7 +167,6 @@ class TaxBracketNavView(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(permission_required("payroll.view_taxbracket"), name="dispatch")
 class FilingStatusPipeline(Pipeline):
     """

@@ -138,6 +138,7 @@ class TimeSheetList(HorillaListView):
 
     model = TimeSheet
     filter_class = TimeSheetFilter
+    view_id = "timeSheetListContainer"
 
     def get_queryset(self):
         queryset = super().get_queryset()

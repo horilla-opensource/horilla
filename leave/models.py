@@ -1012,12 +1012,13 @@ class LeaveRequest(HorillaModel):
 
     def leave_actions(self):
         """
-        method for rendering cancel action
+        method for rendering cancel/edit/delete actions
         """
 
+        current_date = date.today()
         return render_template(
             path="cbv/my_leave_request/leave_actions.html",
-            context={"instance": self},
+            context={"instance": self, "current_date": current_date},
         )
 
     def detail_leave_actions(self):
@@ -1213,6 +1214,21 @@ class LeaveRequest(HorillaModel):
             context={
                 "instance": self,
                 "current_date": current_date,
+            },
+        )
+
+    def leave_tab_actions(self):
+        """
+        combined actions column: penalty/edit/delete + approve/reject
+        """
+        current_date = date.today()
+
+        return render_template(
+            path="cbv/leave_requests/leave_request_tab_actions.html",
+            context={
+                "instance": self,
+                "current_date": current_date,
+                "end_date": self.end_date,
             },
         )
 
@@ -1988,6 +2004,16 @@ class LeaveAllocationRequest(HorillaModel):
             context={"instance": self},
         )
 
+    def allocation_tab_actions(self):
+        """
+        combined actions column: edit/delete + approve/reject
+        """
+
+        return render_template(
+            path="cbv/leave_allocation_request/allocation_tab_actions.html",
+            context={"instance": self},
+        )
+
     def diff_cell(self):
         if self.status == "rejected":
             return 'style="background-color: rgba(255, 166, 0, 0.158);"'
@@ -2200,6 +2226,15 @@ if apps.is_installed("attendance"):
             """
             return render_template(
                 path="cbv/compensatory_leave/compensatory_confirmation.html",
+                context={"instance": self},
+            )
+
+        def compensatory_tab_actions(self):
+            """
+            combined actions column: approve/reject + edit/delete
+            """
+            return render_template(
+                path="cbv/compensatory_leave/compensatory_tab_actions.html",
                 context={"instance": self},
             )
 

@@ -6,7 +6,7 @@
                 <div
                     class="oh-tabs__movable-header"
                     style="cursor: pointer"
-                    onclick="$(this).parent().find('.oh-tabs__movable-body').toggleClass('d-none')"
+                    onclick="$(this).parent().find('.oh-tabs__movable-body').toggleClass('d-none'); var foldIcon = this.querySelector('.oh-tabs__movable-fold-icon'); if(foldIcon){foldIcon.setAttribute('name', foldIcon.getAttribute('name') === 'chevron-up-outline' ? 'chevron-down-outline' : 'chevron-up-outline');}"
                 >
                     <div class="flex items-center gap-2">
                         <span
@@ -19,6 +19,8 @@
                     </div>
 
                     {% if perms.recruitment.add_skillzonecandidate or perms.recruitment.change_skillzone or perms.recruitment.delete_skillzone %}
+                        <div class="d-flex align-items-center">
+                        <ion-icon name="chevron-up-outline" class="oh-tabs__movable-fold-icon me-2"></ion-icon>
                         <div onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
                             <button
                                 class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
@@ -104,6 +106,7 @@
                                     {% endif %}
                                 </ul>
                             </div>
+                        </div>
                         </div>
                     {% endif %}
                 </div>

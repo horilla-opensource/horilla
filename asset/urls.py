@@ -40,6 +40,16 @@ urlpatterns = [
         asset_history.AssetHistoryDetailView.as_view(),
         name="asset-history-detail-view",
     ),
+    path(
+        "asset-history-export-form/",
+        asset_history.AssetHistoryExportFormView.as_view(),
+        name="asset-history-export-form",
+    ),
+    path(
+        "asset-history-export/",
+        asset_history.AssetHistoryExportView.as_view(),
+        name="asset-history-export",
+    ),
     # path(
     #     "asset-creation/<int:asset_category_id>/",
     #     views.asset_creation,

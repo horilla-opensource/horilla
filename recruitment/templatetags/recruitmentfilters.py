@@ -26,11 +26,16 @@ def is_stagemanager(user):
     This method is used to check the employee is stage or recruitment manager
     """
     try:
+        cached = getattr(user, "_horilla_is_stagemanager", None)
+        if cached is not None:
+            return cached
         employee_obj = user.employee_get
-        return (
-            employee_obj.stage_set.all().exists()
+        result = (
+            employee_obj.stage_set.filter(is_active=True).exists()
             or employee_obj.recruitment_set.exists()
         )
+        setattr(user, "_horilla_is_stagemanager", result)
+        return result
     except Exception:
         return False
 
@@ -40,12 +45,19 @@ def is_any_manager(request):
     """
     This method is used to check the employee is stage or recruitment manager
     """
-    return (
-        request.user.employee_get.stage_set.exists()
-        or request.user.employee_get.recruitment_set.exists()
-        or request.user.employee_get.onboardingstage_set.exists()
-        or request.user.employee_get.onboarding_task.exists()
+    user = request.user
+    cached = getattr(user, "_horilla_is_any_manager", None)
+    if cached is not None:
+        return cached
+    employee = user.employee_get
+    result = (
+        employee.stage_set.filter(is_active=True).exists()
+        or employee.recruitment_set.exists()
+        or employee.onboardingstage_set.exists()
+        or employee.onboarding_task.exists()
     )
+    setattr(user, "_horilla_is_any_manager", result)
+    return result
 
 
 @register.filter(name="is_recruitmentmanager")
@@ -54,8 +66,13 @@ def is_recruitmentmangers(user):
     This method is used to check the employee is recruitment manager
     """
     try:
+        cached = getattr(user, "_horilla_is_recruitmentmanager", None)
+        if cached is not None:
+            return cached
         employee_obj = user.employee_get
-        return employee_obj.recruitment_set.exists()
+        result = employee_obj.recruitment_set.exists()
+        setattr(user, "_horilla_is_recruitmentmanager", result)
+        return result
     except Exception:
         return False
 

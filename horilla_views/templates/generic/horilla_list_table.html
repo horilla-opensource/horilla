@@ -1,5 +1,5 @@
 {% load static i18n generic_template_filters %}
-<div id="{{ view_id|safe }}" class="hlv-container">
+<div id="{{ view_id|safe }}" class="hlv-container" data-total-count="{{queryset.paginator.count}}">
     <div
         class="oh-modal"
         id="bulkUpdateModal{{view_id|safe}}"
@@ -312,27 +312,29 @@
             {% endif %}
         {% endif %}
         <script>
-            $("ul[data-search-url] a").click(function (e) {
-              e.preventDefault();
-              const url =  $(this).attr("hx-get")
+            $(document).off("click.hlvPageClick").on("click.hlvPageClick", "ul[data-search-url] a, .inline-flex button[hx-get]", function () {
+              const url = $(this).attr("hx-get");
+              if (!url) return;
               const $urlObj = $('<a>', { href: url });
               const searchParams = new URLSearchParams($urlObj[0].search);
 
-              let lastPageParam = null;
+              let lastPageParam = "page";
               let lastPageValue = 1;
 
               searchParams.forEach((value, param) => {
-                if (param === "page") {
+                if (param === "page" || param.endsWith("_page")) {
                   lastPageParam = param;
                   lastPageValue = value.split(",").pop();
                 }
               });
 
-              form = $(`form[hx-get="{{search_url}}"]`)
-              pageInput = form.find("#pageInput")
-              pageInput.attr("name",lastPageParam)
-              pageInput.attr("value",lastPageValue)
-
+              const form = $(`form[hx-get="{{search_url}}"]`);
+              const pageInput = form.find("#pageInput");
+              if (pageInput.length) {
+                pageInput.attr("name", lastPageParam);
+                pageInput.attr("value", lastPageValue);
+                pageInput.val(lastPageValue);
+              }
             });
         </script>
         <script>

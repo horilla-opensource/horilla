@@ -7,7 +7,7 @@ from typing import Any
 
 from django import forms
 from django.contrib import messages
-from django.db.models import Count, Prefetch, Q
+from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
@@ -73,13 +73,8 @@ class StageList(HorillaListView):
                     queryset=Employee.objects.filter(is_active=True),
                 )
             )
-            .annotate(
-                managers_count=Count(
-                    "stage_managers",
-                    filter=Q(stage_managers__is_active=True),
-                    distinct=True,
-                )
-            )
+            # managers_count comes from Stage.managers_count() using the
+            # prefetch cache — Count()+M2M joins made every group page slow.
         )
         return queryset
 
@@ -192,6 +187,7 @@ class StageNav(HorillaNavView):
     filter_form_context_name = "form"
     search_swap_target = "#listContainer"
     filter_body_template = "cbv/stages/filter.html"
+    default_group_by = "recruitment_id"
 
     group_by_fields = [("recruitment_id", _("Recruitment"))]
 

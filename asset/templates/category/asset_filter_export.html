@@ -6,14 +6,28 @@
     </button>
     <span class="oh-modal__dialog-title ml-5" id="addEmployeeObjectiveModalLabel">
         <h5>{% trans "Export Assets" %}</h5>
+        <p id="assetExportSelectedHint" class="text-xs text-gray-500 mt-1" style="display:none;"></p>
     </span>
 </div>
 <div
     class="oh-modal__dialog-body"
     id="assetExportModalBody"
 >
-    <form action="{% url 'asset-export-excel' %}" method="post">
+    <form
+        action="{% url 'asset-export-excel' %}"
+        method="post"
+        onsubmit="
+            var ids = '[]';
+            if (typeof ensureSelectionStore === 'function') {
+                ids = ensureSelectionStore('selectedInstances').attr('data-ids') || '[]';
+            } else {
+                ids = $('#selectedInstances').attr('data-ids') || '[]';
+            }
+            $(this).find('[name=ids]').val(ids);
+        "
+    >
         {% csrf_token %}
+        <input type="hidden" name="ids" value="[]">
         <div class="oh-profile-section pt-0">
             <div class="oh-accordion">
                 <div class="oh-accordion-header">{% trans "Asset" %}</div>
@@ -78,3 +92,14 @@
         </div>
     </form>
 </div>
+<script>
+    (function () {
+        var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+        var $hint = $("#assetExportSelectedHint");
+        if (ids.length) {
+            $hint.text(ids.length + " {% trans 'selected record(s) will be exported' %}").show();
+        } else {
+            $hint.hide();
+        }
+    })();
+</script>

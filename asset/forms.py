@@ -495,3 +495,41 @@ class AssetReassignForm(ModelForm):
             )
         else:
             self.fields["asset_id"].queryset = Asset.available_assets()
+
+
+_ASSET_HISTORY_EXPORT_EXCLUDED = {
+    "id",
+    "created_at",
+    "is_active",
+    "additional_info",
+    "return_images",
+    "assign_images",
+    "return_request",
+}
+
+_asset_history_field_choices = [
+    (field.name, field.verbose_name)
+    for field in AssetAssignment._meta.get_fields()
+    if hasattr(field, "verbose_name")
+    and field.name not in _ASSET_HISTORY_EXPORT_EXCLUDED
+]
+
+
+class AssetHistoryExportForm(forms.Form):
+    """
+    Column picker for Asset History Excel export (same pattern as employee export).
+    """
+
+    selected_fields = forms.MultipleChoiceField(
+        choices=_asset_history_field_choices,
+        widget=forms.CheckboxSelectMultiple,
+        initial=[
+            "asset_id",
+            "assigned_to_employee_id",
+            "assigned_date",
+            "assigned_by_employee_id",
+            "return_date",
+            "return_status",
+            "return_condition",
+        ],
+    )

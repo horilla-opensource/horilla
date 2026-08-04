@@ -47,7 +47,7 @@
                 {% if "payroll"|app_installed %}
                     {% if perms.payroll.add_loanaccount %}
                         <button
-                            class="oh-btn oh-btn--info oh-btn--shadow w-100"
+                            class="oh-btn oh-btn--secondary oh-btn--shadow w-100"
                             type="button"
                             hx-get="{% url 'asset-fine' %}?employee_id={{asset_alocation.assigned_to_employee_id.id}}&asset_id={{asset_id}}"
                             hx-target="#dynamicCreateModalTarget"

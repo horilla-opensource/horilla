@@ -279,10 +279,6 @@ class Recruitment(HorillaModel):
             if self.title is None and self.job_position_id
             else self.title
         )
-
-        if not self.is_event_based and self.job_position_id is not None:
-            self.open_positions.add(self.job_position_id)
-
         return str(title)
 
     def clean(self):
@@ -311,6 +307,10 @@ class Recruitment(HorillaModel):
         super().save(*args, **kwargs)  # Save the Recruitment instance first
         if self.is_event_based and self.open_positions is None:
             raise ValidationError({"open_positions": _("This field is required")})
+        # Keep open_positions in sync on save — never in __str__ (that caused
+        # SQLite write locks on every grouped stage list render).
+        if not self.is_event_based and self.job_position_id_id is not None and self.pk:
+            self.open_positions.add(self.job_position_id)
 
     def ordered_stages(self):
         """
@@ -526,6 +526,15 @@ class Stage(HorillaModel):
             path="cbv/stages/title.html",
             context={"instance": self},
         )
+
+    def managers_count(self):
+        """
+        Active stage manager count from prefetch cache when available.
+        """
+        cache = getattr(self, "_prefetched_objects_cache", None)
+        if cache is not None and "stage_managers" in cache:
+            return len(cache["stage_managers"])
+        return self.stage_managers.filter(is_active=True).count()
 
     def managers_col(self):
         """

@@ -1,34 +1,16 @@
 {% load i18n horillafilters %}
 {% get_company as theme_obj %}
 
-<style>
-	.oh-recuritment__progress-bar {
-		width: 50%;
-		height: 5px;
-		border-radius: 15px;
-		margin: 0.75rem 0;
-		background-color: hsl(213, 22%, 93%);
-		position: relative;
-	}
-
-	.oh-progress-bar__state {
-		background-color: {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }};
-		position: absolute;
-		left: 0px;
-		height: 5px;
-		width: 20%;
-		border-radius: 15px;
-	}
-</style>
-
 <div
 	class="oh-recuritment__progress-bar"
 	title="{% trans 'Paid' %} {{installment_paid}} {% trans 'out of' %} {{total_installments}} {% trans 'installments' %}"
+	style="width: 50%; height: 5px; border-radius: 15px; margin: 0.75rem 0; background-color: hsl(213, 22%, 93%); position: relative;"
 >
 	<div
 		class="oh-progress-bar__state"
 		role="progressbar"
 		aria-valuemax="100"
-		style="width:{{ instance.installment_ratio }}%;"
+		style="background-color: {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }}; position: absolute; left: 0px; height: 5px; width: {{ instance.installment_ratio }}%; border-radius: 15px;"
 	></div>
 </div>
+<span style="display:none; visibility:hidden;">{{ instance.installment_ratio|floatformat:0 }}%</span>

@@ -1,8 +1,12 @@
 {% load i18n generic_template_filters %}
-{% if request.actual_ids and request.session.prev_path == request.path %}
+{% if request.actual_ids and request.session.prev_path == request.path and request.session.hlv_selected_ids %}
 <script>
-  var ids =  {{request.session.hlv_selected_ids|safe}}
+  var ids =  {{request.session.hlv_selected_ids|safe}};
   $("#{{selected_instances_key_id}}").attr("data-ids", JSON.stringify(ids));
+</script>
+{% else %}
+<script>
+  $("#{{selected_instances_key_id}}").attr("data-ids", "[]");
 </script>
 {% endif %}
 
@@ -59,23 +63,16 @@
         </span>)
       </div>
       {% if quick_export %}
-      <div
+      {# Hidden trigger: the nav "Actions > Export" item clicks this to open the export modal #}
+      <button
         id="export_{{view_id}}"
-        class="oh-checkpoint-badge text-info d-none quick-bulk-action"
-        style="cursor: pointer;"
+        class="hlv-export-trigger d-none"
+        hidden
         data-toggle="oh-modal-toggle"
         data-target="#exportFields{{view_id|safe}}"
-      >
-      {% comment %} <ion-icon style="font;font-size: 1rem; margin-right:0;" name="download"></ion-icon> {% endcomment %}
-      <span class="label"
-      {% comment %} style="display: none;" {% endcomment %}
-      >
-        {% trans "Export" %}
-      </span>
-      (<span class="count_{{view_id}}">
-        0
-      </span>)
-      </div>
+        data-view-id="{{view_id}}"
+        data-selected-key="{{selected_instances_key_id}}"
+      ></button>
       {% endif %}
       {% if bulk_path and bulk_update %}
       <div

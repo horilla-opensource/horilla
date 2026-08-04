@@ -5,11 +5,11 @@
   {% for group in groups %}
   <div id="{{selected_instances_key_name}}{{ group.id }}" data-ids="[]"></div>
   <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
-    <div class="accordion-btn w-full flex justify-between items-center px-4 py-2 text-sm transition-all bg-primary-100 text-primary-600 hover:bg-primary-200"  style="cursor:pointer;" onclick="var i=$(this).find('.movable-toggle-icon'); i.text(i.text()=='+' ? '−' : '+'); $(this).parent().find('.oh-tabs__movable-body').toggleClass('d-none');">
+    <div class="accordion-btn w-full flex justify-between items-center px-4 py-2 text-sm transition-all bg-primary-100 text-primary-600 hover:bg-primary-200" style="cursor:pointer;" onclick="var icon = this.querySelector('.movable-toggle-icon'); if (icon) { var name = icon.getAttribute('name'); icon.setAttribute('name', name === 'chevron-down-outline' ? 'chevron-up-outline' : 'chevron-down-outline'); } $(this).parent().find('.oh-tabs__movable-body').toggleClass('d-none');">
       <span class="oh-tabs__movable-title">{{group}}</span>
 
       <div class="flex items-center gap-4">
-        <span class="movable-toggle-icon text-lg font-bold w-4 text-center">−</span>
+        <ion-icon name="{% if forloop.first %}chevron-up-outline{% else %}chevron-down-outline{% endif %}" class="movable-toggle-icon icon text-lg"></ion-icon>
 
         <div onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
           <div style="cursor: pointer;" onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
@@ -47,7 +47,7 @@
       </div>
     </div>
     <div
-    class="oh-tabs__movable-body position-relative bg-white px-4 text-sm text-gray-700"
+    class="oh-tabs__movable-body position-relative bg-white px-4 text-sm text-gray-700 {% if not forloop.first %}d-none{% endif %}"
     hx-get="{{url}}?{% for parameter in parameters %}{{parameter|format:group}}&{% endfor %}{{request.GET.urlencode}}"
     hx-trigger="load" id="taxbracketList{{group.id}}"
 
@@ -64,7 +64,4 @@
     var title = count + " " + label;
     badge.html(count);
     badge.attr("title", title);
-
-    $(".oh-tabs__movable-body").addClass("d-none")
-
 </script>

@@ -41,6 +41,33 @@ class LeaveSettingsTabView(HorillaTabView):
             },
         ]
 
+    def get_context_data(self, **kwargs):
+        from base.models import MultipleApprovalCondition
+        from leave.models import LeaveType
+
+        search = self.request.GET.get("search", "")
+        lt_qs = LeaveType.objects.all()
+        mac_qs = MultipleApprovalCondition.objects.all()
+
+        if search:
+            lt_qs = lt_qs.filter(name__icontains=search)
+            mac_qs = mac_qs.filter(company_id__company__icontains=search)
+
+        leave_type_count = lt_qs.count()
+        approval_count = mac_qs.count()
+
+        leave_url = reverse("leave-settings-leave-types-tab")
+        appr_url = reverse("leave-settings-approvals-tab")
+
+        for tab in self.tabs:
+            url = tab.get("url", "")
+            if leave_url in url:
+                tab["badge"] = leave_type_count
+            elif appr_url in url:
+                tab["badge"] = approval_count
+        context = super().get_context_data(**kwargs)
+        return context
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(hx_request_required, name="dispatch")

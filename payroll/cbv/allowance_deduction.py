@@ -45,19 +45,34 @@ class AllowanceDeductionTabView(HorillaTabView):
         """
         Adds tab information for allowances and deductions, including actions for adding bonuses
         """
-
-        context = super().get_context_data(**kwargs)
         pk = self.kwargs.get("pk")
-        context["tabs"] = [
+        from payroll.filters import AllowanceFilter, DeductionFilter
+        from payroll.models.models import Allowance, Deduction
+
+        all_qs = Allowance.objects.filter(employee_id=pk)
+        ded_qs = Deduction.objects.filter(employee_id=pk)
+
+        if self.request.GET.get("search"):
+            all_qs = AllowanceFilter(
+                data=self.request.GET, queryset=all_qs, request=self.request
+            ).qs
+            ded_qs = DeductionFilter(
+                data=self.request.GET, queryset=ded_qs, request=self.request
+            ).qs
+
+        self.tabs = [
             {
                 "title": _("Allowances"),
-                "url": f"{reverse('allowance-tab-list',kwargs={'pk': pk})}",
+                "url": f"{reverse('allowance-tab-list', kwargs={'pk': pk})}",
+                "badge": all_qs.count(),
             },
             {
                 "title": _("Deductions"),
-                "url": f"{reverse('deduction-tab-list',kwargs={'pk': pk })}",
+                "url": f"{reverse('deduction-tab-list', kwargs={'pk': pk})}",
+                "badge": ded_qs.count(),
             },
         ]
+        context = super().get_context_data(**kwargs)
         return context
 
 

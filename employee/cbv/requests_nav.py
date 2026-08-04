@@ -4,7 +4,7 @@ employee/cbv/requests_nav.py
 Nav views for shift request tabs inside the unified Requests page.
 """
 
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
@@ -26,12 +26,17 @@ class RequestsShiftNav(ShitRequestNav):
 
 @method_decorator(login_required, name="dispatch")
 class RequestsShiftInboxNav(ShitRequestNav):
-    """Shift inbox nav for allocated shift requests on the Requests page."""
+    """Shift allocations nav for allocated shift requests on the Work Requests page."""
 
-    nav_title = _("Shift Inbox")
+    nav_title = _("Shift Allocations")
     template_name = "generic/inline_nav.html"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.search_url = reverse("allocated-shift-view")
-        self.create_attrs = None
+        self.create_attrs = f"""
+             hx-get="{reverse_lazy('shift-request-reallocate')}"
+             data-toggle="oh-modal-toggle"
+             data-target="#genericModal"
+             hx-target="#genericModalBody"
+         """

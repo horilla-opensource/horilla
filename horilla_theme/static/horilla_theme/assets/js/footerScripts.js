@@ -545,6 +545,21 @@ function switchTab(e) {
     }
 }
 
+function setAccordionFoldIcon(icon, isOpen) {
+    if (!icon) {
+        return;
+    }
+    // Match recruitment pipeline fold icons: open = up, closed = down.
+    if (icon.tagName && icon.tagName.toLowerCase() === "ion-icon") {
+        icon.setAttribute(
+            "name",
+            isOpen ? "chevron-up-outline" : "chevron-down-outline"
+        );
+        return;
+    }
+    icon.textContent = isOpen ? "−" : "+";
+}
+
 function toggleAccordion(btn) {
 
     //  * This function is intended to be called explicitly via `hx-on:click` in HTMX-rendered content,
@@ -556,8 +571,10 @@ function toggleAccordion(btn) {
     document.querySelectorAll(".accordion-panel").forEach((p) => {
         p.style.maxHeight = null;
         const prevBtn = p.previousElementSibling;
-        const prevIcon = prevBtn.querySelector(".icon");
-        if (prevIcon) prevIcon.textContent = "+";
+        if (!prevBtn) {
+            return;
+        }
+        setAccordionFoldIcon(prevBtn.querySelector(".icon"), false);
         prevBtn.classList.remove("bg-primary-600", "text-white");
         prevBtn.classList.add("bg-primary-100", "text-primary-600");
     });
@@ -571,12 +588,12 @@ function toggleAccordion(btn) {
         // avoids animating to/from an arbitrary fixed height that doesn't
         // match the content, which read as janky/laggy.
         panel.style.maxHeight = panel.scrollHeight + "px";
-        if (icon) icon.textContent = "−";
+        setAccordionFoldIcon(icon, true);
         // btn.classList.remove("bg-primary-100", "text-primary-600");
         // btn.classList.add("bg-primary-600", "text-white");
     } else {
         panel.style.maxHeight = null;
-        if (icon) icon.textContent = "+";
+        setAccordionFoldIcon(icon, false);
         // btn.classList.remove("bg-primary-600", "text-white");
         // btn.classList.add("bg-primary-100", "text-primary-600");
     }
@@ -601,20 +618,23 @@ document.querySelectorAll('.accordion-btn').forEach((btn) => {
         // Collapse all others (optional — comment this block if you want multiple open)
         document.querySelectorAll('.accordion-panel').forEach(p => {
             p.style.maxHeight = null;
-            p.previousElementSibling.querySelector('.icon').textContent = '+';
-            p.previousElementSibling.classList.remove("bg-primary-600", "text-white");
-            p.previousElementSibling.classList.add("bg-primary-100", "text-primary-600");
+            const prevBtn = p.previousElementSibling;
+            if (prevBtn) {
+                setAccordionFoldIcon(prevBtn.querySelector('.icon'), false);
+                prevBtn.classList.remove("bg-primary-600", "text-white");
+                prevBtn.classList.add("bg-primary-100", "text-primary-600");
+            }
         });
 
         // Toggle current
         if (!isOpen) {
             panel.style.maxHeight = panel.scrollHeight + 'px';
-            icon.textContent = '-';
+            setAccordionFoldIcon(icon, true);
             // btn.classList.remove("bg-primary-100", "text-primary-600");
             // btn.classList.add("bg-primary-600", "text-white");
         } else {
             panel.style.maxHeight = null;
-            icon.textContent = '+';
+            setAccordionFoldIcon(icon, false);
             // btn.classList.remove("bg-primary-600", "text-white");
             // btn.classList.add("bg-primary-100", "text-primary-600");
         }

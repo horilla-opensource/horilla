@@ -41,11 +41,11 @@
         data-pre-move-check-url = "{{ view.pre_move_check_url }}"
     > </div>
 
-    <div class="flex gap-4 flex-nowrap overflow-auto groupContainer">
+    <div class="flex gap-2.5 flex-nowrap overflow-auto groupContainer">
         {% for key, group in grouped_items.items %}
 
         <div
-            class="kanban-block relative p-2 pt-0 pb-0 bg-[#e9edf0] rounded-lg overflow-hidden overflow-y-auto h-[calc(100vh_-_300px)] w-[350px] transition-[width] duration-500 ease-in-out flex-shrink-0 oh-kanban__section pipeline_item {% if key in view.folded_groups %}folded{% endif %}"
+            class="kanban-block relative p-2 pt-0 pb-0 bg-[#e9edf0] rounded-lg overflow-hidden overflow-y-auto h-[calc(100vh_-_180px)] min-h-[500px] w-[275px] transition-[width] duration-500 ease-in-out flex-shrink-0 oh-kanban__section pipeline_item {% if key in view.folded_groups %}folded{% endif %}"
             id="kanban{{key}}"
             data-group-id="{{key}}"
             data-group-instance = "{{group.label}}"
@@ -66,26 +66,27 @@
                     data-group-id="{{key}}"
                     data-group-sequence="{{group.sequence|default:forloop.counter0}}"
                 >
-                    <div class="flex gap-2 items-center">
+                    <div class="flex gap-1.5 items-center min-w-0">
                         <span
-                            class="fold-icon-animation transition-transform duration-500 ease-in-out"
+                            class="fold-icon-animation transition-transform duration-500 ease-in-out flex-shrink-0"
                             role="button"
                             onclick="event.stopPropagation();toggleFold($(this));"
                         >
-                            <i class="fa-solid fa-angles-left text-lg"></i>
+                            <i class="fa-solid fa-angles-left text-sm"></i>
                         </span>
-                        <div class="relative kanban-title duration-500 ease-in-out">
+                        <div class="relative kanban-title duration-500 ease-in-out min-w-0">
                             <h5
-                                class="text-center px-3 py-1.5 rounded-2xl text-sm font-medium text-[white] flex items-center gap-2 ps-2 {% cycle 'bg-[#f39022]' 'bg-[#22c55e]' 'bg-[#3b82f6]' 'bg-[#e11d48]' 'bg-[#8b5cf6]' 'bg-[#10b981]' 'bg-[#f59e0b]' %}"
+                                class="text-center px-2.5 py-1 rounded-2xl text-xs font-semibold text-[white] flex items-center gap-1.5 ps-1.5 truncate {% cycle 'bg-[#f39022]' 'bg-[#22c55e]' 'bg-[#3b82f6]' 'bg-[#e11d48]' 'bg-[#8b5cf6]' 'bg-[#10b981]' 'bg-[#f59e0b]' %}"
+                                title="{{group.label}}"
                             >
                                 <span
-                                    class="w-6 h-6 bg-white rounded-full text-[#f39022] flex items-center justify-center text-xs fade-me-out"
+                                    class="w-5 h-5 bg-white rounded-full text-[#f39022] flex items-center justify-center text-[11px] font-bold flex-shrink-0 fade-me-out"
                                     data-rec-stage-badge="{{rec.id}}"
                                     id="groupCount{{key}}"
                                 >
-                                    {{group.page_obj.object_list.count}}
+                                    {{group.page_obj.paginator.count|default:group.page_obj.object_list.count}}
                                 </span>
-                                {{group.label}}
+                                <span class="truncate">{{group.label}}</span>
                             </h5>
                         </div>
                     </div>

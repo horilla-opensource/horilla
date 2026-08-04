@@ -87,14 +87,14 @@ def generate_error_report(error_list, error_data, file_name):
     ]
     for key in keys_to_remove:
         del error_data[key]
-    data_frame = pd.DataFrame(error_data, columns=error_data.keys())
-    styled_data_frame = data_frame.style.map(
-        lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
-    )
-    response = HttpResponse(content_type="application/ms-excel")
-    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
     writer = pd.ExcelWriter(response, engine="xlsxwriter")
-    styled_data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
+    try:
+        styled_data_frame = data_frame.style.map(
+            lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
+        )
+        styled_data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
+    except Exception:
+        data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
     worksheet = writer.sheets["Sheet1"]
     worksheet.set_column("A:Z", 30)
     writer.close()
