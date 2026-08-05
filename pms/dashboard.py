@@ -215,11 +215,7 @@ def pms_at_risk_objectives(request):
                     "id": obj.id,
                     "employee_id": emp.id if emp else None,
                     "employee": emp.get_full_name() if emp else "—",
-                    "avatar": (
-                        emp.employee_profile.url
-                        if emp and emp.employee_profile
-                        else None
-                    ),
+                    "avatar": emp.get_avatar() if emp else None,
                     "objective": (
                         obj.objective_id.title
                         if obj.objective_id
@@ -241,6 +237,7 @@ def pms_at_risk_objectives(request):
 @permission_required("pms.view_employeeobjective")
 def pms_top_performers(request):
     """Top performers by objective completion and bonus points, for the picker range."""
+    from employee.models import Employee
     from pms.models import EmployeeBonusPoint, EmployeeObjective
 
     performers = []
@@ -253,7 +250,6 @@ def pms_top_performers(request):
                 "employee_id",
                 "employee_id__employee_first_name",
                 "employee_id__employee_last_name",
-                "employee_id__employee_profile",
             )
             .annotate(
                 avg_progress=Avg("progress_percentage"),
@@ -263,10 +259,16 @@ def pms_top_performers(request):
             .order_by("-avg_progress")[:10]
         )
 
+        avatar_by_employee_id = {
+            emp.id: emp.get_avatar()
+            for emp in Employee.objects.filter(
+                id__in=[item["employee_id"] for item in data]
+            )
+        }
+
         for item in data:
             first = item["employee_id__employee_first_name"] or ""
             last = item["employee_id__employee_last_name"] or ""
-            avatar = item["employee_id__employee_profile"]
 
             # Get bonus points
             bonus = 0
@@ -281,7 +283,7 @@ def pms_top_performers(request):
                 {
                     "id": item["employee_id"],
                     "name": f"{first} {last}".strip(),
-                    "avatar": f"/media/{avatar}" if avatar else None,
+                    "avatar": avatar_by_employee_id.get(item["employee_id"]),
                     "avg_progress": round(float(item["avg_progress"] or 0), 1),
                     "objectives": item["total_objectives"],
                     "completed": item["completed"],

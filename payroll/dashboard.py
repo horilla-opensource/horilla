@@ -263,6 +263,7 @@ def payroll_status_pipeline(request):
 @permission_required("payroll.view_payslip")
 def payroll_top_earners(request):
     """Top 10 employees by net pay this month."""
+    from employee.models import Employee
     from payroll.models.models import Payslip
 
     from_date, to_date = _parse_period(request)
@@ -281,22 +282,27 @@ def payroll_top_earners(request):
                 "employee_id",
                 "employee_id__employee_first_name",
                 "employee_id__employee_last_name",
-                "employee_id__employee_profile",
             )
             .annotate(total_net=Sum("net_pay"), total_gross=Sum("gross_pay"))
             .order_by("-total_net")[:10]
         )
 
+        avatar_by_employee_id = {
+            emp.id: emp.get_avatar()
+            for emp in Employee.objects.filter(
+                id__in=[item["employee_id"] for item in data]
+            )
+        }
+
         for item in data:
             first = item["employee_id__employee_first_name"] or ""
             last = item["employee_id__employee_last_name"] or ""
-            avatar = item["employee_id__employee_profile"]
 
             earners.append(
                 {
                     "id": item["employee_id"],
                     "name": f"{first} {last}".strip(),
-                    "avatar": f"/media/{avatar}" if avatar else None,
+                    "avatar": avatar_by_employee_id.get(item["employee_id"]),
                     "net": round(float(item["total_net"] or 0), 2),
                     "gross": round(float(item["total_gross"] or 0), 2),
                 }
@@ -342,11 +348,7 @@ def payroll_contract_status(request):
                 {
                     "id": emp.id if emp else None,
                     "name": emp.get_full_name() if emp else "—",
-                    "avatar": (
-                        emp.employee_profile.url
-                        if emp and emp.employee_profile
-                        else None
-                    ),
+                    "avatar": emp.get_avatar() if emp else None,
                     "end_date": c.contract_end_date.strftime("%b %d, %Y"),
                     "days_left": (c.contract_end_date - today).days,
                     "contract": c.contract_name or str(c),

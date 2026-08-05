@@ -241,6 +241,20 @@
 
         <!-- Main Content -->
         <div class="oh-main-content h-screen overflow-auto">
+            <script>
+                (function () {
+                    try {
+                        var stored = localStorage.getItem('sidebarPinned');
+                        var pinned = stored === null ? true : stored === 'true';
+                        if (pinned) {
+                            var sidebarEl = document.getElementById('sidebar');
+                            var contentEl = document.currentScript.parentNode;
+                            if (sidebarEl) sidebarEl.classList.add('sidebar-pinned');
+                            if (contentEl) contentEl.style.marginLeft = '13rem';
+                        }
+                    } catch (_) {}
+                })();
+            </script>
             <div>
                 <!-- Include Header -->
                 <div id="header">

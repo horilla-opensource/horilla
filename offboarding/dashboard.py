@@ -294,11 +294,7 @@ def offboarding_notice_period_tracker(request):
                 {
                     "id": emp.id if emp else None,
                     "name": emp.get_full_name() if emp else "—",
-                    "avatar": (
-                        emp.employee_profile.url
-                        if emp and emp.employee_profile
-                        else None
-                    ),
+                    "avatar": emp.get_avatar() if emp else None,
                     "stage": oe.stage_id.title if oe.stage_id else "—",
                     "notice_ends": (
                         oe.notice_period_ends.strftime("%b %d, %Y")

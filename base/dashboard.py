@@ -755,15 +755,7 @@ def dashboard_todays_leave(request):
                     "employee_id": emp.id if emp else None,
                     "employee": emp.get_full_name() if emp else "—",
                     "badge_id": getattr(emp, "badge_id", "") or "",
-                    "avatar": (
-                        (
-                            emp.employee_profile.url
-                            if emp and emp.employee_profile
-                            else None
-                        )
-                        if emp
-                        else None
-                    ),
+                    "avatar": emp.get_avatar() if emp else None,
                     "leave_type": lr.leave_type_id.name if lr.leave_type_id else "—",
                     "start": lr.start_date.strftime("%b %d"),
                     "end": lr.end_date.strftime("%b %d"),
@@ -837,9 +829,7 @@ def dashboard_birthdays_anniversaries(request):
                     {
                         "id": emp.id,
                         "name": emp.get_full_name(),
-                        "avatar": (
-                            emp.employee_profile.url if emp.employee_profile else None
-                        ),
+                        "avatar": emp.get_avatar(),
                         "date": this_year_bday.strftime("%b %d"),
                         "days_away": (this_year_bday - today).days,
                     }
@@ -868,9 +858,7 @@ def dashboard_birthdays_anniversaries(request):
                     {
                         "id": emp.id,
                         "name": emp.get_full_name(),
-                        "avatar": (
-                            emp.employee_profile.url if emp.employee_profile else None
-                        ),
+                        "avatar": emp.get_avatar(),
                         "date": this_year_ann.strftime("%b %d"),
                         "years": years,
                         "days_away": (this_year_ann - today).days,

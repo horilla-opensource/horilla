@@ -301,11 +301,7 @@ def asset_recent_allocations(request):
                 {
                     "id": emp.id if emp else None,
                     "employee": emp.get_full_name() if emp else "—",
-                    "avatar": (
-                        emp.employee_profile.url
-                        if emp and emp.employee_profile
-                        else None
-                    ),
+                    "avatar": emp.get_avatar() if emp else None,
                     "asset": aa.asset_id.asset_name if aa.asset_id else "—",
                     "category": (
                         aa.asset_id.asset_category_id.asset_category_name

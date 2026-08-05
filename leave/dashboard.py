@@ -366,6 +366,7 @@ def leave_paid_unpaid_split(request):
 @permission_required("leave.delete_leaverequest")
 def leave_top_takers(request):
     """Top 10 employees by leave days taken this month."""
+    from employee.models import Employee
     from leave.models import LeaveRequest
 
     from_date, to_date = _parse_period(request)
@@ -384,23 +385,28 @@ def leave_top_takers(request):
                 "employee_id",
                 "employee_id__employee_first_name",
                 "employee_id__employee_last_name",
-                "employee_id__employee_profile",
             )
             .annotate(total_days=Sum("requested_days"), request_count=Count("id"))
             .order_by("-total_days")[:10]
         )
 
+        avatar_by_employee_id = {
+            emp.id: emp.get_avatar()
+            for emp in Employee.objects.filter(
+                id__in=[item["employee_id"] for item in data]
+            )
+        }
+
         for item in data:
             first = item["employee_id__employee_first_name"] or ""
             last = item["employee_id__employee_last_name"] or ""
             name = f"{first} {last}".strip()
-            avatar = item["employee_id__employee_profile"]
 
             takers.append(
                 {
                     "id": item["employee_id"],
                     "name": name,
-                    "avatar": f"/media/{avatar}" if avatar else None,
+                    "avatar": avatar_by_employee_id.get(item["employee_id"]),
                     "days": round(float(item["total_days"] or 0), 1),
                     "requests": item["request_count"],
                 }
@@ -443,11 +449,7 @@ def leave_on_leave_today(request):
                 {
                     "id": emp.id if emp else None,
                     "name": emp.get_full_name() if emp else "—",
-                    "avatar": (
-                        emp.employee_profile.url
-                        if emp and emp.employee_profile
-                        else None
-                    ),
+                    "avatar": emp.get_avatar() if emp else None,
                     "leave_type": lr.leave_type_id.name if lr.leave_type_id else "—",
                     "start": lr.start_date.strftime("%b %d"),
                     "end": (
@@ -570,11 +572,7 @@ def leave_upcoming(request):
                 {
                     "id": emp.id if emp else None,
                     "name": emp.get_full_name() if emp else "—",
-                    "avatar": (
-                        emp.employee_profile.url
-                        if emp and emp.employee_profile
-                        else None
-                    ),
+                    "avatar": emp.get_avatar() if emp else None,
                     "leave_type": lr.leave_type_id.name if lr.leave_type_id else "—",
                     "start": lr.start_date.strftime("%b %d"),
                     "end": (
@@ -627,11 +625,7 @@ def employee_kpi_data(request):
 
     # Basic employee info
     try:
-        avatar_url = (
-            employee.get_avatar()
-            if hasattr(employee, "get_avatar")
-            else (employee.employee_profile.url if employee.employee_profile else None)
-        )
+        avatar_url = employee.get_avatar()
     except Exception:
         avatar_url = None
 

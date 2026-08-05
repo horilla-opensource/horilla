@@ -247,7 +247,7 @@ def employee_recent_list(request):
             {
                 "id": emp.id,
                 "name": emp.get_full_name(),
-                "avatar": emp.employee_profile.url if emp.employee_profile else None,
+                "avatar": emp.get_avatar(),
                 "department": (
                     wi.department_id.department if wi and wi.department_id else "—"
                 ),
@@ -286,9 +286,7 @@ def employee_upcoming_birthdays(request):
                     {
                         "id": emp.id,
                         "name": emp.get_full_name(),
-                        "avatar": (
-                            emp.employee_profile.url if emp.employee_profile else None
-                        ),
+                        "avatar": emp.get_avatar(),
                         "date": birthday_this_year.strftime("%d %b"),
                         "days_left": (birthday_this_year - today).days,
                     }

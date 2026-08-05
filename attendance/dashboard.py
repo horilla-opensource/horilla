@@ -656,9 +656,7 @@ def attendance_top_absentees(request):
                     {
                         "id": emp.id,
                         "name": emp.get_full_name(),
-                        "avatar": (
-                            emp.employee_profile.url if emp.employee_profile else None
-                        ),
+                        "avatar": emp.get_avatar(),
                         "absent_days": absent_days,
                         "present_days": present_days,
                         "total_days": working_days,

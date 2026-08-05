@@ -314,11 +314,7 @@ def helpdesk_overdue_tickets(request):
                     ),
                     "employee_id": emp.id if emp else None,
                     "employee": emp.get_full_name() if emp else "—",
-                    "avatar": (
-                        emp.employee_profile.url
-                        if emp and emp.employee_profile
-                        else None
-                    ),
+                    "avatar": emp.get_avatar() if emp else None,
                     "priority": t.priority,
                     "status": t.status,
                     "days_overdue": days_overdue,
@@ -355,11 +351,7 @@ def helpdesk_recent_tickets(request):
                     ),
                     "employee_id": emp.id if emp else None,
                     "employee": emp.get_full_name() if emp else "—",
-                    "avatar": (
-                        emp.employee_profile.url
-                        if emp and emp.employee_profile
-                        else None
-                    ),
+                    "avatar": emp.get_avatar() if emp else None,
                     "priority": t.priority,
                     "status": t.status,
                     "type": t.ticket_type.title if t.ticket_type else "—",
@@ -440,9 +432,7 @@ def helpdesk_assignee_workload(request):
                     workload[emp.id] = {
                         "id": emp.id,
                         "name": emp.get_full_name(),
-                        "avatar": (
-                            emp.employee_profile.url if emp.employee_profile else None
-                        ),
+                        "avatar": emp.get_avatar(),
                         "count": 0,
                         "high": 0,
                     }
