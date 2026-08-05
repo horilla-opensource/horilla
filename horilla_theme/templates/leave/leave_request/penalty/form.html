@@ -71,90 +71,94 @@
         </div>
     </div>
 
-    <form
-        hx-post="{% url 'leave-cut-penalty' instance.id %}?{{pd}}"
-        hx-target="#penaltyModalBody"
-    >
-        {{ form.errors }}
-        <div class="">
-            <div class="oh-input__group mb-2">
-                <label class="text-xs font-medium" for="id_leave_type_id">{% trans "Leave Type" %}</label>
-                {{ form.leave_type_id }}
-            </div>
-            <div class="oh-input__group">
-                <label class="text-xs font-medium" for="id_minus_leaves">{% trans "Minius Leave" %}</label>
-                {{ form.minus_leaves }}
-            </div>
-            <div class="oh-input__group">
-                <label
-                    class="text-xs font-medium"
-                    for="id_deduct_from_carry_forward"
-                >{% trans "Deduct From Carryforward" %}</label>
-                {{ form.deduct_from_carry_forward }}
-            </div>
-            <div class="oh-input__group">
-                <label class="text-xs font-medium" for="id_penalty_amount">{% trans "Penalty Amount" %}</label>
-                {{ form.penalty_amount }}
-            </div>
-        </div>
-
-        <input type="submit" id="penaltyFormSubmit" hidden>
-    </form>
-
-    {% if "leave"|app_installed %}
-        <table class="fixed-table w-full">
-            <thead class="sticky top-0 bg-[white] z-[1]">
-                <tr class="border-b border-[#ececec]">
-                    <th class="text-sm font-medium text-left p-3">
-                        {% trans "Leave Type" %}
-                    </th>
-                    <th class="text-sm font-medium text-left p-3">
-                        {% trans "Available Days" %}
-                    </th>
-                    <th class="text-sm font-medium text-left p-3">
-                        {% trans "Carry Forward Days" %}
-                    </th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for acc in available %}
-                    <tr class="border-b border-[#f3f3f3]">
-                        <td class="text-sm text-left p-3 text-[#666]">
-                            {{ acc.leave_type_id }}
-                        </td>
-                        <td class="text-sm text-left p-3 text-[#666]">
-                            {{ acc.available_days }}
-                        </td>
-                        <td class="text-sm text-left p-3 text-[#666]">
-                            {{ acc.carryforward_days }}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <ol class="mt-3 list-decimal ml-5 text-xs">
-            <li class="italic text-gray-700">
-                {% trans "Leave type is optional when 'minus leave' is 0" %}
-            </li>
-            <li class="italic text-gray-700">
-                {% trans "Penalty amount will affect payslip on the date" %}
-            </li>
-            <li class="italic text-gray-700">
-                {% trans "By default minus leave will cut/deduct from available leaves" %}
-            </li>
-            <li class="italic text-gray-700">
-                {% trans "By enabling 'Deduct from carry forward' leave will cut/deduct from carry forward days" %}
-            </li>
-        </ol>
-    {% endif %}
-    <div class="d-flex flex-row-reverse">
-        <button
-            onclick="$('#penaltyFormSubmit').click()"
-            class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp"
+    <div class="oh-general__tab-target oh-profile-section bg-[white] rounded-md border border-dark-50 w-full">
+      <div class="oh-profile-section__card">
+        <form
+            hx-post="{% url 'leave-cut-penalty' instance.id %}?{{pd}}"
+            hx-target="#penaltyModalBody"
         >
-            {% trans "Save" %}
-        </button>
+            {{ form.errors }}
+            <div class="">
+                <div class="oh-input__group mb-3">
+                    <label class="text-xs font-medium" for="id_leave_type_id">{% trans "Leave Type" %}</label>
+                    {{ form.leave_type_id }}
+                </div>
+                <div class="oh-input__group mb-3">
+                    <label class="text-xs font-medium" for="id_minus_leaves">{% trans "Minius Leave" %}</label>
+                    {{ form.minus_leaves }}
+                </div>
+                <div class="oh-input__group mb-3">
+                    <label
+                        class="text-xs font-medium"
+                        for="id_deduct_from_carry_forward"
+                    >{% trans "Deduct From Carryforward" %}</label>
+                    {{ form.deduct_from_carry_forward }}
+                </div>
+                <div class="oh-input__group">
+                    <label class="text-xs font-medium" for="id_penalty_amount">{% trans "Penalty Amount" %}</label>
+                    {{ form.penalty_amount }}
+                </div>
+            </div>
+
+            <input type="submit" id="penaltyFormSubmit" hidden>
+        </form>
+
+        {% if "leave"|app_installed %}
+            <table class="fixed-table w-full mt-4">
+                <thead class="sticky top-0 bg-[white] z-[1]">
+                    <tr class="border-b border-[#ececec]">
+                        <th class="text-sm font-medium text-left p-3">
+                            {% trans "Leave Type" %}
+                        </th>
+                        <th class="text-sm font-medium text-left p-3">
+                            {% trans "Available Days" %}
+                        </th>
+                        <th class="text-sm font-medium text-left p-3">
+                            {% trans "Carry Forward Days" %}
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for acc in available %}
+                        <tr class="border-b border-[#f3f3f3]">
+                            <td class="text-sm text-left p-3 text-[#666]">
+                                {{ acc.leave_type_id }}
+                            </td>
+                            <td class="text-sm text-left p-3 text-[#666]">
+                                {{ acc.available_days }}
+                            </td>
+                            <td class="text-sm text-left p-3 text-[#666]">
+                                {{ acc.carryforward_days }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <ol class="mt-4 list-decimal ml-5 text-xs">
+                <li class="italic text-gray-700 mb-1">
+                    {% trans "Leave type is optional when 'minus leave' is 0" %}
+                </li>
+                <li class="italic text-gray-700 mb-1">
+                    {% trans "Penalty amount will affect payslip on the date" %}
+                </li>
+                <li class="italic text-gray-700 mb-1">
+                    {% trans "By default minus leave will cut/deduct from available leaves" %}
+                </li>
+                <li class="italic text-gray-700">
+                    {% trans "By enabling 'Deduct from carry forward' leave will cut/deduct from carry forward days" %}
+                </li>
+            </ol>
+        {% endif %}
+        <div class="d-flex flex-row-reverse">
+            <button
+                onclick="$('#penaltyFormSubmit').click()"
+                class="oh-btn oh-btn--secondary mt-4 mr-0 pl-4 pr-5 oh-btn--w-100-resp"
+            >
+                {% trans "Save" %}
+            </button>
+        </div>
+      </div>
     </div>
 </div>
