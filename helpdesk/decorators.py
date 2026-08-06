@@ -43,8 +43,10 @@ def ticket_owner_can_enter(function, perm: str, model: object, manager_access=Fa
                 if manager_access
                 else False
             )
-            or Ticket.objects.filter(assigned_to__in=[request.user.employee_get])
-            or Ticket.objects.filter(created_by=request.user)
+            or Ticket.objects.filter(
+                id=instance_id, assigned_to__in=[request.user.employee_get]
+            )
+            or Ticket.objects.filter(id=instance_id, created_by=request.user)
         )
         if can_enter:
             return function(request, *args, **kwargs)

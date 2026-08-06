@@ -1350,6 +1350,7 @@ def comment_create(request, ticket_id):
 
 @login_required
 @hx_request_required
+@ticket_owner_can_enter(perm="helpdesk.change_comment", model=Comment)
 def comment_edit(request):
     comment_id = request.GET.get("comment_id")
     new_comment = request.POST.get("new_comment")
@@ -1383,7 +1384,7 @@ def comment_edit(request):
 
 
 @login_required
-@permission_required("helpdesk.delete_comment")
+@ticket_owner_can_enter(perm="helpdesk.delete_comment", model=Comment)
 def comment_delete(request, comment_id):
     comment = Comment.find(comment_id)
     if not comment:
