@@ -1,13 +1,21 @@
 {% load i18n %}
 
-<div class="oh-modal__dialog-header pb-0">
-    <span class="oh-modal__dialog-title">{% trans "Publish Roster" %}</span>
+<div class="oh-modal__dialog-header">
+    <h2 class="text-md font-semibold" id="createTitle">
+        {% trans "Publish Roster" %}
+    </h2>
     <button
-        class="oh-modal__close"
+        type="button"
+        class="oh-modal__close--custom"
+        onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
         aria-label="{% trans 'Close' %}"
-        onclick="$('#genericModal').removeClass('oh-modal--show')"
     >
-        <ion-icon name="close-outline"></ion-icon>
+        <ion-icon
+            name="close-outline"
+            role="img"
+            class="md hydrated"
+            aria-label="{% trans 'close outline' %}"
+        ></ion-icon>
     </button>
 </div>
 
@@ -15,46 +23,50 @@
     <form hx-post="{% url 'roster-publish' %}" hx-target="#genericModalBody" hx-swap="innerHTML">
         {% csrf_token %}
 
-        <div class="row">
-            <div class="col-12 mb-3">
-                <div class="oh-input-wrapper">
-                    <label class="oh-label">{% trans "Department" %}</label>
-                    <select name="department" class="oh-select oh-select-2 w-100">
-                        <option value="">{% trans "All Departments" %}</option>
-                        {% for dept in departments %}
-                            <option value="{{ dept.pk }}">{{ dept.department }}</option>
-                        {% endfor %}
-                    </select>
+        <div class="oh-general__tab-target oh-profile-section bg-[white] rounded-md border border-dark-50 w-full">
+          <div class="oh-profile-section__card">
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <div class="oh-input-wrapper">
+                        <label class="oh-label">{% trans "Department" %}</label>
+                        <select name="department" class="oh-select oh-select-2 w-100">
+                            <option value="">{% trans "All Departments" %}</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.pk }}">{{ dept.department }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 mb-3">
+                    <div class="oh-input-wrapper">
+                        <label class="oh-label oh-label--mandatory">{% trans "From Date" %}</label>
+                        <input type="date" name="from_date" class="oh-input w-100" required>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 mb-3">
+                    <div class="oh-input-wrapper">
+                        <label class="oh-label">{% trans "To Date" %}</label>
+                        <input type="date" name="to_date" class="oh-input w-100">
+                        <small
+                            class="text-muted"
+                            style="font-size: 11px"
+                        >{% trans "Leave blank to publish all entries from start date" %}</small>
+                    </div>
                 </div>
             </div>
-            <div class="col-12 col-md-6 mb-3">
-                <div class="oh-input-wrapper">
-                    <label class="oh-label oh-label--mandatory">{% trans "From Date" %}</label>
-                    <input type="date" name="from_date" class="oh-input w-100" required>
-                </div>
-            </div>
-            <div class="col-12 col-md-6 mb-3">
-                <div class="oh-input-wrapper">
-                    <label class="oh-label">{% trans "To Date" %}</label>
-                    <input type="date" name="to_date" class="oh-input w-100">
-                    <small
-                        class="text-muted"
-                        style="font-size: 11px"
-                    >{% trans "Leave blank to publish all entries from start date" %}</small>
-                </div>
-            </div>
-        </div>
 
-        <div class="oh-alert oh-alert--info mb-3" style="font-size: 13px">
-            <ion-icon name="information-circle-outline" class="me-1"></ion-icon>
-            {% trans "All unpublished roster entries in this range will be made visible to employees." %}
-        </div>
+            <div class="oh-alert oh-alert--info mb-3" style="font-size: 13px">
+                <ion-icon name="information-circle-outline" class="me-1"></ion-icon>
+                {% trans "All unpublished roster entries in this range will be made visible to employees." %}
+            </div>
 
-        <div class="oh-modal__dialog-footer p-0 mt-2">
-            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-                <ion-icon name="cloud-upload-outline" class="me-1"></ion-icon>
-                {% trans "Publish" %}
-            </button>
+            <div class="oh-modal__dialog-footer p-0 mt-2">
+                <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                    <ion-icon name="cloud-upload-outline" class="me-1"></ion-icon>
+                    {% trans "Publish" %}
+                </button>
+            </div>
+          </div>
         </div>
     </form>
 </div>
