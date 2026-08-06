@@ -1,8 +1,20 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header">
-    <span class="oh-modal__dialog-title">{{ form.instance.title|default:_("Add Template") }}</span>
-    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
-        <ion-icon name="close-outline"></ion-icon>
+    <h2 class="text-md font-semibold" id="createTitle">
+        {{ form.instance.title|default:_("Add Template") }}
+    </h2>
+    <button
+        type="button"
+        class="oh-modal__close--custom"
+        onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+        aria-label="{% trans 'Close' %}"
+    >
+        <ion-icon
+            name="close-outline"
+            role="img"
+            class="md hydrated"
+            aria-label="{% trans 'close outline' %}"
+        ></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body">
@@ -13,7 +25,8 @@
     >
         <div id="viewTemplateModalContainer">
             <div class="my-3" id="keyResultCard">
-                <div class="oh-card oh-card--no-shadow oh-card__body">
+                <div class="oh-general__tab-target oh-profile-section bg-[white] rounded-md border border-dark-50 w-full">
+                  <div class="oh-profile-section__card">
                     <div class="oh-input__group">
                         <label class="oh-input__label mt-0" for="id_title">{% trans "Title" %}</label>
                         {{ form.title }}
@@ -32,6 +45,7 @@
                         <label class="oh-input__label mt-2" for="id_company_id">{% trans "Company" %}</label>
                         {{ form.company_id }}
                     </div>
+                  </div>
                 </div>
             </div>
         </div>

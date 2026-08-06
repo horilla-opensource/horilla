@@ -35,6 +35,7 @@ class MailTemplateFormView(HorillaFormView):
         context = super().get_context_data(**kwargs)
         if self.form.instance.pk:
             self.form_class.verbose_name = _("Update Template")
+        context["searchWords"] = self.form.get_template_language()
 
         return context
 

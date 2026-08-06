@@ -4,12 +4,56 @@
 
 </div>
 <script>
-    $(document).ready(function() {
-        var hintHtml = `
-            <div class="form-hint" style="margin-top: 10px; font-size: 14px; color: #888;">
-                {% trans "Hint: Type '{' to get sender or receiver data" %}
-            </div>`;
+    (function () {
+        // $(document).ready never fires here: this fragment loads via htmx
+        // into an already-open modal, well after the page's own DOMContentLoaded
+        // has passed -- so neither the hint text nor the Summernote mentions
+        // dropdown below ever appeared. htmx:afterSettle is the correct signal
+        // that this fragment (and its #id_body textarea) now exist in the DOM.
+        function initMailTemplateHint() {
+            var $body = $("#id_body");
+            if ($body.length === 0) {
+                return;
+            }
 
-        $("#dynamic_field_body").after(hintHtml);
-    });
+            // Guard against duplicate hint text: this fires on every htmx
+            // settle anywhere on the page while the modal stays open, not
+            // just this fragment's own load.
+            if ($("#dynamic_field_body").next(".form-hint").length === 0) {
+                var hintHtml = `
+                    <div class="form-hint" style="margin-top: 10px; font-size: 14px; color: #888;">
+                        {% trans "Hint: Type '{' to get sender or receiver data" %}
+                    </div>`;
+                $("#dynamic_field_body").after(hintHtml);
+            }
+
+            var searchWords = {{ searchWords|safe }};
+            var mentions = Object.keys(searchWords);
+            $body.summernote({
+                height: 300,
+                hint: {
+                    mentions: mentions,
+                    match: /\B{(\w*)$/,
+                    search: function (keyword, callback) {
+                        var pattern = new RegExp(keyword, "i");
+                        callback($.grep(this.mentions, function (item) {
+                            return pattern.test(item);
+                        }));
+                    },
+                    content: function (item) {
+                        var word = searchWords[item];
+                        return "{% templatetag openbrace %}{% templatetag openbrace %}" + word + "{% templatetag closebrace %}{% templatetag closebrace %}";
+                    }
+                },
+                callbacks: {
+                    onChange: function (contents) {
+                        $('[name="body"]').val(contents);
+                    },
+                },
+            });
+        }
+
+        $(document).off("htmx:afterSettle.mailTemplateHint").on("htmx:afterSettle.mailTemplateHint", initMailTemplateHint);
+        initMailTemplateHint();
+    })();
 </script>
