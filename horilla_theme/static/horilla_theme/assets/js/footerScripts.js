@@ -655,13 +655,19 @@ $(document).on("htmx:afterSettle", function (event) {
     //     }
     // });
 
-    // method for sticky issue
-    const $fixedTable = $('.fixed-table');
+    // method for sticky issue -- scoped to the subtree htmx actually just
+    // swapped (event.target), not the whole document. This handler fires on
+    // EVERY htmx swap anywhere on the page (e.g. opening the Edit modal into
+    // #genericModalBody), and an unscoped $(".oh-permission-table--toggle")
+    // would re-collapse every accordion row on the page each time, undoing
+    // whatever the user had just expanded.
+    const $scope = $(event.target);
+    const $fixedTable = $scope.find('.fixed-table').addBack('.fixed-table');
     if ($fixedTable.length === 0) return;
 
     const bulk_select_option = $fixedTable.data('bulk-select-option');
     if (bulk_select_option) {
-        $('tr').each(function () {
+        $scope.find('tr').each(function () {
             const $cells = $(this).find('th, td');
             if ($cells.length > 0) {
                 $cells.eq(0).addClass('stickyleft');
@@ -669,7 +675,7 @@ $(document).on("htmx:afterSettle", function (event) {
             }
         });
     } else {
-        $('tr').each(function () {
+        $scope.find('tr').each(function () {
             const $cells = $(this).find('th, td');
             if ($cells.length > 0) {
                 $cells.eq(0).addClass('stickyleft');
@@ -677,8 +683,9 @@ $(document).on("htmx:afterSettle", function (event) {
         });
     };
 
-    if ($(".oh-permission-table--toggle").length > 0) {
-        $(".oh-permission-table--toggle").each(function () {
+    const $toggles = $scope.find(".oh-permission-table--toggle");
+    if ($toggles.length > 0) {
+        $toggles.each(function () {
             $(this).closest("tr").addClass("oh-permission-table--collapsed")
         });
     }
