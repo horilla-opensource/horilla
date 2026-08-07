@@ -27,6 +27,7 @@ from base.methods import (
     closest_numbers,
     eval_validate,
     export_data,
+    filter_own_and_subordinate_recordes,
     generate_colors,
     generate_pdf,
     get_key_instances,
@@ -1848,6 +1849,27 @@ def delete_payrollrequest_comment(request, comment_id):
     if not comment.exists():
         messages.error(request, _("Comment not found."))
         return HorillaRedirect(request)
+    comment_obj = comment.first()
+
+    # Mirrors reimbursement_comment.html's delete-control condition, but
+    # scoped to the comment's specific parent Reimbursement instead of the
+    # template's coarse is_reportingmanager check (which only asks "does
+    # this user manage *someone*", not whether they manage the request's
+    # actual employee). filter_own_and_subordinate_recordes() checks: own
+    # record, subordinate-of-an-authorized-manager, or the global perm.
+    is_author = comment_obj.employee_id == request.user.employee_get
+    if not is_author:
+        authorized_requests = filter_own_and_subordinate_recordes(
+            request,
+            Reimbursement.objects.filter(pk=comment_obj.request_id_id),
+            "payroll.delete_reimbursementrequestcomment",
+        )
+        if not authorized_requests.exists():
+            messages.error(
+                request, _("You don't have permission to delete this comment.")
+            )
+            return HorillaRedirect(request)
+
     comment.delete()
     return HorillaRedirect(request, message=_("Comment deleted successfully!"))
 

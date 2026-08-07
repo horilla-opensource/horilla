@@ -409,7 +409,14 @@ def delete_announcement_comment(request, comment_id):
     """
     This method is used to delete announcement comments
     """
-    comment = AnnouncementComment.objects.get(id=comment_id)
+    comment = get_object_or_404(AnnouncementComment, id=comment_id)
+
+    if not (
+        request.user.has_perm("base.delete_announcementcomment")
+        or comment.created_by == request.user
+    ):
+        messages.error(request, _("You don't have permission to delete this comment."))
+        return HttpResponse(status=403)
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
     return HttpResponse()

@@ -2497,6 +2497,29 @@ def delete_attendancerequest_comment(request, comment_id):
             request, message=_("No Comment found matching the query.")
         )
 
+    # Authorize against the comment's parent attendance request using the
+    # same scope request_attendance_view() uses to list requests: the
+    # requester's own record, a subordinate's record they're an authorized
+    # manager over, or any record if they hold the global view permission.
+    # Comment creation isn't restricted to just the owner/manager (see the
+    # notify.send() branches above this view), so deletion can't be
+    # narrowed to "comment author only" without blocking legitimate
+    # moderation by an authorized manager/HR.
+    authorized_requests = filtersubordinates(
+        request=request,
+        perm="attendance.view_attendance",
+        queryset=Attendance.objects.filter(pk=comment.request_id_id),
+    )
+    authorized_requests = authorized_requests | Attendance.objects.filter(
+        pk=comment.request_id_id,
+        employee_id__employee_user_id=request.user,
+    )
+    if not authorized_requests.exists():
+        return HorillaRedirect(
+            request,
+            message=_("You don't have permission to delete this comment."),
+        )
+
     script = ""
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
