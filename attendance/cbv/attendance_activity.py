@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from attendance.filters import AttendanceActivityFilter
 from attendance.forms import AttendanceActivityExportForm
 from attendance.models import AttendanceActivity
-from base.methods import filtersubordinates, is_reportingmanager
+from base.methods import filtersubordinates, has_export_access, is_reportingmanager
 from horilla_views.cbv_methods import hx_request_required, login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -103,10 +103,14 @@ class AttendanceActivityNavView(HorillaNavView):
         super().__init__(**kwargs)
         self.search_url = reverse("attendance-activity-search")
 
-        actions = [
-            {
-                "action": _("Import"),
-                "attrs": f"""
+        actions = []
+        if self.request.user.has_perm(
+            "attendance.delete_attendanceactivity"
+        ) or is_reportingmanager(self.request):
+            actions.append(
+                {
+                    "action": _("Import"),
+                    "attrs": f"""
                     "id"="activityInfoImport"
                     data-toggle = "oh-modal-toggle"
                     data-target = "#objectCreateModal"
@@ -114,18 +118,22 @@ class AttendanceActivityNavView(HorillaNavView):
                     hx-get ="{reverse_lazy('attendance-activity-import')}"
                     style="cursor: pointer;"
                 """,
-            },
-            {
-                "action": _("Export"),
-                "attrs": f"""
+                }
+            )
+
+        if has_export_access(self.request, AttendanceActivity):
+            actions.append(
+                {
+                    "action": _("Export"),
+                    "attrs": f"""
                     data-toggle = "oh-modal-toggle"
                     data-target = "#genericModal"
                     hx-target="#genericModalBody"
                     hx-get ="{reverse_lazy('attendance-bulk-export')}"
                     style="cursor: pointer;"
                 """,
-            },
-        ]
+                }
+            )
 
         if self.request.user.has_perm("attendance.delete_attendanceactivity"):
             actions.append(
@@ -140,11 +148,7 @@ class AttendanceActivityNavView(HorillaNavView):
                 """,
                 }
             )
-        if not self.request.user.has_perm(
-            "attendance.delete_attendanceactivity"
-        ) and not is_reportingmanager(self.request):
-            actions = None
-        self.actions = actions
+        self.actions = actions or None
 
     nav_title = _("Check-in / Check-out Log")
     filter_body_template = "cbv/attendance_activity/filter.html"

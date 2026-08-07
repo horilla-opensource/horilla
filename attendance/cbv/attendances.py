@@ -21,7 +21,12 @@ from attendance.forms import AttendanceExportForm, AttendanceForm, AttendanceUpd
 from attendance.models import Attendance, AttendanceValidationCondition, strtime_seconds
 from base.decorators import manager_can_enter
 from base.filters import PenaltyFilter
-from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
+from base.methods import (
+    choosesubordinates,
+    filtersubordinates,
+    has_export_access,
+    is_reportingmanager,
+)
 from base.models import PenaltyAccounts
 from employee.cbv.employee_profile import EmployeeProfileView
 from employee.cbv.employees import EmployeeCard, EmployeeNav, EmployeesList
@@ -241,17 +246,20 @@ class AttendancesNavView(HorillaNavView):
                     style="cursor: pointer;"
                 """,
             },
-            {
-                "action": _("Export"),
-                "attrs": f"""
+        ]
+        if has_export_access(self.request, Attendance):
+            actions.append(
+                {
+                    "action": _("Export"),
+                    "attrs": f"""
                     data-toggle = "oh-modal-toggle"
                     data-target = "#genericModal"
                     hx-target="#genericModalBody"
                     hx-get ="{reverse('attendences-navbar-export')}"
                     style="cursor: pointer;"
                 """,
-            },
-        ]
+                }
+            )
         if self.request.user.has_perm("attendance.add_attendance"):
             actions.append(
                 {

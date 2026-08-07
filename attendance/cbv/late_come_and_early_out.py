@@ -13,7 +13,7 @@ from attendance.forms import LateComeEarlyOutExportForm
 from attendance.models import AttendanceLateComeEarlyOut
 from base.decorators import manager_can_enter
 from base.filters import PenaltyFilter
-from base.methods import filtersubordinates, is_reportingmanager
+from base.methods import filtersubordinates, has_export_access, is_reportingmanager
 from base.models import PenaltyAccounts
 from horilla_views.cbv_methods import hx_request_required, login_required
 from horilla_views.generic.cbv.views import (
@@ -133,18 +133,20 @@ class LateComeAndEarlyOutListNav(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("late-come-early-out-search")
-        actions = [
-            {
-                "action": _("Export"),
-                "attrs": f"""
+        actions = []
+        if has_export_access(self.request, AttendanceLateComeEarlyOut):
+            actions.append(
+                {
+                    "action": _("Export"),
+                    "attrs": f"""
                 data-toggle="oh-modal-toggle"
                 data-target="#attendanceExport"
                 hx-get="{reverse('late-come-and-early-out-export')}"
                 hx-target="#attendanceExportForm"
                 style="cursor: pointer;"
                 """,
-            }
-        ]
+                }
+            )
 
         if self.request.user.has_perm(
             "base.change_penaltyaccounts"
@@ -164,16 +166,7 @@ class LateComeAndEarlyOutListNav(HorillaNavView):
                 },
             )
 
-        if (
-            not self.request.user.has_perm("base.change_penaltyaccounts")
-            and not is_reportingmanager(self.request)
-            and not self.request.user.has_perm(
-                "perms.attendance.delete_attendancelatecomeearlyout"
-            )
-        ):
-            actions = None
-
-        self.actions = actions
+        self.actions = actions or None
 
     nav_title = _("Late Arrival & Early Departure")
     filter_instance = LateComeEarlyOutFilter()

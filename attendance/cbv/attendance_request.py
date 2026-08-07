@@ -19,7 +19,12 @@ from attendance.forms import (
 )
 from attendance.methods.utils import get_employee_last_name
 from attendance.models import Attendance
-from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
+from base.methods import (
+    choosesubordinates,
+    filtersubordinates,
+    has_export_access,
+    is_reportingmanager,
+)
 from employee.models import Employee
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
@@ -313,18 +318,20 @@ class AttendanceRequestNav(HorillaNavView):
                         hx-get="{reverse('request-new-attendance')}"
                         hx-target="#genericModalBody"
                         """
-        self.actions = [
-            {
-                "action": _("Export"),
-                "attrs": f"""
+        self.actions = []
+        if has_export_access(self.request, Attendance):
+            self.actions.append(
+                {
+                    "action": _("Export"),
+                    "attrs": f"""
                     data-toggle="oh-modal-toggle"
                     data-target="#genericModal"
                     hx-target="#genericModalBody"
                     hx-get="{reverse('attendences-navbar-export')}"
                     style="cursor: pointer;"
                 """,
-            },
-        ]
+                }
+            )
         if self.request.user.has_perm(
             "attendance.add_attendanceovertime"
         ) or is_reportingmanager(self.request):

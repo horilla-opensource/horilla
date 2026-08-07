@@ -15,7 +15,12 @@ from attendance.filters import AttendanceOverTimeFilter
 from attendance.forms import AttendanceOverTimeExportForm, AttendanceOverTimeForm
 from attendance.models import AttendanceOverTime
 from base.decorators import manager_can_enter
-from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
+from base.methods import (
+    choosesubordinates,
+    filtersubordinates,
+    has_export_access,
+    is_reportingmanager,
+)
 from horilla_views.cbv_methods import hx_request_required, login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -132,18 +137,20 @@ class HourAccountNav(HorillaNavView):
                 hx-target="#genericModalBody"
                 hx-get="{reverse_lazy('attendance-overtime-create')}"
             """
-        actions = [
-            {
-                "action": _("Export"),
-                "attrs": f"""
+        actions = []
+        if has_export_access(self.request, AttendanceOverTime):
+            actions.append(
+                {
+                    "action": _("Export"),
+                    "attrs": f"""
                 data-toggle="oh-modal-toggle"
                 data-target="#hourAccountExport"
                 hx-get="{reverse('hour-account-export')}"
                 hx-target="#hourAccountExportModalBody"
                 style="cursor: pointer;"
                 """,
-            }
-        ]
+                }
+            )
 
         if self.request.user.has_perm("attendance.add_attendanceovertime"):
             actions.append(
@@ -159,12 +166,7 @@ class HourAccountNav(HorillaNavView):
                 },
             )
 
-        if not self.request.user.has_perm(
-            "attendance.add_attendanceovertime"
-        ) and not is_reportingmanager(self.request):
-            actions = None
-
-        self.actions = actions
+        self.actions = actions or None
 
     nav_title = _("Hours Balance")
     filter_instance = AttendanceOverTimeFilter()
