@@ -15,7 +15,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
-from base.methods import filtersubordinates, get_key_instances
+from base.methods import filtersubordinates, get_key_instances, has_export_access
 from horilla.decorators import hx_request_required, login_required, permission_required
 from horilla.http import HorillaRedirect
 from horilla.methods import handle_no_permission
@@ -526,6 +526,8 @@ def project_bulk_export(request):
     """
     This method is used to export bulk of Project instances
     """
+    if not has_export_access(request, Project):
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
     # No selection means "export everything", same convention as every other
     # list view's export flow - this used to hard-block instead of falling
     # back, so selecting nothing was the only way to get a "no rows" error.
