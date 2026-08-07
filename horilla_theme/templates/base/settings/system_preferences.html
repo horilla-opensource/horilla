@@ -46,7 +46,7 @@
         </div>
     {% endif %}
 
-    {% if perms.horilla_audit.view_accountblockunblock or perms.horilla_audit.view_historytrackingfields %}
+    {% if perms.horilla_audit.view_accountblockunblock or perms.horilla_audit.view_historytrackingfields or perms.base.view_defaultexportpermission %}
         <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
             <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">
                 {% trans "Data & Access Controls" %}
@@ -58,6 +58,9 @@
                     {% endif %}
                     {% if perms.horilla_audit.view_historytrackingfields %}
                         {% include "base/audit_tag/history_tracking_fields.html" %}
+                    {% endif %}
+                    {% if perms.base.view_defaultexportpermission %}
+                        {% include "base/settings/default_export_access_toggle.html" %}
                     {% endif %}
                 </div>
             </div>

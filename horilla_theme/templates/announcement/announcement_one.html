@@ -143,6 +143,7 @@
                                                 hx-post="{% url 'delete-announcement' announcement.id %}?instance_ids={{ instance_ids }}"
                                                 hx-confirm="{% trans 'Are you sure you want to delete this announcement?' %}"
                                                 hx-target="#objectDetailsModalTarget"
+                                                hx-on-htmx-after-request="$('#reloadMessagesButton').click();"
                                             >
                                                 {% csrf_token %}
                                                 <button

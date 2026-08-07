@@ -117,7 +117,7 @@
                             hx-target="#announCommentCard{{comment.id}}"
                             hx-swap="delete"
                             class="inline-block"
-                            hx-on:click="setTimeout(() => {reloadMessage(this);},100);"
+                            hx-on-htmx-after-request="$('#reloadMessagesButton').click();"
                         >
                             {% csrf_token %}
                             <button

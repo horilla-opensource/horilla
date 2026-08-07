@@ -67,7 +67,7 @@
                     >
                         <div class="flex oh-label" for="id_{{ field.name }}">
                             <label
-                                class="{% if field.field.required %}required-star{% endif %}"
+                                class="{% if field.field.required or field.name in form.required_fields %}required-star{% endif %}"
                                 for="id_{{ field.name }}"
                             >{% trans field.label %}</label>
                             {% if field.help_text != '' %}
