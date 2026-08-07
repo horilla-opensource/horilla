@@ -9,8 +9,8 @@ from payroll.methods.deductions import create_deductions
 from payroll.models.models import Allowance, Contract, Deduction, LoanAccount, Payslip
 
 
-@receiver(pre_save, sender=EmployeeWorkInformation)
-def employeeworkinformation_pre_save(sender, instance, **_kwargs):
+@receiver(post_save, sender=EmployeeWorkInformation)
+def employeeworkinformation_post_save(sender, instance, **_kwargs):
     """
     This method is used to override the save method for EmployeeWorkInformation Model
     """
