@@ -232,6 +232,19 @@
         {% get_current_language as LANGUAGE_CODE %}
         <div hidden id="statiUrl" data-url='{% static "" %}'></div>
         <span hidden id="whiteLabelCompany" data-company="{{ white_label_company_name }}"></span>
+
+        <div id="reloadMessages">
+            {% include "generic/messages.html" %}
+        </div>
+        <button
+            id="reloadMessagesButton"
+            hx-get="{% url 'reload-messages' %}"
+            hx-swap="afterend"
+            hidden
+            hx-target="#reloadMessages"
+        >
+        </button>
+
         <!-- Include Sidebar (sidebar.html owns id="sidebar" itself) -->
         {% include "horilla_theme/components/sidebar.html" %}
 

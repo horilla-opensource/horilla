@@ -31,28 +31,6 @@
         {% endif %}
     </div>
 
-    <div id="reloadMessages">
-        {% include "generic/messages.html" %}
-    </div>
-    <button
-        id="reloadMessagesButton"
-        hx-get="{% url 'reload-messages' %}"
-        hx-swap="afterend"
-        hidden
-        hx-target="#reloadMessages"
-    >
-    </button>
-
-    {% if messages %}
-        <div class="oh-alert-container">
-            {% for message in messages %}
-                <div class="oh-alert oh-alert--animated {{message.tags}}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
     <div class="flex items-center gap-8">
         <!-- Action Icons -->
         <div class="flex items-center gap-2">
