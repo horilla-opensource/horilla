@@ -732,39 +732,23 @@ class DepartmentForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance.pk:
-            # Manager choices are restricted to employees who already belong
-            # to this department (matches helpdesk's original behavior). A
-            # brand-new department has no members yet, so it gets an empty
-            # queryset until employees are assigned to it.
-            self.fields["manager"].queryset = Employee.objects.filter(
-                employee_work_info__department_id=self.instance
-            )
-            if apps.is_installed("helpdesk"):
-                from helpdesk.models import DepartmentManager
+        # Manager can be any employee, not just current members of this
+        # department -- so both create and update keep the field's own
+        # default queryset (Employee.objects.all()), letting the "All
+        # Company" session context surface every employee in every company
+        # instead of narrowing to whoever's already assigned to this
+        # department.
+        if self.instance.pk and apps.is_installed("helpdesk"):
+            from helpdesk.models import DepartmentManager
 
-                existing = DepartmentManager.objects.filter(
-                    department=self.instance
-                ).first()
-                if existing:
-                    self.fields["manager"].initial = existing.manager_id
-        else:
-            self.fields["manager"].queryset = Employee.objects.none()
+            existing = DepartmentManager.objects.filter(
+                department=self.instance
+            ).first()
+            if existing:
+                self.fields["manager"].initial = existing.manager_id
 
     def clean(self):
         cleaned_data = super().clean()
-        manager = cleaned_data.get("manager")
-        # Mirrors helpdesk.DepartmentManager.clean() so this fails as a clean
-        # field error here instead of surfacing as a model ValidationError
-        # from the helpdesk sync in save(). Only enforced when editing an
-        # existing department — a brand-new department has no members yet,
-        # so no employee could pass this check at creation time.
-        if manager and self.instance.pk and manager.get_department() != self.instance:
-            self.add_error(
-                "manager",
-                _("This employee is not from %(department)s.")
-                % {"department": self.instance},
-            )
         return cleaned_data
 
     def save(self, commit=True):
