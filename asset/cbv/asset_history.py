@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from asset.filters import AssetHistoryFilter
 from asset.forms import AssetHistoryExportForm
 from asset.models import AssetAssignment
-from base.methods import export_data
+from base.methods import export_data, has_export_access
 from horilla_views.cbv_methods import (
     hx_request_required,
     login_required,
@@ -84,7 +84,7 @@ class AssetHistoryNavView(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("asset-history-list")
-        if self.request.user.has_perm("asset.view_assetassignment"):
+        if has_export_access(self.request, AssetAssignment):
             self.actions = [
                 {
                     "action": _("Export"),

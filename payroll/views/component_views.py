@@ -37,6 +37,7 @@ from base.methods import (
     filter_own_records,
     get_key_instances,
     get_next_month_same_date,
+    has_export_access,
     sortby,
 )
 from base.models import Company
@@ -1282,6 +1283,11 @@ def payslip_export(request):
     This view exports payslip data based on selected fields and filters,
     and generates an Excel file for download.
     """
+    if not has_export_access(request, Payslip):
+        return HorillaRedirect(
+            request, message=_("You dont have access to export this data")
+        )
+
     if request.META.get("HTTP_HX_REQUEST"):
         return render(
             request,

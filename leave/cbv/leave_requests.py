@@ -18,7 +18,12 @@ from django.utils.translation import gettext_lazy as _
 from base.cbv.penalty import ViewPenaltyList
 from base.decorators import manager_can_enter
 from base.filters import PenaltyFilter
-from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
+from base.methods import (
+    choosesubordinates,
+    filtersubordinates,
+    has_export_access,
+    is_reportingmanager,
+)
 from base.models import PenaltyAccounts
 from horilla_views.cbv_methods import hx_request_required, login_required
 from horilla_views.generic.cbv.views import (
@@ -229,16 +234,21 @@ class LeaveRequestsNavView(HorillaNavView):
                     style="cursor: pointer;"
                 """,
             },
-            {
-                "action": _("Export"),
-                "attrs": f"""
+        ]
+        if has_export_access(self.request, LeaveRequest):
+            self.actions.append(
+                {
+                    "action": _("Export"),
+                    "attrs": f"""
                     data-toggle = "oh-modal-toggle"
                     data-target = "#genericModal"
                     hx-target="#genericModalBody"
                     hx-get ="{reverse('leave-requests-nav-export')}"
                     style="cursor: pointer;"
                 """,
-            },
+                }
+            )
+        self.actions.append(
             {
                 "action": _("Delete"),
                 "attrs": """
@@ -246,8 +256,8 @@ class LeaveRequestsNavView(HorillaNavView):
                     data-action ="delete"
                     style="cursor: pointer; color:red !important"
                 """,
-            },
-        ]
+            }
+        )
 
         if self.request.user.has_perm("leave.add_leaverequest") or is_reportingmanager(
             self.request

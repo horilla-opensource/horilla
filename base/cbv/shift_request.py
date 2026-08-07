@@ -21,7 +21,12 @@ from base.forms import (
     ShiftRequestColumnForm,
     ShiftRequestForm,
 )
-from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
+from base.methods import (
+    choosesubordinates,
+    filtersubordinates,
+    has_export_access,
+    is_reportingmanager,
+)
 from base.models import EmployeeShift, ShiftRequest
 from base.views import include_employee_instance
 from employee.models import Employee
@@ -305,9 +310,7 @@ class ShitRequestNav(HorillaNavView):
                 }
             )
 
-        if self.request.user.has_perm("base.view_shiftrequest") or is_reportingmanager(
-            self.request
-        ):
+        if has_export_access(self.request, ShiftRequest):
             self.actions.insert(
                 0,
                 {

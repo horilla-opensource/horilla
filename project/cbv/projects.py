@@ -13,6 +13,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
+from base.methods import has_export_access
 from employee.models import Employee
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
@@ -76,13 +77,6 @@ class ProjectsNavView(HorillaNavView):
                     """,
                 },
                 {
-                    "action": _("Export"),
-                    "attrs": """
-                        id="exportProject"
-                        style="cursor: pointer;"
-                    """,
-                },
-                {
                     "action": _("Archive"),
                     "attrs": """
                         id="archiveProject"
@@ -111,6 +105,17 @@ class ProjectsNavView(HorillaNavView):
                     """,
                 },
             ]
+            if has_export_access(self.request, Project):
+                self.actions.insert(
+                    1,
+                    {
+                        "action": _("Export"),
+                        "attrs": """
+                            id="exportProject"
+                            style="cursor: pointer;"
+                        """,
+                    },
+                )
         self.view_types = [
             {
                 "type": "list",

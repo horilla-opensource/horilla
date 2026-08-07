@@ -13,7 +13,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from base.decorators import manager_can_enter
-from base.methods import eval_validate, filtersubordinates
+from base.methods import eval_validate, filtersubordinates, has_export_access
 from horilla_views.cbv_methods import (
     get_short_uuid,
     hx_request_required,
@@ -187,16 +187,21 @@ class AssignedLeaveNavView(HorillaNavView):
                         style="cursor: pointer;"
                     """,
             },
-            {
-                "action": _("Export"),
-                "attrs": f"""
+        ]
+        if has_export_access(self.request, AvailableLeave):
+            self.actions.append(
+                {
+                    "action": _("Export"),
+                    "attrs": f"""
                         data-toggle = "oh-modal-toggle"
                         data-target = "#genericModal"
                         hx-target="#genericModalBody"
                         hx-get ="{reverse('assigned-leave-nav-export')}"
                         style="cursor: pointer;"
                     """,
-            },
+                }
+            )
+        self.actions.append(
             {
                 "action": _("Delete"),
                 "attrs": """
@@ -204,8 +209,8 @@ class AssignedLeaveNavView(HorillaNavView):
                             data-action ="delete"
                             style="cursor: pointer; color:red !important"
                              """,
-            },
-        ]
+            }
+        )
 
         if self.request.user.has_perm("leave.add_availableleave"):
             self.create_attrs = f"""

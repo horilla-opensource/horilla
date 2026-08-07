@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.filters import HolidayFilter
 from base.forms import HolidayForm, HolidaysColumnExportForm
+from base.methods import has_export_access
 from base.models import Holidays
 from horilla_views.cbv_methods import (
     hx_request_required,
@@ -92,6 +93,7 @@ class HolidayNavView(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("holiday-filter")
+        self.actions = []
         if self.request.user.has_perm("base.add_holidays"):
             self.create_attrs = f"""
                 hx-get="{reverse_lazy('holiday-creation')}"
@@ -99,7 +101,7 @@ class HolidayNavView(HorillaNavView):
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
             """
-            self.actions = [
+            self.actions.append(
                 {
                     "action": _("Import"),
                     "attrs": """
@@ -108,7 +110,10 @@ class HolidayNavView(HorillaNavView):
                         data-target = "#holidayImport"
                         style="cursor: pointer;"
                     """,
-                },
+                }
+            )
+        if has_export_access(self.request, Holidays):
+            self.actions.append(
                 {
                     "action": _("Export"),
                     "attrs": f"""
@@ -118,7 +123,10 @@ class HolidayNavView(HorillaNavView):
                         hx-get ="{reverse('holiday-nav-export')}"
                         style="cursor: pointer;"
                     """,
-                },
+                }
+            )
+        if self.request.user.has_perm("base.add_holidays"):
+            self.actions.append(
                 {
                     "action": _("Delete"),
                     "attrs": """
@@ -126,8 +134,8 @@ class HolidayNavView(HorillaNavView):
                         data-action ="delete"
                         style="cursor: pointer; color:red !important"
                     """,
-                },
-            ]
+                }
+            )
 
     nav_title = _("Public Holidays")
     filter_body_template = "cbv/holidays/holiday_filter.html"

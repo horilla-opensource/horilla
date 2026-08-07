@@ -15,6 +15,7 @@ from asset.cbv.asset_batch_no import DynamicCreateBatchNo
 from asset.filters import AssetFilter
 from asset.forms import AssetCategoryForm, AssetForm, AssetReportForm
 from asset.models import Asset, AssetCategory, AssetDocuments, AssetReport
+from base.methods import has_export_access
 from horilla_views.cbv_methods import (
     hx_request_required,
     login_required,
@@ -247,7 +248,7 @@ class AssetCategoryNav(HorillaNavView):
                 },
             )
 
-        if self.request.user.has_perm("asset.view_asset"):
+        if has_export_access(self.request, Asset):
             self.actions.append(
                 {
                     "action": _("Export"),

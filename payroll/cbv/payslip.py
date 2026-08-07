@@ -12,8 +12,10 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from base.methods import has_export_access
 from employee import views as employee_view
 from employee.cbv.employee_profile import EmployeeProfileView
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import (
     hx_request_required,
     login_required,
@@ -184,6 +186,7 @@ class PayslipNav(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("payslip-list")
+        self.actions = []
         if self.request.user.has_perm("payroll.add_payslip"):
             self.create_attrs = f"""
                 data-target="#genericModal"
@@ -192,32 +195,40 @@ class PayslipNav(HorillaNavView):
                 hx-target="#genericModalBody"
             """
 
-            self.actions = [
-                {
-                    "action": _("Generate"),
-                    "attrs": """
+            self.actions.extend(
+                [
+                    {
+                        "action": _("Generate"),
+                        "attrs": """
                     data-toggle = "oh-modal-toggle"
                     data-target = "#bulkPayslipModal"
                     style="cursor: pointer;"
                 """,
-                },
-                {
-                    "action": _("Payslip Report"),
-                    "attrs": f"""
+                    },
+                    {
+                        "action": _("Payslip Report"),
+                        "attrs": f"""
                             data-toggle = "oh-modal-toggle"
                             data-target = "#genericModal"
                             hx-target="#genericModalBody"
                             hx-get ="{reverse('payslip-detailed-export')}"
                             style="cursor: pointer;"
                 """,
-                },
-                {
-                    "action": _("Send Via Mail"),
-                    "attrs": """
+                    },
+                    {
+                        "action": _("Send Via Mail"),
+                        "attrs": """
                    onclick="bulkSendViaMail()"
                     style="cursor: pointer;"
                 """,
-                },
+                    },
+                ]
+            )
+        else:
+            self.create_attrs = None
+
+        if has_export_access(self.request, Payslip):
+            self.actions.append(
                 {
                     "action": _("Export"),
                     "attrs": f"""
@@ -227,7 +238,11 @@ class PayslipNav(HorillaNavView):
                     hx-get ="{reverse('payslip-bulk-export-data')}"
                     style="cursor: pointer;"
                 """,
-                },
+                }
+            )
+
+        if self.request.user.has_perm("payroll.add_payslip"):
+            self.actions.append(
                 {
                     "action": _("Delete"),
                     "attrs": """
@@ -235,11 +250,8 @@ class PayslipNav(HorillaNavView):
                             data-action ="delete"
                             style="cursor: pointer; color:red !important"
                              """,
-                },
-            ]
-        else:
-            self.create_attrs = None
-            self.actions = None
+                }
+            )
 
     nav_title = _("Payslip")
     filter_body_template = "cbv/payslip/payslip_filter.html"
@@ -265,12 +277,20 @@ class PayslipNav(HorillaNavView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(hx_request_required, name="dispatch")
+@method_decorator(login_required, name="dispatch")
 class PayslipBulkExport(TemplateView):
     """
     bulk export
     """
 
     template_name = "cbv/payslip/payslip_export.html"
+
+    def get(self, request, *args, **kwargs):
+        if not has_export_access(request, Payslip):
+            return HorillaRedirect(
+                request, message=_("You dont have access to export this data")
+            )
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: Any):
         """

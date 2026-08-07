@@ -17,7 +17,12 @@ from base.cbv.rotating_shift import DynamicRotatingShiftTypeFormView
 from base.decorators import manager_can_enter
 from base.filters import RotatingShiftAssignFilters
 from base.forms import RotatingShiftAssignExportForm, RotatingShiftAssignForm
-from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
+from base.methods import (
+    choosesubordinates,
+    filtersubordinates,
+    has_export_access,
+    is_reportingmanager,
+)
 from base.models import RotatingShiftAssign
 from employee.models import Employee
 from horilla_views.cbv_methods import hx_request_required, login_required
@@ -165,9 +170,7 @@ class RotatingShiftAssignNav(HorillaNavView):
                 },
             )
 
-        if self.request.user.has_perm(
-            "base.view_rotatingshiftassign"
-        ) or is_reportingmanager(self.request):
+        if has_export_access(self.request, RotatingShiftAssign):
             self.actions.append(
                 {
                     "action": _("Export"),

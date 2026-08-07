@@ -25,6 +25,7 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from xhtml2pdf import pisa
 
+from base.methods import has_export_access
 from employee.forms import BulkUpdateFieldForm
 from horilla.horilla_middlewares import _thread_locals
 from horilla.http.response import HorillaRedirect
@@ -683,16 +684,20 @@ class CandidateNav(HorillaNavView):
                             hx-target="#candidateMainContainer"
                             hx-swap="innerHTML"
                             """
-        self.actions = [
-            {
-                "action": _("Export"),
-                "attrs": f"""
+        self.actions = []
+        if has_export_access(self.request, Candidate):
+            self.actions.append(
+                {
+                    "action": _("Export"),
+                    "attrs": f"""
                  data-toggle="oh-modal-toggle"
                  data-target="#genericModal"
                  hx-get="{reverse('export')}"
                  hx-target="#genericModalBody"
                  """,
-            },
+                }
+            )
+        self.actions += [
             {
                 "action": _("Bulk mail"),
                 "attrs": f"""

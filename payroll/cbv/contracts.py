@@ -8,6 +8,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from base.methods import has_export_access
 from horilla_views.cbv_methods import (
     hx_request_required,
     login_required,
@@ -161,17 +162,21 @@ class ContractsNav(HorillaNavView):
                             hx-target="#listContainer"
                             hx-swap="innerHTML"
                             """
-        self.actions = [
-            {
-                "action": _("Export"),
-                "attrs": f"""
+        self.actions = []
+        if has_export_access(self.request, Contract):
+            self.actions.append(
+                {
+                    "action": _("Export"),
+                    "attrs": f"""
                         data-toggle="oh-modal-toggle"
                         data-target="#hxContractExport"
                         hx-get="{reverse_lazy('contracts-export')}"
                         hx-target="#hxContractExportForm"
                         style="cursor: pointer;"
                         """,
-            },
+                }
+            )
+        self.actions.append(
             {
                 "action": _("Delete"),
                 "attrs": """
@@ -181,8 +186,8 @@ class ContractsNav(HorillaNavView):
                     data-action ="delete"
                     style="cursor: pointer; color:red !important"
                     """,
-            },
-        ]
+            }
+        )
 
     nav_title = _("Contracts")
     filter_body_template = "cbv/contracts/filter.html"

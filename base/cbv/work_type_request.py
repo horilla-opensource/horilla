@@ -15,7 +15,12 @@ from django.utils.translation import gettext_lazy as _
 
 from base.filters import WorkTypeRequestFilter
 from base.forms import WorkTypeForm, WorkTypeRequestColumnForm, WorkTypeRequestForm
-from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
+from base.methods import (
+    choosesubordinates,
+    filtersubordinates,
+    has_export_access,
+    is_reportingmanager,
+)
 from base.models import WorkType, WorkTypeRequest
 from base.views import include_employee_instance
 from employee.models import Employee
@@ -210,9 +215,7 @@ class WorkRequestNavView(HorillaNavView):
                     """,
                 }
             )
-        if self.request.user.has_perm(
-            "base.view_worktyperequest"
-        ) or is_reportingmanager(self.request):
+        if has_export_access(self.request, WorkTypeRequest):
             self.actions.insert(
                 0,
                 {

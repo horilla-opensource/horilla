@@ -15,7 +15,12 @@ from base.cbv.settings_rotatingwork import DynamicRotatingWorkTypeCreate
 from base.decorators import manager_can_enter
 from base.filters import RotatingWorkTypeAssignFilter
 from base.forms import RotatingWorkTypeAssignExportForm, RotatingWorkTypeAssignForm
-from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
+from base.methods import (
+    choosesubordinates,
+    filtersubordinates,
+    has_export_access,
+    is_reportingmanager,
+)
 from base.models import RotatingWorkTypeAssign
 from employee.models import Employee
 from horilla.http.response import HorillaRedirect
@@ -182,9 +187,7 @@ class RotatingWorkNavView(HorillaNavView):
                 }
             )
 
-        if self.request.user.has_perm(
-            "base.view_rotatingworktypeassign"
-        ) or is_reportingmanager(self.request):
+        if has_export_access(self.request, RotatingWorkTypeAssign):
             self.actions.insert(
                 0,
                 {

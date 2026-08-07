@@ -57,6 +57,7 @@ from base.methods import (
     filtersubordinates,
     get_key_instances,
     get_pagination,
+    has_export_access,
     paginator_qry,
     sortby,
 )
@@ -1418,6 +1419,11 @@ def asset_excel(_request):
 @permission_required("asset.view_assetcategory")
 def asset_export_excel(request):
     """asset export view"""
+    if not has_export_access(request, Asset):
+        return HorillaRedirect(
+            request, message=_("You dont have access to export this data")
+        )
+
     asset_export_filter = AssetExportFilter(request.GET, queryset=Asset.objects.all())
     if request.method == "POST":
         queryset_all = Asset.objects.all()
