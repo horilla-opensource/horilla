@@ -37,6 +37,9 @@ CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
 HORILLA_ENV = env("HORILLA_ENV", default="")
 REDIS_URL = env("REDIS_URL", default=None)
 
+# Default site ID for django.contrib.sites framework.
+SITE_ID = 1
+
 THEME_APP = "horilla_theme"
 
 INSTALLED_APPS = [
