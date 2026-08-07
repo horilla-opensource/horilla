@@ -20,7 +20,7 @@ from django.utils.translation import gettext_lazy as _
 from accessibility.cbv_decorators import enter_if_accessible
 from accessibility.models import DefaultAccessibility
 from base.context_processors import enable_profile_edit
-from base.methods import is_reportingmanager
+from base.methods import has_export_access, is_reportingmanager
 from employee.filters import EmployeeFilter
 from employee.forms import BulkUpdateFieldForm, EmployeeExportExcelForm
 from employee.models import Employee, EmployeeBankDetails, EmployeeWorkInformation
@@ -532,8 +532,9 @@ class EmployeeNav(HorillaNavView):
         else:
             self.create_attrs = None
 
+        actions = []
         if self.request.user.has_perm("employee.change_employee"):
-            self.actions = [
+            actions.append(
                 {
                     "action": _("Import"),
                     "attrs": f"""
@@ -544,7 +545,10 @@ class EmployeeNav(HorillaNavView):
                         hx-target="#objectCreateModalTarget"
                         style="cursor: pointer;"
                     """,
-                },
+                }
+            )
+        if has_export_access(self.request, Employee):
+            actions.append(
                 {
                     "action": _("Export"),
                     "attrs": f"""
@@ -554,50 +558,54 @@ class EmployeeNav(HorillaNavView):
                     hx-target="#employeeExportForm"
                     style="cursor: pointer;"
                     """,
-                },
-                {
-                    "action": _("Archive"),
-                    "attrs": """
-                    id="archiveEmployees"
-                    style="cursor: pointer;"
-                    """,
-                },
-                {
-                    "action": _("Un-archive"),
-                    "attrs": """
-                    id="unArchiveEmployees"
-                    style="cursor: pointer;"
-                    """,
-                },
-                {
-                    "action": _("Bulk mail"),
-                    "attrs": f"""
-                    data-toggle="oh-modal-toggle"
-                    data-target="#sendMailModal"
-                    hx-get="{reverse('employee-bulk-mail')}"
-                    hx-target="#mail-content"
-                    style="cursor: pointer;"
-                    """,
-                },
-                {
-                    "action": _("Bulk Update"),
-                    "attrs": """
-                    id="employeeBulkUpdateId"
-                    style="cursor: pointer;"
-                    """,
-                },
-                {
-                    "action": _("Delete"),
-                    "attrs": """
-                    class="oh-dropdown__link--danger"
-                    data-action ="delete"
-                    id="deleteEmployees"
-                    style="cursor: pointer; color:red !important"
-                    """,
-                },
-            ]
-        else:
-            self.actions = None
+                }
+            )
+        if self.request.user.has_perm("employee.change_employee"):
+            actions.extend(
+                [
+                    {
+                        "action": _("Archive"),
+                        "attrs": """
+                        id="archiveEmployees"
+                        style="cursor: pointer;"
+                        """,
+                    },
+                    {
+                        "action": _("Un-archive"),
+                        "attrs": """
+                        id="unArchiveEmployees"
+                        style="cursor: pointer;"
+                        """,
+                    },
+                    {
+                        "action": _("Bulk mail"),
+                        "attrs": f"""
+                        data-toggle="oh-modal-toggle"
+                        data-target="#sendMailModal"
+                        hx-get="{reverse('employee-bulk-mail')}"
+                        hx-target="#mail-content"
+                        style="cursor: pointer;"
+                        """,
+                    },
+                    {
+                        "action": _("Bulk Update"),
+                        "attrs": """
+                        id="employeeBulkUpdateId"
+                        style="cursor: pointer;"
+                        """,
+                    },
+                    {
+                        "action": _("Delete"),
+                        "attrs": """
+                        class="oh-dropdown__link--danger"
+                        data-action ="delete"
+                        id="deleteEmployees"
+                        style="cursor: pointer; color:red !important"
+                        """,
+                    },
+                ]
+            )
+        self.actions = actions or None
 
         self.view_types = [
             {

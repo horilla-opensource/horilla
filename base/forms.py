@@ -2911,6 +2911,8 @@ class AnnouncementForm(ModelForm):
         "job_position": 12,
     }
 
+    required_fields = ["description"]
+
     class Meta:
         """
         Meta class for additional options

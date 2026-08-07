@@ -53,6 +53,7 @@ from base.methods import (
     filtersubordinatesemployeemodel,
     get_key_instances,
     get_pagination,
+    has_export_access,
     sortby,
 )
 from base.models import (
@@ -1277,6 +1278,7 @@ def employee_view(request):
             "emp": emp,
             "gp_fields": EmployeeReGroup.fields,
             "error_message": error_message,
+            "can_export_employee": has_export_access(request, Employee),
         },
     )
 
@@ -1633,9 +1635,6 @@ def employee_view_update(request, obj_id, **kwargs):
 
     selected_company_id = request.session["selected_company"]
     user = Employee.objects.filter(employee_user_id=request.user).first()
-    work_info_history = HistoryTrackingFields.objects.filter(
-        work_info_track=True
-    ).exists()
 
     if not employee and emp and hasattr(emp, "employee_work_info"):
         if (
@@ -1648,6 +1647,21 @@ def employee_view_update(request, obj_id, **kwargs):
                 request, _("Employee is not working in the selected company.")
             )
             return redirect(f"{reverse('employee-view')}?view=list")
+
+    tracking_company = None
+    work_info_source = employee or emp
+    if (
+        work_info_source
+        and hasattr(work_info_source, "employee_work_info")
+        and work_info_source.employee_work_info
+    ):
+        tracking_company = work_info_source.employee_work_info.company_id
+    elif selected_company_id and selected_company_id != "all":
+        tracking_company = Company.objects.filter(id=selected_company_id).first()
+    history_tracking = HistoryTrackingFields.for_company(tracking_company)
+    work_info_history = bool(
+        history_tracking is not None and history_tracking.work_info_track
+    )
 
     if employee is None:
         employee = emp
@@ -2718,13 +2732,17 @@ def employee_import(request):
 
 
 @login_required
-@permission_required("employee.add_employee")
 def employee_export(request):
     """
     This method is used to export employee data to xlsx. If the caller
     selected specific employees in the list view (instance_ids), only those
     are exported; otherwise every employee is exported, same as before.
     """
+    if not has_export_access(request, Employee):
+        return HorillaRedirect(
+            request, message=_("You dont have access to export this data")
+        )
+
     # Get the list of field names for your model
     field_names = [f.name for f in Employee._meta.get_fields() if not f.auto_created]
     field_names.remove("employee_user_id")
@@ -2916,6 +2934,11 @@ def work_info_export(request):
     """
     This method is used to export employee data to xlsx
     """
+    if not has_export_access(request, Employee):
+        return HorillaRedirect(
+            request, message=_("You dont have access to export this data")
+        )
+
     if request.META.get("HTTP_HX_REQUEST"):
         context = {
             "export_filter": EmployeeFilter(),
@@ -3310,20 +3333,13 @@ def note_tab(request, pk):
     )
 
 
+@login_required
 def history_tab(request, pk):
     """
-    This function is used to view history tab of an employee in employee individual
-    & profile view.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-    emp_id (int): The id of the employee.
-
-    Returns: return history template
-
+    Activity-history tab for employee profile / individual view.
+    Renders the shared activity-history feed from work-information tracking.
     """
     employee_obj = Employee.objects.get(id=pk)
-
     return render(
         request,
         "tabs/history.html",

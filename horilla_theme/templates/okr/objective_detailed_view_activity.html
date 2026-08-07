@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static %}
 {% load pmsfilters %}
 
 <style>
@@ -175,21 +175,26 @@
     <ul class="oh-activity-list">
         {% for activity in activity_list %}
             {% if activity.type == 'Changes' %}
-                <ul class="d-flex justify-content-between align-items-center pt-3 mb-3 border-top">
-                    <li class="oh-activity-list__item align-items-center mb-0">
+                <ul class="d-flex justify-content-between align-items-center pt-3 mb-3 border-top gap-2 flex-wrap">
+                    <li class="oh-activity-list__item align-items-center mb-0 flex-1 min-w-0">
                         <div class="oh-activity-list__photo oh-activity-list__photo--small me-2">
                             <img
                                 src="https://ui-avatars.com/api/?name={{ activity.updated_by }}&background=random"
                                 class="oh-activity-list__image"
-                                alt="{% trans 'Albert Camus' %}"
+                                alt=""
                             >
                         </div>
-                        <small class="oh-activity-list__description">
+                        <small class="oh-activity-list__description flex flex-wrap items-center gap-1.5">
                             <strong>{{ activity.updated_by }}</strong>
                             {% trans 'updated' %}
-                            <strong>{{ activity.changes.0.field|title|cut:'_' }}</strong> {% trans 'from' %}
-                            <strong>{{ activity.changes.0.old }}</strong> {% trans "to" %} <strong
-                            >{{ activity.changes.0.new }}</strong>
+                            <strong>{{ activity.changes.0.field|title|cut:'_' }}</strong>
+                            <span class="inline-flex max-w-full items-center rounded-md px-2 py-0.5 text-xs bg-primary-50 text-dark-100 border border-dark-50" style="text-decoration:line-through;text-decoration-color:#c4c4c4;">
+                                {{ activity.changes.0.old }}
+                            </span>
+                            <img src="{% static '/images/ui/arrow-right-line.svg' %}" alt="" class="w-3 h-3 opacity-60">
+                            <span class="inline-flex max-w-full items-center rounded-md px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                                {{ activity.changes.0.new }}
+                            </span>
                         </small>
                     </li>
                     <li>

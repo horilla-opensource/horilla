@@ -300,12 +300,30 @@
         }
         #companyLanguageSettings .lang-workspace-icon {
             flex-shrink: 0;
-            font-size: 20px;
-            line-height: 1;
+            width: 32px;
+            height: 32px;
+            object-fit: cover;
+            border: 1px solid var(--lang-border);
+            border-radius: 50%;
+            background: #f3f4f6;
         }
         #companyLanguageSettings .lang-workspace-icon-sm {
-            font-size: 14px;
-            line-height: 1;
+            width: 22px;
+            height: 22px;
+            object-fit: cover;
+            border: 1px solid var(--lang-border);
+            border-radius: 50%;
+            background: #f3f4f6;
+            vertical-align: middle;
+        }
+        #companyLanguageSettings .lang-summary-company-icon {
+            flex-shrink: 0;
+            width: 22px;
+            height: 22px;
+            object-fit: cover;
+            border: 1px solid var(--lang-border);
+            border-radius: 50%;
+            background: #f3f4f6;
         }
         #companyLanguageSettings .lang-workspace-info {
             flex: 1;
@@ -511,7 +529,7 @@
     </style>
 
     {% trans "All Companies (Default)" as lang_all_companies_label %}
-    {% with company_name=language_company.company|default:lang_all_companies_label %}
+    {% with company_name=language_company.company|default:lang_all_companies_label all_company_icon="https://ui-avatars.com/api/?name=All+Company&background=0D8ABC&color=fff" %}
         <div class="lang-header-desc">
             <h3 class="text-sm font-semibold text-[#333]">{% trans "Company Settings" %}</h3>
             <p class="text-xs text-gray-500 mt-1">
@@ -534,7 +552,12 @@
                             aria-controls="languageWorkspaceMenu"
                             hx-on:click="event.stopPropagation(); companyLanguageSettings.toggleWorkspaceMenu()"
                         >
-                            <span class="lang-workspace-icon" aria-hidden="true">🏢</span>
+                            <img
+                                class="lang-workspace-icon"
+                                src="{% if language_company %}{{ language_company.icon.url }}{% else %}{{ all_company_icon }}{% endif %}"
+                                alt=""
+                                aria-hidden="true"
+                            >
                             <span class="lang-workspace-info">
                                 <span class="lang-workspace-name">{{ company_name }}</span>
                                 <span class="lang-workspace-meta">
@@ -557,10 +580,7 @@
                                 hx-get="{% url 'update-selected-company' %}?company_id=all&next={{ request.path }}"
                                 hx-indicator="#languageLoadingOverlay"
                             >
-                                <span
-                                    class="lang-workspace-option-icon"
-                                    style="display: flex; align-items: center; justify-content: center; font-size: 14px"
-                                >🏢</span>
+                                <img class="lang-workspace-option-icon" src="{{ all_company_icon }}" alt="">
                                 <span class="lang-workspace-option-text">
                                     <span class="lang-workspace-option-name">{{ lang_all_companies_label }}</span>
                                     <span class="lang-workspace-option-meta">{% trans "Default configuration" %}</span>
@@ -601,7 +621,12 @@
                 {% else %}
                     <div class="lang-workspace">
                         <div class="lang-workspace-trigger" style="cursor: default">
-                            <span class="lang-workspace-icon" aria-hidden="true">🏢</span>
+                            <img
+                                class="lang-workspace-icon"
+                                src="{% if language_company %}{{ language_company.icon.url }}{% else %}{{ all_company_icon }}{% endif %}"
+                                alt=""
+                                aria-hidden="true"
+                            >
                             <span class="lang-workspace-info">
                                 <span
                                     class="lang-context-eyebrow"
@@ -635,7 +660,13 @@
             <div class="lang-summary-card">
                 <div class="lang-summary-title">{% trans "Current Company" %}</div>
                 <div class="lang-summary-company">
-                    <span aria-hidden="true">🏢</span> {{ company_name }}
+                    <img
+                        class="lang-summary-company-icon"
+                        src="{% if language_company %}{{ language_company.icon.url }}{% else %}{{ all_company_icon }}{% endif %}"
+                        alt=""
+                        aria-hidden="true"
+                    >
+                    {{ company_name }}
                 </div>
                 <dl class="lang-summary-stats">
                     <div>
@@ -662,8 +693,15 @@
 
         <div class="lang-managing-row">
             <span class="lang-managing-label">{% trans "Managing Languages For" %}</span>
-            <span class="lang-managing-company"><span class="lang-workspace-icon-sm" aria-hidden="true">🏢</span>
-                {{ company_name }}</span>
+            <span class="lang-managing-company">
+                <img
+                    class="lang-workspace-icon-sm"
+                    src="{% if language_company %}{{ language_company.icon.url }}{% else %}{{ all_company_icon }}{% endif %}"
+                    alt=""
+                    aria-hidden="true"
+                >
+                {{ company_name }}
+            </span>
         </div>
     {% endwith %}
 

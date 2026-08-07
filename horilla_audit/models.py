@@ -149,8 +149,189 @@ def post_create_horilla_audit_log(sender, instance, *_args, **kwargs):
 
 
 class HistoryTrackingFields(HorillaModel):
+    """
+    Per-company work-information history tracking settings.
+    When company_id is null, the row is the default used for "All Companies"
+    and as a fallback for companies without their own configuration.
+    """
+
     tracking_fields = models.JSONField(null=True, blank=True, editable=False)
     work_info_track = models.BooleanField(default=True)
+    company_id = models.ForeignKey(
+        "base.Company",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        verbose_name=_("Company"),
+    )
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name = _("History Tracking Fields")
+        verbose_name_plural = _("History Tracking Fields")
+
+    def tracked_field_names(self):
+        """Return the list of field names selected for tracking."""
+        if not self.tracking_fields:
+            return []
+        if isinstance(self.tracking_fields, dict):
+            return list(self.tracking_fields.get("tracking_fields") or [])
+        return []
+
+    @classmethod
+    def default_setting(cls):
+        """Return the All Companies (company_id=None) setting row, if any."""
+        return cls.objects.filter(company_id__isnull=True).order_by("id").first()
+
+    @classmethod
+    def for_company(cls, company=None):
+        """
+        Return the tracking settings for ``company``. Prefers a company-
+        specific row; falls back to the default (company_id=None) row.
+        """
+        if company is not None:
+            instance = cls.objects.filter(company_id=company).first()
+            if instance is not None:
+                return instance
+        return cls.default_setting()
+
+    @classmethod
+    def for_settings_ui(cls, company=None):
+        """
+        Settings used to render the System Preferences controls.
+
+        - All Companies: the default row (or an unsaved stub)
+        - Specific company with its own row: that row
+        - Specific company without its own row: inherit the default for display
+          (caller should not persist the inherited instance as the company row
+          unless the user explicitly saves)
+        """
+        if company is None:
+            instance = cls.default_setting()
+            return instance or cls(
+                work_info_track=True, tracking_fields={"tracking_fields": []}
+            )
+
+        own = cls.objects.filter(company_id=company).first()
+        if own is not None:
+            return own
+
+        default = cls.default_setting()
+        if default is not None:
+            # Unsaved copy for display only — keeps All Companies values visible
+            # until this company saves its own configuration.
+            return cls(
+                company_id=company,
+                work_info_track=default.work_info_track,
+                tracking_fields={
+                    "tracking_fields": list(default.tracked_field_names())
+                },
+            )
+        return cls(
+            company_id=company,
+            work_info_track=True,
+            tracking_fields={"tracking_fields": []},
+        )
+
+    @classmethod
+    def get_or_create_for_company(cls, company=None):
+        """
+        Fetch or create the settings row for ``company``.
+        New company rows copy field selections from the All Companies default.
+        """
+        if company is None:
+            instance = cls.default_setting()
+            if instance is not None:
+                return instance, False
+            return (
+                cls.objects.create(
+                    company_id=None,
+                    work_info_track=True,
+                    tracking_fields={"tracking_fields": []},
+                ),
+                True,
+            )
+
+        instance = cls.objects.filter(company_id=company).first()
+        if instance is not None:
+            return instance, False
+
+        default = cls.default_setting()
+        return (
+            cls.objects.create(
+                company_id=company,
+                work_info_track=default.work_info_track if default else True,
+                tracking_fields=(
+                    default.tracking_fields
+                    if default and default.tracking_fields is not None
+                    else {"tracking_fields": []}
+                ),
+            ),
+            True,
+        )
+
+    @classmethod
+    def assigned_company_ids(cls):
+        """Company IDs that already have their own tracking configuration."""
+        return list(
+            cls.objects.exclude(company_id=None)
+            .values_list("company_id_id", flat=True)
+            .distinct()
+        )
+
+    @classmethod
+    def apply_settings(
+        cls,
+        *,
+        work_info_track,
+        field_names,
+        company=None,
+        assign_company_ids=None,
+        update_fields=False,
+    ):
+        """
+        Persist tracking settings.
+
+        - Always updates the row for ``company`` (None = All Companies default).
+        - When ``company`` is None and ``assign_company_ids`` is provided, also
+          applies settings to those companies without wiping company-specific
+          field selections: existing company fields are kept and new default
+          fields are merged in.
+        """
+        field_names = list(field_names or [])
+        payload = {"tracking_fields": field_names}
+        history_object, _created = cls.get_or_create_for_company(company)
+        history_object.work_info_track = work_info_track
+        if update_fields:
+            history_object.tracking_fields = payload
+        history_object.save()
+
+        if company is None and assign_company_ids is not None:
+            from base.models import Company
+
+            companies = Company.objects.filter(id__in=assign_company_ids)
+            for target in companies:
+                target_object = cls.objects.filter(company_id=target).first()
+                if target_object is None:
+                    cls.objects.create(
+                        company_id=target,
+                        work_info_track=work_info_track,
+                        tracking_fields=(
+                            payload if update_fields else {"tracking_fields": []}
+                        ),
+                    )
+                else:
+                    target_object.work_info_track = work_info_track
+                    if update_fields:
+                        existing_fields = target_object.tracked_field_names()
+                        if existing_fields:
+                            # Keep company-specific fields; add any new default fields.
+                            merged = list(dict.fromkeys(existing_fields + field_names))
+                            target_object.tracking_fields = {"tracking_fields": merged}
+                        # Empty list means "track all" — leave it alone.
+                    target_object.save()
+
+        return history_object
 
 
 class AccountBlockUnblock(HorillaModel):

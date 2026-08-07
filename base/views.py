@@ -5919,15 +5919,36 @@ def _system_preferences_context(request):
         ProfileEditFeature.objects.exists()
         and ProfileEditFeature.objects.first().is_enabled
     )
-    history_tracking_instance = HistoryTrackingFields.objects.first()
-    history_fields_form_initial = {}
-    if history_tracking_instance and history_tracking_instance.tracking_fields:
-        history_fields_form_initial = {
-            "tracking_fields": history_tracking_instance.tracking_fields[
-                "tracking_fields"
-            ]
-        }
+    tracking_company = _selected_company(request)
+    history_tracking_instance = HistoryTrackingFields.for_settings_ui(tracking_company)
+    history_fields_form_initial = {
+        "tracking_fields": history_tracking_instance.tracked_field_names()
+    }
+    export_access_company = _selected_company(request)
+    export_access_instance = DefaultExportPermission.objects.filter(
+        company_id=export_access_company
+    ).first()
+    enabled_export_access = (
+        export_access_instance is None or export_access_instance.is_enabled
+    )
     history_fields_form = HistoryTrackingFieldsForm(initial=history_fields_form_initial)
+
+    from base.auth_backends import company_scoped_active, get_allowed_company_ids
+
+    tracking_scoped = (
+        company_scoped_active()
+        and request.user.is_authenticated
+        and not request.user.is_superuser
+    )
+    if tracking_scoped:
+        tracking_assign_company_qs = Company.objects.filter(
+            id__in=get_allowed_company_ids(request.user) or []
+        )
+    else:
+        tracking_assign_company_qs = Company.objects.all()
+    tracking_assign_companies = list(tracking_assign_company_qs.order_by("company"))
+    # Default: all companies selected for assignment.
+    tracking_assigned_company_ids = [c.id for c in tracking_assign_companies]
 
     if DynamicPagination.objects.filter(user_id=request.user).exists():
         pagination = DynamicPagination.objects.filter(user_id=request.user).first()
@@ -5935,7 +5956,7 @@ def _system_preferences_context(request):
     else:
         pagination_form = DynamicPaginationForm()
 
-    language_company = _selected_company(request)
+    language_company = tracking_company
     language_setting = CompanyLanguageSetting.objects.filter(
         company_id=language_company
     ).first()
@@ -5948,17 +5969,9 @@ def _system_preferences_context(request):
         language_employee_count = Employee.objects.filter(is_active=True).count()
     language_configured_on = language_setting.created_at if language_setting else None
 
-    from base.auth_backends import company_scoped_active, get_allowed_company_ids
-
-    language_scoped = (
-        company_scoped_active()
-        and request.user.is_authenticated
-        and not request.user.is_superuser
-    )
+    language_scoped = tracking_scoped
     if language_scoped:
-        all_language_companies = Company.objects.filter(
-            id__in=get_allowed_company_ids(request.user) or []
-        )
+        all_language_companies = tracking_assign_company_qs
     else:
         all_language_companies = Company.objects.all()
     language_employee_counts_by_company = {
@@ -5992,8 +6005,13 @@ def _system_preferences_context(request):
         "pagination_form": pagination_form,
         "history_fields_form": history_fields_form,
         "history_tracking_instance": history_tracking_instance,
+        "tracking_company": tracking_company,
+        "tracking_is_all_companies": tracking_company is None,
+        "tracking_assign_companies": tracking_assign_companies,
+        "tracking_assigned_company_ids": tracking_assigned_company_ids,
         "enabled_block_unblock": enabled_block_unblock,
         "enabled_profile_edit": enabled_profile_edit,
+        "enabled_export_access": enabled_export_access,
         "prefix_form": prefix_form,
         "companies": companies,
         "selected_company_id": selected_company_id,
@@ -6264,43 +6282,102 @@ def get_time_format(request):
     return JsonResponse({"selected_format": time_format})
 
 
+def _history_tracking_settings_context(request, company):
+    """Shared template context for the work-info tracking settings partial."""
+    from base.auth_backends import company_scoped_active, get_allowed_company_ids
+
+    history_tracking_instance = HistoryTrackingFields.for_settings_ui(company)
+    history_fields_form = HistoryTrackingFieldsForm(
+        initial={"tracking_fields": history_tracking_instance.tracked_field_names()}
+    )
+    tracking_scoped = (
+        company_scoped_active()
+        and request.user.is_authenticated
+        and not request.user.is_superuser
+    )
+    if tracking_scoped:
+        tracking_assign_company_qs = Company.objects.filter(
+            id__in=get_allowed_company_ids(request.user) or []
+        )
+    else:
+        tracking_assign_company_qs = Company.objects.all()
+    tracking_assign_companies = list(tracking_assign_company_qs.order_by("company"))
+    # Default: all companies selected for assignment.
+    tracking_assigned_company_ids = [c.id for c in tracking_assign_companies]
+    return {
+        "history_tracking_instance": history_tracking_instance,
+        "history_fields_form": history_fields_form,
+        "tracking_company": company,
+        "tracking_is_all_companies": company is None,
+        "tracking_assign_companies": tracking_assign_companies,
+        "tracking_assigned_company_ids": tracking_assigned_company_ids,
+    }
+
+
 @login_required
 def history_field_settings(request):
-    if request.method == "POST":
-        fields = request.POST.getlist("tracking_fields")
-        check = request.POST.get("work_info_track")
-        history_object, created = HistoryTrackingFields.objects.get_or_create(
-            pk=1, defaults={"tracking_fields": {"tracking_fields": fields}}
-        )
+    """
+    Save Work Information Tracking settings for the currently selected company.
 
-        if not created:
-            history_object.tracking_fields = {"tracking_fields": fields}
-            if check == "on":
-                history_object.work_info_track = True
+    When All Companies is selected, the fields form can also post
+    ``assign_companies`` so the same settings are applied to those companies.
+    """
+    company = _selected_company(request)
+
+    if request.method == "POST":
+        updating_fields = request.POST.get("update_tracking_fields") == "1"
+        fields = request.POST.getlist("tracking_fields")
+        track_enabled = request.POST.get("work_info_track") == "on"
+        assign_company_ids = None
+        if company is None:
+            from base.auth_backends import (
+                company_scoped_active,
+                get_allowed_company_ids,
+            )
+
+            if updating_fields:
+                raw_ids = request.POST.getlist("assign_companies")
+                assign_company_ids = []
+                for raw in raw_ids:
+                    try:
+                        assign_company_ids.append(int(raw))
+                    except (TypeError, ValueError):
+                        continue
             else:
-                history_object.work_info_track = False
+                # Toggle-only: keep existing company assignments in sync.
+                assign_company_ids = HistoryTrackingFields.assigned_company_ids()
+
+            if (
+                company_scoped_active()
+                and request.user.is_authenticated
+                and not request.user.is_superuser
+            ):
+                allowed = set(get_allowed_company_ids(request.user) or [])
+                assign_company_ids = [
+                    cid for cid in (assign_company_ids or []) if cid in allowed
+                ]
+
+        HistoryTrackingFields.apply_settings(
+            work_info_track=track_enabled,
+            field_names=fields,
+            company=company,
+            assign_company_ids=assign_company_ids,
+            update_fields=updating_fields,
+        )
+        if company is None and updating_fields and assign_company_ids:
+            messages.success(
+                request,
+                _("Settings updated and assigned to %(count)s company(ies).")
+                % {"count": len(assign_company_ids)},
+            )
+        else:
             messages.success(request, _("Settings updated."))
-            history_object.save()
 
     if request.headers.get("HX-Request"):
-        history_tracking_instance = HistoryTrackingFields.objects.first()
-        history_fields_form_initial = {}
-        if history_tracking_instance and history_tracking_instance.tracking_fields:
-            history_fields_form_initial = {
-                "tracking_fields": history_tracking_instance.tracking_fields[
-                    "tracking_fields"
-                ]
-            }
-        history_fields_form = HistoryTrackingFieldsForm(
-            initial=history_fields_form_initial
-        )
         return render(
             request,
             "base/audit_tag/history_tracking_fields_content.html",
-            {
-                "history_tracking_instance": history_tracking_instance,
-                "history_fields_form": history_fields_form,
-            },
+            _history_tracking_settings_context(request, company),
         )
     return redirect(general_settings)
 

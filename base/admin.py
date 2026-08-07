@@ -15,6 +15,7 @@ from base.models import (
     CompanyGroupAssignment,
     CompanyLeaves,
     DashboardEmployeeCharts,
+    DefaultExportPermission,
     Department,
     DynamicEmailConfiguration,
     DynamicPagination,
@@ -74,3 +75,4 @@ admin.site.register(CompanyLeaves)
 admin.site.register(PenaltyAccounts)
 admin.site.register(MultipleApprovalCondition)
 admin.site.register(AttendanceAllowedIP)
+admin.site.register(DefaultExportPermission)

@@ -1,20 +1,21 @@
-{% load i18n %}
+{% load i18n static %}
 {% if instance.allocate_tracking and instance.status == 'approved' %}
-
-        <div class="oh-timeoff-modal__stats w-100 mt-3 mb-3">
-            <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "History" %}</span>
-                <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary">
-                    <div class="oh-timeoff-modal__stat-count">
-                        <span style="color: #665d5d;">{% trans "Requested days" %} : {{instance.allocate_tracking.old}}</span>
-                        <br >
-                        <img src="/static/images/ui/arrow-right-line.svg" style="width: 100px; height: 20px;" class="oh-progress_arrow">
-                        <br >
-                        <span style="color: #35b835;"> {% trans "Allocated days" %} : {{instance.allocate_tracking.new}}</span>
-                    </div>
-                    <div class="oh-timeoff-modal__stat-count"></div>
+    <div class="oh-timeoff-modal__stats w-100 mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "History" %}</span>
+            <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary">
+                <div class="oh-timeoff-modal__stat-count flex flex-wrap items-center gap-2 py-1">
+                    <span class="text-xs font-medium text-dark-200">{% trans "Requested days" %}</span>
+                    <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs bg-primary-50 text-dark-100 border border-dark-50" style="text-decoration:line-through;text-decoration-color:#c4c4c4;">
+                        {{ instance.allocate_tracking.old }}
+                    </span>
+                    <img src="{% static '/images/ui/arrow-right-line.svg' %}" alt="" class="w-3 h-3 opacity-60">
+                    <span class="text-xs font-medium text-dark-200">{% trans "Allocated days" %}</span>
+                    <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                        {{ instance.allocate_tracking.new }}
+                    </span>
                 </div>
             </div>
         </div>
-
-    {% endif %}
+    </div>
+{% endif %}

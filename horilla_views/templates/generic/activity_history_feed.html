@@ -1,0 +1,319 @@
+{% load static i18n audit_filters %}
+<style>
+    #{{ feed_id }} {
+        max-width: {% if compact %}100%{% else %}980px{% endif %};
+        margin: 0 auto;
+    }
+    #{{ feed_id }}.eah-compact {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        padding-bottom: 1rem;
+    }
+    #{{ feed_id }} .eah-old {
+        text-decoration: line-through;
+        text-decoration-color: #c4c4c4;
+    }
+    #{{ feed_id }} .eah-change-row + .eah-change-row {
+        border-top: 1px solid #ebebeb;
+        margin-top: 8px;
+        padding-top: 8px;
+    }
+    #{{ feed_id }} .eah-dot {
+        box-shadow: 0 0 0 3px #fff;
+    }
+    #{{ feed_id }} .eah-search {
+        min-width: 0;
+        width: {% if compact %}100%{% else %}260px{% endif %};
+        max-width: 100%;
+    }
+    #{{ feed_id }}.eah-compact .eah-card {
+        padding: 0.75rem;
+    }
+    #{{ feed_id }}.eah-compact .eah-avatar {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+</style>
+
+<div id="{{ feed_id }}" class="px-3 pb-6{% if compact %} eah-compact{% endif %}">
+    {% if show_header %}
+        <div class="oh-btn-group p-0 mb-4 d-flex flex-col {% if not compact %}lg:flex-row lg:items-end lg:justify-between{% endif %} gap-3">
+            <div>
+                <span class="text-md font-semibold text-dark-500 block">{{ title }}</span>
+                {% if subtitle %}
+                    <p class="text-xs text-dark-100 mb-0 mt-0.5">{{ subtitle }}</p>
+                {% endif %}
+            </div>
+            {% if show_search and has_history %}
+                <div class="eah-search relative shrink-0">
+                    <input
+                        type="text"
+                        id="{{ feed_id }}Search"
+                        name="search"
+                        value="{{ search }}"
+                        placeholder="{% trans 'Search by field or value…' %}"
+                        autocomplete="off"
+                        aria-label="{% trans 'Search' %}"
+                        class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+                    >
+                    <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
+                </div>
+            {% endif %}
+        </div>
+    {% elif show_search and has_history %}
+        <div class="eah-search relative shrink-0 mb-3">
+            <input
+                type="text"
+                id="{{ feed_id }}Search"
+                name="search"
+                value="{{ search }}"
+                placeholder="{% trans 'Search by field or value…' %}"
+                autocomplete="off"
+                aria-label="{% trans 'Search' %}"
+                class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+            >
+            <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
+        </div>
+    {% endif %}
+
+    {% if has_history %}
+        <div
+            id="{{ feed_id }}EmptyFilter"
+            class="bg-white p-6 rounded-md shadow-card hidden"
+        >
+            <div class="flex flex-col items-center justify-center py-8">
+                <img
+                    src="/static/horilla_theme/assets/img/no-records.svg"
+                    alt=""
+                    width="180"
+                    class="mb-4"
+                    onerror="this.style.display='none'"
+                >
+                <p class="text-[#666] mb-0">{% trans "No changes match your filters." %}</p>
+            </div>
+        </div>
+
+        <div id="{{ feed_id }}Timeline" class="space-y-5">
+            {% for group in history_groups %}
+                <section data-history-group>
+                    <h3 class="text-xs font-semibold uppercase tracking-wide text-dark-100 mb-2.5">
+                        {{ group.label }}
+                    </h3>
+                    <ol class="relative space-y-2.5 pl-5 pr-1 list-none m-0">
+                        <span class="absolute left-[5px] top-2 bottom-2 w-0.5 bg-dark-50" aria-hidden="true"></span>
+                        {% for history in group.entries %}
+                            <li
+                                class="relative pr-1"
+                                data-history-entry
+                                data-search-text="{{ history.actor_name }} {{ history.action_phrase }} {{ history.reason }} {% for change in history.changes %}{{ change.field_label|default:change.field }} {{ change.old_value }} {{ change.new_value }} {% endfor %}"
+                            >
+                                <span
+                                    class="eah-dot absolute -left-5 top-3.5 w-2.5 h-2.5 rounded-full bg-primary-600"
+                                    aria-hidden="true"
+                                ></span>
+                                <article class="eah-card bg-white rounded-md border border-dark-50 shadow-sm px-3.5 py-3">
+                                    <div class="flex items-start gap-2.5">
+                                        <div class="eah-avatar w-8 h-8 rounded-full overflow-hidden shrink-0 border-2 border-primary-600 bg-white">
+                                            <img
+                                                src="{% if history.actor_avatar %}{{ history.actor_avatar }}{% else %}{{ history.updated_by.get_avatar }}{% endif %}"
+                                                alt=""
+                                                class="w-full h-full object-cover rounded-full"
+                                            >
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+                                                <span class="text-sm font-semibold text-dark-500">{{ history.actor_name }}</span>
+                                                <span class="text-sm text-dark-100">{{ history.action_phrase }}</span>
+                                                {% if history.history_date %}
+                                                    <span class="text-xs text-dark-100 sm:ml-auto whitespace-nowrap">
+                                                        <span class="timeformat_changer">{{ history.history_date|time }}</span>
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                            {% if history.reason %}
+                                                <p class="text-xs text-dark-100 italic mt-1 mb-0">
+                                                    “{{ history.reason }}”
+                                                </p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    {% if history.changes %}
+                                        <ul class="mt-2.5 {% if compact %}pl-0{% else %}pl-10{% endif %} list-none m-0" data-history-changes>
+                                            {% for change in history.changes %}
+                                                <li
+                                                    class="eah-change-row {% if forloop.counter > 3 %}hidden{% endif %}"
+                                                    {% if forloop.counter > 3 %}data-history-extra{% endif %}
+                                                >
+                                                    <div class="flex flex-col gap-1.5">
+                                                        <span class="text-xs font-medium text-dark-200">
+                                                            {{ change.field_label|default:change.field }}
+                                                        </span>
+                                                        <div class="flex flex-wrap items-center gap-1.5 min-w-0">
+                                                            <span class="eah-old inline-flex max-w-full items-center rounded-md px-2 py-0.5 text-xs bg-primary-50 text-dark-100 border border-dark-50">
+                                                                <span class="truncate">
+                                                                    {% if change.is_fk and history.pair %}
+                                                                        {{ history.pair.1|fk_history:change }}
+                                                                    {% else %}
+                                                                        {{ change.old_value }}
+                                                                    {% endif %}
+                                                                </span>
+                                                            </span>
+                                                            <img
+                                                                src="{% static '/images/ui/arrow-right-line.svg' %}"
+                                                                alt=""
+                                                                class="w-3 h-3 shrink-0 opacity-60"
+                                                            >
+                                                            <span class="inline-flex max-w-full items-center rounded-md px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                                                                <span class="truncate">
+                                                                    {% if change.is_fk and history.pair %}
+                                                                        {{ history.pair.0|fk_history:change }}
+                                                                    {% else %}
+                                                                        {{ change.new_value }}
+                                                                    {% endif %}
+                                                                </span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                        {% if history.changes|length > 3 %}
+                                            <div class="{% if compact %}pl-0{% else %}pl-10{% endif %} mt-2">
+                                                <button
+                                                    type="button"
+                                                    class="text-xs font-semibold text-primary-600 hover:text-primary-800 bg-transparent border-0 p-0 cursor-pointer"
+                                                    data-history-toggle
+                                                    data-more-label="{% trans 'Show' %} {{ history.changes|length|add:'-3' }} {% trans 'more' %}"
+                                                    data-less-label="{% trans 'Show less' %}"
+                                                >
+                                                    {% trans "Show" %} {{ history.changes|length|add:"-3" }} {% trans "more" %}
+                                                </button>
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+
+                                    {% if has_perm_to_revert and history.revert_history_id and object and model %}
+                                        <div class="{% if compact %}pl-0{% else %}pl-10{% endif %} mt-2">
+                                            <button
+                                                hidden
+                                                id="revert{{ history.revert_history_id }}"
+                                                hx-post="{% url 'history-revert' object.pk history.revert_history_id %}?model={{ model }}"
+                                            ></button>
+                                            <a
+                                                href="javascript:void(0);"
+                                                class="text-xs font-semibold text-primary-600 hover:text-primary-800 inline-flex items-center gap-1"
+                                                title="{% trans 'Restore previous state' %}"
+                                                data-revert-confirm
+                                                data-title="{% trans 'Are you sure?' %}"
+                                                data-text="{% trans 'This will revert the object to a previous state.' %}"
+                                                data-confirm="{% trans 'Yes, revert it' %}"
+                                                data-target="revert{{ history.revert_history_id }}"
+                                            >
+                                                <ion-icon name="git-pull-request-outline" class="text-sm"></ion-icon>
+                                                {% trans "Revert" %}
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                </article>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                </section>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="oh-wrapper h-full" align="center">
+            <div class="bg-white p-6 rounded-md shadow-card">
+                <div class="flex flex-col items-center justify-center py-10">
+                    <img
+                        src="/static/horilla_theme/assets/img/no-records.svg"
+                        alt=""
+                        width="{% if compact %}180{% else %}280{% endif %}"
+                        class="mb-4"
+                        onerror="this.src='{% static 'images/ui/history.png' %}'"
+                    >
+                    <p class="text-[#666] mb-0 font-medium">{{ empty_message }}</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    (function () {
+        var root = document.getElementById("{{ feed_id }}");
+        if (!root || root.getAttribute("data-eah-bound") === "1") return;
+        root.setAttribute("data-eah-bound", "1");
+
+        root.querySelectorAll("[data-history-toggle]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                var card = btn.closest("article");
+                if (!card) return;
+                var extras = card.querySelectorAll("[data-history-extra]");
+                var expanded = btn.getAttribute("data-expanded") === "1";
+                extras.forEach(function (el) {
+                    el.classList.toggle("hidden", expanded);
+                });
+                btn.setAttribute("data-expanded", expanded ? "0" : "1");
+                btn.textContent = expanded
+                    ? btn.getAttribute("data-more-label")
+                    : btn.getAttribute("data-less-label");
+            });
+        });
+
+        root.querySelectorAll("[data-revert-confirm]").forEach(function (link) {
+            link.addEventListener("click", function (e) {
+                e.preventDefault();
+                var targetId = link.getAttribute("data-target");
+                if (typeof Swal === "undefined") {
+                    if (confirm(link.getAttribute("data-text"))) {
+                        var btn = document.getElementById(targetId);
+                        if (btn) btn.click();
+                    }
+                    return;
+                }
+                Swal.fire({
+                    title: link.getAttribute("data-title"),
+                    text: link.getAttribute("data-text"),
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#6c757d",
+                    confirmButtonText: link.getAttribute("data-confirm"),
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        var btn = document.getElementById(targetId);
+                        if (btn) btn.click();
+                    }
+                });
+            });
+        });
+
+        var searchInput = document.getElementById("{{ feed_id }}Search");
+        var timeline = document.getElementById("{{ feed_id }}Timeline");
+        var emptyFilter = document.getElementById("{{ feed_id }}EmptyFilter");
+        if (!searchInput || !timeline) return;
+
+        function applyHistorySearch() {
+            var q = (searchInput.value || "").trim().toLowerCase();
+            var visibleCount = 0;
+            timeline.querySelectorAll("[data-history-group]").forEach(function (group) {
+                var groupVisible = 0;
+                group.querySelectorAll("[data-history-entry]").forEach(function (entry) {
+                    var haystack = (entry.getAttribute("data-search-text") || "").toLowerCase();
+                    var match = !q || haystack.indexOf(q) !== -1;
+                    entry.classList.toggle("hidden", !match);
+                    if (match) groupVisible += 1;
+                });
+                group.classList.toggle("hidden", groupVisible === 0);
+                visibleCount += groupVisible;
+            });
+            timeline.classList.toggle("hidden", visibleCount === 0);
+            if (emptyFilter) emptyFilter.classList.toggle("hidden", visibleCount !== 0);
+        }
+
+        searchInput.addEventListener("input", applyHistorySearch);
+        if ((searchInput.value || "").trim()) applyHistorySearch();
+    })();
+</script>

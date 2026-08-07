@@ -82,8 +82,9 @@ class HistoryTrackingFieldsForm(forms.Form):
             required=False,
             widget=forms.SelectMultiple(
                 attrs={
-                    "class": "oh-select oh-select-2 select2-hidden-accessible",
-                    "style": "height:270px;",
+                    "class": "oh-select oh-select-2",
+                    "style": "width:100%;",
+                    "data-placeholder": "Select fields…",
                 }
             ),
         )

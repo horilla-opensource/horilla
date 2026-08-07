@@ -65,15 +65,36 @@ def get_field_label(model_class, field_name):
 def filter_history(histories, track_fields):
     filtered_histories = []
     for history in histories:
-        changes = history.get("changes", [])
+        changes = history.get("changes") or []
+        if not changes:
+            continue
         filtered_changes = [
             change for change in changes if change.get("field_name", "") in track_fields
         ]
         if filtered_changes:
             history["changes"] = filtered_changes
             filtered_histories.append(history)
-    histories = filtered_histories
-    return histories
+    return filtered_histories
+
+
+class _SyntheticHistorySnapshot:
+    """Stand-in when a live record has no simple-history rows yet."""
+
+    def __init__(self, history_date, history_type="+"):
+        self.history_date = history_date
+        self.history_type = history_type
+        self.history_title = None
+        self.history_change_reason = None
+        self.pk = None
+
+
+def _actor_from_user(user):
+    if not user:
+        return Bot()
+    try:
+        return user.employee_get
+    except Exception:
+        return Bot()
 
 
 def get_diff(instance, history_related_name):
@@ -108,8 +129,6 @@ def get_diff(instance, history_related_name):
                 new = choices[new]
             if isinstance(field, models.ForeignKey):
                 is_fk = True
-                # old = getattr(pair[0], change.field)
-                # new = getattr(pair[1], change.field)
             diffs.append(
                 {
                     "field": get_field_label(class_name, change.field),
@@ -119,6 +138,8 @@ def get_diff(instance, history_related_name):
                     "new": new,
                 }
             )
+        if not diffs:
+            continue
         updated_by = (
             HorillaUser.objects.get(id=pair[0].history_user.id).employee_get
             if pair[0].history_user
@@ -135,7 +156,7 @@ def get_diff(instance, history_related_name):
     if create_history:
         try:
             updated_by = create_history.history_user.employee_get
-        except:
+        except Exception:
             updated_by = Bot()
         delta_changes.append(
             {
@@ -144,12 +165,53 @@ def get_diff(instance, history_related_name):
                 "updated_by": updated_by,
             }
         )
+    if not delta_changes and history_list:
+        only = history_list[0]
+        try:
+            updated_by = only.history_user.employee_get if only.history_user else Bot()
+        except Exception:
+            updated_by = Bot()
+        if only.history_type == "+":
+            event_type = f"{instance._meta.verbose_name.capitalize()} created"
+        elif only.history_type == "-":
+            event_type = f"{instance._meta.verbose_name.capitalize()} deleted"
+        else:
+            event_type = f"{instance._meta.verbose_name.capitalize()} updated"
+        delta_changes.append(
+            {
+                "type": event_type,
+                "pair": (only, only),
+                "updated_by": updated_by,
+            }
+        )
+    # Records created before history was enabled (or via paths that skipped
+    # simple-history) have no rows — still surface creation from HorillaModel.
+    if not delta_changes:
+        created_at = getattr(instance, "created_at", None)
+        if created_at:
+            snapshot = _SyntheticHistorySnapshot(created_at, "+")
+            delta_changes.append(
+                {
+                    "type": f"{instance._meta.verbose_name.capitalize()} created",
+                    "pair": (snapshot, snapshot),
+                    "updated_by": _actor_from_user(
+                        getattr(instance, "created_by", None)
+                    ),
+                }
+            )
     if instance._meta.model_name == "employeeworkinformation":
-        from .models import HistoryTrackingFields
+        from horilla_audit.models import HistoryTrackingFields
 
-        history_tracking_instance = HistoryTrackingFields.objects.first()
-        if history_tracking_instance and history_tracking_instance.tracking_fields:
-            track_fields = history_tracking_instance.tracking_fields["tracking_fields"]
+        history_tracking_instance = HistoryTrackingFields.for_company(
+            getattr(instance, "company_id", None)
+        )
+        if (
+            history_tracking_instance is None
+            or not history_tracking_instance.work_info_track
+        ):
+            return []
+        if history_tracking_instance.tracking_fields:
+            track_fields = history_tracking_instance.tracked_field_names()
             if track_fields:
                 delta_changes = filter_history(delta_changes, track_fields)
     return delta_changes

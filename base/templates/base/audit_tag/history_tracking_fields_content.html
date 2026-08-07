@@ -24,64 +24,125 @@
     }
 </style>
 
-<form
-    action="{% url 'history-field-settings' %}"
-    class="settings-label mb-1"
-    method="post"
-    hx-post="{% url 'history-field-settings' %}"
-    hx-target="#historyTrackingFieldsForm"
-    hx-swap="innerHTML"
-    data-settings-native="true"
->
-    {% csrf_token %}
-    <div class="oh-inner-sidebar-content__header mt-4">
-        <h2 class="oh-inner-sidebar-content__title">
-            {% trans "Employee History Tracking" %}
-        </h2>
-    </div>
-    {% if history_tracking_instance.work_info_track %}
-        <div class="oh-label__info" for="defatul_expire">
-            <label class="oh-label" for="defatul_expire">{% trans "Tracking Fields" %}</label>
-            <span
-                class="oh-info mr-2"
-                title="{% trans 'Employee history will be stored during updation of the fields that selected here.' %}"
-            ></span>
+<div id="historyTrackingFieldsForm">
+    <form
+        action="{% url 'history-field-settings' %}"
+        class="settings-label mb-1"
+        method="post"
+        hx-post="{% url 'history-field-settings' %}"
+        hx-target="#historyTrackingFieldsForm"
+        hx-swap="outerHTML"
+        data-settings-native="true"
+    >
+        {% csrf_token %}
+        <input type="hidden" name="update_tracking_fields" value="1">
+        <input type="hidden" name="work_info_track" value="{% if history_tracking_instance.work_info_track %}on{% endif %}">
+        <div class="oh-inner-sidebar-content__header mt-4">
+            <h2 class="oh-inner-sidebar-content__title">
+                {% trans "Employee History Tracking" %}
+            </h2>
         </div>
-        <div style="display: flex">
-            <div style="min-width: 273px">
-                {{ history_fields_form.tracking_fields }}
+        {% if history_tracking_instance.work_info_track %}
+            <div class="oh-label__info" for="defatul_expire">
+                <label class="oh-label" for="defatul_expire">{% trans "Tracking Fields" %}</label>
+                <span
+                    class="oh-info mr-2"
+                    title="{% trans 'Employee history will be stored during updation of the fields that selected here. Leave empty to track all work information fields.' %}"
+                ></span>
             </div>
-            {% if perms.payroll.change_payrollsettings %}
+            <div style="display: flex">
+                <div style="min-width: 273px; flex: 1">
+                    {{ history_fields_form.tracking_fields }}
+                </div>
+            </div>
+
+            {% if tracking_is_all_companies %}
+                <div class="oh-label__info mt-3">
+                    <label class="oh-label">{% trans "Assign to Companies" %}</label>
+                    <span
+                        class="oh-info mr-2"
+                        title="{% trans 'Select the companies that should receive these tracking settings. The All Companies default is always saved as well.' %}"
+                    ></span>
+                </div>
+                <p class="text-muted mb-2" style="font-size: 12px">
+                    {% trans "Choose which companies these settings should be applied to." %}
+                </p>
+                <select
+                    name="assign_companies"
+                    id="historyTrackingAssignCompanies"
+                    class="oh-select oh-select-2"
+                    multiple
+                    style="width:100%; min-height:42px;"
+                >
+                    {% for company in tracking_assign_companies %}
+                        <option
+                            value="{{ company.id }}"
+                            {% if company.id in tracking_assigned_company_ids %}selected{% endif %}
+                        >{{ company.company }}</option>
+                    {% endfor %}
+                </select>
+            {% endif %}
+
+            {% if perms.horilla_audit.change_historytrackingfields or perms.payroll.change_payrollsettings %}
                 <button
-                    style="display: inline; margin-left: 5px"
+                    style="display: inline; margin-top: 10px"
                     type="submit"
                     class="oh-btn oh-btn--secondary mr-0 oh-btn--w-100-resp"
                 >
-                    {% trans "Save Changes" %}
+                    {% if tracking_is_all_companies %}
+                        {% trans "Save & Assign" %}
+                    {% else %}
+                        {% trans "Save Changes" %}
+                    {% endif %}
                 </button>
             {% endif %}
-        </div>
-    {% endif %}
+        {% endif %}
+    </form>
 
-    <div class="oh-label__info mt-3" for="work_info_track">
-        <label class="oh-label" for="work_info_track">{% trans "Work Information Tracking" %}</label>
-        <span
-            class="oh-info mr-2"
-            title='{% trans "By enabling this feature, you can save the history of employee work information during updates." %}'
-        >
-        </span>
-    </div>
-    <div class="oh-switch p-3">
-        <input
-            type="checkbox"
-            class="oh-switch__checkbox"
-            name="work_info_track"
-            onchange="$(this).closest('form').find('input[type=submit]').click()"
-            {% if history_tracking_instance.work_info_track %}
-                checked
-            {% endif %}
-        >
-    </div>
-    <input type="submit" hidden>
-    <div class="oh-inner-sidebar-content__footer"></div>
-</form>
+    <form
+        action="{% url 'history-field-settings' %}"
+        method="post"
+        hx-post="{% url 'history-field-settings' %}"
+        hx-target="#historyTrackingFieldsForm"
+        hx-swap="outerHTML"
+        data-settings-native="true"
+        class="settings-label mb-1"
+    >
+        {% csrf_token %}
+        <div class="oh-label__info mt-3" for="work_info_track">
+            <label class="oh-label" for="work_info_track">{% trans "Work Information Tracking" %}</label>
+            <span
+                class="oh-info mr-2"
+                title='{% if tracking_is_all_companies %}{% trans "Configure the default, then choose which companies should receive these settings." %}{% else %}{% trans "By enabling this feature, you can save the history of employee work information during updates for the currently selected company." %}{% endif %}'
+            >
+            </span>
+        </div>
+        <div class="oh-switch p-3">
+            <input
+                type="checkbox"
+                class="oh-switch__checkbox"
+                name="work_info_track"
+                onchange="$(this).closest('form').find('input[type=submit]').click()"
+                {% if history_tracking_instance.work_info_track %}
+                    checked
+                {% endif %}
+            >
+        </div>
+        <input type="submit" hidden>
+        <div class="oh-inner-sidebar-content__footer"></div>
+    </form>
+</div>
+<script>
+    (function () {
+        function initSelect($el) {
+            if ($el.length && typeof $.fn.select2 === "function") {
+                if ($el.hasClass("select2-hidden-accessible")) {
+                    $el.select2("destroy");
+                }
+                $el.select2({ width: "100%" });
+            }
+        }
+        initSelect($("#historyTrackingFieldsForm select[name='tracking_fields']"));
+        initSelect($("#historyTrackingAssignCompanies"));
+    })();
+</script>

@@ -317,26 +317,29 @@
                                                 {{ item.history.updated_by }}</strong> {% trans "Created the ticket " %}
                                         </span>
                                     </div>
-                                {% elif item.history.changes.0.is_fk == True %}
-                                    <div class="oh-helpdesk__chat-update">
-                                        <span>{{ item.history.updated_by }}
-                                            {% trans "changed the ticket " %}{{ item.history.changes.0.field|safe }}
-                                            {% trans " from" %}
-                                            <strong
-                                            >{{ item.history.pair.0|fk_history:item.history.changes.0|safe }}</strong>
-                                            {% trans "to" %}
-                                            <strong
-                                            >{{ item.history.pair.1|fk_history:item.history.changes.0|safe }}</strong></span>
-                                        <span>{{ item.history.pair.0.history_date }}</span>
-                                    </div>
                                 {% else %}
-                                    <div class="oh-helpdesk__chat-update">
-                                        <span>{{ item.history.updated_by }}
-                                            {% trans "changed the ticket " %}{{ item.history.changes.0.field|safe }}
-                                            {% trans " from" %}
-                                            <strong>{{ item.history.changes.0.old|safe }}</strong> {% trans "to" %}
-                                            <strong>{{ item.history.changes.0.new|safe }}</strong></span>
-                                        <span>{{ item.history.pair.0.history_date }}</span>
+                                    <div class="oh-helpdesk__chat-update flex flex-wrap items-center gap-2">
+                                        <span class="text-xs">
+                                            <strong>{{ item.history.updated_by }}</strong>
+                                            {% trans "updated" %}
+                                            <strong>{{ item.history.changes.0.field|safe }}</strong>
+                                        </span>
+                                        <span class="inline-flex max-w-full items-center rounded-md px-2 py-0.5 text-xs bg-primary-50 text-dark-100 border border-dark-50" style="text-decoration:line-through;text-decoration-color:#c4c4c4;">
+                                            {% if item.history.changes.0.is_fk %}
+                                                {{ item.history.pair.1|fk_history:item.history.changes.0|safe }}
+                                            {% else %}
+                                                {{ item.history.changes.0.old|safe }}
+                                            {% endif %}
+                                        </span>
+                                        <img src="{% static '/images/ui/arrow-right-line.svg' %}" alt="" class="w-3 h-3 opacity-60">
+                                        <span class="inline-flex max-w-full items-center rounded-md px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                                            {% if item.history.changes.0.is_fk %}
+                                                {{ item.history.pair.0|fk_history:item.history.changes.0|safe }}
+                                            {% else %}
+                                                {{ item.history.changes.0.new|safe }}
+                                            {% endif %}
+                                        </span>
+                                        <span class="text-xs text-dark-100">{{ item.history.pair.0.history_date }}</span>
                                     </div>
                                 {% endif %}
                             {% endif %}

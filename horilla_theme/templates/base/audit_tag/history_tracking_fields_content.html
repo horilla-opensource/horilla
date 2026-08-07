@@ -1,4 +1,27 @@
 {% load i18n %}
+<style>
+    #historyTrackingSection .history-tracking-select-wrap .select2-container {
+        width: 100% !important;
+    }
+    #historyTrackingSection .history-tracking-select-wrap .select2-selection--multiple {
+        min-height: 42px !important;
+        height: 42px !important;
+        overflow-y: auto;
+        display: flex;
+        align-items: flex-start;
+    }
+    #historyTrackingSection .history-tracking-select-wrap select {
+        min-height: 42px;
+        width: 100%;
+    }
+    #historyTrackingSection .history-tracking-equal-col {
+        display: flex;
+        flex-direction: column;
+    }
+    #historyTrackingSection .history-tracking-equal-col .history-tracking-select-wrap {
+        flex: 1 1 auto;
+    }
+</style>
 <div class="col-span-12 lg:col-span-6" id="setting-work-info-tracking">
     <form
         action="{% url 'history-field-settings' %}"
@@ -9,18 +32,22 @@
         data-settings-native="true"
     >
         {% csrf_token %}
-        <div class="flex items-center justify-between mb-4 mt-[30px]">
+        <div class="flex items-center justify-between mb-4">
             <div>
                 <div class="flex space-x-2">
                     <h3 class="text-sm font-medium">{% trans "Work Information Tracking" %}</h3>
                     <span
                         class="oh-info mr-2"
-                        title='{% trans "By enabling this feature, you can save the history of employee work information during updates." %}'
+                        title='{% if tracking_is_all_companies %}{% trans "Configure the default, then choose which companies should receive these settings." %}{% else %}{% trans "By enabling this feature, you can save the history of employee work information during updates for the currently selected company." %}{% endif %}'
                     >
                     </span>
                 </div>
                 <p class="text-xs text-gray-500 mt-1">
-                    {% trans "Save a history record whenever an employee's work information is updated." %}
+                    {% if tracking_is_all_companies %}
+                        {% trans "Configure default tracking settings, then assign them to one or more companies below." %}
+                    {% else %}
+                        {% trans "Save a history record whenever an employee's work information is updated. Applies to the currently selected company." %}
+                    {% endif %}
                 </p>
             </div>
             <label class="toggle-label">
@@ -41,8 +68,9 @@
     </form>
 </div>
 {% if history_tracking_instance.work_info_track %}
-    <div class="col-span-12 lg:col-span-6" id="setting-tracking-fields">
+    <div class="col-span-12 {% if tracking_is_all_companies %}lg:col-span-12{% else %}lg:col-span-6{% endif %}" id="setting-tracking-fields">
         <form
+            id="historyTrackingFieldsForm"
             action="{% url 'history-field-settings' %}"
             method="post"
             hx-post="{% url 'history-field-settings' %}"
@@ -52,24 +80,102 @@
         >
             {% csrf_token %}
             <input type="hidden" name="work_info_track" value="on">
-            <div class="flex space-x-2 pb-1">
-                <label>{% trans "Tracking Fields" %}</label>
-                <span
-                    class="oh-info mr-2"
-                    title="{% trans 'Employee history will be stored during updation of the fields that selected here.' %}"
-                ></span>
+            <input type="hidden" name="update_tracking_fields" value="1">
+
+            <div class="{% if tracking_is_all_companies %}grid grid-cols-12 gap-4 items-stretch{% endif %}">
+                <div class="{% if tracking_is_all_companies %}col-span-12 lg:col-span-6 history-tracking-equal-col{% endif %}">
+                    <div class="flex space-x-2 pb-1">
+                        <label>{% trans "Tracking Fields" %}</label>
+                        <span
+                            class="oh-info mr-2"
+                            title="{% trans 'Employee history will be stored during updation of the fields that selected here. Leave empty to track all work information fields.' %}"
+                        ></span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1 pb-2">
+                        {% trans "Selected fields will be recorded in employee history whenever they are updated. Leave empty to track all work information fields." %}
+                    </p>
+                    <div class="history-tracking-select-wrap">
+                        {{ history_fields_form.tracking_fields }}
+                    </div>
+                </div>
+
+                {% if tracking_is_all_companies %}
+                    <div class="col-span-12 lg:col-span-6 history-tracking-equal-col">
+                        <div class="flex space-x-2 pb-1">
+                            <label>{% trans "Assign to Companies" %}</label>
+                            <span
+                                class="oh-info mr-2"
+                                title="{% trans 'Select the companies that should receive these tracking settings. All companies are selected by default. Company-specific field selections are preserved; new fields from All Companies are merged in.' %}"
+                            ></span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1 pb-2">
+                            {% trans "Choose which companies these settings should be applied to. All companies are selected by default. Existing company-specific fields are kept; new fields are added to them." %}
+                        </p>
+                        <div class="history-tracking-select-wrap">
+                            <select
+                                name="assign_companies"
+                                id="historyTrackingAssignCompanies"
+                                class="oh-select oh-select-2"
+                                multiple
+                                data-placeholder="{% trans 'Select companies…' %}"
+                                style="width:100%;"
+                            >
+                                {% for company in tracking_assign_companies %}
+                                    <option
+                                        value="{{ company.id }}"
+                                        {% if company.id in tracking_assigned_company_ids %}selected{% endif %}
+                                    >{{ company.company }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
-            <p class="text-xs text-gray-500 mt-1 pb-2">
-                {% trans "Selected fields will be recorded in employee history whenever they are updated." %}
-            </p>
-            <div class="flex gap-2 h-[30px]">
-                {{ history_fields_form.tracking_fields }}
-                {% if perms.payroll.change_payrollsettings %}
+
+            <div class="flex justify-end mt-3">
+                {% if perms.horilla_audit.change_historytrackingfields or perms.payroll.change_payrollsettings %}
                     <button class="btn h-[36px]" type="submit">
-                        {% trans "Save" %}
+                        {% if tracking_is_all_companies %}
+                            {% trans "Save & Assign" %}
+                        {% else %}
+                            {% trans "Save" %}
+                        {% endif %}
                     </button>
                 {% endif %}
             </div>
         </form>
     </div>
 {% endif %}
+<script>
+    (function () {
+        function initSelect($el, placeholder) {
+            if (!$el.length || typeof $.fn.select2 !== "function") {
+                return;
+            }
+            if ($el.hasClass("select2-hidden-accessible")) {
+                $el.select2("destroy");
+            }
+            $el.select2({
+                width: "100%",
+                placeholder: placeholder || "",
+                closeOnSelect: false,
+            });
+            // Keep both multi-selects the same visual height.
+            $el.next(".select2-container")
+                .find(".select2-selection--multiple")
+                .css({ "min-height": "42px", height: "42px", "overflow-y": "auto" });
+        }
+        function initHistoryTrackingSelects() {
+            initSelect(
+                $("#historyTrackingSection select[name='tracking_fields']"),
+                "{% trans 'Select fields…' %}"
+            );
+            initSelect(
+                $("#historyTrackingAssignCompanies"),
+                "{% trans 'Select companies…' %}"
+            );
+        }
+        initHistoryTrackingSelects();
+        setTimeout(initHistoryTrackingSelects, 50);
+    })();
+</script>

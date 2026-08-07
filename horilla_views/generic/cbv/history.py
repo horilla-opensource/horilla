@@ -33,14 +33,22 @@ class HorillaHistoryView(DetailView):
         """
         context = super().get_context_data(**kwargs)
         instance = self.get_object()
+        tracking = None
+        log_entries = None
         if self.history_related_name:
-            context["tracking"] = get_diff(instance, self.history_related_name)
+            tracking = get_diff(instance, self.history_related_name)
+        # Prefer simple-history when it produced entries; otherwise use auditlog.
+        if tracking:
+            context["tracking"] = tracking
             context["log_entries"] = None
-        else:
+        elif hasattr(instance, "horilla_history"):
             context["tracking"] = None
             context["log_entries"] = instance.horilla_history.all().order_by(
                 "-timestamp"
             )
+        else:
+            context["tracking"] = tracking
+            context["log_entries"] = log_entries
         context["model"] = (
             f"{self.model._meta.app_label}.{self.model._meta.object_name}"
         )
@@ -52,6 +60,15 @@ class HorillaHistoryView(DetailView):
         request = getattr(_thread_locals, "request", None)
         self.request = request
 
+    def get_queryset(self):
+        """
+        Bypass company-scoped managers so history opens for any row visible
+        in multi-company / All Companies list views.
+        """
+        if self.model is not None:
+            return self.model._base_manager.all()
+        return super().get_queryset()
+
     def get(self, request, *args, **kwargs):
         """
         Resolve the model dynamically when a subclass hasn't set one, so a
@@ -62,7 +79,12 @@ class HorillaHistoryView(DetailView):
             if model_param:
                 app_label, model_name = model_param.split(".")
                 self.model = apps.get_model(app_label, model_name)
-        if hasattr(self.model, "history_set"):
+        # Prefer HistoryManager when present; history_set is only the reverse FK.
+        if hasattr(self.model, "history") and hasattr(
+            getattr(self.model, "history"), "model"
+        ):
+            self.history_related_name = "history"
+        elif hasattr(self.model, "history_set"):
             self.history_related_name = "history_set"
         elif hasattr(self.model, "history"):
             self.history_related_name = "history"

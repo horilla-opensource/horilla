@@ -1,0 +1,87 @@
+{% load i18n %}
+<div class="col-span-12 lg:col-span-6" id="setting-default-export-access">
+    <form
+        id="enableExportAccessForm"
+        hx-post="{% url 'enable-default-export-access' %}"
+        hx-swap="none"
+        hx-include="#enableExportAccess"
+        hx-on-htmx-after-request="setTimeout(reloadMessage, 70);"
+    >
+        {% csrf_token %}
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <div class="flex space-x-2">
+                    <h3 class="text-sm font-medium">{% trans "Default Export Access" %}</h3>
+                    <span
+                        class="oh-info mr-2"
+                        title="{% trans 'When enabled, every user of this company can export data from any module. When disabled, only users (or superusers) with the appropriate export permission for a module can export its data.' %}"
+                    ></span>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">
+                    {% trans "Allow every user of this company to export data from any module." %}
+                </p>
+            </div>
+            <label class="toggle-label">
+                <input
+                    type="checkbox"
+                    class="toggle-input"
+                    name="enable_export_access"
+                    id="enableExportAccess"
+                    {% if enabled_export_access %}
+                        checked
+                    {% endif %}
+                >
+                <div class="toggle-switch"></div>
+            </label>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#enableExportAccess').on('change', function (e) {
+            const $checkbox = $(this);
+            const $form = $('#enableExportAccessForm');
+
+            const message = $checkbox.is(':checked')
+                ? "{{ _('Are you sure you want to allow all users to export data?') }}"
+                : "{{ _('Are you sure you want to restrict data export to users with export permission?') }}";
+
+            Swal.fire({
+                title: "{{ _('Please Confirm') }}",
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: "{{ _('Confirm') }}",
+                cancelButtonText: "{{ _('Cancel') }}",
+                confirmButtonColor: '#008000',
+                cancelButtonColor: '#6c757d'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const formData = new FormData($form[0]);
+                    formData.append('csrfmiddlewaretoken', $('[name="csrfmiddlewaretoken"]').val());
+
+                    $.ajax({
+                        url: "{% url 'enable-default-export-access' %}",
+                        type: 'POST',
+                        headers: {
+                            'HX-Request': 'true',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function () {
+                            reloadMessage();
+                        },
+                        error: function () {
+                            Swal.fire("{{ _('Error') }}", "{{ _('Something went wrong while updating.') }}", "error");
+                        }
+                    });
+                } else {
+                    $checkbox.prop('checked', !$checkbox.is(':checked'));
+                }
+            });
+        });
+    });
+</script>

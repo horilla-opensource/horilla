@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static %}
 {% load pmsfilters %}
 
 <style>
@@ -76,20 +76,22 @@
         {% comment %} {% for history in history_object.delta.changes %}
       {% endcomment %}
         {% if activity.type == 'Changes' %}
-            <ul class="d-flex justify-content-between align-items-center pt-3 mb-3 border-top">
+            <ul class="d-flex justify-content-between align-items-center pt-3 mb-3 border-top flex-wrap gap-2">
                 <li class="oh-activity-list__item align-items-center mb-0">
                     <div class="oh-activity-list__photo oh-activity-list__photo--small me-2">
                         <img
                             src="https://ui-avatars.com/api/?name={{ activity.updated_by }}&background=random"
                             class="oh-activity-list__image"
-                            alt="{% trans 'Albert Camus' %}"
+                            alt=""
                         >
                     </div>
-                    <small class="oh-activity-list__description">
+                    <small class="oh-activity-list__description d-flex flex-wrap align-items-center gap-1">
                         <strong>{{ activity.updated_by }}</strong>
                         {% trans 'updated' %}
-                        <strong>{{ activity.changes.0.field|title|cut:'_' }}</strong> {% trans 'from' %}
-                        <strong>{{ activity.changes.0.old }}</strong> to <strong>{{ activity.changes.0.new }}</strong>
+                        <strong>{{ activity.changes.0.field|title|cut:'_' }}</strong>
+                        <span class="badge bg-light text-muted border" style="text-decoration:line-through;">{{ activity.changes.0.old }}</span>
+                        <img src="{% static '/images/ui/arrow-right-line.svg' %}" alt="" width="12" height="12" class="opacity-50">
+                        <span class="badge border" style="background:#ecfdf5;color:#15803d;border-color:#bbf7d0!important;">{{ activity.changes.0.new }}</span>
                     </small>
                 </li>
                 <li>

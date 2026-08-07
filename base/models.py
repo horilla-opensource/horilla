@@ -3172,6 +3172,9 @@ class DefaultExportPermission(HorillaModel):
     )
     objects = models.Manager()
 
+    def __str__(self):
+        return f"Default Export Access for {self.company_id} is {'enabled' if self.is_enabled else 'disabled'}"
+
 
 class CompanyLanguageSetting(HorillaModel):
     """

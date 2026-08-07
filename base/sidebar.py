@@ -237,7 +237,7 @@ class GeneralSettings:
                 {
                     "text": _("Work Information Tracking"),
                     "description": _(
-                        "Enable tracking of changes to employee work information fields"
+                        "Enable tracking of changes to employee work information fields for the selected company"
                     ),
                     "anchor": "setting-work-info-tracking",
                 },
@@ -266,19 +266,6 @@ class GeneralSettings:
                     "text": _("Menu Access Restrictions"),
                     "description": _(
                         "Control which user roles can see which menu items"
-                    ),
-                },
-            ],
-        },
-        {
-            "label": _("Default Export Access"),
-            "url": reverse_lazy("default-export-access-settings"),
-            "accessibility": default_export_accessibility,
-            "search_entries": [
-                {
-                    "text": _("Default Export Access"),
-                    "description": _(
-                        "Control the default data export behavior for the currently selected company"
                     ),
                 },
             ],

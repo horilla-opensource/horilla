@@ -258,7 +258,7 @@
                         </div>
                     </div>
                 {% endif %}
-                {% if perms.employee.change_employee or perms.employee.add_employee or perms.employee.delete_employee %}
+                {% if perms.employee.change_employee or perms.employee.add_employee or perms.employee.delete_employee or can_export_employee %}
                     <div class="oh-btn-group ml-2" onclick="event.preventDefault()">
                         <div class="oh-dropdown" x-data="{open: false}">
                             <button class="oh-btn oh-btn--dropdown" @click="open = !open" @click.outside="open = false">
@@ -281,7 +281,7 @@
                                         </li>
                                     {% endif %}
                                     {% if emp %}
-                                        {% if perms.employee.add_employee %}
+                                        {% if can_export_employee %}
                                             <li class="oh-dropdown__item">
                                                 <a
                                                     href="#"
