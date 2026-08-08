@@ -27,22 +27,22 @@
                 </h3>
                 <div class="grid grid-cols-3 gap-x-4 gap-y-2 emp-grid-3 px-3 py-3">
                     <div>
-                        <label class="block text-xs font-medium text-color-600 mb-1" for="id_bank_name">{% trans "Bank Name" %}</label>
+                        <label class="block text-xs font-medium text-color-600 mb-1 required-star" for="id_bank_name">{% trans "Bank Name" %}</label>
                         {{ bank_form.bank_name|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
                         {{ bank_form.bank_name.errors }}
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-color-600 mb-1" for="id_account_number">{% trans "Account Number" %}</label>
+                        <label class="block text-xs font-medium text-color-600 mb-1 required-star" for="id_account_number">{% trans "Account Number" %}</label>
                         {{ bank_form.account_number|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
                         {{ bank_form.account_number.errors }}
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-color-600 mb-1" for="id_branch">{% trans "Branch" %}</label>
+                        <label class="block text-xs font-medium text-color-600 mb-1 required-star" for="id_branch">{% trans "Branch" %}</label>
                         {{ bank_form.branch|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
                         {{ bank_form.branch.errors }}
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-color-600 mb-1" for="id_any_other_code1">{% trans "Bank Code #1" %}</label>
+                        <label class="block text-xs font-medium text-color-600 mb-1 required-star" for="id_any_other_code1">{% trans "Bank Code #1" %}</label>
                         {{ bank_form.any_other_code1|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
                         {{ bank_form.any_other_code1.errors }}
                     </div>
@@ -61,7 +61,7 @@
                 </h3>
                 <div class="px-3 py-3">
                 <div class="mb-2">
-                    <label class="block text-xs font-medium text-color-600 mb-1" for="id_address">{% trans "Address" %}</label>
+                    <label class="block text-xs font-medium text-color-600 mb-1 required-star" for="id_address">{% trans "Address" %}</label>
                     {{ bank_form.address|add_class:"emp-input w-full px-3 py-2 text-xs border border-secondary-200 rounded-md bg-white text-dark-500 resize-y" }}
                     {{ bank_form.address.errors }}
                 </div>
