@@ -103,6 +103,18 @@ def evaluate_leave_type_conditions(leave_type, employee):
     return True, None
 
 
+def has_sufficient_leave_balance(available_leave, requested_days) -> bool:
+    """
+    Gate used by leave_request_approve before deducting balance.
+
+    Returns True when available_days + carryforward_days covers requested_days.
+    """
+    total = (available_leave.available_days or 0) + (
+        available_leave.carryforward_days or 0
+    )
+    return total >= float(requested_days or 0)
+
+
 def get_condition_display_choices():
     """
     Returns a dict of {condition_type: suggested value choices} for UI hints.
