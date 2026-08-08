@@ -839,7 +839,9 @@ class Allowance(HorillaModel):
 
     if apps.is_installed("attendance"):
         attendance_choices = [
-            ("overtime", _("Overtime")),
+            ("overtime", _("Regular Overtime")),
+            ("week_off_overtime", _("Week Off Overtime")),
+            ("holiday_overtime", _("Holiday Overtime")),
             ("shift_id", _("Shift")),
             ("work_type_id", _("Work Type")),
             ("attendance", _("Attendance")),
