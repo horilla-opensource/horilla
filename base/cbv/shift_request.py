@@ -663,7 +663,7 @@ class ShiftAllocationFormView(HorillaFormView):
             )
         return super().form_invalid(form)
 
-    def form_valid(self, form: ShiftRequestForm) -> HttpResponse:
+    def form_valid(self, form: ShiftAllocationForm) -> HttpResponse:
         if form.is_valid():
             if form.instance.pk:
                 message = _("Shift request updated Successfully")

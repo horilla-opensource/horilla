@@ -4,7 +4,7 @@
 <script>
     function toggleFunctionShiftRequestForm(element) {
         const requestedTill = $("[id=id_requested_till]");
-        const parent = requestedTill.parent();
+        const parent = $("#id_requested_till_parent_div");
 
         if (element.is(":checked")) {
             requestedTill.val("");
