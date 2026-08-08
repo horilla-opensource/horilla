@@ -1,4 +1,4 @@
-"""Deepen: compute_salary_on_period with Contract + stubbed leave helpers."""
+"""compute_salary_on_period against Main's payroll.methods (no month_summary kwarg)."""
 
 from datetime import date
 from unittest.mock import patch
@@ -26,7 +26,6 @@ class ComputeSalaryOnPeriodTests(TestCase):
     def setUp(self):
         company = make_company("Salary Co")
         self.employee = make_employee(company=company, email="salary@test.horilla")
-        # Employee create may auto-seed a zero-wage active contract.
         Contract.objects.filter(employee_id=self.employee).delete()
         self.start = date(2024, 1, 1)
         self.end = date(2024, 1, 31)
@@ -53,71 +52,59 @@ class ComputeSalaryOnPeriodTests(TestCase):
         self._activate(contract_status="draft", wage=25000.0)
         self.assertIsNone(compute_salary_on_period(self.employee, self.start, self.end))
 
-    @patch("payroll.methods.methods.months_between_range", return_value=[])
+    @patch("payroll.methods.methods.months_between_range")
     @patch(
         "payroll.methods.methods.get_daily_salary",
         return_value={"day_wage": 1000.0},
     )
     @patch("payroll.methods.methods.get_leaves", return_value=EMPTY_LEAVES)
-    def test_monthly_with_summary_deducts_unpaid(self, *_mocks):
+    def test_monthly_with_no_unpaid_leaves(self, _leaves, _daily, mock_months):
         self._activate(wage=31000.0)
-        summary = {
-            "present": 20,
-            "paid_leave": 2,
-            "unpaid_leave": 1,
-            "absent": 1,
-            "week_off": 4,
-            "holiday": 2,
-        }
-        data = compute_salary_on_period(
-            self.employee, self.start, self.end, month_summary=summary
-        )
+        mock_months.return_value = [
+            {
+                "working_days_on_period": 22,
+                "per_day_amount": 1000.0,
+            }
+        ]
+        data = compute_salary_on_period(self.employee, self.start, self.end)
         self.assertIsNotNone(data)
-        self.assertEqual(data["unpaid_days"], 2)
-        self.assertEqual(data["paid_days"], 28.0)
+        self.assertEqual(data["unpaid_days"], 0)
+        self.assertEqual(data["paid_days"], 22)
         self.assertEqual(data["contract_wage"], 31000.0)
-        per_day = 31000.0 / 30
-        self.assertAlmostEqual(data["loss_of_pay"], 2 * per_day)
-        self.assertAlmostEqual(data["basic_pay"], 31000.0 - (2 * per_day))
+        self.assertEqual(data["basic_pay"], 22000.0)
+        self.assertEqual(data["loss_of_pay"], 0)
 
-    @patch("payroll.methods.methods.months_between_range", return_value=[])
+    @patch("payroll.methods.methods.months_between_range")
     @patch(
         "payroll.methods.methods.get_daily_salary",
         return_value={"day_wage": 1000.0},
     )
-    @patch("payroll.methods.methods.get_leaves", return_value=EMPTY_LEAVES)
-    def test_monthly_unresolved_conflicts_marks_all_unpaid(self, *_mocks):
+    @patch("payroll.methods.methods.get_leaves")
+    def test_monthly_deducts_unpaid_leaves(self, mock_leaves, _daily, mock_months):
         self._activate(wage=31000.0)
-        summary = {
-            "present": 20,
-            "paid_leave": 2,
-            "unpaid_leave": 1,
-            "absent": 1,
-            "week_off": 4,
-            "holiday": 2,
-            "unresolved_conflicts": 1,
-        }
-        data = compute_salary_on_period(
-            self.employee, self.start, self.end, month_summary=summary
-        )
-        self.assertEqual(data["unpaid_days"], 30)
-        self.assertEqual(data["paid_days"], 0.0)
+        mock_months.return_value = [
+            {
+                "working_days_on_period": 22,
+                "per_day_amount": 1000.0,
+            }
+        ]
+        leaves = dict(EMPTY_LEAVES)
+        leaves["unpaid_leaves"] = 2
+        mock_leaves.return_value = leaves
+        data = compute_salary_on_period(self.employee, self.start, self.end)
+        self.assertEqual(data["unpaid_days"], 2)
+        self.assertEqual(data["paid_days"], 20)
+        self.assertEqual(data["loss_of_pay"], 2000.0)
+        self.assertEqual(data["basic_pay"], 20000.0)
 
     @patch("payroll.methods.methods.months_between_range", return_value=[])
+    @patch("payroll.methods.methods.get_working_days")
     @patch("payroll.methods.methods.get_leaves", return_value=EMPTY_LEAVES)
-    def test_daily_wage_uses_summary_counts(self, *_mocks):
+    def test_daily_wage_uses_working_days(self, _leaves, mock_wd, _months):
         self._activate(wage_type="daily", wage=500.0)
-        summary = {
-            "present": 18,
-            "paid_leave": 2,
-            "unpaid_leave": 1,
-            "absent": 0,
-            "week_off": 4,
-            "holiday": 2,
-        }
-        data = compute_salary_on_period(
-            self.employee, self.start, self.end, month_summary=summary
-        )
-        self.assertEqual(data["paid_days"], 26.0)
-        self.assertEqual(data["unpaid_days"], 1)
-        self.assertEqual(data["basic_pay"], 26 * 500.0 - 1 * 500.0)
+        mock_wd.return_value = {"total_working_days": 20}
+        data = compute_salary_on_period(self.employee, self.start, self.end)
+        self.assertEqual(data["paid_days"], 20)
+        self.assertEqual(data["unpaid_days"], 0)
+        self.assertEqual(data["basic_pay"], 10000.0)
+        self.assertEqual(data["contract_wage"], 500.0)
