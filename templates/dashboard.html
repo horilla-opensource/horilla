@@ -2078,7 +2078,7 @@
                 const mins = Math.floor((Date.now() - lastRefresh) / 60000);
                 refreshText.textContent = mins < 1 ? '{% trans "Just now" %}' : mins + '{% trans "m ago" %}';
             }
-            setInterval(updateRefreshText, 30000);
+            registerAutoRefresh(setInterval(updateRefreshText, 30000));
 
             // Re-runs every data/chart load in place instead of reloading
             // the whole document -- refreshAllData() is defined further
@@ -2095,6 +2095,7 @@
                     updateRefreshText();
                     refreshAllData();
                 }, REFRESH_INTERVAL);
+                registerAutoRefresh(refreshTimer);
             }
             function stopAutoRefresh() {
                 autoRefreshOn = false;

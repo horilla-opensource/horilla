@@ -90,6 +90,20 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+window.registerAutoRefresh = function (intervalId) {
+  window._activeAutoRefreshTimers = window._activeAutoRefreshTimers || [];
+  window._activeAutoRefreshTimers.push(intervalId);
+};
+
+$(function () {
+  $("#ohMainContent").on("htmx:beforeSwap", function () {
+    $.each(window._activeAutoRefreshTimers || [], function (i, id) {
+      clearInterval(id);
+    });
+    window._activeAutoRefreshTimers = [];
+  });
+});
+
 // SIDEBARModal DSESIGN
 document.addEventListener("DOMContentLoaded", () => {
   // Toggle any sidebar based on data-sidebar attribute
