@@ -2032,8 +2032,9 @@ class Payslip(HorillaModel):
                 employee_id=self.employee_id,
                 start_date=self.start_date,
                 end_date=self.end_date,
-            ).count()
-            > 1
+            )
+            .exclude(pk=self.pk)
+            .exists()
         ):
             raise ValidationError(_("Employee ,start and end date must be unique"))
 
@@ -2088,6 +2089,12 @@ class Payslip(HorillaModel):
 
         ordering = [
             "-end_date",
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["employee_id", "start_date", "end_date"],
+                name="unique_payslip_per_employee_period",
+            )
         ]
 
 
