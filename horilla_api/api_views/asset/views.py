@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.http import QueryDict
+from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
@@ -243,7 +244,7 @@ class AssetRejectAPIView(APIView):
             asset_request.asset_request_status = "Rejected"
             asset_request.save()
             return Response(status=204)
-        raise serializers.ValidationError({"error": "Access Denied.."})
+        raise serializers.ValidationError({"error": _("Access Denied..")})
 
 
 class AssetApproveAPIView(APIView):
@@ -275,7 +276,7 @@ class AssetApproveAPIView(APIView):
                 asset_request.save()
                 return Response(status=200)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        raise serializers.ValidationError({"error": "Access Denied.."})
+        raise serializers.ValidationError({"error": _("Access Denied..")})
 
 
 class AssetReturnAPIView(APIView):

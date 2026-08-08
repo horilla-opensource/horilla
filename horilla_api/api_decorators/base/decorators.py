@@ -3,6 +3,7 @@ from functools import wraps
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.permissions import BasePermission
 from rest_framework.response import Response
@@ -52,7 +53,7 @@ def manager_permission_required(perm):
                 return func(self, request, *args, **kwargs)
             else:
                 return Response(
-                    {"error": "You do not have permission to perform this action."},
+                    {"error": _("You do not have permission to perform this action.")},
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
@@ -94,7 +95,7 @@ def manager_or_owner_permission_required(model_class, perm):
                 return func(self, request, *args, **kwargs)
             else:
                 return Response(
-                    {"error": "You do not have permission to perform this action."},
+                    {"error": _("You do not have permission to perform this action.")},
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
@@ -112,12 +113,18 @@ def check_approval_status(model, perm):
             object = model.objects.filter(id=pk).first()
             if object.approved:
                 return Response(
-                    {"error": f"Approved {model.__name__} can't preform this action "},
+                    {
+                        "error": _("Approved %(model)s can't preform this action ")
+                        % {"model": model.__name__}
+                    },
                     status=400,
                 )
             if object.canceled:
                 return Response(
-                    {"error": f"Canceled {model.__name__} can't preform this action "},
+                    {
+                        "error": _("Canceled %(model)s can't preform this action ")
+                        % {"model": model.__name__}
+                    },
                     status=400,
                 )
             return func(self, request, pk, *args, **kwargs)
@@ -140,6 +147,6 @@ def permission_required(function, perm):
         if request.user.has_perm(perm):
             return function(self, *args, **kwargs)
         else:
-            return Response({"message": "No permission"}, status=401)
+            return Response({"message": _("No permission")}, status=401)
 
     return _function

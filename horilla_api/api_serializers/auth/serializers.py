@@ -40,7 +40,7 @@ class PasswordResetSerializer(serializers.Serializer):
     def validate(self, data):
         if data["new_password"] != data["confirm_password"]:
             raise serializers.ValidationError(
-                {"confirm_password": "Passwords do not match."}
+                {"confirm_password": _("Passwords do not match.")}
             )
         user = self.context["request"].user
         try:

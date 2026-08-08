@@ -4,6 +4,7 @@ from collections import defaultdict
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -55,7 +56,7 @@ class PayslipView(APIView):
             ):
                 serializer = PayslipSerializer(payslip)
                 return Response(serializer.data, status=200)
-            return Response({"detail": "Permission denied."}, status=403)
+            return Response({"detail": _("Permission denied.")}, status=403)
         if request.user.has_perm("payroll.view_payslip"):
             payslips = Payslip.objects.all()
         else:
@@ -86,7 +87,7 @@ class PayslipDownloadView(APIView):
         if Payslip.objects.filter(id=id, employee_id=request.user.employee_get):
             return payslip_pdf(request, id)
         else:
-            raise Response({"error": "You don't have permission"})
+            raise Response({"error": _("You don't have permission")})
 
 
 class PayslipSendMailView(APIView):
@@ -98,7 +99,7 @@ class PayslipSendMailView(APIView):
         if not getattr(
             email_backend, "dynamic_username_with_display_name", None
         ) or not len(email_backend.dynamic_username_with_display_name):
-            return Response({"error": "Email server is not configured"}, status=400)
+            return Response({"error": _("Email server is not configured")}, status=400)
 
         payslip_ids = request.data.get("id", [])
         payslips = Payslip.objects.filter(id__in=payslip_ids)
@@ -128,7 +129,7 @@ class ContractView(APIView):
                     id=id, employee_id=request.user.employee_get
                 ).first()
             if not contract:
-                return Response({"error": "Contract not found."}, status=404)
+                return Response({"error": _("Contract not found.")}, status=404)
             serializer = ContractSerializer(contract)
             return Response(serializer.data, status=200)
         if request.user.has_perm("payroll.view_contract"):
@@ -302,7 +303,7 @@ class ReimbursementView(APIView):
                     id=pk, employee_id=request.user.employee_get
                 ).first()
             if not reimbursement:
-                return Response({"error": "Reimbursement not found."}, status=404)
+                return Response({"error": _("Reimbursement not found.")}, status=404)
             serializer = self.serializer_class(reimbursement)
             return Response(serializer.data, status=200)
         reimbursements = Reimbursement.objects.all()
@@ -447,7 +448,7 @@ class PayslipPDFAPIView(APIView):
             or payslip.employee_id.employee_user_id == user
         ):
             return Response(
-                {"detail": "You do not have permission to view this payslip."},
+                {"detail": _("You do not have permission to view this payslip.")},
                 status=status.HTTP_403_FORBIDDEN,
             )
 
@@ -477,7 +478,7 @@ class PayslipPDFAPIView(APIView):
 
         if not start_date_str or not end_date_str:
             return Response(
-                {"detail": "Payslip missing start_date or end_date"},
+                {"detail": _("Payslip missing start_date or end_date")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -542,7 +543,9 @@ class PayslipPDFAPIView(APIView):
             if not HAVE_PDFKIT:
                 return Response(
                     {
-                        "detail": "PDF generation not available on server. Install pdfkit/wkhtmltopdf."
+                        "detail": _(
+                            "PDF generation not available on server. Install pdfkit/wkhtmltopdf."
+                        )
                     },
                     status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 )

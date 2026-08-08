@@ -1,6 +1,7 @@
 from django.db.models import ProtectedError, Q
 from django.http import Http404
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
@@ -110,7 +111,8 @@ class EmployeeAPIView(APIView):
             ).get(pk=pk)
         except Employee.DoesNotExist:
             return Response(
-                {"error": "Employee does not exist"}, status=status.HTTP_404_NOT_FOUND
+                {"error": _("Employee does not exist")},
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         # If user has global view permission
@@ -130,7 +132,7 @@ class EmployeeAPIView(APIView):
             return Response(serializer.data)
 
         return Response(
-            {"error": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
+            {"error": _("Permission denied")}, status=status.HTTP_403_FORBIDDEN
         )
 
         # paginator = PageNumberPagination()
@@ -170,7 +172,7 @@ class EmployeeAPIView(APIView):
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"error": "You don't have permission"}, status=400)
+        return Response({"error": _("You don't have permission")}, status=400)
 
     @method_decorator(permission_required("employee.delete_employee"))
     def delete(self, request, pk):
@@ -179,7 +181,8 @@ class EmployeeAPIView(APIView):
             employee.delete()
         except Employee.DoesNotExist:
             return Response(
-                {"error": "Employee does not exist"}, status=status.HTTP_404_NOT_FOUND
+                {"error": _("Employee does not exist")},
+                status=status.HTTP_404_NOT_FOUND,
             )
         except ProtectedError as e:
             return Response({"error": str(e)}, status=status.HTTP_204_NO_CONTENT)
@@ -276,7 +279,7 @@ class EmployeeBankDetailsAPIView(APIView):
             serializer = EmployeeBankDetailsSerializer(bank_detail)
             return Response(serializer.data)
 
-        return Response({"message": "No permission"}, status=400)
+        return Response({"message": _("No permission")}, status=400)
 
     @manager_or_owner_permission_required(
         EmployeeBankDetails, "employee.add_employeebankdetails"
@@ -296,7 +299,8 @@ class EmployeeBankDetailsAPIView(APIView):
             bank_detail = EmployeeBankDetails.objects.get(pk=pk)
         except EmployeeBankDetails.DoesNotExist:
             return Response(
-                {"error": "Bank details do not exist"}, status=status.HTTP_404_NOT_FOUND
+                {"error": _("Bank details do not exist")},
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         serializer = EmployeeBankDetailsSerializer(bank_detail, data=request.data)
@@ -312,7 +316,8 @@ class EmployeeBankDetailsAPIView(APIView):
             bank_detail.delete()
         except EmployeeBankDetails.DoesNotExist:
             return Response(
-                {"error": "Bank details do not exist"}, status=status.HTTP_404_NOT_FOUND
+                {"error": _("Bank details do not exist")},
+                status=status.HTTP_404_NOT_FOUND,
             )
         except Exception as E:
             return Response({"error": str(E)}, status=400)
@@ -348,7 +353,7 @@ class EmployeeWorkInformationAPIView(APIView):
         ) or request.user.has_perm("employee.view_employeeworkinformation"):
             serializer = EmployeeWorkInformationSerializer(work_info)
             return Response(serializer.data, status=200)
-        return Response({"message": "No permission"}, status=400)
+        return Response({"message": _("No permission")}, status=400)
 
     @manager_permission_required("employee.add_employeeworkinformation")
     def post(self, request):
@@ -372,7 +377,7 @@ class EmployeeWorkInformationAPIView(APIView):
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"message": "No permission"}, status=400)
+        return Response({"message": _("No permission")}, status=400)
 
     @method_decorator(
         permission_required("employee.delete_employeeworkinformation"), name="dispatch"
@@ -470,7 +475,7 @@ class ActiontypeView(APIView):
         if pk:
             action_type = object_check(Actiontype, pk)
             if action_type is None:
-                return Response({"error": "Actiontype not found"}, status=404)
+                return Response({"error": _("Actiontype not found")}, status=404)
             serializer = self.serializer_class(action_type)
             return Response(serializer.data, status=200)
         action_types = Actiontype.objects.all()
@@ -481,7 +486,7 @@ class ActiontypeView(APIView):
 
     def post(self, request):
         if permission_check(request, "employee.add_actiontype") is False:
-            return Response({"error": "No permission"}, status=401)
+            return Response({"error": _("No permission")}, status=401)
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -490,10 +495,10 @@ class ActiontypeView(APIView):
 
     def put(self, request, pk):
         if permission_check(request, "employee.change_actiontype") is False:
-            return Response({"error": "No permission"}, status=401)
+            return Response({"error": _("No permission")}, status=401)
         action_type = object_check(Actiontype, pk)
         if action_type is None:
-            return Response({"error": "Actiontype not found"}, status=404)
+            return Response({"error": _("Actiontype not found")}, status=404)
         serializer = self.serializer_class(action_type, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -502,10 +507,10 @@ class ActiontypeView(APIView):
 
     def delete(self, request, pk):
         if permission_check(request, "employee.delete_actiontype") is False:
-            return Response({"error": "No permission"}, status=401)
+            return Response({"error": _("No permission")}, status=401)
         action_type = object_check(Actiontype, pk)
         if action_type is None:
-            return Response({"error": "Actiontype not found"}, status=404)
+            return Response({"error": _("Actiontype not found")}, status=404)
         response, status_code = object_delete(Actiontype, pk)
         return Response(response, status=status_code)
 
@@ -558,7 +563,7 @@ class DisciplinaryActionAPIView(APIView):
             ):
                 serializer = DisciplinaryActionSerializer(disciplinary_action)
                 return Response(serializer.data, status=200)
-            return Response({"error": "No permission"}, status=400)
+            return Response({"error": _("No permission")}, status=400)
         else:
             employee = request.user.employee_get
             is_manager = EmployeeWorkInformation.objects.filter(
@@ -592,7 +597,7 @@ class DisciplinaryActionAPIView(APIView):
 
     def post(self, request):
         if permission_check(request, "employee.add_disciplinaryaction") is False:
-            return Response({"error": "No permission"}, status=401)
+            return Response({"error": _("No permission")}, status=401)
         serializer = DisciplinaryActionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -601,7 +606,7 @@ class DisciplinaryActionAPIView(APIView):
 
     def put(self, request, pk):
         if permission_check(request, "employee.add_disciplinaryaction") is False:
-            return Response({"error": "No permission"}, status=401)
+            return Response({"error": _("No permission")}, status=401)
         disciplinary_action = self.get_object(pk)
         serializer = DisciplinaryActionSerializer(
             disciplinary_action, data=request.data
@@ -613,7 +618,7 @@ class DisciplinaryActionAPIView(APIView):
 
     def delete(self, request, pk):
         if permission_check(request, "employee.add_disciplinaryaction") is False:
-            return Response({"error": "No permission"}, status=401)
+            return Response({"error": _("No permission")}, status=401)
         disciplinary_action = self.get_object(pk)
         disciplinary_action.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -667,7 +672,7 @@ class PolicyAPIView(APIView):
 
     def post(self, request):
         if permission_check(request, "employee.add_policy") is False:
-            return Response({"error": "No permission"}, status=401)
+            return Response({"error": _("No permission")}, status=401)
 
         serializer = PolicySerializer(data=request.data)
         if serializer.is_valid():
@@ -677,7 +682,7 @@ class PolicyAPIView(APIView):
 
     def put(self, request, pk):
         if permission_check(request, "employee.change_policy") is False:
-            return Response({"error": "No permission"}, status=401)
+            return Response({"error": _("No permission")}, status=401)
         policy = self.get_object(pk)
         serializer = PolicySerializer(policy, data=request.data)
         if serializer.is_valid():
@@ -687,7 +692,7 @@ class PolicyAPIView(APIView):
 
     def delete(self, request, pk):
         if permission_check(request, "employee.delete_policy") is False:
-            return Response({"error": "No permission"}, status=401)
+            return Response({"error": _("No permission")}, status=401)
         policy = self.get_object(pk)
         policy.delete()
         return Response(status=204)
@@ -733,7 +738,9 @@ class DocumentRequestAPIView(APIView):
             if not (has_perm or is_addressee):
                 return Response(
                     {
-                        "error": "You do not have permission to view this document request."
+                        "error": _(
+                            "You do not have permission to view this document request."
+                        )
                     },
                     status=status.HTTP_403_FORBIDDEN,
                 )
@@ -899,7 +906,7 @@ class DocumentBulkApproveRejectAPIView(APIView):
             for document in documents:
                 if not document.document:
                     status_code = 400
-                    response.append({"id": document.id, "error": "No documents"})
+                    response.append({"id": document.id, "error": _("No documents")})
                     continue
                 response.append({"id": document.id, "status": "success"})
                 document.status = status
@@ -923,7 +930,7 @@ class EmployeeBulkArchiveView(APIView):
             error.append(
                 {
                     "employee": str(employee),
-                    "error": "Related model found for this employee. ",
+                    "error": _("Related model found for this employee. "),
                 }
             )
         return Response(error, status=200)

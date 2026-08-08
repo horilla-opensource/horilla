@@ -6,6 +6,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
@@ -60,7 +61,7 @@ class ProjectGetCreateAPIView(APIView):
         if pk:
             project = object_check(Project, pk)
             if project is None:
-                return Response({"error": "Project not found"}, status=404)
+                return Response({"error": _("Project not found")}, status=404)
             serializer = ProjectSerializer(project)
             return Response(serializer.data, status=200)
 
@@ -94,7 +95,7 @@ class ProjectGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         project = object_check(Project, pk)
         if project is None:
-            return Response({"error": "Project not found"}, status=404)
+            return Response({"error": _("Project not found")}, status=404)
         serializer = ProjectSerializer(project)
         return Response(serializer.data, status=200)
 
@@ -102,7 +103,7 @@ class ProjectGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         project = object_check(Project, pk)
         if project is None:
-            return Response({"error": "Project not found"}, status=404)
+            return Response({"error": _("Project not found")}, status=404)
         serializer = ProjectSerializer(project, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -113,7 +114,7 @@ class ProjectGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         project = object_check(Project, pk)
         if project is None:
-            return Response({"error": "Project not found"}, status=404)
+            return Response({"error": _("Project not found")}, status=404)
         try:
             project.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -165,7 +166,7 @@ class ProjectStageGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         stage = object_check(ProjectStage, pk)
         if stage is None:
-            return Response({"error": "ProjectStage not found"}, status=404)
+            return Response({"error": _("ProjectStage not found")}, status=404)
         serializer = ProjectStageSerializer(stage)
         return Response(serializer.data, status=200)
 
@@ -173,7 +174,7 @@ class ProjectStageGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         stage = object_check(ProjectStage, pk)
         if stage is None:
-            return Response({"error": "ProjectStage not found"}, status=404)
+            return Response({"error": _("ProjectStage not found")}, status=404)
         serializer = ProjectStageSerializer(stage, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -184,7 +185,7 @@ class ProjectStageGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         stage = object_check(ProjectStage, pk)
         if stage is None:
-            return Response({"error": "ProjectStage not found"}, status=404)
+            return Response({"error": _("ProjectStage not found")}, status=404)
         try:
             stage.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -216,7 +217,7 @@ class TaskGetCreateAPIView(APIView):
         if pk:
             task = object_check(Task, pk)
             if task is None:
-                return Response({"error": "Task not found"}, status=404)
+                return Response({"error": _("Task not found")}, status=404)
             serializer = TaskSerializer(task)
             return Response(serializer.data, status=200)
 
@@ -257,7 +258,7 @@ class TaskGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         task = object_check(Task, pk)
         if task is None:
-            return Response({"error": "Task not found"}, status=404)
+            return Response({"error": _("Task not found")}, status=404)
         serializer = TaskSerializer(task)
         return Response(serializer.data, status=200)
 
@@ -265,7 +266,7 @@ class TaskGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         task = object_check(Task, pk)
         if task is None:
-            return Response({"error": "Task not found"}, status=404)
+            return Response({"error": _("Task not found")}, status=404)
         serializer = TaskSerializer(task, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -276,7 +277,7 @@ class TaskGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         task = object_check(Task, pk)
         if task is None:
-            return Response({"error": "Task not found"}, status=404)
+            return Response({"error": _("Task not found")}, status=404)
         try:
             task.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -310,7 +311,7 @@ class TimeSheetGetCreateAPIView(APIView):
         if pk:
             timesheet = object_check(TimeSheet, pk)
             if timesheet is None:
-                return Response({"error": "TimeSheet not found"}, status=404)
+                return Response({"error": _("TimeSheet not found")}, status=404)
             serializer = TimeSheetSerializer(timesheet)
             return Response(serializer.data, status=200)
 
@@ -353,7 +354,7 @@ class TimeSheetGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         timesheet = object_check(TimeSheet, pk)
         if timesheet is None:
-            return Response({"error": "TimeSheet not found"}, status=404)
+            return Response({"error": _("TimeSheet not found")}, status=404)
         serializer = TimeSheetSerializer(timesheet)
         return Response(serializer.data, status=200)
 
@@ -361,7 +362,7 @@ class TimeSheetGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         timesheet = object_check(TimeSheet, pk)
         if timesheet is None:
-            return Response({"error": "TimeSheet not found"}, status=404)
+            return Response({"error": _("TimeSheet not found")}, status=404)
         serializer = TimeSheetSerializer(timesheet, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -372,7 +373,7 @@ class TimeSheetGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         timesheet = object_check(TimeSheet, pk)
         if timesheet is None:
-            return Response({"error": "TimeSheet not found"}, status=404)
+            return Response({"error": _("TimeSheet not found")}, status=404)
         try:
             timesheet.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)

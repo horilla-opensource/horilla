@@ -6,6 +6,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
@@ -76,7 +77,7 @@ class OffboardingGetCreateAPIView(APIView):
         if pk:
             offboarding = object_check(Offboarding, pk)
             if offboarding is None:
-                return Response({"error": "Offboarding not found"}, status=404)
+                return Response({"error": _("Offboarding not found")}, status=404)
             serializer = OffboardingSerializer(offboarding)
             return Response(serializer.data, status=200)
 
@@ -110,7 +111,7 @@ class OffboardingGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         offboarding = object_check(Offboarding, pk)
         if offboarding is None:
-            return Response({"error": "Offboarding not found"}, status=404)
+            return Response({"error": _("Offboarding not found")}, status=404)
         serializer = OffboardingSerializer(offboarding)
         return Response(serializer.data, status=200)
 
@@ -118,7 +119,7 @@ class OffboardingGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         offboarding = object_check(Offboarding, pk)
         if offboarding is None:
-            return Response({"error": "Offboarding not found"}, status=404)
+            return Response({"error": _("Offboarding not found")}, status=404)
         serializer = OffboardingSerializer(offboarding, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -129,7 +130,7 @@ class OffboardingGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         offboarding = object_check(Offboarding, pk)
         if offboarding is None:
-            return Response({"error": "Offboarding not found"}, status=404)
+            return Response({"error": _("Offboarding not found")}, status=404)
         try:
             offboarding.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -161,7 +162,7 @@ class OffboardingStageGetCreateAPIView(APIView):
         if pk:
             stage = object_check(OffboardingStage, pk)
             if stage is None:
-                return Response({"error": "OffboardingStage not found"}, status=404)
+                return Response({"error": _("OffboardingStage not found")}, status=404)
             serializer = OffboardingStageSerializer(stage)
             return Response(serializer.data, status=200)
 
@@ -202,7 +203,7 @@ class OffboardingStageGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         stage = object_check(OffboardingStage, pk)
         if stage is None:
-            return Response({"error": "OffboardingStage not found"}, status=404)
+            return Response({"error": _("OffboardingStage not found")}, status=404)
         serializer = OffboardingStageSerializer(stage)
         return Response(serializer.data, status=200)
 
@@ -210,7 +211,7 @@ class OffboardingStageGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         stage = object_check(OffboardingStage, pk)
         if stage is None:
-            return Response({"error": "OffboardingStage not found"}, status=404)
+            return Response({"error": _("OffboardingStage not found")}, status=404)
         serializer = OffboardingStageSerializer(stage, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -221,7 +222,7 @@ class OffboardingStageGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         stage = object_check(OffboardingStage, pk)
         if stage is None:
-            return Response({"error": "OffboardingStage not found"}, status=404)
+            return Response({"error": _("OffboardingStage not found")}, status=404)
         try:
             stage.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -255,7 +256,9 @@ class OffboardingEmployeeGetCreateAPIView(APIView):
         if pk:
             employee = object_check(OffboardingEmployee, pk)
             if employee is None:
-                return Response({"error": "OffboardingEmployee not found"}, status=404)
+                return Response(
+                    {"error": _("OffboardingEmployee not found")}, status=404
+                )
             serializer = OffboardingEmployeeSerializer(employee)
             return Response(serializer.data, status=200)
 
@@ -292,7 +295,7 @@ class OffboardingEmployeeGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         employee = object_check(OffboardingEmployee, pk)
         if employee is None:
-            return Response({"error": "OffboardingEmployee not found"}, status=404)
+            return Response({"error": _("OffboardingEmployee not found")}, status=404)
         serializer = OffboardingEmployeeSerializer(employee)
         return Response(serializer.data, status=200)
 
@@ -300,7 +303,7 @@ class OffboardingEmployeeGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         employee = object_check(OffboardingEmployee, pk)
         if employee is None:
-            return Response({"error": "OffboardingEmployee not found"}, status=404)
+            return Response({"error": _("OffboardingEmployee not found")}, status=404)
         serializer = OffboardingEmployeeSerializer(
             employee, data=request.data, partial=True
         )
@@ -313,7 +316,7 @@ class OffboardingEmployeeGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         employee = object_check(OffboardingEmployee, pk)
         if employee is None:
-            return Response({"error": "OffboardingEmployee not found"}, status=404)
+            return Response({"error": _("OffboardingEmployee not found")}, status=404)
         try:
             employee.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -345,7 +348,7 @@ class ResignationLetterGetCreateAPIView(APIView):
         if pk:
             letter = object_check(ResignationLetter, pk)
             if letter is None:
-                return Response({"error": "ResignationLetter not found"}, status=404)
+                return Response({"error": _("ResignationLetter not found")}, status=404)
             serializer = ResignationLetterSerializer(letter)
             return Response(serializer.data, status=200)
 
@@ -386,7 +389,7 @@ class ResignationLetterGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         letter = object_check(ResignationLetter, pk)
         if letter is None:
-            return Response({"error": "ResignationLetter not found"}, status=404)
+            return Response({"error": _("ResignationLetter not found")}, status=404)
         serializer = ResignationLetterSerializer(letter)
         return Response(serializer.data, status=200)
 
@@ -394,7 +397,7 @@ class ResignationLetterGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         letter = object_check(ResignationLetter, pk)
         if letter is None:
-            return Response({"error": "ResignationLetter not found"}, status=404)
+            return Response({"error": _("ResignationLetter not found")}, status=404)
         serializer = ResignationLetterSerializer(
             letter, data=request.data, partial=True
         )
@@ -407,7 +410,7 @@ class ResignationLetterGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         letter = object_check(ResignationLetter, pk)
         if letter is None:
-            return Response({"error": "ResignationLetter not found"}, status=404)
+            return Response({"error": _("ResignationLetter not found")}, status=404)
         try:
             letter.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -437,7 +440,7 @@ class OffboardingTaskGetCreateAPIView(APIView):
         if pk:
             task = object_check(OffboardingTask, pk)
             if task is None:
-                return Response({"error": "OffboardingTask not found"}, status=404)
+                return Response({"error": _("OffboardingTask not found")}, status=404)
             serializer = OffboardingTaskSerializer(task)
             return Response(serializer.data, status=200)
 
@@ -465,7 +468,7 @@ class OffboardingTaskGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         task = object_check(OffboardingTask, pk)
         if task is None:
-            return Response({"error": "OffboardingTask not found"}, status=404)
+            return Response({"error": _("OffboardingTask not found")}, status=404)
         serializer = OffboardingTaskSerializer(task)
         return Response(serializer.data, status=200)
 
@@ -473,7 +476,7 @@ class OffboardingTaskGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         task = object_check(OffboardingTask, pk)
         if task is None:
-            return Response({"error": "OffboardingTask not found"}, status=404)
+            return Response({"error": _("OffboardingTask not found")}, status=404)
         serializer = OffboardingTaskSerializer(task, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -484,7 +487,7 @@ class OffboardingTaskGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         task = object_check(OffboardingTask, pk)
         if task is None:
-            return Response({"error": "OffboardingTask not found"}, status=404)
+            return Response({"error": _("OffboardingTask not found")}, status=404)
         try:
             task.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -516,7 +519,7 @@ class EmployeeTaskGetCreateAPIView(APIView):
         if pk:
             employee_task = object_check(EmployeeTask, pk)
             if employee_task is None:
-                return Response({"error": "EmployeeTask not found"}, status=404)
+                return Response({"error": _("EmployeeTask not found")}, status=404)
             serializer = EmployeeTaskSerializer(employee_task)
             return Response(serializer.data, status=200)
 
@@ -550,7 +553,7 @@ class EmployeeTaskGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         employee_task = object_check(EmployeeTask, pk)
         if employee_task is None:
-            return Response({"error": "EmployeeTask not found"}, status=404)
+            return Response({"error": _("EmployeeTask not found")}, status=404)
         serializer = EmployeeTaskSerializer(employee_task)
         return Response(serializer.data, status=200)
 
@@ -558,7 +561,7 @@ class EmployeeTaskGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         employee_task = object_check(EmployeeTask, pk)
         if employee_task is None:
-            return Response({"error": "EmployeeTask not found"}, status=404)
+            return Response({"error": _("EmployeeTask not found")}, status=404)
         serializer = EmployeeTaskSerializer(
             employee_task, data=request.data, partial=True
         )
@@ -571,7 +574,7 @@ class EmployeeTaskGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         employee_task = object_check(EmployeeTask, pk)
         if employee_task is None:
-            return Response({"error": "EmployeeTask not found"}, status=404)
+            return Response({"error": _("EmployeeTask not found")}, status=404)
         try:
             employee_task.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -603,7 +606,7 @@ class OffboardingNoteGetCreateAPIView(APIView):
         if pk:
             note = object_check(OffboardingNote, pk)
             if note is None:
-                return Response({"error": "OffboardingNote not found"}, status=404)
+                return Response({"error": _("OffboardingNote not found")}, status=404)
             serializer = OffboardingNoteSerializer(note)
             return Response(serializer.data, status=200)
 
@@ -637,7 +640,7 @@ class OffboardingNoteGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         note = object_check(OffboardingNote, pk)
         if note is None:
-            return Response({"error": "OffboardingNote not found"}, status=404)
+            return Response({"error": _("OffboardingNote not found")}, status=404)
         serializer = OffboardingNoteSerializer(note)
         return Response(serializer.data, status=200)
 
@@ -645,7 +648,7 @@ class OffboardingNoteGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         note = object_check(OffboardingNote, pk)
         if note is None:
-            return Response({"error": "OffboardingNote not found"}, status=404)
+            return Response({"error": _("OffboardingNote not found")}, status=404)
         serializer = OffboardingNoteSerializer(note, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -656,7 +659,7 @@ class OffboardingNoteGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         note = object_check(OffboardingNote, pk)
         if note is None:
-            return Response({"error": "OffboardingNote not found"}, status=404)
+            return Response({"error": _("OffboardingNote not found")}, status=404)
         try:
             note.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)

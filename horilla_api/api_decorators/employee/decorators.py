@@ -25,7 +25,7 @@ def or_condition(*decorators):
                     return view_func(request, *args, **kwargs)
             # If none of the decorators allow access, return forbidden response
             return HttpResponseForbidden(
-                "You don't have permission to access this page."
+                _("You don't have permission to access this page.")
             )
 
         return _wrapped_view

@@ -286,18 +286,22 @@ class ReimbursementSerializer(serializers.ModelSerializer):
 
             if available_points.points < bonus_to_encash:
                 raise serializers.ValidationError(
-                    {"bonus_to_encash": "Not enough bonus points to redeem"}
+                    {"bonus_to_encash": _("Not enough bonus points to redeem")}
                 )
             if bonus_to_encash <= 0:
                 raise serializers.ValidationError(
-                    {"bonus_to_encash": "Points must be greater than zero to redeem."}
+                    {
+                        "bonus_to_encash": _(
+                            "Points must be greater than zero to redeem."
+                        )
+                    }
                 )
         if type == "leave_encashment":
             leave_type_id = leave_type_id
             encashable_leaves = self.get_encashable_leaves(employee_id)
             if (leave_type_id is None) or (leave_type_id not in encashable_leaves):
                 raise serializers.ValidationError(
-                    {"leave_type_id": "This leave type is not encashable"}
+                    {"leave_type_id": _("This leave type is not encashable")}
                 )
 
         return data

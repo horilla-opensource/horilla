@@ -2,6 +2,7 @@ from typing import Any
 
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -112,7 +113,7 @@ class JobPositionView(APIView):
         if pk:
             job_position = object_check(JobPosition, pk)
             if job_position is None:
-                return Response({"error": "Job position not found "}, status=404)
+                return Response({"error": _("Job position not found ")}, status=404)
             serializer = self.serializer_class(job_position)
             return Response(serializer.data, status=200)
 
@@ -126,7 +127,7 @@ class JobPositionView(APIView):
     def put(self, request, pk):
         job_position = object_check(JobPosition, pk)
         if job_position is None:
-            return Response({"error": "Job position not found "}, status=404)
+            return Response({"error": _("Job position not found ")}, status=404)
         serializer = self.serializer_class(job_position, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -145,7 +146,7 @@ class JobPositionView(APIView):
     def delete(self, request, pk):
         job_position = object_check(JobPosition, pk)
         if job_position is None:
-            return Response({"error": "Job position not found "}, status=404)
+            return Response({"error": _("Job position not found ")}, status=404)
         response, status_code = object_delete(JobPosition, pk)
         return Response(response, status=status_code)
 
@@ -159,7 +160,7 @@ class DepartmentView(APIView):
         if pk:
             department = object_check(Department, pk)
             if department is None:
-                return Response({"error": "Department not found "}, status=404)
+                return Response({"error": _("Department not found ")}, status=404)
             serializer = self.serializer_class(department)
             return Response(serializer.data, status=200)
 
@@ -173,7 +174,7 @@ class DepartmentView(APIView):
     def put(self, request, pk):
         department = object_check(Department, pk)
         if department is None:
-            return Response({"error": "Department not found "}, status=404)
+            return Response({"error": _("Department not found ")}, status=404)
         serializer = self.serializer_class(department, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -192,7 +193,7 @@ class DepartmentView(APIView):
     def delete(self, request, pk):
         department = object_check(Department, pk)
         if department is None:
-            return Response({"error": "Department not found "}, status=404)
+            return Response({"error": _("Department not found ")}, status=404)
         response, status_code = object_delete(Department, pk)
         return Response(response, status=status_code)
 
@@ -206,7 +207,7 @@ class JobRoleView(APIView):
         if pk:
             job_role = object_check(JobRole, pk)
             if job_role is None:
-                return Response({"error": "Job role not found "}, status=404)
+                return Response({"error": _("Job role not found ")}, status=404)
             serializer = self.serializer_class(job_role)
             return Response(serializer.data, status=200)
 
@@ -220,7 +221,7 @@ class JobRoleView(APIView):
     def put(self, request, pk):
         job_role = object_check(JobRole, pk)
         if job_role is None:
-            return Response({"error": "Job role not found "}, status=404)
+            return Response({"error": _("Job role not found ")}, status=404)
         serializer = self.serializer_class(job_role, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -239,7 +240,7 @@ class JobRoleView(APIView):
     def delete(self, request, pk):
         job_role = object_check(JobRole, pk)
         if job_role is None:
-            return Response({"error": "Job role not found "}, status=404)
+            return Response({"error": _("Job role not found ")}, status=404)
         response, status_code = object_delete(JobRole, pk)
         return Response(response, status=status_code)
 
@@ -253,7 +254,7 @@ class CompanyView(APIView):
         if pk:
             company = object_check(Company, pk)
             if company is None:
-                return Response({"error": "Company not found "}, status=404)
+                return Response({"error": _("Company not found ")}, status=404)
             serializer = self.serializer_class(company)
             return Response(serializer.data, status=200)
 
@@ -267,7 +268,7 @@ class CompanyView(APIView):
     def put(self, request, pk):
         company = object_check(Company, pk)
         if company is None:
-            return Response({"error": "Company not found "}, status=404)
+            return Response({"error": _("Company not found ")}, status=404)
         serializer = self.serializer_class(company, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -286,7 +287,7 @@ class CompanyView(APIView):
     def delete(self, request, pk):
         company = object_check(Company, pk)
         if company is None:
-            return Response({"error": "Company not found "}, status=400)
+            return Response({"error": _("Company not found ")}, status=400)
         response, status_code = object_delete(Company, pk)
         return Response(response, status=status_code)
 
@@ -299,7 +300,7 @@ class WorkTypeView(APIView):
         if pk:
             work_type = object_check(WorkType, pk)
             if work_type is None:
-                return Response({"error": "WorkType not found"}, status=404)
+                return Response({"error": _("WorkType not found")}, status=404)
             serializer = self.serializer_class(work_type)
             return Response(serializer.data, status=200)
 
@@ -319,7 +320,7 @@ class WorkTypeView(APIView):
     def put(self, request, pk):
         work_type = object_check(WorkType, pk)
         if work_type is None:
-            return Response({"error": "WorkType not found"}, status=404)
+            return Response({"error": _("WorkType not found")}, status=404)
         serializer = self.serializer_class(work_type, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -330,7 +331,7 @@ class WorkTypeView(APIView):
     def delete(self, request, pk):
         work_type = object_check(WorkType, pk)
         if work_type is None:
-            return Response({"error": "WorkType not found"}, status=404)
+            return Response({"error": _("WorkType not found")}, status=404)
         response, status_code = object_delete(WorkType, pk)
         return Response(response, status=status_code)
 
@@ -357,7 +358,7 @@ class WorkTypeRequestView(APIView):
         if pk:
             work_type_request = object_check(WorkTypeRequest, pk)
             if work_type_request is None:
-                return Response({"error": "WorkTypeRequest not found"}, status=404)
+                return Response({"error": _("WorkTypeRequest not found")}, status=404)
             serializer = self.serializer_class(work_type_request)
             return Response(serializer.data, status=200)
         # permission based queryset
@@ -415,7 +416,7 @@ class WorkTypeRequestView(APIView):
     def put(self, request, pk):
         work_type_request = object_check(WorkTypeRequest, pk)
         if work_type_request is None:
-            return Response({"error": "WorkTypeRequest not found"}, status=404)
+            return Response({"error": _("WorkTypeRequest not found")}, status=404)
         serializer = self.serializer_class(work_type_request, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -429,7 +430,7 @@ class WorkTypeRequestView(APIView):
     def delete(self, request, pk):
         work_type_request = object_check(WorkTypeRequest, pk)
         if work_type_request is None:
-            return Response({"error": "WorkTypeRequest not found"}, status=404)
+            return Response({"error": _("WorkTypeRequest not found")}, status=404)
         response, status_code = object_delete(WorkTypeRequest, pk)
         return Response(response, status=status_code)
 
@@ -504,7 +505,7 @@ class WorkRequestApproveView(APIView):
                 except Exception as e:
                     return Response({"error": str(e)}, status=400)
         else:
-            return Response({"error": "You don't have permission"}, status=400)
+            return Response({"error": _("You don't have permission")}, status=400)
 
 
 class WorkTypeRequestExport(APIView):
@@ -521,12 +522,12 @@ class IndividualRotatingWorktypesView(APIView):
 
     def get(self, request, pk=None):
         if individual_permssion_check(request) == False:
-            return Response({"error": "you have no permssion to view"}, status=400)
+            return Response({"error": _("you have no permssion to view")}, status=400)
         if pk:
             rotating_work_type_assign = object_check(RotatingWorkTypeAssign, pk)
             if rotating_work_type_assign is None:
                 return Response(
-                    {"error": "RotatingWorkTypeAssign not found"}, status=404
+                    {"error": _("RotatingWorkTypeAssign not found")}, status=404
                 )
             serializer = self.serializer_class(rotating_work_type_assign)
             return Response(serializer.data, status=200)
@@ -566,7 +567,7 @@ class RotatingWorkTypeAssignView(APIView):
             rotating_work_type_assign = object_check(RotatingWorkTypeAssign, pk)
             if rotating_work_type_assign is None:
                 return Response(
-                    {"error": "RotatingWorkTypeAssign not found"}, status=404
+                    {"error": _("RotatingWorkTypeAssign not found")}, status=404
                 )
             serializer = self.serializer_class(rotating_work_type_assign)
             return Response(serializer.data, status=200)
@@ -617,7 +618,9 @@ class RotatingWorkTypeAssignView(APIView):
     def put(self, request, pk):
         rotating_work_type_assign = object_check(RotatingWorkTypeAssign, pk)
         if rotating_work_type_assign is None:
-            return Response({"error": "RotatingWorkTypeAssign not found"}, status=404)
+            return Response(
+                {"error": _("RotatingWorkTypeAssign not found")}, status=404
+            )
         serializer = self.serializer_class(rotating_work_type_assign, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -628,7 +631,9 @@ class RotatingWorkTypeAssignView(APIView):
     def delete(self, request, pk):
         rotating_work_type_assign = object_check(RotatingWorkTypeAssign, pk)
         if rotating_work_type_assign is None:
-            return Response({"error": "RotatingWorkTypeAssign not found"}, status=404)
+            return Response(
+                {"error": _("RotatingWorkTypeAssign not found")}, status=404
+            )
         response, status_code = object_delete(RotatingWorkTypeAssign, pk)
         return Response(response, status=status_code)
 
@@ -639,13 +644,13 @@ class IndividualWorkTypeRequestView(APIView):
 
     def get(self, request, pk=None):
         if individual_permssion_check(request) == False:
-            return Response({"error": "you have no permssion to view"}, status=400)
+            return Response({"error": _("you have no permssion to view")}, status=400)
 
         # individual object workflow
         if pk:
             work_type_request = object_check(WorkTypeRequest, pk)
             if work_type_request is None:
-                return Response({"error": "WorkTypeRequest not found"}, status=404)
+                return Response({"error": _("WorkTypeRequest not found")}, status=404)
             serializer = self.serializer_class(work_type_request)
             return Response(serializer.data, status=200)
         employee_id = request.GET.get("employee_id", None)
@@ -664,7 +669,7 @@ class EmployeeShiftView(APIView):
         if pk:
             employee_shift = object_check(EmployeeShift, pk)
             if employee_shift is None:
-                return Response({"error": "EmployeeShift not found"}, status=404)
+                return Response({"error": _("EmployeeShift not found")}, status=404)
             serializer = self.serializer_class(employee_shift)
             return Response(serializer.data, status=200)
 
@@ -684,7 +689,7 @@ class EmployeeShiftView(APIView):
     def put(self, request, pk):
         employee_shift = object_check(EmployeeShift, pk)
         if employee_shift is None:
-            return Response({"error": "EmployeeShift not found"}, status=404)
+            return Response({"error": _("EmployeeShift not found")}, status=404)
         serializer = self.serializer_class(employee_shift, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -695,7 +700,7 @@ class EmployeeShiftView(APIView):
     def delete(self, request, pk):
         employee_shift = object_check(EmployeeShift, pk)
         if employee_shift is None:
-            return Response({"error": "EmployeeShift not found"}, status=404)
+            return Response({"error": _("EmployeeShift not found")}, status=404)
         response, status_code = object_delete(EmployeeShift, pk)
         return Response(response, status=status_code)
 
@@ -712,7 +717,7 @@ class EmployeeShiftScheduleView(APIView):
             employee_shift_schedule = object_check(EmployeeShiftSchedule, pk)
             if employee_shift_schedule is None:
                 return Response(
-                    {"error": "EmployeeShiftSchedule not found"}, status=404
+                    {"error": _("EmployeeShiftSchedule not found")}, status=404
                 )
             serializer = self.serializer_class(employee_shift_schedule)
             return Response(serializer.data, status=200)
@@ -737,7 +742,7 @@ class EmployeeShiftScheduleView(APIView):
     def put(self, request, pk):
         employee_shift_schedule = object_check(EmployeeShiftSchedule, pk)
         if employee_shift_schedule is None:
-            return Response({"error": "EmployeeShiftSchedule not found"}, status=404)
+            return Response({"error": _("EmployeeShiftSchedule not found")}, status=404)
         serializer = self.serializer_class(employee_shift_schedule, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -750,7 +755,7 @@ class EmployeeShiftScheduleView(APIView):
     def delete(self, request, pk):
         employee_shift_schedule = object_check(EmployeeShiftSchedule, pk)
         if employee_shift_schedule is None:
-            return Response({"error": "EmployeeShiftSchedule not found"}, status=404)
+            return Response({"error": _("EmployeeShiftSchedule not found")}, status=404)
         response, status_code = object_delete(EmployeeShiftSchedule, pk)
         return Response(response, status=status_code)
 
@@ -765,7 +770,7 @@ class RotatingShiftView(APIView):
         if pk:
             rotating_shift = object_check(RotatingShift, pk)
             if rotating_shift is None:
-                return Response({"error": "RotatingShift not found"}, status=404)
+                return Response({"error": _("RotatingShift not found")}, status=404)
             serializer = self.serializer_class(rotating_shift)
             return Response(serializer.data, status=200)
 
@@ -793,7 +798,7 @@ class RotatingShiftView(APIView):
     def put(self, request, pk):
         rotating_shift = object_check(RotatingShift, pk)
         if rotating_shift is None:
-            return Response({"error": "RotatingShift not found"}, status=404)
+            return Response({"error": _("RotatingShift not found")}, status=404)
         serializer = self.serializer_class(rotating_shift, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -804,7 +809,7 @@ class RotatingShiftView(APIView):
     def delete(self, request, pk):
         rotating_shift = object_check(RotatingShift, pk)
         if rotating_shift is None:
-            return Response({"error": "RotatingShift not found"}, status=404)
+            return Response({"error": _("RotatingShift not found")}, status=404)
         response, status_code = object_delete(RotatingShift, pk)
         return Response(response, status=status_code)
 
@@ -815,12 +820,14 @@ class IndividualRotatingShiftView(APIView):
 
     def get(self, request, pk=None):
         if individual_permssion_check(request) == False:
-            return Response({"error": "you have no permssion to view"}, status=400)
+            return Response({"error": _("you have no permssion to view")}, status=400)
 
         if pk:
             rotating_shift_assign = object_check(RotatingShiftAssign, pk)
             if rotating_shift_assign is None:
-                return Response({"error": "RotatingShiftAssign not found"}, status=404)
+                return Response(
+                    {"error": _("RotatingShiftAssign not found")}, status=404
+                )
             serializer = self.serializer_class(rotating_shift_assign)
             return Response(serializer.data, status=200)
         employee_id = request.GET.get("employee_id", None)
@@ -845,7 +852,9 @@ class RotatingShiftAssignView(APIView):
         if pk:
             rotating_shift_assign = object_check(RotatingShiftAssign, pk)
             if rotating_shift_assign is None:
-                return Response({"error": "RotatingShiftAssign not found"}, status=404)
+                return Response(
+                    {"error": _("RotatingShiftAssign not found")}, status=404
+                )
             serializer = self.serializer_class(rotating_shift_assign)
             return Response(serializer.data, status=200)
 
@@ -880,7 +889,7 @@ class RotatingShiftAssignView(APIView):
     def put(self, request, pk):
         rotating_shift_assign = object_check(RotatingShiftAssign, pk)
         if rotating_shift_assign is None:
-            return Response({"error": "RotatingShiftAssign not found"}, status=404)
+            return Response({"error": _("RotatingShiftAssign not found")}, status=404)
         serializer = self.serializer_class(rotating_shift_assign, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -891,7 +900,7 @@ class RotatingShiftAssignView(APIView):
     def delete(self, request, pk):
         rotating_shift_assign = object_check(RotatingShiftAssign, pk)
         if rotating_shift_assign is None:
-            return Response({"error": "RotatingShiftAssign not found"}, status=404)
+            return Response({"error": _("RotatingShiftAssign not found")}, status=404)
         response, status_code = object_delete(RotatingShiftAssign, pk)
         return Response(response, status=status_code)
 
@@ -902,12 +911,12 @@ class IndividualShiftRequestView(APIView):
 
     def get(self, request, pk=None):
         if individual_permssion_check(request) == False:
-            return Response({"error": "you have no permssion to view"}, status=400)
+            return Response({"error": _("you have no permssion to view")}, status=400)
 
         if pk:
             shift_request = object_check(ShiftRequest, pk)
             if shift_request is None:
-                return Response({"error": "EmployeeShift not found"}, status=404)
+                return Response({"error": _("EmployeeShift not found")}, status=404)
             serializer = self.serializer_class(shift_request)
             return Response(serializer.data, status=200)
         employee_id = request.GET.get("employee_id", None)
@@ -941,7 +950,7 @@ class ShiftRequestView(APIView):
         if pk:
             shift_request = object_check(ShiftRequest, pk)
             if shift_request is None:
-                return Response({"error": "ShiftRequest not found"}, status=404)
+                return Response({"error": _("ShiftRequest not found")}, status=404)
             serializer = self.serializer_class(shift_request)
             return Response(serializer.data, status=200)
         # filter section
@@ -974,7 +983,7 @@ class ShiftRequestView(APIView):
     def put(self, request, pk):
         shift_request = object_check(ShiftRequest, pk)
         if shift_request is None:
-            return Response({"error": "ShiftRequest not found"}, status=404)
+            return Response({"error": _("ShiftRequest not found")}, status=404)
         serializer = self.serializer_class(shift_request, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -986,7 +995,7 @@ class ShiftRequestView(APIView):
     def delete(self, request, pk):
         shift_request = object_check(ShiftRequest, pk)
         if shift_request is None:
-            return Response({"error": "ShiftRequest not found"}, status=404)
+            return Response({"error": _("ShiftRequest not found")}, status=404)
         response, status_code = object_delete(ShiftRequest, pk)
         return Response(response, status=status_code)
 
@@ -1000,7 +1009,7 @@ class RotatingWorkTypeView(APIView):
         if pk:
             rotating_work_type = object_check(RotatingWorkType, pk)
             if rotating_work_type is None:
-                return Response({"error": "RotatingWorkType not found"}, status=404)
+                return Response({"error": _("RotatingWorkType not found")}, status=404)
             serializer = self.serializer_class(rotating_work_type)
             return Response(serializer.data, status=200)
 
@@ -1022,7 +1031,7 @@ class RotatingWorkTypeView(APIView):
     def put(self, request, pk):
         rotating_work_type = object_check(RotatingWorkType, pk)
         if rotating_work_type is None:
-            return Response({"error": "RotatingWorkType not found"}, status=404)
+            return Response({"error": _("RotatingWorkType not found")}, status=404)
         serializer = self.serializer_class(rotating_work_type, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -1035,7 +1044,7 @@ class RotatingWorkTypeView(APIView):
     def delete(self, request, pk):
         rotating_work_type = object_check(RotatingWorkType, pk)
         if rotating_work_type is None:
-            return Response({"error": "RotatingWorkType not found"}, status=404)
+            return Response({"error": _("RotatingWorkType not found")}, status=404)
         response, status_code = object_delete(RotatingWorkType, pk)
         return Response(response, status=status_code)
 
@@ -1060,10 +1069,10 @@ class ShiftRequestApproveView(APIView):
                 return Response({"status": "success"}, status=200)
             else:
                 return Response(
-                    {"error": "Already request exits on same date"}, status=400
+                    {"error": _("Already request exits on same date")}, status=400
                 )
 
-        return Response({"error": "No permission "}, status=400)
+        return Response({"error": _("No permission ")}, status=400)
 
 
 class ShiftRequestBulkApproveView(APIView):
@@ -1167,7 +1176,7 @@ class ShiftRequestDeleteView(APIView):
 
         except ShiftRequest.DoesNotExist:
             return Response(
-                {"status": "failed", "error": "Shift request does not exists"},
+                {"status": "failed", "error": _("Shift request does not exists")},
                 status=400,
             )
         return Response({"status": "deleted"}, status=200)
@@ -1294,7 +1303,7 @@ class EmployeeTabPermissionCheck(APIView):
             ]
         ):
             return Response(status=200)
-        return Response({"message": "No permission"}, status=400)
+        return Response({"message": _("No permission")}, status=400)
 
 
 class CheckUserLevel(APIView):
@@ -1303,7 +1312,7 @@ class CheckUserLevel(APIView):
         perm = request.GET.get("perm")
         if request.user.has_perm(perm):
             return Response(status=200)
-        return Response({"error": "No permission"}, status=400)
+        return Response({"error": _("No permission")}, status=400)
 
 
 from datetime import datetime, timedelta

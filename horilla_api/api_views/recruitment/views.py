@@ -6,6 +6,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
@@ -96,7 +97,7 @@ class RecruitmentGetCreateAPIView(APIView):
         if pk:
             recruitment = object_check(Recruitment, pk)
             if recruitment is None:
-                return Response({"error": "Recruitment not found"}, status=404)
+                return Response({"error": _("Recruitment not found")}, status=404)
             serializer = RecruitmentSerializer(recruitment)
             return Response(serializer.data, status=200)
 
@@ -130,7 +131,7 @@ class RecruitmentGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         recruitment = object_check(Recruitment, pk)
         if recruitment is None:
-            return Response({"error": "Recruitment not found"}, status=404)
+            return Response({"error": _("Recruitment not found")}, status=404)
         serializer = RecruitmentSerializer(recruitment)
         return Response(serializer.data, status=200)
 
@@ -138,7 +139,7 @@ class RecruitmentGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         recruitment = object_check(Recruitment, pk)
         if recruitment is None:
-            return Response({"error": "Recruitment not found"}, status=404)
+            return Response({"error": _("Recruitment not found")}, status=404)
         serializer = RecruitmentSerializer(recruitment, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -149,7 +150,7 @@ class RecruitmentGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         recruitment = object_check(Recruitment, pk)
         if recruitment is None:
-            return Response({"error": "Recruitment not found"}, status=404)
+            return Response({"error": _("Recruitment not found")}, status=404)
         try:
             recruitment.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -181,7 +182,7 @@ class StageGetCreateAPIView(APIView):
         if pk:
             stage = object_check(Stage, pk)
             if stage is None:
-                return Response({"error": "Stage not found"}, status=404)
+                return Response({"error": _("Stage not found")}, status=404)
             serializer = StageSerializer(stage)
             return Response(serializer.data, status=200)
 
@@ -222,7 +223,7 @@ class StageGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         stage = object_check(Stage, pk)
         if stage is None:
-            return Response({"error": "Stage not found"}, status=404)
+            return Response({"error": _("Stage not found")}, status=404)
         serializer = StageSerializer(stage)
         return Response(serializer.data, status=200)
 
@@ -230,7 +231,7 @@ class StageGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         stage = object_check(Stage, pk)
         if stage is None:
-            return Response({"error": "Stage not found"}, status=404)
+            return Response({"error": _("Stage not found")}, status=404)
         serializer = StageSerializer(stage, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -241,7 +242,7 @@ class StageGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         stage = object_check(Stage, pk)
         if stage is None:
-            return Response({"error": "Stage not found"}, status=404)
+            return Response({"error": _("Stage not found")}, status=404)
         try:
             stage.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -275,7 +276,7 @@ class CandidateGetCreateAPIView(APIView):
         if pk:
             candidate = object_check(Candidate, pk)
             if candidate is None:
-                return Response({"error": "Candidate not found"}, status=404)
+                return Response({"error": _("Candidate not found")}, status=404)
             serializer = CandidateSerializer(candidate)
             return Response(serializer.data, status=200)
 
@@ -318,7 +319,7 @@ class CandidateGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         candidate = object_check(Candidate, pk)
         if candidate is None:
-            return Response({"error": "Candidate not found"}, status=404)
+            return Response({"error": _("Candidate not found")}, status=404)
         serializer = CandidateSerializer(candidate)
         return Response(serializer.data, status=200)
 
@@ -326,7 +327,7 @@ class CandidateGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         candidate = object_check(Candidate, pk)
         if candidate is None:
-            return Response({"error": "Candidate not found"}, status=404)
+            return Response({"error": _("Candidate not found")}, status=404)
         serializer = CandidateSerializer(candidate, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -337,7 +338,7 @@ class CandidateGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         candidate = object_check(Candidate, pk)
         if candidate is None:
-            return Response({"error": "Candidate not found"}, status=404)
+            return Response({"error": _("Candidate not found")}, status=404)
         try:
             candidate.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -369,7 +370,7 @@ class InterviewScheduleGetCreateAPIView(APIView):
         if pk:
             interview = object_check(InterviewSchedule, pk)
             if interview is None:
-                return Response({"error": "InterviewSchedule not found"}, status=404)
+                return Response({"error": _("InterviewSchedule not found")}, status=404)
             serializer = InterviewScheduleSerializer(interview)
             return Response(serializer.data, status=200)
 
@@ -410,7 +411,7 @@ class InterviewScheduleGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         interview = object_check(InterviewSchedule, pk)
         if interview is None:
-            return Response({"error": "InterviewSchedule not found"}, status=404)
+            return Response({"error": _("InterviewSchedule not found")}, status=404)
         serializer = InterviewScheduleSerializer(interview)
         return Response(serializer.data, status=200)
 
@@ -418,7 +419,7 @@ class InterviewScheduleGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         interview = object_check(InterviewSchedule, pk)
         if interview is None:
-            return Response({"error": "InterviewSchedule not found"}, status=404)
+            return Response({"error": _("InterviewSchedule not found")}, status=404)
         serializer = InterviewScheduleSerializer(
             interview, data=request.data, partial=True
         )
@@ -431,7 +432,7 @@ class InterviewScheduleGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         interview = object_check(InterviewSchedule, pk)
         if interview is None:
-            return Response({"error": "InterviewSchedule not found"}, status=404)
+            return Response({"error": _("InterviewSchedule not found")}, status=404)
         try:
             interview.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -456,7 +457,7 @@ class SkillGetCreateAPIView(APIView):
         if pk:
             skill = object_check(Skill, pk)
             if skill is None:
-                return Response({"error": "Skill not found"}, status=404)
+                return Response({"error": _("Skill not found")}, status=404)
             serializer = SkillSerializer(skill)
             return Response(serializer.data, status=200)
 
@@ -484,7 +485,7 @@ class SkillGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         skill = object_check(Skill, pk)
         if skill is None:
-            return Response({"error": "Skill not found"}, status=404)
+            return Response({"error": _("Skill not found")}, status=404)
         serializer = SkillSerializer(skill)
         return Response(serializer.data, status=200)
 
@@ -492,7 +493,7 @@ class SkillGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         skill = object_check(Skill, pk)
         if skill is None:
-            return Response({"error": "Skill not found"}, status=404)
+            return Response({"error": _("Skill not found")}, status=404)
         serializer = SkillSerializer(skill, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -503,7 +504,7 @@ class SkillGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         skill = object_check(Skill, pk)
         if skill is None:
-            return Response({"error": "Skill not found"}, status=404)
+            return Response({"error": _("Skill not found")}, status=404)
         try:
             skill.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -533,7 +534,7 @@ class SurveyTemplateGetCreateAPIView(APIView):
         if pk:
             template = object_check(SurveyTemplate, pk)
             if template is None:
-                return Response({"error": "SurveyTemplate not found"}, status=404)
+                return Response({"error": _("SurveyTemplate not found")}, status=404)
             serializer = SurveyTemplateSerializer(template)
             return Response(serializer.data, status=200)
 
@@ -561,7 +562,7 @@ class SurveyTemplateGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         template = object_check(SurveyTemplate, pk)
         if template is None:
-            return Response({"error": "SurveyTemplate not found"}, status=404)
+            return Response({"error": _("SurveyTemplate not found")}, status=404)
         serializer = SurveyTemplateSerializer(template)
         return Response(serializer.data, status=200)
 
@@ -569,7 +570,7 @@ class SurveyTemplateGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         template = object_check(SurveyTemplate, pk)
         if template is None:
-            return Response({"error": "SurveyTemplate not found"}, status=404)
+            return Response({"error": _("SurveyTemplate not found")}, status=404)
         serializer = SurveyTemplateSerializer(template, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -580,7 +581,7 @@ class SurveyTemplateGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         template = object_check(SurveyTemplate, pk)
         if template is None:
-            return Response({"error": "SurveyTemplate not found"}, status=404)
+            return Response({"error": _("SurveyTemplate not found")}, status=404)
         try:
             template.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -610,7 +611,7 @@ class SkillZoneGetCreateAPIView(APIView):
         if pk:
             skill_zone = object_check(SkillZone, pk)
             if skill_zone is None:
-                return Response({"error": "SkillZone not found"}, status=404)
+                return Response({"error": _("SkillZone not found")}, status=404)
             serializer = SkillZoneSerializer(skill_zone)
             return Response(serializer.data, status=200)
 
@@ -638,7 +639,7 @@ class SkillZoneGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         skill_zone = object_check(SkillZone, pk)
         if skill_zone is None:
-            return Response({"error": "SkillZone not found"}, status=404)
+            return Response({"error": _("SkillZone not found")}, status=404)
         serializer = SkillZoneSerializer(skill_zone)
         return Response(serializer.data, status=200)
 
@@ -646,7 +647,7 @@ class SkillZoneGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         skill_zone = object_check(SkillZone, pk)
         if skill_zone is None:
-            return Response({"error": "SkillZone not found"}, status=404)
+            return Response({"error": _("SkillZone not found")}, status=404)
         serializer = SkillZoneSerializer(skill_zone, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -657,7 +658,7 @@ class SkillZoneGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         skill_zone = object_check(SkillZone, pk)
         if skill_zone is None:
-            return Response({"error": "SkillZone not found"}, status=404)
+            return Response({"error": _("SkillZone not found")}, status=404)
         try:
             skill_zone.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -691,7 +692,9 @@ class SkillZoneCandidateGetCreateAPIView(APIView):
         if pk:
             skill_zone_candidate = object_check(SkillZoneCandidate, pk)
             if skill_zone_candidate is None:
-                return Response({"error": "SkillZoneCandidate not found"}, status=404)
+                return Response(
+                    {"error": _("SkillZoneCandidate not found")}, status=404
+                )
             serializer = SkillZoneCandidateSerializer(skill_zone_candidate)
             return Response(serializer.data, status=200)
 
@@ -738,7 +741,7 @@ class SkillZoneCandidateGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         skill_zone_candidate = object_check(SkillZoneCandidate, pk)
         if skill_zone_candidate is None:
-            return Response({"error": "SkillZoneCandidate not found"}, status=404)
+            return Response({"error": _("SkillZoneCandidate not found")}, status=404)
         serializer = SkillZoneCandidateSerializer(skill_zone_candidate)
         return Response(serializer.data, status=200)
 
@@ -746,7 +749,7 @@ class SkillZoneCandidateGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         skill_zone_candidate = object_check(SkillZoneCandidate, pk)
         if skill_zone_candidate is None:
-            return Response({"error": "SkillZoneCandidate not found"}, status=404)
+            return Response({"error": _("SkillZoneCandidate not found")}, status=404)
         serializer = SkillZoneCandidateSerializer(
             skill_zone_candidate, data=request.data, partial=True
         )
@@ -759,7 +762,7 @@ class SkillZoneCandidateGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         skill_zone_candidate = object_check(SkillZoneCandidate, pk)
         if skill_zone_candidate is None:
-            return Response({"error": "SkillZoneCandidate not found"}, status=404)
+            return Response({"error": _("SkillZoneCandidate not found")}, status=404)
         try:
             skill_zone_candidate.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -789,7 +792,7 @@ class CandidateRatingGetCreateAPIView(APIView):
         if pk:
             rating = object_check(CandidateRating, pk)
             if rating is None:
-                return Response({"error": "CandidateRating not found"}, status=404)
+                return Response({"error": _("CandidateRating not found")}, status=404)
             serializer = CandidateRatingSerializer(rating)
             return Response(serializer.data, status=200)
 
@@ -821,7 +824,7 @@ class CandidateRatingGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         rating = object_check(CandidateRating, pk)
         if rating is None:
-            return Response({"error": "CandidateRating not found"}, status=404)
+            return Response({"error": _("CandidateRating not found")}, status=404)
         serializer = CandidateRatingSerializer(rating)
         return Response(serializer.data, status=200)
 
@@ -829,7 +832,7 @@ class CandidateRatingGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         rating = object_check(CandidateRating, pk)
         if rating is None:
-            return Response({"error": "CandidateRating not found"}, status=404)
+            return Response({"error": _("CandidateRating not found")}, status=404)
         serializer = CandidateRatingSerializer(rating, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -840,7 +843,7 @@ class CandidateRatingGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         rating = object_check(CandidateRating, pk)
         if rating is None:
-            return Response({"error": "CandidateRating not found"}, status=404)
+            return Response({"error": _("CandidateRating not found")}, status=404)
         try:
             rating.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -870,7 +873,7 @@ class RejectReasonGetCreateAPIView(APIView):
         if pk:
             reason = object_check(RejectReason, pk)
             if reason is None:
-                return Response({"error": "RejectReason not found"}, status=404)
+                return Response({"error": _("RejectReason not found")}, status=404)
             serializer = RejectReasonSerializer(reason)
             return Response(serializer.data, status=200)
 
@@ -898,7 +901,7 @@ class RejectReasonGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         reason = object_check(RejectReason, pk)
         if reason is None:
-            return Response({"error": "RejectReason not found"}, status=404)
+            return Response({"error": _("RejectReason not found")}, status=404)
         serializer = RejectReasonSerializer(reason)
         return Response(serializer.data, status=200)
 
@@ -906,7 +909,7 @@ class RejectReasonGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         reason = object_check(RejectReason, pk)
         if reason is None:
-            return Response({"error": "RejectReason not found"}, status=404)
+            return Response({"error": _("RejectReason not found")}, status=404)
         serializer = RejectReasonSerializer(reason, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -917,7 +920,7 @@ class RejectReasonGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         reason = object_check(RejectReason, pk)
         if reason is None:
-            return Response({"error": "RejectReason not found"}, status=404)
+            return Response({"error": _("RejectReason not found")}, status=404)
         try:
             reason.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -947,7 +950,7 @@ class RejectedCandidateGetCreateAPIView(APIView):
         if pk:
             rejected = object_check(RejectedCandidate, pk)
             if rejected is None:
-                return Response({"error": "RejectedCandidate not found"}, status=404)
+                return Response({"error": _("RejectedCandidate not found")}, status=404)
             serializer = RejectedCandidateSerializer(rejected)
             return Response(serializer.data, status=200)
 
@@ -979,7 +982,7 @@ class RejectedCandidateGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         rejected = object_check(RejectedCandidate, pk)
         if rejected is None:
-            return Response({"error": "RejectedCandidate not found"}, status=404)
+            return Response({"error": _("RejectedCandidate not found")}, status=404)
         serializer = RejectedCandidateSerializer(rejected)
         return Response(serializer.data, status=200)
 
@@ -987,7 +990,7 @@ class RejectedCandidateGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         rejected = object_check(RejectedCandidate, pk)
         if rejected is None:
-            return Response({"error": "RejectedCandidate not found"}, status=404)
+            return Response({"error": _("RejectedCandidate not found")}, status=404)
         serializer = RejectedCandidateSerializer(
             rejected, data=request.data, partial=True
         )
@@ -1000,7 +1003,7 @@ class RejectedCandidateGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         rejected = object_check(RejectedCandidate, pk)
         if rejected is None:
-            return Response({"error": "RejectedCandidate not found"}, status=404)
+            return Response({"error": _("RejectedCandidate not found")}, status=404)
         try:
             rejected.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -1031,7 +1034,7 @@ class CandidateDocumentRequestGetCreateAPIView(APIView):
             doc_request = object_check(CandidateDocumentRequest, pk)
             if doc_request is None:
                 return Response(
-                    {"error": "CandidateDocumentRequest not found"}, status=404
+                    {"error": _("CandidateDocumentRequest not found")}, status=404
                 )
             serializer = CandidateDocumentRequestSerializer(doc_request)
             return Response(serializer.data, status=200)
@@ -1064,7 +1067,9 @@ class CandidateDocumentRequestGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         doc_request = object_check(CandidateDocumentRequest, pk)
         if doc_request is None:
-            return Response({"error": "CandidateDocumentRequest not found"}, status=404)
+            return Response(
+                {"error": _("CandidateDocumentRequest not found")}, status=404
+            )
         serializer = CandidateDocumentRequestSerializer(doc_request)
         return Response(serializer.data, status=200)
 
@@ -1072,7 +1077,9 @@ class CandidateDocumentRequestGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         doc_request = object_check(CandidateDocumentRequest, pk)
         if doc_request is None:
-            return Response({"error": "CandidateDocumentRequest not found"}, status=404)
+            return Response(
+                {"error": _("CandidateDocumentRequest not found")}, status=404
+            )
         serializer = CandidateDocumentRequestSerializer(
             doc_request, data=request.data, partial=True
         )
@@ -1085,7 +1092,9 @@ class CandidateDocumentRequestGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         doc_request = object_check(CandidateDocumentRequest, pk)
         if doc_request is None:
-            return Response({"error": "CandidateDocumentRequest not found"}, status=404)
+            return Response(
+                {"error": _("CandidateDocumentRequest not found")}, status=404
+            )
         try:
             doc_request.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -1117,7 +1126,7 @@ class CandidateDocumentGetCreateAPIView(APIView):
         if pk:
             document = object_check(CandidateDocument, pk)
             if document is None:
-                return Response({"error": "CandidateDocument not found"}, status=404)
+                return Response({"error": _("CandidateDocument not found")}, status=404)
             serializer = CandidateDocumentSerializer(document)
             return Response(serializer.data, status=200)
 
@@ -1155,7 +1164,7 @@ class CandidateDocumentGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         document = object_check(CandidateDocument, pk)
         if document is None:
-            return Response({"error": "CandidateDocument not found"}, status=404)
+            return Response({"error": _("CandidateDocument not found")}, status=404)
         serializer = CandidateDocumentSerializer(document)
         return Response(serializer.data, status=200)
 
@@ -1163,7 +1172,7 @@ class CandidateDocumentGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         document = object_check(CandidateDocument, pk)
         if document is None:
-            return Response({"error": "CandidateDocument not found"}, status=404)
+            return Response({"error": _("CandidateDocument not found")}, status=404)
         serializer = CandidateDocumentSerializer(
             document, data=request.data, partial=True
         )
@@ -1176,7 +1185,7 @@ class CandidateDocumentGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         document = object_check(CandidateDocument, pk)
         if document is None:
-            return Response({"error": "CandidateDocument not found"}, status=404)
+            return Response({"error": _("CandidateDocument not found")}, status=404)
         try:
             document.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -1206,7 +1215,7 @@ class LinkedInAccountGetCreateAPIView(APIView):
         if pk:
             account = object_check(LinkedInAccount, pk)
             if account is None:
-                return Response({"error": "LinkedInAccount not found"}, status=404)
+                return Response({"error": _("LinkedInAccount not found")}, status=404)
             serializer = LinkedInAccountSerializer(account)
             return Response(serializer.data, status=200)
 
@@ -1234,7 +1243,7 @@ class LinkedInAccountGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         account = object_check(LinkedInAccount, pk)
         if account is None:
-            return Response({"error": "LinkedInAccount not found"}, status=404)
+            return Response({"error": _("LinkedInAccount not found")}, status=404)
         serializer = LinkedInAccountSerializer(account)
         return Response(serializer.data, status=200)
 
@@ -1242,7 +1251,7 @@ class LinkedInAccountGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         account = object_check(LinkedInAccount, pk)
         if account is None:
-            return Response({"error": "LinkedInAccount not found"}, status=404)
+            return Response({"error": _("LinkedInAccount not found")}, status=404)
         serializer = LinkedInAccountSerializer(account, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -1253,7 +1262,7 @@ class LinkedInAccountGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         account = object_check(LinkedInAccount, pk)
         if account is None:
-            return Response({"error": "LinkedInAccount not found"}, status=404)
+            return Response({"error": _("LinkedInAccount not found")}, status=404)
         try:
             account.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)

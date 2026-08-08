@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from django.utils.translation import gettext_lazy as _
 from drf_yasg import openapi
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -91,9 +92,9 @@ class LoginAPIView(APIView):
                 }
                 return Response(result, status=200)
             else:
-                return Response({"error": "Invalid credentials"}, status=401)
+                return Response({"error": _("Invalid credentials")}, status=401)
         else:
-            return Response({"error": "Please provide Username and Password"})
+            return Response({"error": _("Please provide Username and Password")})
 
 
 class PasswordResetAPIView(APIView):
@@ -122,4 +123,4 @@ class PasswordResetAPIView(APIView):
         user = request.user
         user.set_password(serializer.validated_data["new_password"])
         user.save()
-        return Response({"message": "Password updated successfully."}, status=200)
+        return Response({"message": _("Password updated successfully.")}, status=200)

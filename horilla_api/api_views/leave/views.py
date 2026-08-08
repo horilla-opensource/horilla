@@ -133,7 +133,7 @@ class EmployeeLeaveRequestUpdateDeleteAPIView(APIView):
                     UserLeaveRequestGetSerilaizer(leave_request).data, status=201
                 )
             return Response(serializer.errors, status=400)
-        raise serializers.ValidationError({"error": "Access Denied.."})
+        raise serializers.ValidationError({"error": _("Access Denied..")})
 
     def delete(self, request, pk):
         leave_request = self.get_leave_request(request, pk)
@@ -146,7 +146,7 @@ class EmployeeLeaveRequestUpdateDeleteAPIView(APIView):
             return Response(
                 {"message": "Leave request deleted successfully.."}, status=200
             )
-        raise serializers.ValidationError({"error": "Access Denied.."})
+        raise serializers.ValidationError({"error": _("Access Denied..")})
 
 
 class LeaveTypeGetCreateAPIView(APIView):
@@ -318,7 +318,7 @@ class LeaveAllocationRequestGetUpdateDeleteAPIView(APIView):
                     status=201,
                 )
             return Response(serializer.errors, status=400)
-        raise serializers.ValidationError({"error": "Access Denied.."})
+        raise serializers.ValidationError({"error": _("Access Denied..")})
 
     @manager_permission_required("leave.delete_leaveallocationrequest")
     def delete(self, request, pk):
@@ -326,7 +326,7 @@ class LeaveAllocationRequestGetUpdateDeleteAPIView(APIView):
         if allocation_request.status == "requested":
             allocation_request.delete()
             return Response(status=200)
-        raise serializers.ValidationError({"error": "Access Denied.."})
+        raise serializers.ValidationError({"error": _("Access Denied..")})
 
 
 class AssignLeaveGetCreateAPIView(APIView):
@@ -566,7 +566,7 @@ class LeaveRequestGetUpdateDeleteAPIView(APIView):
                     status=201,
                 )
             return Response(serializer.errors, status=400)
-        raise serializers.ValidationError({"error": "Access Denied.."})
+        raise serializers.ValidationError({"error": _("Access Denied..")})
 
     @manager_permission_required("leave.delete_leaverequest")
     def delete(self, request, pk):
@@ -574,7 +574,7 @@ class LeaveRequestGetUpdateDeleteAPIView(APIView):
         if leave_request.status == "requested":
             leave_request.delete()
             return Response(status=200)
-        raise serializers.ValidationError({"error": "Access Denied.."})
+        raise serializers.ValidationError({"error": _("Access Denied..")})
 
 
 class CompanyLeaveGetCreateAPIView(APIView):
@@ -923,7 +923,7 @@ class LeaveRequestBulkApproveDeleteAPIview(APIView):
             leave_request_ids = request.data.getlist("leave_request_id")
         except Exception as e:
             raise serializers.ValidationError(
-                {"leave_request_id": ["This field is required"]}
+                {"leave_request_id": [_("This field is required")]}
             )
         leave_requests = LeaveRequest.objects.filter(id__in=leave_request_ids).exclude(
             status__in=["reject", "cancelled", "approved"]
@@ -1051,7 +1051,7 @@ class EmployeeLeaveAllocationUpdateDeleteAPIView(APIView):
                     status=201,
                 )
             return Response(serializer.errors, status=400)
-        raise serializers.ValidationError({"error": "Access Denied.."})
+        raise serializers.ValidationError({"error": _("Access Denied..")})
         return Response(status=200)
 
     def delete(self, request, pk):
@@ -1059,7 +1059,7 @@ class EmployeeLeaveAllocationUpdateDeleteAPIView(APIView):
         if allocation_request.status == "requested":
             allocation_request.delete()
             return Response(status=200)
-        raise serializers.ValidationError({"error": "Access Denied.."})
+        raise serializers.ValidationError({"error": _("Access Denied..")})
 
 
 class LeaveRequestedApprovedCountAPIView(APIView):

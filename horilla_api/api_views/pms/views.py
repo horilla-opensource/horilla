@@ -2,6 +2,7 @@
 horilla_api/api_views/pms/views.py
 """
 
+from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
@@ -97,7 +98,7 @@ class PeriodGetCreateAPIView(APIView):
         if pk:
             period = object_check(Period, pk)
             if period is None:
-                return Response({"error": "Period not found"}, status=404)
+                return Response({"error": _("Period not found")}, status=404)
             serializer = PeriodSerializer(period)
             return Response(serializer.data, status=200)
 
@@ -124,7 +125,7 @@ class PeriodGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         period = object_check(Period, pk)
         if period is None:
-            return Response({"error": "Period not found"}, status=404)
+            return Response({"error": _("Period not found")}, status=404)
         serializer = PeriodSerializer(period)
         return Response(serializer.data, status=200)
 
@@ -132,7 +133,7 @@ class PeriodGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         period = object_check(Period, pk)
         if period is None:
-            return Response({"error": "Period not found"}, status=404)
+            return Response({"error": _("Period not found")}, status=404)
         serializer = PeriodSerializer(period, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -143,7 +144,7 @@ class PeriodGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         period = object_check(Period, pk)
         if period is None:
-            return Response({"error": "Period not found"}, status=404)
+            return Response({"error": _("Period not found")}, status=404)
         try:
             period.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -171,7 +172,7 @@ class KeyResultGetCreateAPIView(APIView):
         if pk:
             key_result = object_check(KeyResult, pk)
             if key_result is None:
-                return Response({"error": "KeyResult not found"}, status=404)
+                return Response({"error": _("KeyResult not found")}, status=404)
             serializer = KeyResultSerializer(key_result)
             return Response(serializer.data, status=200)
 
@@ -198,7 +199,7 @@ class KeyResultGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         key_result = object_check(KeyResult, pk)
         if key_result is None:
-            return Response({"error": "KeyResult not found"}, status=404)
+            return Response({"error": _("KeyResult not found")}, status=404)
         serializer = KeyResultSerializer(key_result)
         return Response(serializer.data, status=200)
 
@@ -206,7 +207,7 @@ class KeyResultGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         key_result = object_check(KeyResult, pk)
         if key_result is None:
-            return Response({"error": "KeyResult not found"}, status=404)
+            return Response({"error": _("KeyResult not found")}, status=404)
         serializer = KeyResultSerializer(key_result, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -217,7 +218,7 @@ class KeyResultGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         key_result = object_check(KeyResult, pk)
         if key_result is None:
-            return Response({"error": "KeyResult not found"}, status=404)
+            return Response({"error": _("KeyResult not found")}, status=404)
         try:
             key_result.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -245,7 +246,7 @@ class ObjectiveGetCreateAPIView(APIView):
         if pk:
             objective = object_check(Objective, pk)
             if objective is None:
-                return Response({"error": "Objective not found"}, status=404)
+                return Response({"error": _("Objective not found")}, status=404)
             serializer = ObjectiveSerializer(objective)
             return Response(serializer.data, status=200)
 
@@ -272,7 +273,7 @@ class ObjectiveGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         objective = object_check(Objective, pk)
         if objective is None:
-            return Response({"error": "Objective not found"}, status=404)
+            return Response({"error": _("Objective not found")}, status=404)
         serializer = ObjectiveSerializer(objective)
         return Response(serializer.data, status=200)
 
@@ -280,7 +281,7 @@ class ObjectiveGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         objective = object_check(Objective, pk)
         if objective is None:
-            return Response({"error": "Objective not found"}, status=404)
+            return Response({"error": _("Objective not found")}, status=404)
         serializer = ObjectiveSerializer(objective, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -291,7 +292,7 @@ class ObjectiveGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         objective = object_check(Objective, pk)
         if objective is None:
-            return Response({"error": "Objective not found"}, status=404)
+            return Response({"error": _("Objective not found")}, status=404)
         try:
             objective.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -323,7 +324,7 @@ class EmployeeObjectiveGetCreateAPIView(APIView):
         if pk:
             employee_objective = object_check(EmployeeObjective, pk)
             if employee_objective is None:
-                return Response({"error": "EmployeeObjective not found"}, status=404)
+                return Response({"error": _("EmployeeObjective not found")}, status=404)
             serializer = EmployeeObjectiveSerializer(employee_objective)
             return Response(serializer.data, status=200)
 
@@ -368,7 +369,7 @@ class EmployeeObjectiveGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         employee_objective = object_check(EmployeeObjective, pk)
         if employee_objective is None:
-            return Response({"error": "EmployeeObjective not found"}, status=404)
+            return Response({"error": _("EmployeeObjective not found")}, status=404)
         serializer = EmployeeObjectiveSerializer(employee_objective)
         return Response(serializer.data, status=200)
 
@@ -376,7 +377,7 @@ class EmployeeObjectiveGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         employee_objective = object_check(EmployeeObjective, pk)
         if employee_objective is None:
-            return Response({"error": "EmployeeObjective not found"}, status=404)
+            return Response({"error": _("EmployeeObjective not found")}, status=404)
         serializer = EmployeeObjectiveSerializer(
             employee_objective, data=request.data, partial=True
         )
@@ -389,7 +390,7 @@ class EmployeeObjectiveGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         employee_objective = object_check(EmployeeObjective, pk)
         if employee_objective is None:
-            return Response({"error": "EmployeeObjective not found"}, status=404)
+            return Response({"error": _("EmployeeObjective not found")}, status=404)
         try:
             employee_objective.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -423,7 +424,7 @@ class EmployeeKeyResultGetCreateAPIView(APIView):
         if pk:
             employee_key_result = object_check(EmployeeKeyResult, pk)
             if employee_key_result is None:
-                return Response({"error": "EmployeeKeyResult not found"}, status=404)
+                return Response({"error": _("EmployeeKeyResult not found")}, status=404)
             serializer = EmployeeKeyResultSerializer(employee_key_result)
             return Response(serializer.data, status=200)
 
@@ -465,7 +466,7 @@ class EmployeeKeyResultGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         employee_key_result = object_check(EmployeeKeyResult, pk)
         if employee_key_result is None:
-            return Response({"error": "EmployeeKeyResult not found"}, status=404)
+            return Response({"error": _("EmployeeKeyResult not found")}, status=404)
         serializer = EmployeeKeyResultSerializer(employee_key_result)
         return Response(serializer.data, status=200)
 
@@ -473,7 +474,7 @@ class EmployeeKeyResultGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         employee_key_result = object_check(EmployeeKeyResult, pk)
         if employee_key_result is None:
-            return Response({"error": "EmployeeKeyResult not found"}, status=404)
+            return Response({"error": _("EmployeeKeyResult not found")}, status=404)
         serializer = EmployeeKeyResultSerializer(
             employee_key_result, data=request.data, partial=True
         )
@@ -486,7 +487,7 @@ class EmployeeKeyResultGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         employee_key_result = object_check(EmployeeKeyResult, pk)
         if employee_key_result is None:
-            return Response({"error": "EmployeeKeyResult not found"}, status=404)
+            return Response({"error": _("EmployeeKeyResult not found")}, status=404)
         try:
             employee_key_result.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -514,7 +515,7 @@ class CommentGetCreateAPIView(APIView):
         if pk:
             comment = object_check(Comment, pk)
             if comment is None:
-                return Response({"error": "Comment not found"}, status=404)
+                return Response({"error": _("Comment not found")}, status=404)
             serializer = CommentSerializer(comment)
             return Response(serializer.data, status=200)
 
@@ -546,7 +547,7 @@ class CommentGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         comment = object_check(Comment, pk)
         if comment is None:
-            return Response({"error": "Comment not found"}, status=404)
+            return Response({"error": _("Comment not found")}, status=404)
         serializer = CommentSerializer(comment)
         return Response(serializer.data, status=200)
 
@@ -554,7 +555,7 @@ class CommentGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         comment = object_check(Comment, pk)
         if comment is None:
-            return Response({"error": "Comment not found"}, status=404)
+            return Response({"error": _("Comment not found")}, status=404)
         serializer = CommentSerializer(comment, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -565,7 +566,7 @@ class CommentGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         comment = object_check(Comment, pk)
         if comment is None:
-            return Response({"error": "Comment not found"}, status=404)
+            return Response({"error": _("Comment not found")}, status=404)
         try:
             comment.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -593,7 +594,7 @@ class QuestionTemplateGetCreateAPIView(APIView):
         if pk:
             template = object_check(QuestionTemplate, pk)
             if template is None:
-                return Response({"error": "QuestionTemplate not found"}, status=404)
+                return Response({"error": _("QuestionTemplate not found")}, status=404)
             serializer = QuestionTemplateSerializer(template)
             return Response(serializer.data, status=200)
 
@@ -620,7 +621,7 @@ class QuestionTemplateGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         template = object_check(QuestionTemplate, pk)
         if template is None:
-            return Response({"error": "QuestionTemplate not found"}, status=404)
+            return Response({"error": _("QuestionTemplate not found")}, status=404)
         serializer = QuestionTemplateSerializer(template)
         return Response(serializer.data, status=200)
 
@@ -628,7 +629,7 @@ class QuestionTemplateGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         template = object_check(QuestionTemplate, pk)
         if template is None:
-            return Response({"error": "QuestionTemplate not found"}, status=404)
+            return Response({"error": _("QuestionTemplate not found")}, status=404)
         serializer = QuestionTemplateSerializer(
             template, data=request.data, partial=True
         )
@@ -641,7 +642,7 @@ class QuestionTemplateGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         template = object_check(QuestionTemplate, pk)
         if template is None:
-            return Response({"error": "QuestionTemplate not found"}, status=404)
+            return Response({"error": _("QuestionTemplate not found")}, status=404)
         try:
             template.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -669,7 +670,7 @@ class QuestionGetCreateAPIView(APIView):
         if pk:
             question = object_check(Question, pk)
             if question is None:
-                return Response({"error": "Question not found"}, status=404)
+                return Response({"error": _("Question not found")}, status=404)
             serializer = QuestionSerializer(question)
             return Response(serializer.data, status=200)
 
@@ -701,7 +702,7 @@ class QuestionGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         question = object_check(Question, pk)
         if question is None:
-            return Response({"error": "Question not found"}, status=404)
+            return Response({"error": _("Question not found")}, status=404)
         serializer = QuestionSerializer(question)
         return Response(serializer.data, status=200)
 
@@ -709,7 +710,7 @@ class QuestionGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         question = object_check(Question, pk)
         if question is None:
-            return Response({"error": "Question not found"}, status=404)
+            return Response({"error": _("Question not found")}, status=404)
         serializer = QuestionSerializer(question, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -720,7 +721,7 @@ class QuestionGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         question = object_check(Question, pk)
         if question is None:
-            return Response({"error": "Question not found"}, status=404)
+            return Response({"error": _("Question not found")}, status=404)
         try:
             question.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -748,7 +749,7 @@ class QuestionOptionsGetCreateAPIView(APIView):
         if pk:
             options = object_check(QuestionOptions, pk)
             if options is None:
-                return Response({"error": "QuestionOptions not found"}, status=404)
+                return Response({"error": _("QuestionOptions not found")}, status=404)
             serializer = QuestionOptionsSerializer(options)
             return Response(serializer.data, status=200)
 
@@ -780,7 +781,7 @@ class QuestionOptionsGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         options = object_check(QuestionOptions, pk)
         if options is None:
-            return Response({"error": "QuestionOptions not found"}, status=404)
+            return Response({"error": _("QuestionOptions not found")}, status=404)
         serializer = QuestionOptionsSerializer(options)
         return Response(serializer.data, status=200)
 
@@ -788,7 +789,7 @@ class QuestionOptionsGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         options = object_check(QuestionOptions, pk)
         if options is None:
-            return Response({"error": "QuestionOptions not found"}, status=404)
+            return Response({"error": _("QuestionOptions not found")}, status=404)
         serializer = QuestionOptionsSerializer(options, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -799,7 +800,7 @@ class QuestionOptionsGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         options = object_check(QuestionOptions, pk)
         if options is None:
-            return Response({"error": "QuestionOptions not found"}, status=404)
+            return Response({"error": _("QuestionOptions not found")}, status=404)
         try:
             options.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -829,7 +830,7 @@ class FeedbackGetCreateAPIView(APIView):
         if pk:
             feedback = object_check(Feedback, pk)
             if feedback is None:
-                return Response({"error": "Feedback not found"}, status=404)
+                return Response({"error": _("Feedback not found")}, status=404)
             serializer = FeedbackSerializer(feedback)
             return Response(serializer.data, status=200)
 
@@ -863,7 +864,7 @@ class FeedbackGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         feedback = object_check(Feedback, pk)
         if feedback is None:
-            return Response({"error": "Feedback not found"}, status=404)
+            return Response({"error": _("Feedback not found")}, status=404)
         serializer = FeedbackSerializer(feedback)
         return Response(serializer.data, status=200)
 
@@ -871,7 +872,7 @@ class FeedbackGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         feedback = object_check(Feedback, pk)
         if feedback is None:
-            return Response({"error": "Feedback not found"}, status=404)
+            return Response({"error": _("Feedback not found")}, status=404)
         serializer = FeedbackSerializer(feedback, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -882,7 +883,7 @@ class FeedbackGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         feedback = object_check(Feedback, pk)
         if feedback is None:
-            return Response({"error": "Feedback not found"}, status=404)
+            return Response({"error": _("Feedback not found")}, status=404)
         try:
             feedback.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -912,7 +913,7 @@ class AnswerGetCreateAPIView(APIView):
         if pk:
             answer = object_check(Answer, pk)
             if answer is None:
-                return Response({"error": "Answer not found"}, status=404)
+                return Response({"error": _("Answer not found")}, status=404)
             serializer = AnswerSerializer(answer)
             return Response(serializer.data, status=200)
 
@@ -950,7 +951,7 @@ class AnswerGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         answer = object_check(Answer, pk)
         if answer is None:
-            return Response({"error": "Answer not found"}, status=404)
+            return Response({"error": _("Answer not found")}, status=404)
         serializer = AnswerSerializer(answer)
         return Response(serializer.data, status=200)
 
@@ -958,7 +959,7 @@ class AnswerGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         answer = object_check(Answer, pk)
         if answer is None:
-            return Response({"error": "Answer not found"}, status=404)
+            return Response({"error": _("Answer not found")}, status=404)
         serializer = AnswerSerializer(answer, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -969,7 +970,7 @@ class AnswerGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         answer = object_check(Answer, pk)
         if answer is None:
-            return Response({"error": "Answer not found"}, status=404)
+            return Response({"error": _("Answer not found")}, status=404)
         try:
             answer.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -999,7 +1000,7 @@ class KeyResultFeedbackGetCreateAPIView(APIView):
         if pk:
             kr_feedback = object_check(KeyResultFeedback, pk)
             if kr_feedback is None:
-                return Response({"error": "KeyResultFeedback not found"}, status=404)
+                return Response({"error": _("KeyResultFeedback not found")}, status=404)
             serializer = KeyResultFeedbackSerializer(kr_feedback)
             return Response(serializer.data, status=200)
 
@@ -1037,7 +1038,7 @@ class KeyResultFeedbackGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         kr_feedback = object_check(KeyResultFeedback, pk)
         if kr_feedback is None:
-            return Response({"error": "KeyResultFeedback not found"}, status=404)
+            return Response({"error": _("KeyResultFeedback not found")}, status=404)
         serializer = KeyResultFeedbackSerializer(kr_feedback)
         return Response(serializer.data, status=200)
 
@@ -1045,7 +1046,7 @@ class KeyResultFeedbackGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         kr_feedback = object_check(KeyResultFeedback, pk)
         if kr_feedback is None:
-            return Response({"error": "KeyResultFeedback not found"}, status=404)
+            return Response({"error": _("KeyResultFeedback not found")}, status=404)
         serializer = KeyResultFeedbackSerializer(
             kr_feedback, data=request.data, partial=True
         )
@@ -1058,7 +1059,7 @@ class KeyResultFeedbackGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         kr_feedback = object_check(KeyResultFeedback, pk)
         if kr_feedback is None:
-            return Response({"error": "KeyResultFeedback not found"}, status=404)
+            return Response({"error": _("KeyResultFeedback not found")}, status=404)
         try:
             kr_feedback.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -1086,7 +1087,7 @@ class MeetingsGetCreateAPIView(APIView):
         if pk:
             meeting = object_check(Meetings, pk)
             if meeting is None:
-                return Response({"error": "Meetings not found"}, status=404)
+                return Response({"error": _("Meetings not found")}, status=404)
             serializer = MeetingsSerializer(meeting)
             return Response(serializer.data, status=200)
 
@@ -1113,7 +1114,7 @@ class MeetingsGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         meeting = object_check(Meetings, pk)
         if meeting is None:
-            return Response({"error": "Meetings not found"}, status=404)
+            return Response({"error": _("Meetings not found")}, status=404)
         serializer = MeetingsSerializer(meeting)
         return Response(serializer.data, status=200)
 
@@ -1121,7 +1122,7 @@ class MeetingsGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         meeting = object_check(Meetings, pk)
         if meeting is None:
-            return Response({"error": "Meetings not found"}, status=404)
+            return Response({"error": _("Meetings not found")}, status=404)
         serializer = MeetingsSerializer(meeting, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -1132,7 +1133,7 @@ class MeetingsGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         meeting = object_check(Meetings, pk)
         if meeting is None:
-            return Response({"error": "Meetings not found"}, status=404)
+            return Response({"error": _("Meetings not found")}, status=404)
         try:
             meeting.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -1162,7 +1163,7 @@ class MeetingsAnswerGetCreateAPIView(APIView):
         if pk:
             answer = object_check(MeetingsAnswer, pk)
             if answer is None:
-                return Response({"error": "MeetingsAnswer not found"}, status=404)
+                return Response({"error": _("MeetingsAnswer not found")}, status=404)
             serializer = MeetingsAnswerSerializer(answer)
             return Response(serializer.data, status=200)
 
@@ -1200,7 +1201,7 @@ class MeetingsAnswerGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         answer = object_check(MeetingsAnswer, pk)
         if answer is None:
-            return Response({"error": "MeetingsAnswer not found"}, status=404)
+            return Response({"error": _("MeetingsAnswer not found")}, status=404)
         serializer = MeetingsAnswerSerializer(answer)
         return Response(serializer.data, status=200)
 
@@ -1208,7 +1209,7 @@ class MeetingsAnswerGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         answer = object_check(MeetingsAnswer, pk)
         if answer is None:
-            return Response({"error": "MeetingsAnswer not found"}, status=404)
+            return Response({"error": _("MeetingsAnswer not found")}, status=404)
         serializer = MeetingsAnswerSerializer(answer, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -1219,7 +1220,7 @@ class MeetingsAnswerGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         answer = object_check(MeetingsAnswer, pk)
         if answer is None:
-            return Response({"error": "MeetingsAnswer not found"}, status=404)
+            return Response({"error": _("MeetingsAnswer not found")}, status=404)
         try:
             answer.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -1249,7 +1250,9 @@ class EmployeeBonusPointGetCreateAPIView(APIView):
         if pk:
             bonus_point = object_check(EmployeeBonusPoint, pk)
             if bonus_point is None:
-                return Response({"error": "EmployeeBonusPoint not found"}, status=404)
+                return Response(
+                    {"error": _("EmployeeBonusPoint not found")}, status=404
+                )
             serializer = EmployeeBonusPointSerializer(bonus_point)
             return Response(serializer.data, status=200)
 
@@ -1283,7 +1286,7 @@ class EmployeeBonusPointGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         bonus_point = object_check(EmployeeBonusPoint, pk)
         if bonus_point is None:
-            return Response({"error": "EmployeeBonusPoint not found"}, status=404)
+            return Response({"error": _("EmployeeBonusPoint not found")}, status=404)
         serializer = EmployeeBonusPointSerializer(bonus_point)
         return Response(serializer.data, status=200)
 
@@ -1291,7 +1294,7 @@ class EmployeeBonusPointGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         bonus_point = object_check(EmployeeBonusPoint, pk)
         if bonus_point is None:
-            return Response({"error": "EmployeeBonusPoint not found"}, status=404)
+            return Response({"error": _("EmployeeBonusPoint not found")}, status=404)
         serializer = EmployeeBonusPointSerializer(
             bonus_point, data=request.data, partial=True
         )
@@ -1304,7 +1307,7 @@ class EmployeeBonusPointGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         bonus_point = object_check(EmployeeBonusPoint, pk)
         if bonus_point is None:
-            return Response({"error": "EmployeeBonusPoint not found"}, status=404)
+            return Response({"error": _("EmployeeBonusPoint not found")}, status=404)
         try:
             bonus_point.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -1328,7 +1331,7 @@ class BonusPointSettingGetCreateAPIView(APIView):
         if pk:
             setting = object_check(BonusPointSetting, pk)
             if setting is None:
-                return Response({"error": "BonusPointSetting not found"}, status=404)
+                return Response({"error": _("BonusPointSetting not found")}, status=404)
             serializer = BonusPointSettingSerializer(setting)
             return Response(serializer.data, status=200)
 
@@ -1355,7 +1358,7 @@ class BonusPointSettingGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         setting = object_check(BonusPointSetting, pk)
         if setting is None:
-            return Response({"error": "BonusPointSetting not found"}, status=404)
+            return Response({"error": _("BonusPointSetting not found")}, status=404)
         serializer = BonusPointSettingSerializer(setting)
         return Response(serializer.data, status=200)
 
@@ -1363,7 +1366,7 @@ class BonusPointSettingGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         setting = object_check(BonusPointSetting, pk)
         if setting is None:
-            return Response({"error": "BonusPointSetting not found"}, status=404)
+            return Response({"error": _("BonusPointSetting not found")}, status=404)
         serializer = BonusPointSettingSerializer(
             setting, data=request.data, partial=True
         )
@@ -1376,7 +1379,7 @@ class BonusPointSettingGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         setting = object_check(BonusPointSetting, pk)
         if setting is None:
-            return Response({"error": "BonusPointSetting not found"}, status=404)
+            return Response({"error": _("BonusPointSetting not found")}, status=404)
         try:
             setting.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -1404,7 +1407,7 @@ class AnonymousFeedbackGetCreateAPIView(APIView):
         if pk:
             feedback = object_check(AnonymousFeedback, pk)
             if feedback is None:
-                return Response({"error": "AnonymousFeedback not found"}, status=404)
+                return Response({"error": _("AnonymousFeedback not found")}, status=404)
             serializer = AnonymousFeedbackSerializer(feedback)
             return Response(serializer.data, status=200)
 
@@ -1431,7 +1434,7 @@ class AnonymousFeedbackGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         feedback = object_check(AnonymousFeedback, pk)
         if feedback is None:
-            return Response({"error": "AnonymousFeedback not found"}, status=404)
+            return Response({"error": _("AnonymousFeedback not found")}, status=404)
         serializer = AnonymousFeedbackSerializer(feedback)
         return Response(serializer.data, status=200)
 
@@ -1439,7 +1442,7 @@ class AnonymousFeedbackGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         feedback = object_check(AnonymousFeedback, pk)
         if feedback is None:
-            return Response({"error": "AnonymousFeedback not found"}, status=404)
+            return Response({"error": _("AnonymousFeedback not found")}, status=404)
         serializer = AnonymousFeedbackSerializer(
             feedback, data=request.data, partial=True
         )
@@ -1452,7 +1455,7 @@ class AnonymousFeedbackGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         feedback = object_check(AnonymousFeedback, pk)
         if feedback is None:
-            return Response({"error": "AnonymousFeedback not found"}, status=404)
+            return Response({"error": _("AnonymousFeedback not found")}, status=404)
         try:
             feedback.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)

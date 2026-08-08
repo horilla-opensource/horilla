@@ -6,6 +6,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
@@ -74,7 +75,7 @@ class OnboardingStageGetCreateAPIView(APIView):
         if pk:
             stage = object_check(OnboardingStage, pk)
             if stage is None:
-                return Response({"error": "OnboardingStage not found"}, status=404)
+                return Response({"error": _("OnboardingStage not found")}, status=404)
             serializer = OnboardingStageSerializer(stage)
             return Response(serializer.data, status=200)
 
@@ -111,7 +112,7 @@ class OnboardingStageGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         stage = object_check(OnboardingStage, pk)
         if stage is None:
-            return Response({"error": "OnboardingStage not found"}, status=404)
+            return Response({"error": _("OnboardingStage not found")}, status=404)
         serializer = OnboardingStageSerializer(stage)
         return Response(serializer.data, status=200)
 
@@ -119,7 +120,7 @@ class OnboardingStageGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         stage = object_check(OnboardingStage, pk)
         if stage is None:
-            return Response({"error": "OnboardingStage not found"}, status=404)
+            return Response({"error": _("OnboardingStage not found")}, status=404)
         serializer = OnboardingStageSerializer(stage, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -130,7 +131,7 @@ class OnboardingStageGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         stage = object_check(OnboardingStage, pk)
         if stage is None:
-            return Response({"error": "OnboardingStage not found"}, status=404)
+            return Response({"error": _("OnboardingStage not found")}, status=404)
         try:
             stage.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -162,7 +163,7 @@ class OnboardingTaskGetCreateAPIView(APIView):
         if pk:
             task = object_check(OnboardingTask, pk)
             if task is None:
-                return Response({"error": "OnboardingTask not found"}, status=404)
+                return Response({"error": _("OnboardingTask not found")}, status=404)
             serializer = OnboardingTaskSerializer(task)
             return Response(serializer.data, status=200)
 
@@ -199,7 +200,7 @@ class OnboardingTaskGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         task = object_check(OnboardingTask, pk)
         if task is None:
-            return Response({"error": "OnboardingTask not found"}, status=404)
+            return Response({"error": _("OnboardingTask not found")}, status=404)
         serializer = OnboardingTaskSerializer(task)
         return Response(serializer.data, status=200)
 
@@ -207,7 +208,7 @@ class OnboardingTaskGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         task = object_check(OnboardingTask, pk)
         if task is None:
-            return Response({"error": "OnboardingTask not found"}, status=404)
+            return Response({"error": _("OnboardingTask not found")}, status=404)
         serializer = OnboardingTaskSerializer(task, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -218,7 +219,7 @@ class OnboardingTaskGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         task = object_check(OnboardingTask, pk)
         if task is None:
-            return Response({"error": "OnboardingTask not found"}, status=404)
+            return Response({"error": _("OnboardingTask not found")}, status=404)
         try:
             task.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -252,7 +253,7 @@ class CandidateStageGetCreateAPIView(APIView):
         if pk:
             candidate_stage = object_check(CandidateStage, pk)
             if candidate_stage is None:
-                return Response({"error": "CandidateStage not found"}, status=404)
+                return Response({"error": _("CandidateStage not found")}, status=404)
             serializer = CandidateStageSerializer(candidate_stage)
             return Response(serializer.data, status=200)
 
@@ -291,7 +292,7 @@ class CandidateStageGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         candidate_stage = object_check(CandidateStage, pk)
         if candidate_stage is None:
-            return Response({"error": "CandidateStage not found"}, status=404)
+            return Response({"error": _("CandidateStage not found")}, status=404)
         serializer = CandidateStageSerializer(candidate_stage)
         return Response(serializer.data, status=200)
 
@@ -299,7 +300,7 @@ class CandidateStageGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         candidate_stage = object_check(CandidateStage, pk)
         if candidate_stage is None:
-            return Response({"error": "CandidateStage not found"}, status=404)
+            return Response({"error": _("CandidateStage not found")}, status=404)
         serializer = CandidateStageSerializer(
             candidate_stage, data=request.data, partial=True
         )
@@ -312,7 +313,7 @@ class CandidateStageGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         candidate_stage = object_check(CandidateStage, pk)
         if candidate_stage is None:
-            return Response({"error": "CandidateStage not found"}, status=404)
+            return Response({"error": _("CandidateStage not found")}, status=404)
         try:
             candidate_stage.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -350,7 +351,7 @@ class CandidateTaskGetCreateAPIView(APIView):
         if pk:
             candidate_task = object_check(CandidateTask, pk)
             if candidate_task is None:
-                return Response({"error": "CandidateTask not found"}, status=404)
+                return Response({"error": _("CandidateTask not found")}, status=404)
             serializer = CandidateTaskSerializer(candidate_task)
             return Response(serializer.data, status=200)
 
@@ -391,7 +392,7 @@ class CandidateTaskGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         candidate_task = object_check(CandidateTask, pk)
         if candidate_task is None:
-            return Response({"error": "CandidateTask not found"}, status=404)
+            return Response({"error": _("CandidateTask not found")}, status=404)
         serializer = CandidateTaskSerializer(candidate_task)
         return Response(serializer.data, status=200)
 
@@ -399,7 +400,7 @@ class CandidateTaskGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         candidate_task = object_check(CandidateTask, pk)
         if candidate_task is None:
-            return Response({"error": "CandidateTask not found"}, status=404)
+            return Response({"error": _("CandidateTask not found")}, status=404)
         serializer = CandidateTaskSerializer(
             candidate_task, data=request.data, partial=True
         )
@@ -412,7 +413,7 @@ class CandidateTaskGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         candidate_task = object_check(CandidateTask, pk)
         if candidate_task is None:
-            return Response({"error": "CandidateTask not found"}, status=404)
+            return Response({"error": _("CandidateTask not found")}, status=404)
         try:
             candidate_task.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -442,7 +443,7 @@ class OnboardingPortalGetCreateAPIView(APIView):
         if pk:
             portal = object_check(OnboardingPortal, pk)
             if portal is None:
-                return Response({"error": "OnboardingPortal not found"}, status=404)
+                return Response({"error": _("OnboardingPortal not found")}, status=404)
             serializer = OnboardingPortalSerializer(portal)
             return Response(serializer.data, status=200)
 
@@ -470,7 +471,7 @@ class OnboardingPortalGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         portal = object_check(OnboardingPortal, pk)
         if portal is None:
-            return Response({"error": "OnboardingPortal not found"}, status=404)
+            return Response({"error": _("OnboardingPortal not found")}, status=404)
         serializer = OnboardingPortalSerializer(portal)
         return Response(serializer.data, status=200)
 
@@ -478,7 +479,7 @@ class OnboardingPortalGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         portal = object_check(OnboardingPortal, pk)
         if portal is None:
-            return Response({"error": "OnboardingPortal not found"}, status=404)
+            return Response({"error": _("OnboardingPortal not found")}, status=404)
         serializer = OnboardingPortalSerializer(portal, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -489,7 +490,7 @@ class OnboardingPortalGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         portal = object_check(OnboardingPortal, pk)
         if portal is None:
-            return Response({"error": "OnboardingPortal not found"}, status=404)
+            return Response({"error": _("OnboardingPortal not found")}, status=404)
         try:
             portal.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)

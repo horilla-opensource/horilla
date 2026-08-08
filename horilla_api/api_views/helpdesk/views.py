@@ -6,6 +6,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
@@ -85,7 +86,7 @@ class TicketTypeGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         ticket_type = object_check(TicketType, pk)
         if ticket_type is None:
-            return Response({"error": "TicketType not found"}, status=404)
+            return Response({"error": _("TicketType not found")}, status=404)
         serializer = TicketTypeSerializer(ticket_type)
         return Response(serializer.data, status=200)
 
@@ -93,7 +94,7 @@ class TicketTypeGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         ticket_type = object_check(TicketType, pk)
         if ticket_type is None:
-            return Response({"error": "TicketType not found"}, status=404)
+            return Response({"error": _("TicketType not found")}, status=404)
         serializer = TicketTypeSerializer(ticket_type, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -104,7 +105,7 @@ class TicketTypeGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         ticket_type = object_check(TicketType, pk)
         if ticket_type is None:
-            return Response({"error": "TicketType not found"}, status=404)
+            return Response({"error": _("TicketType not found")}, status=404)
         try:
             ticket_type.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -148,7 +149,7 @@ class FAQCategoryGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         faq_category = object_check(FAQCategory, pk)
         if faq_category is None:
-            return Response({"error": "FAQCategory not found"}, status=404)
+            return Response({"error": _("FAQCategory not found")}, status=404)
         serializer = FAQCategorySerializer(faq_category)
         return Response(serializer.data, status=200)
 
@@ -156,7 +157,7 @@ class FAQCategoryGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         faq_category = object_check(FAQCategory, pk)
         if faq_category is None:
-            return Response({"error": "FAQCategory not found"}, status=404)
+            return Response({"error": _("FAQCategory not found")}, status=404)
         serializer = FAQCategorySerializer(faq_category, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -167,7 +168,7 @@ class FAQCategoryGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         faq_category = object_check(FAQCategory, pk)
         if faq_category is None:
-            return Response({"error": "FAQCategory not found"}, status=404)
+            return Response({"error": _("FAQCategory not found")}, status=404)
         try:
             faq_category.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -214,7 +215,7 @@ class FAQGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         faq = object_check(FAQ, pk)
         if faq is None:
-            return Response({"error": "FAQ not found"}, status=404)
+            return Response({"error": _("FAQ not found")}, status=404)
         serializer = FAQSerializer(faq)
         return Response(serializer.data, status=200)
 
@@ -222,7 +223,7 @@ class FAQGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         faq = object_check(FAQ, pk)
         if faq is None:
-            return Response({"error": "FAQ not found"}, status=404)
+            return Response({"error": _("FAQ not found")}, status=404)
         serializer = FAQSerializer(faq, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -233,7 +234,7 @@ class FAQGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         faq = object_check(FAQ, pk)
         if faq is None:
-            return Response({"error": "FAQ not found"}, status=404)
+            return Response({"error": _("FAQ not found")}, status=404)
         try:
             faq.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -296,7 +297,7 @@ class TicketGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         ticket = object_check(Ticket, pk)
         if ticket is None:
-            return Response({"error": "Ticket not found"}, status=404)
+            return Response({"error": _("Ticket not found")}, status=404)
         # Check permissions
         user = request.user
         if not (
@@ -304,7 +305,7 @@ class TicketGetUpdateDeleteAPIView(APIView):
             or ticket.employee_id == user.employee_get
             or ticket.assigned_to.filter(id=user.employee_get.id).exists()
         ):
-            return Response({"error": "Permission denied"}, status=403)
+            return Response({"error": _("Permission denied")}, status=403)
         serializer = TicketSerializer(ticket)
         return Response(serializer.data, status=200)
 
@@ -312,7 +313,7 @@ class TicketGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         ticket = object_check(Ticket, pk)
         if ticket is None:
-            return Response({"error": "Ticket not found"}, status=404)
+            return Response({"error": _("Ticket not found")}, status=404)
         serializer = TicketSerializer(ticket, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -323,7 +324,7 @@ class TicketGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         ticket = object_check(Ticket, pk)
         if ticket is None:
-            return Response({"error": "Ticket not found"}, status=404)
+            return Response({"error": _("Ticket not found")}, status=404)
         try:
             ticket.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -338,12 +339,12 @@ class TicketChangeStatusAPIView(APIView):
     def put(self, request, pk):
         ticket = object_check(Ticket, pk)
         if ticket is None:
-            return Response({"error": "Ticket not found"}, status=404)
+            return Response({"error": _("Ticket not found")}, status=404)
         status_value = request.data.get("status")
         if status_value not in [
             choice[0] for choice in Ticket._meta.get_field("status").choices
         ]:
-            return Response({"error": "Invalid status"}, status=400)
+            return Response({"error": _("Invalid status")}, status=400)
         ticket.status = status_value
         if status_value == "resolved":
             from datetime import date
@@ -360,7 +361,7 @@ class TicketArchiveAPIView(APIView):
     def put(self, request, pk):
         ticket = object_check(Ticket, pk)
         if ticket is None:
-            return Response({"error": "Ticket not found"}, status=404)
+            return Response({"error": _("Ticket not found")}, status=404)
         ticket.is_active = False
         ticket.save()
         return Response(TicketSerializer(ticket).data, status=200)
@@ -373,7 +374,7 @@ class CommentGetCreateAPIView(APIView):
     def get(self, request, ticket_id):
         ticket = object_check(Ticket, ticket_id)
         if ticket is None:
-            return Response({"error": "Ticket not found"}, status=404)
+            return Response({"error": _("Ticket not found")}, status=404)
         comments = Comment.objects.filter(ticket_id=ticket_id)
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(comments, request)
@@ -383,7 +384,7 @@ class CommentGetCreateAPIView(APIView):
     def post(self, request, ticket_id):
         ticket = object_check(Ticket, ticket_id)
         if ticket is None:
-            return Response({"error": "Ticket not found"}, status=404)
+            return Response({"error": _("Ticket not found")}, status=404)
         data = request.data.copy()
         data["ticket_id"] = ticket_id
         if (
@@ -407,17 +408,17 @@ class CommentGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         comment = object_check(Comment, pk)
         if comment is None:
-            return Response({"error": "Comment not found"}, status=404)
+            return Response({"error": _("Comment not found")}, status=404)
         serializer = CommentSerializer(comment)
         return Response(serializer.data, status=200)
 
     def put(self, request, pk):
         comment = object_check(Comment, pk)
         if comment is None:
-            return Response({"error": "Comment not found"}, status=404)
+            return Response({"error": _("Comment not found")}, status=404)
         # Check if user owns the comment
         if comment.employee_id != request.user.employee_get:
-            return Response({"error": "Permission denied"}, status=403)
+            return Response({"error": _("Permission denied")}, status=403)
         serializer = CommentSerializer(comment, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -427,13 +428,13 @@ class CommentGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         comment = object_check(Comment, pk)
         if comment is None:
-            return Response({"error": "Comment not found"}, status=404)
+            return Response({"error": _("Comment not found")}, status=404)
         # Check if user owns the comment or has permission
         if (
             comment.employee_id != request.user.employee_get
             and not request.user.has_perm("helpdesk.delete_comment")
         ):
-            return Response({"error": "Permission denied"}, status=403)
+            return Response({"error": _("Permission denied")}, status=403)
         try:
             comment.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -451,7 +452,9 @@ class AttachmentGetCreateAPIView(APIView):
         elif comment_id:
             attachments = Attachment.objects.filter(comment_id=comment_id)
         else:
-            return Response({"error": "ticket_id or comment_id required"}, status=400)
+            return Response(
+                {"error": _("ticket_id or comment_id required")}, status=400
+            )
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(attachments, request)
         serializer = AttachmentSerializer(page, many=True)
@@ -473,14 +476,14 @@ class AttachmentGetDeleteAPIView(APIView):
     def get(self, request, pk):
         attachment = object_check(Attachment, pk)
         if attachment is None:
-            return Response({"error": "Attachment not found"}, status=404)
+            return Response({"error": _("Attachment not found")}, status=404)
         serializer = AttachmentSerializer(attachment)
         return Response(serializer.data, status=200)
 
     def delete(self, request, pk):
         attachment = object_check(Attachment, pk)
         if attachment is None:
-            return Response({"error": "Attachment not found"}, status=404)
+            return Response({"error": _("Attachment not found")}, status=404)
         try:
             attachment.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -520,7 +523,7 @@ class ClaimRequestApproveAPIView(APIView):
     def put(self, request, pk):
         claim_request = object_check(ClaimRequest, pk)
         if claim_request is None:
-            return Response({"error": "ClaimRequest not found"}, status=404)
+            return Response({"error": _("ClaimRequest not found")}, status=404)
         claim_request.is_approved = True
         claim_request.is_rejected = False
         claim_request.save()
@@ -537,7 +540,7 @@ class ClaimRequestRejectAPIView(APIView):
     def put(self, request, pk):
         claim_request = object_check(ClaimRequest, pk)
         if claim_request is None:
-            return Response({"error": "ClaimRequest not found"}, status=404)
+            return Response({"error": _("ClaimRequest not found")}, status=404)
         claim_request.is_approved = False
         claim_request.is_rejected = True
         claim_request.save()
@@ -576,7 +579,7 @@ class DepartmentManagerGetUpdateDeleteAPIView(APIView):
     def get(self, request, pk):
         department_manager = object_check(DepartmentManager, pk)
         if department_manager is None:
-            return Response({"error": "DepartmentManager not found"}, status=404)
+            return Response({"error": _("DepartmentManager not found")}, status=404)
         serializer = DepartmentManagerSerializer(department_manager)
         return Response(serializer.data, status=200)
 
@@ -584,7 +587,7 @@ class DepartmentManagerGetUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         department_manager = object_check(DepartmentManager, pk)
         if department_manager is None:
-            return Response({"error": "DepartmentManager not found"}, status=404)
+            return Response({"error": _("DepartmentManager not found")}, status=404)
         serializer = DepartmentManagerSerializer(department_manager, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -595,7 +598,7 @@ class DepartmentManagerGetUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         department_manager = object_check(DepartmentManager, pk)
         if department_manager is None:
-            return Response({"error": "DepartmentManager not found"}, status=404)
+            return Response({"error": _("DepartmentManager not found")}, status=404)
         try:
             department_manager.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)

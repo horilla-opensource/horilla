@@ -1,6 +1,7 @@
 import datetime
 
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from base.models import (
@@ -344,7 +345,11 @@ class WorkTypeRequestSerializer(serializers.ModelSerializer):
 
             if requested_date and requested_date < datetime.datetime.today().date():
                 raise serializers.ValidationError(
-                    {"requested_date": "Date must be greater than or equal to today."}
+                    {
+                        "requested_date": _(
+                            "Date must be greater than or equal to today."
+                        )
+                    }
                 )
 
         # Validate requested_till is not earlier than requested_date
@@ -352,7 +357,7 @@ class WorkTypeRequestSerializer(serializers.ModelSerializer):
         if requested_till and requested_till < requested_date:
             raise serializers.ValidationError(
                 {
-                    "requested_till": (
+                    "requested_till": _(
                         "End date must be greater than or equal to start date."
                     )
                 }
@@ -361,14 +366,18 @@ class WorkTypeRequestSerializer(serializers.ModelSerializer):
         # Check if any work type request already exists
         if self.instance and self.instance.is_any_work_type_request_exists():
             raise serializers.ValidationError(
-                {"error": "A work type request already exists during this time period."}
+                {
+                    "error": _(
+                        "A work type request already exists during this time period."
+                    )
+                }
             )
 
         # Validate if `is_permanent_work_type` is False, `requested_till` must be provided
         if not attrs.get("is_permanent_work_type", False):
             if not requested_till:
                 raise serializers.ValidationError(
-                    {"requested_till": ("Requested till field is required.")}
+                    {"requested_till": _("Requested till field is required.")}
                 )
 
         return attrs

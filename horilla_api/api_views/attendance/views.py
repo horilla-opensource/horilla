@@ -7,6 +7,7 @@ from django.db.models import Case, CharField, F, Value, When
 from django.http import QueryDict
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -131,7 +132,9 @@ class ClockInAPIView(APIView):
                 return Response({"message": "Clocked-In"}, status=200)
             return Response(
                 {
-                    "error": "You Don't have work information filled or your employee detail neither entered "
+                    "error": _(
+                        "You Don't have work information filled or your employee detail neither entered "
+                    )
                 }
             )
         return Response({"message": "Already clocked-in"}, status=400)
@@ -237,7 +240,9 @@ class AttendanceView(APIView):
             if not scoped.exists():
                 return Response(
                     {
-                        "error": "You do not have permission to view this attendance record."
+                        "error": _(
+                            "You do not have permission to view this attendance record."
+                        )
                     },
                     status=403,
                 )
@@ -275,7 +280,9 @@ class AttendanceView(APIView):
             return Response(
                 {
                     "error": [
-                        "Attendance for this employee on the current date already exists."
+                        _(
+                            "Attendance for this employee on the current date already exists."
+                        )
                     ]
                 },
                 status=400,
@@ -287,7 +294,7 @@ class AttendanceView(APIView):
         try:
             attendance = Attendance.objects.get(id=pk)
         except Attendance.DoesNotExist:
-            return Response({"detail": "Attendance record not found."}, status=404)
+            return Response({"detail": _("Attendance record not found.")}, status=404)
 
         serializer = AttendanceSerializer(instance=attendance, data=request.data)
 
@@ -431,7 +438,9 @@ class AttendanceRequestView(APIView):
             if not scoped.exists():
                 return Response(
                     {
-                        "error": "You do not have permission to view this attendance request."
+                        "error": _(
+                            "You do not have permission to view this attendance request."
+                        )
                     },
                     status=403,
                 )
@@ -640,7 +649,9 @@ class AttendanceOverTimeView(APIView):
             if not scoped.exists():
                 return Response(
                     {
-                        "error": "You do not have permission to view this overtime record."
+                        "error": _(
+                            "You do not have permission to view this overtime record."
+                        )
                     },
                     status=403,
                 )
@@ -689,7 +700,7 @@ class AttendanceOverTimeView(APIView):
         attendance = get_object_or_404(AttendanceOverTime, pk=pk)
         attendance.delete()
 
-        return Response({"message": "Overtime deleted successfully"}, status=204)
+        return Response({"message": _("Overtime deleted successfully")}, status=204)
 
 
 class LateComeEarlyOutView(APIView):
@@ -711,7 +722,7 @@ class LateComeEarlyOutView(APIView):
     def delete(self, request, pk=None):
         attendance = get_object_or_404(AttendanceLateComeEarlyOut, pk=pk)
         attendance.delete()
-        return Response({"message": "Attendance deleted successfully"}, status=204)
+        return Response({"message": _("Attendance deleted successfully")}, status=204)
 
 
 class AttendanceActivityView(APIView):
@@ -791,7 +802,7 @@ class OfflineEmployeesCountView(APIView):
             )
             return Response({"count": count}, status=200)
         return Response(
-            {"error": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
+            {"error": _("Permission denied")}, status=status.HTTP_403_FORBIDDEN
         )
 
 
@@ -819,7 +830,7 @@ class OfflineEmployeesListView(APIView):
             base_queryset = Employee.objects.filter(id__in=managed_employee_ids)
         else:
             return Response(
-                {"error": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
+                {"error": _("Permission denied")}, status=status.HTTP_403_FORBIDDEN
             )
 
         # Apply filtering for offline employees
@@ -1097,7 +1108,7 @@ class AttendanceTypeAccessCheck(APIView):
             return Response(status=200)
 
         return Response(
-            {"error": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
+            {"error": _("Permission denied")}, status=status.HTTP_403_FORBIDDEN
         )
 
 
@@ -1110,5 +1121,5 @@ class UserAttendanceDetailedView(APIView):
             serializer = UserAttendanceDetailedSerializer(attendance)
             return Response(serializer.data, status=200)
         return Response(
-            {"error": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
+            {"error": _("Permission denied")}, status=status.HTTP_403_FORBIDDEN
         )

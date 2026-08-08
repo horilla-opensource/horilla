@@ -33,7 +33,8 @@ def leave_Validations(self, data):
     )
     if not available_leave:
         raise serializers.ValidationError(
-            f"Employee is not assigned with leave type {leave_type_id}."
+            _("Employee is not assigned with leave type %(leave_type)s.")
+            % {"leave_type": leave_type_id}
         )
 
     requested_days = calculate_requested_days(
@@ -63,7 +64,7 @@ def leave_Validations(self, data):
 
     # checking if the end date is less than the start date
     if not start_date <= end_date:
-        errors["end_date"] = ["End date should not be less than start date."]
+        errors["end_date"] = [_("End date should not be less than start date.")]
 
     if start_date == end_date and start_date_breakdown != end_date_breakdown:
         raise serializers.ValidationError(
@@ -76,7 +77,7 @@ def leave_Validations(self, data):
         )
 
     if leave_type_id.require_attachment == "yes" and attachment == None:
-        errors["attachment"] = ["This field is required."]
+        errors["attachment"] = [_("This field is required.")]
 
     if errors:
         raise serializers.ValidationError(errors)
@@ -238,19 +239,19 @@ class LeaveTypeGetCreateSerilaizer(serializers.ModelSerializer):
         if reset == True:
             if reset_based == None:
                 raise serializers.ValidationError(
-                    {"reset_based": ["This field is required."]}
+                    {"reset_based": [_("This field is required.")]}
                 )
             elif reset_based == "yearly" and reset_month == None:
                 raise serializers.ValidationError(
-                    {"reset_month": ["This field is required."]}
+                    {"reset_month": [_("This field is required.")]}
                 )
             elif reset_based in ["yearly", "monthly"] and reset_day == "":
                 raise serializers.ValidationError(
-                    {"reset_day": ["This field is required."]}
+                    {"reset_day": [_("This field is required.")]}
                 )
             elif reset_based == "weekly" and reset_weekday == None:
                 raise serializers.ValidationError(
-                    {"reset_weekday": ["This field is required."]}
+                    {"reset_weekday": [_("This field is required.")]}
                 )
             # elif carryforward_type in ['carryforward', 'carryforward expire'] and carryforward_max
         return data
@@ -288,14 +289,14 @@ class AssignLeaveCreateSerializer(serializers.Serializer):
     def validate_leave_type_ids(self, value):
         if not value:
             raise serializers.ValidationError(
-                {"leave_type_ids": ["This field is required."]}
+                {"leave_type_ids": [_("This field is required.")]}
             )
         return value
 
     def validate_employee_ids(self, value):
         if not value:
             raise serializers.ValidationError(
-                {"employee_ids": ["This field is required."]}
+                {"employee_ids": [_("This field is required.")]}
             )
         return value
 
@@ -477,7 +478,7 @@ class HoildaySerializer(serializers.ModelSerializer):
         end_date = data.get("end_date")
         if end_date and not start_date <= end_date:
             raise serializers.ValidationError(
-                {"end_date": ["End date should not be less than start date."]}
+                {"end_date": [_("End date should not be less than start date.")]}
             )
         return data
 
@@ -502,7 +503,8 @@ class LeaveRequestApproveSerializer(serializers.ModelSerializer):
         )
         if not total_available_leave >= leave_request.requested_days:
             raise serializers.ValidationError(
-                f"{employee_id} dont have enough leave days to approve the request.."
+                _("%(employee)s dont have enough leave days to approve the request..")
+                % {"employee": employee_id}
             )
         data["available_leave"] = available_leave
         return data
