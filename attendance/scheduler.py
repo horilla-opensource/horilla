@@ -69,7 +69,7 @@ def create_work_record():
     from attendance.models import WorkRecords
     from employee.models import Employee
 
-    date = datetime.datetime.today()
+    date = datetime.date.today()
     work_records = WorkRecords.objects.filter(date=date).values_list(
         "employee_id", flat=True
     )
@@ -96,7 +96,7 @@ def create_work_record():
 
     if records_to_create:
         try:
-            WorkRecords.objects.bulk_create(records_to_create)
+            WorkRecords.objects.bulk_create(records_to_create, ignore_conflicts=True)
         except Exception as e:
             logger.error(f"Failed to bulk create work records: {e}")
 

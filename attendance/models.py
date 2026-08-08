@@ -1691,4 +1691,9 @@ class WorkRecords(models.Model):
     class Meta:
         verbose_name = _("Daily Work Status")
         verbose_name_plural = _("Daily Work Status")
-        # unique_together = ['date', 'employee_id']
+        constraints = [
+            models.UniqueConstraint(
+                fields=["employee_id", "date"],
+                name="unique_work_record_per_employee_per_date",
+            )
+        ]
