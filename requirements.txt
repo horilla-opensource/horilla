@@ -9,7 +9,7 @@ cffi
 chardet
 charset-normalizer
 click
-cryptography==44.0.2
+cryptography==50.0.0
 cssselect2
 Django==5.2
 django-auditlog
