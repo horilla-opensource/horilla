@@ -155,6 +155,20 @@ class HistoryTrackingFields(HorillaModel):
     and as a fallback for companies without their own configuration.
     """
 
+    # Pre-selected on a fresh install so history tracking is useful out of the
+    # box instead of silently tracking nothing until an admin visits Settings.
+    DEFAULT_TRACKING_FIELDS = [
+        "job_position_id",
+        "department_id",
+        "job_role_id",
+        "work_type_id",
+        "employee_type_id",
+        "shift_id",
+        "reporting_manager_id",
+        "company_id",
+        "basic_salary",
+    ]
+
     tracking_fields = models.JSONField(null=True, blank=True, editable=False)
     work_info_track = models.BooleanField(default=True)
     company_id = models.ForeignKey(
@@ -184,6 +198,21 @@ class HistoryTrackingFields(HorillaModel):
         return cls.objects.filter(company_id__isnull=True).order_by("id").first()
 
     @classmethod
+    def seed_default_row(cls):
+        """
+        Create the "All Companies" row with ``DEFAULT_TRACKING_FIELDS`` if no
+        such row exists yet. Safe to call repeatedly (e.g. on every
+        post_migrate) — never overwrites an existing configuration.
+        """
+        if cls.objects.filter(company_id__isnull=True).exists():
+            return
+        cls.objects.create(
+            company_id=None,
+            work_info_track=True,
+            tracking_fields={"tracking_fields": list(cls.DEFAULT_TRACKING_FIELDS)},
+        )
+
+    @classmethod
     def for_company(cls, company=None):
         """
         Return the tracking settings for ``company``. Prefers a company-
@@ -209,7 +238,8 @@ class HistoryTrackingFields(HorillaModel):
         if company is None:
             instance = cls.default_setting()
             return instance or cls(
-                work_info_track=True, tracking_fields={"tracking_fields": []}
+                work_info_track=True,
+                tracking_fields={"tracking_fields": list(cls.DEFAULT_TRACKING_FIELDS)},
             )
 
         own = cls.objects.filter(company_id=company).first()
@@ -230,7 +260,7 @@ class HistoryTrackingFields(HorillaModel):
         return cls(
             company_id=company,
             work_info_track=True,
-            tracking_fields={"tracking_fields": []},
+            tracking_fields={"tracking_fields": list(cls.DEFAULT_TRACKING_FIELDS)},
         )
 
     @classmethod
@@ -247,7 +277,9 @@ class HistoryTrackingFields(HorillaModel):
                 cls.objects.create(
                     company_id=None,
                     work_info_track=True,
-                    tracking_fields={"tracking_fields": []},
+                    tracking_fields={
+                        "tracking_fields": list(cls.DEFAULT_TRACKING_FIELDS)
+                    },
                 ),
                 True,
             )
@@ -264,7 +296,7 @@ class HistoryTrackingFields(HorillaModel):
                 tracking_fields=(
                     default.tracking_fields
                     if default and default.tracking_fields is not None
-                    else {"tracking_fields": []}
+                    else {"tracking_fields": list(cls.DEFAULT_TRACKING_FIELDS)}
                 ),
             ),
             True,

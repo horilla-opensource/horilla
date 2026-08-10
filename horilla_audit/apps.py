@@ -19,6 +19,17 @@ class HorillaAuditConfig(AppConfig):
         def _reapply_after_migrate(sender, **kwargs):
             registry.apply_audit_configuration()
 
+            from horilla_audit.models import HistoryTrackingFields
+
+            try:
+                HistoryTrackingFields.seed_default_row()
+            except Exception:  # pragma: no cover - table may not exist yet
+                import logging
+
+                logging.getLogger(__name__).debug(
+                    "Skipping HistoryTrackingFields default seed", exc_info=True
+                )
+
         post_migrate.connect(_reapply_after_migrate, sender=self)
 
         # Reapply on config changes so the UI takes effect immediately.
