@@ -3,7 +3,11 @@
     class="oh-profile-section">
     <div class="oh-alert oh-alert--info mb-3">
         <p class="mb-0">
-            {% blocktrans with name=group.name %}Choose employees for "{{ name }}". Saving adds the selected employees without removing existing members.{% endblocktrans %}
+            {% if assign_mode == "edit" %}
+                {% blocktrans with name=group.name %}Editing members of "{{ name }}". Unchecking an employee removes them from this role, and unchecking a company removes that assignment.{% endblocktrans %}
+            {% else %}
+                {% blocktrans with name=group.name %}Choose employees for "{{ name }}". Saving adds the selected employees without removing existing members.{% endblocktrans %}
+            {% endif %}
         </p>
     </div>
     <label class="settings-label mb-1">{% trans "Employees" %}</label>

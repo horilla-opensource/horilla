@@ -225,6 +225,7 @@ class WorkRequestNavView(HorillaNavView):
                 data-toggle = "oh-modal-toggle"
                 data-target = "#genericModal"
                 hx-get ="{reverse('work-export-candidate')}"
+                hx-vals='js:{{"has_selection": (JSON.parse(document.getElementById("selectedInstances")?.getAttribute("data-ids")||"[]").length>0)}}'
                 style="cursor: pointer;"
             """,
                 },
@@ -320,6 +321,7 @@ class WorkExportCandidate(TemplateView):
         context = super().get_context_data(**kwargs)
         context["export_fields"] = export_fields
         context["export_filter"] = export_filter
+        context["hide_export_filters"] = self.request.GET.get("has_selection") == "true"
         return context
 
 

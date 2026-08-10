@@ -77,13 +77,11 @@
             </button>
         {% endif %}
     </div>
-    <div class="h-[calc(100vh_-_320px)] overflow-hidden overflow-y-auto overflow-x-auto">
-        <div
-            id="permissionContainer"
-            class="accordion-wrapper space-y-2"
-        >
-            {% include "base/auth/group_lines.html" %}
-        </div>
+    <div
+        id="permissionContainer"
+        class="accordion-wrapper space-y-2"
+    >
+        {% include "base/auth/group_lines.html" %}
     </div>
 </div>
 
@@ -326,6 +324,40 @@
             } else {
                 window.openUserGroupPanel($panel);
             }
+        });
+
+        function filterGroupMembers($scope) {
+            var $search = $scope.find(".ug-member-search");
+            var $companyFilter = $scope.find(".ug-member-company-filter");
+            var $target = $($search.data("target") || $companyFilter.data("target"));
+            if (!$target.length) return;
+
+            var term = ($search.val() || "").toLowerCase().trim();
+            var company = ($companyFilter.val() || "").toLowerCase();
+            var visibleCount = 0;
+
+            $target.children(".ug-member-row").each(function () {
+                var $row = $(this);
+                var haystack = $row.data("search") || "";
+                var companies = $row.data("companies") || "";
+                var matchesTerm = !term || haystack.indexOf(term) !== -1;
+                var matchesCompany = !company || companies.indexOf(company + "|") !== -1;
+                var show = matchesTerm && matchesCompany;
+                $row.toggleClass("hidden", !show);
+                if (show) visibleCount++;
+            });
+
+            var emptySelector = $search.data("empty") || $companyFilter.data("empty");
+            if (emptySelector) {
+                $(emptySelector).toggleClass("hidden", visibleCount !== 0);
+            }
+        }
+
+        $(document).on("input", ".ug-member-search", function () {
+            filterGroupMembers($(this).closest(".ug-tab-panel"));
+        });
+        $(document).on("change", ".ug-member-company-filter", function () {
+            filterGroupMembers($(this).closest(".ug-tab-panel"));
         });
     }
 

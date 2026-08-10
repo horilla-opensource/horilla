@@ -22,7 +22,9 @@
     >
         {% csrf_token %}
         <input type="hidden" name="instance_ids">
-        {% include "work_type_request/work_type_request_export.html" %}
+        {% if not hide_export_filters %}
+            {% include "work_type_request/work_type_request_export.html" %}
+        {% endif %}
         <div class="oh-dropdown__filter-footer">
             <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
                 {% trans "Export" %}

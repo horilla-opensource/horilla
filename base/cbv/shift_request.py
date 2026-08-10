@@ -320,6 +320,7 @@ class ShitRequestNav(HorillaNavView):
                     data-target="#genericModal"
                     hx-get="{reverse('shift-export')}"
                     hx-target="#genericModalBody"
+                    hx-vals='js:{{"has_selection": (JSON.parse(document.getElementById("shiftselectedInstances")?.getAttribute("data-ids")||"[]").length>0 || JSON.parse(document.getElementById("allocatedselectedInstances")?.getAttribute("data-ids")||"[]").length>0)}}'
                     style="cursor: pointer;"
                     """,
                 },
@@ -377,6 +378,7 @@ class ExportView(TemplateView):
         export_filter = ShiftRequestFilter(queryset=shift_requests)
         context["export_fields"] = export_fields
         context["export_filter"] = export_filter
+        context["hide_export_filters"] = self.request.GET.get("has_selection") == "true"
         return context
 
 

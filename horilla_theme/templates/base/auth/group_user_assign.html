@@ -1,6 +1,6 @@
 {% load i18n %}
 <form
-    hx-post="{% url 'user-group-assign' %}?group={{ group_id }}&mode={{ assign_mode|default:'add' }}"
+    hx-post="{% url 'user-group-assign' %}?group={{ group_id }}&mode={{ assign_mode|default:'add' }}{% if target_employee_id %}&target_employee={{ target_employee_id }}{% endif %}"
     hx-target="#groupAssignBody"
     class="oh-profile-section space-y-4"
 >
@@ -13,8 +13,10 @@
             {% endif %}
         </p>
         <p class="text-xs text-dark-300 leading-relaxed">
-            {% if assign_mode == "edit" %}
-                {% trans "Update employees or companies for this role. Saving applies the selected employees to the selected companies." %}
+            {% if target_employee %}
+                {% blocktrans with name=target_employee.get_full_name %}Update which companies {{ name }} gets this role's permissions in. Other members of this role are not affected.{% endblocktrans %}
+            {% elif assign_mode == "edit" %}
+                {% trans "Update employees or companies for this role. Unchecking an employee removes them from the role; the selected companies apply to everyone selected." %}
             {% else %}
                 {% trans "Search and pick employees below. Saving adds the selected employees to this role for the selected companies." %}
             {% endif %}
@@ -27,20 +29,30 @@
     </div>
 
     {{ form.group.errors }}
-    <div>
-        <label class="block text-sm font-medium text-dark-400 mb-1">
-            {% if assign_mode == "edit" %}
-                {% trans "Employees in this role" %}
-            {% else %}
-                {% trans "Employees to add" %}
-            {% endif %}
-        </label>
-        <p class="text-xs text-dark-200 mb-2">
-            {% trans "Use search or filters to find people quickly." %}
-        </p>
-        {{ form.employee.errors }}
-        {{ form.employee }}
-    </div>
+    {% if target_employee %}
+        <div>
+            <label class="block text-sm font-medium text-dark-400 mb-1">
+                {% trans "Employee" %}
+            </label>
+            <p class="text-sm text-dark-400">{{ target_employee.get_full_name }}</p>
+        </div>
+        <input type="hidden" name="employee" value="{{ target_employee.id }}">
+    {% else %}
+        <div>
+            <label class="block text-sm font-medium text-dark-400 mb-1">
+                {% if assign_mode == "edit" %}
+                    {% trans "Employees in this role" %}
+                {% else %}
+                    {% trans "Employees to add" %}
+                {% endif %}
+            </label>
+            <p class="text-xs text-dark-200 mb-2">
+                {% trans "Use search or filters to find people quickly." %}
+            </p>
+            {{ form.employee.errors }}
+            {{ form.employee }}
+        </div>
+    {% endif %}
     {% if form.companies %}
         <div>
             <label class="block text-sm font-medium text-dark-400 mb-1">
@@ -57,6 +69,9 @@
     {% endif %}
     <input type="hidden" name="group" value="{{ group_id }}">
     <input type="hidden" name="mode" value="{{ assign_mode|default:'add' }}">
+    {% if target_employee_id %}
+        <input type="hidden" name="target_employee" value="{{ target_employee_id }}">
+    {% endif %}
 
     <div class="flex flex-wrap justify-end gap-2 pt-2 border-t border-[#ececec]">
         <button

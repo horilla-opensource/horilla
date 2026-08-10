@@ -2,6 +2,8 @@
 <div
     class="ug-member-row flex items-center justify-between gap-2 border border-[#ececec] rounded-md px-3 py-2"
     id="groupMember{{ group.id }}_{{ user.id }}"
+    data-search="{{ user.employee_get.get_full_name|lower }} {{ user.employee_get.get_mail|lower }}{% for company in companies %} {{ company.name|lower }}{% endfor %}"
+    data-companies="{% for company in companies %}{{ company.name|lower }}|{% endfor %}"
 >
     <div class="flex items-center gap-2 min-w-0">
         <img
@@ -27,8 +29,8 @@
                                     type="button"
                                     class="text-primary-400 hover:text-danger leading-none"
                                     hx-post="{% url 'group-remove-user' user.id group.id %}?company_id={{ company.id }}"
-                                    hx-target="#groupMember{{ group.id }}_{{ user.id }}"
-                                    hx-swap="outerHTML"
+                                    hx-target="closest .ug-detail-body"
+                                    hx-swap="innerHTML"
                                     hx-trigger="confirmed"
                                     onclick="hxConfirm(this, &quot;{% filter escapejs %}{% blocktrans with name=user.employee_get.get_full_name cname=company.name %}Remove {{ cname }} from {{ name }}'s assignment?{% endblocktrans %}{% endfilter %}&quot;)"
                                     hx-on-htmx-after-request="reloadMessage()"
@@ -46,18 +48,33 @@
         </div>
     </div>
     {% if request.user.is_superuser %}
-        <button
-            type="button"
-            class="text-xs text-danger hover:underline shrink-0"
-            hx-post="{% url 'group-remove-user' user.id group.id %}"
-            hx-target="#groupMember{{ group.id }}_{{ user.id }}"
-            hx-swap="outerHTML"
-            hx-trigger="confirmed"
-            onclick="hxConfirm(this, &quot;{% filter escapejs %}{% blocktrans with name=user.employee_get.get_full_name %}Remove {{ name }} from this group?{% endblocktrans %}{% endfilter %}&quot;)"
-            hx-on-htmx-after-request="reloadMessage()"
-            title="{% trans 'Remove from group' %}"
-        >
-            {% trans "Remove" %}
-        </button>
+        <div class="flex items-center gap-2 shrink-0">
+            {% if company_scoped %}
+                <a
+                    class="cursor-pointer text-xs text-primary-600 hover:underline"
+                    hx-get="{% url 'user-group-assign' %}"
+                    hx-vals='{"group":"{{ group.id }}", "mode":"edit", "target_employee":"{{ user.employee_get.id }}"}'
+                    hx-target="#groupAssignBody"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#groupAssign"
+                    title="{% trans 'Edit this employee\'s companies' %}"
+                >
+                    {% trans "Edit" %}
+                </a>
+            {% endif %}
+            <button
+                type="button"
+                class="text-xs text-danger hover:underline"
+                hx-post="{% url 'group-remove-user' user.id group.id %}"
+                hx-target="closest .ug-detail-body"
+                hx-swap="innerHTML"
+                hx-trigger="confirmed"
+                onclick="hxConfirm(this, &quot;{% filter escapejs %}{% blocktrans with name=user.employee_get.get_full_name %}Remove {{ name }} from this group?{% endblocktrans %}{% endfilter %}&quot;)"
+                hx-on-htmx-after-request="reloadMessage()"
+                title="{% trans 'Remove from group' %}"
+            >
+                {% trans "Remove" %}
+            </button>
+        </div>
     {% endif %}
 </div>

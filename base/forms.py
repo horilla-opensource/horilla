@@ -528,12 +528,22 @@ class AssignUserGroup(Form):
             return companies
         return list(Company.objects.all())
 
-    def save(self):
+    def save(self, mode="add", target_employee_id=None):
         """
-        Add group membership for selected users in selected companies.
+        Assign group membership for selected users in selected companies.
 
-        Existing members and their current company assignments are preserved.
-        Removal is handled by dedicated remove actions, not by this form save.
+        mode="add": additive only — existing members and their company
+        assignments are preserved; nothing is removed.
+
+        mode="edit": reconciliation — members that are no longer selected
+        are removed from the group entirely, and remaining members' company
+        assignments are replaced to match exactly what was submitted.
+
+        target_employee_id: when given, restricts an "edit" save to that one
+        employee only — their company set is replaced (or they're removed
+        if unchecked), and every other member of the group is left
+        untouched. This avoids one shared ``companies`` field from being
+        cross-applied to every employee selected in the form.
         """
         from base.models import CompanyGroupAssignment
 
@@ -541,11 +551,55 @@ class AssignUserGroup(Form):
         employee_ids = (
             self.data.getlist("employee") if hasattr(self.data, "getlist") else []
         )
+        companies = self._companies_for_save()
+
+        if mode == "edit" and target_employee_id:
+            target_employee = Employee.objects.filter(id=target_employee_id).first()
+            target_user = target_employee.employee_user_id if target_employee else None
+            if target_user:
+                if str(target_employee_id) in [str(e) for e in employee_ids]:
+                    company_ids = {c.id for c in companies}
+                    CompanyGroupAssignment.objects.filter(
+                        group=group, user=target_user
+                    ).exclude(company_id__in=company_ids).delete()
+                    CompanyGroupAssignment.objects.bulk_create(
+                        [
+                            CompanyGroupAssignment(
+                                user=target_user, company=company, group=group
+                            )
+                            for company in companies
+                        ],
+                        ignore_conflicts=True,
+                    )
+                    CompanyGroupAssignment.sync_user_group_membership(
+                        target_user, group
+                    )
+                else:
+                    CompanyGroupAssignment.objects.filter(
+                        group=group, user=target_user
+                    ).delete()
+                    group.user_set.remove(target_user)
+            return group
+
         assigning_employees = Employee.objects.filter(id__in=employee_ids)
         assigning_users = [
             e.employee_user_id for e in assigning_employees if e.employee_user_id
         ]
-        companies = self._companies_for_save()
+
+        if mode == "edit":
+            previous_users = list(group.user_set.all())
+            new_user_ids = {u.id for u in assigning_users}
+            removed_users = [u for u in previous_users if u.id not in new_user_ids]
+            if removed_users:
+                CompanyGroupAssignment.objects.filter(
+                    group=group, user_id__in=[u.id for u in removed_users]
+                ).delete()
+                group.user_set.remove(*removed_users)
+
+            company_ids = {c.id for c in companies}
+            CompanyGroupAssignment.objects.filter(
+                group=group, user__in=assigning_users
+            ).exclude(company_id__in=company_ids).delete()
 
         CompanyGroupAssignment.objects.bulk_create(
             [

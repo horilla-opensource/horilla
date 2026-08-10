@@ -1413,6 +1413,43 @@ def user_group_search(request):
     )
 
 
+def _group_detail_context(group):
+    """
+    Build the context for the members + permissions panel of a single group.
+    Shared by the lazy-load view and any action that needs to refresh it
+    in place (e.g. removing a member).
+    """
+    from base.auth_backends import company_scoped_active
+
+    company_scoped = company_scoped_active()
+    member_companies = {}
+    distinct_member_companies = []
+    if company_scoped:
+        company_names = set()
+        for user_id, company_id, company_name in CompanyGroupAssignment.objects.filter(
+            group=group
+        ).values_list("user_id", "company_id", "company__company"):
+            member_companies.setdefault(user_id, []).append(
+                {"id": company_id, "name": company_name}
+            )
+            company_names.add(company_name)
+        distinct_member_companies = sorted(company_names)
+    members = [
+        {"user": user, "companies": member_companies.get(user.id, [])}
+        for user in group.user_set.all()
+    ]
+    permissions, no_permission_models = _build_permission_matrix()
+    return {
+        "group": group,
+        "member_count": group.user_set.count(),
+        "members": members,
+        "member_companies": distinct_member_companies,
+        "permissions": permissions,
+        "no_permission_models": no_permission_models,
+        "company_scoped": company_scoped,
+    }
+
+
 @login_required
 @hx_request_required
 @superuser_required
@@ -1420,40 +1457,13 @@ def user_group_detail(request, obj_id):
     """
     Lazy-loaded members + permissions panel for a single group.
     """
-    from base.auth_backends import company_scoped_active
-
     group = get_object_or_404(
         Group.objects.prefetch_related(
             "permissions", "user_set", "user_set__employee_get"
         ),
         id=obj_id,
     )
-    company_scoped = company_scoped_active()
-    member_companies = {}
-    if company_scoped:
-        for user_id, company_id, company_name in CompanyGroupAssignment.objects.filter(
-            group=group
-        ).values_list("user_id", "company_id", "company__company"):
-            member_companies.setdefault(user_id, []).append(
-                {"id": company_id, "name": company_name}
-            )
-    members = [
-        {"user": user, "companies": member_companies.get(user.id, [])}
-        for user in group.user_set.all()
-    ]
-    permissions, no_permission_models = _build_permission_matrix()
-    return render(
-        request,
-        "base/auth/group_detail.html",
-        {
-            "group": group,
-            "member_count": group.user_set.count(),
-            "members": members,
-            "permissions": permissions,
-            "no_permission_models": no_permission_models,
-            "company_scoped": company_scoped,
-        },
-    )
+    return render(request, "base/auth/group_detail.html", _group_detail_context(group))
 
 
 @login_required
@@ -1506,6 +1516,9 @@ def group_assign(request):
     mode = (request.GET.get("mode") or request.POST.get("mode") or "add").lower()
     if mode not in ("add", "edit"):
         mode = "add"
+    target_employee_id = request.GET.get("target_employee") or request.POST.get(
+        "target_employee"
+    )
     if not group_id:
         return HorillaRedirect(request, message=_("Required parameters are missing"))
     group = Group.objects.filter(id=group_id).first()
@@ -1526,20 +1539,30 @@ def group_assign(request):
             employee_user_id__company_group_assignments__group=group,
             employee_user_id__company_group_assignments__company_id__in=grantable_ids,
         ).distinct()
-        initial_companies = Company.objects.filter(
-            id__in=grantable_ids,
-            group_assignments__group=group,
-        ).distinct()
+        company_qry = {"id__in": grantable_ids}
     else:
         current_employees = Employee.objects.filter(
             employee_user_id__groups__id=group_id, is_active=True
         )
+        company_qry = {}
+
+    if mode == "edit" and target_employee_id:
+        # Scoped to one employee: only their own companies are pre-filled,
+        # so saving never touches any other member's assignments.
+        initial_employees = list(current_employees.filter(id=target_employee_id))
         initial_companies = Company.objects.filter(
-            group_assignments__group=group
+            group_assignments__group=group,
+            group_assignments__user__employee_get__id=target_employee_id,
+            **company_qry,
+        ).distinct()
+    else:
+        # Add starts empty; bulk Edit pre-fills current members so their
+        # (shared) companies can be updated.
+        initial_employees = list(current_employees) if mode == "edit" else []
+        initial_companies = Company.objects.filter(
+            group_assignments__group=group, **company_qry
         ).distinct()
 
-    # Add starts empty; Edit pre-fills current members so companies can be updated.
-    initial_employees = list(current_employees) if mode == "edit" else []
     form = AssignUserGroup(
         initial={
             "group": group_id,
@@ -1550,7 +1573,7 @@ def group_assign(request):
     if request.POST:
         form = AssignUserGroup(request.POST)
         if form.is_valid():
-            form.save()
+            form.save(mode=mode, target_employee_id=target_employee_id)
             messages.success(
                 request,
                 (
@@ -1560,6 +1583,9 @@ def group_assign(request):
                 ),
             )
             return HorillaRedirect(request)
+    target_employee = None
+    if target_employee_id:
+        target_employee = Employee.objects.filter(id=target_employee_id).first()
     return render(
         request,
         "base/auth/group_user_assign.html",
@@ -1569,6 +1595,8 @@ def group_assign(request):
             "group": group,
             "member_count": current_employees.count(),
             "assign_mode": mode,
+            "target_employee_id": target_employee_id,
+            "target_employee": target_employee,
         },
     )
 
@@ -1657,22 +1685,9 @@ def group_remove_user(request, uid, gid):
     else:
         messages.error(request, _("Unable to remove employee from the group."))
     if request.headers.get("HX-Request"):
-        if group and user and not fully_removed:
-            member_companies = [
-                {"id": cid, "name": name}
-                for cid, name in CompanyGroupAssignment.objects.filter(
-                    user=user, group=group
-                ).values_list("company_id", "company__company")
-            ]
+        if group:
             return render(
-                request,
-                "base/auth/group_member_row.html",
-                {
-                    "group": group,
-                    "user": user,
-                    "companies": member_companies,
-                    "company_scoped": True,
-                },
+                request, "base/auth/group_detail.html", _group_detail_context(group)
             )
         return HttpResponse("")
     return HorillaRedirect(request)

@@ -39,24 +39,35 @@
                         <i class="fa-solid fa-user-plus"></i>
                         {% trans "Add" %}
                     </a>
-                    {% if member_count %}
-                        <a
-                            class="cursor-pointer px-3 py-1.5 text-xs border border-brand-600 text-brand-600 bg-white rounded-md inline-flex items-center gap-1.5 hover:bg-brand-600 hover:text-white transition"
-                            hx-get="{% url 'user-group-assign' %}"
-                            hx-vals='{"group":"{{ group.id }}", "mode":"edit"}'
-                            hx-target="#groupAssignBody"
-                            data-toggle="oh-modal-toggle"
-                            data-target="#groupAssign"
-                        >
-                            <i class="fa-solid fa-pen-to-square"></i>
-                            {% trans "Edit" %}
-                        </a>
-                    {% endif %}
                 </div>
             {% endif %}
         </div>
 
         {% if member_count %}
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+                <div class="relative flex-1 min-w-[180px]">
+                    <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-[11px] text-dark-200"></i>
+                    <input
+                        type="text"
+                        class="ug-member-search w-full pl-7 pr-2 py-1.5 text-xs border border-[#ececec] rounded-md focus:outline-none focus:ring-1 focus:ring-brand-600"
+                        placeholder="{% trans 'Search members by name, email or company...' %}"
+                        data-target="#groupMembers{{ group.id }}"
+                        data-empty="#groupMembersEmpty{{ group.id }}"
+                    >
+                </div>
+                {% if member_companies %}
+                    <select
+                        class="ug-member-company-filter text-xs border border-[#ececec] rounded-md py-1.5 px-2 focus:outline-none focus:ring-1 focus:ring-brand-600"
+                        data-target="#groupMembers{{ group.id }}"
+                        data-empty="#groupMembersEmpty{{ group.id }}"
+                    >
+                        <option value="">{% trans "All companies" %}</option>
+                        {% for company in member_companies %}
+                            <option value="{{ company|lower }}">{{ company }}</option>
+                        {% endfor %}
+                    </select>
+                {% endif %}
+            </div>
             <div class="grid sm:grid-cols-2 gap-2" id="groupMembers{{ group.id }}">
                 {% for member in members %}
                     {% if member.user.employee_get %}
@@ -64,6 +75,12 @@
                     {% endif %}
                 {% endfor %}
             </div>
+            <p
+                class="hidden text-center text-xs text-dark-200 py-6"
+                id="groupMembersEmpty{{ group.id }}"
+            >
+                {% trans "No members match your search." %}
+            </p>
         {% else %}
             <div class="text-center py-8 border border-dashed border-[#ddd] rounded-md">
                 <p class="text-sm text-dark-300 mb-3">
