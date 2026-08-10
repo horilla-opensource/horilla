@@ -1,7 +1,11 @@
 {% load i18n static i18n %}
 <style>
-    .shadow-card {
+    /* Keep accordion flush so the view button sits inside the header —
+       scoped so profile .shadow-card cards are not affected */
+    #projectContainer .hlv-container.shadow-card {
         padding-top: 0;
+        padding-left: 0;
+        padding-right: 0;
     }
 </style>
 <div id="messages" class="oh-alert-container"></div>
@@ -17,12 +21,11 @@
                 hx-get="{% url 'tasks-list-individual-view' %}?employee_id={{ employee.id }}&project_id={{ project.id }}&field=project"
                 hx-trigger="load"
                 hx-target="#projectTaskList{{project.id}}"
-                class="relative"
             >
-                <div class="absolute top-0 right-16 h-11 flex items-center z-50">
+                <div class="absolute top-2 right-16 h-6 w-6 flex items-center justify-center z-50">
                     <button
                         onclick="event.stopPropagation()"
-                        class="oh-btn oh-btn--sq-sm bg-white border border-[#e6e6e6]"
+                        class="oh-btn oh-btn--sq-sm bg-white border border-[#e6e6e6] h-6 w-6 p-0 flex items-center justify-center"
                         title="{% trans 'View Project' %}"
                         hx-target="#genericModalBody"
                         data-target="#genericModal"

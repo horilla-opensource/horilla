@@ -61,6 +61,20 @@
                                 <ion-icon name="person-add-outline" class="me-1"></ion-icon>{% trans "Assign Leave" %}
                             </a>
                         {% endif %}
+                        {% if view_id == "task-list-container" and saved_filters.field == "project" %}
+                            <button
+                                type="button"
+                                class="oh-btn oh-btn--sq-sm bg-white border border-[#e6e6e6]"
+                                title="{% trans 'View Project' %}"
+                                onclick="event.stopPropagation()"
+                                hx-get="{% url 'project-detailed-view' group.grouper.id %}"
+                                hx-target="#genericModalBody"
+                                data-target="#genericModal"
+                                data-toggle="oh-modal-toggle"
+                            >
+                                <ion-icon name="eye-outline" role="img"></ion-icon>
+                            </button>
+                        {% endif %}
                         <ion-icon name="chevron-down-outline" class="icon text-lg"></ion-icon>
                     </div>
                 </div>
