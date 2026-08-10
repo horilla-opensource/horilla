@@ -6782,7 +6782,7 @@ msgid "candidate-update"
 msgstr "atualização-candidatura"
 
 msgid "create-payslip"
-msgstr "criar-payslip"
+msgstr "criar holerite"
 
 msgid "work-records"
 msgstr "registros-trabalho"
@@ -6848,7 +6848,7 @@ msgid "restrict-view"
 msgstr "vínculo-restrito"
 
 msgid "auto-payslip-settings-view"
-msgstr "auto-payslip-settings-view"
+msgstr "visualização de configurações de holerite automático"
 
 msgid "bonus-point-setting"
 msgstr "configuração-ponto"
@@ -13553,7 +13553,7 @@ msgid "Loan Settled"
 msgstr "Empréstimo quitado"
 
 msgid "Payslip"
-msgstr "Payslip"
+msgstr "Holerite"
 
 msgid "Do you want to send the payslip by mail?"
 msgstr "Você deseja mandar a oferta de correio por correio?"
@@ -17184,19 +17184,19 @@ msgid "Generate"
 msgstr "Gerar"
 
 msgid "Payslip Report"
-msgstr "Relatório Payslip"
+msgstr "Relatório de Holerite"
 
 msgid "Send Via Mail"
 msgstr "Enviar via e-mail"
 
 msgid "Pay Slip Batch"
-msgstr "Lote de contracheques"
+msgstr "Lote de holerites"
 
 msgid "Create Payslip"
-msgstr "Criar Payslip"
+msgstr "Criar Holerite"
 
 msgid "Payslip Saved"
-msgstr "Payslip Salvo"
+msgstr "Holerite Salvo"
 
 msgid "Payroll"
 msgstr "Folha de pagamento"
@@ -17208,19 +17208,19 @@ msgid "Payslip creation date"
 msgstr "Data de criação do trecho"
 
 msgid "Payslip Automation"
-msgstr "Payslip Automation"
+msgstr "Automação de Holerite"
 
 msgid "Create Auto Payslip Generate"
 msgstr "Criar Geração de Inverno Automático"
 
 msgid "Update Auto Payslip Generate"
-msgstr "Atualizar o Auto Payslip Gerar"
+msgstr "Atualizar Geração Automática de Holerite"
 
 msgid "All companies"
 msgstr "Todas as empresas"
 
 msgid "Active 'Payslip auto generate' cannot be deleted."
-msgstr "Não é possível excluir uma geração automática de contracheque ativa."
+msgstr "Não é possível excluir uma geração automática de holerite ativa."
 
 msgid "Leave Encashments"
 msgstr "Enreembolsos de licenças"
@@ -17250,10 +17250,10 @@ msgid "Reimbursement created successfully"
 msgstr "Reembolso criado com sucesso."
 
 msgid "Payslip Auto Generation"
-msgstr "Payslip Auto Generation"
+msgstr "Geração Automática de Holerite"
 
 msgid "Payslip Batch"
-msgstr "Lote Payslip"
+msgstr "Lote de Holerites"
 
 msgid "You need to choose the employee."
 msgstr "Você precisa escolher o empregado."
@@ -17675,10 +17675,10 @@ msgid "Notice period in days"
 msgstr "Período de aviso em dias"
 
 msgid "Payslip Generate Day"
-msgstr "Dia de geração do contracheque"
+msgstr "Dia de geração do holerite"
 
 msgid "On this day of every month,Payslip will auto generate"
-msgstr "Neste dia de cada mês, o contracheque será gerado automaticamente."
+msgstr "Neste dia de cada mês, o holerite será gerado automaticamente."
 
 msgid "Auto Generate"
 msgstr "Gerar automaticamente"
@@ -17790,10 +17790,10 @@ msgstr ""
 "mês."
 
 msgid "Do you want to sent the payslip by mail?"
-msgstr "Deseja enviar o contracheque por e-mail?"
+msgstr "Deseja enviar o holerite por e-mail?"
 
 msgid "Are you sure you want to delete this payslip?"
-msgstr "Tem certeza que deseja excluir este trecho de pagamento?"
+msgstr "Tem certeza que deseja excluir este holerite?"
 
 msgid "Start Date Till"
 msgstr "Start Date Till"
@@ -17826,7 +17826,7 @@ msgid "Mail Sent"
 msgstr "E-mails enviados"
 
 msgid "Bulk Payslip"
-msgstr "Bulk Payslip"
+msgstr "Holerites em Massa"
 
 msgid "Export Payslips"
 msgstr "Exportar Sistemas Pagos"
@@ -17894,7 +17894,7 @@ msgid "Select All Payslips"
 msgstr "Selecionar todos os sistemas"
 
 msgid "Unselect All Payslips"
-msgstr "Desmarcar todos os Payslips"
+msgstr "Desmarcar Todos os Holerites"
 
 msgid "Send via mail "
 msgstr "Enviar via e-mail "
@@ -17968,7 +17968,7 @@ msgid "Mail Not Sent"
 msgstr "Mail não enviado"
 
 msgid "Payslip report"
-msgstr "Relatório Payslip"
+msgstr "Relatório de holerite"
 
 msgid "No payslips have been generated."
 msgstr "Nenhum sistema de pagamento foi gerado."
@@ -18052,7 +18052,7 @@ msgstr "Dedução não encontrada"
 
 #, python-format
 msgid "%(emp_count)s payslip saved as draft"
-msgstr "%(emp_count)s contracheque salvo como rascunho"
+msgstr "%(emp_count)s holerite salvo como rascunho"
 
 msgid ""
 "When this payslip is run, the payslip start date will be updated to match "
@@ -18087,7 +18087,7 @@ msgid "Mail processing"
 msgstr "Processamento de correio"
 
 msgid "Payslip not found"
-msgstr "Payslip não encontrado"
+msgstr "Holerite não encontrado"
 
 msgid "Bonus Added"
 msgstr "Bônus adicionado"
@@ -18209,13 +18209,13 @@ msgid "There was an error updating the currency."
 msgstr "Ocorreu um erro ao atualizar a moeda."
 
 msgid "Payslip not found."
-msgstr "Payslip não encontrado."
+msgstr "Holerite não encontrado."
 
 msgid "Payslip status updated"
-msgstr "Status do Payslip atualizado"
+msgstr "Status do holerite atualizado"
 
 msgid "Payslip deleted"
-msgstr "Payslip excluído"
+msgstr "Holerite excluído"
 
 msgid "No payslips generated for this month."
 msgstr "Nenhum sistema de pagamento gerado para este mês."
@@ -18225,7 +18225,7 @@ msgstr "Nenhum contrato terminado este mês"
 
 #, python-brace-format
 msgid "{employee} {period} payslip deleted."
-msgstr "{employee} {period} pagador excluído."
+msgstr "Holerite de {employee} para {period} excluído."
 
 #, python-brace-format
 msgid "You cannot delete {payslip}"
@@ -18280,7 +18280,7 @@ msgid "Active 'Payslip auto generate' cannot delete."
 msgstr "Não é possível excluir o 'gerador automático de holerite' ativo."
 
 msgid "Payslip auto generate not found."
-msgstr "Geração automática de payyslip não encontrada."
+msgstr "Geração automática de holerite não encontrada."
 
 msgid "Performance"
 msgstr "Desempenho"
