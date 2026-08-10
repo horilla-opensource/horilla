@@ -151,6 +151,37 @@
     $(document).ready(function(){
         reloadMessage()
     })
+    {% if request.GET.asset_lot_number_id %}
+        // Arrived here from the "N Assets" link on Asset Batches. Every
+        // category still renders (the lot filter only narrows each
+        // category's own asset-count badge, not which categories show up),
+        // so auto-open the one category whose badge shows this lot actually
+        // has assets in it, instead of leaving the user to find and click it
+        // themselves. toggleAccordion() only handles the visual open/close;
+        // its content is lazy-loaded via htmx (normally fired by the
+        // hyperscript "on click" handler through the "doRequest" custom
+        // trigger) -- htmx.trigger() for that custom event turned out to
+        // race htmx's own attribute processing on this freshly-swapped
+        // fragment and silently no-op, so this fires the equivalent request
+        // directly through htmx's JS API instead, using the same hx-get/
+        // hx-target the button already declares.
+        $(document).ready(function () {
+            $(".accordion-btn").each(function () {
+                var countEl = this.querySelector("[id^='asset-count']");
+                var count = countEl ? parseInt(countEl.textContent.trim(), 10) : 0;
+                if (count > 0) {
+                    toggleAccordion(this);
+                    if (window.htmx) {
+                        htmx.ajax("GET", this.getAttribute("hx-get"), {
+                            target: this.getAttribute("hx-target"),
+                            swap: "innerHTML",
+                        });
+                    }
+                    return false;
+                }
+            });
+        });
+    {% endif %}
     function batchNoChange(selectElement) {
         var selectedBatchNo = selectElement.val();
         var parentForm = selectElement.parents().closest("form");
