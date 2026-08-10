@@ -256,6 +256,7 @@ class AttendancesNavView(HorillaNavView):
                     data-target = "#genericModal"
                     hx-target="#genericModalBody"
                     hx-get ="{reverse('attendences-navbar-export')}"
+                    hx-vals='js:{{"has_selection": (function(){{var t=document.querySelector(".oh-tabs__content--active");var l=(t||document).querySelector("[data-selected-instances-key]");var k=(l&&l.getAttribute("data-selected-instances-key"))||"selectedInstances";var el=document.getElementById(k);return JSON.parse((el&&el.getAttribute("data-ids"))||"[]").length>0;}})()}}'
                     style="cursor: pointer;"
                 """,
                 }
@@ -323,6 +324,7 @@ class AttendancesExportNav(TemplateView):
         context = super().get_context_data(**kwargs)
         context["export_form"] = export_form
         context["export"] = export
+        context["hide_export_filters"] = self.request.GET.get("has_selection") == "true"
         return context
 
 
