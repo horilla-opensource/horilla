@@ -143,3 +143,61 @@ def auto_approve_self_approval_stage(sender, instance, created, **kwargs):
     """
     if created and instance.manager_id == instance.leave_request_id.employee_id:
         sender.objects.filter(pk=instance.pk).update(is_approved=True)
+
+
+# ============================================================================
+# ROYAL FALCON SECURITY - Leave Accrual Policy Signal Handlers
+# ============================================================================
+
+
+@receiver(post_save, sender="leave.UnpaidLeave")
+def handle_unpaid_leave_status_change(sender, instance, created, update_fields, **kwargs):
+    """
+    Handle accrual pause when unpaid leave is approved.
+    Resume accrual when employee returns from unpaid leave.
+    """
+    from leave.models import UnpaidLeave
+    from leave.accrual_service import pause_accrual_for_unpaid_leave, resume_accrual_after_unpaid_leave
+    
+    try:
+        # Get the current instance to check status
+        unpaid_leave = UnpaidLeave.objects.get(pk=instance.pk)
+        
+        if unpaid_leave.status == "active" and (created or (update_fields and "status" in update_fields)):
+            # Pause accrual when unpaid leave is activated
+            pause_accrual_for_unpaid_leave(unpaid_leave)
+            
+        elif unpaid_leave.status == "returned" and update_fields and "status" in update_fields:
+            # Resume accrual when employee returns
+            resume_accrual_after_unpaid_leave(unpaid_leave)
+            
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error handling unpaid leave status change: {str(e)}")
+
+
+@receiver(post_save, sender="leave.UnauthorizedExtension")
+def handle_unauthorized_extension_approval(sender, instance, created, update_fields, **kwargs):
+    """
+    Handle service adjustment when unauthorized extension is approved.
+    """
+    from leave.models import UnauthorizedExtension, EmployeeServiceAdjustment
+    
+    try:
+        unauthorized_ext = UnauthorizedExtension.objects.get(pk=instance.pk)
+        
+        # Service adjustment is created in the create_unauthorized_extension_record function
+        # This signal just logs the approval for audit purposes
+        if unauthorized_ext.status == "approved" and update_fields and "status" in update_fields:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.info(
+                f"Unauthorized extension for {unauthorized_ext.employee_id.badge_id} approved: "
+                f"{unauthorized_ext.unauthorized_days} days from {unauthorized_ext.approved_return_date}"
+            )
+            
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error handling unauthorized extension approval: {str(e)}")
