@@ -1342,8 +1342,17 @@ $(document).on("click", function (event) {
 });
 
 $(document).on("htmx:afterSwap", function () {
-    if ($("[data-summernote]").length > 0) {
-        $("[data-summernote]").summernote({
+    // Only initialize elements that aren't already a live Summernote editor.
+    // Re-calling .summernote(options) on one that already is can leave the
+    // original textarea visible again alongside the rich editor UI (see
+    // initializeSummernote() below, which guards the same way for the same
+    // reason) -- this handler fires on EVERY htmx swap anywhere on the page,
+    // so a modal reopened more than once was hitting this repeatedly.
+    $("[data-summernote]").each(function () {
+        if ($(this).next(".note-editor").length > 0) {
+            return;
+        }
+        $(this).summernote({
             height: 300,
             codeviewFilter: false,
             codeviewIframeFilter: false,
@@ -1353,8 +1362,69 @@ $(document).on("htmx:afterSwap", function () {
                 },
             },
         });
-    }
+    });
 });
+
+// Global "type '{' for sender/receiver data" mail-body hint, called by
+// send-mail forms (employee, recruitment candidate, etc.) after their own
+// searchWords-aware Summernote init. Previously lived only in the legacy
+// templates/sidebar.html, which the active theme's index.html no longer
+// includes -- every caller's `typeof initializeSummernote === 'function'`
+// check silently failed, so the hint dropdown never appeared even though
+// the base editor (initialized above) still worked.
+function preloadData(item, candId, preloadedData, callback) {
+    $.ajax({
+        type: "get",
+        url: `/recruitment/get-template-hint/`,
+        data: { "candidate_id": candId, 'word': item },
+        success: function (response) {
+            preloadedData[item] = response.body;
+            callback();
+            $('.note-hint-popover').hide()
+        }
+    });
+}
+
+function initializeSummernote(candId, searchWords) {
+    var preloadedData = {};
+    var mentions = Object.keys(searchWords);
+    var $body = $("[name='body']");
+    // A caller invoked more than once for the same open (e.g. a stale,
+    // re-accumulated event listener) would otherwise re-call .summernote()
+    // on an already-live editor, which can leave the source textarea
+    // visible again alongside the rich editor UI. Destroy any existing
+    // instance first so exactly one clean editor (with hint) results
+    // regardless of how many times this runs.
+    if ($body.next(".note-editor").length > 0) {
+        $body.summernote("destroy");
+    }
+    $body.summernote({
+        hint: {
+            mentions: mentions,
+            match: /\B\{(\w*)$/,
+            search: function (keyword, callback) {
+                var pattern = new RegExp(keyword, "i"); // Case-insensitive search
+                callback($.grep(this.mentions, function (item) {
+                    return pattern.test(item);
+                }));
+            },
+            content: function (item) {
+                var word = searchWords[item];
+                var insertText = `{{${word}}}`;
+
+                if (preloadedData[word]) {
+                    $("[name='body']").summernote('pasteHTML', insertText);
+                    $('.note-hint-popover').hide();
+                } else {
+                    preloadData(word, candId, preloadedData, function () {
+                        $("[name='body']").summernote('pasteHTML', insertText);
+                        $('.note-hint-popover').hide();
+                    });
+                }
+            }
+        }
+    });
+}
 
 function offboardingUpdateStage($element) {
     submitButton = $element.closest("form").find("input[type=submit]")
