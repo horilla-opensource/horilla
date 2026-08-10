@@ -28,6 +28,9 @@ from .models import (
     LeaveRequest,
     LeaveType,
     RestrictLeave,
+    UnpaidLeave,
+    UnauthorizedExtension,
+    LeaveAccrualAuditLog,
 )
 
 
@@ -564,3 +567,153 @@ if apps.is_installed("attendance"):
                 queryset | qs.filter(employee_id__badge_id__icontains=value).distinct()
             )
             return queryset
+
+
+# ============================================================================
+# ROYAL FALCON SECURITY - Leave Accrual Policy Filters
+# ============================================================================
+
+
+class UnpaidLeaveFilter(FilterSet):
+    """
+    Filter class for UnpaidLeave model.
+    Allows filtering unpaid leave records by employee, date range, and status.
+    """
+
+    employee_id = filters.CharFilter(
+        field_name="employee_id__badge_id", lookup_expr="icontains"
+    )
+    search = filters.CharFilter(method="filter_by_name")
+    start_date = DateFilter(
+        field_name="start_date",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    end_date = DateFilter(
+        field_name="end_date",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    status = filters.ChoiceFilter(
+        field_name="status",
+        choices=[
+            ("active", _("Active")),
+            ("returned", _("Returned")),
+            ("rejected", _("Rejected")),
+        ],
+    )
+
+    class Meta:
+        model = UnpaidLeave
+        fields = ["employee_id", "status", "start_date", "end_date"]
+
+    def filter_by_name(self, queryset, name, value):
+        """Search by employee name or badge ID"""
+        return queryset.filter(
+            Q(employee_id__employee_first_name__icontains=value)
+            | Q(employee_id__employee_last_name__icontains=value)
+            | Q(employee_id__badge_id__icontains=value)
+        ).distinct()
+
+
+class UnauthorizedExtensionFilter(FilterSet):
+    """
+    Filter class for UnauthorizedExtension model.
+    Allows filtering unauthorized extensions by employee, date range, and status.
+    """
+
+    employee_id = filters.CharFilter(
+        field_name="employee_id__badge_id", lookup_expr="icontains"
+    )
+    search = filters.CharFilter(method="filter_by_name")
+    approved_return_date = DateFilter(
+        field_name="approved_return_date",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    actual_return_date = DateFilter(
+        field_name="actual_return_date",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    status = filters.ChoiceFilter(
+        field_name="status",
+        choices=[
+            ("pending_review", _("Pending Review")),
+            ("approved", _("Approved")),
+            ("converted_to_paid", _("Converted to Paid")),
+            ("rejected", _("Rejected")),
+        ],
+    )
+    unauthorized_days_min = filters.NumberFilter(
+        field_name="unauthorized_days", lookup_expr="gte"
+    )
+    unauthorized_days_max = filters.NumberFilter(
+        field_name="unauthorized_days", lookup_expr="lte"
+    )
+
+    class Meta:
+        model = UnauthorizedExtension
+        fields = ["employee_id", "status", "approved_return_date", "actual_return_date"]
+
+    def filter_by_name(self, queryset, name, value):
+        """Search by employee name or badge ID"""
+        return queryset.filter(
+            Q(employee_id__employee_first_name__icontains=value)
+            | Q(employee_id__employee_last_name__icontains=value)
+            | Q(employee_id__badge_id__icontains=value)
+        ).distinct()
+
+
+class LeaveAccrualAuditLogFilter(FilterSet):
+    """
+    Filter class for LeaveAccrualAuditLog model.
+    Allows filtering audit logs by employee, date range, type, and reason.
+    """
+
+    employee_id = filters.CharFilter(
+        field_name="employee_id__badge_id", lookup_expr="icontains"
+    )
+    search = filters.CharFilter(method="filter_by_name")
+    from_date = DateFilter(
+        field_name="effective_date",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    to_date = DateFilter(
+        field_name="effective_date",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    accrual_type = filters.ChoiceFilter(
+        field_name="accrual_type",
+        choices=LeaveAccrualAuditLog.ACCRUAL_TYPE_CHOICES,
+    )
+    reason = filters.CharFilter(
+        field_name="reason", lookup_expr="icontains"
+    )
+    accrual_days_min = filters.NumberFilter(
+        field_name="accrual_days", lookup_expr="gte"
+    )
+    accrual_days_max = filters.NumberFilter(
+        field_name="accrual_days", lookup_expr="lte"
+    )
+
+    class Meta:
+        model = LeaveAccrualAuditLog
+        fields = [
+            "employee_id",
+            "accrual_type",
+            "from_date",
+            "to_date",
+            "reason",
+        ]
+
+    def filter_by_name(self, queryset, name, value):
+        """Search by employee name, badge ID, or reason"""
+        return queryset.filter(
+            Q(employee_id__employee_first_name__icontains=value)
+            | Q(employee_id__employee_last_name__icontains=value)
+            | Q(employee_id__badge_id__icontains=value)
+            | Q(reason__icontains=value)
+        ).distinct()

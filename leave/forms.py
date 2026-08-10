@@ -38,6 +38,9 @@ from leave.models import (
     LeaveType,
     LeaveTypeCondition,
     RestrictLeave,
+    UnpaidLeave,
+    UnauthorizedExtension,
+    EmployeeCategory,
 )
 
 CHOICES = [("yes", _("Yes")), ("no", _("No"))]
@@ -1314,3 +1317,169 @@ if apps.is_installed("attendance"):
 
             model = CompensatoryLeaverequestComment
             fields = ("comment",)
+
+
+# ============================================================================
+# ROYAL FALCON SECURITY - Leave Accrual Policy Forms
+# ============================================================================
+
+
+class UnpaidLeaveForm(BaseModelForm):
+    """
+    Form for creating and managing unpaid leave records.
+    Only HR/SuperAdmin can create/edit these.
+    """
+
+    start_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date", "class": "oh-input w-100"}),
+        label=_("Start Date"),
+    )
+    end_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date", "class": "oh-input w-100"}),
+        label=_("End Date"),
+    )
+    reason = forms.CharField(
+        widget=forms.Textarea(attrs={"rows": 4, "class": "oh-input w-100"}),
+        label=_("Reason for Unpaid Leave"),
+    )
+
+    class Meta:
+        model = UnpaidLeave
+        fields = ["employee_id", "start_date", "end_date", "reason", "status"]
+        exclude = ["days_count", "accrual_paused", "created_by"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["employee_id"].label = _("Employee")
+        self.fields["status"].label = _("Status")
+        self.fields["status"].help_text = _(
+            "Select 'active' to pause accrual, 'returned' when employee returns, 'rejected' to cancel"
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get("start_date")
+        end_date = cleaned_data.get("end_date")
+
+        if start_date and end_date and end_date < start_date:
+            raise ValidationError(
+                _("End date must be on or after the start date.")
+            )
+
+        return cleaned_data
+
+
+class UnauthorizedExtensionForm(BaseModelForm):
+    """
+    Form for tracking unauthorized extension after approved paid leave.
+    Used by HR to record when employee doesn't return on approved date.
+    """
+
+    approved_return_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date", "class": "oh-input w-100"}),
+        label=_("Approved Return Date"),
+        help_text=_("Date employee was approved to return"),
+    )
+    actual_return_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date", "class": "oh-input w-100"}),
+        label=_("Actual Return Date"),
+        help_text=_("When employee actually returned"),
+    )
+    remarks = forms.CharField(
+        widget=forms.Textarea(attrs={"rows": 4, "class": "oh-input w-100"}),
+        label=_("Remarks"),
+        required=False,
+    )
+
+    class Meta:
+        model = UnauthorizedExtension
+        fields = [
+            "leave_request_id",
+            "approved_return_date",
+            "actual_return_date",
+            "status",
+            "remarks",
+        ]
+        exclude = ["unauthorized_days", "created_by"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["leave_request_id"].label = _("Leave Request")
+        self.fields["leave_request_id"].help_text = _(
+            "Select the approved leave request"
+        )
+        self.fields["status"].label = _("Status")
+        self.fields["status"].help_text = _(
+            "Select 'approved' to deduct from service, 'converted_to_paid' if HR approves as paid"
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        approved_return = cleaned_data.get("approved_return_date")
+        actual_return = cleaned_data.get("actual_return_date")
+        leave_request = cleaned_data.get("leave_request_id")
+
+        if approved_return and actual_return and actual_return < approved_return:
+            raise ValidationError(
+                _("Actual return date must be on or after the approved return date.")
+            )
+
+        if leave_request and actual_return:
+            # Ensure actual return is after the leave end date
+            if actual_return <= leave_request.end_date:
+                raise ValidationError(
+                    _(
+                        "Actual return date must be after the leave end date."
+                    )
+                )
+
+        return cleaned_data
+
+
+class EmployeeCategoryForm(BaseModelForm):
+    """
+    Form for configuring employee categories and carryforward limits.
+    Used by HR to set badge ID prefixes and leave carryforward rules.
+    """
+
+    badge_id_prefix = forms.CharField(
+        max_length=10,
+        label=_("Badge ID Prefix"),
+        help_text=_("e.g., 'A' for A-001, 'S' for S-001 (leave blank for default)"),
+        required=False,
+    )
+    max_carryforward_days = forms.IntegerField(
+        label=_("Max Carryforward Days"),
+        help_text=_("Maximum days allowed after December 31 reset"),
+        min_value=0,
+    )
+
+    class Meta:
+        model = EmployeeCategory
+        fields = ["name", "badge_id_prefix", "max_carryforward_days"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["name"].label = _("Category Name")
+        self.fields["name"].help_text = _("e.g., 'Management', 'Normal Employee'")
+
+    def clean(self):
+        cleaned_data = super().clean()
+        badge_id_prefix = cleaned_data.get("badge_id_prefix")
+        name = cleaned_data.get("name")
+
+        # Check for duplicate badge_id_prefix in the same company
+        if badge_id_prefix:
+            company = getattr(self.instance, "company_id", None)
+            existing = EmployeeCategory.objects.filter(
+                badge_id_prefix=badge_id_prefix,
+                company_id=company,
+            ).exclude(pk=self.instance.pk)
+            if existing.exists():
+                raise ValidationError(
+                    _(
+                        f"Badge ID prefix '{badge_id_prefix}' already exists for this company."
+                    )
+                )
+
+        return cleaned_data
