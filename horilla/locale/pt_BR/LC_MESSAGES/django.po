@@ -17202,8 +17202,7 @@ msgid "Payroll"
 msgstr "Folha de pagamento"
 
 msgid "Are you sure you want to delete this payslip auto generate?"
-msgstr ""
-"Tem certeza que deseja excluir este auto de folha de pagamento gerado?"
+msgstr "Tem certeza que deseja excluir esta geração automática de holerite?"
 
 msgid "Payslip creation date"
 msgstr "Data de criação do trecho"
