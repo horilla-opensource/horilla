@@ -2,8 +2,6 @@
 attendance/sidebar.py
 """
 
-from datetime import datetime
-
 from django.apps import apps
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
@@ -36,11 +34,6 @@ SUBMENUS = [
         "redirect": reverse_lazy("request-attendance-view"),
     },
     {
-        "menu": _("Hours Balance"),
-        "redirect": reverse_lazy("attendance-overtime-view"),
-        "accessibility": "attendance.sidebar.hour_account_accessibility",
-    },
-    {
         "menu": _("Daily Work Status"),
         "redirect": reverse_lazy("work-records"),
         "accessibility": "attendance.sidebar.work_record_accessibility",
@@ -53,6 +46,11 @@ SUBMENUS = [
         "menu": _("Late Arrival & Early Departure"),
         "redirect": reverse_lazy("late-come-early-out-view"),
         "accessibility": "attendance.sidebar.tracking_accessibility",
+    },
+    {
+        "menu": _("Monthly Summary"),
+        "redirect": reverse_lazy("attendance-monthly-summary"),
+        "accessibility": "attendance.sidebar.monthly_summary_accessibility",
     },
     {
         "menu": _("Time Policies"),
@@ -69,14 +67,6 @@ def attendances_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm("attendance.view_attendance") or is_reportingmanager(
         request.user
     )
-
-
-def hour_account_accessibility(request, submenu, user_perms, *args, **kwargs):
-    """
-    Modify the submenu redirect URL to include the current year as a query parameter.
-    """
-    submenu["redirect"] = submenu["redirect"] + f"?year={datetime.now().year}"
-    return True
 
 
 def work_record_accessibility(request, submenu, user_perms, *args, **kwargs):
@@ -112,6 +102,12 @@ def tracking_accessibility(request, submenu, user_perms, *args, **kwargs):
         or is_reportingmanager(request.user)
     )
     return tracking_enabled and has_access
+
+
+def monthly_summary_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("attendance.view_attendance") or is_reportingmanager(
+        request.user
+    )
 
 
 # ---------------------------------------------------------------------------

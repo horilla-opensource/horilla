@@ -1,0 +1,337 @@
+{% load i18n %}
+{% if metric == "present" %}
+  <div class="ms-pop-header" style="border-top:3px solid #28a745;">
+    <ion-icon name="checkmark-circle-outline" style="color:#28a745;"></ion-icon>
+    {% trans "Present Records" %}
+  </div>
+  <div class="ms-pop-body">
+    {% if records %}
+      {% for r in records %}
+        {% if r.day_type == "full" %}
+          <div class="ms-pop-row" style="border-left:3px solid #28a745;padding-left:10px;">
+            <div>
+              <span class="ms-pop-date">{{ r.attendance_date|date:"D, d M Y" }}</span>
+              {% if r.is_regularized %}<span class="ms-pop-reg-badge"><ion-icon name="checkmark-circle-outline" style="font-size:.7rem;"></ion-icon>{% trans "Regularized" %}</span>{% endif %}
+              <div class="ms-pop-badge" style="color:#28a745;">
+                {{ r.attendance_clock_in|default:"—" }}{% if r.attendance_clock_out %} – {{ r.attendance_clock_out }}{% endif %}
+                {% if r.at_work_label %}<span style="color:#adb5bd;">({{ r.at_work_label }})</span>{% endif %}
+                {% if r.ot_label %}
+                  <span style="display:inline-flex;align-items:center;gap:2px;margin-left:5px;font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:4px;vertical-align:middle;
+                    {% if r.ot_approved %}background:#d1fae5;color:#065f46;{% else %}background:#ffedd5;color:#92400e;{% endif %}">
+                    <ion-icon name="flash-outline" style="font-size:.65rem;"></ion-icon>
+                    {% trans "OT" %} {{ r.ot_label }}{% if r.ot_approved %} ✓{% endif %}
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% elif r.day_type == "half" %}
+          <div class="ms-pop-row" style="border-left:3px solid #e85d04;padding-left:10px;background:#fff4ed;">
+            <div>
+              <span class="ms-pop-date">{{ r.attendance_date|date:"D, d M Y" }}</span>
+              <span style="display:inline-block;margin-left:6px;font-size:.65rem;font-weight:700;background:#ffedd5;color:#92400e;border-radius:4px;padding:1px 5px;vertical-align:middle;">{% trans "HALF DAY" %}</span>
+              {% if r.is_regularized %}<span class="ms-pop-reg-badge"><ion-icon name="checkmark-circle-outline" style="font-size:.7rem;"></ion-icon>{% trans "Regularized" %}</span>{% endif %}
+              <div class="ms-pop-badge" style="color:#e85d04;">
+                {{ r.attendance_clock_in|default:"—" }}{% if r.attendance_clock_out %} – {{ r.attendance_clock_out }}{% endif %}
+                {% if r.at_work_label %}<span style="color:#adb5bd;">({{ r.at_work_label }})</span>{% endif %}
+                {% if r.ot_label %}
+                  <span style="display:inline-flex;align-items:center;gap:2px;margin-left:5px;font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:4px;vertical-align:middle;
+                    {% if r.ot_approved %}background:#d1fae5;color:#065f46;{% else %}background:#ffedd5;color:#92400e;{% endif %}">
+                    <ion-icon name="flash-outline" style="font-size:.65rem;"></ion-icon>
+                    {% trans "OT" %} {{ r.ot_label }}{% if r.ot_approved %} ✓{% endif %}
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% elif r.day_type == "short" %}
+          <div class="ms-pop-row" style="border-left:3px solid #6366f1;padding-left:10px;background:#f5f3ff;">
+            <div>
+              <span class="ms-pop-date" style="color:#4338ca;">{{ r.attendance_date|date:"D, d M Y" }}</span>
+              <span style="display:inline-block;margin-left:6px;font-size:.65rem;font-weight:700;background:#ede9fe;color:#3730a3;border-radius:4px;padding:1px 5px;vertical-align:middle;">{% trans "SHORT HOURS" %}</span>
+              {% if r.is_regularized %}<span class="ms-pop-reg-badge"><ion-icon name="checkmark-circle-outline" style="font-size:.7rem;"></ion-icon>{% trans "Regularized" %}</span>{% endif %}
+              <div class="ms-pop-badge" style="color:#6366f1;">
+                {{ r.attendance_clock_in|default:"—" }}{% if r.attendance_clock_out %} – {{ r.attendance_clock_out }}{% endif %}
+                {% if r.at_work_label %}<span style="color:#adb5bd;">({{ r.at_work_label }})</span>{% endif %}
+                {% if r.ot_label %}
+                  <span style="display:inline-flex;align-items:center;gap:2px;margin-left:5px;font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:4px;vertical-align:middle;
+                    {% if r.ot_approved %}background:#d1fae5;color:#065f46;{% else %}background:#ffedd5;color:#92400e;{% endif %}">
+                    <ion-icon name="flash-outline" style="font-size:.65rem;"></ion-icon>
+                    {% trans "OT" %} {{ r.ot_label }}{% if r.ot_approved %} ✓{% endif %}
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="ms-pop-row" style="border-left:3px solid #dc3545;padding-left:10px;background:#fff5f5;">
+            <div>
+              <span class="ms-pop-date" style="color:#dc3545;">{{ r.attendance_date|date:"D, d M Y" }}</span>
+              <span style="display:inline-block;margin-left:6px;font-size:.65rem;font-weight:700;background:#fee2e2;color:#991b1b;border-radius:4px;padding:1px 5px;vertical-align:middle;">{% trans "MISSING OUT" %}</span>
+              {% if r.is_regularized %}<span class="ms-pop-reg-badge"><ion-icon name="checkmark-circle-outline" style="font-size:.7rem;"></ion-icon>{% trans "Regularized" %}</span>{% endif %}
+              <div class="ms-pop-badge" style="color:#dc3545;">
+                {{ r.attendance_clock_in|default:"—" }}{% if r.attendance_clock_out %} – {{ r.attendance_clock_out }}{% endif %}
+                {% if r.at_work_label %}<span style="color:#adb5bd;">({{ r.at_work_label }})</span>{% endif %}
+                {% if r.ot_label %}
+                  <span style="display:inline-flex;align-items:center;gap:2px;margin-left:5px;font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:4px;vertical-align:middle;
+                    {% if r.ot_approved %}background:#d1fae5;color:#065f46;{% else %}background:#ffedd5;color:#92400e;{% endif %}">
+                    <ion-icon name="flash-outline" style="font-size:.65rem;"></ion-icon>
+                    {% trans "OT" %} {{ r.ot_label }}{% if r.ot_approved %} ✓{% endif %}
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <p class="ms-pop-empty">{% trans "No attendance records found." %}</p>
+    {% endif %}
+  </div>
+
+{% elif metric == "conflict" %}
+  <div class="ms-pop-header" style="border-top:3px solid #e85d04;">
+    <ion-icon name="warning-outline" style="color:#e85d04;"></ion-icon>
+    {% trans "Conflicting Records" %}
+    {% if conflict_summary.total %}
+      <span style="margin-left:auto;background:#fff3cd;color:#856404;border:1px solid #ffc107;border-radius:10px;padding:1px 8px;font-size:.7rem;font-weight:700;">
+        {{ conflict_summary.total }}
+      </span>
+    {% endif %}
+  </div>
+
+  {% if conflict_summary.total %}
+  <div class="ms-pop-strips">
+    <!-- Conflict-type breakdown (what overlaps) -->
+    <div style="display:flex;flex-wrap:wrap;gap:4px;padding:8px 12px;border-bottom:1px solid hsl(213,22%,93%);background:#fff4ed;">
+      {% if conflict_summary.paid_leave %}
+      <span style="display:inline-flex;align-items:center;gap:3px;background:#dbeafe;color:#1e40af;border-radius:10px;padding:2px 8px;font-size:.68rem;font-weight:700;">
+        <ion-icon name="calendar-outline" style="font-size:.7rem;"></ion-icon>
+        {{ conflict_summary.paid_leave }} {% trans "Paid Leave" %}
+      </span>
+      {% endif %}
+      {% if conflict_summary.unpaid_leave %}
+      <span style="display:inline-flex;align-items:center;gap:3px;background:#ffedd5;color:#9a3412;border-radius:10px;padding:2px 8px;font-size:.68rem;font-weight:700;">
+        <ion-icon name="calendar-outline" style="font-size:.7rem;"></ion-icon>
+        {{ conflict_summary.unpaid_leave }} {% trans "Unpaid Leave" %}
+      </span>
+      {% endif %}
+      {% if conflict_summary.holiday %}
+      <span style="display:inline-flex;align-items:center;gap:3px;background:#ccfbf1;color:#134e4a;border-radius:10px;padding:2px 8px;font-size:.68rem;font-weight:700;">
+        <ion-icon name="flag-outline" style="font-size:.7rem;"></ion-icon>
+        {{ conflict_summary.holiday }} {% trans "Holiday" %}
+      </span>
+      {% endif %}
+      {% if conflict_summary.week_off %}
+      <span style="display:inline-flex;align-items:center;gap:3px;background:#ede9fe;color:#4c1d95;border-radius:10px;padding:2px 8px;font-size:.68rem;font-weight:700;">
+        <ion-icon name="moon-outline" style="font-size:.7rem;"></ion-icon>
+        {{ conflict_summary.week_off }} {% trans "Week Off" %}
+      </span>
+      {% endif %}
+    </div>
+    <!-- Attendance-type breakdown (how the day was classified) -->
+    <div style="display:flex;flex-wrap:wrap;gap:4px;padding:6px 12px 8px;border-bottom:1px solid hsl(213,22%,93%);">
+      {% if conflict_summary.full %}
+      <span style="background:#d1fae5;color:#065f46;border-radius:8px;padding:1px 7px;font-size:.65rem;font-weight:700;">
+        {{ conflict_summary.full }} {% trans "Full" %}
+      </span>
+      {% endif %}
+      {% if conflict_summary.half %}
+      <span style="background:#ffedd5;color:#92400e;border-radius:8px;padding:1px 7px;font-size:.65rem;font-weight:700;">
+        {{ conflict_summary.half }} {% trans "Half" %}
+      </span>
+      {% endif %}
+      {% if conflict_summary.short %}
+      <span style="background:#ede9fe;color:#3730a3;border-radius:8px;padding:1px 7px;font-size:.65rem;font-weight:700;">
+        {{ conflict_summary.short }} {% trans "Short" %}
+      </span>
+      {% endif %}
+      {% if conflict_summary.mo %}
+      <span style="background:#fee2e2;color:#991b1b;border-radius:8px;padding:1px 7px;font-size:.65rem;font-weight:700;">
+        {{ conflict_summary.mo }} {% trans "Missing Out" %}
+      </span>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="ms-pop-body">
+    {% if records %}
+      {% for r in records %}
+        <div class="ms-pop-row" style="flex-direction:column;align-items:flex-start;gap:3px;">
+          <div style="display:flex;align-items:center;gap:6px;width:100%;">
+            <span class="ms-pop-date">{{ r.date|date:"D, d M Y" }}</span>
+            {% if r.day_type == "full" %}
+              <span style="font-size:.62rem;font-weight:700;background:#d1fae5;color:#065f46;border-radius:4px;padding:1px 5px;">{% trans "FULL" %}</span>
+            {% elif r.day_type == "half" %}
+              <span style="font-size:.62rem;font-weight:700;background:#ffedd5;color:#92400e;border-radius:4px;padding:1px 5px;">{% trans "HALF" %}</span>
+            {% elif r.day_type == "short" %}
+              <span style="font-size:.62rem;font-weight:700;background:#ede9fe;color:#3730a3;border-radius:4px;padding:1px 5px;">{% trans "SHORT" %}</span>
+            {% else %}
+              <span style="font-size:.62rem;font-weight:700;background:#fee2e2;color:#991b1b;border-radius:4px;padding:1px 5px;">{% trans "MO" %}</span>
+            {% endif %}
+            <span style="margin-left:auto;font-size:.68rem;font-weight:600;
+              {% if r.conflict_type == 'paid_leave' %}color:#1e40af;{% elif r.conflict_type == 'unpaid_leave' %}color:#9a3412;{% elif r.conflict_type == 'holiday' %}color:#134e4a;{% else %}color:#4c1d95;{% endif %}">
+              {% if r.conflict_type == "paid_leave" %}{% trans "Paid Leave" %}{% elif r.conflict_type == "unpaid_leave" %}{% trans "Unpaid Leave" %}{% elif r.conflict_type == "holiday" %}{% trans "Holiday" %}{% else %}{% trans "Week Off" %}{% endif %}
+              {% if r.conflict_label %}: {{ r.conflict_label }}{% endif %}
+            </span>
+          </div>
+          <div style="font-size:.74rem;color:#6c757d;">
+            {{ r.clock_in|default:"—" }}{% if r.clock_out %} – {{ r.clock_out }}{% endif %}
+            &nbsp;({{ r.worked_h }}h{{ r.worked_m|stringformat:"02d" }}m)
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="ms-pop-empty">{% trans "No conflict records found." %}</p>
+    {% endif %}
+  </div>
+
+{% elif metric == "absent" %}
+  <div class="ms-pop-header" style="border-top:3px solid #dc3545;">
+    <ion-icon name="close-circle-outline" style="color:#dc3545;"></ion-icon>
+    {% trans "Absent / Missing Out" %}
+  </div>
+  <div class="ms-pop-body">
+    {% if records %}
+      {% for r in records %}
+      <div class="ms-pop-row">
+        <span class="ms-pop-date" style="color:#dc3545;">{{ r.date|date:"D, d M Y" }}</span>
+        {% if r.is_regularized %}<span class="ms-pop-reg-badge"><ion-icon name="checkmark-circle-outline" style="font-size:.7rem;"></ion-icon>{% trans "Regularized" %}</span>{% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <p class="ms-pop-empty">{% trans "No absent days found." %}</p>
+    {% endif %}
+  </div>
+
+{% elif metric == "paid_leave" %}
+  <div class="ms-pop-header" style="border-top:3px solid #0d6efd;">
+    <ion-icon name="calendar-outline" style="color:#0d6efd;"></ion-icon>
+    {% trans "Paid Leave" %}
+  </div>
+  <div class="ms-pop-body">
+    {% if records or resolution_only_leave %}
+      {% for lr in records %}
+        {% if lr.status == "approved" %}
+        <div class="ms-pop-row" style="border-left:3px solid #28a745;padding-left:10px;background:#f0fdf4;">
+          <div>
+            <span class="ms-pop-date" style="color:#166534;">{{ lr.leave_type_id.name }}</span>
+            <span style="display:inline-block;margin-left:6px;font-size:.65rem;font-weight:700;background:#dcfce7;color:#166534;border-radius:4px;padding:1px 5px;vertical-align:middle;">{% trans "APPROVED" %}</span>
+            <div class="ms-pop-badge" style="color:#28a745;">
+              {{ lr.start_date|date:"d M" }}{% if lr.end_date and lr.end_date != lr.start_date %} – {{ lr.end_date|date:"d M Y" }}{% else %}, {{ lr.start_date|date:"Y" }}{% endif %}
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="ms-pop-row" style="border-left:3px solid #adb5bd;padding-left:10px;background:#f8f9fa;">
+          <div>
+            <span class="ms-pop-date" style="color:#6c757d;">{{ lr.leave_type_id.name }}</span>
+            <span style="display:inline-block;margin-left:6px;font-size:.65rem;font-weight:700;background:#e9ecef;color:#495057;border-radius:4px;padding:1px 5px;vertical-align:middle;">{% trans "PENDING" %}</span>
+            <div class="ms-pop-badge" style="color:#adb5bd;">
+              {{ lr.start_date|date:"d M" }}{% if lr.end_date and lr.end_date != lr.start_date %} – {{ lr.end_date|date:"d M Y" }}{% else %}, {{ lr.start_date|date:"Y" }}{% endif %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      {% endfor %}
+      {% for rl in resolution_only_leave %}
+        <div class="ms-pop-row" style="border-left:3px solid #0d6efd;padding-left:10px;background:#eff6ff;">
+          <div>
+            <span class="ms-pop-date" style="color:#1d4ed8;">{{ rl.date|date:"D, d M Y" }}</span>
+            <span class="ms-pop-reg-badge"><ion-icon name="checkmark-circle-outline" style="font-size:.7rem;"></ion-icon>{% trans "Regularized" %}</span>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="ms-pop-empty">{% trans "No paid leave records." %}</p>
+    {% endif %}
+  </div>
+
+{% elif metric == "unpaid_leave" %}
+  <div class="ms-pop-header" style="border-top:3px solid #fd7e14;">
+    <ion-icon name="calendar-outline" style="color:#fd7e14;"></ion-icon>
+    {% trans "Unpaid Leave" %}
+  </div>
+  <div class="ms-pop-body">
+    {% if records or resolution_only_leave %}
+      {% for lr in records %}
+        {% if lr.status == "approved" %}
+        <div class="ms-pop-row" style="border-left:3px solid #28a745;padding-left:10px;background:#f0fdf4;">
+          <div>
+            <span class="ms-pop-date" style="color:#166534;">{{ lr.leave_type_id.name }}</span>
+            <span style="display:inline-block;margin-left:6px;font-size:.65rem;font-weight:700;background:#dcfce7;color:#166534;border-radius:4px;padding:1px 5px;vertical-align:middle;">{% trans "APPROVED" %}</span>
+            <div class="ms-pop-badge" style="color:#28a745;">
+              {{ lr.start_date|date:"d M" }}{% if lr.end_date and lr.end_date != lr.start_date %} – {{ lr.end_date|date:"d M Y" }}{% else %}, {{ lr.start_date|date:"Y" }}{% endif %}
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="ms-pop-row" style="border-left:3px solid #adb5bd;padding-left:10px;background:#f8f9fa;">
+          <div>
+            <span class="ms-pop-date" style="color:#6c757d;">{{ lr.leave_type_id.name }}</span>
+            <span style="display:inline-block;margin-left:6px;font-size:.65rem;font-weight:700;background:#e9ecef;color:#495057;border-radius:4px;padding:1px 5px;vertical-align:middle;">{% trans "PENDING" %}</span>
+            <div class="ms-pop-badge" style="color:#adb5bd;">
+              {{ lr.start_date|date:"d M" }}{% if lr.end_date and lr.end_date != lr.start_date %} – {{ lr.end_date|date:"d M Y" }}{% else %}, {{ lr.start_date|date:"Y" }}{% endif %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      {% endfor %}
+      {% for rl in resolution_only_leave %}
+        <div class="ms-pop-row" style="border-left:3px solid #fd7e14;padding-left:10px;background:#fff7ed;">
+          <div>
+            <span class="ms-pop-date" style="color:#c2410c;">{{ rl.date|date:"D, d M Y" }}</span>
+            <span class="ms-pop-reg-badge"><ion-icon name="checkmark-circle-outline" style="font-size:.7rem;"></ion-icon>{% trans "Regularized" %}</span>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="ms-pop-empty">{% trans "No unpaid leave records." %}</p>
+    {% endif %}
+  </div>
+
+{% elif metric == "week_off" %}
+  <div class="ms-pop-header" style="border-top:3px solid #6610f2;">
+    <ion-icon name="moon-outline" style="color:#6610f2;"></ion-icon>
+    {% trans "Week Off" %}
+    <span style="font-weight:400;font-size:.7rem;color:#6c757d;margin-left:6px;">
+      ({% if source == "roster" %}{% trans "from roster" %}{% else %}{% trans "company schedule" %}{% endif %})
+    </span>
+  </div>
+  <div class="ms-pop-body">
+    {% if records %}
+      {% for r in records %}
+      <div class="ms-pop-row">
+        <span class="ms-pop-date" style="color:#6610f2;">{{ r.date|date:"D, d M Y" }}</span>
+        {% if r.is_regularized %}<span class="ms-pop-reg-badge"><ion-icon name="checkmark-circle-outline" style="font-size:.7rem;"></ion-icon>{% trans "Regularized" %}</span>{% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <p class="ms-pop-empty">{% trans "No week off days in this period." %}</p>
+    {% endif %}
+  </div>
+
+{% elif metric == "holiday" %}
+  <div class="ms-pop-header" style="border-top:3px solid #20c997;">
+    <ion-icon name="flag-outline" style="color:#20c997;"></ion-icon>
+    {% trans "Holidays" %}
+  </div>
+  <div class="ms-pop-body">
+    {% if records %}
+      {% for h in records %}
+      <div class="ms-pop-row">
+        <div>
+          <span class="ms-pop-date">{{ h.name }}</span>
+          {% if h.is_regularized %}<span class="ms-pop-reg-badge"><ion-icon name="checkmark-circle-outline" style="font-size:.7rem;"></ion-icon>{% trans "Regularized" %}</span>{% endif %}
+          <div class="ms-pop-badge" style="color:#20c997;">
+            {{ h.start_date|date:"d M" }}{% if h.end_date != h.start_date %} – {{ h.end_date|date:"d M Y" }}{% else %}, {{ h.start_date|date:"Y" }}{% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p class="ms-pop-empty">{% trans "No holidays in this period." %}</p>
+    {% endif %}
+  </div>
+{% endif %}

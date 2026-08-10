@@ -30,7 +30,7 @@ from base.forms import AttendanceAllowedIPForm
 from base.models import AttendanceAllowedIP
 from base.views import add_remove_dynamic_fields
 
-from .views import views
+from .views import summary, views
 
 urlpatterns = [
     path(
@@ -1019,5 +1019,51 @@ urlpatterns = [
         "dashboard/api/overview/",
         att_dashboard.attendance_overview,
         name="attendance-dashboard-overview",
+    ),
+    # Monthly summary (HR-188 / HR-190)
+    path(
+        "monthly-summary/",
+        summary.attendance_monthly_summary,
+        name="attendance-monthly-summary",
+    ),
+    path(
+        "monthly-summary/table/",
+        summary.attendance_monthly_summary_table,
+        name="attendance-monthly-summary-table",
+    ),
+    path(
+        "monthly-summary/export/",
+        summary.attendance_monthly_summary_export,
+        name="attendance-monthly-summary-export",
+    ),
+    path(
+        "monthly-summary/detail/",
+        summary.attendance_monthly_summary_detail,
+        name="attendance-monthly-summary-detail",
+    ),
+    path(
+        "monthly-summary/calendar/",
+        summary.attendance_monthly_summary_calendar,
+        name="attendance-monthly-summary-calendar",
+    ),
+    path(
+        "monthly-summary/conflict-resolve/",
+        summary.attendance_monthly_summary_conflict_resolve,
+        name="attendance-monthly-summary-conflict-resolve",
+    ),
+    path(
+        "monthly-summary/bulk-override/",
+        summary.attendance_monthly_summary_bulk_override,
+        name="attendance-monthly-summary-bulk-override",
+    ),
+    path(
+        "monthly-summary/undo-bulk/",
+        summary.attendance_monthly_summary_undo_bulk,
+        name="attendance-monthly-summary-undo-bulk",
+    ),
+    path(
+        "monthly-summary/daily-hours-edit/",
+        summary.attendance_monthly_summary_daily_hours_edit,
+        name="attendance-monthly-summary-daily-hours-edit",
     ),
 ]

@@ -1317,7 +1317,7 @@
                 const mins = Math.floor((Date.now() - lastRefresh) / 60000);
                 refreshText.textContent = mins < 1 ? '{% trans "Just now" %}' : mins + '{% trans "m ago" %}';
             }
-            registerAutoRefresh(setInterval(updateRefreshText, 30000));
+            setInterval(updateRefreshText, 30000);
 
             function startAutoRefresh() {
                 autoRefreshOn = true;
@@ -1330,7 +1330,6 @@
                     updateRefreshText();
                     refreshAllData();
                 }, REFRESH_INTERVAL);
-                registerAutoRefresh(refreshTimer);
             }
             function stopAutoRefresh() {
                 autoRefreshOn = false;
@@ -1600,13 +1599,7 @@
                             { name: '{% trans "Worked" %}', data: data.departments.map(d => d.worked_hours) },
                             { name: '{% trans "Pending" %}', data: data.departments.map(d => d.pending_hours) },
                         ],
-                        chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: true, animations: ANIM,
-                            events: { dataPointSelection: (e, ctx, config) => {
-                                const dept = data.departments[config.dataPointIndex]?.department;
-                                if (!dept) return;
-                                navigate("{% url 'attendance-overtime-view' %}", { department_name: dept });
-                            }}
-                        },
+                        chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: true, animations: ANIM },
                         colors: ['#22c55e', '#f59e0b'],
                         fill: { type: 'gradient', gradient: { type: 'vertical', shadeIntensity: 0.3, opacityFrom: 1, opacityTo: 0.85 } },
                         plotOptions: { bar: { borderRadius: 6, borderRadiusApplication: 'end', columnWidth: '58%' } },

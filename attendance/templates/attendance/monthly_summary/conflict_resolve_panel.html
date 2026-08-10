@@ -1,0 +1,448 @@
+{% load i18n %}
+<input type="hidden" id="cal-resolve-date" value="{{ date|date:'Y-m-d' }}">
+
+<style>
+.crp-mark-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 7px;
+  margin-bottom: 14px;
+}
+.crp-mark-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 9px 6px;
+  border-radius: 8px;
+  border: 1.5px solid;
+  cursor: pointer;
+  font-size: .72rem;
+  font-weight: 600;
+  transition: opacity .12s, box-shadow .12s;
+  background: #fff;
+  text-align: center;
+  line-height: 1.3;
+}
+.crp-mark-btn:hover:not([disabled]) { box-shadow: 0 0 0 2px currentColor; opacity: .9; }
+.crp-mark-btn[disabled] { opacity: .35; cursor: not-allowed; }
+.crp-mark-btn ion-icon { font-size: 1.15rem; }
+/* colours */
+.crp-full   { color:#065f46; border-color:#6ee7b7; background:#d1fae5; }
+.crp-half   { color:#854d0e; border-color:#fb923c; background:#fef9c3; }
+.crp-absent { color:#991b1b; border-color:#fca5a5; background:#fee2e2; }
+.crp-paid   { color:#1e40af; border-color:#93c5fd; background:#dbeafe; }
+.crp-unpaid { color:#9a3412; border-color:#fdba74; background:#ffedd5; }
+.crp-hol     { color:#134e4a; border-color:#5eead4; background:#ccfbf1; }
+.crp-woff    { color:#4c1d95; border-color:#c4b5fd; background:#ede9fe; }
+.crp-partial { color:#0e7490; border-color:#67e8f9; background:#ecfeff; }
+
+.crp-pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: .74rem;
+  font-weight: 700;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+</style>
+
+<div style="padding:14px 20px 16px;">
+
+  <!-- ── Title row ─────────────────────────────────────────────────────── -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      {% if conflict_type == "paid_leave" or conflict_type == "unpaid_leave" %}
+        <ion-icon name="warning-outline" style="color:#e85d04;font-size:1.1rem;flex-shrink:0;"></ion-icon>
+        <span style="font-weight:700;font-size:.88rem;color:#92400e;">
+          {% trans "Conflict" %} — {{ date|date:"d M Y" }}
+          <span style="font-size:.72rem;font-weight:400;color:#78716c;margin-left:6px;">{% trans "attendance overlaps approved leave" %}</span>
+        </span>
+      {% elif conflict_type == "holiday_ot" %}
+        <ion-icon name="sunny-outline" style="color:#0f766e;font-size:1.1rem;flex-shrink:0;"></ion-icon>
+        <span style="font-weight:700;font-size:.88rem;color:#134e4a;">{% trans "Holiday OT" %} — {{ date|date:"d M Y" }}</span>
+      {% elif conflict_type == "week_off_ot" %}
+        <ion-icon name="moon-outline" style="color:#7c3aed;font-size:1.1rem;flex-shrink:0;"></ion-icon>
+        <span style="font-weight:700;font-size:.88rem;color:#4c1d95;">{% trans "Week Off OT" %} — {{ date|date:"d M Y" }}</span>
+      {% elif existing_resolution %}
+        <ion-icon name="checkmark-circle-outline" style="color:#10b981;font-size:1.1rem;flex-shrink:0;"></ion-icon>
+        <span style="font-weight:700;font-size:.88rem;color:#065f46;">{% trans "Overridden" %} — {{ date|date:"d M Y" }}</span>
+      {% else %}
+        <ion-icon name="calendar-outline" style="color:#6366f1;font-size:1.1rem;flex-shrink:0;"></ion-icon>
+        <span style="font-weight:700;font-size:.88rem;color:#1e1b4b;">{{ date|date:"d M Y" }}</span>
+      {% endif %}
+    </div>
+    <button onclick="var p=document.getElementById('cal-resolve-panel');p.style.display='none';p.innerHTML='';"
+            style="background:none;border:none;color:#9ca3af;cursor:pointer;font-size:1rem;padding:2px 6px;" title="{% trans 'Close' %}">✕</button>
+  </div>
+
+  <!-- ── Current attendance info ───────────────────────────────────────── -->
+  {% if att_row %}
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:9px 12px;margin-bottom:12px;">
+    <span style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#6c757d;">{% trans "Attendance" %}</span>
+    {% if day_type == "full" %}
+      <span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 7px;font-size:.72rem;font-weight:600;">{% trans "Full Present" %}</span>
+    {% elif day_type == "half" %}
+      <span style="background:#fef9c3;color:#854d0e;border-radius:4px;padding:2px 7px;font-size:.72rem;font-weight:600;">{% trans "Half Day" %}</span>
+    {% elif day_type == "short" %}
+      <span style="background:#ede9fe;color:#3730a3;border-radius:4px;padding:2px 7px;font-size:.72rem;font-weight:600;">{% trans "Short Hours" %}</span>
+    {% else %}
+      <span style="background:#fee2e2;color:#991b1b;border-radius:4px;padding:2px 7px;font-size:.72rem;font-weight:600;">{% trans "Missing Clock-out" %}</span>
+    {% endif %}
+    {% if conflict_type == "paid_leave" or conflict_type == "unpaid_leave" %}
+      <span style="margin-left:auto;font-size:.7rem;font-weight:600;color:#e85d04;">
+        ⚠ {% if conflict_type == "paid_leave" %}{% trans "Paid Leave" %}{% else %}{% trans "Unpaid Leave" %}{% endif %}
+        {% if conflict_label %}({{ conflict_label }}){% endif %}
+      </span>
+    {% elif conflict_type == "holiday_ot" %}
+      <span style="margin-left:auto;background:#0f766e;color:#fff;border-radius:4px;padding:2px 7px;font-size:.68rem;font-weight:800;">HO</span>
+    {% elif conflict_type == "week_off_ot" %}
+      <span style="margin-left:auto;background:#7c3aed;color:#fff;border-radius:4px;padding:2px 7px;font-size:.68rem;font-weight:800;">WO</span>
+    {% endif %}
+    <!-- clock-in/out + hours breakdown row -->
+    <div style="width:100%;display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px;">
+      {% if clock_in %}
+      <span style="font-size:.72rem;color:#6c757d;">
+        {{ clock_in }}{% if clock_out %} → {{ clock_out }}{% else %} <em style="color:#ef4444;">{% trans "no clock-out" %}</em>{% endif %}
+      </span>
+      <span style="color:#d1d5db;font-size:.7rem;">|</span>
+      {% endif %}
+      <span id="crp-att-hours-{{ employee.pk }}-{{ date|date:'Y-m-d' }}"
+            data-eff-min="{{ effective_min_secs }}"
+            data-ot-cutoff="{{ ot_cutoff_sec }}"
+            data-is-ot-day="{% if is_ot_day %}1{% else %}0{% endif %}"
+            style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        <span style="font-size:.7rem;background:#f0fdf4;color:#166534;border-radius:4px;padding:2px 7px;border:1px solid #bbf7d0;font-weight:600;">
+          {% trans "Reg" %} {{ regular_h }}h {{ regular_m|stringformat:"02d" }}m
+        </span>
+        <span style="font-size:.68rem;color:#9ca3af;">+</span>
+        <span style="font-size:.7rem;background:{% if overtime_h or overtime_m %}#ffedd5{% else %}#f9fafb{% endif %};color:{% if overtime_h or overtime_m %}#92400e{% else %}#9ca3af{% endif %};border-radius:4px;padding:2px 7px;border:1px solid {% if overtime_h or overtime_m %}#fed7aa{% else %}#e5e7eb{% endif %};font-weight:600;">
+          {% trans "OT" %} {{ overtime_h }}h {{ overtime_m|stringformat:"02d" }}m
+        </span>
+        {% if excess_h or excess_m %}
+        <span style="font-size:.68rem;color:#9ca3af;">+</span>
+        <span style="font-size:.7rem;background:#fdf4ff;color:#7e22ce;border-radius:4px;padding:2px 7px;border:1px solid #e9d5ff;font-weight:600;"
+              title="{% trans 'Hours beyond the OT cap — not counted as regular or overtime' %}">
+          &#9663; {{ excess_h }}h {{ excess_m|stringformat:"02d" }}m
+        </span>
+        {% endif %}
+        <span style="font-size:.68rem;color:#9ca3af;">=</span>
+        <span style="font-size:.7rem;background:#eff6ff;color:#1e40af;border-radius:4px;padding:2px 7px;border:1px solid #bfdbfe;font-weight:700;">
+          {{ worked_h }}h {{ worked_m|stringformat:"02d" }}m {% trans "total" %}
+        </span>
+        {% if shift_min_secs %}
+        <span style="font-size:.67rem;color:#9ca3af;border-left:1px solid #e5e7eb;padding-left:7px;margin-left:1px;">
+          {% trans "shift" %} {{ shift_min_h }}h {{ shift_min_m|stringformat:"02d" }}m
+        </span>
+        {% endif %}
+      </span>
+    </div>
+    <!-- ── OT Rules info ──────────────────────────────────────────────── -->
+    <div style="margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+      <span style="font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#9ca3af;">{% trans "OT Rules" %}</span>
+      <!-- Regular threshold -->
+      <span style="font-size:.65rem;background:#f1f5f9;color:#475569;border-radius:4px;padding:1px 6px;border:1px solid #e2e8f0;">
+        {% if ot_rule_is_ot_day %}
+          {% trans "Holiday/WO" %} · {% trans "Reg" %} {% trans "N/A" %}
+        {% else %}
+          {% trans "Reg threshold" %} {{ ot_rule_reg_h }}h {{ ot_rule_reg_m|stringformat:"02d" }}m{% if not shift_min_secs %} <em style="color:#94a3b8;">({% trans "default" %})</em>{% endif %}
+        {% endif %}
+      </span>
+      <!-- OT cap -->
+      {% if ot_rule_cap_h is not None %}
+      <span style="font-size:.65rem;background:#fff4ed;color:#92400e;border-radius:4px;padding:1px 6px;border:1px solid #fed7aa;">
+        {% trans "Max OT" %}
+        {% if ot_rule_is_ot_day %}
+          {{ ot_rule_holiday_cap_h }}h {{ ot_rule_holiday_cap_m|stringformat:"02d" }}m
+          <em style="color:#b45309;font-style:normal;">({{ ot_rule_reg_h }}h + {{ ot_rule_cap_h }}h)</em>
+        {% else %}
+          {{ ot_rule_cap_h }}h {{ ot_rule_cap_m|stringformat:"02d" }}m
+        {% endif %}
+      </span>
+      {% else %}
+      <span style="font-size:.65rem;background:#f9fafb;color:#9ca3af;border-radius:4px;padding:1px 6px;border:1px solid #e5e7eb;">{% trans "No OT cap" %}</span>
+      {% endif %}
+      <!-- Min to approve -->
+      {% if ot_rule_min_approve_h is not None %}
+      <span style="font-size:.65rem;background:#f0fdf4;color:#166534;border-radius:4px;padding:1px 6px;border:1px solid #bbf7d0;">
+        {% trans "Approve ≥" %} {{ ot_rule_min_approve_h }}h {{ ot_rule_min_approve_m|stringformat:"02d" }}m
+        {% if ot_rule_auto_approve %}<em style="color:#15803d;font-style:normal;">· {% trans "auto" %}</em>{% endif %}
+      </span>
+      {% endif %}
+    </div>
+  </div>
+  {% else %}
+  <!-- No attendance — show what the day is, plus hours breakdown if regularized/edited -->
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:9px 12px;margin-bottom:12px;">
+    <span style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#6c757d;">{% trans "No Attendance" %}</span>
+    {% if day_status == "paid_leave" %}
+      <span style="background:#dbeafe;color:#1e40af;border-radius:4px;padding:2px 7px;font-size:.72rem;font-weight:600;">{% trans "Paid Leave" %}{% if conflict_label %} — {{ conflict_label }}{% endif %}</span>
+    {% elif day_status == "unpaid_leave" %}
+      <span style="background:#ffedd5;color:#9a3412;border-radius:4px;padding:2px 7px;font-size:.72rem;font-weight:600;">{% trans "Unpaid Leave" %}{% if conflict_label %} — {{ conflict_label }}{% endif %}</span>
+    {% elif day_status == "holiday" %}
+      <span style="background:#ccfbf1;color:#134e4a;border-radius:4px;padding:2px 7px;font-size:.72rem;font-weight:600;">{% trans "Holiday" %}{% if conflict_label %} — {{ conflict_label }}{% endif %}</span>
+    {% elif day_status == "week_off" %}
+      <span style="background:#ede9fe;color:#4c1d95;border-radius:4px;padding:2px 7px;font-size:.72rem;font-weight:600;">{% trans "Week Off" %}</span>
+    {% elif day_status == "weekend" %}
+      <span style="background:#f1f5f9;color:#94a3b8;border-radius:4px;padding:2px 7px;font-size:.72rem;font-weight:600;">{% trans "Weekend" %}</span>
+    {% else %}
+      <span style="background:#fee2e2;color:#991b1b;border-radius:4px;padding:2px 7px;font-size:.72rem;font-weight:600;">{% trans "Absent" %}</span>
+    {% endif %}
+    {% if panel_hours_sec %}
+    <!-- Breakdown pills (from regularization or manual edit — same id so JS updates work) -->
+    <div style="width:100%;display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px;">
+      <span style="font-size:.7rem;color:#6c757d;font-style:italic;">{% trans "based on regularization/edit" %}</span>
+      <span style="color:#d1d5db;font-size:.7rem;">|</span>
+      <span id="crp-att-hours-{{ employee.pk }}-{{ date|date:'Y-m-d' }}"
+            data-eff-min="{{ effective_min_secs }}"
+            data-ot-cutoff="{{ ot_cutoff_sec }}"
+            data-is-ot-day="{% if is_ot_day %}1{% else %}0{% endif %}"
+            style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        <span style="font-size:.7rem;background:#f0fdf4;color:#166534;border-radius:4px;padding:2px 7px;border:1px solid #bbf7d0;font-weight:600;">
+          {% trans "Reg" %} {{ regular_h }}h {{ regular_m|stringformat:"02d" }}m
+        </span>
+        <span style="font-size:.68rem;color:#9ca3af;">+</span>
+        <span style="font-size:.7rem;background:{% if overtime_h or overtime_m %}#ffedd5{% else %}#f9fafb{% endif %};color:{% if overtime_h or overtime_m %}#92400e{% else %}#9ca3af{% endif %};border-radius:4px;padding:2px 7px;border:1px solid {% if overtime_h or overtime_m %}#fed7aa{% else %}#e5e7eb{% endif %};font-weight:600;">
+          {% trans "OT" %} {{ overtime_h }}h {{ overtime_m|stringformat:"02d" }}m
+        </span>
+        {% if excess_h or excess_m %}
+        <span style="font-size:.68rem;color:#9ca3af;">+</span>
+        <span style="font-size:.7rem;background:#fdf4ff;color:#7e22ce;border-radius:4px;padding:2px 7px;border:1px solid #e9d5ff;font-weight:600;"
+              title="{% trans 'Hours beyond the OT cap' %}">
+          &#9663; {{ excess_h }}h {{ excess_m|stringformat:"02d" }}m
+        </span>
+        {% endif %}
+        <span style="font-size:.68rem;color:#9ca3af;">=</span>
+        <span style="font-size:.7rem;background:#eff6ff;color:#1e40af;border-radius:4px;padding:2px 7px;border:1px solid #bfdbfe;font-weight:700;">
+          {{ worked_h }}h {{ worked_m|stringformat:"02d" }}m {% trans "total" %}
+        </span>
+      </span>
+    </div>
+    <!-- OT Rules -->
+    <div style="width:100%;margin-top:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+      <span style="font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#9ca3af;">{% trans "OT Rules" %}</span>
+      <span style="font-size:.65rem;background:#f1f5f9;color:#475569;border-radius:4px;padding:1px 6px;border:1px solid #e2e8f0;">
+        {% if ot_rule_is_ot_day %}{% trans "Holiday/WO · Reg N/A" %}{% else %}{% trans "Reg threshold" %} {{ ot_rule_reg_h }}h {{ ot_rule_reg_m|stringformat:"02d" }}m{% endif %}
+      </span>
+      {% if ot_rule_cap_h is not None %}
+      <span style="font-size:.65rem;background:#fff4ed;color:#92400e;border-radius:4px;padding:1px 6px;border:1px solid #fed7aa;">
+        {% trans "Max OT" %} {% if ot_rule_is_ot_day %}{{ ot_rule_holiday_cap_h }}h {{ ot_rule_holiday_cap_m|stringformat:"02d" }}m ({{ ot_rule_reg_h }}h+{{ ot_rule_cap_h }}h){% else %}{{ ot_rule_cap_h }}h {{ ot_rule_cap_m|stringformat:"02d" }}m{% endif %}
+      </span>
+      {% endif %}
+      {% if ot_rule_min_approve_h is not None %}
+      <span style="font-size:.65rem;background:#f0fdf4;color:#166534;border-radius:4px;padding:1px 6px;border:1px solid #bbf7d0;">
+        {% trans "Approve ≥" %} {{ ot_rule_min_approve_h }}h {{ ot_rule_min_approve_m|stringformat:"02d" }}m{% if ot_rule_auto_approve %} · {% trans "auto" %}{% endif %}
+      </span>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- ── Current override banner ───────────────────────────────────────── -->
+  {% if existing_resolution %}
+  <div data-resolved="1" style="background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:10px 14px;margin-bottom:12px;">
+    <div style="display:flex;align-items:center;gap:6px;font-size:.78rem;color:#374151;flex-wrap:wrap;">
+      <ion-icon name="checkmark-circle-outline" style="font-size:1rem;flex-shrink:0;color:#10b981;"></ion-icon>
+      <span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        {% trans "Changed" %}:
+        <span class="crp-pill" style="background:{{ natural_status_bg }};color:{{ natural_status_fg }};">{{ natural_status_label }}</span>
+        <span style="color:#6c757d;font-weight:700;">&rarr;</span>
+        <span class="crp-pill" style="background:{{ override_status_bg }};color:{{ override_status_fg }};">{{ override_status_label }}</span>
+      </span>
+      <span style="font-size:.68rem;color:#9ca3af;">{% trans "— affects summary counts only" %}</span>
+    </div>
+    {% if existing_obj %}
+    <div style="display:flex;align-items:center;gap:5px;margin-top:5px;font-size:.7rem;color:#6c757d;">
+      <ion-icon name="person-outline" style="font-size:.85rem;flex-shrink:0;"></ion-icon>
+      {% trans "By" %}:
+      <strong>
+        {% if existing_obj.modified_by %}
+          {{ existing_obj.modified_by.employee_get.employee_first_name|default:existing_obj.modified_by.username }}
+          {% if existing_obj.modified_by.employee_get.employee_last_name %}
+            {{ existing_obj.modified_by.employee_get.employee_last_name }}
+          {% endif %}
+        {% else %}—{% endif %}
+      </strong>
+      &nbsp;·&nbsp;
+      <ion-icon name="time-outline" style="font-size:.85rem;flex-shrink:0;"></ion-icon>
+      {{ existing_obj.created_at|date:"d M Y, H:i" }}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- ── Hours for this day ────────────────────────────────────────────────── -->
+  <div style="margin-bottom:14px;border-radius:8px;padding:10px 14px;
+              background:#f8fafc;border:1px solid #e5e7eb;">
+    <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;
+                letter-spacing:.4px;color:#6c757d;margin-bottom:8px;
+                display:flex;align-items:center;gap:6px;">
+      <ion-icon name="time-outline" style="font-size:.9rem;color:#6366f1;"></ion-icon>
+      {% trans "Hours" %}
+    </div>
+    <div id="crp-hours-{{ employee.pk }}-{{ date|date:'Y-m-d' }}">
+      {% include "attendance/monthly_summary/crp_hours.html" with edit_mode=False hours_label=panel_hours_label hours_second=panel_hours_sec is_hours_edited=panel_is_edited daily_obj=panel_daily_obj %}
+    </div>
+  </div>
+
+  <!-- ── Mark as grid ──────────────────────────────────────────────────── -->
+  <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#6c757d;margin-bottom:7px;">
+    {% trans "Mark this day as" %}
+  </div>
+  <div class="crp-mark-grid">
+
+    <button class="crp-mark-btn crp-full"
+            onclick="msCalResolvePost('full_present', '{{ conflict_type }}')"
+            {% if existing_resolution == "full_present" %}disabled{% endif %}>
+      <ion-icon name="checkmark-circle-outline"></ion-icon>
+      {% trans "Full Present" %}
+    </button>
+
+    <button class="crp-mark-btn crp-half"
+            onclick="msCalResolvePost('half_present', '{{ conflict_type }}')"
+            {% if existing_resolution == "half_present" %}disabled{% endif %}>
+      <ion-icon name="remove-circle-outline"></ion-icon>
+      {% trans "Half Day" %}
+    </button>
+
+    {% if panel_hours_sec %}
+    <button class="crp-mark-btn crp-partial"
+            onclick="msCalResolvePost('partial_hours', '{{ conflict_type }}')"
+            {% if existing_resolution == "partial_hours" %}disabled{% endif %}>
+      <ion-icon name="time-outline"></ion-icon>
+      {% trans "Partial Hours" %}
+      <span style="font-size:.65rem;opacity:.8;">({{ panel_hours_label }})</span>
+    </button>
+    {% endif %}
+
+    <button class="crp-mark-btn crp-absent"
+            onclick="msCalResolvePost('absent', '{{ conflict_type }}')"
+            {% if existing_resolution == "absent" %}disabled{% endif %}>
+      <ion-icon name="close-circle-outline"></ion-icon>
+      {% trans "Absent" %}
+    </button>
+
+    <button class="crp-mark-btn crp-paid"
+            onclick="msCalResolvePost('paid_leave', '{{ conflict_type }}')"
+            {% if existing_resolution == "paid_leave" %}disabled{% endif %}>
+      <ion-icon name="calendar-outline"></ion-icon>
+      {% trans "Paid Leave" %}
+    </button>
+
+    <button class="crp-mark-btn crp-unpaid"
+            onclick="msCalResolvePost('unpaid_leave', '{{ conflict_type }}')"
+            {% if existing_resolution == "unpaid_leave" %}disabled{% endif %}>
+      <ion-icon name="calendar-clear-outline"></ion-icon>
+      {% trans "Unpaid Leave" %}
+    </button>
+
+    <button class="crp-mark-btn crp-hol"
+            onclick="msCalResolvePost('holiday', '{{ conflict_type }}')"
+            {% if existing_resolution == "holiday" %}disabled{% endif %}>
+      <ion-icon name="sunny-outline"></ion-icon>
+      {% trans "Holiday" %}
+    </button>
+
+    <button class="crp-mark-btn crp-woff"
+            onclick="msCalResolvePost('week_off', '{{ conflict_type }}')"
+            {% if existing_resolution == "week_off" %}disabled{% endif %}>
+      <ion-icon name="moon-outline"></ion-icon>
+      {% trans "Week Off" %}
+    </button>
+
+  </div>
+
+  <!-- ── Clear override ────────────────────────────────────────────────── -->
+  {% if existing_resolution %}
+  <div id="crp-clear-wrap" style="display:flex;align-items:center;gap:8px;">
+    <!-- Initial button -->
+    <button id="crp-clear-btn"
+            onclick="document.getElementById('crp-clear-wrap').style.display='none';
+                     document.getElementById('crp-clear-confirm').style.display='flex';"
+            style="background:#f9fafb;color:#6b7280;border:1px solid #d1d5db;border-radius:6px;
+                   padding:6px 14px;font-size:.78rem;font-weight:600;cursor:pointer;
+                   display:flex;align-items:center;gap:5px;">
+      <ion-icon name="refresh-outline" style="font-size:.9rem;"></ion-icon>
+      {% trans "Clear Override (restore computed)" %}
+    </button>
+    <span style="font-size:.68rem;color:#9ca3af;font-style:italic;">{% trans "Reverts to automatically calculated status" %}</span>
+  </div>
+  <!-- Inline confirmation (shown after button click) -->
+  <div id="crp-clear-confirm"
+       style="display:none;align-items:center;gap:8px;
+              background:#fff4ed;border:1px solid #fb923c;border-radius:8px;padding:8px 12px;">
+    <ion-icon name="warning-outline" style="color:#e85d04;font-size:1.1rem;flex-shrink:0;"></ion-icon>
+    <span style="font-size:.8rem;font-weight:600;color:#92400e;flex:1;">
+      {% trans "Remove this override and revert to computed status?" %}
+    </span>
+    <button onclick="msCalResolvePost('clear', '{{ conflict_type }}')"
+            style="background:#ef4444;color:#fff;border:none;border-radius:6px;
+                   padding:5px 13px;font-size:.78rem;font-weight:600;cursor:pointer;">
+      {% trans "Yes, clear" %}
+    </button>
+    <button onclick="document.getElementById('crp-clear-confirm').style.display='none';
+                     document.getElementById('crp-clear-wrap').style.display='flex';"
+            style="background:#f3f4f6;color:#374151;border:1px solid #d1d5db;border-radius:6px;
+                   padding:5px 13px;font-size:.78rem;font-weight:600;cursor:pointer;">
+      {% trans "Cancel" %}
+    </button>
+  </div>
+  {% endif %}
+
+  <!-- ── History ──────────────────────────────────────────────────────────── -->
+  {% if panel_daily_obj and panel_daily_obj.is_manually_edited or existing_resolution %}
+  <div style="margin-top:14px;border-top:1px solid #f0f0f0;padding-top:10px;">
+    <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;
+                color:#9ca3af;margin-bottom:6px;display:flex;align-items:center;gap:5px;">
+      <ion-icon name="time-outline" style="font-size:.8rem;"></ion-icon>
+      {% trans "History" %}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      {% if panel_daily_obj and panel_daily_obj.is_manually_edited %}
+      <div style="display:flex;align-items:flex-start;gap:7px;font-size:.74rem;color:#374151;">
+        <ion-icon name="pencil-outline" style="font-size:.85rem;color:#6366f1;flex-shrink:0;margin-top:1px;"></ion-icon>
+        <span>
+          {% trans "Hours set to" %} <strong>{{ panel_hours_label }}</strong>
+          {% if panel_daily_obj.modified_by %}
+            {% trans "by" %} <strong>
+              {{ panel_daily_obj.modified_by.employee_get.employee_first_name|default:panel_daily_obj.modified_by.username }}
+              {% if panel_daily_obj.modified_by.employee_get.employee_last_name %}{{ panel_daily_obj.modified_by.employee_get.employee_last_name }}{% endif %}
+            </strong>
+          {% endif %}
+          <span style="color:#9ca3af;">· {{ panel_daily_obj.modified_at|date:"d M Y, H:i" }}</span>
+        </span>
+      </div>
+      {% endif %}
+      {% if existing_resolution and existing_obj %}
+      <div style="display:flex;align-items:flex-start;gap:7px;font-size:.74rem;color:#374151;">
+        <ion-icon name="checkmark-circle-outline" style="font-size:.85rem;color:#10b981;flex-shrink:0;margin-top:1px;"></ion-icon>
+        <span>
+          {% trans "Regularized as" %}
+          <strong>
+            {% if existing_resolution == "full_present" %}{% trans "Full Present" %}
+            {% elif existing_resolution == "half_present" %}{% trans "Half Day" %}
+            {% elif existing_resolution == "absent" %}{% trans "Absent" %}
+            {% elif existing_resolution == "paid_leave" %}{% trans "Paid Leave" %}
+            {% elif existing_resolution == "unpaid_leave" %}{% trans "Unpaid Leave" %}
+            {% elif existing_resolution == "holiday" %}{% trans "Holiday" %}
+            {% elif existing_resolution == "week_off" %}{% trans "Week Off" %}
+            {% else %}{{ existing_resolution }}{% endif %}
+          </strong>
+          {% if existing_obj.modified_by %}
+            {% trans "by" %} <strong>
+              {{ existing_obj.modified_by.employee_get.employee_first_name|default:existing_obj.modified_by.username }}
+              {% if existing_obj.modified_by.employee_get.employee_last_name %}{{ existing_obj.modified_by.employee_get.employee_last_name }}{% endif %}
+            </strong>
+          {% endif %}
+          <span style="color:#9ca3af;">· {{ existing_obj.created_at|date:"d M Y, H:i" }}</span>
+        </span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>

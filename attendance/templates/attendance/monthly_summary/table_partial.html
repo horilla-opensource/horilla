@@ -1,0 +1,1473 @@
+{% load i18n %}
+{% load static %}
+
+<style>
+  .ms-stat-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+  }
+  .ms-stat-card {
+    /* flex-grow disabled — with flex-wrap, a card left alone on a wrapped
+       row (e.g. the conditional Conflicts card) would otherwise stretch to
+       fill the entire row width instead of staying the same size as its
+       siblings. */
+    flex: 0 1 160px;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    padding: 14px 18px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  body.dark .ms-stat-card { background: #1a1a1a; border-color: #444444; }
+  .ms-working-days-val { color: #495057; }
+  body.dark .ms-working-days-val { color: #dfdfdf; }
+  body.dark .ms-stat-card__label { color: #bbbbbb; }
+  .ms-stat-card__label {
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #6c757d;
+    margin-bottom: 6px;
+  }
+  .ms-stat-card__value { font-size: 1.6rem; font-weight: 700; margin: 0; }
+
+  /* â"€â"€ fixed-table overrides scoped to our table â"€â"€ */
+  .ms-table-wrap {
+    position: relative;
+  }
+  .ms-table-wrap .table-wrapper {
+    max-height: 60vh;
+    overflow: auto;
+    background: #fff;
+    border: 1px solid hsl(213, 22%, 88%);
+    border-radius: 10px;
+    width: 100%;
+  }
+  /* Column sizing mirrors the real Employee list table exactly
+     (horilla_theme/templates/generic/horilla_list_table.html): natural
+     auto layout with a per-column MIN-width floor (not a fixed width),
+     so short numeric columns don't get force-stretched to fill 100%
+     and long headers don't need to wrap. */
+  .ms-table-wrap .fixed-table {
+    table-layout: auto;
+    width: 100%;
+  }
+  /* Sticky header */
+  .ms-table-wrap .fixed-table thead tr {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  .ms-table-wrap .fixed-table th {
+    min-width: 85px;
+    white-space: nowrap;
+    font-size: .875rem;
+    padding: 6px;
+    height: auto !important;
+    background-color: #fff !important;
+    border-bottom: 2px solid hsl(213, 22%, 88%) !important;
+  }
+  /* Room for the column-toggle button overlaid at the header row's
+     top-right corner (see .ms-table-wrap's absolutely-positioned toggle
+     button below), so it doesn't sit on top of the last column's label. */
+  .ms-table-wrap .fixed-table thead th:last-child {
+    padding-right: 56px;
+  }
+  body.dark .ms-table-wrap .fixed-table thead tr th {
+    background-color: #1a1a1a !important;
+  }
+  .ms-table-wrap .fixed-table td {
+    min-width: 85px;
+    white-space: nowrap;
+    font-size: .875rem;
+    padding: 4px;
+    height: 30px !important;
+    background-color: #fff;
+    /* Same muted text color the real Employee list uses on every cell
+       (horilla_list_table.html's text-[#666], including its own name
+       cell) — was previously unset here, inheriting plain black. */
+    color: #666;
+    border-bottom: 1px solid hsl(213, 22%, 93%);
+  }
+  /* Constrain employee name so it doesn't blow out the column */
+  .ms-table-wrap .fixed-table td:nth-child(2) .oh-profile__name {
+    font-size: .875rem;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  /* Row hover */
+  .ms-table-wrap .fixed-table tbody tr:hover td {
+    background-color: hsl(0, 0%, 96%);
+    cursor: pointer;
+  }
+  /* Checkbox column (1st) — frozen while the rest of the table scrolls.
+     30px matches the Employee table's own checkbox column width exactly.
+     Padding must stay at 4px each side (not 8px) because box-sizing is
+     border-box site-wide (tailwind.css preflight) -- width:30px already
+     INCLUDES padding, so 8px+8px padding + the 16px checkbox itself (24px
+     needed at 4px) would overflow a 30px box and bleed into the next
+     sticky column while scrolling. */
+  .ms-table-wrap .fixed-table th:first-child,
+  .ms-table-wrap .fixed-table td:first-child {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 2;
+    width: 30px !important;
+    min-width: 30px !important;
+    padding: 0 4px !important;
+    text-align: center !important;
+    background-color: #fff !important;
+  }
+  /* Employee column (2nd) — frozen right after the checkbox column.
+     `left` must match the checkbox column's actual width (30px) above,
+     or the two overlap and clip the first character of each name. */
+  .ms-table-wrap .fixed-table th:nth-child(2),
+  .ms-table-wrap .fixed-table td:nth-child(2) {
+    position: sticky !important;
+    left: 30px !important;
+    z-index: 2;
+    width: 210px !important;
+    min-width: 210px !important;
+    background-color: #fff !important;
+    border-right: none !important;
+    box-shadow: 2px 0 4px rgba(0,0,0,.06);
+  }
+  .ms-table-wrap .fixed-table thead th:first-child,
+  .ms-table-wrap .fixed-table thead th:nth-child(2) {
+    z-index: 6;
+  }
+  /* Badge ID column (3rd) — de-sticky, otherwise uses the general min-width */
+  .ms-table-wrap .fixed-table th:nth-child(3),
+  .ms-table-wrap .fixed-table td:nth-child(3) {
+    position: static !important;
+    left: auto !important;
+    background-color: #fff !important;
+    border-right: none !important;
+  }
+  /* Dark mode */
+  body.dark .ms-table-wrap .table-wrapper { background: #1a1a1a; border-color: #444444; }
+  body.dark .ms-table-wrap .fixed-table td { background-color: #1a1a1a !important; color: #dfdfdf; border-bottom-color: #444444; }
+  body.dark .ms-table-wrap .fixed-table td:first-child,
+  body.dark .ms-table-wrap .fixed-table td:nth-child(2),
+  body.dark .ms-table-wrap .fixed-table td:nth-child(3) { background-color: #1a1a1a !important; }
+  body.dark .ms-table-wrap .fixed-table thead th { background-color: #1a1a1a !important; color: #dfdfdf; border-bottom-color: #444444; }
+  body.dark .ms-table-wrap .fixed-table tbody tr:hover td { background-color: #2e2e2e !important; }
+
+  /* Row-checked highlight — .highlight-selected is the same class
+     highlightRow() (static/index/index.js) uses on every Horilla list
+     table. Its own rule (index.html) tints it with the company's theme
+     color via color-mix(), but every <td> here has its own opaque
+     background-color for the sticky columns, which paints over it — so
+     the same theme-driven tint needs to be applied per-cell instead.
+     var(--primary-600, ...) is the CSS custom property index.html exposes
+     on :root from the active company theme, so this stays in sync with
+     it instead of hardcoding a color. */
+  .ms-table-wrap .fixed-table tbody tr.highlight-selected td {
+    background-color: color-mix(in srgb, var(--primary-600, #E54F38) 12%, transparent) !important;
+  }
+  /* The two STICKY columns (checkbox + Employee) must stay fully opaque —
+     a semi-transparent background on a `position: sticky` cell lets the
+     non-sticky columns scrolled underneath it show through, which reads as
+     the sticky column "overlapping" the rest of the row while scrolling.
+     Mixing into the row's own opaque background (white / #1a1a1a) instead
+     of transparent gives the same visible tint, pre-composited and opaque. */
+  .ms-table-wrap .fixed-table tbody tr.highlight-selected td:first-child,
+  .ms-table-wrap .fixed-table tbody tr.highlight-selected td:nth-child(2) {
+    background-color: color-mix(in srgb, var(--primary-600, #E54F38) 12%, white) !important;
+  }
+  body.dark .ms-table-wrap .fixed-table tbody tr.highlight-selected td:first-child,
+  body.dark .ms-table-wrap .fixed-table tbody tr.highlight-selected td:nth-child(2) {
+    background-color: color-mix(in srgb, var(--primary-600, #E54F38) 12%, #1a1a1a) !important;
+  }
+
+  /* Clickable metric cells */
+  .ms-metric-cell {
+    cursor: pointer;
+    transition: opacity .15s;
+    position: relative;
+  }
+  .ms-metric-cell:hover { opacity: .75; }
+
+  /* Floating popover — JS sets position:fixed and left/top at runtime */
+  #ms-pop {
+    z-index: 99999;
+    background: #fff;
+    border: 1px solid hsl(213, 22%, 88%);
+    border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.14);
+    min-width: 240px;
+    max-width: 380px;
+    max-height: 460px;
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+  }
+  body.dark #ms-pop { background: #242424; border-color: #444444; }
+  .ms-pop-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    padding: 10px 14px 8px;
+    border-bottom: 1px solid hsl(213, 22%, 93%);
+    flex-shrink: 0;
+    background: #fff;
+    border-radius: 10px 10px 0 0;
+  }
+  body.dark .ms-pop-header { background: #242424; border-bottom-color: #444444; color: #dfdfdf; }
+  /* Summary strips (conflict metric) — pinned above the scroll area */
+  .ms-pop-strips { flex-shrink: 0; }
+  /* Only the body rows scroll */
+  .ms-pop-body { padding: 6px 0 8px; overflow-y: auto; flex: 1; }
+  .ms-pop-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 14px;
+    border-bottom: 1px solid hsl(213, 22%, 96%);
+    font-size: .8rem;
+  }
+  body.dark .ms-pop-row { border-bottom-color: #444444; }
+  .ms-pop-row:last-child { border-bottom: none; }
+  .ms-pop-date { color: #343a40; font-weight: 500; }
+  body.dark .ms-pop-date { color: #dfdfdf; }
+  .ms-pop-badge { font-size: .74rem; color: #6c757d; white-space: nowrap; margin-left: 10px; }
+  .ms-pop-empty { padding: 10px 14px; color: #6c757d; font-size: .8rem; margin: 0; }
+  .ms-pop-reg-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-left: 6px;
+    font-size: .62rem;
+    font-weight: 700;
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+    border-radius: 10px;
+    padding: 1px 6px;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  body.dark .ms-pop-reg-badge { background: #064e3b; color: #6ee7b7; border-color: #065f46; }
+</style>
+
+<!-- Stat cards -->
+<div class="ms-stat-row">
+  <div class="ms-stat-card" style="border-top: 3px solid #6c757d;">
+    <div class="ms-stat-card__label">{% trans "Employees" %}</div>
+    <p class="ms-stat-card__value" style="color:#6c757d;">{{ summary_totals.total_employees }}</p>
+  </div>
+  <div class="ms-stat-card" style="border-top: 3px solid #28a745;">
+    <div class="ms-stat-card__label">{% trans "Total Present" %}</div>
+    <p class="ms-stat-card__value" style="color:#28a745;">{{ summary_totals.total_present|floatformat:"-1" }}</p>
+  </div>
+  <div class="ms-stat-card" style="border-top: 3px solid #dc3545;">
+    <div class="ms-stat-card__label">{% trans "Total Absent / Missing Out" %}</div>
+    <p class="ms-stat-card__value" style="color:#dc3545;">{{ summary_totals.total_absent|floatformat:"-1" }}</p>
+  </div>
+  <div class="ms-stat-card" style="border-top: 3px solid #0d6efd;">
+    <div class="ms-stat-card__label">{% trans "Paid Leave" %}</div>
+    <p class="ms-stat-card__value" style="color:#0d6efd;">{{ summary_totals.total_paid_leave }}</p>
+  </div>
+  <div class="ms-stat-card" style="border-top: 3px solid #fd7e14;">
+    <div class="ms-stat-card__label">{% trans "Unpaid Leave" %}</div>
+    <p class="ms-stat-card__value" style="color:#fd7e14;">{{ summary_totals.total_unpaid_leave }}</p>
+  </div>
+  <div class="ms-stat-card" style="border-top: 3px solid #495057;">
+    <div class="ms-stat-card__label">{% trans "Working Days" %}</div>
+    <p class="ms-stat-card__value ms-working-days-val">{{ total_working }}</p>
+  </div>
+  <div class="ms-stat-card" style="border-top: 3px solid #6610f2;">
+    <div class="ms-stat-card__label">{% trans "Week Off" %}</div>
+    <p class="ms-stat-card__value" style="color:#6610f2;">{{ summary_totals.week_off }}</p>
+  </div>
+  <div class="ms-stat-card" style="border-top: 3px solid #20c997;">
+    <div class="ms-stat-card__label">{% trans "Holidays" %}</div>
+    <p class="ms-stat-card__value" style="color:#20c997;">{{ summary_totals.holiday }}</p>
+  </div>
+  {% if summary_totals.total_conflicts %}
+  <div class="ms-stat-card" style="border-top: 3px solid #e85d04;">
+    <div class="ms-stat-card__label">{% trans "Conflicts" %}</div>
+    <p class="ms-stat-card__value" style="color:#e85d04;">{{ summary_totals.total_conflicts }}</p>
+  </div>
+  {% endif %}
+</div>
+
+{% if rows %}
+<!-- Storage div for the selection state — same mechanism the real Employee
+     list uses (addToSelectedId/removeId/selectSelected/reloadSelectedCount
+     in static/index/index.js read and write its data-ids attribute, and
+     mirror it into localStorage so the selection survives pagination and
+     page reloads, exactly like the Employee list). -->
+<div id="selectedInstances" data-ids="[]"></div>
+
+<!-- Bulk selection toolbar (above the table) — identical markup/behavior to
+     the Employee list's Select/Unselect/Update buttons in
+     generic/quick_actions.html, just pointed at our own table's view id. -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-2" style="gap:.5rem;">
+  <div class="flex flex-nowrap gap-1 items-center" style="display:flex;">
+    <button
+        class="d-none quick-bulk-action px-4 py-2 bg-transparent border border-secondary-700 text-secondary-700 rounded-md text-xs hover:bg-secondary-700 hover:text-white transition duration-300"
+        id="unselect_msAttendance"
+        onclick="clearSelection('selectedInstances');
+selectSelected('#msAttendanceTable','selectedInstances');
+reloadSelectedCount($('#count_msAttendance'),'selectedInstances');
+reloadSelectedCount($('.count_msAttendance'),'selectedInstances');
+$('#msAttendanceTable .list-table-row').prop('checked',false);
+$('#msAttendanceTable .highlight-selected').removeClass('highlight-selected');
+$('#msAttendanceTable .bulk-list-table-row').prop('checked',false);">
+      <span class="label">{% trans 'Unselect' %}</span>
+      (<span id="count_msAttendance">0</span>)
+    </button>
+    <button
+        id="select_msAttendance"
+        data-total-count="{{ total_employee_count|default:0 }}"
+        class="quick-bulk-action px-4 py-2 bg-transparent border border-primary-600 text-primary-600 rounded-md text-xs hover:bg-primary-600 hover:text-white transition duration-300"
+        onclick="addToSelectedId({{ select_all_ids|default:'[]'|safe }},'selectedInstances');
+selectSelected('#msAttendanceTable','selectedInstances');
+reloadSelectedCount($('#count_msAttendance'),'selectedInstances');
+reloadSelectedCount($('.count_msAttendance'),'selectedInstances');">
+      <span class="label">{% trans 'Select' %}</span>
+      (<span>{{ total_employee_count|default:0 }}</span>)
+    </button>
+    <button
+        id="bulk_udate_msAttendance"
+        class="d-none quick-bulk-action px-4 py-2 bg-transparent border border-success text-success rounded-md text-xs hover:bg-success hover:text-white transition duration-300"
+        onclick="msOpenUpdateModal()">
+      <span class="label">{% trans 'Update' %}</span>
+      (<span class="count_msAttendance">0</span>)
+    </button>
+  </div>
+
+  <div class="flex flex-nowrap items-center gap-3" style="display:flex;flex-wrap:wrap;">
+    <!-- Pagination — identical markup/classes to generic/quick_actions.html -->
+    {% if rows.has_previous or rows.has_next %}
+      <div class="inline-flex items-center gap-0.5 bg-white border border-[#e6e6e6] rounded-md p-1 flex-shrink-0">
+        <button
+            class="w-6 h-6 flex items-center justify-center rounded text-[10px] transition duration-300 {% if rows.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+            {% if rows.has_previous %}
+            hx-target="#summary-table-container"
+            hx-swap="innerHTML"
+            hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&page=1"
+            {% endif %}
+        >
+          <i class="fa-solid fa-angles-left"></i>
+        </button>
+        <button
+            class="w-6 h-6 flex items-center justify-center rounded text-[10px] transition duration-300 {% if rows.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+            {% if rows.has_previous %}
+            hx-target="#summary-table-container"
+            hx-swap="innerHTML"
+            hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&page={{ rows.previous_page_number }}"
+            {% endif %}
+        >
+          <i class="fa-solid fa-angle-left"></i>
+        </button>
+        <div class="flex items-center gap-1 px-1 text-xs text-[#666]">
+          <input
+              type="number"
+              name="page"
+              min="1"
+              max="{{ rows.paginator.num_pages }}"
+              value="{{ rows.number }}"
+              title="{% trans 'Enter a page number and press Enter' %}"
+              class="w-10 h-6 text-center text-xs border border-[#e6e6e6] rounded outline-none focus:border-primary-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              hx-target="#summary-table-container"
+              hx-swap="innerHTML"
+              hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}"
+              hx-trigger="keyup[keyCode==13] changed, blur changed"
+              onclick="this.select()"
+          >
+          <span>/ {{ rows.paginator.num_pages }}</span>
+        </div>
+        <button
+            class="w-6 h-6 flex items-center justify-center rounded text-[10px] transition duration-300 {% if rows.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+            {% if rows.has_next %}
+            hx-target="#summary-table-container"
+            hx-swap="innerHTML"
+            hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&page={{ rows.next_page_number }}"
+            {% endif %}
+        >
+          <i class="fa-solid fa-angle-right"></i>
+        </button>
+        <button
+            class="w-6 h-6 flex items-center justify-center rounded text-[10px] transition duration-300 {% if rows.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+            {% if rows.has_next %}
+            hx-target="#summary-table-container"
+            hx-swap="innerHTML"
+            hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&page={{ rows.paginator.num_pages }}"
+            {% endif %}
+        >
+          <i class="fa-solid fa-angles-right"></i>
+        </button>
+      </div>
+    {% endif %}
+
+    <p style="font-size:.82rem;color:#6c757d;margin:0;white-space:nowrap;">
+      <ion-icon name="calendar-outline"></ion-icon>
+      {% trans "Period" %}: <strong>{{ from_date }}</strong> &mdash; <strong>{{ to_date }}</strong>
+      &nbsp;|&nbsp; {% trans "Working days" %}: <strong>{{ total_working }}</strong>
+    </p>
+  </div>
+</div>
+
+<!-- Bulk update modal — opened by the Update button above -->
+<div class="oh-modal" id="msUpdateModal">
+  <div class="oh-modal__dialog" style="max-width:640px;">
+    <div class="oh-modal__dialog-header" style="display:flex;justify-content:space-between;align-items:center;">
+      <h5 style="margin:0;">{% trans "Update Attendance" %}</h5>
+      <button type="button" onclick="document.getElementById('msUpdateModal').classList.remove('oh-modal--show')"
+              style="background:none;border:none;cursor:pointer;font-size:1.4rem;line-height:1;color:#6c757d;">
+        &times;
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body">
+      <p style="font-size:.85rem;color:#6c757d;margin-bottom:14px;">
+        <span id="ms-modal-selected-count">0</span> {% trans "employee(s) selected" %}
+      </p>
+
+      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+        <div style="flex:1 1 160px;">
+          <label class="oh-label">{% trans "From" %}</label>
+          <input type="date" id="ms-bulk-from" value="{% now 'Y-m-d' %}" class="oh-input w-100">
+        </div>
+        <div style="flex:1 1 160px;">
+          <label class="oh-label">{% trans "To" %}</label>
+          <input type="date" id="ms-bulk-to" value="{% now 'Y-m-d' %}" class="oh-input w-100">
+        </div>
+      </div>
+
+      <label class="oh-label" style="display:block;margin-bottom:8px;">{% trans "Mark as" %}</label>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        <button class="ms-bulk-btn" onclick="msBulkApply('full_present')"
+                style="background:#d1fae5;color:#065f46;border:1.5px solid #6ee7b7;border-radius:7px;
+                       padding:6px 12px;font-size:.78rem;font-weight:600;cursor:pointer;
+                       display:flex;align-items:center;gap:4px;white-space:nowrap;">
+          <ion-icon name="checkmark-circle-outline"></ion-icon> {% trans "Full Present" %}
+        </button>
+        <button class="ms-bulk-btn" onclick="msBulkApply('half_present')"
+                style="background:#fef9c3;color:#854d0e;border:1.5px solid #fb923c;border-radius:7px;
+                       padding:6px 12px;font-size:.78rem;font-weight:600;cursor:pointer;
+                       display:flex;align-items:center;gap:4px;white-space:nowrap;">
+          <ion-icon name="remove-circle-outline"></ion-icon> {% trans "Half Day" %}
+        </button>
+        <button class="ms-bulk-btn" onclick="msBulkApply('absent')"
+                style="background:#fee2e2;color:#991b1b;border:1.5px solid #fca5a5;border-radius:7px;
+                       padding:6px 12px;font-size:.78rem;font-weight:600;cursor:pointer;
+                       display:flex;align-items:center;gap:4px;white-space:nowrap;">
+          <ion-icon name="close-circle-outline"></ion-icon> {% trans "Absent" %}
+        </button>
+        <button class="ms-bulk-btn" onclick="msBulkApply('paid_leave')"
+                style="background:#dbeafe;color:#1e40af;border:1.5px solid #93c5fd;border-radius:7px;
+                       padding:6px 12px;font-size:.78rem;font-weight:600;cursor:pointer;
+                       display:flex;align-items:center;gap:4px;white-space:nowrap;">
+          <ion-icon name="calendar-outline"></ion-icon> {% trans "Paid Leave" %}
+        </button>
+        <button class="ms-bulk-btn" onclick="msBulkApply('unpaid_leave')"
+                style="background:#ffedd5;color:#9a3412;border:1.5px solid #fdba74;border-radius:7px;
+                       padding:6px 12px;font-size:.78rem;font-weight:600;cursor:pointer;
+                       display:flex;align-items:center;gap:4px;white-space:nowrap;">
+          <ion-icon name="calendar-clear-outline"></ion-icon> {% trans "Unpaid Leave" %}
+        </button>
+        <button class="ms-bulk-btn" onclick="msBulkApply('holiday')"
+                style="background:#ccfbf1;color:#134e4a;border:1.5px solid #5eead4;border-radius:7px;
+                       padding:6px 12px;font-size:.78rem;font-weight:600;cursor:pointer;
+                       display:flex;align-items:center;gap:4px;white-space:nowrap;">
+          <ion-icon name="sunny-outline"></ion-icon> {% trans "Holiday" %}
+        </button>
+        <button class="ms-bulk-btn" onclick="msBulkApply('week_off')"
+                style="background:#ede9fe;color:#4c1d95;border:1.5px solid #c4b5fd;border-radius:7px;
+                       padding:6px 12px;font-size:.78rem;font-weight:600;cursor:pointer;
+                       display:flex;align-items:center;gap:4px;white-space:nowrap;">
+          <ion-icon name="moon-outline"></ion-icon> {% trans "Week Off" %}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Table — Horilla fixed-table pattern (horilla_list_table.html) -->
+<div class="ms-table-wrap" id="msAttendanceTable">
+  <!-- Column visibility toggle — positioned over the header row's right
+       edge, same spot the real Employee list's toggle occupies inside its
+       sticky Actions column header. Our table has no Actions column, so
+       this overlays the header via absolute positioning against
+       .ms-table-wrap (position:relative) rather than living inside an
+       actual <th> — same visual result without adding an empty column to
+       every row. Reuses the site-wide .oh-column-config CSS
+       (global.css / v1_styles.css) that backs generic/as_list.html's
+       "Columns" panel, so it looks identical to the Employee list's.
+       Behavior is a plain click-toggle + localStorage instead of
+       Alpine.js/backend-persisted (ToggleColumn/ColumnOrder models),
+       since this is a bespoke table, not a HorillaListView. Drag-to-
+       reorder is intentionally not implemented, so no drag handles or
+       "drag to reorder" hint are shown — only show/hide. -->
+  <div style="position:absolute; top:6px; right:24px; z-index:7;">
+    <button type="button" id="ms-columns-toggle"
+            class="oh-sticky-dropdown_btn is-column-config-trigger"
+            title="{% trans 'Customize columns' %}"
+            aria-label="{% trans 'Customize columns' %}"
+            aria-haspopup="true" aria-expanded="false">
+      <ion-icon name="options-outline"></ion-icon>
+    </button>
+    <div id="ms-columns-panel" class="oh-sticky-table_dropdown"
+         style="display:none; position:absolute; right:0; top:32px; z-index:20;">
+      <div class="oh-column-config">
+        <div class="oh-column-config__header">
+          <div class="oh-column-config__title-wrap">
+            <span class="oh-column-config__title">{% trans "Columns" %}</span>
+            <span class="oh-column-config__subtitle">{% trans "Show or hide columns" %}</span>
+          </div>
+          <span class="oh-column-config__count" id="ms-columns-count" aria-live="polite"></span>
+        </div>
+        <div class="oh-column-config__search">
+          <ion-icon name="search-outline"></ion-icon>
+          <input type="search" class="oh-column-config__search-input" id="ms-columns-search"
+                 placeholder="{% trans 'Search columns…' %}" autocomplete="off">
+        </div>
+        <label class="oh-column-config__select-all">
+          <span class="oh-column-config__label">{% trans "Select All" %}</span>
+          <span class="oh-table__checkbox">
+            <input type="checkbox" class="custom-checkbox" id="ms-columns-select-all">
+          </span>
+        </label>
+        <ul class="oh-dropdown__items oh-column-config__list" id="ms-columns-list">
+          <li class="oh-column-config__item is-fixed" data-label="{% trans 'Employee' %}">
+            <span class="oh-column-config__handle" aria-hidden="true">
+              <ion-icon name="lock-closed-outline" title="{% trans 'Primary column' %}"></ion-icon>
+            </span>
+            <span class="oh-column-config__label">{% trans "Employee" %}</span>
+            <span class="oh-table__checkbox">
+              <input type="checkbox" class="custom-checkbox" checked disabled
+                     title="{% trans 'Primary column is always visible' %}">
+            </span>
+          </li>
+          <li class="oh-column-config__item is-draggable" data-label="{% trans 'Badge ID' %}">
+            <span class="oh-column-config__handle" aria-hidden="true"><ion-icon name="reorder-two-outline"></ion-icon></span>
+            <span class="oh-column-config__label">{% trans "Badge ID" %}</span>
+            <span class="oh-table__checkbox"><input type="checkbox" class="custom-checkbox ms-col-toggle" data-col="badge_id" checked></span>
+          </li>
+          <li class="oh-column-config__item is-draggable" data-label="{% trans 'Department' %}">
+            <span class="oh-column-config__handle" aria-hidden="true"><ion-icon name="reorder-two-outline"></ion-icon></span>
+            <span class="oh-column-config__label">{% trans "Department" %}</span>
+            <span class="oh-table__checkbox"><input type="checkbox" class="custom-checkbox ms-col-toggle" data-col="department" checked></span>
+          </li>
+          <li class="oh-column-config__item is-draggable" data-label="{% trans 'Present' %}">
+            <span class="oh-column-config__handle" aria-hidden="true"><ion-icon name="reorder-two-outline"></ion-icon></span>
+            <span class="oh-column-config__label">{% trans "Present" %}</span>
+            <span class="oh-table__checkbox"><input type="checkbox" class="custom-checkbox ms-col-toggle" data-col="present" checked></span>
+          </li>
+          <li class="oh-column-config__item is-draggable" data-label="{% trans 'Absent' %}">
+            <span class="oh-column-config__handle" aria-hidden="true"><ion-icon name="reorder-two-outline"></ion-icon></span>
+            <span class="oh-column-config__label">{% trans "Absent" %}</span>
+            <span class="oh-table__checkbox"><input type="checkbox" class="custom-checkbox ms-col-toggle" data-col="absent" checked></span>
+          </li>
+          <li class="oh-column-config__item is-draggable" data-label="{% trans 'Paid Leave' %}">
+            <span class="oh-column-config__handle" aria-hidden="true"><ion-icon name="reorder-two-outline"></ion-icon></span>
+            <span class="oh-column-config__label">{% trans "Paid Leave" %}</span>
+            <span class="oh-table__checkbox"><input type="checkbox" class="custom-checkbox ms-col-toggle" data-col="paid_leave" checked></span>
+          </li>
+          <li class="oh-column-config__item is-draggable" data-label="{% trans 'Unpaid Leave' %}">
+            <span class="oh-column-config__handle" aria-hidden="true"><ion-icon name="reorder-two-outline"></ion-icon></span>
+            <span class="oh-column-config__label">{% trans "Unpaid Leave" %}</span>
+            <span class="oh-table__checkbox"><input type="checkbox" class="custom-checkbox ms-col-toggle" data-col="unpaid_leave" checked></span>
+          </li>
+          <li class="oh-column-config__item is-draggable" data-label="{% trans 'Working Days' %}">
+            <span class="oh-column-config__handle" aria-hidden="true"><ion-icon name="reorder-two-outline"></ion-icon></span>
+            <span class="oh-column-config__label">{% trans "Working Days" %}</span>
+            <span class="oh-table__checkbox"><input type="checkbox" class="custom-checkbox ms-col-toggle" data-col="working_days" checked></span>
+          </li>
+          <li class="oh-column-config__item is-draggable" data-label="{% trans 'Week Off' %}">
+            <span class="oh-column-config__handle" aria-hidden="true"><ion-icon name="reorder-two-outline"></ion-icon></span>
+            <span class="oh-column-config__label">{% trans "Week Off" %}</span>
+            <span class="oh-table__checkbox"><input type="checkbox" class="custom-checkbox ms-col-toggle" data-col="week_off" checked></span>
+          </li>
+          <li class="oh-column-config__item is-draggable" data-label="{% trans 'Holiday' %}">
+            <span class="oh-column-config__handle" aria-hidden="true"><ion-icon name="reorder-two-outline"></ion-icon></span>
+            <span class="oh-column-config__label">{% trans "Holiday" %}</span>
+            <span class="oh-table__checkbox"><input type="checkbox" class="custom-checkbox ms-col-toggle" data-col="holiday" checked></span>
+          </li>
+          <li class="oh-column-config__item is-draggable" data-label="{% trans 'Conflicts' %}">
+            <span class="oh-column-config__handle" aria-hidden="true"><ion-icon name="reorder-two-outline"></ion-icon></span>
+            <span class="oh-column-config__label">{% trans "Conflicts" %}</span>
+            <span class="oh-table__checkbox"><input type="checkbox" class="custom-checkbox ms-col-toggle" data-col="conflicts" checked></span>
+          </li>
+          <li class="oh-column-config__item is-draggable" data-label="{% trans 'Worked' %}">
+            <span class="oh-column-config__handle" aria-hidden="true"><ion-icon name="reorder-two-outline"></ion-icon></span>
+            <span class="oh-column-config__label">{% trans "Worked" %}</span>
+            <span class="oh-table__checkbox"><input type="checkbox" class="custom-checkbox ms-col-toggle" data-col="worked" checked></span>
+          </li>
+          <li class="oh-column-config__item is-draggable" data-label="{% trans 'Regular' %}">
+            <span class="oh-column-config__handle" aria-hidden="true"><ion-icon name="reorder-two-outline"></ion-icon></span>
+            <span class="oh-column-config__label">{% trans "Regular" %}</span>
+            <span class="oh-table__checkbox"><input type="checkbox" class="custom-checkbox ms-col-toggle" data-col="regular" checked></span>
+          </li>
+          <li class="oh-column-config__item is-draggable" data-label="{% trans 'Overtime' %}">
+            <span class="oh-column-config__handle" aria-hidden="true"><ion-icon name="reorder-two-outline"></ion-icon></span>
+            <span class="oh-column-config__label">{% trans "Overtime" %}</span>
+            <span class="oh-table__checkbox"><input type="checkbox" class="custom-checkbox ms-col-toggle" data-col="overtime" checked></span>
+          </li>
+        </ul>
+        <p class="oh-column-config__empty" id="ms-columns-empty">{% trans "No columns match your search" %}</p>
+      </div>
+    </div>
+  </div>
+  <div class="oh-table_sticky--wrapper">
+    <div class="table-wrapper">
+      <table class="fixed-table">
+        <thead>
+          <tr>
+            <th style="text-align:center;">
+              <input
+                  type="checkbox"
+                  class="bulk-list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
+                  title="{% trans 'Select All' %}"
+                  onchange="
+                      $(this).closest('.fixed-table').find('.list-table-row').prop('checked',$(this).is(':checked')).change();
+                      $(document).ready(function () {
+                      reloadSelectedCount($('#count_msAttendance'),'selectedInstances');
+                      reloadSelectedCount($('.count_msAttendance'),'selectedInstances');
+                      });
+                  "
+              >
+            </th>
+            {% comment %}
+              Sort controls mirror horilla_theme/generic/horilla_list_table.html's own
+              sortable-column pattern exactly (fa-solid fa-arrow-up/down, text-primary-600,
+              cursor-pointer, both arrows stacked when this column isn't the active sort) —
+              just against a plain ?sort=&dir= pair + Python sorted() in the view instead of
+              HorillaListView's session-cached sortby() machinery, since `rows` here is a
+              plain list of dicts, not a queryset a .order_by() could apply to.
+            {% endcomment %}
+            <th data-col="employee">
+              <div class="flex gap-1.5 items-center cursor-pointer"
+                   hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&sort=employee&dir={% if sort_key == 'employee' and sort_dir == 'asc' %}desc{% else %}asc{% endif %}"
+                   hx-target="#summary-table-container" hx-swap="innerHTML">
+                <span class="text-xs flex items-center text-primary-600">
+                  {% if sort_key == "employee" and sort_dir == "asc" %}<i class="fa-solid fa-arrow-down"></i>
+                  {% elif sort_key == "employee" and sort_dir == "desc" %}<i class="fa-solid fa-arrow-up"></i>
+                  {% else %}<i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>{% endif %}
+                </span>
+                <span>{% trans "Employee" %}</span>
+              </div>
+            </th>
+            <th data-col="badge_id">
+              <div class="flex gap-1.5 items-center cursor-pointer"
+                   hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&sort=badge_id&dir={% if sort_key == 'badge_id' and sort_dir == 'asc' %}desc{% else %}asc{% endif %}"
+                   hx-target="#summary-table-container" hx-swap="innerHTML">
+                <span class="text-xs flex items-center text-primary-600">
+                  {% if sort_key == "badge_id" and sort_dir == "asc" %}<i class="fa-solid fa-arrow-down"></i>
+                  {% elif sort_key == "badge_id" and sort_dir == "desc" %}<i class="fa-solid fa-arrow-up"></i>
+                  {% else %}<i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>{% endif %}
+                </span>
+                <span>{% trans "Badge ID" %}</span>
+              </div>
+            </th>
+            <th data-col="department">
+              <div class="flex gap-1.5 items-center cursor-pointer"
+                   hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&sort=department&dir={% if sort_key == 'department' and sort_dir == 'asc' %}desc{% else %}asc{% endif %}"
+                   hx-target="#summary-table-container" hx-swap="innerHTML">
+                <span class="text-xs flex items-center text-primary-600">
+                  {% if sort_key == "department" and sort_dir == "asc" %}<i class="fa-solid fa-arrow-down"></i>
+                  {% elif sort_key == "department" and sort_dir == "desc" %}<i class="fa-solid fa-arrow-up"></i>
+                  {% else %}<i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>{% endif %}
+                </span>
+                <span>{% trans "Department" %}</span>
+              </div>
+            </th>
+            <th data-col="present" style="text-align:center;">
+              <div class="flex gap-1.5 items-center justify-center cursor-pointer"
+                   hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&sort=present&dir={% if sort_key == 'present' and sort_dir == 'asc' %}desc{% else %}asc{% endif %}"
+                   hx-target="#summary-table-container" hx-swap="innerHTML">
+                <span class="text-xs flex items-center text-primary-600">
+                  {% if sort_key == "present" and sort_dir == "asc" %}<i class="fa-solid fa-arrow-down"></i>
+                  {% elif sort_key == "present" and sort_dir == "desc" %}<i class="fa-solid fa-arrow-up"></i>
+                  {% else %}<i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>{% endif %}
+                </span>
+                <span>{% trans "Present" %}</span>
+              </div>
+            </th>
+            <th data-col="absent" style="text-align:center;" title="{% trans 'Absent / Missing Out' %}">
+              <div class="flex gap-1.5 items-center justify-center cursor-pointer"
+                   hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&sort=absent&dir={% if sort_key == 'absent' and sort_dir == 'asc' %}desc{% else %}asc{% endif %}"
+                   hx-target="#summary-table-container" hx-swap="innerHTML">
+                <span class="text-xs flex items-center text-primary-600">
+                  {% if sort_key == "absent" and sort_dir == "asc" %}<i class="fa-solid fa-arrow-down"></i>
+                  {% elif sort_key == "absent" and sort_dir == "desc" %}<i class="fa-solid fa-arrow-up"></i>
+                  {% else %}<i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>{% endif %}
+                </span>
+                <span>{% trans "Absent" %}</span>
+              </div>
+            </th>
+            <th data-col="paid_leave" style="text-align:center;">
+              <div class="flex gap-1.5 items-center justify-center cursor-pointer"
+                   hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&sort=paid_leave&dir={% if sort_key == 'paid_leave' and sort_dir == 'asc' %}desc{% else %}asc{% endif %}"
+                   hx-target="#summary-table-container" hx-swap="innerHTML">
+                <span class="text-xs flex items-center text-primary-600">
+                  {% if sort_key == "paid_leave" and sort_dir == "asc" %}<i class="fa-solid fa-arrow-down"></i>
+                  {% elif sort_key == "paid_leave" and sort_dir == "desc" %}<i class="fa-solid fa-arrow-up"></i>
+                  {% else %}<i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>{% endif %}
+                </span>
+                <span>{% trans "Paid Leave" %}</span>
+              </div>
+            </th>
+            <th data-col="unpaid_leave" style="text-align:center;">
+              <div class="flex gap-1.5 items-center justify-center cursor-pointer"
+                   hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&sort=unpaid_leave&dir={% if sort_key == 'unpaid_leave' and sort_dir == 'asc' %}desc{% else %}asc{% endif %}"
+                   hx-target="#summary-table-container" hx-swap="innerHTML">
+                <span class="text-xs flex items-center text-primary-600">
+                  {% if sort_key == "unpaid_leave" and sort_dir == "asc" %}<i class="fa-solid fa-arrow-down"></i>
+                  {% elif sort_key == "unpaid_leave" and sort_dir == "desc" %}<i class="fa-solid fa-arrow-up"></i>
+                  {% else %}<i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>{% endif %}
+                </span>
+                <span>{% trans "Unpaid Leave" %}</span>
+              </div>
+            </th>
+            <th data-col="working_days" style="text-align:center;">{% trans "Working Days" %}</th>
+            <th data-col="week_off" style="text-align:center;">
+              <div class="flex gap-1.5 items-center justify-center cursor-pointer"
+                   hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&sort=week_off&dir={% if sort_key == 'week_off' and sort_dir == 'asc' %}desc{% else %}asc{% endif %}"
+                   hx-target="#summary-table-container" hx-swap="innerHTML">
+                <span class="text-xs flex items-center text-primary-600">
+                  {% if sort_key == "week_off" and sort_dir == "asc" %}<i class="fa-solid fa-arrow-down"></i>
+                  {% elif sort_key == "week_off" and sort_dir == "desc" %}<i class="fa-solid fa-arrow-up"></i>
+                  {% else %}<i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>{% endif %}
+                </span>
+                <span>{% trans "Week Off" %}</span>
+              </div>
+            </th>
+            <th data-col="holiday" style="text-align:center;">
+              <div class="flex gap-1.5 items-center justify-center cursor-pointer"
+                   hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&sort=holiday&dir={% if sort_key == 'holiday' and sort_dir == 'asc' %}desc{% else %}asc{% endif %}"
+                   hx-target="#summary-table-container" hx-swap="innerHTML">
+                <span class="text-xs flex items-center text-primary-600">
+                  {% if sort_key == "holiday" and sort_dir == "asc" %}<i class="fa-solid fa-arrow-down"></i>
+                  {% elif sort_key == "holiday" and sort_dir == "desc" %}<i class="fa-solid fa-arrow-up"></i>
+                  {% else %}<i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>{% endif %}
+                </span>
+                <span>{% trans "Holiday" %}</span>
+              </div>
+            </th>
+            <th data-col="conflicts" style="text-align:center;">
+              <div class="flex gap-1.5 items-center justify-center cursor-pointer"
+                   hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&sort=conflicts&dir={% if sort_key == 'conflicts' and sort_dir == 'asc' %}desc{% else %}asc{% endif %}"
+                   hx-target="#summary-table-container" hx-swap="innerHTML">
+                <span class="text-xs flex items-center text-primary-600">
+                  {% if sort_key == "conflicts" and sort_dir == "asc" %}<i class="fa-solid fa-arrow-down"></i>
+                  {% elif sort_key == "conflicts" and sort_dir == "desc" %}<i class="fa-solid fa-arrow-up"></i>
+                  {% else %}<i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>{% endif %}
+                </span>
+                <span>{% trans "Conflicts" %}</span>
+                {% if summary_totals.total_conflicts %}
+                  <span style="display:inline-flex;align-items:center;justify-content:center;
+                               min-width:16px;height:16px;padding:0 4px;margin-left:2px;
+                               border-radius:8px;background:#bd652e;color:#fff;
+                               font-size:.68rem;font-weight:700;vertical-align:middle;">{{ summary_totals.total_conflicts }}</span>
+                {% endif %}
+              </div>
+            </th>
+            <th data-col="worked" style="text-align:center;">
+              <div class="flex gap-1.5 items-center justify-center cursor-pointer"
+                   hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&sort=worked&dir={% if sort_key == 'worked' and sort_dir == 'asc' %}desc{% else %}asc{% endif %}"
+                   hx-target="#summary-table-container" hx-swap="innerHTML">
+                <span class="text-xs flex items-center text-primary-600">
+                  {% if sort_key == "worked" and sort_dir == "asc" %}<i class="fa-solid fa-arrow-down"></i>
+                  {% elif sort_key == "worked" and sort_dir == "desc" %}<i class="fa-solid fa-arrow-up"></i>
+                  {% else %}<i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>{% endif %}
+                </span>
+                <span>{% trans "Worked" %}</span>
+              </div>
+            </th>
+            <th data-col="regular" style="text-align:center;">
+              <div class="flex gap-1.5 items-center justify-center cursor-pointer"
+                   hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&sort=regular&dir={% if sort_key == 'regular' and sort_dir == 'asc' %}desc{% else %}asc{% endif %}"
+                   hx-target="#summary-table-container" hx-swap="innerHTML">
+                <span class="text-xs flex items-center text-primary-600">
+                  {% if sort_key == "regular" and sort_dir == "asc" %}<i class="fa-solid fa-arrow-down"></i>
+                  {% elif sort_key == "regular" and sort_dir == "desc" %}<i class="fa-solid fa-arrow-up"></i>
+                  {% else %}<i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>{% endif %}
+                </span>
+                <span>{% trans "Regular" %}</span>
+              </div>
+            </th>
+            <th data-col="overtime" style="text-align:center;">
+              <div class="flex gap-1.5 items-center justify-center cursor-pointer"
+                   hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}&sort=overtime&dir={% if sort_key == 'overtime' and sort_dir == 'asc' %}desc{% else %}asc{% endif %}"
+                   hx-target="#summary-table-container" hx-swap="innerHTML">
+                <span class="text-xs flex items-center text-primary-600">
+                  {% if sort_key == "overtime" and sort_dir == "asc" %}<i class="fa-solid fa-arrow-down"></i>
+                  {% elif sort_key == "overtime" and sort_dir == "desc" %}<i class="fa-solid fa-arrow-up"></i>
+                  {% else %}<i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>{% endif %}
+                </span>
+                <span>{% trans "Overtime" %}</span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          <tr class="ms-summary-row"
+              data-calendar-url="{% url 'attendance-monthly-summary-calendar' %}?employee_id={{ row.employee.pk }}&from_date={{ from_date }}&to_date={{ to_date }}"
+              data-present="{{ row.present }}"
+              data-absent="{{ row.absent }}"
+              data-paid="{{ row.paid_leave }}"
+              data-unpaid="{{ row.unpaid_leave }}"
+              data-weekoff="{{ row.week_off }}"
+              data-holiday="{{ row.holiday }}"
+              data-conflict="{{ row.conflict_days }}"
+              data-unresolved="{{ row.unresolved_conflicts }}"
+              data-regularized="{{ row.resolved_conflicts }}">
+            <td onclick="event.stopPropagation()" style="text-align:center;">
+              <input
+                  type="checkbox"
+                  class="list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
+                  title="{% trans 'Select Row' %}"
+                  value="{{ row.employee.pk }}"
+                  onclick="event.stopPropagation();"
+                  onchange="
+                      element = $(this)
+                      highlightRow(element);
+                      $(document).ready(function () {
+                          if (!element.is(':checked')) {
+                          removeId(element, 'selectedInstances')
+                          }
+                          reloadSelectedCount($('#count_msAttendance'),'selectedInstances');
+                          reloadSelectedCount($('.count_msAttendance'),'selectedInstances');
+                      });
+                  "
+              >
+            </td>
+            <td>
+              <div class="oh-profile oh-profile--md w-full justify-normal">
+                <div class="oh-profile__avatar mr-1" style="width:22px;height:22px;">
+                  <img src="{{ row.employee.get_avatar }}" class="oh-profile__image" alt="">
+                </div>
+                <span class="oh-profile__name oh-text--dark ms-2">{{ row.employee.get_full_name }}</span>
+              </div>
+            </td>
+            <td style="font-size:.78rem;">{{ row.employee.badge_id|default:"&mdash;" }}</td>
+            <td>{{ row.employee.employee_work_info.department_id.department|default:"&mdash;" }}</td>
+            <td class="ms-metric-cell" style="text-align:center;font-weight:600;"
+                data-url="{% url 'attendance-monthly-summary-detail' %}?employee_id={{ row.employee.pk }}&from_date={{ from_date }}&to_date={{ to_date }}&metric=present">{{ row.present|floatformat:"-1" }}</td>
+            <td class="ms-metric-cell" style="text-align:center;font-weight:600;"
+                data-url="{% url 'attendance-monthly-summary-detail' %}?employee_id={{ row.employee.pk }}&from_date={{ from_date }}&to_date={{ to_date }}&metric=absent">{{ row.absent|floatformat:"-1" }}</td>
+            <td class="ms-metric-cell" style="text-align:center;font-weight:600;"
+                data-url="{% url 'attendance-monthly-summary-detail' %}?employee_id={{ row.employee.pk }}&from_date={{ from_date }}&to_date={{ to_date }}&metric=paid_leave">{{ row.paid_leave }}</td>
+            <td class="ms-metric-cell" style="text-align:center;font-weight:600;"
+                data-url="{% url 'attendance-monthly-summary-detail' %}?employee_id={{ row.employee.pk }}&from_date={{ from_date }}&to_date={{ to_date }}&metric=unpaid_leave">{{ row.unpaid_leave }}</td>
+            <td style="text-align:center;">{{ row.total_working }}</td>
+            <td class="ms-metric-cell" style="text-align:center;font-weight:600;"
+                data-url="{% url 'attendance-monthly-summary-detail' %}?employee_id={{ row.employee.pk }}&from_date={{ from_date }}&to_date={{ to_date }}&metric=week_off">{{ row.week_off }}</td>
+            <td class="ms-metric-cell" style="text-align:center;font-weight:600;"
+                data-url="{% url 'attendance-monthly-summary-detail' %}?employee_id={{ row.employee.pk }}&from_date={{ from_date }}&to_date={{ to_date }}&metric=holiday">{{ row.holiday }}</td>
+            {% if row.conflict_days %}
+            <td class="ms-metric-cell" style="text-align:center;font-weight:600;"
+                data-url="{% url 'attendance-monthly-summary-detail' %}?employee_id={{ row.employee.pk }}&from_date={{ from_date }}&to_date={{ to_date }}&metric=conflict">
+              {% if row.resolved_conflicts == row.conflict_days %}
+                {# All resolved: green number + âœ" #}
+                <span style="color:#30a180;" title="All {{ row.conflict_days }} conflict{{ row.conflict_days|pluralize }} resolved">
+                  {{ row.conflict_days }} <span style="font-size:.7rem;">&#10003;</span>
+                </span>
+              {% elif row.resolved_conflicts %}
+                {# Partial: amber total + green fraction #}
+                <span title="{{ row.conflict_days }} conflict{{ row.conflict_days|pluralize }}, {{ row.resolved_conflicts }} resolved">
+                  <span style="color:#bd652e;">{{ row.conflict_days }}</span>
+                  <span style="color:#30a180;font-size:.72rem;margin-left:2px;">({{ row.resolved_conflicts }}&#10003;)</span>
+                </span>
+              {% else %}
+                {# None resolved: amber number #}
+                <span style="color:#bd652e;" title="{{ row.conflict_days }} unresolved conflict{{ row.conflict_days|pluralize }}">
+                  {{ row.conflict_days }}
+                </span>
+              {% endif %}
+            </td>
+            {% else %}
+            <td style="text-align:center;color:#ced4da;font-size:.78rem;">&mdash;</td>
+            {% endif %}
+            <td style="text-align:center;font-weight:600;font-size:.82rem;">{{ row.worked_label }}</td>
+            <td style="text-align:center;font-weight:600;font-size:.82rem;">{{ row.regular_label }}</td>
+            <td style="text-align:center;font-size:.82rem;height:auto !important;padding:6px 16px !important;"
+                title="{% trans 'Regular' %}: {{ row.ot_regular_label }} &#183; {% trans 'Week Off' %}: {{ row.ot_week_off_label }} &#183; {% trans 'Holiday' %}: {{ row.ot_holiday_label }}">
+              <div style="font-weight:600;">{{ row.overtime_label }}</div>
+              <div style="font-size:.66rem;color:#9ca3af;font-weight:500;white-space:nowrap;">
+                {% if row.ot_regular_seconds %}<span title="{% trans 'Regular OT' %}">R {{ row.ot_regular_label }}</span>{% endif %}
+                {% if row.ot_week_off_seconds %}<span title="{% trans 'Week Off OT' %}">{% if row.ot_regular_seconds %} &#183; {% endif %}WO {{ row.ot_week_off_label }}</span>{% endif %}
+                {% if row.ot_holiday_seconds %}<span title="{% trans 'Holiday OT' %}">{% if row.ot_regular_seconds or row.ot_week_off_seconds %} &#183; {% endif %}HO {{ row.ot_holiday_label }}</span>{% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<script>
+(function () {
+  // Strategy: a zero-size position:fixed anchor div lives in <body> (outside
+  // #main). Its top-left corner is always the viewport origin (0,0).
+  // The visible popover is position:absolute inside it, so
+  //   left: event.clientX  â†’  exactly clientX px from viewport left
+  //   top:  event.clientY  â†’  exactly clientY px from viewport top
+  // This bypasses every scroll-container and CSS-transform gotcha.
+
+  let layer = document.getElementById('ms-pop-layer');
+  let pop;
+  if (!layer) {
+    layer = document.createElement('div');
+    layer.id = 'ms-pop-layer';
+    // Zero-size fixed anchor at viewport origin; overflow:visible so the
+    // absolutely-positioned child is not clipped.
+    layer.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;overflow:visible;z-index:99999;pointer-events:none;';
+    document.body.appendChild(layer);
+
+    pop = document.createElement('div');
+    pop.id = 'ms-pop';
+    pop.style.position = 'absolute';
+    pop.style.pointerEvents = 'auto';
+    pop.style.display = 'none';
+    layer.appendChild(pop);
+  } else {
+    pop = document.getElementById('ms-pop');
+  }
+
+  let hideTimer = null;
+  let loadedUrl  = null;
+
+  function showPop(event, cell) {
+    clearTimeout(hideTimer);
+
+    // Position the popover flush against the cell edge (1px gap) so the
+    // mouse doesn't have to cross a dead zone to enter it.
+    const rect = cell.getBoundingClientRect();
+    const pw   = 380, ph = 460, gap = 1;
+    const vpw  = window.innerWidth;
+    const vph  = window.innerHeight;
+
+    // Prefer right of cell; flip left when near the right edge
+    let left = rect.right + gap;
+    if (left + pw > vpw - 8) left = rect.left - pw - gap;
+    if (left < 8) left = 8;
+
+    // Align top of popover with top of cell; clamp to viewport
+    let top = rect.top;
+    if (top + ph > vph - 8) top = vph - ph - 8;
+    if (top < 8) top = 8;
+
+    pop.style.left    = left + 'px';
+    pop.style.top     = top  + 'px';
+    pop.style.display = 'flex';
+
+    const url = cell.dataset.url;
+    // Only re-fetch when moving to a different cell; same cell just repositions
+    if (loadedUrl === url) return;
+    loadedUrl = url;
+
+    pop.innerHTML = '<div style="padding:14px 16px;color:#6c757d;font-size:.8rem;display:flex;align-items:center;gap:8px;"><span style="width:14px;height:14px;border:2px solid #dee2e6;border-top-color:#0d6efd;border-radius:50%;display:inline-block;animation:ms-spin .6s linear infinite;"></span> Loading...</div>';
+
+    fetch(url, { headers: { 'HX-Request': 'true', 'X-Requested-With': 'XMLHttpRequest' } })
+      .then(r => r.text())
+      .then(html => { pop.innerHTML = html; })
+      .catch(() => { pop.innerHTML = '<p class="ms-pop-empty">Failed to load.</p>'; });
+  }
+
+  function scheduleHide() {
+    hideTimer = setTimeout(function () {
+      pop.style.display = 'none';
+      loadedUrl = null;
+    }, 180);
+  }
+
+  document.querySelectorAll('.ms-metric-cell').forEach(function (cell) {
+    cell.addEventListener('mouseenter', function (e) { showPop(e, cell); });
+    cell.addEventListener('mouseleave', scheduleHide);
+  });
+
+  pop.addEventListener('mouseenter', function () { clearTimeout(hideTimer); });
+  pop.addEventListener('mouseleave', scheduleHide);
+
+  // â"€â"€ Bulk selection & override â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+  {% url 'attendance-monthly-summary-bulk-override' as ms_bulk_url %}
+  {% url 'attendance-monthly-summary-undo-bulk' as ms_undo_url %}
+  var MS_BULK_URL  = "{{ ms_bulk_url }}" || "/attendance/monthly-summary/bulk-override/";
+  var MS_UNDO_URL  = "{{ ms_undo_url }}" || "/attendance/monthly-summary/undo-bulk/";
+  var MS_TABLE_URL = "{% url 'attendance-monthly-summary-table' %}";
+  var MS_TABLE_PD  = "{{ pd|escapejs }}";
+
+  // After a table refresh the undo bar may already be in the DOM from the
+  // previous bulk action. If the URL is now available, update the bar so the
+  // next Undo click uses the correct endpoint.
+  (function () {
+    if (!MS_UNDO_URL) return;
+    var b = document.getElementById('ms-undo-bar');
+    if (b) b.dataset.undoUrl = MS_UNDO_URL;
+  }());
+
+  // Selection state itself (data-ids on #selectedInstances, mirrored to
+  // localStorage) is entirely owned by the shared addToSelectedId /
+  // removeId / clearSelection / selectSelected / reloadSelectedCount
+  // functions in static/index/index.js — the same ones the Employee list
+  // uses. This just re-runs the mandatory post-render hook (selectSelected
+  // re-checks whichever selected ids are on this page and re-binds the
+  // per-row change listener) and reads the current selection for our own
+  // "Update" modal / bulk-apply, which index.js has no way to know about.
+  function msGetSelectedIds() {
+    try {
+      return JSON.parse($('#selectedInstances').attr('data-ids') || '[]');
+    } catch (e) {
+      return [];
+    }
+  }
+
+  selectSelected('#msAttendanceTable', 'selectedInstances');
+
+  // "Update" button above the table — opens our own bulk-update modal
+  // (the Employee list's Update button opens a generic field-update form
+  // instead, which doesn't apply here since this is a fixed set of
+  // attendance statuses, not arbitrary model fields).
+  window.msOpenUpdateModal = function () {
+    var ids = msGetSelectedIds();
+    if (!ids.length) return;
+    var countEl = document.getElementById('ms-modal-selected-count');
+    if (countEl) countEl.textContent = ids.length;
+    var modal = document.getElementById('msUpdateModal');
+    if (modal) modal.classList.add('oh-modal--show');
+  };
+
+  window.msBulkApply = function (resolution) {
+    var ids = msGetSelectedIds();
+    if (!ids.length) { return; }
+
+    var fromDate = (document.getElementById('ms-bulk-from') || {}).value;
+    var toDate   = (document.getElementById('ms-bulk-to')   || {}).value;
+    if (!fromDate || !toDate) { return; }
+
+    var csrf = document.cookie.replace(/(?:(?:^|.*;\s*)csrftoken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+
+    // Disable buttons to prevent double-submit
+    document.querySelectorAll('.ms-bulk-btn').forEach(function(b) { b.disabled = true; b.style.opacity = '.45'; });
+
+    var body = new URLSearchParams({ from_date: fromDate, to_date: toDate, resolution: resolution });
+    ids.forEach(function(id) { body.append('employee_ids', id); });
+
+    fetch(MS_BULK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': csrf,
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: body.toString(),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        var modal = document.getElementById('msUpdateModal');
+        if (modal) modal.classList.remove('oh-modal--show');
+        if (data.changed_pks && data.changed_pks.length) {
+          msShowUndoBar(data.count, data.changed_pks);
+        }
+        var tableUrl = MS_TABLE_URL + (MS_TABLE_PD ? '?' + MS_TABLE_PD : '');
+        if (typeof htmx !== 'undefined') {
+          htmx.ajax('GET', tableUrl, { target: '#summary-table-container', swap: 'innerHTML',
+                                       headers: { 'HX-Request': 'true' } });
+        } else {
+          window.location.reload();
+        }
+      } else {
+        document.querySelectorAll('.ms-bulk-btn').forEach(function(b) { b.disabled = false; b.style.opacity = '1'; });
+      }
+    })
+    .catch(function() {
+      document.querySelectorAll('.ms-bulk-btn').forEach(function(b) { b.disabled = false; b.style.opacity = '1'; });
+    });
+  };
+
+  // â"€â"€ Undo bar (appended to body so it survives table refreshes) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+  function msShowUndoBar(count, pks) {
+    var existing = document.getElementById('ms-undo-bar');
+    if (existing) existing.remove();
+    if (!count) return;
+
+    var bar = document.createElement('div');
+    bar.id = 'ms-undo-bar';
+    bar.style.cssText = [
+      'position:fixed;top:72px;right:20px;z-index:100001;',
+      'background:#1e293b;color:#e2e8f0;border-radius:10px;',
+      'padding:11px 16px;box-shadow:0 6px 24px rgba(0,0,0,.25);',
+      'display:flex;align-items:center;gap:11px;font-size:.82rem;',
+      'min-width:260px;max-width:380px;',
+    ].join('');
+    bar.dataset.pks = JSON.stringify(pks);
+    bar.dataset.undoUrl = MS_UNDO_URL;
+    bar.innerHTML =
+      '<ion-icon name="checkmark-circle" style="font-size:1.2rem;color:#10b981;flex-shrink:0;"></ion-icon>' +
+      '<span style="flex:1;"><strong>' + count + '</strong> record' + (count !== 1 ? 's' : '') + ' updated</span>' +
+      '<button id="ms-undo-btn" style="background:#6366f1;color:#fff;border:none;border-radius:6px;' +
+              'padding:4px 13px;font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap;">' +
+        '{% trans "Undo" %}' +
+      '</button>' +
+      '<button onclick="document.getElementById(\'ms-undo-bar\').remove()" ' +
+              'style="background:none;color:#64748b;border:none;cursor:pointer;font-size:1.05rem;padding:0 3px;line-height:1;">âœ•</button>';
+    document.body.appendChild(bar);
+
+    // Use window.msUndoBulk indirectly so post-refresh IIFE version is called
+    document.getElementById('ms-undo-btn').addEventListener('click', function () {
+      window.msUndoBulk && window.msUndoBulk();
+    });
+
+    // Auto-dismiss after 45 seconds
+    setTimeout(function () { if (bar.parentNode) bar.remove(); }, 45000);
+  }
+
+  window.msUndoBulk = function () {
+    var bar = document.getElementById('ms-undo-bar');
+    if (!bar) return;
+    // Prefer URL stored on the bar; fall back to current IIFE's MS_UNDO_URL
+    var undoUrl = bar.dataset.undoUrl || MS_UNDO_URL;
+    if (!undoUrl) return;   // URL not yet registered — can't undo
+    var pks = [];
+    try { pks = JSON.parse(bar.dataset.pks || '[]'); } catch (e) {}
+    if (!pks.length) return;
+
+    var csrf = document.cookie.replace(/(?:(?:^|.*;\s*)csrftoken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+    var body = new URLSearchParams();
+    pks.forEach(function (pk) { body.append('pks', pk); });
+
+    bar.querySelector('#ms-undo-btn').disabled = true;
+    bar.querySelector('#ms-undo-btn').textContent = '...';
+
+    fetch(undoUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': csrf,
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: body.toString(),
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      bar.remove();
+      if (data.success) {
+        var tableUrl = MS_TABLE_URL + (MS_TABLE_PD ? '?' + MS_TABLE_PD : '');
+        if (typeof htmx !== 'undefined') {
+          htmx.ajax('GET', tableUrl, { target: '#summary-table-container', swap: 'innerHTML',
+                                       headers: { 'HX-Request': 'true' } });
+        } else {
+          window.location.reload();
+        }
+      }
+    })
+    .catch(function () {
+      var btn = document.getElementById('ms-undo-btn');
+      if (btn) { btn.disabled = false; btn.textContent = '{% trans "Undo" %}'; }
+    });
+  };
+
+})();
+</script>
+
+<style>
+@keyframes ms-spin { to { transform: rotate(360deg); } }
+</style>
+
+<!-- â"€â"€ Calendar modal overlay â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ -->
+<div id="cal-modal-overlay"
+     style="display:none;position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.45);
+            align-items:center;justify-content:center;">
+  <div id="cal-modal-inner"
+       style="background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.25);
+              width:min(94vw,860px);max-height:92vh;overflow:hidden;display:flex;
+              flex-direction:column;position:relative;">
+    <button id="cal-modal-close"
+            onclick="document.getElementById('cal-modal-overlay').style.display='none'"
+            style="position:absolute;top:10px;right:12px;background:none;border:none;
+                   color:#6c757d;cursor:pointer;z-index:1;padding:4px;border-radius:6px;
+                   display:flex;align-items:center;justify-content:center;
+                   transition:background .15s,color .15s;"
+            onmouseenter="this.style.background='#f1f5f9';this.style.color='#374151';"
+            onmouseleave="this.style.background='none';this.style.color='#6c757d';">
+      <ion-icon name="close-outline" style="font-size:1.4rem;pointer-events:none;"></ion-icon>
+    </button>
+    <div id="cal-modal-content" style="overflow-y:auto;flex:1;"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var overlay = document.getElementById('cal-modal-overlay');
+  var content = document.getElementById('cal-modal-content');
+
+  // Close on backdrop click
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) overlay.style.display = 'none';
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') overlay.style.display = 'none';
+  });
+
+  function openCalendar(url) {
+    // Hide the metric hover popover if visible
+    var pop = document.getElementById('ms-pop');
+    if (pop) pop.style.display = 'none';
+
+    content.innerHTML = '<div style="padding:28px 24px;color:#6c757d;font-size:.85rem;display:flex;align-items:center;gap:10px;">'
+      + '<span style="width:16px;height:16px;border:2px solid #dee2e6;border-top-color:#6366f1;border-radius:50%;display:inline-block;animation:ms-spin .6s linear infinite;flex-shrink:0;"></span>'
+      + ' Loading calendar...</div>';
+
+    overlay.style.display = 'flex';
+
+    fetch(url, { headers: { 'HX-Request': 'true', 'X-Requested-With': 'XMLHttpRequest' } })
+      .then(function (r) { return r.text(); })
+      .then(function (html) { content.innerHTML = html; })
+      .catch(function () {
+        content.innerHTML = '<p style="padding:24px;color:#dc3545;">Failed to load calendar.</p>';
+      });
+  }
+
+  // Row click â†’ open calendar  (metric cell hover still shows popover separately)
+  document.querySelectorAll('.ms-summary-row').forEach(function (row) {
+    row.addEventListener('click', function () {
+      openCalendar(row.dataset.calendarUrl);
+    });
+  });
+
+  // â"€â"€ Conflict resolution helpers (called from calendar cell onclick attrs) â"€
+  // NOTE: functions must live here, NOT in calendar_modal.html, because
+  // scripts inside innerHTML do not execute in browsers.
+  // Context (employee, dates, URL) is read from #cal-data injected by the template.
+
+  function _getCalData() {
+    var el = document.getElementById('cal-data');
+    if (!el) return null;
+    return {
+      empId:      el.dataset.emp,
+      fromDate:   el.dataset.from,
+      toDate:     el.dataset.to,
+      resolveUrl: el.dataset.resolveUrl,
+    };
+  }
+
+  function _calSpinner(msg) {
+    return '<div style="padding:14px 20px;font-size:.8rem;color:#92400e;display:flex;align-items:center;gap:8px;">'
+      + '<span style="width:14px;height:14px;border:2px solid #fb923c;border-top-color:#92400e;border-radius:50%;display:inline-block;animation:ms-spin .6s linear infinite;flex-shrink:0;"></span>'
+      + ' ' + (msg || 'Loading...') + '</div>';
+  }
+
+  window.msCalLoadResolve = function (date, conflictType, detail) {
+    var ctx = _getCalData();
+    if (!ctx) return;
+    var panel = document.getElementById('cal-resolve-panel');
+    if (!panel) return;
+
+    // Apply visual theme based on conflict type
+    panel.className = '';
+    if (conflictType === 'paid_leave' || conflictType === 'unpaid_leave') {
+      panel.className = 'panel-conflict';
+    } else if (conflictType === 'holiday_ot' || conflictType === 'week_off_ot') {
+      panel.className = 'panel-ot';
+    }
+
+    panel.style.display = 'block';
+    panel.innerHTML = _calSpinner('Loading...');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    var params = new URLSearchParams({
+      employee_id:   ctx.empId,
+      date:          date,
+      from_date:     ctx.fromDate,
+      to_date:       ctx.toDate,
+      conflict_type: conflictType || '',
+    });
+    fetch(ctx.resolveUrl + '?' + params.toString(), {
+      headers: { 'HX-Request': 'true', 'X-Requested-With': 'XMLHttpRequest' }
+    }).then(function (r) { return r.text(); })
+      .then(function (html) {
+        panel.innerHTML = html;
+        // Register HTMX on dynamically-inserted content (innerHTML bypass)
+        if (typeof htmx !== 'undefined') { htmx.process(panel); }
+        // If the panel reveals a resolved banner, switch to green theme
+        if (panel.querySelector && panel.querySelector('[data-resolved]')) {
+          panel.className = 'panel-resolved';
+        }
+      })
+      .catch(function () { panel.innerHTML = '<p style="padding:12px;color:#dc3545;">Failed to load.</p>'; });
+  };
+
+  window.msCalResolvePost = function (resolution, conflictType) {
+    var ctx = _getCalData();
+    var dateInput = document.getElementById('cal-resolve-date');
+    if (!ctx || !dateInput) return;
+
+    var csrf = document.cookie.replace(/(?:(?:^|.*;\s*)csrftoken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+
+    content.innerHTML = '<div style="padding:28px 24px;color:#6c757d;font-size:.85rem;display:flex;align-items:center;gap:10px;">'
+      + '<span style="width:16px;height:16px;border:2px solid #dee2e6;border-top-color:#6366f1;border-radius:50%;display:inline-block;animation:ms-spin .6s linear infinite;flex-shrink:0;"></span>'
+      + ' Saving and refreshing...</div>';
+
+    fetch(ctx.resolveUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'HX-Request': 'true',
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRFToken': csrf,
+      },
+      body: new URLSearchParams({
+        employee_id:   ctx.empId,
+        date:          dateInput.value,
+        from_date:     ctx.fromDate,
+        to_date:       ctx.toDate,
+        resolution:    resolution,
+        conflict_type: conflictType,
+      })
+    }).then(function (r) { return r.text(); })
+      .then(function (html) { content.innerHTML = html; })
+      .catch(function () {
+        content.innerHTML = '<p style="padding:24px;color:#dc3545;">Failed to save resolution.</p>';
+      });
+  };
+})();
+</script>
+
+<!-- Column visibility toggle — show/hide + localStorage persistence,
+     mirroring the "Columns" panel's look (via the shared .oh-column-config
+     CSS) without its Alpine/backend-persisted (ToggleColumn/ColumnOrder)
+     wiring, and without drag-to-reorder. -->
+<script>
+(function () {
+  var STORAGE_KEY = 'ms_summary_hidden_columns';
+  var table = document.getElementById('msAttendanceTable');
+  var toggle = document.getElementById('ms-columns-toggle');
+  var panel = document.getElementById('ms-columns-panel');
+  if (!table || !toggle || !panel) return;
+
+  function getHidden() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+    catch (e) { return []; }
+  }
+  function setHidden(arr) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); } catch (e) {}
+  }
+
+  // Same index-based approach the real Columns panel uses (static/index/index.js
+  // toggleColumnVisibility): find the <th> by its data-col key, work out its
+  // position among header siblings, then toggle the <td> at that same
+  // position in every row. nth-child sticky-column CSS stays correct
+  // regardless, since display:none doesn't remove the cell from the DOM.
+  function applyColumn(colKey, visible) {
+    var th = table.querySelector('thead th[data-col="' + colKey + '"]');
+    if (!th) return;
+    var headerCells = Array.prototype.slice.call(th.parentElement.children);
+    var index = headerCells.indexOf(th);
+    th.classList.toggle('d-none', !visible);
+    table.querySelectorAll('tbody tr').forEach(function (tr) {
+      var td = tr.children[index];
+      if (td) td.classList.toggle('d-none', !visible);
+    });
+  }
+
+  var checkboxes = Array.prototype.slice.call(panel.querySelectorAll('.ms-col-toggle'));
+  var selectAll = document.getElementById('ms-columns-select-all');
+  var countEl = document.getElementById('ms-columns-count');
+  var searchInput = document.getElementById('ms-columns-search');
+  var emptyMsg = document.getElementById('ms-columns-empty');
+  var list = document.getElementById('ms-columns-list');
+
+  function updateCount() {
+    var total = checkboxes.length + 1;   // +1 for the locked Employee column
+    var checked = 1 + checkboxes.filter(function (cb) { return cb.checked; }).length;
+    if (countEl) countEl.textContent = checked + '/' + total;
+  }
+  function syncSelectAll() {
+    if (selectAll) selectAll.checked = checkboxes.every(function (cb) { return cb.checked; });
+  }
+
+  var hidden = getHidden();
+  checkboxes.forEach(function (cb) {
+    if (hidden.indexOf(cb.getAttribute('data-col')) !== -1) {
+      cb.checked = false;
+      applyColumn(cb.getAttribute('data-col'), false);
+    }
+  });
+  updateCount();
+  syncSelectAll();
+
+  checkboxes.forEach(function (cb) {
+    cb.addEventListener('change', function () {
+      var key = cb.getAttribute('data-col');
+      applyColumn(key, cb.checked);
+      var h = getHidden().filter(function (k) { return k !== key; });
+      if (!cb.checked) h.push(key);
+      setHidden(h);
+      updateCount();
+      syncSelectAll();
+    });
+  });
+
+  if (selectAll) {
+    selectAll.addEventListener('change', function () {
+      var checked = selectAll.checked;
+      checkboxes.forEach(function (cb) {
+        cb.checked = checked;
+        applyColumn(cb.getAttribute('data-col'), checked);
+      });
+      setHidden(checked ? [] : checkboxes.map(function (cb) { return cb.getAttribute('data-col'); }));
+      updateCount();
+    });
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', function () {
+      var q = searchInput.value.trim().toLowerCase();
+      var visibleCount = 0;
+      Array.prototype.forEach.call(list.children, function (li) {
+        var label = (li.getAttribute('data-label') || '').toLowerCase();
+        var match = q === '' || label.indexOf(q) !== -1;
+        li.classList.toggle('is-filtered-out', !match);
+        if (match) visibleCount++;
+      });
+      if (emptyMsg) emptyMsg.classList.toggle('is-visible', q !== '' && visibleCount === 0);
+    });
+  }
+
+  // Open/close — same composedPath-based outside-click pattern as the
+  // Filter dropdown in monthly_summary.html, so clicks inside this panel's
+  // own form controls never get misread as "outside" and close it.
+  toggle.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var show = panel.style.display !== 'block';
+    panel.style.display = show ? 'block' : 'none';
+    toggle.setAttribute('aria-expanded', show ? 'true' : 'false');
+  });
+  document.addEventListener('click', function (e) {
+    if (panel.style.display !== 'block') return;
+    var path = typeof e.composedPath === 'function' ? e.composedPath() : [e.target];
+    if (path.indexOf(panel) !== -1 || path.indexOf(toggle) !== -1) return;
+    panel.style.display = 'none';
+    toggle.setAttribute('aria-expanded', 'false');
+  });
+}());
+</script>
+
+{% else %}
+<div style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:300px;">
+  <img style="width:150px;height:150px;" src="{% static 'images/ui/no-results.png' %}" alt="">
+  <h5 style="margin-top:1rem;">{% trans "No attendance data found for the selected period." %}</h5>
+</div>
+{% endif %}

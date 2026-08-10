@@ -1,0 +1,433 @@
+{% extends 'index.html' %}
+{% load i18n %}
+{% block content %}
+
+<style>
+  body.dark .ms-page-header h3 { color: #dfdfdf !important; }
+  /* Filter dropdown panel — same "Work Info" accordion section used by the
+     real Attendance list's filter (attendances_filter_page.html): reuses
+     Horilla's own .oh-accordion/.oh-accordion-header/.oh-accordion-body
+     classes so the existing global click-toggle handler and chevron CSS
+     (footerScripts.js, v1_styles.css) apply with no extra JS/CSS of our own. */
+  .ms-filter-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 12px; }
+  #ms-filter-dropdown .oh-input-group { margin-bottom: 10px; }
+  /* Active-filter chip row — same look as generic/filter_tags.html */
+  .ms-filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 18px;
+    font-size: .78rem;
+    font-weight: 600;
+    background: rgba(229, 79, 56, .1);
+    border: 1px solid hsl(8, 77%, 56%);
+    color: hsl(8, 60%, 40%);
+  }
+  body.dark .ms-filter-tag { color: #fca5a5; }
+  .ms-filter-tag ion-icon { cursor: pointer; font-size: .95rem; }
+</style>
+
+<div class="oh-wrapper">
+  <div class="oh-container"  style="padding-top:1.25rem;">
+
+    <!-- Search + Filter bar -->
+    <form id="summary-filter-form"
+          hx-get="{% url 'attendance-monthly-summary-table' %}"
+          hx-target="#summary-table-container"
+          hx-push-url="false">
+
+      <div class="ms-page-header flex flex-wrap justify-between items-center mb-2">
+        <h3 class="text-lg font-semibold" style="margin:0;">{% trans "Monthly Attendance Summary" %}</h3>
+
+        <div class="flex flex-wrap gap-1">
+          <!-- Search -->
+          <div class="relative">
+            <input type="text"
+                   name="search"
+                   id="ms-search-input"
+                   placeholder="{% trans 'Employee name…' %}"
+                   autocomplete="off"
+                   hx-get="{% url 'attendance-monthly-summary-table' %}"
+                   hx-target="#summary-table-container"
+                   hx-trigger="input changed delay:400ms"
+                   hx-include="#summary-filter-form"
+                   class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+                   style="width:200px;">
+            <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
+            <button type="button" id="ms-search-clear"
+                    onclick="document.getElementById('ms-search-input').value='';
+                             document.getElementById('ms-search-input').dispatchEvent(new Event('input'));"
+                    style="position:absolute;top:50%;right:8px;transform:translateY(-50%);
+                           background:none;border:none;cursor:pointer;color:#9ca3af;
+                           padding:0;display:none;line-height:1;"
+                    title="{% trans 'Clear' %}">
+              <ion-icon name="close-circle-outline" style="font-size:.9rem;"></ion-icon>
+            </button>
+          </div>
+
+          <!-- Date range -->
+          <input type="date"
+                 name="from_date"
+                 id="ms-from-date"
+                 value="{{ from_date }}"
+                 title="{% trans 'From' %}"
+                 hx-get="{% url 'attendance-monthly-summary-table' %}"
+                 hx-target="#summary-table-container"
+                 hx-trigger="change"
+                 hx-include="#summary-filter-form"
+                 class="text-color-600 p-1.5 pb-2 border border-dark-50 rounded-md focus-visible:outline-0 text-sm [transition:.3s] focus:border-primary-600"
+                 style="width:145px;">
+          <input type="date"
+                 name="to_date"
+                 id="ms-to-date"
+                 value="{{ to_date }}"
+                 title="{% trans 'To' %}"
+                 hx-get="{% url 'attendance-monthly-summary-table' %}"
+                 hx-target="#summary-table-container"
+                 hx-trigger="change"
+                 hx-include="#summary-filter-form"
+                 class="text-color-600 p-1.5 pb-2 border border-dark-50 rounded-md focus-visible:outline-0 text-sm [transition:.3s] focus:border-primary-600"
+                 style="width:145px;">
+
+          <!-- Filter dropdown — deliberately NOT using the shared ".dropdown-wrapper
+               :hover/.dropdown-content" CSS pattern: that pattern closes the panel the
+               moment the mouse leaves it, which breaks as soon as a Select2 option list
+               (rendered outside this wrapper, appended near <body>) is clicked. Opened/
+               closed via explicit JS click-toggle instead, see script below. -->
+          <div class="relative">
+            <span id="ms-filter-toggle" class="px-5 py-2 h-full bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 cursor-pointer">
+              <ion-icon name="filter-outline"></ion-icon> {% trans "Filter" %}
+            </span>
+            <div id="ms-filter-dropdown" class="oh-filter-dropdown absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[480px] p-3 right-0" style="display:none;">
+              <div class="oh-accordion oh-accordion--show">
+                <div class="oh-accordion-header">{% trans "Work Info" %}</div>
+                <div class="oh-accordion-body">
+                  <div class="ms-filter-grid">
+                    <div class="oh-input-group">
+                      <label class="oh-label">{% trans "Employee" %}</label>
+                      <select name="employee_id" multiple class="oh-select oh-select-2 w-100">
+                        {% for emp in employees %}
+                          <option value="{{ emp.pk }}">{{ emp.get_full_name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="oh-input-group">
+                      <label class="oh-label">{% trans "Department" %}</label>
+                      <select name="department_id" multiple class="oh-select oh-select-2 w-100">
+                        {% for dept in departments %}
+                          <option value="{{ dept.pk }}">{{ dept.department }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="oh-input-group">
+                      <label class="oh-label">{% trans "Job Position" %}</label>
+                      <select name="job_position_id" multiple class="oh-select oh-select-2 w-100">
+                        {% for jp in job_positions %}
+                          <option value="{{ jp.pk }}">{{ jp.job_position }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="oh-input-group">
+                      <label class="oh-label">{% trans "Shift" %}</label>
+                      <select name="shift_id" multiple class="oh-select oh-select-2 w-100">
+                        {% for shift in shifts %}
+                          <option value="{{ shift.pk }}">{{ shift.employee_shift }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="oh-input-group">
+                      <label class="oh-label">{% trans "Work Type" %}</label>
+                      <select name="work_type_id" multiple class="oh-select oh-select-2 w-100">
+                        {% for wt in work_types %}
+                          <option value="{{ wt.pk }}">{{ wt.work_type }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex justify-end" style="margin-top:10px;">
+                <button type="submit" id="ms-apply-filter" class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+                  {% trans "Apply" %}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Export -->
+          <a id="export-btn"
+             href="{% url 'attendance-monthly-summary-export' %}?{{ pd }}"
+             class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-brand-800 transition duration-300 cursor-pointer">
+            <ion-icon name="download-outline"></ion-icon> {% trans "Export XLSX" %}
+          </a>
+        </div>
+      </div>
+
+      <!-- Active-filter chips — display toggled purely inline (no d-flex class:
+           Horilla's .d-flex is display:flex !important, which would beat this
+           inline display:none and keep the row visible even with no filters set). -->
+      <div id="ms-filter-tags" class="flex-wrap align-items-center gap-2 mb-2" style="display:none;">
+        <span class="oh-titlebar__tag oh-titlebar__tag--custom">{% trans 'Filters' %}:</span>
+      </div>
+    </form>
+
+    <!-- Table container — loaded via HTMX -->
+    <div id="summary-table-container"
+         hx-get="{% url 'attendance-monthly-summary-table' %}?{{ pd }}"
+         hx-trigger="load">
+      <div class="animated-background" style="height:200px;border-radius:8px;"></div>
+    </div>
+
+  </div><!-- /.oh-container -->
+</div><!-- /.oh-wrapper -->
+
+<script>
+(function () {
+  var inp = document.getElementById('ms-search-input');
+  var clr = document.getElementById('ms-search-clear');
+  if (inp) inp.addEventListener('input', function () {
+    clr.style.display = this.value ? 'inline-flex' : 'none';
+  });
+}());
+
+// ── Filter dropdown open/close — plain click-toggle, not the shared
+// ".dropdown-wrapper:hover/.dropdown-content" CSS pattern. That pattern
+// hides the panel as soon as the mouse leaves it, which fires the instant
+// you move into a Select2 option list (rendered near <body>, outside this
+// panel) — so picking a choice closed the whole dropdown. Clicks inside
+// the panel or inside any Select2 popup no longer close it.
+(function () {
+  var toggle = document.getElementById('ms-filter-toggle');
+  var panel = document.getElementById('ms-filter-dropdown');
+  if (!toggle || !panel) return;
+
+  toggle.addEventListener('click', function (e) {
+    e.stopPropagation();
+    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+  });
+
+  document.addEventListener('click', function (e) {
+    if (panel.style.display !== 'block') return;
+    // Select2's own "remove tag" (×) click handler re-renders the choice
+    // list synchronously, detaching the clicked node from the document
+    // before this bubbled listener runs — so by now e.target has no
+    // parentNode and .closest()/.contains() on it always come back empty,
+    // making every tag removal look like an "outside" click. composedPath()
+    // is captured at dispatch time, before that mutation, so it still lists
+    // the panel/select2 ancestors even once the node is detached.
+    var path = typeof e.composedPath === 'function' ? e.composedPath() : [e.target];
+    var insidePanel = path.indexOf(panel) !== -1 || path.indexOf(toggle) !== -1;
+    var insideSelect2 = path.some(function (node) {
+      return node.classList && (
+        node.classList.contains('select2-container') ||
+        node.classList.contains('select2-dropdown')
+      );
+    });
+    if (insidePanel || insideSelect2) return;
+    panel.style.display = 'none';
+  });
+}());
+
+// ── Active-filter chips (mirrors generic/filter_tags.html's look) ──
+// The filter form never pushes its params to the browser URL
+// (hx-push-url="false"), so the chips are built from the form's own
+// current field values rather than location.search.
+function msRenderFilterTags() {
+  var wrap = document.getElementById('ms-filter-tags');
+  if (!wrap) return;
+  var chips = [];
+
+  var searchVal = (document.getElementById('ms-search-input') || {}).value;
+  if (searchVal) {
+    chips.push({ key: 'search', label: "{% trans 'Search' %}", value: searchVal });
+  }
+  var multiFields = [
+    { name: 'employee_id', label: "{% trans 'Employee' %}" },
+    { name: 'department_id', label: "{% trans 'Department' %}" },
+    { name: 'job_position_id', label: "{% trans 'Job Position' %}" },
+    { name: 'shift_id', label: "{% trans 'Shift' %}" },
+    { name: 'work_type_id', label: "{% trans 'Work Type' %}" },
+  ];
+  multiFields.forEach(function (f) {
+    var select = document.querySelector('[name="' + f.name + '"]');
+    if (!select) return;
+    var selected = Array.from(select.selectedOptions || []);
+    if (!selected.length) return;
+    chips.push({
+      key: f.name,
+      label: f.label,
+      value: selected.map(function (o) { return o.text; }).join(', '),
+    });
+  });
+
+  wrap.innerHTML = '<span class="oh-titlebar__tag oh-titlebar__tag--custom">{% trans "Filters" %}:</span>';
+  if (!chips.length) {
+    wrap.style.display = 'none';
+    return;
+  }
+  wrap.style.display = 'flex';
+  chips.forEach(function (chip) {
+    var tag = document.createElement('span');
+    tag.className = 'ms-filter-tag';
+    tag.innerHTML = chip.label + ': ' + chip.value +
+      ' <ion-icon name="close-outline" data-clear-key="' + chip.key + '"></ion-icon>';
+    wrap.appendChild(tag);
+  });
+  var clearAll = document.createElement('span');
+  clearAll.className = 'oh-titlebar__tag oh-titlebar__tag--custom';
+  clearAll.style.cursor = 'pointer';
+  clearAll.title = "{% trans 'Clear All' %}";
+  clearAll.onclick = function () { window.location.href = "{% url 'attendance-monthly-summary' %}"; };
+  clearAll.innerHTML = '<ion-icon name="close-outline"></ion-icon>';
+  wrap.appendChild(clearAll);
+}
+
+document.getElementById('ms-filter-tags').addEventListener('click', function (e) {
+  var key = e.target.getAttribute && e.target.getAttribute('data-clear-key');
+  if (!key) return;
+  if (key === 'search') {
+    document.getElementById('ms-search-input').value = '';
+    document.getElementById('ms-search-input').dispatchEvent(new Event('input'));
+    return;
+  }
+  var field = document.querySelector('[name="' + key + '"]');
+  if (field) {
+    Array.from(field.options || []).forEach(function (o) { o.selected = false; });
+    if (window.jQuery) jQuery(field).trigger('change');
+  }
+  document.getElementById('ms-apply-filter').click();
+});
+
+document.getElementById('summary-filter-form').addEventListener('submit', msRenderFilterTags);
+document.getElementById('ms-search-input').addEventListener('change', msRenderFilterTags);
+document.addEventListener('DOMContentLoaded', msRenderFilterTags);
+msRenderFilterTags();
+
+function msSyncExportLink() {
+  const params = new URLSearchParams(new FormData(document.getElementById('summary-filter-form')));
+  document.getElementById('export-btn').href =
+    "{% url 'attendance-monthly-summary-export' %}?" + params.toString();
+}
+document.getElementById('summary-filter-form').addEventListener('submit', msSyncExportLink);
+// htmx:afterSwap fires on the TARGET element for every HTMX request that updates
+// the table container (form filter, live search, pagination) — afterRequest only
+// fires on the issuing element and won't reach the container when the search input
+// (a sibling of the form) triggers its own request.
+document.getElementById('summary-table-container').addEventListener('htmx:afterSwap', msSyncExportLink);
+
+// Row/header selection (Select/Unselect, highlight, count badges) is handled
+// entirely by the shared index.js functions via each checkbox's own inline
+// onchange, same as the Employee list — no delegation needed here.
+
+// ── Per-day hours editing — must live here (server-rendered template) so
+//    the functions are guaranteed to be defined regardless of HTMX reloads.
+var _MS_HOURS_EDIT_URL = "{% url 'attendance-monthly-summary-daily-hours-edit' %}";
+
+window.msCalHoursEdit = function (empPk, dateStr, fromDate, toDate, computedSec) {
+  var el = document.getElementById('crp-hours-' + empPk + '-' + dateStr);
+  if (!el) return;
+  var url = _MS_HOURS_EDIT_URL + '?employee_id=' + empPk + '&date=' + dateStr +
+            '&from_date=' + fromDate + '&to_date=' + toDate +
+            '&computed_sec=' + computedSec + '&panel=1';
+  fetch(url, { headers: { 'HX-Request': 'true', 'X-Requested-With': 'XMLHttpRequest' } })
+    .then(function (r) { return r.text(); })
+    .then(function (html) { el.innerHTML = html; });
+};
+
+window.msCalHoursSave = function (empPk, dateStr, fromDate, toDate, computedSec) {
+  var inputEl = document.getElementById('crp-hours-input-' + empPk + '-' + dateStr);
+  var el = document.getElementById('crp-hours-' + empPk + '-' + dateStr);
+  if (!el) return;
+  var hoursRaw = inputEl ? inputEl.value.trim() : '';
+  var csrf = document.cookie.replace(/(?:(?:^|.*;\s*)csrftoken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+  var body = new URLSearchParams({
+    employee_id: empPk, date: dateStr, from_date: fromDate, to_date: toDate,
+    hours: hoursRaw, computed_sec: String(computedSec), panel: '1',
+  });
+  fetch(_MS_HOURS_EDIT_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': csrf,
+      'X-Requested-With': 'XMLHttpRequest',
+    },
+    body: body.toString(),
+  }).then(function (r) { return r.text(); })
+    .then(function (html) {
+      el.innerHTML = html;
+
+      // Parse entered hours to total seconds
+      var h = 0, m = 0;
+      if (hoursRaw.indexOf(':') >= 0) {
+        var parts = hoursRaw.split(':');
+        h = parseInt(parts[0], 10) || 0;
+        m = parseInt(parts[1], 10) || 0;
+      } else {
+        var f = parseFloat(hoursRaw) || 0;
+        h = Math.floor(f);
+        m = Math.round((f - h) * 60);
+      }
+      var totalSec = h * 3600 + m * 60;
+
+      // Update calendar cell label
+      var calCell = document.getElementById('cal-day-hours-' + empPk + '-' + dateStr);
+      if (calCell) {
+        var label = h + 'h ' + (m < 10 ? '0' + m : m) + 'm';
+        calCell.innerHTML = '<span class="cal-hours-label edited">' + label + '</span>'
+          + '<span style="color:#7c3aed;font-size:.52rem;line-height:1;">&#9998;</span>';
+      }
+
+      // Update attendance breakdown pills (Reg / OT / Total) in real-time.
+      // Holiday/WO: all OT, cap = eff_min + cutoff. Normal: OT = min(total-eff_min, cutoff).
+      var attEl = document.getElementById('crp-att-hours-' + empPk + '-' + dateStr);
+      if (attEl) {
+        var effMin   = parseInt(attEl.getAttribute('data-eff-min'),   10) || 28800;
+        var otCutoff = parseInt(attEl.getAttribute('data-ot-cutoff'), 10) || 0;
+        var isOtDay  = attEl.getAttribute('data-is-ot-day') === '1';
+        var otSec, regSec;
+        if (isOtDay) {
+          var maxOt = otCutoff > 0 ? effMin + otCutoff : totalSec;
+          otSec  = Math.min(totalSec, maxOt);
+          regSec = 0;
+        } else {
+          // Anchor reg to shift min so excess renders when total > min + cutoff
+          regSec = Math.min(totalSec, effMin);
+          var potOt = Math.max(0, totalSec - effMin);
+          otSec = otCutoff > 0 ? Math.min(potOt, otCutoff) : potOt;
+        }
+        var excessSec = Math.max(0, totalSec - regSec - otSec);
+        var pad2 = function (n) { return n < 10 ? '0' + n : String(n); };
+        var rH = Math.floor(regSec    / 3600), rM = pad2(Math.floor((regSec    % 3600) / 60));
+        var oH = Math.floor(otSec     / 3600), oM = pad2(Math.floor((otSec     % 3600) / 60));
+        var eH = Math.floor(excessSec / 3600), eM = pad2(Math.floor((excessSec % 3600) / 60));
+        var tH = Math.floor(totalSec  / 3600), tM = pad2(Math.floor((totalSec  % 3600) / 60));
+        var hasOT = otSec > 0;
+        var excessHtml = excessSec > 0
+          ? '<span style="font-size:.68rem;color:#9ca3af;">+</span>' +
+            '<span style="font-size:.7rem;background:#fdf4ff;color:#7e22ce;border-radius:4px;padding:2px 7px;border:1px solid #e9d5ff;font-weight:600;" title="Hours beyond the OT cap">&#9663; ' + eH + 'h ' + eM + 'm</span>'
+          : '';
+        attEl.innerHTML =
+          '<span style="font-size:.7rem;background:#f0fdf4;color:#166534;border-radius:4px;padding:2px 7px;border:1px solid #bbf7d0;font-weight:600;">Reg ' + rH + 'h ' + rM + 'm</span>' +
+          '<span style="font-size:.68rem;color:#9ca3af;">+</span>' +
+          '<span style="font-size:.7rem;background:' + (hasOT ? '#fef3c7' : '#f9fafb') + ';color:' + (hasOT ? '#92400e' : '#9ca3af') + ';border-radius:4px;padding:2px 7px;border:1px solid ' + (hasOT ? '#fde68a' : '#e5e7eb') + ';font-weight:600;">OT ' + oH + 'h ' + oM + 'm</span>' +
+          excessHtml +
+          '<span style="font-size:.68rem;color:#9ca3af;">=</span>' +
+          '<span style="font-size:.7rem;background:#eff6ff;color:#1e40af;border-radius:4px;padding:2px 7px;border:1px solid #bfdbfe;font-weight:700;">' + tH + 'h ' + tM + 'm total</span>';
+      }
+    });
+};
+
+window.msCalHoursCancel = function (empPk, dateStr, fromDate, toDate, computedSec) {
+  var el = document.getElementById('crp-hours-' + empPk + '-' + dateStr);
+  if (!el) return;
+  var url = _MS_HOURS_EDIT_URL + '?employee_id=' + empPk + '&date=' + dateStr +
+            '&from_date=' + fromDate + '&to_date=' + toDate +
+            '&cancel=1&computed_sec=' + computedSec + '&panel=1';
+  fetch(url, { headers: { 'HX-Request': 'true', 'X-Requested-With': 'XMLHttpRequest' } })
+    .then(function (r) { return r.text(); })
+    .then(function (html) { el.innerHTML = html; });
+};
+</script>
+
+{% endblock content %}

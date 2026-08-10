@@ -653,3 +653,78 @@ def sort_activity_dicts(activity_dicts):
     ]
     sorted_activity_dicts = sorted(activity_dicts, key=lambda x: x["Attendance Date"])
     return sorted_activity_dicts
+
+
+def get_employee_attendance_summary(employees, from_date, to_date):
+    """
+    Return per-employee attendance summary for a date range.
+
+    Intended for use by other apps (e.g. payroll) without importing views.
+
+    Args:
+        employees  : Employee queryset, list of Employee instances, or list of PKs
+        from_date  : datetime.date — range start (inclusive)
+        to_date    : datetime.date — range end   (inclusive)
+
+    Returns:
+        dict keyed by employee PK::
+
+            {
+                emp_pk: {
+                    "employee"             : Employee,
+                    "present"              : float,   # 1.0 full day, 0.5 half day
+                    "paid_leave"           : int,
+                    "unpaid_leave"         : int,
+                    "absent"               : float,
+                    "week_off"             : int,
+                    "holiday"              : int,
+                    "total_working"        : int,     # working days in range
+                    "conflict_days"        : int,
+                    "resolved_conflicts"   : int,
+                    "unresolved_conflicts" : int,
+                }
+            }
+
+    Example::
+
+        from attendance.methods.utils import get_employee_attendance_summary
+        import datetime
+
+        summary = get_employee_attendance_summary(
+            employees=Employee.objects.filter(department_id=dept),
+            from_date=datetime.date(2026, 6, 1),
+            to_date=datetime.date(2026, 6, 30),
+        )
+        emp_data = summary[emp.pk]
+        print(emp_data["present"], emp_data["absent"])
+    """
+    # Local import keeps this callable from any app; avoids circular imports
+    # between attendance.methods and attendance.views.
+    from attendance.views.summary import build_monthly_summary
+
+    # Coerce str/datetime to date — handles "2026-06-01" and "2026-6-1"
+    def _to_date(val):
+        if isinstance(val, datetime):
+            return val.date()
+        if isinstance(val, date):
+            return val
+        y, m, d = str(val).split("-")
+        return date(int(y), int(m), int(d))
+
+    from_date = _to_date(from_date)
+    to_date = _to_date(to_date)
+
+    # Normalise employees to a queryset
+    if not hasattr(employees, "model"):
+        pks = [e.pk if hasattr(e, "pk") else int(e) for e in employees]
+        employees = Employee.objects.filter(pk__in=pks)
+
+    rows, _total_working, _totals = build_monthly_summary(from_date, to_date, employees)
+    result = {}
+    for row in rows:
+        row["paid_days"] = (
+            row["present"] + row["paid_leave"] + row["holiday"] + row["week_off"]
+        )
+        row["unpaid_days"] = row["absent"] + row["unpaid_leave"]
+        result[row["employee"].pk] = row
+    return result

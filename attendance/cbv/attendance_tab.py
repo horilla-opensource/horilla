@@ -61,10 +61,6 @@ class AttendanceTabView(HorillaTabView):
                 "url": f"{reverse('validate-attendance-individual-tab',kwargs={'pk': pk})}",
             },
             {
-                "title": _("Hours Balance"),
-                "url": f"{reverse('attendance-overtime-individual-tab',kwargs={'pk': pk})}",
-            },
-            {
                 "title": _("All Attendances"),
                 "url": f"{reverse('all-attendances-individual-tab',kwargs={'pk': pk})}",
             },

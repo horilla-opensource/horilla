@@ -1,0 +1,428 @@
+{% load i18n %}
+<style>
+.cal-header {
+  padding: 14px 20px 10px;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cal-emp-name  { font-size: .95rem; font-weight: 600; }
+.cal-emp-badge { font-size: .75rem; color: #6c757d; margin-left: 6px; }
+
+/* ── Individual summary strip ─────────────────────────────────────────────── */
+.cal-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+}
+.cal-summary-item {
+  flex: 1 1 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px;
+  border-right: 1px solid #e9ecef;
+  min-width: 60px;
+}
+.cal-summary-item:last-child { border-right: none; }
+.cal-summary-val {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.cal-summary-lbl {
+  font-size: .58rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: #6c757d;
+  text-align: center;
+}
+
+/* ── Hours breakdown strip — visually separate from the day-count strip ───── */
+.cal-hours-strip {
+  display: flex;
+  gap: 10px;
+  padding: 10px 20px;
+  background: #fff;
+  border-bottom: 1px solid #e9ecef;
+}
+.cal-hours-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+}
+.cal-hours-lbl {
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: #6c757d;
+}
+.cal-hours-val {
+  font-size: .95rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ── Calendar body ────────────────────────────────────────────────────────── */
+.cal-body { padding: 16px 20px 20px; overflow-y: auto; max-height: calc(90vh - 200px); }
+.cal-month-label {
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #6c757d;
+  margin: 12px 0 6px;
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  margin-bottom: 10px;
+}
+.cal-dow {
+  text-align: center;
+  font-size: .68rem;
+  font-weight: 600;
+  color: #adb5bd;
+  padding: 2px 0 4px;
+  text-transform: uppercase;
+}
+.cal-cell {
+  border-radius: 6px;
+  min-height: 44px;
+  padding: 4px 5px;
+  font-size: .72rem;
+  position: relative;
+  cursor: pointer;
+  transition: opacity .12s, outline .12s;
+}
+.cal-cell:not(.cal-empty):not(.cal-out-of-range):hover {
+  opacity: .82;
+  outline: 2px solid rgba(99,102,241,.45);
+  outline-offset: -2px;
+}
+/* Unresolved leave conflict — persistent amber ring so it's visible without hovering */
+.cal-cell.cal-has-conflict {
+  outline: 2px solid #e85d04;
+  outline-offset: -2px;
+  box-shadow: 0 0 0 4px rgba(232,93,4,.12);
+}
+.cal-cell.cal-has-conflict:hover {
+  outline: 2px solid #e85d04;
+  outline-offset: -2px;
+}
+/* Resolved conflict — persistent green ring, lighter than the unresolved amber one */
+.cal-cell.cal-resolved-conflict {
+  outline: 2px solid #10b981;
+  outline-offset: -2px;
+}
+.cal-cell.cal-resolved-conflict:hover {
+  outline: 2px solid #10b981;
+  outline-offset: -2px;
+}
+
+/* Amber dot — leave conflict needing regularisation */
+.cal-conflict-dot {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e85d04;
+  border: 1.5px solid rgba(255,255,255,.85);
+  z-index: 1;
+}
+/* Green dot — conflict already resolved */
+.cal-resolved-dot {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #10b981;
+  border: 1.5px solid rgba(255,255,255,.85);
+}
+/* Regular / HO / WO overtime badge */
+.cal-ot-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: .52rem;
+  font-weight: 800;
+  letter-spacing: .02em;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: #0f766e;
+  color: #fff;
+  line-height: 1.4;
+}
+.cal-ot-badge.wo  { background: #7c3aed; }
+.cal-ot-badge.reg { background: #b45309; }
+
+.cal-cell .cal-day-num {
+  font-size: .75rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+.cal-cell .cal-day-detail {
+  font-size: .62rem;
+  line-height: 1.2;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.cal-empty        { background: transparent; cursor: default; }
+.cal-out-of-range { background: #f8f9fa; color: #ced4da; cursor: default; }
+
+/* ── Per-day hours label (static display) ────────────────────────────────── */
+.cal-day-hours {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 3px;
+  font-size: .58rem;
+  min-height: 11px;
+  flex-wrap: nowrap;
+}
+.cal-hours-label {
+  font-weight: 600;
+  color: rgba(0, 0, 0, .45);
+  line-height: 1;
+  white-space: nowrap;
+}
+.cal-hours-label.edited { color: #7c3aed; }
+
+.cal-present        { background: #d1fae5; color: #065f46; }
+.cal-half_present   { background: linear-gradient(135deg, #d1fae5 50%, #fee2e2 50%); color: #374151; }
+.cal-partial_hours  { background: linear-gradient(135deg, #cffafe 60%, #f0fdf4 100%); color: #0e7490; }
+.cal-short        { background: #ede9fe; color: #3730a3; }
+.cal-absent       { background: #fee2e2; color: #991b1b; }
+.cal-paid_leave   { background: #dbeafe; color: #1e40af; }
+.cal-unpaid_leave { background: #fef08a; color: #713f12; }
+.cal-week_off     { background: #f3e8ff; color: #6b21a8; }
+.cal-holiday      { background: #a5f3fc; color: #155e75; }
+.cal-weekend      { background: #f1f5f9; color: #94a3b8; }
+
+/* ── Conflict resolve panel ──────────────────────────────────────────────── */
+#cal-resolve-panel {
+  border-top: 2px solid #e5e7eb;
+  background: #fff;
+  padding: 0;
+  display: none;
+}
+#cal-resolve-panel.panel-conflict { border-top-color: #e85d04; background: #fff4ed; }
+#cal-resolve-panel.panel-resolved { border-top-color: #10b981; background: #f0fdf4; }
+#cal-resolve-panel.panel-ot       { border-top-color: #0f766e; background: #f0fdf4; }
+
+/* ── Legend ──────────────────────────────────────────────────────────────── */
+.cal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  padding: 10px 20px 14px;
+  border-top: 1px solid #e9ecef;
+}
+.cal-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: .7rem;
+  color: #495057;
+}
+.cal-legend-dot {
+  width: 11px; height: 11px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+</style>
+
+<!-- Data element — read by msCalLoadResolve / msCalResolvePost in table_partial.html -->
+<div id="cal-data"
+     data-emp="{{ employee.pk }}"
+     data-from="{{ from_date|date:'Y-m-d' }}"
+     data-to="{{ to_date|date:'Y-m-d' }}"
+     data-resolve-url="{% url 'attendance-monthly-summary-conflict-resolve' %}"
+     style="display:none;"></div>
+
+<!-- ── Header ───────────────────────────────────────────────────────────── -->
+<div class="cal-header">
+  <ion-icon name="calendar-number-outline" style="font-size:1.3rem;color:#6366f1;flex-shrink:0;"></ion-icon>
+  <div>
+    <span class="cal-emp-name">{{ employee.employee_first_name }} {{ employee.employee_last_name }}</span>
+    {% if employee.badge_id %}<span class="cal-emp-badge">#{{ employee.badge_id }}</span>{% endif %}
+    <div style="font-size:.72rem;color:#6c757d;margin-top:1px;">
+      {{ from_date|date:"d M Y" }} — {{ to_date|date:"d M Y" }}
+    </div>
+  </div>
+</div>
+
+<!-- ── Summary strip ─────────────────────────────────────────────────────── -->
+<div class="cal-summary">
+  <div class="cal-summary-item">
+    <span class="cal-summary-val" style="color:#28a745;">{{ cal_summary.full_present }}</span>
+    <span class="cal-summary-lbl">{% trans "Full Present" %}</span>
+  </div>
+  <div class="cal-summary-item">
+    <span class="cal-summary-val" style="color:#e85d04;">{{ cal_summary.half_present }}</span>
+    <span class="cal-summary-lbl">{% trans "Half Day" %}</span>
+  </div>
+  <div class="cal-summary-item">
+    <span class="cal-summary-val" style="color:#6366f1;">{{ cal_summary.short }}</span>
+    <span class="cal-summary-lbl">{% trans "Short Hours" %}</span>
+  </div>
+  <div class="cal-summary-item">
+    <span class="cal-summary-val" style="color:#dc3545;">{{ cal_summary.absent }}</span>
+    <span class="cal-summary-lbl">{% trans "Absent / MO" %}</span>
+  </div>
+  <div class="cal-summary-item">
+    <span class="cal-summary-val" style="color:#0d6efd;">{{ cal_summary.paid_leave }}</span>
+    <span class="cal-summary-lbl">{% trans "Paid Leave" %}</span>
+  </div>
+  <div class="cal-summary-item">
+    <span class="cal-summary-val" style="color:#a16207;">{{ cal_summary.unpaid_leave }}</span>
+    <span class="cal-summary-lbl">{% trans "Unpaid Leave" %}</span>
+  </div>
+  <div class="cal-summary-item">
+    <span class="cal-summary-val" style="color:#6610f2;">{{ cal_summary.week_off }}</span>
+    <span class="cal-summary-lbl">{% trans "Week Off" %}</span>
+  </div>
+  <div class="cal-summary-item">
+    <span class="cal-summary-val" style="color:#20c997;">{{ cal_summary.holiday }}</span>
+    <span class="cal-summary-lbl">{% trans "Holiday" %}</span>
+  </div>
+  {% if cal_summary.conflict %}
+  <div class="cal-summary-item" style="background:#fff4ed;">
+    <span class="cal-summary-val" style="color:#e85d04;">{{ cal_summary.conflict }}</span>
+    <span class="cal-summary-lbl" style="color:#92400e;">{% trans "Conflicts" %}</span>
+  </div>
+  {% endif %}
+  <div class="cal-summary-item" style="background:#f8f9fa;border-left:2px solid #dee2e6;">
+    <span class="cal-summary-val" style="color:#374151;">{{ total_days }}</span>
+    <span class="cal-summary-lbl" style="color:#374151;">{% trans "Total Days" %}</span>
+  </div>
+</div>
+
+<!-- ── Hours breakdown — separate from the day-count strip above ──────────── -->
+<div class="cal-hours-strip">
+  <div class="cal-hours-item">
+    <span class="cal-hours-lbl">{% trans "Worked" %}</span>
+    <span class="cal-hours-val" style="color:#1e40af;">{{ cal_summary.worked_label }}</span>
+  </div>
+  <div class="cal-hours-item">
+    <span class="cal-hours-lbl">{% trans "Regular" %}</span>
+    <span class="cal-hours-val" style="color:#059669;">{{ cal_summary.regular_label }}</span>
+  </div>
+  <div class="cal-hours-item" style="flex-direction:column;gap:2px;"
+       title="{% trans 'Regular' %}: {{ cal_summary.ot_regular_label }} &#183; {% trans 'Week Off' %}: {{ cal_summary.ot_week_off_label }} &#183; {% trans 'Holiday' %}: {{ cal_summary.ot_holiday_label }}">
+    <div style="display:flex;align-items:center;gap:7px;">
+      <span class="cal-hours-lbl">{% trans "Overtime" %}</span>
+      <span class="cal-hours-val" style="color:#b45309;">{{ cal_summary.overtime_label }}</span>
+    </div>
+    <div style="font-size:.62rem;color:#9ca3af;font-weight:500;white-space:nowrap;">
+      {% if cal_summary.ot_regular_seconds %}<span>R {{ cal_summary.ot_regular_label }}</span>{% endif %}
+      {% if cal_summary.ot_week_off_seconds %}<span>{% if cal_summary.ot_regular_seconds %} &#183; {% endif %}WO {{ cal_summary.ot_week_off_label }}</span>{% endif %}
+      {% if cal_summary.ot_holiday_seconds %}<span>{% if cal_summary.ot_regular_seconds or cal_summary.ot_week_off_seconds %} &#183; {% endif %}HO {{ cal_summary.ot_holiday_label }}</span>{% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- ── Calendar body ─────────────────────────────────────────────────────── -->
+<div class="cal-body">
+  {% for month in months %}
+  <div class="cal-month-label">{{ month.label }}</div>
+  <div class="cal-grid">
+    <div class="cal-dow">{% trans "Mon" %}</div>
+    <div class="cal-dow">{% trans "Tue" %}</div>
+    <div class="cal-dow">{% trans "Wed" %}</div>
+    <div class="cal-dow">{% trans "Thu" %}</div>
+    <div class="cal-dow">{% trans "Fri" %}</div>
+    <div class="cal-dow">{% trans "Sat" %}</div>
+    <div class="cal-dow">{% trans "Sun" %}</div>
+
+    {% for week in month.weeks %}
+      {% for cell in week %}
+        {% if cell is None %}
+          <div class="cal-cell cal-empty"></div>
+        {% elif cell.status == "out_of_range" %}
+          <div class="cal-cell cal-out-of-range">
+            <div class="cal-day-num">{{ cell.day }}</div>
+          </div>
+        {% else %}
+          <div class="cal-cell cal-{{ cell.status }}{% if cell.is_conflict %} cal-has-conflict{% elif cell.resolution %} cal-resolved-conflict{% endif %}"
+               title="{{ cell.date|date:'d M Y' }}{% if cell.detail %} — {{ cell.detail }}{% endif %}{% if cell.conflict_with == 'paid_leave' or cell.conflict_with == 'unpaid_leave' %} ⚠ conflicts with {{ cell.conflict_with }}{% elif cell.conflict_with == 'holiday_ot' %} HO — Holiday Overtime{% elif cell.conflict_with == 'week_off_ot' %} WO — Week Off Overtime{% elif cell.conflict_with == 'regular_ot' %} OT — Overtime{% elif cell.resolution %} ✓ resolved{% endif %}"
+               onclick="msCalLoadResolve('{{ cell.date|date:'Y-m-d' }}', '{{ cell.conflict_with|default:'' }}', '{{ cell.detail|default:''|escapejs }}')">
+            <div class="cal-day-num">{{ cell.day }}</div>
+            {% if cell.detail %}<div class="cal-day-detail">{{ cell.detail }}</div>{% endif %}
+            {% if cell.conflict_with == "paid_leave" or cell.conflict_with == "unpaid_leave" %}
+              <div class="cal-conflict-dot" title="{% trans 'Leave conflict — click to regularize' %}"></div>
+            {% elif cell.conflict_with == "holiday_ot" %}
+              <div class="cal-ot-badge" title="{% trans 'Holiday Overtime' %}">HO</div>
+            {% elif cell.conflict_with == "week_off_ot" %}
+              <div class="cal-ot-badge wo" title="{% trans 'Week Off Overtime' %}">WO</div>
+            {% elif cell.conflict_with == "regular_ot" %}
+              <div class="cal-ot-badge reg" title="{% trans 'Overtime' %}">OT</div>
+            {% elif cell.resolution %}
+              <div class="cal-resolved-dot" title="{% trans 'Resolved — click to undo or change' %}"></div>
+            {% endif %}
+            {% if cell.show_hours %}
+            <div id="cal-day-hours-{{ employee.pk }}-{{ cell.date|date:'Y-m-d' }}" class="cal-day-hours">
+              <span class="cal-hours-label{% if cell.is_hours_edited %} edited{% endif %}">{{ cell.hours_label }}</span>
+              {% if cell.is_hours_edited %}<span style="color:#7c3aed;font-size:.52rem;line-height:1;">&#9998;</span>{% endif %}
+            </div>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+<!-- ── Conflict resolve panel (hidden until a cell is clicked) ──────────── -->
+<div id="cal-resolve-panel"></div>
+
+<!-- ── Legend ────────────────────────────────────────────────────────────── -->
+<div class="cal-legend">
+  <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#d1fae5;border:1px solid #6ee7b7;"></div> {% trans "Present (Full)" %}</div>
+  <div class="cal-legend-item"><div class="cal-legend-dot" style="background:linear-gradient(135deg,#d1fae5 50%,#fee2e2 50%);border:1px solid #9ca3af;"></div> {% trans "Half Day" %}</div>
+  <div class="cal-legend-item"><div class="cal-legend-dot" style="background:linear-gradient(135deg,#cffafe 60%,#f0fdf4 100%);border:1px solid #67e8f9;"></div> {% trans "Partial Hours" %}</div>
+  <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#ede9fe;border:1px solid #c4b5fd;"></div> {% trans "Short Hours" %}</div>
+  <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#fee2e2;border:1px solid #fca5a5;"></div> {% trans "Absent / Missing Out" %}</div>
+  <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#dbeafe;border:1px solid #93c5fd;"></div> {% trans "Paid Leave" %}</div>
+  <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#fef08a;border:1px solid #facc15;"></div> {% trans "Unpaid Leave" %}</div>
+  <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#f3e8ff;border:1px solid #d8b4fe;"></div> {% trans "Week Off" %}</div>
+  <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#a5f3fc;border:1px solid #22d3ee;"></div> {% trans "Holiday" %}</div>
+  <div class="cal-legend-item">
+    <span style="font-size:.62rem;font-weight:800;padding:1px 4px;border-radius:3px;background:#0f766e;color:#fff;line-height:1.4;">HO</span>
+    {% trans "Holiday Overtime" %}
+  </div>
+  <div class="cal-legend-item">
+    <span style="font-size:.62rem;font-weight:800;padding:1px 4px;border-radius:3px;background:#7c3aed;color:#fff;line-height:1.4;">WO</span>
+    {% trans "Week Off Overtime" %}
+  </div>
+  <div class="cal-legend-item">
+    <div style="width:9px;height:9px;border-radius:50%;background:#e85d04;border:1.5px solid #fff;box-shadow:0 0 0 1px #e85d04;flex-shrink:0;"></div>
+    {% trans "Leave Conflict (click to regularize)" %}
+  </div>
+  <div class="cal-legend-item">
+    <div style="width:9px;height:9px;border-radius:50%;background:#10b981;border:1.5px solid #fff;box-shadow:0 0 0 1px #10b981;flex-shrink:0;"></div>
+    {% trans "Resolved (click to undo)" %}
+  </div>
+</div>

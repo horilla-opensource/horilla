@@ -1,0 +1,50 @@
+{% load i18n %}
+{% if edit_mode %}
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+  <input type="text"
+         id="crp-hours-input-{{ employee.pk }}-{{ date|date:'Y-m-d' }}"
+         value="{{ hours_input }}"
+         style="width:72px;font-size:.88rem;padding:4px 8px;
+                border:1.5px solid #6366f1;border-radius:6px;
+                text-align:center;outline:none;"
+         placeholder="H:MM"
+         autofocus>
+  <button type="button"
+          onclick="msCalHoursSave('{{ employee.pk }}', '{{ date|date:'Y-m-d' }}', '{{ from_date|date:'Y-m-d' }}', '{{ to_date|date:'Y-m-d' }}', {{ computed_sec }})"
+          style="background:#6366f1;color:#fff;border:none;border-radius:6px;
+                 padding:5px 14px;font-size:.8rem;font-weight:600;cursor:pointer;">
+    &#10003; {% trans "Save" %}
+  </button>
+  <button type="button"
+          onclick="msCalHoursCancel('{{ employee.pk }}', '{{ date|date:'Y-m-d' }}', '{{ from_date|date:'Y-m-d' }}', '{{ to_date|date:'Y-m-d' }}', {{ computed_sec }})"
+          style="background:#f3f4f6;color:#6b7280;border:1px solid #d1d5db;border-radius:6px;
+                 padding:5px 12px;font-size:.8rem;font-weight:600;cursor:pointer;">
+    &#10005; {% trans "Cancel" %}
+  </button>
+</div>
+{% else %}
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:{% if is_hours_edited and daily_obj %}2px{% else %}0{% endif %};">
+  <span style="font-size:1.1rem;font-weight:700;color:{% if is_hours_edited %}#6366f1{% else %}#374151{% endif %};">
+    {{ hours_label }}
+  </span>
+  <button type="button"
+          onclick="msCalHoursEdit('{{ employee.pk }}', '{{ date|date:'Y-m-d' }}', '{{ from_date|date:'Y-m-d' }}', '{{ to_date|date:'Y-m-d' }}', {{ hours_second }})"
+          style="background:#f3f4f6;color:#374151;border:1px solid #d1d5db;border-radius:6px;
+                 padding:4px 12px;font-size:.76rem;font-weight:600;cursor:pointer;
+                 display:inline-flex;align-items:center;gap:5px;">
+    <ion-icon name="pencil-outline" style="font-size:.85rem;"></ion-icon>
+    {% trans "Edit" %}
+  </button>
+</div>
+{% if is_hours_edited and daily_obj and daily_obj.modified_by %}
+<div style="font-size:.7rem;color:#6b7280;margin-top:2px;">
+  &#9998; {% trans "Edited by" %}
+  <strong>{{ daily_obj.modified_by.employee_get.employee_first_name|default:daily_obj.modified_by.username }}{% if daily_obj.modified_by.employee_get.employee_last_name %} {{ daily_obj.modified_by.employee_get.employee_last_name }}{% endif %}</strong>
+  · {{ daily_obj.modified_at|date:"d M Y, H:i" }}
+</div>
+{% elif is_hours_edited %}
+<div style="font-size:.7rem;color:#6b7280;margin-top:2px;">
+  &#9998; {% trans "Manually edited" %}
+</div>
+{% endif %}
+{% endif %}

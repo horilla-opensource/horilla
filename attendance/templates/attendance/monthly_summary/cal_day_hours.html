@@ -1,0 +1,45 @@
+{% load i18n %}
+{% if edit_mode %}
+{# Edit mode — form swapped into #cal-day-hours-{pk}-{date} (innerHTML).         #}
+{# The parent div still has hx-get; stopPropagation on the form prevents re-firing. #}
+<form hx-post="{% url 'attendance-monthly-summary-daily-hours-edit' %}"
+      hx-target="#cal-day-hours-{{ employee.pk }}-{{ date|date:'Y-m-d' }}"
+      hx-swap="innerHTML"
+      style="display:flex;align-items:center;gap:2px;flex-wrap:nowrap;"
+      onclick="event.stopPropagation()">
+  {% csrf_token %}
+  <input type="hidden" name="employee_id"  value="{{ employee.pk }}">
+  <input type="hidden" name="date"         value="{{ date|date:'Y-m-d' }}">
+  <input type="hidden" name="from_date"    value="{{ from_date|date:'Y-m-d' }}">
+  <input type="hidden" name="to_date"      value="{{ to_date|date:'Y-m-d' }}">
+  <input type="hidden" name="computed_sec" value="{{ computed_sec }}">
+  <input type="text"   name="hours"        value="{{ hours_input }}"
+         style="width:40px;font-size:.58rem;padding:1px 3px;
+                border:1.5px solid #6366f1;border-radius:3px;
+                text-align:center;outline:none;line-height:1.3;
+                background:#fff;color:#1e1b4b;"
+         placeholder="H:MM"
+         autofocus>
+  <button type="submit"
+          onclick="event.stopPropagation()"
+          style="background:#6366f1;color:#fff;border:none;border-radius:3px;
+                 padding:1px 5px;font-size:.6rem;cursor:pointer;line-height:1.5;
+                 flex-shrink:0;"
+          title="{% trans 'Save' %}">&#10003;</button>
+  <button type="button"
+          hx-get="{% url 'attendance-monthly-summary-daily-hours-edit' %}?employee_id={{ employee.pk }}&date={{ date|date:'Y-m-d' }}&from_date={{ from_date|date:'Y-m-d' }}&to_date={{ to_date|date:'Y-m-d' }}&cancel=1&computed_sec={{ computed_sec }}"
+          hx-target="#cal-day-hours-{{ employee.pk }}-{{ date|date:'Y-m-d' }}"
+          hx-swap="innerHTML"
+          onclick="event.stopPropagation()"
+          style="background:#e5e7eb;color:#374151;border:none;border-radius:3px;
+                 padding:1px 5px;font-size:.6rem;cursor:pointer;line-height:1.5;
+                 flex-shrink:0;"
+          title="{% trans 'Cancel' %}">&#10005;</button>
+</form>
+{% else %}
+{# Display mode — rendered inside #cal-day-hours-{pk}-{date} (innerHTML).       #}
+{# Parent div already carries hx-get for the next click-to-edit; no button needed. #}
+<span class="cal-hours-label{% if is_hours_edited %} edited{% endif %}">{{ hours_label }}</span>
+{% if is_hours_edited %}<span style="color:#7c3aed;font-size:.52rem;line-height:1;" title="{% trans 'Manually edited' %}">&#9998;</span>{% endif %}
+<ion-icon name="pencil-outline" class="cal-hours-edit-icon"></ion-icon>
+{% endif %}

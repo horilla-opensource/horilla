@@ -1697,3 +1697,121 @@ class WorkRecords(models.Model):
                 name="unique_work_record_per_employee_per_date",
             )
         ]
+
+
+class AttendanceConflictResolution(HorillaModel):
+    """
+    HR decision for days where an attendance record overlaps a leave/holiday/week-off.
+    resolution="attendance" → the day counts as attendance (leave/holiday ignored in summary).
+    resolution="leave"      → the day counts as leave/holiday (attendance ignored in summary).
+    """
+
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        related_name="conflict_resolutions",
+        verbose_name=_("Employee"),
+    )
+    date = models.DateField(verbose_name=_("Date"))
+    resolution = models.CharField(
+        max_length=20,
+        choices=[
+            ("full_present", _("Full Present")),
+            ("half_present", _("Half Day")),
+            ("partial_hours", _("Partial Hours")),
+            ("absent", _("Absent")),
+            ("paid_leave", _("Paid Leave")),
+            ("unpaid_leave", _("Unpaid Leave")),
+            ("holiday", _("Holiday")),
+            ("week_off", _("Week Off")),
+            # legacy values kept for existing records
+            ("attendance", _("Count as Attendance")),
+            ("leave", _("Count as Leave / Holiday")),
+        ],
+        verbose_name=_("Resolution"),
+    )
+    conflict_type = models.CharField(
+        max_length=20,
+        blank=True,
+        default="",
+        verbose_name=_("Conflict Type"),
+    )
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+
+    class Meta:
+        unique_together = [["employee_id", "date"]]
+        verbose_name = _("Attendance Conflict Resolution")
+        verbose_name_plural = _("Attendance Conflict Resolutions")
+
+    def __str__(self):
+        return f"{self.employee_id} — {self.date} → {self.resolution}"
+
+
+class AttendanceSummaryHours(HorillaModel):
+    """
+    Stores computed (or HR-overridden) total worked seconds for an employee
+    over a specific date range.  Created/updated on every summary load;
+    is_manually_edited=True records are never overwritten by the auto-compute.
+    """
+
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        related_name="summary_hours",
+        verbose_name=_("Employee"),
+    )
+    from_date = models.DateField(verbose_name=_("From Date"))
+    to_date = models.DateField(verbose_name=_("To Date"))
+    hours_second = models.IntegerField(
+        default=0,
+        verbose_name=_("Hours (seconds)"),
+    )
+    is_manually_edited = models.BooleanField(
+        default=False,
+        verbose_name=_("Manually Edited"),
+    )
+
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+
+    class Meta:
+        unique_together = [["employee_id", "from_date", "to_date"]]
+        verbose_name = _("Attendance Summary Hours")
+        verbose_name_plural = _("Attendance Summary Hours")
+
+    def __str__(self):
+        h, m = self.hours_second // 3600, (self.hours_second % 3600) // 60
+        return f"{self.employee_id} {self.from_date}–{self.to_date}: {h}h{m:02d}m"
+
+
+class AttendanceDailyHours(HorillaModel):
+    """
+    Per-employee per-date worked hours, editable inside the calendar modal.
+    Created when a manager manually edits a single day's hours.
+    When present with is_manually_edited=True, overrides the computed daily
+    contribution in build_monthly_summary.
+    """
+
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        related_name="daily_hours",
+        verbose_name=_("Employee"),
+    )
+    date = models.DateField(verbose_name=_("Date"))
+    hours_second = models.IntegerField(default=0, verbose_name=_("Hours (seconds)"))
+    is_manually_edited = models.BooleanField(
+        default=False,
+        verbose_name=_("Manually Edited"),
+    )
+    modified_at = models.DateTimeField(auto_now=True, verbose_name=_("Modified At"))
+
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+
+    class Meta:
+        unique_together = [["employee_id", "date"]]
+        verbose_name = _("Attendance Daily Hours")
+        verbose_name_plural = _("Attendance Daily Hours")
+
+    def __str__(self):
+        h, m = self.hours_second // 3600, (self.hours_second % 3600) // 60
+        return f"{self.employee_id} {self.date}: {h}h{m:02d}m"
