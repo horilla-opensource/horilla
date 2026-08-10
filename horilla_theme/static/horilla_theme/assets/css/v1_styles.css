@@ -4615,3 +4615,14 @@ th[id$="-mail_indication-header"] {
   width: 210px;
   min-width: 170px !important;
 }
+
+/* Once Summernote has taken over a [data-summernote] textarea (its rich
+   .note-editor sibling exists), the raw source element must stay hidden.
+   Summernote's own JS hide step has been observed to silently no-op on a
+   form that's been closed and reopened more than once, leaving the raw
+   textarea visible side-by-side with the working rich editor. A CSS
+   !important rule wins over whatever inline display value that JS-timing
+   issue leaves behind, so this doesn't depend on init call order/timing. */
+textarea[data-summernote]:has(+ .note-editor) {
+  display: none !important;
+}

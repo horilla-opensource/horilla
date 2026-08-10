@@ -98,6 +98,11 @@ urlpatterns = [
         name="employee-view-individual",
         kwargs={"model": Employee},
     ),
+    path(
+        "employee-history-sidebar/<int:pk>/",
+        views.employee_history_sidebar,
+        name="employee-history-sidebar",
+    ),
     # path(
     #     "employee-profile/<int:obj_id>",
     #     views.employee_view_individual,

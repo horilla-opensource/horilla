@@ -323,6 +323,7 @@ class EmployeesList(HorillaListView):
         (_("Reporting Manager"), "employee_work_info__reporting_manager_id"),
         (_("Company"), "employee_work_info__company_id"),
         (_("Date of Joining"), "employee_work_info__date_joining"),
+        (_("History"), "get_history_col"),
     ]
 
     default_columns = [

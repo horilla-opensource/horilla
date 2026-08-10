@@ -1,0 +1,12 @@
+{% load i18n %}
+<div class="oh-activity-sidebar__header mt-3 sticky top-0 z-[100] bg-white pb-2">
+    <a style="cursor: pointer" onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show')">
+        <ion-icon
+            name="chevron-forward-outline"
+            class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md flip-rtl hydrated"
+        ></ion-icon>
+    </a>
+    <span class="oh-activity-sidebar__title fw-bold">{% trans "Activity history" %}</span>
+</div>
+
+{% include "tabs/history.html" %}

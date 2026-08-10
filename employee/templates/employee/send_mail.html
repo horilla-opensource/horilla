@@ -3,7 +3,7 @@
 
 <div id="ack-message-{{ employee.id }}"></div>
 
-<form id="ack-form-{{ employee.id }}" class="oh-general__tab-target oh-profile-section"
+<form id="ack-form-{{ employee.id }}"
       hx-post="{% url 'send-mail-to-employee' %}" hx-target="#ack-message-{{ employee.id }}"
       hx-encoding="multipart/form-data" onsubmit="return handleFormSubmit(event, {{ employee.id }})">
     <input type="hidden" name="id" value="{{ employee.id }}">
@@ -25,6 +25,9 @@
                 </div>
             </div>
         {% endif %}
+
+      <div class="oh-general__tab-target oh-profile-section bg-[white] rounded-md border border-dark-50 w-full">
+        <div class="oh-profile-section__card">
 
         <!-- Also Send To -->
         <div class="form-group mt-2">
@@ -99,6 +102,8 @@
         <div class="modal-footer d-flex flex-row-reverse mt-3">
             <button type="submit" class="oh-btn oh-btn--secondary submit-send">{% trans "Send Mail" %}</button>
         </div>
+        </div>
+      </div>
     </div>
 </form>
 
@@ -234,8 +239,14 @@
             initializeSummernote({{ employee.id }}, {{ searchWords|safe }});
         }
         {% else %}
-        if (selectedIds.length > 0 && $('#writeField').length && typeof initializeSummernote === 'function') {
-            initializeSummernote(selectedIds[0], {{ searchWords|safe }});
+        // Bulk Mail (nav dropdown) opens with nothing pre-selected -- recipients
+        // are chosen via the "Also send to" field, not row checkboxes -- so the
+        // hint must initialize even when selectedIds is empty. candId is only
+        // used later, if a mention is actually inserted, to preload preview
+        // data; get-template-hint already handles a missing candidate_id
+        // gracefully, so null here doesn't break the hint dropdown itself.
+        if ($('#writeField').length && typeof initializeSummernote === 'function') {
+            initializeSummernote(selectedIds[0] || null, {{ searchWords|safe }});
         }
         {% endif %}
     }
@@ -252,11 +263,18 @@
         loadPreviewIntoWriteField();
     });
 
-    $(document).ready(function () {
-        initSendMailForm();
-    });
-
-    document.body.addEventListener('htmx:afterSwap', function (ev) {
+    // This view requires @hx_request_required, so this fragment can only
+    // ever arrive via an htmx swap -- $(document).ready() is not a real
+    // fallback for it, and calling it unconditionally guaranteed a SECOND
+    // initSendMailForm() call on every open (jQuery's ready() fires
+    // immediately when the document is already loaded, which it always is
+    // by the time this fragment swaps in). That double call to
+    // initializeSummernote() per open was corrupting Summernote's re-init
+    // on the 2nd+ open, leaving the raw textarea visible alongside the rich
+    // editor. Namespaced + re-bound (not raw addEventListener) so reopening
+    // this modal replaces the previous listener instead of stacking a new
+    // one on top of it.
+    $(document.body).off('htmx:afterSwap.sendMailInit').on('htmx:afterSwap.sendMailInit', function (ev) {
         if (ev.detail.target.querySelector && ev.detail.target.querySelector('#writeTabBtn')) {
             initSendMailForm();
         }

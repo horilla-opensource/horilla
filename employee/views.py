@@ -3349,6 +3349,24 @@ def history_tab(request, pk):
 
 @login_required
 @hx_request_required
+def employee_history_sidebar(request, pk):
+    """
+    Same activity-history feed as the profile page's History tab, wrapped
+    with the #historySidebar's own header chrome (close chevron + title) --
+    for opening it directly from the employee list's History column, the
+    same way HorillaModel-based lists open their auto-added History column
+    (see generic/history_col.html / horilla_history_view.html).
+    """
+    employee_obj = Employee.objects.get(id=pk)
+    return render(
+        request,
+        "employee/history_sidebar.html",
+        {"employee": employee_obj},
+    )
+
+
+@login_required
+@hx_request_required
 @manager_can_enter(perm="employee.add_employeenote")
 def add_note(request, emp_id=None):
     """

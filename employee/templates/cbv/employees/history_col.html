@@ -1,0 +1,19 @@
+{% load i18n %}
+<div class="" onclick="event.stopPropagation()">
+    <button
+        type="button"
+        hx-get="{{ history_url }}"
+        hx-target="#historyContainer"
+        title="{% trans 'History' %}"
+        class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
+        style="flex: 1 0 auto; width: 20px; height: 30px; padding: 0"
+        onclick="event.stopPropagation(); $('#historySidebar').addClass('oh-activity-sidebar--show');"
+    >
+        <ion-icon
+            name="time-outline"
+            role="img"
+            class="md hydrated"
+            aria-label="{% trans 'time outline' %}"
+        ></ion-icon>
+    </button>
+</div>

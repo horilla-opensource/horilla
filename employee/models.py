@@ -525,6 +525,25 @@ class Employee(models.Model):
         badge_id = (f"({self.badge_id})") if self.badge_id is not None else ""
         return f"{self.employee_first_name} {last_name} {badge_id}"
 
+    def get_history_col(self):
+        """
+        Renders a clickable icon that opens this employee's activity-history
+        feed -- the same feed shown on the profile page's History tab -- in
+        the shared #historySidebar, matching the History column every
+        HorillaModel-based list already gets automatically (see
+        HorillaListView's history_tracking handling). Employee doesn't
+        subclass HorillaModel, so it's added explicitly here instead.
+        """
+        return render_template(
+            path="cbv/employees/history_col.html",
+            context={
+                "instance": self,
+                "history_url": reverse_lazy(
+                    "employee-history-sidebar", kwargs={"pk": self.pk}
+                ),
+            },
+        )
+
     def get_update_url(self):
         """
         This method to get update url
