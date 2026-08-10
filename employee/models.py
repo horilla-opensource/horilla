@@ -136,6 +136,21 @@ class Employee(models.Model):
     is_directly_converted = models.BooleanField(
         default=False, null=True, blank=True, editable=False
     )
+    # ROYAL FALCON - Leave Accrual Policy Fields
+    original_joining_date = models.DateField(
+        null=True,
+        blank=True,
+        editable=False,
+        verbose_name=_("Original Joining Date"),
+        help_text=_("Preserved original joining date for leave accrual calculations"),
+    )
+    adjusted_service_start_date = models.DateField(
+        null=True,
+        blank=True,
+        editable=False,
+        verbose_name=_("Adjusted Service Start Date"),
+        help_text=_("Joining date adjusted for unpaid/unauthorized leave exclusions"),
+    )
     objects = HorillaCompanyManager(
         related_company_field="employee_work_info__company_id"
     )

@@ -181,6 +181,36 @@ WEEK_DAYS = [
     ("6", _("Sunday")),
 ]
 
+# ============================================================================
+# ROYAL FALCON SECURITY - LEAVE ACCRUAL POLICY CONSTANTS
+# ============================================================================
+
+UNPAID_LEAVE_STATUS = [
+    ("active", _("Active")),
+    ("returned", _("Returned")),
+    ("rejected", _("Rejected")),
+]
+
+UNAUTHORIZED_EXTENSION_STATUS = [
+    ("pending_review", _("Pending Review")),
+    ("approved", _("Approved")),
+    ("converted_to_paid", _("Converted to Paid")),
+    ("rejected", _("Rejected")),
+]
+
+ACCRUAL_TYPE = [
+    ("monthly_accrual", _("Monthly Accrual")),
+    ("annual_reset", _("Annual Reset")),
+    ("accrual_pause_start", _("Accrual Pause Start")),
+    ("accrual_pause_end", _("Accrual Pause End")),
+    ("manual_adjustment", _("Manual Adjustment")),
+]
+
+SERVICE_ADJUSTMENT_TYPE = [
+    ("unpaid_leave_pause", _("Unpaid Leave Pause")),
+    ("unauthorized_extension", _("Unauthorized Extension")),
+]
+
 
 class LeaveTypeCondition(HorillaModel):
     """
@@ -650,6 +680,21 @@ class AvailableLeave(HorillaModel):
     expired_date = models.DateField(
         blank=True, null=True, verbose_name=_("CarryForward Expired Date")
     )
+    # ROYAL FALCON - Accrual tracking fields
+    last_accrual_date = models.DateField(
+        blank=True,
+        null=True,
+        editable=False,
+        verbose_name=_("Last Accrual Date"),
+        help_text=_("Track last date 2.5 days were credited to prevent duplicate accrual"),
+    )
+    accrual_paused_until = models.DateField(
+        blank=True,
+        null=True,
+        editable=False,
+        verbose_name=_("Accrual Paused Until"),
+        help_text=_("If set, accrual is paused until this date (e.g., during unpaid leave)"),
+    )
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
@@ -665,6 +710,29 @@ class AvailableLeave(HorillaModel):
 
     def __str__(self):
         return f"{self.employee_id} | {self.leave_type_id}"
+
+    def is_accrual_eligible(self, check_date=None):
+        """
+        Determine if employee is eligible for accrual on check_date.
+        Returns False if:
+        - Accrual paused during this date
+        - Employee on unpaid leave
+        - Already accrued this month
+        """
+        if check_date is None:
+            check_date = date.today()
+        
+        # Check if accrual is paused
+        if self.accrual_paused_until and self.accrual_paused_until >= check_date:
+            return False
+        
+        # Check if already accrued this month
+        if self.last_accrual_date:
+            if (self.last_accrual_date.month == check_date.month and
+                self.last_accrual_date.year == check_date.year):
+                return False
+        
+        return True
 
     def assigned_leave_actions(self):
         """
@@ -2347,6 +2415,394 @@ if apps.is_installed("attendance"):
                 is_compensatory_leave=True
             ).first()
             super().save(*args, **kwargs)
+
+
+# ============================================================================
+# ROYAL FALCON SECURITY - LEAVE ACCRUAL POLICY MODELS
+# ============================================================================
+
+
+class EmployeeCategory(HorillaModel):
+    """
+    Employee categories based on badge ID prefix.
+    Determines carryforward limits and other category-specific rules.
+    """
+
+    name = models.CharField(
+        max_length=100,
+        verbose_name=_("Category Name"),
+        help_text=_("e.g., Management, Normal Employee"),
+    )
+    badge_id_prefix = models.CharField(
+        max_length=10,
+        verbose_name=_("Badge ID Prefix"),
+        help_text=_("e.g., A-, S-, SD-, D-, P-"),
+        unique=True,
+    )
+    max_carryforward_days = models.IntegerField(
+        default=30,
+        verbose_name=_("Max Carryforward Days"),
+        help_text=_("Maximum leave days allowed to carryforward after December 31 reset"),
+    )
+    company_id = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name=_("Company"),
+    )
+    objects = HorillaCompanyManager(related_company_field="company_id")
+
+    class Meta:
+        verbose_name = _("Employee Category")
+        verbose_name_plural = _("Employee Categories")
+        unique_together = ("badge_id_prefix", "company_id")
+
+    def __str__(self):
+        return f"{self.name} ({self.badge_id_prefix})"
+
+
+class LeaveAccrualConfiguration(HorillaModel):
+    """
+    Company-level configuration for leave accrual policy.
+    Centralizes accrual amount, reset dates, and other settings.
+    """
+
+    monthly_accrual_days = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=2.5,
+        verbose_name=_("Monthly Accrual Days"),
+        help_text=_("Days of leave credited each month to employees"),
+    )
+    annual_reset_month = models.IntegerField(
+        default=12,
+        verbose_name=_("Annual Reset Month"),
+        help_text=_("Month when carryforward limits are reset (1-12)"),
+    )
+    annual_reset_day = models.IntegerField(
+        default=31,
+        verbose_name=_("Annual Reset Day"),
+        help_text=_("Day of month when carryforward limits are reset"),
+    )
+    company_id = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        verbose_name=_("Company"),
+    )
+    active = models.BooleanField(
+        default=True,
+        verbose_name=_("Active"),
+        help_text=_("Enable/disable accrual for this company"),
+    )
+    objects = HorillaCompanyManager(related_company_field="company_id")
+
+    class Meta:
+        verbose_name = _("Leave Accrual Configuration")
+        verbose_name_plural = _("Leave Accrual Configurations")
+        unique_together = ("company_id",)
+
+    def __str__(self):
+        return f"Accrual Config - {self.company_id}"
+
+
+class UnpaidLeave(HorillaModel):
+    """
+    Track unpaid leave periods when employee is not working and not earning leave.
+    Pauses monthly accrual and excludes days from service calculation.
+    """
+
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        verbose_name=_("Employee"),
+    )
+    start_date = models.DateField(verbose_name=_("Start Date"))
+    end_date = models.DateField(verbose_name=_("End Date"))
+    reason = models.TextField(
+        verbose_name=_("Reason"),
+        help_text=_("Reason for unpaid leave"),
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=UNPAID_LEAVE_STATUS,
+        default="active",
+        verbose_name=_("Status"),
+        help_text=_("Current status of unpaid leave"),
+    )
+    created_by = models.ForeignKey(
+        Employee,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="unpaid_leave_created",
+        verbose_name=_("Created By"),
+        help_text=_("HR or SuperAdmin who created this record"),
+    )
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
+    history = HorillaAuditLog(
+        related_name="unpaidleave_history",
+        bases=[HorillaAuditInfo],
+    )
+
+    class Meta:
+        verbose_name = _("Unpaid Leave")
+        verbose_name_plural = _("Unpaid Leaves")
+        ordering = ["-start_date"]
+
+    def __str__(self):
+        return f"{self.employee_id} - {self.start_date} to {self.end_date}"
+
+    def save(self, *args, **kwargs):
+        # Calculate days automatically
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def get_days_count(self):
+        """Calculate number of days in unpaid leave period"""
+        return (self.end_date - self.start_date).days + 1
+
+
+class UnauthorizedExtension(HorillaModel):
+    """
+    Track unauthorized absences after approved paid leave expires.
+    When employee doesn't return on approved return date.
+    """
+
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        verbose_name=_("Employee"),
+    )
+    leave_request_id = models.ForeignKey(
+        LeaveRequest,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_("Related Leave Request"),
+        help_text=_("The approved paid leave request that was extended"),
+    )
+    approved_return_date = models.DateField(
+        verbose_name=_("Approved Return Date"),
+        help_text=_("When employee was supposed to return"),
+    )
+    actual_return_date = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name=_("Actual Return Date"),
+        help_text=_("When employee actually returned"),
+    )
+    unauthorized_days = models.FloatField(
+        default=0,
+        editable=False,
+        verbose_name=_("Unauthorized Days"),
+        help_text=_("Auto-calculated: actual_return_date - approved_return_date"),
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=UNAUTHORIZED_EXTENSION_STATUS,
+        default="pending_review",
+        verbose_name=_("Status"),
+    )
+    remarks = models.TextField(
+        blank=True,
+        verbose_name=_("Remarks"),
+        help_text=_("HR notes and decision details"),
+    )
+    created_by = models.ForeignKey(
+        Employee,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="unauthorized_ext_created",
+        verbose_name=_("Created By"),
+    )
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
+    history = HorillaAuditLog(
+        related_name="unauthorizedextension_history",
+        bases=[HorillaAuditInfo],
+    )
+
+    class Meta:
+        verbose_name = _("Unauthorized Extension")
+        verbose_name_plural = _("Unauthorized Extensions")
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.employee_id} - Unauthorized absence from {self.approved_return_date}"
+
+    def save(self, *args, **kwargs):
+        # Auto-calculate unauthorized days
+        if self.actual_return_date:
+            self.unauthorized_days = (
+                self.actual_return_date - self.approved_return_date
+            ).days
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+
+class LeaveAccrualAuditLog(models.Model):
+    """
+    Immutable audit trail for all leave balance changes.
+    Every accrual, reset, pause, and adjustment is logged with reason.
+    """
+
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        verbose_name=_("Employee"),
+    )
+    accrual_type = models.CharField(
+        max_length=50,
+        choices=ACCRUAL_TYPE,
+        verbose_name=_("Accrual Type"),
+    )
+    old_balance = models.FloatField(
+        verbose_name=_("Old Balance"),
+        help_text=_("Leave balance before change"),
+    )
+    new_balance = models.FloatField(
+        verbose_name=_("New Balance"),
+        help_text=_("Leave balance after change"),
+    )
+    accrual_days = models.FloatField(
+        verbose_name=_("Accrual Days"),
+        help_text=_("Days added (positive) or removed (negative)"),
+    )
+    reason = models.TextField(
+        verbose_name=_("Reason"),
+        help_text=_("Why this accrual change was made"),
+    )
+    related_leave_type_id = models.ForeignKey(
+        LeaveType,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_("Leave Type"),
+        help_text=_("Leave type affected by this accrual"),
+    )
+    effective_date = models.DateField(
+        verbose_name=_("Effective Date"),
+        help_text=_("Date when this accrual took effect"),
+    )
+    created_by = models.ForeignKey(
+        Employee,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="accrual_log_created",
+        verbose_name=_("Created By"),
+        help_text=_("Who triggered this accrual (system or HR)"),
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created At"),
+    )
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
+
+    class Meta:
+        verbose_name = _("Leave Accrual Audit Log")
+        verbose_name_plural = _("Leave Accrual Audit Logs")
+        ordering = ["-effective_date", "-created_at"]
+        indexes = [
+            models.Index(fields=["employee_id", "-effective_date"]),
+            models.Index(fields=["accrual_type", "-effective_date"]),
+        ]
+
+    def __str__(self):
+        return f"{self.employee_id} - {self.accrual_type} on {self.effective_date}"
+
+    def save(self, *args, **kwargs):
+        # Immutable - prevent edits
+        if self.pk:
+            raise ValidationError(
+                _("Accrual audit logs are immutable and cannot be edited.")
+            )
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # Prevent deletion
+        raise ValidationError(
+            _("Accrual audit logs cannot be deleted for compliance reasons.")
+        )
+
+
+class EmployeeServiceAdjustment(models.Model):
+    """
+    Track periods when employee service is not accruing leave.
+    Used to exclude days from service calculation for accrual eligibility.
+    """
+
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        verbose_name=_("Employee"),
+    )
+    adjustment_type = models.CharField(
+        max_length=50,
+        choices=SERVICE_ADJUSTMENT_TYPE,
+        verbose_name=_("Adjustment Type"),
+    )
+    start_date = models.DateField(
+        verbose_name=_("Start Date"),
+        help_text=_("When service pause started"),
+    )
+    end_date = models.DateField(
+        verbose_name=_("End Date"),
+        help_text=_("When service pause ended"),
+    )
+    days_excluded = models.FloatField(
+        default=0,
+        editable=False,
+        verbose_name=_("Days Excluded"),
+        help_text=_("Auto-calculated number of days excluded from service"),
+    )
+    related_unpaid_leave_id = models.ForeignKey(
+        UnpaidLeave,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="service_adjustments",
+        verbose_name=_("Related Unpaid Leave"),
+    )
+    related_unauthorized_extension_id = models.ForeignKey(
+        UnauthorizedExtension,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="service_adjustments",
+        verbose_name=_("Related Unauthorized Extension"),
+    )
+    notes = models.TextField(
+        blank=True,
+        verbose_name=_("Notes"),
+        help_text=_("Additional context for this service adjustment"),
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created At"),
+    )
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
+
+    class Meta:
+        verbose_name = _("Employee Service Adjustment")
+        verbose_name_plural = _("Employee Service Adjustments")
+        ordering = ["-start_date"]
+
+    def __str__(self):
+        return f"{self.employee_id} - {self.adjustment_type} ({self.start_date} to {self.end_date})"
+
+    def save(self, *args, **kwargs):
+        # Auto-calculate excluded days
+        self.days_excluded = (self.end_date - self.start_date).days + 1
+        super().save(*args, **kwargs)
 
 
 class LeaveGeneralSetting(HorillaModel):
