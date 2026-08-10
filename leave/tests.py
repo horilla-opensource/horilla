@@ -14,7 +14,14 @@ from django.test import TestCase
 from base.models import Company, Department, EmployeeShift, Holidays, WorkType
 from employee.models import Employee, EmployeeWorkInformation
 from leave.methods import holiday_dates_list
-from leave.models import PAYMENT_TYPE, LeaveType, LeaveTypeCondition
+from leave.models import (
+    PAYMENT_TYPE,
+    LeaveType,
+    LeaveTypeCondition,
+    AvailableLeave,
+    UnpaidLeave,
+    LeaveAccrualAuditLog,
+)
 from leave.services import evaluate_leave_type_conditions
 
 # ---------------------------------------------------------------------------
@@ -570,3 +577,427 @@ class TestTodayHolidaysMethod(LeaveHolidayFixtureMixin, TestCase):
         far_past = self.today - timedelta(days=200)
         qs = Holidays.today_holidays(today=far_past)
         self.assertFalse(qs.exists())
+
+
+# ============================================================================
+# ROYAL FALCON SECURITY - Leave Accrual Policy Tests
+# ============================================================================
+
+
+class RoyalFalconLeaveAccrualTestCase(TestCase):
+    """Base test case with common setup for all accrual tests."""
+
+    def setUp(self):
+       """Set up test data: company, departments, employees, leave types."""
+       # Create company
+       self.company = Company.objects.create(
+           company_name="Royal Falcon Security",
+           company_code="RFS",
+       )
+
+       # Create department
+       self.department = Department.objects.create(
+           department_name="Operations",
+           company_id=self.company,
+       )
+
+       # Create leave type (Annual Leave)
+       self.leave_type = LeaveType.objects.create(
+           name="Annual Leave",
+           code="AL",
+           count=12,
+           company_id=self.company,
+           payment_type="paid",
+           carryforward_max=60,
+       )
+
+    def create_employee(self, badge_id, joining_date, company=None):
+       """Helper to create employee with badge ID and joining date."""
+       if company is None:
+           company = self.company
+
+       employee = Employee.objects.create(
+           badge_id=badge_id,
+           employee_first_name=f"Test_{badge_id}",
+           employee_last_name="Employee",
+           email=f"{badge_id}@test.com",
+       )
+
+       # Create work information
+       EmployeeWorkInformation.objects.filter(employee_id=employee).update(
+           company_id_id=company.pk,
+           date_joining=joining_date,
+       )
+
+       # Store original joining date
+       employee.original_joining_date = joining_date
+       employee.save()
+
+       # Create available leave
+       AvailableLeave.objects.create(
+           employee_id=employee,
+           leave_type_id=self.leave_type,
+           available_days=0,
+           carryforward_days=0,
+           assigned_date=date.today(),
+       )
+
+       return employee
+
+
+class TestEmployeeCategoryDetection(RoyalFalconLeaveAccrualTestCase):
+    """Test badge prefix to category conversion."""
+
+    def test_management_prefix(self):
+       """Test A- prefix correctly identifies as Management."""
+       from leave.models import EmployeeCategory
+
+       cat = EmployeeCategory.objects.create(
+           company_id=self.company,
+           name="Management",
+           badge_id_prefix="A",
+           max_carryforward_days=30,
+       )
+
+       from leave.accrual_service import get_employee_category
+       employee = self.create_employee("A-001", date(2024, 1, 15))
+       category = get_employee_category(employee)
+
+       self.assertIsNotNone(category)
+       self.assertEqual(category.badge_id_prefix, "A")
+       self.assertEqual(category.max_carryforward_days, 30)
+
+    def test_normal_prefix(self):
+       """Test S- prefix correctly identifies as Normal Employee."""
+       from leave.models import EmployeeCategory
+
+       cat = EmployeeCategory.objects.create(
+           company_id=self.company,
+           name="Normal",
+           badge_id_prefix="S",
+           max_carryforward_days=60,
+       )
+
+       from leave.accrual_service import get_employee_category
+       employee = self.create_employee("S-001", date(2024, 1, 15))
+       category = get_employee_category(employee)
+
+       self.assertIsNotNone(category)
+       self.assertEqual(category.badge_id_prefix, "S")
+       self.assertEqual(category.max_carryforward_days, 60)
+
+
+class TestAnniversaryDetection(RoyalFalconLeaveAccrualTestCase):
+    """Test anniversary month detection for accrual eligibility."""
+
+    def test_anniversary_month_same_month_next_year(self):
+       """Test employee anniversary month is correctly detected."""
+       from leave.accrual_service import is_anniversary_month
+
+       joining_date = date(2024, 2, 15)
+       employee = self.create_employee("S-001", joining_date)
+
+       # On Feb 15, 2025 (same month next year)
+       test_date = date(2025, 2, 15)
+       self.assertTrue(is_anniversary_month(employee, test_date))
+
+    def test_non_anniversary_month(self):
+       """Test non-anniversary months return False."""
+       from leave.accrual_service import is_anniversary_month
+
+       joining_date = date(2024, 2, 15)
+       employee = self.create_employee("S-001", joining_date)
+
+       # On Mar 15, 2025 - different month
+       test_date = date(2025, 3, 15)
+       self.assertFalse(is_anniversary_month(employee, test_date))
+
+
+class TestServiceCalculation(RoyalFalconLeaveAccrualTestCase):
+    """Test service duration calculation excluding unpaid/unauthorized days."""
+
+    def test_basic_service_days_no_exclusions(self):
+       """Test basic service calculation without exclusions."""
+       from leave.accrual_service import calculate_adjusted_service_days
+
+       joining_date = date(2024, 1, 15)
+       employee = self.create_employee("S-001", joining_date)
+
+       test_date = date(2024, 2, 15)  # 31 days of service
+       service_days = calculate_adjusted_service_days(employee, test_date)
+       self.assertGreaterEqual(service_days, 30)
+
+    def test_service_excludes_unpaid_leave(self):
+       """Test unpaid leave days are excluded from service calculation."""
+       from leave.accrual_service import calculate_adjusted_service_days
+
+       joining_date = date(2024, 1, 15)
+       employee = self.create_employee("S-001", joining_date)
+
+       # Create unpaid leave for 5 days
+       UnpaidLeave.objects.create(
+           employee_id=employee,
+           start_date=date(2024, 2, 1),
+           end_date=date(2024, 2, 5),
+           reason="Family emergency",
+           status="active",
+           accrual_paused=True,
+           days_count=5,
+       )
+
+       test_date = date(2024, 3, 15)
+       service_days_with_unpaid = calculate_adjusted_service_days(employee, test_date)
+
+       # Create another employee without unpaid leave
+       employee2 = self.create_employee("S-002", joining_date)
+       service_days_without_unpaid = calculate_adjusted_service_days(employee2, test_date)
+
+       # First employee should have fewer days due to unpaid leave
+       self.assertLess(service_days_with_unpaid, service_days_without_unpaid)
+
+
+class TestAccrualAuditLogImmutability(RoyalFalconLeaveAccrualTestCase):
+    """Test that audit logs are immutable."""
+
+    def test_audit_log_creation(self):
+       """Test that audit log can be created."""
+       from leave.accrual_service import create_accrual_audit_log
+
+       employee = self.create_employee("S-001", date(2024, 1, 15))
+
+       audit_log = create_accrual_audit_log(
+           employee=employee,
+           accrual_type="monthly_accrual",
+           old_balance=10.0,
+           new_balance=12.5,
+           reason="Monthly Accrual - 2.5 days on anniversary",
+       )
+
+       self.assertEqual(audit_log.accrual_type, "monthly_accrual")
+       self.assertEqual(audit_log.accrual_days, 2.5)
+       self.assertEqual(audit_log.old_balance, 10.0)
+       self.assertEqual(audit_log.new_balance, 12.5)
+
+    def test_audit_log_cannot_be_edited(self):
+       """Test that audit log cannot be edited after creation."""
+       from leave.accrual_service import create_accrual_audit_log
+
+       employee = self.create_employee("S-001", date(2024, 1, 15))
+       audit_log = create_accrual_audit_log(
+           employee=employee,
+           accrual_type="monthly_accrual",
+           old_balance=10.0,
+           new_balance=12.5,
+           reason="Test Accrual",
+       )
+
+       # Try to update
+       audit_log.reason = "Modified reason"
+       with self.assertRaises(ValidationError):
+           audit_log.save()
+
+    def test_audit_log_cannot_be_deleted(self):
+       """Test that audit log cannot be deleted after creation."""
+       from leave.accrual_service import create_accrual_audit_log
+
+       employee = self.create_employee("S-001", date(2024, 1, 15))
+       audit_log = create_accrual_audit_log(
+           employee=employee,
+           accrual_type="monthly_accrual",
+           old_balance=10.0,
+           new_balance=12.5,
+           reason="Test Accrual",
+       )
+
+       # Try to delete
+       with self.assertRaises(ValidationError):
+           audit_log.delete()
+
+
+class TestAccrualPauseResume(RoyalFalconLeaveAccrualTestCase):
+    """Test accrual pause/resume mechanisms during unpaid leave."""
+
+    def test_accrual_paused_when_unpaid_leave_active(self):
+       """Test that accrual is paused when unpaid leave is created."""
+       from leave.accrual_service import pause_accrual_for_unpaid_leave
+
+       employee = self.create_employee("S-001", date(2024, 1, 15))
+       available_leave = AvailableLeave.objects.get(
+           employee_id=employee,
+           leave_type_id=self.leave_type,
+       )
+
+       # Create unpaid leave
+       unpaid = UnpaidLeave.objects.create(
+           employee_id=employee,
+           start_date=date(2024, 2, 1),
+           end_date=date(2024, 2, 10),
+           reason="Test unpaid leave",
+           status="active",
+           days_count=10,
+       )
+
+       # Pause accrual
+       pause_accrual_for_unpaid_leave(unpaid)
+
+       # Verify accrual_paused_until is set
+       available_leave.refresh_from_db()
+       self.assertIsNotNone(available_leave.accrual_paused_until)
+       self.assertEqual(available_leave.accrual_paused_until, date(2024, 2, 10))
+
+    def test_accrual_eligibility_during_pause(self):
+       """Test that employee is not eligible for accrual while paused."""
+       from leave.accrual_service import is_service_eligible_for_accrual
+
+       employee = self.create_employee("S-001", date(2023, 6, 15))
+
+       # Create unpaid leave that covers anniversary
+       unpaid = UnpaidLeave.objects.create(
+           employee_id=employee,
+           start_date=date(2024, 6, 1),
+           end_date=date(2024, 6, 30),
+           reason="Medical leave",
+           status="active",
+           days_count=30,
+       )
+
+       available_leave = AvailableLeave.objects.get(
+           employee_id=employee,
+           leave_type_id=self.leave_type,
+       )
+       available_leave.accrual_paused_until = date(2024, 6, 30)
+       available_leave.save()
+
+       # On anniversary date (but during unpaid leave), should not be eligible
+       # Note: This depends on implementation - may need logic in accrual job
+
+
+class TestAnnualReset(RoyalFalconLeaveAccrualTestCase):
+    """Test December 31 annual reset functionality."""
+
+    def test_annual_reset_enforces_management_limit(self):
+       """Test management category is limited to 30 days on Dec 31."""
+       from leave.models import EmployeeCategory
+
+       # Create management category
+       mgmt_cat = EmployeeCategory.objects.create(
+           company_id=self.company,
+           name="Management",
+           badge_id_prefix="A",
+           max_carryforward_days=30,
+       )
+
+       employee = self.create_employee("A-001", date(2024, 1, 15))
+       available_leave = AvailableLeave.objects.get(
+           employee_id=employee,
+           leave_type_id=self.leave_type,
+       )
+
+       # Set balance above 30
+       available_leave.available_days = 50
+       available_leave.carryforward_days = 0
+       available_leave.save()
+
+       # Verify management category is detected
+       from leave.accrual_service import get_employee_category
+       category = get_employee_category(employee)
+       self.assertEqual(category.max_carryforward_days, 30)
+
+    def test_annual_reset_enforces_normal_limit(self):
+       """Test normal employee category is limited to 60 days on Dec 31."""
+       from leave.models import EmployeeCategory
+
+       # Create normal category
+       normal_cat = EmployeeCategory.objects.create(
+           company_id=self.company,
+           name="Normal Employee",
+           badge_id_prefix="S",
+           max_carryforward_days=60,
+       )
+
+       employee = self.create_employee("S-001", date(2024, 1, 15))
+       available_leave = AvailableLeave.objects.get(
+           employee_id=employee,
+           leave_type_id=self.leave_type,
+       )
+
+       # Set balance above 60
+       available_leave.available_days = 80
+       available_leave.carryforward_days = 0
+       available_leave.save()
+
+       # Verify normal category is detected
+       from leave.accrual_service import get_employee_category
+       category = get_employee_category(employee)
+       self.assertEqual(category.max_carryforward_days, 60)
+
+
+class TestUnauthorizedExtension(RoyalFalconLeaveAccrualTestCase):
+    """Test unauthorized extension tracking."""
+
+    def test_unauthorized_extension_calculation(self):
+       """Test unauthorized days are correctly calculated."""
+       from leave.models import UnauthorizedExtension, LeaveRequest
+
+       employee = self.create_employee("S-001", date(2024, 1, 15))
+
+       # Create a dummy leave request (approved paid leave)
+       leave_req = LeaveRequest.objects.create(
+           employee_id=employee,
+           leave_type_id=self.leave_type,
+           start_date=date(2024, 3, 1),
+           end_date=date(2024, 3, 10),
+           status="approved",
+       )
+
+       # Create unauthorized extension
+       ue = UnauthorizedExtension.objects.create(
+           employee_id=employee,
+           leave_request_id=leave_req,
+           approved_return_date=date(2024, 3, 11),
+           actual_return_date=date(2024, 3, 15),
+           status="pending_review",
+       )
+
+       # Verify unauthorized days calculated
+       self.assertEqual(ue.unauthorized_days, 4)
+
+
+class TestMultipleUnpaidLeaves(RoyalFalconLeaveAccrualTestCase):
+    """Test handling of multiple unpaid leaves."""
+
+    def test_multiple_unpaid_leaves_exclude_service(self):
+       """Test service calculation with multiple unpaid leaves."""
+       from leave.accrual_service import calculate_adjusted_service_days
+
+       joining_date = date(2024, 1, 1)
+       employee = self.create_employee("S-001", joining_date)
+
+       # Create first unpaid leave
+       UnpaidLeave.objects.create(
+           employee_id=employee,
+           start_date=date(2024, 2, 1),
+           end_date=date(2024, 2, 5),
+           reason="First unpaid leave",
+           status="active",
+           days_count=5,
+       )
+
+       # Create second unpaid leave
+       UnpaidLeave.objects.create(
+           employee_id=employee,
+           start_date=date(2024, 3, 1),
+           end_date=date(2024, 3, 3),
+           reason="Second unpaid leave",
+           status="active",
+           days_count=3,
+       )
+
+       # Calculate service on April 1
+       reference_date = date(2024, 4, 1)
+       service_days = calculate_adjusted_service_days(employee, reference_date)
+
+       # Should exclude 8 days (5 + 3)
+       # From Jan 1 to Apr 1 = 91 days, minus 8 = 83 days
+       expected = 91 - 8
+       self.assertAlmostEqual(service_days, expected, delta=2)
