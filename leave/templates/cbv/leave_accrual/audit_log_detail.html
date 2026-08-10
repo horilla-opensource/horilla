@@ -1,0 +1,117 @@
+{% extends "index.html" %}
+{% load i18n static %}
+
+{% block content %}
+
+<div class="oh-wrapper">
+	<div class="row">
+		<div class="col-md-8">
+			<div class="oh-card">
+				<div class="oh-card__header">
+					<h3>{% trans "Accrual Audit Log Details" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Employee" %}</label>
+							<p>{{ audit_log.employee_id.get_full_name }} ({{ audit_log.employee_id.badge_id }})</p>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Date" %}</label>
+							<p>{{ audit_log.effective_date|date:"SHORT_DATE_FORMAT" }}</p>
+						</div>
+					</div>
+
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Type" %}</label>
+							<p><span class="badge badge-info">{{ accrual_type_display }}</span></p>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Leave Type" %}</label>
+							<p>
+								{% if audit_log.related_leave_type_id %}
+									{{ audit_log.related_leave_type_id.name }}
+								{% else %}
+									<span class="text-muted">—</span>
+								{% endif %}
+							</p>
+						</div>
+					</div>
+
+					<div class="row mb-3">
+						<div class="col-md-4">
+							<label class="form-label">{% trans "Old Balance" %}</label>
+							<p><strong>{{ audit_log.old_balance|floatformat:2 }}</strong> {% trans "days" %}</p>
+						</div>
+						<div class="col-md-4">
+							<label class="form-label">{% trans "Accrual Days" %}</label>
+							<p>
+								{% if audit_log.accrual_days > 0 %}
+									<span class="text-success">+{{ audit_log.accrual_days|floatformat:2 }}</span>
+								{% elif audit_log.accrual_days < 0 %}
+									<span class="text-danger">{{ audit_log.accrual_days|floatformat:2 }}</span>
+								{% else %}
+									0
+								{% endif %}
+							</p>
+						</div>
+						<div class="col-md-4">
+							<label class="form-label">{% trans "New Balance" %}</label>
+							<p><strong>{{ audit_log.new_balance|floatformat:2 }}</strong> {% trans "days" %}</p>
+						</div>
+					</div>
+
+					<div class="row mb-3">
+						<div class="col-md-12">
+							<label class="form-label">{% trans "Reason" %}</label>
+							<p class="alert alert-info p-2">{{ audit_log.reason }}</p>
+						</div>
+					</div>
+
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Created By" %}</label>
+							<p>
+								{% if audit_log.created_by %}
+									{{ audit_log.created_by.get_full_name }}
+								{% else %}
+									<span class="text-muted">{% trans "System" %}</span>
+								{% endif %}
+							</p>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Created At" %}</label>
+							<p>{{ audit_log.created_at|date:"SHORT_DATETIME_FORMAT" }}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-4">
+			<div class="oh-card">
+				<div class="oh-card__header">
+					<h3>{% trans "Information" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<p>{% trans "This is an immutable audit log entry. No changes can be made to this record." %}</p>
+					<p class="mt-2">{% trans "This record preserves the complete history of leave balance changes for compliance and audit purposes." %}</p>
+				</div>
+			</div>
+
+			<div class="oh-card mt-3">
+				<div class="oh-card__header">
+					<h3>{% trans "Actions" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<a href="{% url 'accrual-audit-logs-list' %}" class="btn btn-secondary btn-sm w-100">
+						{% trans "Back to Logs" %}
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

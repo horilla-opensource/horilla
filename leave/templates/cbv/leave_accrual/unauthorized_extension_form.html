@@ -1,0 +1,122 @@
+{% extends "index.html" %}
+{% load i18n static %}
+
+{% block content %}
+
+<div class="oh-wrapper">
+	<div class="row">
+		<div class="col-md-8">
+			<div class="oh-card">
+				<div class="oh-card__header">
+					<h3>{% if action == "Create" %}{% trans "Create Unauthorized Extension" %}{% else %}{% trans "Update Unauthorized Extension" %}{% endif %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<form method="post">
+						{% csrf_token %}
+						<div class="row">
+							<div class="col-md-12">
+								{% if form.non_field_errors %}
+									<div class="alert alert-danger">
+										{% for error in form.non_field_errors %}
+											<p>{{ error }}</p>
+										{% endfor %}
+									</div>
+								{% endif %}
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label class="form-label">{{ form.leave_request_id.label }}</label>
+								{{ form.leave_request_id }}
+								{% if form.leave_request_id.errors %}
+									<div class="alert alert-danger mt-1">{{ form.leave_request_id.errors }}</div>
+								{% endif %}
+								<small class="form-text text-muted d-block mt-1">{{ form.leave_request_id.help_text|safe }}</small>
+							</div>
+							<div class="col-md-6 mb-3">
+								<label class="form-label">{{ form.status.label }}</label>
+								{{ form.status }}
+								{% if form.status.errors %}
+									<div class="alert alert-danger mt-1">{{ form.status.errors }}</div>
+								{% endif %}
+								<small class="form-text text-muted d-block mt-1">{{ form.status.help_text|safe }}</small>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label class="form-label">{{ form.approved_return_date.label }}</label>
+								{{ form.approved_return_date }}
+								{% if form.approved_return_date.errors %}
+									<div class="alert alert-danger mt-1">{{ form.approved_return_date.errors }}</div>
+								{% endif %}
+								<small class="form-text text-muted d-block mt-1">{{ form.approved_return_date.help_text|safe }}</small>
+							</div>
+							<div class="col-md-6 mb-3">
+								<label class="form-label">{{ form.actual_return_date.label }}</label>
+								{{ form.actual_return_date }}
+								{% if form.actual_return_date.errors %}
+									<div class="alert alert-danger mt-1">{{ form.actual_return_date.errors }}</div>
+								{% endif %}
+								<small class="form-text text-muted d-block mt-1">{{ form.actual_return_date.help_text|safe }}</small>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-12 mb-3">
+								<label class="form-label">{{ form.remarks.label }}</label>
+								{{ form.remarks }}
+								{% if form.remarks.errors %}
+									<div class="alert alert-danger mt-1">{{ form.remarks.errors }}</div>
+								{% endif %}
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-12">
+								<button type="submit" class="btn btn-primary">
+									{% if action == "Create" %}{% trans "Create" %}{% else %}{% trans "Update" %}{% endif %}
+								</button>
+								<a href="{% url 'unauthorized-extension-list' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<div class="oh-card mt-3">
+				<div class="oh-card__header">
+					<h3>{% trans "Important Information" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<ul class="list-unstyled">
+						<li class="mb-2"><strong>{% trans "Service Impact:" %}</strong> {% trans "Unauthorized days will be excluded from service calculation for accrual eligibility." %}</li>
+						<li class="mb-2"><strong>{% trans "Accrual Pause:" %}</strong> {% trans "Monthly accrual will be paused for unauthorized period." %}</li>
+						<li class="mb-2"><strong>{% trans "Status Options:" %}</strong></li>
+						<ul class="list-unstyled ms-3">
+							<li>Pending Review: {% trans "Awaiting HR approval" %}</li>
+							<li>Approved: {% trans "Deducted from service" %}</li>
+							<li>Converted to Paid: {% trans "HR approved as paid leave" %}</li>
+							<li>Rejected: {% trans "Not counted as service deduction" %}</li>
+						</ul>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-4">
+			<div class="oh-card">
+				<div class="oh-card__header">
+					<h3>{% trans "Help" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<p>{% trans "Use this form to record when an employee doesn't return on their approved leave end date." %}</p>
+					<p class="mt-2">{% trans "The system will automatically calculate unauthorized days as the difference between approved and actual return dates." %}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

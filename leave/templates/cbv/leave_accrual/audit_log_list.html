@@ -1,0 +1,38 @@
+{% extends "index.html" %}
+{% load i18n static %}
+
+{% block content %}
+
+<style>
+	.accrual-credit {
+		border-left: 3.4px solid green !important;
+		border-radius: 4px 0 0 4px;
+	}
+	.accrual-deduction {
+		border-left: 3.4px solid red !important;
+		border-radius: 4px 0 0 4px;
+	}
+	.accrual-adjustment {
+		border-left: 3.4px solid orange !important;
+		border-radius: 4px 0 0 4px;
+	}
+	.credit--dot {
+		background-color: green;
+	}
+	.deduction--dot {
+		background-color: red;
+	}
+	.adjustment--dot {
+		background-color: orange;
+	}
+</style>
+
+<div hx-get="{% url 'accrual-audit-logs-list' %}" hx-trigger="load"></div>
+
+{% include "generic/components.html" %}
+
+<div class="oh-wrapper" id="listContainer">
+	<div class="animated-background"></div>
+</div>
+
+{% endblock %}

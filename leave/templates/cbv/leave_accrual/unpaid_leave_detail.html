@@ -1,0 +1,117 @@
+{% extends "index.html" %}
+{% load i18n static %}
+
+{% block content %}
+
+<div class="oh-wrapper">
+	<div class="row">
+		<div class="col-md-8">
+			<div class="oh-card">
+				<div class="oh-card__header">
+					<h3>{% trans "Unpaid Leave Details" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Employee" %}</label>
+							<p>{{ unpaid_leave.employee_id.get_full_name }} ({{ unpaid_leave.employee_id.badge_id }})</p>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Status" %}</label>
+							<span class="badge badge-{{ unpaid_leave.get_status_display|lower }}">
+								{{ unpaid_leave.get_status_display }}
+							</span>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Start Date" %}</label>
+							<p>{{ unpaid_leave.start_date }}</p>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">{% trans "End Date" %}</label>
+							<p>{{ unpaid_leave.end_date }}</p>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Total Days" %}</label>
+							<p>{{ unpaid_leave.days_count }} {% trans "days" %}</p>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Accrual Paused" %}</label>
+							<p>{% if unpaid_leave.accrual_paused %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</p>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-md-12">
+							<label class="form-label">{% trans "Reason" %}</label>
+							<p>{{ unpaid_leave.reason }}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{% if related_adjustments %}
+			<div class="oh-card mt-3">
+				<div class="oh-card__header">
+					<h3>{% trans "Service Adjustments" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>{% trans "Type" %}</th>
+								<th>{% trans "Days Excluded" %}</th>
+								<th>{% trans "Date" %}</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for adjustment in related_adjustments %}
+							<tr>
+								<td>{{ adjustment.get_type_display }}</td>
+								<td>{{ adjustment.days_excluded }}</td>
+								<td>{{ adjustment.created_at|date:"SHORT_DATE_FORMAT" }}</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			{% endif %}
+		</div>
+
+		<div class="col-md-4">
+			<div class="oh-card">
+				<div class="oh-card__header">
+					<h3>{% trans "Actions" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					{% if user.groups.filter|length > 0 or user.is_superuser %}
+						<a href="{% url 'unpaid-leave-update' unpaid_leave.pk %}" class="btn btn-primary btn-sm w-100 mb-2">
+							{% trans "Edit" %}
+						</a>
+						<a href="{% url 'unpaid-leave-delete' unpaid_leave.pk %}" class="btn btn-danger btn-sm w-100">
+							{% trans "Delete" %}
+						</a>
+					{% endif %}
+					<a href="{% url 'unpaid-leave-list' %}" class="btn btn-secondary btn-sm w-100 mt-2">
+						{% trans "Back to List" %}
+					</a>
+				</div>
+			</div>
+
+			<div class="oh-card mt-3">
+				<div class="oh-card__header">
+					<h3>{% trans "Accrual Impact" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<p>{% blocktrans %}During this unpaid leave period, monthly accrual has been paused. Service calculation will exclude {{ unpaid_leave.days_count }} days.{% endblocktrans %}</p>
+					<p class="text-warning">{% trans "Employees will not receive 2.5-day credit during unpaid leave months." %}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

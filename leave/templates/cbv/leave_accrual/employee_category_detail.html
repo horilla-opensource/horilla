@@ -1,0 +1,116 @@
+{% extends "index.html" %}
+{% load i18n static %}
+
+{% block content %}
+
+<div class="oh-wrapper">
+	<div class="row">
+		<div class="col-md-8">
+			<div class="oh-card">
+				<div class="oh-card__header">
+					<h3>{% trans "Employee Category" %} - {{ category.name }}</h3>
+				</div>
+				<div class="oh-card__body">
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Category Name" %}</label>
+							<p><strong>{{ category.name }}</strong></p>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Badge ID Prefix" %}</label>
+							<p>
+								{% if category.badge_id_prefix %}
+									<span class="badge bg-primary">{{ category.badge_id_prefix }}*</span>
+								{% else %}
+									<span class="badge bg-secondary">{% trans "Default" %}</span>
+								{% endif %}
+							</p>
+						</div>
+					</div>
+
+					<div class="row mb-3">
+						<div class="col-md-12">
+							<label class="form-label">{% trans "Max Carryforward Days" %}</label>
+							<p><strong class="text-primary">{{ category.max_carryforward_days }} {% trans "days" %}</strong></p>
+							<small class="form-text text-muted">{% trans "Maximum leave balance kept after annual December 31 reset" %}</small>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="oh-card mt-3">
+				<div class="oh-card__header">
+					<h3>{% trans "Employee Count" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<p>
+						{% if category.badge_id_prefix %}
+							<strong>{{ employee_count }}</strong> {% trans "employee(s) with badge prefix" %} <span class="badge bg-info">{{ category.badge_id_prefix }}</span>
+						{% else %}
+							{% trans "This is the default category" %}
+						{% endif %}
+					</p>
+				</div>
+			</div>
+
+			<div class="oh-card mt-3">
+				<div class="oh-card__header">
+					<h3>{% trans "How This Works" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<ul class="list-unstyled">
+						<li class="mb-2">
+							<strong>{% trans "Prefix Matching:" %}</strong> 
+							{% if category.badge_id_prefix %}
+								{% blocktrans with prefix=category.badge_id_prefix %}All employees with badge IDs starting with "{{ prefix }}" belong to this category.{% endblocktrans %}
+							{% else %}
+								{% trans "Default category for employees not matching any other prefix." %}
+							{% endif %}
+						</li>
+						<li class="mb-2">
+							<strong>{% trans "Carryforward Limit:" %}</strong>
+							{% blocktrans with days=category.max_carryforward_days %}After the annual December 31 reset, employees can carry forward maximum {{ days }} days. Excess is removed.{% endblocktrans %}
+						</li>
+						<li>
+							<strong>{% trans "Audit Trail:" %}</strong>
+							{% trans "Every December 31, a reset audit log is created showing old balance, retained days, and deducted amount." %}
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-4">
+			<div class="oh-card">
+				<div class="oh-card__header">
+					<h3>{% trans "Actions" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					{% if user.groups.filter|length > 0 or user.is_superuser %}
+						<a href="{% url 'employee-category-update' category.pk %}" class="btn btn-primary btn-sm w-100 mb-2">
+							{% trans "Edit" %}
+						</a>
+						<a href="{% url 'employee-category-delete' category.pk %}" class="btn btn-danger btn-sm w-100">
+							{% trans "Delete" %}
+						</a>
+					{% endif %}
+					<a href="{% url 'employee-category-list' %}" class="btn btn-secondary btn-sm w-100 mt-2">
+						{% trans "Back to Categories" %}
+					</a>
+				</div>
+			</div>
+
+			<div class="oh-card mt-3">
+				<div class="oh-card__header">
+					<h3>{% trans "Info" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<p>{% trans "Employee categories define carryforward limits for leave balance." %}</p>
+					<p class="mt-2">{% trans "Typically used to differentiate between Management and regular employees." %}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

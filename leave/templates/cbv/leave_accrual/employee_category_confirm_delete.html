@@ -1,0 +1,53 @@
+{% extends "index.html" %}
+{% load i18n static %}
+
+{% block content %}
+
+<div class="oh-wrapper">
+	<div class="row justify-content-center">
+		<div class="col-md-6">
+			<div class="oh-card">
+				<div class="oh-card__header">
+					<h3>{% trans "Confirm Delete" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<div class="alert alert-warning" role="alert">
+						<h4 class="alert-heading">{% trans "Warning!" %}</h4>
+						<p>{% trans "Are you sure you want to delete this employee category?" %}</p>
+						<hr>
+						<p class="mb-0">{% trans "Affected employees will use default carryforward rules." %}</p>
+					</div>
+
+					<div class="oh-card mt-3">
+						<div class="oh-card__body">
+							<p><strong>{% trans "Category:" %}</strong> {{ object.name }}</p>
+							<p><strong>{% trans "Badge Prefix:" %}</strong> 
+								{% if object.badge_id_prefix %}
+									{{ object.badge_id_prefix }}
+								{% else %}
+									{% trans "Default" %}
+								{% endif %}
+							</p>
+							<p><strong>{% trans "Max Carryforward:" %}</strong> {{ object.max_carryforward_days }} {% trans "days" %}</p>
+							{% if affected_count %}
+							<p><strong class="text-warning">{% trans "Affected Employees:" %}</strong> {{ affected_count }}</p>
+							{% endif %}
+						</div>
+					</div>
+
+					<form method="post" class="mt-4">
+						{% csrf_token %}
+						<button type="submit" class="btn btn-danger w-100 mb-2">
+							{% trans "Delete Employee Category" %}
+						</button>
+						<a href="{% url 'employee-category-detail' object.pk %}" class="btn btn-secondary w-100">
+							{% trans "Cancel" %}
+						</a>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

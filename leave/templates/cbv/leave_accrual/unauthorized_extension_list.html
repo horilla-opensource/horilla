@@ -1,0 +1,45 @@
+{% extends "index.html" %}
+{% load i18n static %}
+
+{% block content %}
+
+<style>
+	.status-pending-review {
+		border-left: 3.4px solid orange !important;
+		border-radius: 4px 0 0 4px;
+	}
+	.status-approved {
+		border-left: 3.4px solid red !important;
+		border-radius: 4px 0 0 4px;
+	}
+	.status-converted-to-paid {
+		border-left: 3.4px solid green !important;
+		border-radius: 4px 0 0 4px;
+	}
+	.status-rejected {
+		border-left: 3.4px solid gray !important;
+		border-radius: 4px 0 0 4px;
+	}
+	.pending-review--dot {
+		background-color: orange;
+	}
+	.approved--dot {
+		background-color: red;
+	}
+	.converted-to-paid--dot {
+		background-color: green;
+	}
+	.rejected--dot {
+		background-color: gray;
+	}
+</style>
+
+<div hx-get="{% url 'unauthorized-extension-list' %}" hx-trigger="load"></div>
+
+{% include "generic/components.html" %}
+
+<div class="oh-wrapper" id="listContainer">
+	<div class="animated-background"></div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "index.html" %}
+{% load i18n static %}
+
+{% block content %}
+
+<style>
+	.category-prefix-badge {
+		font-size: 1.1rem;
+		font-weight: bold;
+		padding: 0.5rem 1rem;
+		background-color: #e3f2fd;
+		color: #1976d2;
+		border-radius: 4px;
+	}
+</style>
+
+<div hx-get="{% url 'employee-category-list' %}" hx-trigger="load"></div>
+
+{% include "generic/components.html" %}
+
+<div class="oh-wrapper" id="listContainer">
+	<div class="animated-background"></div>
+</div>
+
+{% endblock %}

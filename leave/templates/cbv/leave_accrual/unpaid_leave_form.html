@@ -1,0 +1,119 @@
+{% extends "index.html" %}
+{% load i18n static %}
+
+{% block content %}
+
+<div class="oh-wrapper">
+	<div class="row">
+		<div class="col-md-8">
+			<div class="oh-card">
+				<div class="oh-card__header">
+					<h3>{% if action == "Create" %}{% trans "Create Unpaid Leave" %}{% else %}{% trans "Update Unpaid Leave" %}{% endif %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<form method="post">
+						{% csrf_token %}
+						<div class="row">
+							<div class="col-md-12">
+								{% if form.non_field_errors %}
+									<div class="alert alert-danger">
+										{% for error in form.non_field_errors %}
+											<p>{{ error }}</p>
+										{% endfor %}
+									</div>
+								{% endif %}
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label class="form-label">{{ form.employee_id.label }}</label>
+								{{ form.employee_id }}
+								{% if form.employee_id.errors %}
+									<div class="alert alert-danger mt-1">{{ form.employee_id.errors }}</div>
+								{% endif %}
+							</div>
+							<div class="col-md-6 mb-3">
+								<label class="form-label">{{ form.status.label }}</label>
+								{{ form.status }}
+								{% if form.status.errors %}
+									<div class="alert alert-danger mt-1">{{ form.status.errors }}</div>
+								{% endif %}
+								<small class="form-text text-muted d-block mt-1">{{ form.status.help_text|safe }}</small>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label class="form-label">{{ form.start_date.label }}</label>
+								{{ form.start_date }}
+								{% if form.start_date.errors %}
+									<div class="alert alert-danger mt-1">{{ form.start_date.errors }}</div>
+								{% endif %}
+							</div>
+							<div class="col-md-6 mb-3">
+								<label class="form-label">{{ form.end_date.label }}</label>
+								{{ form.end_date }}
+								{% if form.end_date.errors %}
+									<div class="alert alert-danger mt-1">{{ form.end_date.errors }}</div>
+								{% endif %}
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-12 mb-3">
+								<label class="form-label">{{ form.reason.label }}</label>
+								{{ form.reason }}
+								{% if form.reason.errors %}
+									<div class="alert alert-danger mt-1">{{ form.reason.errors }}</div>
+								{% endif %}
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-12">
+								<button type="submit" class="btn btn-primary">
+									{% if action == "Create" %}{% trans "Create" %}{% else %}{% trans "Update" %}{% endif %}
+								</button>
+								<a href="{% url 'unpaid-leave-list' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<div class="oh-card mt-3">
+				<div class="oh-card__header">
+					<h3>{% trans "Important Information" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<ul class="list-unstyled">
+						<li class="mb-2"><strong>{% trans "Accrual Impact:" %}</strong> {% trans "Monthly 2.5-day accrual will be paused during this period." %}</li>
+						<li class="mb-2"><strong>{% trans "Service Calculation:" %}</strong> {% trans "Days during unpaid leave will be excluded from service duration for accrual eligibility." %}</li>
+						<li class="mb-2"><strong>{% trans "Anniversary Months:" %}</strong> {% trans "If unpaid leave covers employee's monthly anniversary, no accrual credit for that month." %}</li>
+						<li><strong>{% trans "Return to Duty:" %}</strong> {% trans "Accrual will resume the following month after employee returns." %}</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-4">
+			<div class="oh-card">
+				<div class="oh-card__header">
+					<h3>{% trans "Help" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<p>{% trans "Use this form to record unpaid leave periods. Only HR and SuperAdmins can create and manage unpaid leave records." %}</p>
+					<p class="mt-2">{% trans "Status values:" %}</p>
+					<ul class="list-unstyled">
+						<li><strong>Active:</strong> {% trans "Unpaid leave is ongoing, accrual paused" %}</li>
+						<li><strong>Returned:</strong> {% trans "Employee has returned from unpaid leave" %}</li>
+						<li><strong>Rejected:</strong> {% trans "Record was rejected and accrual not affected" %}</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

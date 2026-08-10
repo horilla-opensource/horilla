@@ -1,0 +1,38 @@
+{% extends "index.html" %}
+{% load i18n static %}
+
+{% block content %}
+
+<style>
+	.status-active {
+		border-left: 3.4px solid orange !important;
+		border-radius: 4px 0 0 4px;
+	}
+	.status-returned {
+		border-left: 3.4px solid green !important;
+		border-radius: 4px 0 0 4px;
+	}
+	.status-rejected {
+		border-left: 3.4px solid red !important;
+		border-radius: 4px 0 0 4px;
+	}
+	.active--dot {
+		background-color: orange;
+	}
+	.returned--dot {
+		background-color: green;
+	}
+	.rejected--dot {
+		background-color: red;
+	}
+</style>
+
+<div hx-get="{% url 'unpaid-leave-list' %}" hx-trigger="load"></div>
+
+{% include "generic/components.html" %}
+
+<div class="oh-wrapper" id="listContainer">
+	<div class="animated-background"></div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends "index.html" %}
+{% load i18n static %}
+
+{% block content %}
+
+<div class="oh-wrapper">
+	<div class="row">
+		<div class="col-md-8">
+			<div class="oh-card">
+				<div class="oh-card__header">
+					<h3>{% if action == "Create" %}{% trans "Create Employee Category" %}{% else %}{% trans "Update Employee Category" %}{% endif %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<form method="post">
+						{% csrf_token %}
+						<div class="row">
+							<div class="col-md-12">
+								{% if form.non_field_errors %}
+									<div class="alert alert-danger">
+										{% for error in form.non_field_errors %}
+											<p>{{ error }}</p>
+										{% endfor %}
+									</div>
+								{% endif %}
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label class="form-label">{{ form.name.label }}</label>
+								{{ form.name }}
+								{% if form.name.errors %}
+									<div class="alert alert-danger mt-1">{{ form.name.errors }}</div>
+								{% endif %}
+								<small class="form-text text-muted d-block mt-1">{{ form.name.help_text|safe }}</small>
+							</div>
+							<div class="col-md-6 mb-3">
+								<label class="form-label">{{ form.badge_id_prefix.label }}</label>
+								{{ form.badge_id_prefix }}
+								{% if form.badge_id_prefix.errors %}
+									<div class="alert alert-danger mt-1">{{ form.badge_id_prefix.errors }}</div>
+								{% endif %}
+								<small class="form-text text-muted d-block mt-1">{{ form.badge_id_prefix.help_text|safe }}</small>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label class="form-label">{{ form.max_carryforward_days.label }}</label>
+								{{ form.max_carryforward_days }}
+								{% if form.max_carryforward_days.errors %}
+									<div class="alert alert-danger mt-1">{{ form.max_carryforward_days.errors }}</div>
+								{% endif %}
+								<small class="form-text text-muted d-block mt-1">{{ form.max_carryforward_days.help_text|safe }}</small>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-12">
+								<button type="submit" class="btn btn-primary">
+									{% if action == "Create" %}{% trans "Create Category" %}{% else %}{% trans "Update Category" %}{% endif %}
+								</button>
+								<a href="{% url 'employee-category-list' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<div class="oh-card mt-3">
+				<div class="oh-card__header">
+					<h3>{% trans "Examples" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<div class="table-responsive">
+						<table class="table table-sm">
+							<thead>
+								<tr>
+									<th>{% trans "Category" %}</th>
+									<th>{% trans "Badge Prefix" %}</th>
+									<th>{% trans "Max Carryforward" %}</th>
+									<th>{% trans "Example Badges" %}</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Management</td>
+									<td>A</td>
+									<td>30 days</td>
+									<td>A-001, A-002, A-100</td>
+								</tr>
+								<tr>
+									<td>Normal Employee</td>
+									<td>S</td>
+									<td>60 days</td>
+									<td>S-001, S-002, S-500</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-4">
+			<div class="oh-card">
+				<div class="oh-card__header">
+					<h3>{% trans "Help" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<p>{% trans "Employee categories are used to group employees by badge ID prefix and set different carryforward limits." %}</p>
+					<p class="mt-2">{% trans "Examples:" %}</p>
+					<ul class="list-unstyled">
+						<li>• Badge prefix "A" → Management (30-day limit)</li>
+						<li>• Badge prefix "S" → Normal staff (60-day limit)</li>
+						<li>• Badge prefix "D" → Directors (custom limit)</li>
+					</ul>
+					<p class="mt-2">{% trans "Leave blank for default category." %}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

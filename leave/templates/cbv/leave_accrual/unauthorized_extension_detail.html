@@ -1,0 +1,106 @@
+{% extends "index.html" %}
+{% load i18n static %}
+
+{% block content %}
+
+<div class="oh-wrapper">
+	<div class="row">
+		<div class="col-md-8">
+			<div class="oh-card">
+				<div class="oh-card__header">
+					<h3>{% trans "Unauthorized Extension Details" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Employee" %}</label>
+							<p>{{ unauthorized_extension.employee_id.get_full_name }} ({{ unauthorized_extension.employee_id.badge_id }})</p>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Status" %}</label>
+							<span class="badge badge-{{ unauthorized_extension.get_status_display|lower|cut:' ' }}">
+								{{ unauthorized_extension.get_status_display }}
+							</span>
+						</div>
+					</div>
+
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Approved Return Date" %}</label>
+							<p>{{ unauthorized_extension.approved_return_date }}</p>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">{% trans "Actual Return Date" %}</label>
+							<p>{{ unauthorized_extension.actual_return_date }}</p>
+						</div>
+					</div>
+
+					<div class="row mb-3">
+						<div class="col-md-12">
+							<label class="form-label">{% trans "Unauthorized Days" %}</label>
+							<p class="text-danger"><strong>{{ unauthorized_extension.unauthorized_days }} {% trans "days" %}</strong></p>
+						</div>
+					</div>
+
+					{% if unauthorized_extension.leave_request_id %}
+					<div class="row mb-3">
+						<div class="col-md-12">
+							<label class="form-label">{% trans "Related Leave Request" %}</label>
+							<p>
+								<a href="{% url 'leave-requests-detail-view' unauthorized_extension.leave_request_id.pk %}">
+									{{ unauthorized_extension.leave_request_id.leave_type_id.name }} 
+									({{ unauthorized_extension.leave_request_id.start_date }} - {{ unauthorized_extension.leave_request_id.end_date }})
+								</a>
+							</p>
+						</div>
+					</div>
+					{% endif %}
+
+					{% if unauthorized_extension.remarks %}
+					<div class="row mb-3">
+						<div class="col-md-12">
+							<label class="form-label">{% trans "Remarks" %}</label>
+							<p>{{ unauthorized_extension.remarks }}</p>
+						</div>
+					</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-4">
+			<div class="oh-card">
+				<div class="oh-card__header">
+					<h3>{% trans "Actions" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					{% if user.groups.filter|length > 0 or user.is_superuser %}
+						<a href="{% url 'unauthorized-extension-update' unauthorized_extension.pk %}" class="btn btn-primary btn-sm w-100 mb-2">
+							{% trans "Edit" %}
+						</a>
+						<a href="{% url 'unauthorized-extension-delete' unauthorized_extension.pk %}" class="btn btn-danger btn-sm w-100">
+							{% trans "Delete" %}
+						</a>
+					{% endif %}
+					<a href="{% url 'unauthorized-extension-list' %}" class="btn btn-secondary btn-sm w-100 mt-2">
+						{% trans "Back to List" %}
+					</a>
+				</div>
+			</div>
+
+			<div class="oh-card mt-3">
+				<div class="oh-card__header">
+					<h3>{% trans "Service Impact" %}</h3>
+				</div>
+				<div class="oh-card__body">
+					<p>{% blocktrans with days=unauthorized_extension.unauthorized_days %}
+						This unauthorized extension of {{ days }} days will be excluded from service calculation for accrual eligibility.
+					{% endblocktrans %}</p>
+					<p class="text-danger mt-2">{% trans "This will affect monthly accrual calculations during this period." %}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

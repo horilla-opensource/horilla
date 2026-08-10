@@ -1,0 +1,41 @@
+{% extends "index.html" %}
+{% load i18n static %}
+
+{% block content %}
+
+<div class="oh-wrapper">
+	<div class="row mb-3">
+		<div class="col-md-12">
+			<div class="oh-stats-container">
+				<div class="oh-stats-card">
+					<div class="oh-stats-card__header">{% trans "Total Accruals" %}</div>
+					<div class="oh-stats-card__body">
+						<div class="oh-stats-card__value">{{ total_accruals }}</div>
+					</div>
+				</div>
+				<div class="oh-stats-card">
+					<div class="oh-stats-card__header">{% trans "Total Credited" %}</div>
+					<div class="oh-stats-card__body">
+						<div class="oh-stats-card__value text-success">+{{ total_credited|floatformat:1 }}</div>
+					</div>
+				</div>
+				<div class="oh-stats-card">
+					<div class="oh-stats-card__header">{% trans "Total Deducted" %}</div>
+					<div class="oh-stats-card__body">
+						<div class="oh-stats-card__value text-danger">-{{ total_deducted|floatformat:1 }}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div hx-get="{% url 'accrual-audit-logs-hr' %}" hx-trigger="load"></div>
+
+{% include "generic/components.html" %}
+
+<div class="oh-wrapper" id="listContainer">
+	<div class="animated-background"></div>
+</div>
+
+{% endblock %}
