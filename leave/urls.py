@@ -22,6 +22,10 @@ from leave.cbv import (
     my_leave_request,
     restricted_days,
     settings_tabs,
+    unpaid_leave,
+    unauthorized_extension,
+    employee_category,
+    accrual_audit_logs,
 )
 from leave.forms import RestrictLeaveForm
 
@@ -695,6 +699,101 @@ urlpatterns = [
             "form": RestrictLeaveForm,
             "template": "leave/restrict/restrict_form.html",
         },
+    ),
+    # ── Royal Falcon Security - Leave Accrual Policy URLs ──────────────────
+    # Unpaid Leave Management
+    path(
+        "unpaid-leave/",
+        unpaid_leave.UnpaidLeaveListView.as_view(),
+        name="unpaid-leave-list",
+    ),
+    path(
+        "unpaid-leave/<int:pk>/",
+        unpaid_leave.UnpaidLeaveDetailView.as_view(),
+        name="unpaid-leave-detail",
+    ),
+    path(
+        "unpaid-leave/create/",
+        unpaid_leave.UnpaidLeaveCreateView.as_view(),
+        name="unpaid-leave-create",
+    ),
+    path(
+        "unpaid-leave/<int:pk>/update/",
+        unpaid_leave.UnpaidLeaveUpdateView.as_view(),
+        name="unpaid-leave-update",
+    ),
+    path(
+        "unpaid-leave/<int:pk>/delete/",
+        unpaid_leave.UnpaidLeaveDeleteView.as_view(),
+        name="unpaid-leave-delete",
+    ),
+    # Unauthorized Extension Management
+    path(
+        "unauthorized-extension/",
+        unauthorized_extension.UnauthorizedExtensionListView.as_view(),
+        name="unauthorized-extension-list",
+    ),
+    path(
+        "unauthorized-extension/<int:pk>/",
+        unauthorized_extension.UnauthorizedExtensionDetailView.as_view(),
+        name="unauthorized-extension-detail",
+    ),
+    path(
+        "unauthorized-extension/create/",
+        unauthorized_extension.UnauthorizedExtensionCreateView.as_view(),
+        name="unauthorized-extension-create",
+    ),
+    path(
+        "unauthorized-extension/<int:pk>/update/",
+        unauthorized_extension.UnauthorizedExtensionUpdateView.as_view(),
+        name="unauthorized-extension-update",
+    ),
+    path(
+        "unauthorized-extension/<int:pk>/delete/",
+        unauthorized_extension.UnauthorizedExtensionDeleteView.as_view(),
+        name="unauthorized-extension-delete",
+    ),
+    # Employee Category Management
+    path(
+        "employee-category/",
+        employee_category.EmployeeCategoryListView.as_view(),
+        name="employee-category-list",
+    ),
+    path(
+        "employee-category/<int:pk>/",
+        employee_category.EmployeeCategoryDetailView.as_view(),
+        name="employee-category-detail",
+    ),
+    path(
+        "employee-category/create/",
+        employee_category.EmployeeCategoryCreateView.as_view(),
+        name="employee-category-create",
+    ),
+    path(
+        "employee-category/<int:pk>/update/",
+        employee_category.EmployeeCategoryUpdateView.as_view(),
+        name="employee-category-update",
+    ),
+    path(
+        "employee-category/<int:pk>/delete/",
+        employee_category.EmployeeCategoryDeleteView.as_view(),
+        name="employee-category-delete",
+    ),
+    # Leave Accrual Audit Logs
+    path(
+        "accrual-audit-logs/",
+        accrual_audit_logs.LeaveAccrualAuditLogListView.as_view(),
+        name="accrual-audit-logs-list",
+    ),
+    path(
+        "accrual-audit-logs/<int:pk>/",
+        accrual_audit_logs.LeaveAccrualAuditLogDetailView.as_view(),
+        name="accrual-audit-logs-detail",
+    ),
+    path(
+        "accrual-audit-logs-hr/",
+        accrual_audit_logs.LeaveAccrualAuditLogHRView.as_view(),
+        name="accrual-audit-logs-hr",
     ),
     # ── Leave Modern Dashboard ───────────────────────────────────────────────
     path(
