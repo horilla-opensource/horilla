@@ -2913,9 +2913,7 @@ class CompanyLeaves(HorillaModel):
     based_on_week_day = models.CharField(
         max_length=100, choices=WEEK_DAYS, verbose_name=_("Based On Week Day")
     )
-    company_id = models.ForeignKey(
-        Company, null=True, on_delete=models.PROTECT, verbose_name=_("Company")
-    )
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
     objects = HorillaCompanyManager()
 
     class Meta:
@@ -2972,6 +2970,12 @@ class CompanyLeaves(HorillaModel):
             path="cbv/company_leaves/company_leave_actions.html",
             context={"instance": self, "weeks": WEEKS},
         )
+
+    def get_company_display(self):
+        """
+        Comma-separated names of the companies this weekly off day applies to.
+        """
+        return ", ".join(str(company) for company in self.company_id.all())
 
     def detail_view(self):
         """

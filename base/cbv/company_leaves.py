@@ -58,8 +58,8 @@ class CompanyleaveListView(HorillaListView):
             self.action_method = "company_leave_actions"
 
         if self.request.user.has_perm("base.view_company"):
-            if (_("Company"), "company_id") not in self.columns:
-                self.columns.append((_("Company"), "company_id"))
+            if (_("Company"), "get_company_display") not in self.columns:
+                self.columns.append((_("Company"), "get_company_display"))
 
     columns = [
         (_("Based On Week"), "custom_based_on_week"),
@@ -120,7 +120,7 @@ class CompanyLeaveDetailView(HorillaDetailedView):
     body = [
         (_("Based On Week"), "custom_based_on_week"),
         (_("Based On Week Day"), "based_on_week_day_col"),
-        (_("Company"), "company_id"),
+        (_("Company"), "get_company_display"),
     ]
     action_method = "detail_view_actions"
 
