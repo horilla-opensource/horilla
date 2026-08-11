@@ -76,11 +76,11 @@
                         </span>
                         <div class="relative kanban-title duration-500 ease-in-out min-w-0">
                             <h5
-                                class="text-center px-2.5 py-1 rounded-2xl text-xs font-semibold text-[white] flex items-center gap-1.5 ps-1.5 truncate {% cycle 'bg-[#f39022]' 'bg-[#22c55e]' 'bg-[#3b82f6]' 'bg-[#e11d48]' 'bg-[#8b5cf6]' 'bg-[#10b981]' 'bg-[#f59e0b]' %}"
+                                class="text-center px-2.5 py-1 rounded-2xl text-xs font-semibold text-white bg-primary-600 flex items-center gap-1.5 ps-1.5 truncate"
                                 title="{{group.label}}"
                             >
                                 <span
-                                    class="w-5 h-5 bg-white rounded-full text-[#f39022] flex items-center justify-center text-[11px] font-bold flex-shrink-0 fade-me-out"
+                                    class="w-5 h-5 bg-white rounded-full text-primary-600 flex items-center justify-center text-[11px] font-bold flex-shrink-0 fade-me-out"
                                     data-rec-stage-badge="{{rec.id}}"
                                     id="groupCount{{key}}"
                                 >
@@ -101,17 +101,18 @@
                                 </button>
                                 <!-- Dropdown Content -->
                                 <div
-                                    class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50"
+                                    class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200"
                                 >
-                                    <ul class="text-xs" style="color:black;">
+                                    <ul class="text-xs text-dark-600">
                                         {% for action in view.group_actions %}
                                             {% if action.accessibility|accessibility:group.instance %}
                                                 <li>
-                                                    <p
-                                                        class="w-full text-left px-3 py-1 hover:text-primary-600 font-semibold"
+                                                    <a
+                                                        {{action.attrs|format:group.instance|safe}}
+                                                        class="block w-full text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300 cursor-pointer"
                                                     >
-                                                        <a {{action.attrs|format:group.instance|safe}}>{{group.instance|getattribute:action.action|default:action.action}}</a>
-                                                    </p>
+                                                        {{group.instance|getattribute:action.action|default:action.action}}
+                                                    </a>
                                                 </li>
                                             {% endif %}
                                         {% endfor %}

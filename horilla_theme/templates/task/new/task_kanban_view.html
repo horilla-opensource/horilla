@@ -37,10 +37,10 @@
                             ondragend="columnDragEnd(event)"
                         >
                             <div class="relative">
-                                <h5 class="text-center {% cycle 'bg-[#f39022]' 'bg-[#8b5cf6]' 'bg-[#22c55e]' 'bg-[#3b82f6]' 'bg-[#e11d48]' 'bg-[#f59e0b]' 'bg-[#10b981]' %} px-3 py-1.5 rounded-2xl text-sm font-medium text-white flex items-center gap-2 ps-2">
+                                <h5 class="text-center bg-primary-600 px-3 py-1.5 rounded-2xl text-sm font-medium text-white flex items-center gap-2 ps-2">
                                     {{ stage.title }}
                                     <span
-                                        class="w-6 h-6 bg-white rounded-full text-[#f39022] flex items-center justify-center text-xs task-count"
+                                        class="w-6 h-6 bg-white rounded-full text-primary-600 flex items-center justify-center text-xs task-count"
                                     >
                                         {{ stage.tasks.all|length }}
                                     </span>
