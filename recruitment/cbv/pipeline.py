@@ -270,6 +270,9 @@ class GetStages(TemplateView):
             stage.candidate_count = count_map.get(stage.id, 0)
 
         context["stages"] = stages_list
+        context["total_candidates"] = sum(
+            stage.candidate_count for stage in stages_list
+        )
         context["view_id"] = get_short_uuid(6, "hsv")
         context["rec_id"] = kwargs["rec_id"]
         return context
