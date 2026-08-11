@@ -237,13 +237,13 @@
     "model": "asset.assetrequest",
     "pk": 1,
     "fields": {
-      "created_at": "2025-07-24T05:25:00.158Z",
+      "created_at": "2025-07-02T06:10:00.000Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "requested_employee_id": 1,
       "asset_category_id": 1,
-      "asset_request_date": "2025-07-24",
+      "asset_request_date": "2025-07-02",
       "description": "i need a laptop",
       "asset_request_status": "Requested"
     }
@@ -252,13 +252,13 @@
     "model": "asset.assetrequest",
     "pk": 2,
     "fields": {
-      "created_at": "2025-07-24T05:25:11.332Z",
+      "created_at": "2025-07-03T06:15:00.000Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "requested_employee_id": 12,
       "asset_category_id": 1,
-      "asset_request_date": "2025-07-24",
+      "asset_request_date": "2025-07-03",
       "description": "i need a laptop",
       "asset_request_status": "Requested"
     }
@@ -267,13 +267,13 @@
     "model": "asset.assetrequest",
     "pk": 3,
     "fields": {
-      "created_at": "2025-07-24T05:25:24.608Z",
+      "created_at": "2025-07-04T06:20:00.000Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "requested_employee_id": 13,
       "asset_category_id": 1,
-      "asset_request_date": "2025-07-24",
+      "asset_request_date": "2025-07-04",
       "description": "i need a laptop",
       "asset_request_status": "Requested"
     }
@@ -282,13 +282,13 @@
     "model": "asset.assetrequest",
     "pk": 4,
     "fields": {
-      "created_at": "2025-07-24T05:25:37.401Z",
+      "created_at": "2025-07-05T06:25:00.000Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "requested_employee_id": 1,
       "asset_category_id": 7,
-      "asset_request_date": "2025-07-24",
+      "asset_request_date": "2025-07-05",
       "description": "i need a car",
       "asset_request_status": "Approved"
     }
@@ -297,13 +297,13 @@
     "model": "asset.assetrequest",
     "pk": 5,
     "fields": {
-      "created_at": "2025-07-24T05:25:57.948Z",
+      "created_at": "2025-07-06T06:30:00.000Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "requested_employee_id": 67,
       "asset_category_id": 2,
-      "asset_request_date": "2025-07-24",
+      "asset_request_date": "2025-07-06",
       "description": "i need a headset",
       "asset_request_status": "Approved"
     }
@@ -320,13 +320,13 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "LPT0001",
-      "asset_purchase_date": "2022-07-07",
+      "asset_purchase_date": "2025-07-02",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "Not-Available",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-03",
+      "notify_before": 7
     }
   },
   {
@@ -341,13 +341,13 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "LPT0002",
-      "asset_purchase_date": "2022-07-07",
+      "asset_purchase_date": "2025-07-04",
       "asset_purchase_cost": "16000.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "Not-Available",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-04",
+      "notify_before": 7
     }
   },
   {
@@ -362,13 +362,13 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "LPT0003",
-      "asset_purchase_date": "2022-07-07",
+      "asset_purchase_date": "2025-07-05",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "Not-Available",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-05",
+      "notify_before": 7
     }
   },
   {
@@ -383,13 +383,13 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "LPT0004",
-      "asset_purchase_date": "2022-07-07",
+      "asset_purchase_date": "2025-07-07",
       "asset_purchase_cost": "15001.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "Not-Available",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-06",
+      "notify_before": 7
     }
   },
   {
@@ -407,10 +407,10 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15002.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "Not-Available",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-07",
+      "notify_before": 7
     }
   },
   {
@@ -428,10 +428,10 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15003.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "Not-Available",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-08",
+      "notify_before": 7
     }
   },
   {
@@ -449,10 +449,10 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15004.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-09",
+      "notify_before": 7
     }
   },
   {
@@ -470,10 +470,10 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15005.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-10",
+      "notify_before": 7
     }
   },
   {
@@ -491,10 +491,10 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15006.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-03",
+      "notify_before": 7
     }
   },
   {
@@ -512,10 +512,10 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15007.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-04",
+      "notify_before": 7
     }
   },
   {
@@ -533,10 +533,10 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15008.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-05",
+      "notify_before": 7
     }
   },
   {
@@ -554,10 +554,10 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15009.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-06",
+      "notify_before": 7
     }
   },
   {
@@ -575,10 +575,10 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15010.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-07",
+      "notify_before": 7
     }
   },
   {
@@ -596,10 +596,10 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15011.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-08",
+      "notify_before": 7
     }
   },
   {
@@ -617,10 +617,10 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15012.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-09",
+      "notify_before": 7
     }
   },
   {
@@ -638,10 +638,10 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15013.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-10",
+      "notify_before": 7
     }
   },
   {
@@ -659,10 +659,10 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15014.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-03",
+      "notify_before": 7
     }
   },
   {
@@ -680,10 +680,10 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15015.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 1,
-      "expiry_date": null,
-      "notify_before": 1
+      "expiry_date": "2025-07-04",
+      "notify_before": 7
     }
   },
   {
@@ -701,7 +701,7 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15016.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 1,
       "expiry_date": null,
       "notify_before": 1
@@ -722,7 +722,7 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15017.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 1,
       "expiry_date": null,
       "notify_before": 1
@@ -743,7 +743,7 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15018.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 1,
       "expiry_date": null,
       "notify_before": 1
@@ -764,7 +764,7 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15019.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 1,
       "expiry_date": null,
       "notify_before": 1
@@ -785,7 +785,7 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15020.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -806,7 +806,7 @@
       "asset_purchase_date": "2022-07-07",
       "asset_purchase_cost": "15021.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -827,7 +827,7 @@
       "asset_purchase_date": "2022-07-31",
       "asset_purchase_cost": "18500.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -848,7 +848,7 @@
       "asset_purchase_date": "2022-08-01",
       "asset_purchase_cost": "18501.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -869,7 +869,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "18502.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -890,7 +890,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "18503.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -911,7 +911,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "18504.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -932,7 +932,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "18505.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -953,7 +953,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "18506.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -974,7 +974,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "18507.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -995,7 +995,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "18508.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -1016,7 +1016,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "18509.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -1037,7 +1037,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "18510.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -1058,7 +1058,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "18511.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -1079,7 +1079,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "18512.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -1100,7 +1100,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "18513.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -1121,7 +1121,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "18514.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -1142,7 +1142,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "18515.00",
       "asset_category_id": 1,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 2,
       "expiry_date": null,
       "notify_before": 1
@@ -1160,10 +1160,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "HPT0001",
-      "asset_purchase_date": "2022-08-02",
+      "asset_purchase_date": "2025-07-08",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1181,10 +1181,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "HPT0002",
-      "asset_purchase_date": "2022-08-02",
+      "asset_purchase_date": "2025-07-10",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1202,10 +1202,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "HPT0003",
-      "asset_purchase_date": "2022-08-02",
+      "asset_purchase_date": "2025-07-12",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1223,10 +1223,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "HPT0004",
-      "asset_purchase_date": "2022-08-02",
+      "asset_purchase_date": "2025-07-14",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1247,7 +1247,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1268,7 +1268,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1289,7 +1289,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1310,7 +1310,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1331,7 +1331,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1352,7 +1352,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1373,7 +1373,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1394,7 +1394,7 @@
       "asset_purchase_date": "2022-08-02",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1415,7 +1415,7 @@
       "asset_purchase_date": "2022-08-28",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1436,7 +1436,7 @@
       "asset_purchase_date": "2022-08-29",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1457,7 +1457,7 @@
       "asset_purchase_date": "2022-08-30",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1478,7 +1478,7 @@
       "asset_purchase_date": "2022-08-31",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1499,7 +1499,7 @@
       "asset_purchase_date": "2022-09-01",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1520,7 +1520,7 @@
       "asset_purchase_date": "2022-09-02",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1541,7 +1541,7 @@
       "asset_purchase_date": "2022-09-03",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1562,7 +1562,7 @@
       "asset_purchase_date": "2022-09-04",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1583,7 +1583,7 @@
       "asset_purchase_date": "2022-09-05",
       "asset_purchase_cost": "1299.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1604,7 +1604,7 @@
       "asset_purchase_date": "2022-09-06",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 3,
       "expiry_date": null,
       "notify_before": 1
@@ -1625,7 +1625,7 @@
       "asset_purchase_date": "2022-09-07",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1646,7 +1646,7 @@
       "asset_purchase_date": "2022-09-08",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1667,7 +1667,7 @@
       "asset_purchase_date": "2022-09-09",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1688,7 +1688,7 @@
       "asset_purchase_date": "2022-09-10",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1709,7 +1709,7 @@
       "asset_purchase_date": "2022-09-11",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1730,7 +1730,7 @@
       "asset_purchase_date": "2022-09-12",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1751,7 +1751,7 @@
       "asset_purchase_date": "2022-09-13",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1772,7 +1772,7 @@
       "asset_purchase_date": "2022-09-14",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1793,7 +1793,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1814,7 +1814,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1835,7 +1835,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1856,7 +1856,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1877,7 +1877,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1898,7 +1898,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1919,7 +1919,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1940,7 +1940,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "1350.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1961,7 +1961,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "1542.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -1982,7 +1982,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "1200.00",
       "asset_category_id": 2,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 4,
       "expiry_date": null,
       "notify_before": 1
@@ -2000,10 +2000,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "PHT0001",
-      "asset_purchase_date": "2022-09-15",
+      "asset_purchase_date": "2025-07-15",
       "asset_purchase_cost": "52000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2021,10 +2021,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "PHT0002",
-      "asset_purchase_date": "2022-09-15",
+      "asset_purchase_date": "2025-07-16",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2042,10 +2042,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "PHT0003",
-      "asset_purchase_date": "2022-09-15",
+      "asset_purchase_date": "2025-07-18",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2063,10 +2063,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "PHT0004",
-      "asset_purchase_date": "2022-09-15",
+      "asset_purchase_date": "2025-07-20",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2087,7 +2087,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2108,7 +2108,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2129,7 +2129,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2150,7 +2150,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2171,7 +2171,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2192,7 +2192,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2213,7 +2213,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2234,7 +2234,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2255,7 +2255,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2276,7 +2276,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2297,7 +2297,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2318,7 +2318,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2339,7 +2339,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2360,7 +2360,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "15000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2381,7 +2381,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2402,7 +2402,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2423,7 +2423,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2444,7 +2444,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2465,7 +2465,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2486,7 +2486,7 @@
       "asset_purchase_date": "2022-09-15",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2507,7 +2507,7 @@
       "asset_purchase_date": "2022-10-19",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2528,7 +2528,7 @@
       "asset_purchase_date": "2022-10-19",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2549,7 +2549,7 @@
       "asset_purchase_date": "2022-10-19",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2570,7 +2570,7 @@
       "asset_purchase_date": "2022-10-19",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2591,7 +2591,7 @@
       "asset_purchase_date": "2022-10-19",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2612,7 +2612,7 @@
       "asset_purchase_date": "2022-10-19",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2633,7 +2633,7 @@
       "asset_purchase_date": "2022-10-19",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2654,7 +2654,7 @@
       "asset_purchase_date": "2022-10-19",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2675,7 +2675,7 @@
       "asset_purchase_date": "2022-10-19",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2696,7 +2696,7 @@
       "asset_purchase_date": "2022-10-19",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2717,7 +2717,7 @@
       "asset_purchase_date": "2022-10-19",
       "asset_purchase_cost": "28000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 5,
       "expiry_date": null,
       "notify_before": 1
@@ -2738,7 +2738,7 @@
       "asset_purchase_date": "2022-10-19",
       "asset_purchase_cost": "52000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 6,
       "expiry_date": null,
       "notify_before": 1
@@ -2759,7 +2759,7 @@
       "asset_purchase_date": "2022-10-19",
       "asset_purchase_cost": "52000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 6,
       "expiry_date": null,
       "notify_before": 1
@@ -2780,7 +2780,7 @@
       "asset_purchase_date": "2022-10-19",
       "asset_purchase_cost": "8000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 6,
       "expiry_date": null,
       "notify_before": 1
@@ -2801,7 +2801,7 @@
       "asset_purchase_date": "2022-10-19",
       "asset_purchase_cost": "7000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 6,
       "expiry_date": null,
       "notify_before": 1
@@ -2822,7 +2822,7 @@
       "asset_purchase_date": "2022-10-19",
       "asset_purchase_cost": "6000.00",
       "asset_category_id": 3,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 6,
       "expiry_date": null,
       "notify_before": 1
@@ -2840,10 +2840,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "BGT0001",
-      "asset_purchase_date": "2022-10-20",
+      "asset_purchase_date": "2025-07-22",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -2861,10 +2861,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "BGT0002",
-      "asset_purchase_date": "2022-10-20",
+      "asset_purchase_date": "2025-07-24",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -2882,10 +2882,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "BGT0003",
-      "asset_purchase_date": "2022-10-20",
+      "asset_purchase_date": "2025-07-25",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -2903,10 +2903,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "BGT0004",
-      "asset_purchase_date": "2022-10-20",
+      "asset_purchase_date": "2025-07-02",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -2920,14 +2920,14 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "asset_name": "Fj\u03a3llr\u03a3ven",
+      "asset_name": "FjΣllrΣven",
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "BGT0005",
       "asset_purchase_date": "2022-10-20",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -2948,7 +2948,7 @@
       "asset_purchase_date": "2022-10-20",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -2969,7 +2969,7 @@
       "asset_purchase_date": "2022-10-20",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -2990,7 +2990,7 @@
       "asset_purchase_date": "2022-10-20",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -3011,7 +3011,7 @@
       "asset_purchase_date": "2022-10-20",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -3032,7 +3032,7 @@
       "asset_purchase_date": "2022-10-20",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -3053,7 +3053,7 @@
       "asset_purchase_date": "2022-10-20",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -3074,7 +3074,7 @@
       "asset_purchase_date": "2022-10-20",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -3095,7 +3095,7 @@
       "asset_purchase_date": "2022-10-20",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -3116,7 +3116,7 @@
       "asset_purchase_date": "2022-10-20",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -3137,7 +3137,7 @@
       "asset_purchase_date": "2022-10-20",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -3158,7 +3158,7 @@
       "asset_purchase_date": "2022-10-20",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -3179,7 +3179,7 @@
       "asset_purchase_date": "2022-10-20",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -3200,7 +3200,7 @@
       "asset_purchase_date": "2022-10-20",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -3221,7 +3221,7 @@
       "asset_purchase_date": "2022-10-20",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -3242,7 +3242,7 @@
       "asset_purchase_date": "2022-10-20",
       "asset_purchase_cost": "1000.00",
       "asset_category_id": 4,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 7,
       "expiry_date": null,
       "notify_before": 1
@@ -3260,10 +3260,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "CMT0001",
-      "asset_purchase_date": "2023-04-06",
+      "asset_purchase_date": "2025-07-04",
       "asset_purchase_cost": "500.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 8,
       "expiry_date": null,
       "notify_before": 1
@@ -3281,10 +3281,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "CMT0002",
-      "asset_purchase_date": "2023-04-06",
+      "asset_purchase_date": "2025-07-05",
       "asset_purchase_cost": "500.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 8,
       "expiry_date": null,
       "notify_before": 1
@@ -3302,10 +3302,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "CMT0003",
-      "asset_purchase_date": "2023-04-06",
+      "asset_purchase_date": "2025-07-07",
       "asset_purchase_cost": "500.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 8,
       "expiry_date": null,
       "notify_before": 1
@@ -3323,10 +3323,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "CMT0004",
-      "asset_purchase_date": "2023-04-06",
+      "asset_purchase_date": "2025-07-08",
       "asset_purchase_cost": "500.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 8,
       "expiry_date": null,
       "notify_before": 1
@@ -3347,7 +3347,7 @@
       "asset_purchase_date": "2023-04-06",
       "asset_purchase_cost": "500.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 8,
       "expiry_date": null,
       "notify_before": 1
@@ -3368,7 +3368,7 @@
       "asset_purchase_date": "2023-04-06",
       "asset_purchase_cost": "500.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 8,
       "expiry_date": null,
       "notify_before": 1
@@ -3389,7 +3389,7 @@
       "asset_purchase_date": "2023-04-06",
       "asset_purchase_cost": "500.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 8,
       "expiry_date": null,
       "notify_before": 1
@@ -3410,7 +3410,7 @@
       "asset_purchase_date": "2023-04-06",
       "asset_purchase_cost": "500.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 8,
       "expiry_date": null,
       "notify_before": 1
@@ -3431,7 +3431,7 @@
       "asset_purchase_date": "2023-04-06",
       "asset_purchase_cost": "600.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 8,
       "expiry_date": null,
       "notify_before": 1
@@ -3452,7 +3452,7 @@
       "asset_purchase_date": "2023-04-06",
       "asset_purchase_cost": "600.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 8,
       "expiry_date": null,
       "notify_before": 1
@@ -3473,7 +3473,7 @@
       "asset_purchase_date": "2023-04-06",
       "asset_purchase_cost": "600.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 8,
       "expiry_date": null,
       "notify_before": 1
@@ -3494,7 +3494,7 @@
       "asset_purchase_date": "2023-04-06",
       "asset_purchase_cost": "600.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 8,
       "expiry_date": null,
       "notify_before": 1
@@ -3515,7 +3515,7 @@
       "asset_purchase_date": "2023-04-06",
       "asset_purchase_cost": "600.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 9,
       "expiry_date": null,
       "notify_before": 1
@@ -3536,7 +3536,7 @@
       "asset_purchase_date": "2023-04-06",
       "asset_purchase_cost": "600.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 9,
       "expiry_date": null,
       "notify_before": 1
@@ -3557,7 +3557,7 @@
       "asset_purchase_date": "2023-04-06",
       "asset_purchase_cost": "600.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 9,
       "expiry_date": null,
       "notify_before": 1
@@ -3578,7 +3578,7 @@
       "asset_purchase_date": "2023-04-07",
       "asset_purchase_cost": "600.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 9,
       "expiry_date": null,
       "notify_before": 1
@@ -3599,7 +3599,7 @@
       "asset_purchase_date": "2023-04-08",
       "asset_purchase_cost": "600.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 9,
       "expiry_date": null,
       "notify_before": 1
@@ -3620,7 +3620,7 @@
       "asset_purchase_date": "2023-04-09",
       "asset_purchase_cost": "600.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 9,
       "expiry_date": null,
       "notify_before": 1
@@ -3641,7 +3641,7 @@
       "asset_purchase_date": "2023-04-10",
       "asset_purchase_cost": "600.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 9,
       "expiry_date": null,
       "notify_before": 1
@@ -3662,7 +3662,7 @@
       "asset_purchase_date": "2023-04-11",
       "asset_purchase_cost": "600.00",
       "asset_category_id": 5,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 9,
       "expiry_date": null,
       "notify_before": 1
@@ -3680,10 +3680,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "MST0001",
-      "asset_purchase_date": "2023-04-11",
+      "asset_purchase_date": "2025-07-10",
       "asset_purchase_cost": "750.00",
       "asset_category_id": 6,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 10,
       "expiry_date": null,
       "notify_before": 1
@@ -3701,10 +3701,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "MST0002",
-      "asset_purchase_date": "2023-04-11",
+      "asset_purchase_date": "2025-07-12",
       "asset_purchase_cost": "750.00",
       "asset_category_id": 6,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 10,
       "expiry_date": null,
       "notify_before": 1
@@ -3722,10 +3722,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "MST0003",
-      "asset_purchase_date": "2023-04-11",
+      "asset_purchase_date": "2025-07-14",
       "asset_purchase_cost": "750.00",
       "asset_category_id": 6,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 10,
       "expiry_date": null,
       "notify_before": 1
@@ -3743,10 +3743,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "MST0004",
-      "asset_purchase_date": "2023-04-11",
+      "asset_purchase_date": "2025-07-15",
       "asset_purchase_cost": "750.00",
       "asset_category_id": 6,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 10,
       "expiry_date": null,
       "notify_before": 1
@@ -3767,7 +3767,7 @@
       "asset_purchase_date": "2023-04-11",
       "asset_purchase_cost": "750.00",
       "asset_category_id": 6,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 10,
       "expiry_date": null,
       "notify_before": 1
@@ -3788,7 +3788,7 @@
       "asset_purchase_date": "2023-04-11",
       "asset_purchase_cost": "750.00",
       "asset_category_id": 6,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 10,
       "expiry_date": null,
       "notify_before": 1
@@ -3809,7 +3809,7 @@
       "asset_purchase_date": "2023-04-11",
       "asset_purchase_cost": "750.00",
       "asset_category_id": 6,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 10,
       "expiry_date": null,
       "notify_before": 1
@@ -3830,7 +3830,7 @@
       "asset_purchase_date": "2023-04-11",
       "asset_purchase_cost": "750.00",
       "asset_category_id": 6,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 10,
       "expiry_date": null,
       "notify_before": 1
@@ -3851,7 +3851,7 @@
       "asset_purchase_date": "2023-04-11",
       "asset_purchase_cost": "750.00",
       "asset_category_id": 6,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 10,
       "expiry_date": null,
       "notify_before": 1
@@ -3872,7 +3872,7 @@
       "asset_purchase_date": "2023-04-11",
       "asset_purchase_cost": "750.00",
       "asset_category_id": 6,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 10,
       "expiry_date": null,
       "notify_before": 1
@@ -3893,7 +3893,7 @@
       "asset_purchase_date": "2023-04-11",
       "asset_purchase_cost": "750.00",
       "asset_category_id": 6,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 10,
       "expiry_date": null,
       "notify_before": 1
@@ -3914,7 +3914,7 @@
       "asset_purchase_date": "2023-04-11",
       "asset_purchase_cost": "750.00",
       "asset_category_id": 6,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 10,
       "expiry_date": null,
       "notify_before": 1
@@ -3935,7 +3935,7 @@
       "asset_purchase_date": "2023-04-11",
       "asset_purchase_cost": "750.00",
       "asset_category_id": 6,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 10,
       "expiry_date": null,
       "notify_before": 1
@@ -3953,10 +3953,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "CRT0001",
-      "asset_purchase_date": "2023-04-12",
+      "asset_purchase_date": "2025-07-16",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -3974,10 +3974,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "CRT0002",
-      "asset_purchase_date": "2023-04-12",
+      "asset_purchase_date": "2025-07-18",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "Available",
+      "asset_status": "Not-Available",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -3995,10 +3995,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "CRT0003",
-      "asset_purchase_date": "2023-04-12",
+      "asset_purchase_date": "2025-07-20",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -4016,10 +4016,10 @@
       "owner": null,
       "asset_description": null,
       "asset_tracking_id": "CRT0004",
-      "asset_purchase_date": "2023-04-12",
+      "asset_purchase_date": "2025-07-22",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -4040,7 +4040,7 @@
       "asset_purchase_date": "2023-04-12",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "Available",
+      "asset_status": "Not-Available",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -4061,7 +4061,7 @@
       "asset_purchase_date": "2023-04-12",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -4082,7 +4082,7 @@
       "asset_purchase_date": "2023-04-12",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -4124,7 +4124,7 @@
       "asset_purchase_date": "2023-04-12",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -4145,7 +4145,7 @@
       "asset_purchase_date": "2023-04-12",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -4187,7 +4187,7 @@
       "asset_purchase_date": "2023-04-12",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -4208,7 +4208,7 @@
       "asset_purchase_date": "2023-04-12",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -4229,7 +4229,7 @@
       "asset_purchase_date": "2023-04-12",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -4250,7 +4250,7 @@
       "asset_purchase_date": "2023-04-13",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -4271,7 +4271,7 @@
       "asset_purchase_date": "2023-04-13",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -4292,7 +4292,7 @@
       "asset_purchase_date": "2023-04-13",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -4313,7 +4313,7 @@
       "asset_purchase_date": "2023-04-13",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -4334,7 +4334,7 @@
       "asset_purchase_date": "2023-04-13",
       "asset_purchase_cost": "120000.00",
       "asset_category_id": 7,
-      "asset_status": "In Use",
+      "asset_status": "In use",
       "asset_lot_number_id": 11,
       "expiry_date": null,
       "notify_before": 1
@@ -4376,7 +4376,7 @@
       "return_date": null,
       "return_condition": null,
       "return_status": null,
-      "return_request": false,
+      "return_request": true,
       "return_images": [],
       "assign_images": []
     }
@@ -4416,7 +4416,7 @@
       "return_date": null,
       "return_condition": null,
       "return_status": null,
-      "return_request": false,
+      "return_request": true,
       "return_images": [],
       "assign_images": []
     }
@@ -4436,7 +4436,7 @@
       "return_date": null,
       "return_condition": null,
       "return_status": null,
-      "return_request": false,
+      "return_request": true,
       "return_images": [],
       "assign_images": []
     }
@@ -4456,7 +4456,7 @@
       "return_date": null,
       "return_condition": null,
       "return_status": null,
-      "return_request": false,
+      "return_request": true,
       "return_images": [],
       "assign_images": []
     }
@@ -4476,7 +4476,7 @@
       "return_date": null,
       "return_condition": null,
       "return_status": null,
-      "return_request": false,
+      "return_request": true,
       "return_images": [],
       "assign_images": []
     }
@@ -8112,6 +8112,243 @@
       "asset_id": 176,
       "assigned_to_employee_id": 21,
       "assigned_date": "2025-07-01",
+      "assigned_by_employee_id": 1,
+      "return_date": null,
+      "return_condition": null,
+      "return_status": null,
+      "return_request": false,
+      "return_images": [],
+      "assign_images": []
+    }
+  },
+  {
+    "model": "asset.assetrequest",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-07-07T08:30:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "requested_employee_id": 5,
+      "asset_category_id": 3,
+      "asset_request_date": "2025-07-07",
+      "description": "Phone request rejected — demo data for request status chart",
+      "asset_request_status": "Rejected"
+    }
+  },
+  {
+    "model": "asset.assetrequest",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-07-08T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "requested_employee_id": 8,
+      "asset_category_id": 2,
+      "asset_request_date": "2025-07-08",
+      "description": "Headphone request rejected — demo data",
+      "asset_request_status": "Rejected"
+    }
+  },
+  {
+    "model": "asset.asset",
+    "pk": 194,
+    "fields": {
+      "created_at": "2025-07-01T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "asset_name": "Dell XPS 13 Dashboard Demo",
+      "owner": null,
+      "asset_description": "Dashboard demo asset for /asset/dashboard/ charts",
+      "asset_tracking_id": "LPT-DASH-001",
+      "asset_purchase_date": "2025-07-06",
+      "asset_purchase_cost": "125000.00",
+      "asset_category_id": 1,
+      "asset_status": "In use",
+      "asset_lot_number_id": 1,
+      "expiry_date": "2025-07-05",
+      "notify_before": 7
+    }
+  },
+  {
+    "model": "asset.asset",
+    "pk": 195,
+    "fields": {
+      "created_at": "2025-07-02T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "asset_name": "Bose QC Dashboard Demo",
+      "owner": null,
+      "asset_description": "Dashboard demo asset for /asset/dashboard/ charts",
+      "asset_tracking_id": "HP-DASH-001",
+      "asset_purchase_date": "2025-07-09",
+      "asset_purchase_cost": "28000.00",
+      "asset_category_id": 2,
+      "asset_status": "Available",
+      "asset_lot_number_id": 3,
+      "expiry_date": "2025-07-06",
+      "notify_before": 7
+    }
+  },
+  {
+    "model": "asset.asset",
+    "pk": 196,
+    "fields": {
+      "created_at": "2025-07-03T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "asset_name": "Pixel 8 Dashboard Demo",
+      "owner": null,
+      "asset_description": "Dashboard demo asset for /asset/dashboard/ charts",
+      "asset_tracking_id": "PH-DASH-001",
+      "asset_purchase_date": "2025-07-11",
+      "asset_purchase_cost": "72000.00",
+      "asset_category_id": 3,
+      "asset_status": "In use",
+      "asset_lot_number_id": 5,
+      "expiry_date": null,
+      "notify_before": 7
+    }
+  },
+  {
+    "model": "asset.asset",
+    "pk": 197,
+    "fields": {
+      "created_at": "2025-07-04T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "asset_name": "Travel Bag Dashboard Demo",
+      "owner": null,
+      "asset_description": "Dashboard demo asset for /asset/dashboard/ charts",
+      "asset_tracking_id": "BG-DASH-001",
+      "asset_purchase_date": "2025-07-13",
+      "asset_purchase_cost": "4500.00",
+      "asset_category_id": 4,
+      "asset_status": "Available",
+      "asset_lot_number_id": 7,
+      "expiry_date": "2025-07-07",
+      "notify_before": 7
+    }
+  },
+  {
+    "model": "asset.asset",
+    "pk": 198,
+    "fields": {
+      "created_at": "2025-07-05T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "asset_name": "Canon EOS Dashboard Demo",
+      "owner": null,
+      "asset_description": "Dashboard demo asset for /asset/dashboard/ charts",
+      "asset_tracking_id": "CM-DASH-001",
+      "asset_purchase_date": "2025-07-03",
+      "asset_purchase_cost": "95000.00",
+      "asset_category_id": 5,
+      "asset_status": "Not-Available",
+      "asset_lot_number_id": 8,
+      "expiry_date": null,
+      "notify_before": 7
+    }
+  },
+  {
+    "model": "asset.asset",
+    "pk": 199,
+    "fields": {
+      "created_at": "2025-07-06T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "asset_name": "Logitech MX Dashboard Demo",
+      "owner": null,
+      "asset_description": "Dashboard demo asset for /asset/dashboard/ charts",
+      "asset_tracking_id": "MS-DASH-001",
+      "asset_purchase_date": "2025-07-17",
+      "asset_purchase_cost": "8500.00",
+      "asset_category_id": 6,
+      "asset_status": "In use",
+      "asset_lot_number_id": 10,
+      "expiry_date": "2025-07-08",
+      "notify_before": 7
+    }
+  },
+  {
+    "model": "asset.asset",
+    "pk": 200,
+    "fields": {
+      "created_at": "2025-07-07T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "asset_name": "Toyota Demo Fleet Car",
+      "owner": null,
+      "asset_description": "Dashboard demo asset for /asset/dashboard/ charts",
+      "asset_tracking_id": "CR-DASH-001",
+      "asset_purchase_date": "2025-07-01",
+      "asset_purchase_cost": "1850000.00",
+      "asset_category_id": 7,
+      "asset_status": "Available",
+      "asset_lot_number_id": 11,
+      "expiry_date": null,
+      "notify_before": 7
+    }
+  },
+  {
+    "model": "asset.assetassignment",
+    "pk": 189,
+    "fields": {
+      "created_at": "2025-07-15T11:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "asset_id": 194,
+      "assigned_to_employee_id": 2,
+      "assigned_date": "2025-07-06",
+      "assigned_by_employee_id": 1,
+      "return_date": null,
+      "return_condition": null,
+      "return_status": null,
+      "return_request": true,
+      "return_images": [],
+      "assign_images": []
+    }
+  },
+  {
+    "model": "asset.assetassignment",
+    "pk": 190,
+    "fields": {
+      "created_at": "2025-07-15T11:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "asset_id": 196,
+      "assigned_to_employee_id": 10,
+      "assigned_date": "2025-07-11",
+      "assigned_by_employee_id": 1,
+      "return_date": null,
+      "return_condition": null,
+      "return_status": null,
+      "return_request": false,
+      "return_images": [],
+      "assign_images": []
+    }
+  },
+  {
+    "model": "asset.assetassignment",
+    "pk": 191,
+    "fields": {
+      "created_at": "2025-07-15T11:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "asset_id": 199,
+      "assigned_to_employee_id": 15,
+      "assigned_date": "2025-07-17",
       "assigned_by_employee_id": 1,
       "return_date": null,
       "return_condition": null,
