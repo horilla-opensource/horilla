@@ -2023,6 +2023,43 @@ class CandidateDocument(HorillaModel):
                     {"document": _("Please upload {} file only.").format(format)}
                 )
 
+    def status_col(self):
+        """
+        Status badge for the candidate documents list view.
+        """
+        if not self.document:
+            return format_html(
+                '<span class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--secondary"></span>'
+                "<span>{}</span>",
+                _("No Document"),
+            )
+        colors = {
+            "approved": "oh-dot--success",
+            "rejected": "oh-dot--danger",
+            "requested": "oh-dot--warning",
+        }
+        return format_html(
+            '<span class="oh-dot oh-dot--small me-1 oh-dot--color {}"></span>'
+            "<span>{}</span>",
+            colors.get(self.status, "oh-dot--secondary"),
+            self.get_status_display(),
+        )
+
+    def document_actions(self):
+        """
+        Row actions (upload/approve/reject/delete) for the candidate documents list view.
+        """
+        return render_template(
+            path="cbv/candidate_documents/actions.html",
+            context={"instance": self},
+        )
+
+    def view_file_url(self):
+        """
+        URL used to preview this document's uploaded file in a modal.
+        """
+        return reverse("candidate-view-file", args=[self.id])
+
 
 class LinkedInAccount(HorillaModel):
     username = models.CharField(max_length=250, verbose_name=_("App Name"))

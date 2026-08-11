@@ -37,6 +37,7 @@ from base.filters import FilterSet
 from horilla.filters import HorillaFilterSet, filter_by_name
 from recruitment.models import (
     Candidate,
+    CandidateDocument,
     InterviewSchedule,
     LinkedInAccount,
     Recruitment,
@@ -337,6 +338,30 @@ class CandidateFilter(HorillaFilterSet):
 
     def filter_joining_set(self, queryset, name, value):
         return queryset.filter(joining_date__isnull=(not value))
+
+
+class CandidateDocumentFilter(HorillaFilterSet):
+    """
+    Filter set class for CandidateDocument model
+    """
+
+    search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
+
+    class Meta:
+        model = CandidateDocument
+        fields = ["title", "status"]
+
+
+class SkillZoneCandidateFilter(HorillaFilterSet):
+    """
+    Filter set class for SkillZoneCandidate model
+    """
+
+    search = django_filters.CharFilter(field_name="reason", lookup_expr="icontains")
+
+    class Meta:
+        model = SkillZoneCandidate
+        fields = ["skill_zone_id", "candidate_id", "reason"]
 
 
 BOOLEAN_CHOICES = (

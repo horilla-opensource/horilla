@@ -1009,12 +1009,15 @@ def add_note(request, pk=None):
             note.stage_files.set(attachment_ids)
             messages.success(request, _("Note added successfully.."))
     candidate_obj = Candidate.objects.get(id=pk)
+    notes = candidate_obj.stagenote_set.all().order_by("-id")
+    notes = paginator_qry(notes, request.GET.get("page"))
     return render(
         request,
         "cbv/candidates/profile_notes_tab.html",
         {
             "candidate": candidate_obj,
             "note_form": form,
+            "notes": notes,
         },
     )
 
@@ -1765,25 +1768,6 @@ def candidate_survey_tab(request, pk, **kwargs):
     )
 
 
-@login_required
-@manager_can_enter(perm="recruitment.view_candidate")
-def candidate_document_request_tab(request, pk, **kwargs):
-    """
-    method for rendering survey tab
-    """
-
-    candidate_obj = Candidate.find(pk)
-    documents = candidate_obj.candidatedocument_set.all()
-    return render(
-        request,
-        "candidate/document.html",
-        {
-            "candidate": candidate_obj,
-            "documents": documents,
-        },
-    )
-
-
 # @login_required
 # @manager_can_enter(perm="recruitment.view_candidate")
 # def candidate_notes_tab(request, pk, **kwargs):
@@ -1843,11 +1827,14 @@ def candidate_rating_tab(request, pk, **kwargs):
     """
 
     candidate_obj = Candidate.find(pk)
+    ratings = candidate_obj.candidate_rating.all().order_by("-id")
+    ratings = paginator_qry(ratings, request.GET.get("page"))
     return render(
         request,
         "candidate/rating_tab.html",
         {
             "candidate": candidate_obj,
+            "ratings": ratings,
         },
     )
 
@@ -1860,11 +1847,14 @@ def candidate_interview_tab(request, pk, **kwargs):
     """
 
     candidate_obj = Candidate.find(pk)
+    interviews = candidate_obj.candidate_interview.all().order_by("-interview_date")
+    interviews = paginator_qry(interviews, request.GET.get("page"))
     return render(
         request,
         "cbv/candidates/profile_interview_tab.html",
         {
             "candidate": candidate_obj,
+            "interviews": interviews,
         },
     )
 
