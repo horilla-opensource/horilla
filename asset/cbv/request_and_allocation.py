@@ -182,10 +182,7 @@ class AssetRequestList(HorillaListView):
 
         self.search_url = reverse("list-asset-request")
         # self.view_id = "view-container"
-        if self.request.user.has_perm("asset.add_assetassignment"):
-            self.action_method = "action_col"
-
-        self.option_method = "option_col"
+        self.action_method = "action_col"
 
     model = AssetRequest
     filter_class = AssetRequestFilter

@@ -38,7 +38,6 @@ from horilla_views.cbv_methods import render_template
 from leave.methods import (
     calculate_requested_days,
     company_leave_dates_list,
-    filter_conditional_leave_request,
     holiday_dates_list,
 )
 from leave.threading import LeaveClashThread
@@ -1159,12 +1158,9 @@ class LeaveRequest(HorillaModel):
         """
         method for rendering custom status col
         """
-        request = getattr(_thread_locals, "request")
-        multiple_approvals = filter_conditional_leave_request(request).distinct()
-
         return render_template(
             path="cbv/leave_requests/custom_status_col.html",
-            context={"instance": self, "multiple_approvals": multiple_approvals},
+            context={"instance": self},
         )
 
     def leave_request_detail_action(self):
@@ -1279,18 +1275,32 @@ class LeaveRequest(HorillaModel):
         leave_requests_with_interview = []
         context = {"instance": self}
         if apps.is_installed("recruitment"):
-            Schedule = get_horilla_model_class(
-                app_label="recruitment", model="interviewschedule"
-            )
-            interviews = Schedule.objects.filter(
-                employee_id=self.employee_id,
-                interview_date__range=[
-                    self.start_date,
-                    self.end_date,
-                ],
-            )
-            if interviews:
-                leave_requests_with_interview.append(interviews)
+            cache_key = (self.employee_id_id, self.start_date, self.end_date)
+            request = getattr(_thread_locals, "request", None)
+            cache = None
+            if request is not None:
+                cache = getattr(request, "_horilla_interview_clash_cache", None)
+                if cache is None:
+                    cache = request._horilla_interview_clash_cache = {}
+
+            if cache is not None and cache_key in cache:
+                has_interview = cache[cache_key]
+            else:
+                Schedule = get_horilla_model_class(
+                    app_label="recruitment", model="interviewschedule"
+                )
+                has_interview = Schedule.objects.filter(
+                    employee_id=self.employee_id,
+                    interview_date__range=[
+                        self.start_date,
+                        self.end_date,
+                    ],
+                ).exists()
+                if cache is not None:
+                    cache[cache_key] = has_interview
+
+            if has_interview:
+                leave_requests_with_interview.append(True)
             context = {
                 "instance": self,
                 "leave_requests_with_interview": leave_requests_with_interview,
@@ -1734,30 +1744,50 @@ class LeaveRequest(HorillaModel):
         available_leave.save()
 
     def multiple_approvals(self, *args, **kwargs):
-        approvals = LeaveRequestConditionApproval.objects.filter(leave_request_id=self)
-        requested_query = approvals.filter(is_approved=False).order_by("sequence")
-        approved_query = approvals.filter(is_approved=True).order_by("sequence")
-        managers = []
-        for manager in approvals:
-            managers.append(manager.manager_id)
-        if approvals.exists():
-            result = {
-                "managers": managers,
-                "approved": approved_query,
-                "requested": requested_query,
-                "approvals": approvals,
-            }
-        else:
-            result = False
+        if hasattr(self, "_multiple_approvals_cache"):
+            return self._multiple_approvals_cache
+
+        approvals = list(
+            LeaveRequestConditionApproval.objects.filter(
+                leave_request_id=self
+            ).select_related("manager_id")
+        )
+        if not approvals:
+            self._multiple_approvals_cache = False
+            return False
+        managers = [approval.manager_id for approval in approvals]
+        requested_query = sorted(
+            (a for a in approvals if not a.is_approved), key=lambda a: a.sequence
+        )
+        approved_query = sorted(
+            (a for a in approvals if a.is_approved), key=lambda a: a.sequence
+        )
+        result = {
+            "managers": managers,
+            "approved": approved_query,
+            "requested": requested_query,
+            "approvals": approvals,
+        }
+        self._multiple_approvals_cache = result
         return result
 
     def is_approved(self):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         if request:
-            employee = Employee.objects.filter(employee_user_id=request.user).first()
-            condition_approval = LeaveRequestConditionApproval.objects.filter(
-                leave_request_id=self, manager_id=employee.id
-            ).first()
+            if not hasattr(request.user, "_horilla_employee_cache"):
+                request.user._horilla_employee_cache = Employee.objects.filter(
+                    employee_user_id=request.user
+                ).first()
+            employee = request.user._horilla_employee_cache
+
+            multiple_approvals = self.multiple_approvals()
+            condition_approval = None
+            if multiple_approvals and employee:
+                for approval in multiple_approvals["approvals"]:
+                    if approval.manager_id_id == employee.id:
+                        condition_approval = approval
+                        break
+
             if condition_approval:
                 return not condition_approval.is_approved
             else:

@@ -654,29 +654,30 @@ class CreateEmployeeKeyResultFormView(HorillaFormView):
                 )
             else:
                 self.emp_objective = None
+        if not self.has_key_result_permission():
+            messages.info(request, _("You dont have permission"))
+            return HorillaRedirect(request)
         return super().dispatch(request, *args, **kwargs)
+
+    def has_key_result_permission(self):
+        """
+        Only users with objective/key result change permission or the
+        objective's managers can create/update an employee key result.
+        """
+
+        return (
+            self.request.user.has_perm("pms.change_objective")
+            or self.request.user.has_perm("pms.change_employeeobjective")
+            or self.request.user.has_perm("pms.change_employeekeyresult")
+            or self.request.user.employee_get
+            in self.emp_objective.objective_id.managers.all()
+        )
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         emp_obj_id = self.kwargs.get("emp_obj_id")
         kwargs["emp_objective"] = EmployeeObjective.objects.get(id=emp_obj_id)
         return kwargs
-
-    def get(self, request, *args, pk=None, **kwargs):
-        if (
-            self.request.user.has_perm("pms.change_objective")
-            or self.request.user.has_perm("pms.change_employeeobjective")
-            or self.request.user.has_perm("pms.change_employeekeyresult")
-            or self.request.user.employee_get
-            in self.emp_objective.objective_id.managers.all()
-            or (
-                self.emp_objective.objective_id.self_employee_progress_update
-                and (self.emp_objective.employee_id == self.request.user.employee_get)
-            )
-        ):
-            return super().get(request, *args, pk=pk, **kwargs)
-        messages.info(request, _("You dont have permission"))
-        return HorillaRedirect(request)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -817,10 +818,6 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
             or self.request.user.has_perm("pms.change_employeekeyresult")
             or self.request.user.employee_get
             in emp_objective.objective_id.managers.all()
-            or (
-                emp_objective.objective_id.self_employee_progress_update
-                and (emp_objective.employee_id == self.request.user.employee_get)
-            )
         ):
             self.actions.append(
                 {
@@ -932,6 +929,11 @@ class EKRTab(EmployeeObjectiveKeyResultDetailListView):
         self._saved_filters = self._saved_filters.copy()
         self._saved_filters["field"] = "employee_objective_id"
         return self.queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["compact_group_pagination"] = True
+        return context
 
 
 EmployeeProfileView.add_tab(

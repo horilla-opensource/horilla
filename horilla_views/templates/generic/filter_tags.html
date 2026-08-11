@@ -15,7 +15,7 @@
 	></div>
 </div>
 <button
-	hx-get='{% url "saved-filter" %}?path={{request.path}}&referrer={{request.META.HTTP_REFERER}}&{{saved_filters.urlencode}}'
+	hx-get='{% url "saved-filter" %}?path={{request.GET.nav_url|default:request.path}}&referrer={{request.META.HTTP_REFERER}}&{{saved_filters.urlencode}}'
 	hx-target="#SavedFilterFormTarget"
 	hidden
 	id="loadsavedfilterform"

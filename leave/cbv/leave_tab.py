@@ -40,6 +40,22 @@ class IndividualLeaveTab(MainParentListView):
         queryset = self.model.objects.filter(employee_id=pk)
         return queryset
 
+    def get_template_names(self):
+        """
+        template_name renders the leave-type summary cards above the
+        paginated request list. Pagination/sort/filter links inside that
+        list target "#leave-tab" (view_id) directly with hx-swap="outerHTML",
+        expecting back just the list+pagination fragment. Returning the full
+        template for those requests re-renders a second, nested copy of the
+        summary cards on every "next page"/sort/filter click, since the
+        original cards - siblings outside the swapped div - are never
+        removed. Only the tab's initial load (targeted at the profile page's
+        own generic tab container, not "#leave-tab") needs the full template.
+        """
+        if self.request.META.get("HTTP_HX_TARGET") == self.view_id:
+            return ["generic/horilla_list_table.html"]
+        return [self.template_name]
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.view_id = "leave-tab"

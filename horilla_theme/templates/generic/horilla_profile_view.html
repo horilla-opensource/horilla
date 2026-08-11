@@ -3,8 +3,8 @@
 <style>
     .emp-profile-page {
         background:
-            radial-gradient(1200px 500px at 10% -10%, rgba(229, 79, 56, 0.06), transparent 55%),
-            radial-gradient(900px 420px at 100% 0%, rgba(247, 200, 193, 0.18), transparent 50%);
+            radial-gradient(1200px 500px at 10% -10%, color-mix(in srgb, var(--primary-600, #E54F38) 6%, transparent), transparent 55%),
+            radial-gradient(900px 420px at 100% 0%, color-mix(in srgb, var(--primary-500, #F7C8C1) 18%, transparent), transparent 50%);
     }
     .emp-profile-card {
         position: relative;
@@ -19,10 +19,10 @@
            card no longer clips overflow (the settings dropdown needs to be
            able to extend past the card's bottom edge). */
         border-radius: 1rem 1rem 0 0;
-        background: linear-gradient(90deg, #E54F38, #F7C8C1 55%, transparent);
+        background: linear-gradient(90deg, var(--primary-600, #E54F38), var(--primary-500, #F7C8C1) 55%, transparent);
     }
     .emp-avatar-ring {
-        box-shadow: 0 0 0 3px #fff, 0 0 0 5px rgba(229, 79, 56, 0.2);
+        box-shadow: 0 0 0 3px #fff, 0 0 0 5px color-mix(in srgb, var(--primary-600, #E54F38) 20%, transparent);
     }
     .emp-profile-page .usertablist {
         display: flex;
@@ -46,15 +46,15 @@
     }
     .emp-profile-page .usertablist li button:hover {
         transform: translateY(-1px);
-        border-color: #F7C8C1;
-        background: #FFF5F1;
-        color: #E54F38;
+        border-color: var(--primary-500, #F7C8C1);
+        background: var(--primary-100, #FFF5F1);
+        color: var(--primary-600, #E54F38);
     }
     .emp-profile-page .usertablist li button.active {
-        background: #E54F38 !important;
-        border-color: #E54F38;
+        background: var(--primary-600, #E54F38) !important;
+        border-color: var(--primary-600, #E54F38);
         color: #fff;
-        box-shadow: 0 1px 2px rgba(229, 79, 56, 0.25);
+        box-shadow: 0 1px 2px color-mix(in srgb, var(--primary-600, #E54F38) 25%, transparent);
         transform: none;
     }
     body.dark .emp-profile-page .usertablist li button {

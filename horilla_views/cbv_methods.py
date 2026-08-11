@@ -377,6 +377,23 @@ def paginator_qry(qryset, page_number, records_per_page=50):
     return qryset
 
 
+def saved_filter_path_query(request):
+    """
+    SavedFilter rows are keyed by the request path that was active when they
+    were saved. List and Card/Kanban views of the same page live at different
+    URLs, so a filter saved from one is invisible from the other even though
+    it's the same logical page. The shared nav bar's filter form always
+    submits a "nav_url" field (the nav view's own, mode-independent path) -
+    match on that too, in addition to the exact path, so a saved filter
+    shows up regardless of which view mode it was saved from.
+    """
+    path_query = models.Q(path=request.path)
+    nav_url = request.GET.get("nav_url")
+    if nav_url:
+        path_query |= models.Q(path=nav_url)
+    return path_query
+
+
 def get_short_uuid(length: int, prefix: str = "hlv"):
     """
     Short uuid generating method

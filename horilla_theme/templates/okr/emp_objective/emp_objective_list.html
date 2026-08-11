@@ -25,13 +25,16 @@
                     hx-target="#krData{{emp_objective.id}}"
                     hx-trigger="click"
                     onclick="$(this).toggleClass('accordion-btn--show');
-                $('#krBody{{emp_objective.id}}').toggleClass('max-h-0').toggleClass('py-3')"
+                $('#krBody{{emp_objective.id}}').toggleClass('max-h-0').toggleClass('py-3');
+                var icon = this.querySelector('.icon');
+                if (icon) { icon.setAttribute('name', icon.getAttribute('name') === 'chevron-down-outline' ? 'chevron-up-outline' : 'chevron-down-outline'); }"
                 >
                     <div class="flex items-center gap-2">
                         <span
                             class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs"
+                            title="{{ emp_objective.employee_key_result.count }} {% trans 'Key Results' %}"
                         >
-                            {{ forloop.counter|stringformat:"02d" }}
+                            {{ emp_objective.employee_key_result.count }}
                         </span>
                         {{ emp_objective.employee_id }}
                     </div>
@@ -187,7 +190,7 @@
                             {% endif %}
                         </div>
 
-                        <span class="icon text-xl font-bold">+</span>
+                        <ion-icon class="icon text-xl" name="chevron-down-outline"></ion-icon>
                     </div>
                 </button>
 

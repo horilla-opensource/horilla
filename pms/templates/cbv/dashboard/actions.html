@@ -1,15 +1,18 @@
 {% load i18n %}
+{% load pmsfilters %}
 <div class="oh-btn-group">
-    <button
-        class="oh-btn oh-btn--light-bkg w-50"
-        title="{% trans 'Edit' %}"
-        data-toggle="oh-modal-toggle"
-        data-target="#genericModal"
-        hx-get='{% url "employee-key-result-update" instance.id %}'
-        hx-target="#genericModalBody"
-    >
-        <ion-icon name="create-outline"></ion-icon>
-    </button>
+    {% if perms.pms.change_objective or perms.pms.change_employeeobjective or perms.pms.change_employeekeyresult or instance.employee_objective_id|is_manager:request.user %}
+        <button
+            class="oh-btn oh-btn--light-bkg w-50"
+            title="{% trans 'Edit' %}"
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            hx-get='{% url "employee-key-result-update" instance.id %}'
+            hx-target="#genericModalBody"
+        >
+            <ion-icon name="create-outline"></ion-icon>
+        </button>
+    {% endif %}
     <form
         hx-post='{% url "delete-employee-keyresult" instance.id %}?dashboard=True'
         class="w-50"

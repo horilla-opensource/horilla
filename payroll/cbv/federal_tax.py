@@ -13,6 +13,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from base.methods import paginator_qry
 from base.models import Holidays
 from horilla_views.cbv_methods import (
     hx_request_required,
@@ -221,6 +222,25 @@ class FilingStatusPipeline(Pipeline):
             ],
         }
     ]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Pipeline renders every FilingStatus row unconditionally with no
+        # paging at all - fine with a handful of filing statuses, but it
+        # just keeps growing as more get added. Page it like every other
+        # list, keeping the total (not just the current page's count) for
+        # the tab badge script at the bottom of pipeline.html.
+        all_groups = context["groups"]
+        context["groups_total_count"] = all_groups.count()
+        context["groups"] = paginator_qry(all_groups, self.request.GET.get("page"))
+
+        # quick_actions.html's pagination widget expects these names.
+        context["queryset"] = context["groups"]
+        context["search_url"] = reverse("filing-status-search")
+        preserved_query = self.request.GET.copy()
+        preserved_query.pop("page", None)
+        context["pd"] = preserved_query.urlencode()
+        return context
 
 
 @method_decorator(login_required, name="dispatch")

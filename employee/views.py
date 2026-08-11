@@ -3325,6 +3325,7 @@ def note_tab(request, pk):
     """
     employee_obj = Employee.objects.get(id=pk)
     notes = EmployeeNote.objects.filter(employee_id=pk).order_by("-id")
+    notes = paginator_qry(notes, request.GET.get("page"))
 
     return render(
         request,

@@ -15,7 +15,12 @@ from django.utils.decorators import method_decorator
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-from base.methods import choosesubordinates, get_key_instances, is_reportingmanager
+from base.methods import (
+    choosesubordinates,
+    get_key_instances,
+    is_reportingmanager,
+    paginator_qry,
+)
 from employee.filters import DocumentPipelineFilter, DocumentRequestFilter
 from employee.models import Employee
 from horilla.decorators import manager_can_enter
@@ -24,7 +29,12 @@ from horilla_documents.forms import DocumentForm
 from horilla_documents.forms import DocumentRejectCbvForm as RejectForm
 from horilla_documents.forms import DocumentRequestForm, DocumentUpdateForm
 from horilla_documents.models import Document, DocumentRequest
-from horilla_views.cbv_methods import hx_request_required, login_required
+from horilla_views import models as horilla_views_models
+from horilla_views.cbv_methods import (
+    hx_request_required,
+    login_required,
+    saved_filter_path_query,
+)
 from horilla_views.generic.cbv.pipeline import Pipeline
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
@@ -398,9 +408,46 @@ class DocumentRequestPipelineView(Pipeline):
             key: list(dict.fromkeys(values)) for key, values in data_dict.items()
         }
         data_dict = get_key_instances(self.model, data_dict)
-        for key in ("filter_applied", "nav_url", "referrer", "grouper"):
+        for key in ("filter_applied", "nav_url", "referrer", "grouper", "page"):
             data_dict.pop(key, None)
         context["filter_dict"] = data_dict
+
+        # Pipeline never wired up the saved-filter chip row (quick_actions.html)
+        # that every HorillaListView/HorillaCardView gets for free, so there
+        # was nothing to click "Save" on and no chips to show here. Mirror
+        # their stored_filters construction, but WITHOUT the referrer-based OR
+        # match those use: every chip re-submits its own historically-saved
+        # "referrer" GET param when clicked, so matching on "current referrer"
+        # made the "Filter (N)" count shift depending on which chip was last
+        # selected. path/nav_url are stable regardless of which filter (if
+        # any) is currently applied, so match on those alone.
+        context["saved_filters"] = self.request.GET
+        context["stored_filters"] = horilla_views_models.SavedFilter.objects.filter(
+            saved_filter_path_query(self.request), created_by=self.request.user
+        ).distinct()
+
+        # The outer group list (one accordion row per document type) was
+        # rendered in full with no paging, unlike every other list in the
+        # app - fine while there were a couple of document types, but it
+        # just keeps growing as more get added. Page it like everything
+        # else, keeping the total (not just the current page's count) for
+        # the tab badge in the template's script block.
+        all_groups = context["groups"].order_by("-id")
+        context["groups_total_count"] = all_groups.count()
+        context["groups"] = paginator_qry(all_groups, self.request.GET.get("page"))
+
+        preserved_query = self.request.GET.copy()
+        preserved_query.pop("page", None)
+        context["groups_preserved_query"] = preserved_query.urlencode()
+        context["groups_search_url"] = reverse("document-request-filter-view")
+
+        # quick_actions.html already renders a pagination control in the same
+        # row as the Filter dropdown (the "queryset"/"search_url"/"pd" names
+        # below are what it expects) - reuse it instead of hand-rolling a
+        # second, differently-styled pagination widget underneath.
+        context["queryset"] = context["groups"]
+        context["search_url"] = context["groups_search_url"]
+        context["pd"] = context["groups_preserved_query"]
 
         # The accordion badge used to show group.document_set.count - the
         # group's grand total, unaffected by the nav's own search/filter.
@@ -447,6 +494,17 @@ class DocumentListView(HorillaListView):
 
     action_method = "document_actions"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Same reasoning as show_filter_tags above: the quick-filter chip row
+        # (quick_actions.html's "Filter (N)" dropdown) is a page-level control
+        # that already lives once, outside every group, on
+        # DocumentRequestPipelineView. HorillaListView always populates
+        # stored_filters regardless of show_filter_tags, so left alone every
+        # expanded group would render its own identical copy of that dropdown.
+        context["stored_filters"] = horilla_views_models.SavedFilter.objects.none()
+        return context
+
     row_attrs = """
                 id="document{id}"
                 hx-get='{view_file_url}'
@@ -461,3 +519,62 @@ class DocumentListView(HorillaListView):
             document_request_id__pk=self.request.GET.get("document_request_id")
         )
         return queryset
+
+
+@method_decorator(login_required, name="dispatch")
+class DocumentIndividualTabList(DocumentListView):
+    """
+    List view for the Documents tab in employee individual & profile view
+    """
+
+    columns = [
+        (_("Document"), "title"),
+        (_("Status"), "document_status_display"),
+        (_("Date"), "issue_date"),
+    ]
+    default_columns = columns
+
+    sortby_mapping = [
+        (_("Document"), "title"),
+        (_("Date"), "issue_date"),
+    ]
+
+    # DocumentListView's inherited row_attrs targets #viewFile / #viewFileModal,
+    # a modal shell that only exists inside the handful of legacy templates
+    # that used to embed it inline (tabs/document_tab.html, documents/
+    # requests.html, etc). Now that this tab renders through the generic
+    # HorillaListView table template instead of one of those templates, that
+    # shell is absent from the DOM and a row click raised htmx:targetError
+    # instead of opening a preview. Route through #genericModal /
+    # #genericModalBody instead - the page-chrome modal that's always present
+    # - matching how every other HorillaProfileView sub-tab in this framework
+    # opens its row-click preview (see RotatingShiftAssignIndividualView and
+    # RotatingWorkIndividualTab in base/cbv/work_shift_tab.py).
+    row_attrs = """
+                id="document{id}"
+                hx-get='{view_file_url}'
+                hx-target="#genericModalBody"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        pk = self.request.resolver_match.kwargs.get("pk")
+        self.search_url = reverse("employee-document-tab-list", kwargs={"pk": pk})
+        self.view_id = "document_target"
+
+    def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
+        # DocumentListView.get_queryset() (the immediate parent) filters by
+        # a document_request_id GET param, which doesn't apply to this tab
+        # (it's scoped by the employee_id path param instead), so go
+        # straight to HorillaListView.get_queryset() with our own base
+        # queryset. That base implementation is what sets self._saved_filters
+        # and applies filter_class/session/pagination handling -
+        # get_context_data() reads self._saved_filters unconditionally, so
+        # skipping it (as a bare `return self.model.objects.filter(...)`
+        # override previously did) raised an AttributeError on every load.
+        if queryset is None:
+            pk = self.kwargs.get("pk")
+            queryset = self.model.objects.filter(employee_id=pk)
+        return HorillaListView.get_queryset(self, queryset, filtered, *args, **kwargs)

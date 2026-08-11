@@ -763,26 +763,41 @@ class EmployeeKeyResult(models.Model):
         """
         For status column
         """
-        update_url = reverse(
-            "employee-keyresult-update-status", kwargs={"kr_id": self.pk}
-        )
-        options = "".join(
-            f"<option value='{str(key)}' {'selected' if key == self.status else ''}>{str(value)}</option>"
-            for key, value in self.STATUS_CHOICES
-        )
+        request = _thread_locals.request
+        if (
+            request.user.has_perm("pms.change_objective")
+            or request.user.has_perm("pms.change_employeeobjective")
+            or request.user.has_perm("pms.change_employeekeyresult")
+            or request.user.employee_get
+            in self.employee_objective_id.objective_id.managers.all()
+            or (
+                self.employee_objective_id.objective_id.self_employee_progress_update
+                and (
+                    self.employee_objective_id.employee_id == request.user.employee_get
+                )
+            )
+        ):
+            update_url = reverse(
+                "employee-keyresult-update-status", kwargs={"kr_id": self.pk}
+            )
+            options = "".join(
+                f"<option value='{str(key)}' {'selected' if key == self.status else ''}>{str(value)}</option>"
+                for key, value in self.STATUS_CHOICES
+            )
 
-        col = f"""
-            <select
-                id="keyResultStatus" name="key_result_status"
-                hx-post="{update_url}"
-                hx-trigger="change" class="oh-table__editable-input w-100"
-                hx-on-htmx-after-request = "$('#reloadMessagesButton').click()"
-                hx-swap = "none"
-            >
-                    {options}
-            </select>
-        """
-        return col
+            col = f"""
+                <select
+                    id="keyResultStatus" name="key_result_status"
+                    hx-post="{update_url}"
+                    hx-trigger="change" class="oh-table__editable-input w-100"
+                    hx-on-htmx-after-request = "$('#reloadMessagesButton').click()"
+                    hx-swap = "none"
+                >
+                        {options}
+                </select>
+            """
+            return col
+        return self.get_status_display()
 
     def get_instance_id(self):
         return self.pk

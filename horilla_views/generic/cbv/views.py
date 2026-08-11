@@ -53,6 +53,7 @@ from horilla_views.cbv_methods import (  # update_initial_cache,
     hx_request_required,
     login_required,
     paginator_qry,
+    saved_filter_path_query,
     sortby,
     split_by_import_reference,
     structured,
@@ -255,7 +256,7 @@ class HorillaListView(ListView):
                     )["query_dict"]
 
                 default_filter = models.SavedFilter.objects.filter(
-                    path=self.request.path,
+                    saved_filter_path_query(self.request),
                     created_by=self.request.user,
                     is_default=True,
                 ).first()
@@ -328,7 +329,7 @@ class HorillaListView(ListView):
             referrer = "/" + "/".join(referrer.split("/")[3:])
         context["stored_filters"] = (
             models.SavedFilter.objects.filter(
-                path=self.request.path, created_by=self.request.user
+                saved_filter_path_query(self.request), created_by=self.request.user
             )
             | models.SavedFilter.objects.filter(
                 referrer=referrer, created_by=self.request.user
@@ -1814,7 +1815,7 @@ class HorillaCardView(ListView):
                     query_dict, queryset=self.queryset, request=self.request
                 ).qs
                 default_filter = models.SavedFilter.objects.filter(
-                    path=self.request.path,
+                    saved_filter_path_query(self.request),
                     created_by=self.request.user,
                     is_default=True,
                 ).first()
@@ -1877,7 +1878,7 @@ class HorillaCardView(ListView):
             referrer = "/" + "/".join(referrer.split("/")[3:])
         context["stored_filters"] = (
             models.SavedFilter.objects.filter(
-                path=self.request.path, created_by=self.request.user
+                saved_filter_path_query(self.request), created_by=self.request.user
             )
             | models.SavedFilter.objects.filter(
                 referrer=referrer, created_by=self.request.user

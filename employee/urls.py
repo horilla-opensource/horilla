@@ -374,6 +374,11 @@ urlpatterns = [
         kwargs={"model": Employee},
     ),
     path("document-tab/<int:pk>/", views.document_tab, name="document-tab"),
+    path(
+        "employee-document-tab-list/<int:pk>/",
+        document_request.DocumentIndividualTabList.as_view(),
+        name="employee-document-tab-list",
+    ),
     path("bonus-points-tab/<int:pk>/", views.bonus_points_tab, name="bonus-points-tab"),
     path(
         "add-bonus-points/<int:emp_id>/",

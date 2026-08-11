@@ -19,7 +19,9 @@
         {% include "generic/filter_tags.html" %}
     {% endif %}
     {% if queryset|length %}
-        {% include "generic/quick_actions.html" %}
+        {% with row_status_indications=card_status_indications %}
+            {% include "generic/quick_actions.html" %}
+        {% endwith %}
         <div class="bg-white rounded-md shadow-card">
             <div class="h-[calc(100vh_-_210px)] overflow-hidden overflow-y-auto overflow-x-auto">
                 <div id="gridView" class="p-5">

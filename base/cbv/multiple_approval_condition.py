@@ -111,7 +111,14 @@ class MultipleApprovalConditionNav(HorillaNavView):
 
     nav_title = _("Multiple Approval Rules")
     filter_instance = MultipleApprovalConditionFilter()
-    search_swap_target = "#listContainer"
+    # "#listContainer" is a generic id every tab's own content template
+    # reuses (e.g. the sibling "Leave Types" tab on the same Leave Settings
+    # page) - once both tabs have been visited, both live in the DOM at once
+    # (inactive tabs are hidden via CSS, not removed), so a non-namespaced
+    # target here can resolve to the wrong tab's stale container and quietly
+    # swap content into it instead of this view's own. Target the list
+    # view's own, page-unique view_id instead.
+    search_swap_target = "#multipleApproveCondition"
     template_name = "generic/inline_nav.html"
 
 

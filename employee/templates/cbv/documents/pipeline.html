@@ -1,8 +1,17 @@
 {% load i18n generic_template_filters horillafilters %}
 
-{% include "generic/filter_tags.html" %}
-
 <div id="{{view_id}}" class="accordion-wrapper space-y-2">
+  <button
+      class="reload-record"
+      hidden
+      hx-get="{{groups_search_url|default:request.path}}?{{request.GET.urlencode}}"
+      hx-target="#{{view_id}}"
+      hx-swap="outerHTML"
+  ></button>
+
+  {% include "generic/filter_tags.html" %}
+  {% include "generic/quick_actions.html" %}
+
   {% if not groups %}
   <div class="oh-wrapper h-full" align="center">
     <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
@@ -102,6 +111,31 @@
         }
     }
 
+    // toggleDocAccordion() measures scrollHeight synchronously on click, but
+    // the panel's actual content (the document table, or the "no records"
+    // card) only arrives afterwards via the accordion button's own hx-get -
+    // so the max-height it sets is measured against the still-empty panel
+    // and never updated once real content lands, clipping everything past
+    // that near-zero height. Re-measure once htmx swaps the content in.
+    document.addEventListener("htmx:afterSwap", function (e) {
+        var panel = e.target;
+        if (!panel.id || panel.id.indexOf("docRequest") !== 0) return;
+        if (!panel.style.maxHeight || panel.style.maxHeight === "0px") return;
+        panel.style.maxHeight = panel.scrollHeight + "px";
+        // The "no records" illustration can still be mid-download at swap
+        // time, growing the panel further once it finishes loading in.
+        panel.querySelectorAll("img").forEach(function (img) {
+            if (img.complete) return;
+            img.addEventListener(
+                "load",
+                function () {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                },
+                { once: true }
+            );
+        });
+    });
+
     // Approving/rejecting/uploading a document reloads this entire list from
     // the server (see htmx_refresh_document_request_container), which
     // re-renders every group collapsed - closing whichever ones the user had
@@ -191,7 +225,7 @@
 
     var tabId = $("#{{view_id}}").closest(".oh-tabs__content").attr("id");
     var badge = $(`#badge-${tabId}`);
-    var count = "{{groups|length}}";
+    var count = "{{groups_total_count}}";
     var label = badge.attr("data-badge-label") || "";
     var title = count + " " + label;
     badge.html(count);

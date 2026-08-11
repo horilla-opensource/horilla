@@ -18,15 +18,34 @@ def equals(value, arg):
     return value == arg
 
 
+def _get_employee_of_user(user):
+    """
+    Resolve the Employee for a user once per request and cache it on the
+    user object - this tag/filter is called once per row in list views, and
+    without this cache each call re-issues the same lookup query.
+    """
+    if not hasattr(user, "_horilla_employee_cache"):
+        user._horilla_employee_cache = Employee.objects.filter(
+            employee_user_id=user
+        ).first()
+    return user._horilla_employee_cache
+
+
 @register.simple_tag
 def is_manager_of(user, instance, field_name="employee_id"):
-    employee = Employee.objects.filter(employee_user_id=user).first()
+    employee = _get_employee_of_user(user)
 
     target_employee = getattr(instance, field_name, None)
 
-    return EmployeeWorkInformation.objects.filter(
-        reporting_manager_id=employee, employee_id=target_employee
-    ).exists()
+    if not hasattr(user, "_horilla_is_manager_of_cache"):
+        user._horilla_is_manager_of_cache = {}
+    cache = user._horilla_is_manager_of_cache
+    key = (getattr(employee, "id", None), getattr(target_employee, "id", None))
+    if key not in cache:
+        cache[key] = EmployeeWorkInformation.objects.filter(
+            reporting_manager_id=employee, employee_id=target_employee
+        ).exists()
+    return cache[key]
 
 
 @register.filter(name="is_reportingmanager")
@@ -35,7 +54,7 @@ def is_reportingmanager(user):
 
     This method will return true if the user employee profile is reporting manager to any employee
     """
-    employee = Employee.objects.filter(employee_user_id=user).first()
+    employee = _get_employee_of_user(user)
     return EmployeeWorkInformation.objects.filter(
         reporting_manager_id=employee
     ).exists()
@@ -46,7 +65,9 @@ def is_leave_approval_manager(user):
     """
     This method will return true if the user is comes in MultipleApprovalCondition model as approving manager
     """
-    employee = Employee.objects.filter(employee_user_id=user).first()
+    if hasattr(user, "_horilla_is_leave_approval_manager_cache"):
+        return user._horilla_is_leave_approval_manager_cache
+    employee = _get_employee_of_user(user)
     manager = (
         MultipleApprovalManagers.objects.entire()
         .filter(employee_id=employee.id)
@@ -54,6 +75,7 @@ def is_leave_approval_manager(user):
         if employee
         else False
     )
+    user._horilla_is_leave_approval_manager_cache = manager
     return manager
 
 

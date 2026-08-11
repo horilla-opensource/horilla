@@ -2,6 +2,16 @@
 {% load generic_template_filters %}
 {% get_company as theme_obj %}
 <div id="{{view_id}}" class="accordion-wrapper space-y-2">
+  <button
+      class="reload-record"
+      hidden
+      hx-get="{{search_url}}?{{request.GET.urlencode}}"
+      hx-target="#{{view_id}}"
+      hx-swap="outerHTML"
+  ></button>
+
+  {% include "generic/quick_actions.html" %}
+
   {% for group in groups %}
   <div id="{{selected_instances_key_name}}{{ group.id }}" data-ids="[]"></div>
   <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
@@ -59,7 +69,7 @@
 <script>
     var tabId = $("#{{view_id}}").closest(".oh-tabs__content").attr("id");
     var badge = $(`#badge-${tabId}`);
-    var count = "{{groups|length}}";
+    var count = "{{groups_total_count}}";
     var label = badge.attr("data-badge-label") || "";
     var title = count + " " + label;
     badge.html(count);

@@ -2,7 +2,6 @@
 {% load basefilters %}
 {% is_manager_of request.user instance as can_manage %}
 {% with can_change=perms.leave.change_leaverequest can_delete=perms.leave.delete_leaverequest can_penalty=perms.base.change_penaltyaccounts leave_manager=request.user|is_leave_approval_manager %}
-{% if can_change or can_delete or can_penalty or can_manage or leave_manager %}
     <div onclick="event.stopPropagation()">
         <div class="flex items-center justify-center gap-1">
 
@@ -11,6 +10,10 @@
                 <button data-toggle="oh-modal-toggle" data-target="#penaltyModal" hx-target="#penaltyModalBody"
                     hx-get="{% url 'leave-cut-penalty' instance.id %}" type="button"
                     class="oh-btn oh-btn--danger oh-btn--sq-sm" title="{% trans 'Penalty' %}">
+                    <ion-icon name="information-circle-outline"></ion-icon>
+                </button>
+            {% else %}
+                <button type="button" class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Penalty' %}">
                     <ion-icon name="information-circle-outline"></ion-icon>
                 </button>
             {% endif %}
@@ -26,12 +29,16 @@
                     >
                     <ion-icon name="create-outline"></ion-icon>
                 </button>
+            {% else %}
+                <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Edit' %}">
+                    <ion-icon name="create-outline"></ion-icon>
+                </button>
             {% endif %}
 
             {# Delete Button #}
             {% if can_manage or can_delete or leave_manager %}
                 <button
-                    class="oh-btn oh-btn--danger oh-btn--sq-sm" {% if instance.status != 'requested' %}disabled{% endif %}
+                    class="oh-btn {% if instance.status != 'requested' %}oh-btn--light-bkg{% else %}oh-btn--danger{% endif %} oh-btn--sq-sm" {% if instance.status != 'requested' %}disabled{% endif %}
                     title="{% trans 'Delete' %}"
                     id="delete-link"
                     {% if instance.status == 'requested' %}
@@ -42,9 +49,12 @@
                     >
                     <ion-icon name="trash-outline"></ion-icon>
                 </button>
+            {% else %}
+                <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Delete' %}">
+                    <ion-icon name="trash-outline"></ion-icon>
+                </button>
             {% endif %}
 
         </div>
     </div>
-{% endif %}
 {% endwith %}

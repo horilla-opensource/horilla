@@ -121,10 +121,11 @@
                 align-items: flex-start;
             }
 
-            label[for='fileUpload'] {
-                justify-content: center;
-                width: 100%;
-            }
+            .emp-photo-wrap { width: 100% !important; align-items: center !important; }
+        }
+
+        .emp-photo-zone:hover {
+            border-color: {{ theme_obj.primary_500|default:"#F7C8C1" }};
         }
 
         .form-input-items input:focus,
@@ -332,33 +333,26 @@
                 <div class="col-span-12 md:col-span-6">
                     <div class="p-5 rounded-md border border-dark-50">
                         <div class="form-input-items">
-                            <label class="text-xs font-medium">{% trans "Icon" %}</label>
-                            <label
-                                for="fileUpload"
-                                class="text-xs font-medium flex items-center bg-white justify-center gap-2 px-4 py-2 border border-dark-50 rounded-md text-xs text-gray-700 cursor-pointer hover:bg-gray-100 transition duration-300"
-                            >
-                                <svg
-                                    class="w-4 h-4 text-primary-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 12V4m0 0l4 4m-4-4L8 8"
-                                    />
-                                </svg>
-                                {% trans "Choose Icon" %}
-                            </label>
-                            {{ form.icon.errors }}
-                            <input id="fileUpload" type="file" class="hidden" accept="image/*" name="icon">
-                            <img
-                                id="imagePreview"
-                                class="mt-3 w-10 h-10 object-cover rounded border border-[#0000001c] hidden"
-                                alt="{% trans 'Preview' %}"
-                            >
+                            <label class="text-xs font-medium mb-2 block">{% trans "Icon" %}</label>
+                            <div class="w-24 flex flex-col items-center flex-shrink-0 emp-photo-wrap">
+                                <label for="id_icon" class="emp-photo-zone w-20 h-20 border-2 border-dashed border-secondary-300 rounded-xl flex items-center justify-center bg-secondary-50 overflow-hidden cursor-pointer transition-colors" id="iconDropZone">
+                                    <img
+                                        id="iconPreview"
+                                        src="{% if form.instance.icon %}{{ form.instance.icon.url }}{% else %}https://ui-avatars.com/api/?name=LT&background=e5e7eb&color=6b7280{% endif %}"
+                                        data-default-src="{% if form.instance.icon %}{{ form.instance.icon.url }}{% else %}https://ui-avatars.com/api/?name=LT&background=e5e7eb&color=6b7280{% endif %}"
+                                        alt="{% trans 'Leave type icon' %}"
+                                        class="preview w-full h-full object-cover"
+                                    >
+                                </label>
+                                <div class="hidden">{{ form.icon }}</div>
+                                <p class="text-xxs text-dark-100 text-center mt-2 leading-relaxed">
+                                    {% trans "Upload JPG, PNG or SVG" %}
+                                </p>
+                                <button type="button" id="removeIconBtn" class="hidden text-xxs text-danger mt-1 border-0 bg-transparent p-0 cursor-pointer font-bold">
+                                    {% trans "Remove icon" %}
+                                </button>
+                                {{ form.icon.errors }}
+                            </div>
                         </div>
                         <div class="flex items-center justify-between mb-2 resetContainer form-input-items">
                             <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
@@ -438,24 +432,41 @@
     </div>
 
     <script>
-        var icon = $("#id_icon");
-        icon.show();
-        document.getElementById('fileUpload').addEventListener('change', function () {
-            const file = this.files[0];
-            const preview = document.getElementById('imagePreview');
+        $(document).ready(function () {
+            var $iconInput = $("#id_icon");
+            var $iconPreview = $("#iconPreview");
+            var $removeIconBtn = $("#removeIconBtn");
+            var defaultIconSrc = $iconPreview.data("default-src");
 
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    preview.src = e.target.result;
-                    preview.classList.remove('hidden');
+            function toggleRemoveIconButton() {
+                if ($iconInput[0] && $iconInput[0].files && $iconInput[0].files.length > 0) {
+                    $removeIconBtn.removeClass("hidden");
+                } else {
+                    $removeIconBtn.addClass("hidden");
                 }
-                reader.readAsDataURL(file);
-            } else {
-                preview.src = '';
-                preview.classList.add('hidden');
             }
+
+            $iconInput.on("change", function () {
+                const file = this.files[0];
+                if (file && file.type.startsWith("image/")) {
+                    const reader = new FileReader();
+                    reader.addEventListener("load", function () {
+                        $iconPreview.attr("src", reader.result);
+                    });
+                    reader.readAsDataURL(file);
+                }
+                toggleRemoveIconButton();
+            });
+
+            $removeIconBtn.on("click", function () {
+                $iconInput.val("");
+                $iconPreview.attr("src", defaultIconSrc);
+                toggleRemoveIconButton();
+            });
+
+            toggleRemoveIconButton();
         });
+
         function toggleInput(inputSelector, shouldShow = null) {
             const $targetInput = $(inputSelector);
             if (!$targetInput.length) {

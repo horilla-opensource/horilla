@@ -1,6 +1,6 @@
 {% load i18n %}
 
-{% if perms.payroll.change_reimbursement %}
+{% if perms.payroll.change_reimbursement or perms.payroll.delete_reimbursement or request.user == instance.employee_id.employee_user_id %}
     <div id="requestCard{{ instance.id }}" onclick="event.stopPropagation()">
         <form
             hx-get="{% url 'approve-reimbursements' %}"
@@ -12,6 +12,36 @@
             <input type="hidden" name="amount" default="0" min="0" />
 
             <div class="oh-btn-group" onclick="event.stopPropagation()">
+                {% if perms.payroll.change_reimbursement or request.user == instance.employee_id.employee_user_id %}
+                    {% if instance.status == 'requested' %}
+                        <a
+                            onclick="event.stopPropagation()"
+                            hx-get="{% url 'reimbursement-update' instance.id %}"
+                            hx-target="#genericModalBody"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModal"
+                            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
+                            title="{% trans 'Edit' %}"
+                        >
+                            <ion-icon name="create-outline"></ion-icon>
+                        </a>
+                    {% else %}
+                        <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled>
+                            <ion-icon name="create-outline"></ion-icon>
+                        </button>
+                    {% endif %}
+                {% endif %}
+                {% if perms.payroll.delete_reimbursement %}
+                    <a href="#"
+                        hx-get="{% url 'delete-reimbursement' %}?ids={{instance.id}}"
+                        hx-confirm="{% trans 'Do you want to delete this record?' %}"
+                        hx-swap="none"
+                        onclick="event.preventDefault();event.stopPropagation();"
+                        class='oh-btn oh-btn--danger oh-btn--sq-sm' title='{% trans "Delete" %}'>
+                        <ion-icon name="trash-outline"></ion-icon>
+                    </a>
+                {% endif %}
+                {% if perms.payroll.change_reimbursement %}
                 {% if instance.status == 'requested' %}
                     <button
                         type="button"
@@ -47,6 +77,7 @@
                     >
                         <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
                     </button>
+                {% endif %}
                 {% endif %}
             </div>
 

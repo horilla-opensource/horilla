@@ -3,29 +3,23 @@
 {% with is_owner=request.user.employee_get|equals:instance.reallocate_to can_change=perms.base.change_shiftrequest %}
 <div class="oh-sticky-table__right" onclick="event.stopPropagation();">
 	<div class="oh-btn-group">
-		{% if is_owner and not can_manage %}
-			{% if instance.approved or instance.reallocate_canceled or instance.reallocate_approved %}
-				<button class="oh-btn oh-btn--info w-100" disabled>
-					<ion-icon name="thumbs-up-outline"></ion-icon>
-				</button>
-			{% else %}
-				<a
-					href=" {% url 'shift-allocation-request-approve' instance.id %}"
-					onclick="return confirm(`{% trans 'Are you available for this shift reallocation?' %}`)"
-					class="oh-btn oh-btn--info w-100"
-					title="{% trans 'Available' %}"
-				>
-					<ion-icon name="thumbs-up-outline"></ion-icon>
-				</a>
-			{% endif %}
+		{% if is_owner and not can_manage and not instance.approved and not instance.reallocate_canceled and not instance.reallocate_approved %}
+			<a
+				href=" {% url 'shift-allocation-request-approve' instance.id %}"
+				onclick="return confirm(`{% trans 'Are you available for this shift reallocation?' %}`)"
+				class="oh-btn oh-btn--info w-100"
+				title="{% trans 'Available' %}"
+			>
+				<ion-icon name="thumbs-up-outline"></ion-icon>
+			</a>
+		{% else %}
+			<button class="oh-btn oh-btn--info w-100" disabled title="{% trans 'Available' %}">
+				<ion-icon name="thumbs-up-outline"></ion-icon>
+			</button>
 		{% endif %}
 
 		{% if can_change or can_manage %}
-			{% if instance.reallocate_approved or instance.approved or instance.reallocate_canceled %}
-				<button class="oh-btn oh-btn--success w-100" disabled>
-					<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-				</button>
-			{% else %}
+			{% if not instance.reallocate_approved and not instance.approved and not instance.reallocate_canceled %}
 				<a
 					href="{% url 'shift-allocation-request-approve' instance.id %}"
 					onclick="return confirm(`{% trans 'Do you want to approve this request?' %}`)"
@@ -34,82 +28,84 @@
 				>
 					<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
 				</a>
+			{% else %}
+				<button class="oh-btn oh-btn--success w-100" disabled title="{% trans 'Approve' %}">
+					<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+				</button>
 			{% endif %}
+		{% else %}
+			<button class="oh-btn oh-btn--success w-100" disabled title="{% trans 'Approve' %}">
+				<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+			</button>
 		{% endif %}
 
-		{% if is_owner and not can_manage %}
-			{% if instance.reallocate_canceled or instance.approved or instance.reallocate_approved %}
-				<button class="oh-btn oh-btn--danger w-100" disabled>
-					<ion-icon name="close-circle-outline"></ion-icon>
-				</button>
-			{% else %}
-				<a
-					href=" {% url 'shift-allocation-request-cancel' instance.id %}"
-					onclick="return confirm(`{% trans 'Are you not available for this shift reallocation?' %}`)"
-					class="oh-btn oh-btn--danger w-100"
-					title="{% trans 'Not available' %}"
-				>
-					<ion-icon name="close-circle-outline"></ion-icon>
-				</a>
-			{% endif %}
+		{% if is_owner and not can_manage and not instance.reallocate_canceled and not instance.approved and not instance.reallocate_approved %}
+			<a
+				href=" {% url 'shift-allocation-request-cancel' instance.id %}"
+				onclick="return confirm(`{% trans 'Are you not available for this shift reallocation?' %}`)"
+				class="oh-btn oh-btn--danger w-100"
+				title="{% trans 'Not available' %}"
+			>
+				<ion-icon name="close-circle-outline"></ion-icon>
+			</a>
+		{% else %}
+			<button class="oh-btn oh-btn--danger w-100" disabled title="{% trans 'Not available' %}">
+				<ion-icon name="close-circle-outline"></ion-icon>
+			</button>
 		{% endif %}
 
-		{% if request.user.employee_get == instance.employee_id and not can_manage %}
-			{% if instance.approved or instance.reallocate_canceled or instance.reallocate_approved %}
-				<button class="oh-btn oh-btn--light-bkg w-50" disabled>
-					<ion-icon name="create-outline"></ion-icon>
-				</button>
-			{% else %}
-				<a
-					hx-get="{% url 'shift-allocation-request-update' instance.id %}"
-					hx-target="#shiftRequestModalUpdateBody"
-					data-toggle="oh-modal-toggle"
-					data-target="#shiftRequestModalUpdate"
-					class="oh-btn oh-btn--light-bkg w-50"
-					title="{% trans 'Edit' %}"
-				>
-					<ion-icon name="create-outline"></ion-icon>
-				</a>
-			{% endif %}
+		{% if request.user.employee_get == instance.employee_id and not can_manage and not instance.approved and not instance.reallocate_canceled and not instance.reallocate_approved %}
+			<a
+				hx-get="{% url 'shift-allocation-request-update' instance.id %}"
+				hx-target="#shiftRequestModalUpdateBody"
+				data-toggle="oh-modal-toggle"
+				data-target="#shiftRequestModalUpdate"
+				class="oh-btn oh-btn--light-bkg w-50"
+				title="{% trans 'Edit' %}"
+			>
+				<ion-icon name="create-outline"></ion-icon>
+			</a>
+		{% else %}
+			<button class="oh-btn oh-btn--light-bkg w-50" disabled title="{% trans 'Edit' %}">
+				<ion-icon name="create-outline"></ion-icon>
+			</button>
+		{% endif %}
 
-			{% if instance.approved or instance.reallocate_approved or instance.reallocate_canceled %}
-				<button class="oh-btn oh-btn--light-bkg w-50" disabled>
+		{% if request.user.employee_get == instance.employee_id and not can_manage and not instance.approved and not instance.reallocate_approved and not instance.reallocate_canceled %}
+			<form
+				action="{% url 'shift-request-delete' instance.id  %}"
+				onsubmit="return confirm(`{% trans 'Are you sure you want to delete this shift request?' %}`);"
+				method="post"
+				class="w-50"
+			>
+				{% csrf_token %}
+				<button
+					type="submit"
+					class="oh-btn oh-btn--light-bkg w-100"
+					title="{% trans 'Remove' %}"
+				>
 					<ion-icon name="trash-outline"></ion-icon>
 				</button>
-			{% else %}
-				<form
-					action="{% url 'shift-request-delete' instance.id  %}"
-					onsubmit="return confirm(`{% trans 'Are you sure you want to delete this shift request?' %}`);"
-					method="post"
-					class="w-50"
-				>
-					{% csrf_token %}
-					<button
-						type="submit"
-						class="oh-btn oh-btn--danger w-100"
-						title="{% trans 'Remove' %}"
-					>
-						<ion-icon name="trash-outline"></ion-icon>
-					</button>
-				</form>
-			{% endif %}
+			</form>
+		{% else %}
+			<button class="oh-btn oh-btn--light-bkg w-50" disabled title="{% trans 'Remove' %}">
+				<ion-icon name="trash-outline"></ion-icon>
+			</button>
 		{% endif %}
 
-		{% if can_manage %}
-			{% if instance.reallocate_canceled or instance.approved or instance.reallocate_approved %}
-				<button disabled class="oh-btn oh-btn--danger w-100">
-					<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-				</button>
-			{% else %}
-				<a
-					href="{% url 'shift-allocation-request-cancel' instance.id %}"
-					onclick="return confirm(`{% trans 'Do you want to reject this request?' %}`)"
-					class="oh-btn oh-btn--danger w-100"
-					title="{% trans 'Reject' %}"
-				>
-					<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-				</a>
-			{% endif %}
+		{% if can_manage and not instance.reallocate_canceled and not instance.approved and not instance.reallocate_approved %}
+			<a
+				href="{% url 'shift-allocation-request-cancel' instance.id %}"
+				onclick="return confirm(`{% trans 'Do you want to reject this request?' %}`)"
+				class="oh-btn oh-btn--danger w-100"
+				title="{% trans 'Reject' %}"
+			>
+				<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+			</a>
+		{% else %}
+			<button disabled class="oh-btn oh-btn--danger w-100" title="{% trans 'Reject' %}">
+				<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+			</button>
 		{% endif %}
 	</div>
 </div>

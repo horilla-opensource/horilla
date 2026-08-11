@@ -1,6 +1,70 @@
 {% load i18n %}{% load static %}{% load horillafilters %}
 {% get_company as theme_obj %}
 {% if templates %}
+    {% if templates.has_next or templates.has_previous %}
+        {% if templates.paginator.count %}
+            <div class="flex flex-nowrap items-center justify-end gap-2 mb-2">
+                <div class="hlv-pagination inline-flex items-center h-8 gap-0.5 bg-white border border-[#e6e6e6] rounded-md px-1 flex-shrink-0">
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if templates.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if templates.has_previous %}
+                        hx-target="#view-container"
+                        hx-get="{% url 'rec-filter-survey' %}?{{pd}}&template_page=1"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angles-left"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if templates.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if templates.has_previous %}
+                        hx-target="#view-container"
+                        hx-get="{% url 'rec-filter-survey' %}?{{pd}}&template_page={{ templates.previous_page_number }}"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angle-left"></i>
+                    </button>
+                    <div class="flex items-center gap-1 px-1 h-7 text-xs text-[#666] leading-none">
+                        <input
+                            type="number"
+                            name="template_page"
+                            min="1"
+                            max="{{ templates.paginator.num_pages }}"
+                            value="{{templates.number}}"
+                            title="{% trans 'Enter a page number and press Enter' %}"
+                            class="w-9 h-6 m-0 py-0 px-1 text-center text-xs leading-6 border border-[#e6e6e6] rounded outline-none focus:border-primary-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                            hx-get="{% url 'rec-filter-survey' %}?{{pd}}"
+                            hx-target="#view-container"
+                            hx-trigger="keyup[keyCode==13] changed, blur changed"
+                            onclick="this.select()"
+                        >
+                        <span class="inline-flex items-center h-6 leading-none whitespace-nowrap">/ {{ templates.paginator.num_pages }}</span>
+                    </div>
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if templates.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if templates.has_next %}
+                        hx-target="#view-container"
+                        hx-get="{% url 'rec-filter-survey' %}?{{pd}}&template_page={{ templates.next_page_number }}"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if templates.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if templates.has_next %}
+                        hx-target="#view-container"
+                        hx-get="{% url 'rec-filter-survey' %}?{{pd}}&template_page={{ templates.paginator.num_pages }}"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angles-right"></i>
+                    </button>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
     <div class="p-2 mt-5 shadow-card bg-white">
         {% for grouper in templates %}
             <div class="oh-accordion mb-3">
@@ -99,6 +163,70 @@
                     </div>
                     <div class="oh-accordion-body d-none">
                         {% if grouper.list %}
+                            {% if grouper.list.has_next or grouper.list.has_previous %}
+                                {% if grouper.list.paginator.count %}
+                                    <div class="flex flex-nowrap items-center justify-end gap-2 mb-2">
+                                        <div class="hlv-pagination inline-flex items-center h-8 gap-0.5 bg-white border border-[#e6e6e6] rounded-md px-1 flex-shrink-0">
+                                            <button
+                                                type="button"
+                                                class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if grouper.list.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                                                {% if grouper.list.has_previous %}
+                                                hx-target="#view-container"
+                                                hx-get="{% url 'rec-filter-survey' %}?{{pd}}&{{grouper.dynamic_name}}=1"
+                                                {% endif %}
+                                            >
+                                                <i class="fa-solid fa-angles-left"></i>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if grouper.list.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                                                {% if grouper.list.has_previous %}
+                                                hx-target="#view-container"
+                                                hx-get="{% url 'rec-filter-survey' %}?{{pd}}&{{grouper.dynamic_name}}={{ grouper.list.previous_page_number }}"
+                                                {% endif %}
+                                            >
+                                                <i class="fa-solid fa-angle-left"></i>
+                                            </button>
+                                            <div class="flex items-center gap-1 px-1 h-7 text-xs text-[#666] leading-none">
+                                                <input
+                                                    type="number"
+                                                    name="{{grouper.dynamic_name}}"
+                                                    min="1"
+                                                    max="{{ grouper.list.paginator.num_pages }}"
+                                                    value="{{grouper.list.number}}"
+                                                    title="{% trans 'Enter a page number and press Enter' %}"
+                                                    class="w-9 h-6 m-0 py-0 px-1 text-center text-xs leading-6 border border-[#e6e6e6] rounded outline-none focus:border-primary-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                                    hx-get="{% url 'rec-filter-survey' %}?{{pd}}"
+                                                    hx-target="#view-container"
+                                                    hx-trigger="keyup[keyCode==13] changed, blur changed"
+                                                    onclick="this.select()"
+                                                >
+                                                <span class="inline-flex items-center h-6 leading-none whitespace-nowrap">/ {{ grouper.list.paginator.num_pages }}</span>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if grouper.list.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                                                {% if grouper.list.has_next %}
+                                                hx-target="#view-container"
+                                                hx-get="{% url 'rec-filter-survey' %}?{{pd}}&{{grouper.dynamic_name}}={{ grouper.list.next_page_number }}"
+                                                {% endif %}
+                                            >
+                                                <i class="fa-solid fa-angle-right"></i>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if grouper.list.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                                                {% if grouper.list.has_next %}
+                                                hx-target="#view-container"
+                                                hx-get="{% url 'rec-filter-survey' %}?{{pd}}&{{grouper.dynamic_name}}={{ grouper.list.paginator.num_pages }}"
+                                                {% endif %}
+                                            >
+                                                <i class="fa-solid fa-angles-right"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
                             <table class="w-full border border-[#ececec]">
                                 <thead class="sticky top-0 bg-[white] z-[1]">
                                     <tr class="border-b border-[#ececec]">
@@ -185,50 +313,6 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
-
-                            {% if grouper.list.has_next or grouper.list.has_previous %}
-                                {% if grouper.list.paginator.count %}
-                                    <div class="flex justify-between items-center mt-4 w-full inset-0">
-                                        <p class="text-xs text-[#666]">
-                                            {% trans "Page" %}
-                                            {{ grouper.list.number }}
-                                            {% trans "of" %}
-                                            {{ grouper.list.paginator.num_pages }}
-                                        </p>
-                                        <div class="flex gap-3 text-[#666] items-center">
-                                            {% if grouper.list.has_previous %}
-                                                <button
-                                                    class="text-xs hover:text-primary-600 transition duration-300"
-                                                    hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page={{ grouper.list.previous_page_number }}"
-                                                    hx-target="#view-container"
-                                                >
-                                                    <i class="fa-solid fa-arrow-left"></i>
-                                                </button>
-                                            {% endif %}
-                                            <div>
-                                                <input
-                                                    type="number"
-                                                    name="page"
-                                                    class="w-[30px]"
-                                                    value="{{grouper.list.number}}"
-                                                    hx-get="{% url 'rec-filter-survey' %}?{{pd}}"
-                                                    hx-target="#view-container"
-                                                    min="1"
-                                                > / {{ grouper.list.paginator.num_pages }}
-                                            </div>
-                                            {% if grouper.list.has_next %}
-                                                <button
-                                                    class="text-xs hover:text-primary-600 transition duration-300"
-                                                    hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page={{ grouper.list.next_page_number }}"
-                                                    hx-target="#view-container"
-                                                >
-                                                    <i class="fa-solid fa-arrow-right"></i>
-                                                </button>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            {% endif %}
                         {% else %}
                             <div class="oh-wrapper h-full" align="center">
                                 <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
@@ -250,50 +334,6 @@
             </div>
         {% endfor %}
     </div>
-
-    {% if templates.has_next or templates.has_previous %}
-        {% if templates.paginator.count %}
-            <div class="flex justify-between items-center mt-4 w-full inset-0">
-                <p class="text-xs text-[#666]">
-                    {% trans "Page" %}
-                    {{ templates.number }}
-                    {% trans "of" %}
-                    {{ templates.paginator.num_pages }}
-                </p>
-                <div class="flex gap-3 text-[#666] items-center">
-                    {% if templates.has_previous %}
-                        <button
-                            class="text-xs hover:text-primary-600 transition duration-300"
-                            hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page={{ templates.previous_page_number }}"
-                            hx-target="#view-container"
-                        >
-                            <i class="fa-solid fa-arrow-left"></i>
-                        </button>
-                    {% endif %}
-                    <div>
-                        <input
-                            type="number"
-                            name="page"
-                            class="w-[30px]"
-                            value="{{templates.number}}"
-                            hx-get="{% url 'rec-filter-survey' %}?{{pd}}"
-                            hx-target="#view-container"
-                            min="1"
-                        > / {{ templates.paginator.num_pages }}
-                    </div>
-                    {% if templates.has_next %}
-                        <button
-                            class="text-xs hover:text-primary-600 transition duration-300"
-                            hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page={{ templates.next_page_number }}"
-                            hx-target="#view-container"
-                        >
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                    {% endif %}
-                </div>
-            </div>
-        {% endif %}
-    {% endif %}
 {% else %}
     <div class="oh-empty">
         <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}">

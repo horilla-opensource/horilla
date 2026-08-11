@@ -15,7 +15,7 @@
     <div class="flex flex-nowrap gap-1 items-center flex-shrink-0">
         <button
             type="button"
-            class="d-none quick-bulk-action px-4 py-2 bg-transparent border border-secondary-700 text-secondary-700 rounded-md text-xs hover:bg-secondary-700 hover:text-white transition duration-300"
+            class="d-none quick-bulk-action px-4 py-2 bg-transparent border border-primary-600 text-primary-600 rounded-md text-xs hover:bg-primary-600 hover:text-white transition duration-300"
             id="unselect_{{ view_id }}"
             onclick="clearSelection('{{ selected_instances_key_id }}');
         selectSelected('#{{ root_view_id|default:view_id|safe }}','{{ selected_instances_key_id }}');
@@ -204,7 +204,7 @@
                     <div
                         x-show="open"
                         @click.outside="open = false"
-                        class="absolute left-0 mt-1 z-20 bg-white border border-[#e6e6e6] rounded-md shadow-lg p-2 flex flex-col gap-1 min-w-[200px] max-h-64 overflow-y-auto"
+                        class="absolute right-0 mt-1 z-20 bg-white border border-[#e6e6e6] rounded-md shadow-lg p-2 flex flex-col gap-1 min-w-[200px] max-h-64 overflow-y-auto"
                     >
                         {% for filter in stored_filters %}
                             {% include "generic/_saved_filter_chip.html" with filter=filter %}

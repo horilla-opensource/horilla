@@ -4,6 +4,37 @@
     {% if can_change or can_delete or can_manage %}
         <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
             {% if can_change or can_manage %}
+                <a
+                    hx-get="{% url 'attendance-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
+                    onclick="event.stopPropagation()"
+                    hx-target="#genericModalBody"
+                    hx-swap="innerHTML"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
+                    title="{% trans 'Edit' %}"
+                >
+                    <ion-icon name="create-outline"></ion-icon>
+                </a>
+            {% endif %}
+            {% if can_delete or can_manage %}
+                <form
+                    hx-post="{% url 'attendance-delete' instance.id %}"
+                    onclick="event.stopPropagation()"
+                    hx-swap="none"
+                >
+                    {% csrf_token %}
+                    <button
+                        type="submit"
+                        class="oh-btn oh-btn--danger oh-btn--sq-sm"
+                        title="{% trans 'Remove' %}"
+                        onclick="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
+                    >
+                        <ion-icon name="trash-outline"></ion-icon>
+                    </button>
+                </form>
+            {% endif %}
+            {% if can_change or can_manage %}
                 {% if instance.is_validate_request %}
                     <button
                         type="button"
@@ -39,35 +70,6 @@
                         <ion-icon name="checkmark-outline"></ion-icon>
                     </button>
                 {% endif %}
-                <a
-                    hx-get="{% url 'attendance-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
-                    onclick="event.stopPropagation()"
-                    hx-target="#genericModalBody"
-                    hx-swap="innerHTML"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#genericModal"
-                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
-                    title="{% trans 'Edit' %}"
-                >
-                    <ion-icon name="create-outline"></ion-icon>
-                </a>
-            {% endif %}
-            {% if can_delete or can_manage %}
-                <form
-                    hx-post="{% url 'attendance-delete' instance.id %}"
-                    onclick="event.stopPropagation()"
-                    hx-swap="none"
-                >
-                    {% csrf_token %}
-                    <button
-                        type="submit"
-                        class="oh-btn oh-btn--danger oh-btn--sq-sm"
-                        title="{% trans 'Remove' %}"
-                        onclick="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
-                    >
-                        <ion-icon name="trash-outline"></ion-icon>
-                    </button>
-                </form>
             {% endif %}
         </div>
     {% endif %}

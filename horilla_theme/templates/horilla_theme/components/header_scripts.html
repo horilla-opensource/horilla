@@ -72,6 +72,17 @@
     .oh-btn--light:focus-visible {
         color: {{ theme_obj.primary_700|default:"#ce4732" }} !important;
     }
+
+    /* Tab pills inside "custom" modal dialogs (e.g. leave Allocation). The
+       plain, unscoped .oh-general__tab-link--active rule in v1_styles.css
+       already follows the theme via index.html's remap, but this selector's
+       extra .oh-modal__dialog--custom .oh-general__tab ancestor prefix gives
+       it higher specificity, so its own hardcoded #e54f38 always wins over
+       that remap regardless of load order. */
+    .oh-modal__dialog--custom .oh-general__tab .oh-general__tab-link--active {
+        background-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
+        border-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
+    }
 </style>
 <script>
     document.addEventListener("DOMContentLoaded", function () {

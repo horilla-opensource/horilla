@@ -548,12 +548,15 @@ class PerformanceTab(SelfFeedbacktab):
     performance tab in employee profile
     """
 
-    records_per_page = 2
-
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         pk = self.request.resolver_match.kwargs.get("pk")
         self.search_url = reverse("individual-performance-tab-list", kwargs={"pk": pk})
+        # HorillaListView defaults selected_instances_key_id to the shared
+        # "selectedInstances" bucket, so a bulk-select made on any other list
+        # using that same default (most don't override it) leaked into this
+        # tab's "Select"/"Unselect" count. Scope it to this tab instead.
+        self.selected_instances_key_id = "performanceSelectedInstances"
 
     def get_queryset(self):
         queryset = super().get_queryset()

@@ -1877,6 +1877,7 @@ def scheduled_interview_tab(request, pk, **kwargs):
     interviews = InterviewSchedule.objects.filter(employee_id=employee).order_by(
         "-interview_date"
     )
+    interviews = paginator_qry(interviews, request.GET.get("page"))
     return render(
         request,
         "tabs/scheduled_interview.html",

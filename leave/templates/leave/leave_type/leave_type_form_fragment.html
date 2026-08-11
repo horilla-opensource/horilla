@@ -347,7 +347,8 @@
                                 <img
                                     id="iconPreview"
                                     src="{% if form.instance.icon %}{{ form.instance.icon.url }}{% else %}https://ui-avatars.com/api/?name=LT&background=e5e7eb&color=6b7280{% endif %}"
-                                    data-default-src="{% if form.instance.icon %}{{ form.instance.icon.url }}{% else %}https://ui-avatars.com/api/?name=LT&background=e5e7eb&color=6b7280{% endif %}"
+                                    data-default-src="https://ui-avatars.com/api/?name=LT&background=e5e7eb&color=6b7280"
+                                    data-has-existing="{% if form.instance.icon %}1{% else %}0{% endif %}"
                                     alt="{% trans 'Leave type icon' %}"
                                     class="preview w-full h-full object-cover"
                                 >
@@ -356,7 +357,7 @@
                             <p class="text-xxs text-dark-100 text-center mt-2 leading-relaxed">
                                 {% trans "Upload JPG, PNG or SVG" %}
                             </p>
-                            <button type="button" id="removeIconBtn" class="hidden text-xxs text-danger mt-1 border-0 bg-transparent p-0 cursor-pointer font-bold">
+                            <button type="button" id="removeIconBtn" class="{% if not form.instance.icon %}hidden {% endif %}text-xxs text-danger mt-1 border-0 bg-transparent p-0 cursor-pointer font-bold">
                                 {% trans "Remove icon" %}
                             </button>
                             {{ form.icon.errors }}
@@ -468,10 +469,16 @@
         var $iconInput = $("#id_icon");
         var $iconPreview = $("#iconPreview");
         var $removeIconBtn = $("#removeIconBtn");
+        var $iconClear = $("#icon-clear_id, [name='icon-clear']");
         var defaultIconSrc = $iconPreview.data("default-src");
+        var hasExistingIcon = String($iconPreview.data("has-existing")) === "1";
+
+        function hasSelectedFile() {
+            return $iconInput[0] && $iconInput[0].files && $iconInput[0].files.length > 0;
+        }
 
         function toggleRemoveIconButton() {
-            if ($iconInput[0] && $iconInput[0].files && $iconInput[0].files.length > 0) {
+            if (hasExistingIcon || hasSelectedFile()) {
                 $removeIconBtn.removeClass("hidden");
             } else {
                 $removeIconBtn.addClass("hidden");
@@ -486,6 +493,9 @@
                     $iconPreview.attr("src", reader.result);
                 });
                 reader.readAsDataURL(file);
+                if ($iconClear.length) {
+                    $iconClear.prop("checked", false);
+                }
             }
             toggleRemoveIconButton();
         });
@@ -493,6 +503,11 @@
         $removeIconBtn.on("click", function () {
             $iconInput.val("");
             $iconPreview.attr("src", defaultIconSrc);
+            hasExistingIcon = false;
+            $iconPreview.data("has-existing", "0");
+            if ($iconClear.length) {
+                $iconClear.prop("checked", true);
+            }
             toggleRemoveIconButton();
         });
 

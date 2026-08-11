@@ -195,6 +195,7 @@ class RecruitmentCreationFormExtended(RecruitmentCreationForm):
             "start_date": forms.DateInput(attrs={"type": "date"}),
             "end_date": forms.DateInput(attrs={"type": "date"}),
             "description": forms.Textarea(attrs={"data-summernote": ""}),
+            "vacancy": forms.NumberInput(attrs={"min": 1}),
         }
         labels = {
             "description": _("Description"),
@@ -211,6 +212,9 @@ class RecruitmentCreationFormExtended(RecruitmentCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if not self.instance.pk:
+            self.fields["vacancy"].initial = 1
+            self.fields["open_positions"].required = True
         if not IntegrationApps.objects.filter(
             app_label="linkedin", is_enabled=True
         ).exists():

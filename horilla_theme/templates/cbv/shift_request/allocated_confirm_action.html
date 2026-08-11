@@ -13,10 +13,14 @@
                     <ion-icon name="create-outline"></ion-icon>
                 </a>
             {% else %}
-                <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled>
+                <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Edit' %}">
                     <ion-icon name="create-outline"></ion-icon>
                 </button>
             {% endif %}
+        {% else %}
+            <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Edit' %}">
+                <ion-icon name="create-outline"></ion-icon>
+            </button>
         {% endif %}
 
         {% if is_requester or can_delete or can_manage %}
@@ -29,42 +33,40 @@
                     {% csrf_token %}
                     <button
                         type="submit"
-                        class="oh-btn oh-btn--danger oh-btn--sq-sm"
+                        class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                         title="{% trans 'Remove' %}"
                     >
                         <ion-icon name="trash-outline"></ion-icon>
                     </button>
                 </form>
             {% else %}
-                <button class="oh-btn oh-btn--danger oh-btn--sq-sm" disabled>
+                <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Remove' %}">
                     <ion-icon name="trash-outline"></ion-icon>
                 </button>
             {% endif %}
+        {% else %}
+            <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Remove' %}">
+                <ion-icon name="trash-outline"></ion-icon>
+            </button>
         {% endif %}
 
-        {% if is_owner and not can_manage %}
-            {% if instance.approved or instance.reallocate_canceled or instance.reallocate_approved %}
-                <button class="oh-btn oh-btn--info oh-btn--sq-sm" disabled>
-                    <ion-icon name="thumbs-up-outline"></ion-icon>
-                </button>
-            {% else %}
-                <a
-                    href=" {% url 'shift-allocation-request-approve' instance.id %}"
-                    onclick="return confirm(`{% trans 'Are you available for this shift reallocation?' %}`)"
-                    class="oh-btn oh-btn--info oh-btn--sq-sm"
-                    title="{% trans 'Available' %}"
-                >
-                    <ion-icon name="thumbs-up-outline"></ion-icon>
-                </a>
-            {% endif %}
+        {% if is_owner and not can_manage and not instance.approved and not instance.reallocate_canceled and not instance.reallocate_approved %}
+            <a
+                href=" {% url 'shift-allocation-request-approve' instance.id %}"
+                onclick="return confirm(`{% trans 'Are you available for this shift reallocation?' %}`)"
+                class="oh-btn oh-btn--info oh-btn--sq-sm"
+                title="{% trans 'Available' %}"
+            >
+                <ion-icon name="thumbs-up-outline"></ion-icon>
+            </a>
+        {% else %}
+            <button class="oh-btn oh-btn--info oh-btn--sq-sm" disabled title="{% trans 'Available' %}">
+                <ion-icon name="thumbs-up-outline"></ion-icon>
+            </button>
         {% endif %}
 
         {% if can_change or can_manage %}
-            {% if instance.reallocate_approved or instance.approved or instance.reallocate_canceled %}
-                <button class="oh-btn oh-btn--success oh-btn--sq-sm" disabled title="{% trans 'Approved' %}">
-                    <ion-icon name="checkmark-outline"></ion-icon>
-                </button>
-            {% else %}
+            {% if not instance.reallocate_approved and not instance.approved and not instance.reallocate_canceled %}
                 <a
                     href="{% url 'shift-allocation-request-approve' instance.id %}"
                     onclick="return confirm(`{% trans 'Are you available for this shift reallocation?' %}`)"
@@ -73,24 +75,30 @@
                 >
                     <ion-icon name="checkmark-outline"></ion-icon>
                 </a>
+            {% else %}
+                <button class="oh-btn oh-btn--success oh-btn--sq-sm" disabled title="{% trans 'Approved' %}">
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                </button>
             {% endif %}
+        {% else %}
+            <button class="oh-btn oh-btn--success oh-btn--sq-sm" disabled title="{% trans 'Approved' %}">
+                <ion-icon name="checkmark-outline"></ion-icon>
+            </button>
         {% endif %}
 
-        {% if is_owner and not can_manage %}
-            {% if instance.reallocate_canceled or instance.approved or instance.reallocate_approved %}
-                <button class="oh-btn oh-btn--danger oh-btn--sq-sm" disabled title="{% trans 'Not available' %}">
-                    <ion-icon name="close-circle-outline"></ion-icon>
-                </button>
-            {% else %}
-                <a
-                    href=" {% url 'shift-allocation-request-cancel' instance.id %}"
-                    onclick="return confirm(`{% trans 'Are you not available for this shift reallocation?' %}`)"
-                    class="oh-btn oh-btn--danger oh-btn--sq-sm"
-                    title="{% trans 'Not available' %}"
-                >
-                    <ion-icon name="close-circle-outline"></ion-icon>
-                </a>
-            {% endif %}
+        {% if is_owner and not can_manage and not instance.reallocate_canceled and not instance.approved and not instance.reallocate_approved %}
+            <a
+                href=" {% url 'shift-allocation-request-cancel' instance.id %}"
+                onclick="return confirm(`{% trans 'Are you not available for this shift reallocation?' %}`)"
+                class="oh-btn oh-btn--danger oh-btn--sq-sm"
+                title="{% trans 'Not available' %}"
+            >
+                <ion-icon name="close-circle-outline"></ion-icon>
+            </a>
+        {% else %}
+            <button class="oh-btn oh-btn--danger oh-btn--sq-sm" disabled title="{% trans 'Not available' %}">
+                <ion-icon name="close-circle-outline"></ion-icon>
+            </button>
         {% endif %}
     </div>
 {% endwith %}

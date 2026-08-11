@@ -383,6 +383,45 @@
             transition: none !important;
         }
     }
+
+    /* Narrow viewports: the "pinned open" (13rem, labels visible) sidebar state
+       leaves too little room for the main content — headers, tables, and the
+       employee-profile card overflow the viewport instead of wrapping. Below
+       tablet width, keep the sidebar in its collapsed icon rail regardless of
+       pin state; hover/tap still reveals the flyout submenu for navigation. */
+    @media (max-width: 991.98px) {
+        #sidebar,
+        #sidebar.sidebar-pinned {
+            width: 4rem !important;
+        }
+        #sidebar .oh-sidebar-label,
+        #sidebar.sidebar-pinned .oh-sidebar-label,
+        #sidebar .sidebar-chevron,
+        #sidebar.sidebar-pinned .sidebar-chevron {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        #sidebar:hover .oh-sidebar-label,
+        #sidebar:hover .sidebar-chevron {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+        .oh-main-content,
+        #sidebar.sidebar-pinned ~ .oh-main-content {
+            margin-left: 4rem !important;
+        }
+        .oh-main-header,
+        #sidebar.sidebar-pinned ~ .oh-main-content .oh-main-header {
+            left: 4rem !important;
+        }
+        #sidebar ~ #floating-buttons .fab-container,
+        #sidebar.sidebar-pinned ~ #floating-buttons .fab-container {
+            left: 4rem !important;
+        }
+        #sidebar:not(:hover) #sidebarPinBtn {
+            display: none !important;
+        }
+    }
 </style>
 <div id="sidebar" class="fixed inset-y-0 left-0 bg-white border-r border-r-dark-50 z-50">
     <div class="p-4">

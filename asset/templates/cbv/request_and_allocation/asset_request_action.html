@@ -1,8 +1,50 @@
 {% load i18n %}
 
-{% if perms.asset.add_assetassignment %}
-    {% if instance.asset_request_status == 'Requested' %}
-        <div>
+<div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
+    {% if perms.asset.change_assetrequest or request.user.employee_get == instance.requested_employee_id %}
+        {% if instance.asset_request_status == "Approved" %}
+            <a
+                class="oh-btn oh-btn--light-bkg oh-btn--disabled oh-btn--sq-sm"
+                title="{% trans 'Edit' %}"
+            >
+                <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+            </a>
+        {% else %}
+            <a
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
+                title="{% trans 'Edit' %}"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-put="{% url 'asset-request-update' instance.id %}"
+                hx-target="#genericModalBody"
+            >
+                <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+            </a>
+        {% endif %}
+    {% endif %}
+
+    {% if perms.asset.delete_assetrequest %}
+        {% if instance.asset_request_status == "Approved" %}
+            <a
+                class="oh-btn oh-btn--danger oh-btn--disabled oh-btn--sq-sm"
+                title="{% trans 'Delete' %}"
+            >
+                <ion-icon name="trash-outline" role="img" class="md hydrated"></ion-icon>
+            </a>
+        {% else %}
+            <a
+                class="oh-btn oh-btn--danger oh-btn--sq-sm"
+                title="{% trans 'Delete' %}"
+                hx-confirm="{% trans 'Do you want to delete this Allocation?' %}"
+                hx-post="{% url 'asset-request-delete' instance.id %}"
+            >
+                <ion-icon name="trash-outline" role="img" class="md hydrated"></ion-icon>
+            </a>
+        {% endif %}
+    {% endif %}
+
+    {% if perms.asset.add_assetassignment %}
+        {% if instance.asset_request_status == 'Requested' %}
             <div class="oh-btn-group">
                 <a
                     class="oh-btn oh-btn--success w-50"
@@ -29,9 +71,7 @@
                     <ion-icon name="close-outline"></ion-icon>
                 </a>
             </div>
-        </div>
-    {% else %}
-        <div>
+        {% else %}
             <div class="oh-btn-group">
                 <a
                     href="#"
@@ -52,6 +92,6 @@
                     <ion-icon name="close-outline"></ion-icon>
                 </a>
             </div>
-        </div>
+        {% endif %}
     {% endif %}
-{% endif %}
+</div>

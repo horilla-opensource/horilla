@@ -3452,7 +3452,6 @@ def employee_keyresult_update(request, kr_id):
 
 
 @login_required
-@manager_can_enter(perm="pms.delete_employeekeyresult")
 def delete_employee_keyresult(request, kr_id):
     """
     This function is used to delete the employee key result
@@ -3469,6 +3468,15 @@ def delete_employee_keyresult(request, kr_id):
 
     # employee = emp_kr.employee_id
     objective = emp_kr.employee_objective_id.objective_id
+    if not (
+        request.user.has_perm("pms.delete_objective")
+        or request.user.has_perm("pms.delete_employeeobjective")
+        or request.user.has_perm("pms.delete_employeekeyresult")
+        or request.user.employee_get in objective.managers.all()
+    ):
+        messages.info(request, _("You dont have permission"))
+        return HorillaRedirect(request)
+
     emp_objective = emp_kr.employee_objective_id
     emp_kr.delete()
     emp_objective.update_objective_progress()
@@ -3503,7 +3511,7 @@ def employee_keyresult_update_status(request, kr_id):
         in emp_kr.employee_objective_id.objective_id.managers.all()
         or (
             emp_kr.employee_objective_id.objective_id.self_employee_progress_update
-            and (emp_kr.employee_id == request.user.employee_get)
+            and (emp_kr.employee_objective_id.employee_id == request.user.employee_get)
         )
     ):
         status = request.POST.get("key_result_status")

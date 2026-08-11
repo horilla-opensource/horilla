@@ -377,7 +377,9 @@ def get_employee_leave_types(request):
 
 
 def multiple_approvals_check(id):
-    approvals = LeaveRequestConditionApproval.objects.filter(leave_request_id=id)
+    approvals = LeaveRequestConditionApproval.objects.filter(
+        leave_request_id=id
+    ).select_related("manager_id")
     requested_query = approvals.filter(is_approved=False).order_by("sequence")
     approved_query = approvals.filter(is_approved=True).order_by("sequence")
     managers = []

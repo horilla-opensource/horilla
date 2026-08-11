@@ -19,7 +19,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
-from base.methods import closest_numbers, get_pagination
+from base.methods import closest_numbers
 from horilla.decorators import (
     hx_request_required,
     is_recruitment_manager,
@@ -235,12 +235,19 @@ def view_question_template(request):
         questions = RecruitmentSurvey.objects.all()
     else:
         questions = RecruitmentSurvey.objects.filter(recruitment_ids__in=ids)
+    # See the matching fix/comment in recruitment/views/search.py's
+    # filter_survey() - group_by_queryset() already paginates correctly, but
+    # the unused (0-question) templates it can't see get appended afterward
+    # and the combined list gets paginated a second time on the same
+    # "template_page" param, so page 2+ silently lost has_previous. Fetch
+    # every templates-with-questions group here (unpaginated) and paginate
+    # the merged list exactly once below instead.
     templates = group_by_queryset(
         questions.filter(template_id__isnull=False).distinct(),
         "template_id__title",
-        page=request.GET.get("template_page"),
+        page=1,
         page_name="template_page",
-        records_per_page=get_pagination(),
+        records_per_page=1000000,
     )
     all_template_object_list = []
     for template in templates:

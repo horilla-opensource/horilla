@@ -20,7 +20,7 @@
                     </span>
                 </div>
                 <div class="flex items-center flex-wrap gap-2 md:gap-8">
-                    <span class="icon text-xl font-bold">+</span>
+                    <ion-icon name="chevron-down-outline" class="icon text-lg"></ion-icon>
                 </div>
             </button>
 
@@ -222,7 +222,7 @@
                 if (p !== panel) {
                     p.style.maxHeight = null;
                     const i = p.previousElementSibling.querySelector('.icon');
-                    if (i) i.textContent = '+';
+                    if (i) i.setAttribute('name', 'chevron-down-outline');
                     p.previousElementSibling.classList.remove("bg-primary-600", "text-white");
                     p.previousElementSibling.classList.add("bg-primary-100", "text-primary-600");
                 }
@@ -230,11 +230,11 @@
 
             if (!isOpen) {
                 panel.style.maxHeight = panel.scrollHeight + 'px';
-                icon.textContent = '−';
+                icon.setAttribute('name', 'chevron-up-outline');
                 btn.classList.add("bg-primary-100", "text-primary-600");
             } else {
                 panel.style.maxHeight = null;
-                icon.textContent = '+';
+                icon.setAttribute('name', 'chevron-down-outline');
                 btn.classList.remove("bg-primary-600", "text-white");
                 btn.classList.add("bg-primary-100", "text-primary-600");
             }

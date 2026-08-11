@@ -167,18 +167,20 @@
               data-header-id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header"
               class="{% if index == 1 %} oh-sticky-table__sd {% else %} oh-sticky-table__td{% endif %} t-body"
             >
+              {% with avatar=instance|getattribute:cell.2 cell_value=instance|getattribute:attribute %}
               <div class="oh-profile oh-profile--md">
                 <div class="oh-profile__avatar mr-1">
                   <img
-                    src="{{instance|getattribute:cell.2}}"
+                    src="{{ avatar }}"
                     class="oh-profile__image"
-                    alt="{{instance|getattribute:attribute}}"
+                    alt="{{ cell_value }}"
                   />
                 </div>
                 <span class="oh-profile__name oh-text--dark">
-                  {{instance|getattribute:attribute}}
+                  {{ cell_value }}
                 </span>
               </div>
+              {% endwith %}
             </div>
             {% endif %} {% endwith %} {% endfor %} {% if options or option_method %}
             <div class="oh-sticky-table__td oh-permission-table--toggle">

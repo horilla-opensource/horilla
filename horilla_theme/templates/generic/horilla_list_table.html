@@ -220,22 +220,26 @@
                                         {% with attribute=cell.1 index=forloop.counter %}
                                             <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px] max-w-0">
                                                 {% if not cell.2 %}
-                                                    <div class="truncate" title="{{instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id|cell_tooltip}}">
-                                                        {{instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}
-                                                    </div>
-                                                {% else %}
-                                                    <div class="oh-profile oh-profile--md w-full justify-normal">
-                                                        <div class="oh-profile__avatar mr-1" style="width:22px;height:22px;">
-                                                            <img
-                                                                src="{{instance|getattribute:cell.2}}"
-                                                                data-src="{{instance|getattribute:cell.2}}"
-                                                                alt=""
-                                                                class="oh-profile__image oh-table-img avatar-thumb"
-                                                                width="22"
-                                                            />
+                                                    {% with cell_value=instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id %}
+                                                        <div class="truncate" title="{{ cell_value|cell_tooltip }}">
+                                                            {{ cell_value|safe }}
                                                         </div>
-                                                        <span class="truncate flex-1 min-w-0" title="{{instance|getattribute:attribute|cell_tooltip}}">{{instance|getattribute:attribute|safe}}</span>
-                                                    </div>
+                                                    {% endwith %}
+                                                {% else %}
+                                                    {% with avatar=instance|getattribute:cell.2 cell_value=instance|getattribute:attribute %}
+                                                        <div class="oh-profile oh-profile--md w-full justify-normal">
+                                                            <div class="oh-profile__avatar mr-1" style="width:22px;height:22px;">
+                                                                <img
+                                                                    src="{{ avatar }}"
+                                                                    data-src="{{ avatar }}"
+                                                                    alt=""
+                                                                    class="oh-profile__image oh-table-img avatar-thumb"
+                                                                    width="22"
+                                                                />
+                                                            </div>
+                                                            <span class="truncate flex-1 min-w-0" title="{{ cell_value|cell_tooltip }}">{{ cell_value|safe }}</span>
+                                                        </div>
+                                                    {% endwith %}
                                                 {% endif %}
                                             </td>
                                         {% endwith %}

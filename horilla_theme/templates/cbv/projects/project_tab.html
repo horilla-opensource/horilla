@@ -35,7 +35,11 @@
                         <ion-icon name="eye-outline" role="img"></ion-icon>
                     </button>
                 </div>
-                <div id="projectTaskList{{project.id}}"></div>
+                <div
+                    id="projectTaskList{{project.id}}"
+                    hx-get="{% url 'tasks-list-individual-view' %}?employee_id={{ employee.id }}&project_id={{ project.id }}"
+                    hx-trigger="load"
+                ></div>
             </div>
         {% endfor %}
     </div>

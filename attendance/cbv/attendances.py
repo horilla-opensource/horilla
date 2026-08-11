@@ -712,6 +712,7 @@ class ValidateAttendancesIndividualTabView(AttendancesListView):
             "attendance.change_attendance"
         ) or is_reportingmanager(self.request):
             self.action_method = "validate_button"
+            self.option_method = None
         self.view_id = "validate-container"
 
     row_attrs = """

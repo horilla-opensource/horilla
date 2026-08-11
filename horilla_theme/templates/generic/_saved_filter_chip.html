@@ -1,6 +1,6 @@
 {% load i18n %}
 <div
-    class="relative group oh-hover-btn__main flex flex-shrink-0 transition duration-300 bg-white border border-[#e6e6e6] rounded-md"
+    class="relative group oh-hover-btn__main flex flex-shrink-0 transition duration-300 bg-white hover:bg-primary-100 border border-[#e6e6e6] rounded-md"
     hx-get="{{ request.path }}?{{ filter.urlencode }}"
     hx-target="#{{ root_view_id|default:view_id|safe }}"
     hx-swap="outerHTML"
@@ -9,7 +9,7 @@
     <button
         hx-get="{% url 'last-applied-filter' %}?{{ filter.urlencode }}"
         hx-swap="none"
-        class="px-4 py-2 text-xs flex gap-2 items-center whitespace-nowrap"
+        class="px-4 py-2 text-xs flex gap-2 items-center whitespace-nowrap group-hover:text-primary-600"
     >
         <span class="h-3 w-3 rounded-full flex" style="background-color: {{ filter.color }}"></span>
         {{ filter.title }}
@@ -34,12 +34,21 @@
         <!-- Delete -->
         <button
             class="oh-hover-btn__small"
-            onclick="$(this).parent().find('button:hidden').click(); $(this).closest('div.group').remove()"
+            onclick="$(this).parent().find('button:hidden').click();"
         >
             <ion-icon name="trash-outline"></ion-icon>
         </button>
 
-        <!-- Hidden Delete Trigger -->
-        <button hidden hx-get="{% url 'delete-saved-filter' filter.id %}" hx-swap="none"></button>
+        <!-- Hidden Delete Trigger. Removing the chip's own DOM node client-side
+        (the old approach) left the "Filter (N)" count stale, since that count
+        is only ever rendered once from the server - reload the whole view
+        instead so the chip list and its count both come from the same
+        authoritative render. -->
+        <button
+            hidden
+            hx-get="{% url 'delete-saved-filter' filter.id %}"
+            hx-swap="none"
+            hx-on::after-request="if(event.detail.successful){$('#{{ root_view_id|default:view_id|safe }} .reload-record').click();}"
+        ></button>
     </div>
 </div>

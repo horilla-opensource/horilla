@@ -49,8 +49,28 @@ class AllowanceDeductionTabView(HorillaTabView):
         from payroll.filters import AllowanceFilter, DeductionFilter
         from payroll.models.models import Allowance, Deduction
 
-        all_qs = Allowance.objects.filter(employee_id=pk)
-        ded_qs = Deduction.objects.filter(employee_id=pk)
+        employee = Employee.objects.get(id=pk)
+        active_contract = (
+            employee.contract_set.filter(contract_status="active").first()
+            if apps.is_installed("payroll")
+            else None
+        )
+        if active_contract:
+            all_qs = (
+                Allowance.objects.filter(specific_employees=employee)
+                | Allowance.objects.filter(include_active_employees=True).exclude(
+                    exclude_employees=employee
+                )
+            ).distinct()
+            ded_qs = (
+                Deduction.objects.filter(specific_employees=employee)
+                | Deduction.objects.filter(include_active_employees=True).exclude(
+                    exclude_employees=employee
+                )
+            ).distinct()
+        else:
+            all_qs = Allowance.objects.none()
+            ded_qs = Deduction.objects.none()
 
         if self.request.GET.get("search"):
             all_qs = AllowanceFilter(

@@ -106,10 +106,14 @@ class ReimbursementsAndEncashmentsListView(HorillaListView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        if self.request.user.has_perm("payroll.change_reimbursement"):
-            self.action_method = "actions_col"
-
-    option_method = "options_col"
+        # actions.html now renders edit/delete alongside approve/reject in one
+        # column (it has its own internal permission checks per button), so
+        # the separate Options column is no longer needed. action_method is
+        # set unconditionally - action_col's own permission check still hides
+        # approve/reject for users without change_reimbursement, while still
+        # letting a self-service employee see their own edit/delete buttons.
+        self.action_method = "actions_col"
+        self.option_method = None
 
     row_status_indications = [
         (

@@ -2429,12 +2429,7 @@
                     if (!data.labels || !data.labels.length || !data.dataset || !data.dataset.length) { document.querySelector("#chart-overtime").innerHTML = emptyHtml('{% trans "No overtime data" %}'); return; }
                     renderChart('overtime', document.querySelector("#chart-overtime"), {
                         series: data.dataset[0].data,
-                        chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
-                            events: { dataPointSelection: (e, ctx, config) => {
-                                const dept = data.labels[config.dataPointIndex];
-                                window.location.href = "{% url 'attendance-overtime-view' %}?department=" + encodeURIComponent(dept);
-                            }}
-                        },
+                        chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM },
                         labels: data.labels,
                         colors: ['#22c55e','#06b6d4','#E54F38','#f59e0b','#a855f7','#ef4444'].slice(0, data.labels.length),
                         plotOptions: { pie: { expandOnClick: true, donut: { size: '68%',
