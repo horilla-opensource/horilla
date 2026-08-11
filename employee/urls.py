@@ -381,6 +381,11 @@ urlpatterns = [
     ),
     path("bonus-points-tab/<int:pk>/", views.bonus_points_tab, name="bonus-points-tab"),
     path(
+        "bonus-points-history/<int:pk>/",
+        views.bonus_points_history_tab,
+        name="bonus-points-history",
+    ),
+    path(
         "add-bonus-points/<int:emp_id>/",
         views.add_bonus_points,
         name="add-bonus-points",
