@@ -1734,8 +1734,7 @@ def edit_installment_amount(request):
 
     return render(
         request,
-        # "cbv/loan/loan_detail_view.html",
-        "payroll/loan/installments.html",
+        "cbv/loan/loan_installment_table.html",
         {
             "installments": loan.deduction_ids.all(),
             "loan": loan,
