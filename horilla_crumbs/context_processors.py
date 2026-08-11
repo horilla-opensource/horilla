@@ -418,6 +418,7 @@ def breadcrumbs(request):
                 if section_override:
                     new_dict["name"] = section_override["name"]
                     new_dict["url"] = base_url.rstrip("/") + section_override["url"]
+                    new_dict["found"] = True
                 elif current_section:
                     new_dict["name"] = current_section[0]
 
