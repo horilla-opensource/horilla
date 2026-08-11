@@ -94,7 +94,7 @@ class ProjectDetailView(HorillaDetailedView):
                     "action": _("View Project"),
                     "icon": "create-outline",
                     "attrs": """
-                    class = "oh-btn oh-btn--info w-100"
+                    class = "oh-btn oh-btn--primary w-100"
                     {redirect}
                 """,
                 }

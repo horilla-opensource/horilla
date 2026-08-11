@@ -632,3 +632,4 @@ class TasksInIndividualView(TaskListView):
     row_status_indications = None
     bulk_select_option = False
     action_method = None
+    custom_empty_template = "cbv/projects/compact_empty.html"
