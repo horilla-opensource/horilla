@@ -1889,9 +1889,27 @@ class HorillaCardView(ListView):
         if not self.records_per_page:
             self.records_per_page = get_pagination(default=50)
 
-        context["queryset"] = paginator_qry(
-            queryset, self.request.GET.get("page"), self.records_per_page
-        )
+        # Group-by accordion support: when a `field` filter is active, build groups
+        if self._saved_filters.get("field"):
+            field = self._saved_filters.get("field")
+            try:
+                context["groups"] = group_by_queryset(
+                    queryset,
+                    field,
+                    self._saved_filters.get("page"),
+                    "page",
+                    records_per_page=self.records_per_page,
+                )
+                context["queryset"] = queryset[:0]  # empty — groups has the data
+                context["saved_filters"] = self._saved_filters
+            except Exception:
+                context["queryset"] = paginator_qry(
+                    queryset, self.request.GET.get("page"), self.records_per_page
+                )
+        else:
+            context["queryset"] = paginator_qry(
+                queryset, self.request.GET.get("page"), self.records_per_page
+            )
         return context
 
     @classmethod
