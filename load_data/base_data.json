@@ -3248,7 +3248,7 @@
       "is_active": true,
       "based_on_week": null,
       "based_on_week_day": "6",
-      "company_id": null
+      "company_id": []
     }
   },
   {
@@ -3261,7 +3261,7 @@
       "is_active": true,
       "based_on_week": "1",
       "based_on_week_day": "5",
-      "company_id": null
+      "company_id": []
     }
   },
   {
@@ -3274,7 +3274,7 @@
       "is_active": true,
       "based_on_week": "3",
       "based_on_week_day": "5",
-      "company_id": null
+      "company_id": []
     }
   },
   {
