@@ -1,39 +1,47 @@
-{% load i18n static i18n %}
-<style>
-    /* Keep accordion flush so the view button sits inside the header —
-       scoped so profile .shadow-card cards are not affected */
-    #projectContainer .hlv-container.shadow-card {
-        padding-top: 0;
-        padding-left: 0;
-        padding-right: 0;
-    }
-</style>
+{% load i18n static %}
 <div id="messages" class="oh-alert-container"></div>
 {% if projects %}
-    <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center p-4">
+    <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center mb-3 p-4">
         <h2 class="font-semibold text-sm">
             {{ employee.get_full_name }}{% trans "'s Projects" %}
         </h2>
     </div>
     <div id="projectContainer">
         {% for project in projects %}
-            <div
-                hx-get="{% url 'tasks-list-individual-view' %}?employee_id={{ employee.id }}&project_id={{ project.id }}&field=project"
-                hx-trigger="load"
-                hx-target="#projectTaskList{{project.id}}"
-            >
-                <div class="absolute top-2 right-16 h-6 w-6 flex items-center justify-center z-50">
-                    <button
-                        onclick="event.stopPropagation()"
-                        class="oh-btn oh-btn--sq-sm bg-white border border-[#e6e6e6] h-6 w-6 p-0 flex items-center justify-center"
-                        title="{% trans 'View Project' %}"
-                        hx-target="#genericModalBody"
-                        data-target="#genericModal"
-                        data-toggle="oh-modal-toggle"
-                        hx-get="{% url 'project-detailed-view' project.id %}"
-                    >
-                        <ion-icon name="eye-outline" role="img"></ion-icon>
-                    </button>
+            <div class="bg-white rounded-lg border border-primary-200 shadow-sm mb-4 overflow-hidden">
+                <div
+                    class="flex items-center justify-between px-4 py-3 bg-primary-50 border-b border-primary-100 cursor-pointer select-none"
+                    onclick="$(this).next('#projectTaskList{{project.id}}').toggleClass('hidden'); var icon = this.querySelector('.project-fold-icon'); if (icon) { var name = icon.getAttribute('name'); icon.setAttribute('name', name === 'chevron-down-outline' ? 'chevron-up-outline' : 'chevron-down-outline'); }"
+                >
+                    <div class="flex items-center gap-3">
+                        {% if project.get_avatar %}
+                            <img src="{{ project.get_avatar }}" class="w-7 h-7 rounded-full object-cover" loading="lazy" />
+                        {% else %}
+                            <div class="w-7 h-7 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                                {{ project.title|slice:":1"|upper }}
+                            </div>
+                        {% endif %}
+                        <span class="font-semibold text-sm text-dark-700">{{ project.title }}</span>
+                        {% if project.status %}
+                            <span class="px-2 py-0.5 text-xs rounded-full font-medium bg-primary-100 text-primary-700">
+                                {{ project.get_status_display|default:project.status }}
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <ion-icon name="chevron-up-outline" class="project-fold-icon text-dark-500 hover:text-primary-600 text-lg cursor-pointer flex-shrink-0"></ion-icon>
+                        <button
+                            class="oh-btn oh-btn--sq-sm bg-white border border-primary-200 text-dark-600 hover:bg-primary-50 hover:text-primary-600 transition flex items-center justify-center"
+                            title="{% trans 'View Project' %}"
+                            onclick="event.stopPropagation()"
+                            hx-target="#genericModalBody"
+                            data-target="#genericModal"
+                            data-toggle="oh-modal-toggle"
+                            hx-get="{% url 'project-detailed-view' project.id %}"
+                        >
+                            <ion-icon name="eye-outline" role="img" class="text-base"></ion-icon>
+                        </button>
+                    </div>
                 </div>
                 <div
                     id="projectTaskList{{project.id}}"
@@ -44,15 +52,11 @@
         {% endfor %}
     </div>
 {% else %}
-    <div
-        style="height: 380px; display: flex; align-items: center; justify-content: center"
-        class=""
-    >
-        <div style="" class="">
+    <div style="height: 380px; display: flex; align-items: center; justify-content: center">
+        <div class="text-center">
             <img
                 style="display: block; width: 100px; margin: 10px auto"
                 src="{% static 'images/ui/project/project.png' %}"
-                class=""
                 alt="{% trans 'Page not found. 404.' %}"
             >
             <h3 style="font-size: 20px" class="oh-404__subtitle">
