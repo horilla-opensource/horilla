@@ -1024,7 +1024,7 @@ msgid "Employee not found."
 msgstr "Funcionário não encontrado."
 
 msgid "Attendance Date"
-msgstr "Data de comparecimento"
+msgstr "Data de presença"
 
 msgid "In Date"
 msgstr "Em Data"
@@ -1141,7 +1141,7 @@ msgid "Pending Hour"
 msgstr "Hora Pendente"
 
 msgid "Attendance To Validate"
-msgstr "Validar comparecimento"
+msgstr "Validar presença"
 
 msgid "Validate"
 msgstr "Validate"
@@ -1165,7 +1165,7 @@ msgid "Attendance Added"
 msgstr "Presença adicionada"
 
 msgid "Edit Attendance"
-msgstr "Editar comparecimento"
+msgstr "Editar presença"
 
 msgid "Attandance Updated"
 msgstr "Presença atualizada"
@@ -1193,7 +1193,7 @@ msgid "Are you sure you want to delete this penalty?"
 msgstr "Tem certeza que deseja excluir esta penalidade?"
 
 msgid "Attendance"
-msgstr "Frequência"
+msgstr "Presença"
 
 msgid "Penalty Account"
 msgstr "Conta de penalidades"
@@ -1220,16 +1220,16 @@ msgid "Break Point Condition"
 msgstr "Condição de Ponto Quebrado"
 
 msgid "Create Attendance condition"
-msgstr "Criar condição de frequência"
+msgstr "Criar condição de presença"
 
 msgid "Update Attendance condition"
-msgstr "Atualizar condição de frequência"
+msgstr "Atualizar condição de presença"
 
 msgid "Attendance Break-point settings updated."
 msgstr "Configurações de ponto de presença atualizadas."
 
 msgid "Attendance Break-point settings created."
-msgstr "Configurações de Ponto de Participação criadas."
+msgstr "Configurações de ponto de presença criadas."
 
 msgid "Check in/Check out"
 msgstr "Check-in / Check-out"
@@ -1310,7 +1310,7 @@ msgid "Attendance account updated"
 msgstr "Conta de presença atualizada"
 
 msgid "Attendance account added"
-msgstr "Conta de frequência adicionada."
+msgstr "Conta de presença adicionada."
 
 msgid "IPs"
 msgstr "IPs"
@@ -1334,7 +1334,7 @@ msgid "Check-out Date"
 msgstr "Data de saída"
 
 msgid "Attendance Validated"
-msgstr "Frequência validada"
+msgstr "Presença validada"
 
 msgid "Approved Request"
 msgstr "Solicitação aprovada"
@@ -1419,7 +1419,7 @@ msgid "Employee work info not found"
 msgstr "Informações de trabalho do funcionário não encontradas"
 
 msgid "Allcocate this grace time for Check-In Attendance"
-msgstr "format@@0 Allcocate this grace time for Check-In Presence"
+msgstr "Alocar essa tolerância para presença no Check-In"
 
 msgid "From Date"
 msgstr "Data de início"
@@ -1518,7 +1518,7 @@ msgid "Minimum hour"
 msgstr "Horas mínimas"
 
 msgid "Batch Attendance"
-msgstr "Frequência em lote"
+msgstr "Presença em lote"
 
 msgid "Overtime Approve"
 msgstr "Aprovação de Tempo Exterior"
@@ -1569,7 +1569,7 @@ msgid "Allowed Clock-In"
 msgstr "Relógio permitido"
 
 msgid "Allcocate this grace time for Check-Out Attendance"
-msgstr "format@@0 Allcocate this grace time for Check-Out Attendance"
+msgstr "Alocar essa tolerância para presença no Check-Out"
 
 msgid "Allowed Clock-Out"
 msgstr "Bloqueios permitidos"
@@ -1704,7 +1704,7 @@ msgid "Uploading..."
 msgstr "Enviando..."
 
 msgid "There are no attendance records to display."
-msgstr "Não há registros de participação para exibir."
+msgstr "Não há registros de presença para exibir."
 
 msgid "Work Info"
 msgstr "Informações de Trabalho"
@@ -1716,7 +1716,7 @@ msgid "OT Approved?"
 msgstr "OT aprovado?"
 
 msgid "Attendance From"
-msgstr "Frequência de"
+msgstr "Presença de"
 
 msgid "In From"
 msgstr "Em De"
@@ -1776,7 +1776,7 @@ msgid "Select All"
 msgstr "Selecionar Todos"
 
 msgid "Are you sure want to delete this attendance?"
-msgstr "Tem certeza que deseja excluir este participante?"
+msgstr "Tem certeza que deseja excluir esta presença?"
 
 msgid "Remove"
 msgstr "Excluir"
@@ -1803,10 +1803,10 @@ msgid "Approve Overtime"
 msgstr "Aprovar horas extras"
 
 msgid " Are you sure want to delete this attendance?"
-msgstr " Tem certeza que deseja excluir este participante?"
+msgstr " Tem certeza que deseja excluir esta presença?"
 
 msgid "Attendance To Validate "
-msgstr "Validar comparecimento "
+msgstr "Validar presença "
 
 msgid "OT Attendances"
 msgstr "Presenças do OT"
@@ -1848,7 +1848,7 @@ msgid "At work"
 msgstr "No trabalho"
 
 msgid "No validated attendance to show."
-msgstr "Nenhuma frequência validada para mostrar."
+msgstr "Nenhuma presença validada para mostrar."
 
 #, python-format
 msgid ""
@@ -1890,7 +1890,7 @@ msgid "Are you sure want to delete this hour account?"
 msgstr "Tem certeza que deseja excluir esta conta hora?"
 
 msgid "There are no attendance activity records to display."
-msgstr "Não há registros de atividades de frequência para exibir."
+msgstr "Não há registros de atividades de presença para exibir."
 
 msgid "Select All Attendance"
 msgstr "Selecionar todas as presenças"
@@ -1899,7 +1899,7 @@ msgid "Unselect All Attendance"
 msgstr "Desmarcar todas as presenças"
 
 msgid "Export Attendance"
-msgstr "Exportar comparecimento"
+msgstr "Exportar presença"
 
 msgid "Attendnace Date"
 msgstr "Data de Participação"
@@ -1942,7 +1942,7 @@ msgstr "Início"
 
 #| msgid "Attendance Days"
 msgid "Attendance Dashboard"
-msgstr "Painel de frequência"
+msgstr "Painel de presença"
 
 #| msgid "dashboard"
 msgid "Customize dashboard"
@@ -1957,30 +1957,30 @@ msgstr "Quando os funcionários registram entrada hoje"
 
 #| msgid "Export Attendance"
 msgid "Department Attendance"
-msgstr "Frequência por departamento"
+msgstr "Presença por departamento"
 
 #| msgid "Your attendance for the date "
 msgid "Today's attendance rate by department"
-msgstr "Taxa de frequência de hoje por departamento"
+msgstr "Taxa de presença de hoje por departamento"
 
 #| msgid "Attendance Validate"
 msgid "Attendance Calendar"
-msgstr "Calendário de frequência"
+msgstr "Calendário de presença"
 
 #| msgid "Attendance Date"
 msgid "Daily attendance rate"
-msgstr "Taxa de frequência diária"
+msgstr "Taxa de presença diária"
 
 #| msgid "Attendance Added"
 msgid "Attendance Trend"
-msgstr "Tendência de frequência"
+msgstr "Tendência de presença"
 
 msgid "Headcount across the selected period"
 msgstr "Número de funcionários no período selecionado"
 
 #| msgid "attendance-view"
 msgid "Attendance Overview"
-msgstr "Visão geral de frequência"
+msgstr "Visão geral de presença"
 
 #| msgid "Track late arrivals and early departures of employees"
 msgid "On-time, late arrivals & early departures by department"
@@ -2112,7 +2112,7 @@ msgstr "Não foi possível carregar"
 
 #| msgid "Attendance date from"
 msgid "Attendance rate by department"
-msgstr "Taxa de frequência por departamento"
+msgstr "Taxa de presença por departamento"
 
 msgid "Rate"
 msgstr "Avaliar"
@@ -2154,7 +2154,7 @@ msgstr "funcionário(s)"
 
 #| msgid "Attendance Date"
 msgid "Attendance Rate"
-msgstr "Taxa de frequência"
+msgstr "Taxa de presença"
 
 #| msgid "Week"
 msgid "Week of"
@@ -2187,7 +2187,7 @@ msgstr "dias presentes"
 
 #| msgid "No records available."
 msgid "No attendance records available"
-msgstr "Nenhum registro de frequência disponível."
+msgstr "Nenhum registro de presença disponível."
 
 msgid " Activities"
 msgstr " Atividades"
@@ -2196,7 +2196,7 @@ msgid "Today's Attendances"
 msgstr "Presenças de hoje"
 
 msgid "Attendance Analytic"
-msgstr "Frequência analítica"
+msgstr "Análise de presença"
 
 msgid "Weekly"
 msgstr "Semanalmente"
@@ -2235,7 +2235,7 @@ msgid "caret back outline"
 msgstr "seta para trás (contorno)"
 
 msgid "No pending attendance to validate."
-msgstr "Nenhum participante pendente para validação."
+msgstr "Nenhuma presença pendente para validação."
 
 msgid "Assign Shifts"
 msgstr "Atribuir turnos"
@@ -2282,7 +2282,7 @@ msgid "Out-Date"
 msgstr "Des-Data"
 
 msgid "Attendance validated"
-msgstr "Frequência validada"
+msgstr "Presença validada"
 
 msgid "Penalties "
 msgstr "Penalidades "
@@ -2556,25 +2556,25 @@ msgid "New Attendances Request"
 msgstr "Nova solicitação de presenças"
 
 msgid "There are no attendance requests to display."
-msgstr "Não há nenhuma solicitação de participação para exibir."
+msgstr "Não há nenhuma solicitação de presença para exibir."
 
 msgid "Not-Validated"
 msgstr "Não-validado"
 
 msgid "Attendance added."
-msgstr "Frequência adicionada."
+msgstr "Presença adicionada."
 
 msgid "Attendance Updated."
 msgstr "Presença Atualizada."
 
 msgid "Attendance deleted."
-msgstr "Frequência excluída."
+msgstr "Presença excluída."
 
 msgid "You cannot delete this attendance"
 msgstr "Você não pode excluir esta presença"
 
 msgid "Attendance Deleted"
-msgstr "Frequência excluída"
+msgstr "Presença excluída"
 
 #, python-format
 msgid "You cannot delete this %(attendance)s"
@@ -2590,7 +2590,7 @@ msgid "OT account deleted."
 msgstr "Conta OT excluída."
 
 msgid "You cannot delete this attendance OT"
-msgstr "Você não pode excluir este participante AT"
+msgstr "Você não pode excluir esta presença de hora extra"
 
 msgid "Attendance activity deleted"
 msgstr "Atividade de presença excluída"
@@ -2611,7 +2611,7 @@ msgid "You cannot delete this validation condition."
 msgstr "Você não pode excluir esta condição de validação."
 
 msgid "Attendance validated."
-msgstr "Frequência validada."
+msgstr "Presença validada."
 
 msgid "Overtime approved"
 msgstr "Exercício aprovado"
@@ -2647,7 +2647,7 @@ msgid "Attendance request created"
 msgstr "Pedido de presença criado"
 
 msgid "New attendance request created"
-msgstr "Nova solicitação de participação criada"
+msgstr "Nova solicitação de presença criada"
 
 msgid "Update request updated"
 msgstr "Solicitação de atualização atualizada"
@@ -2656,7 +2656,7 @@ msgid "Attendance batch created successfully."
 msgstr "Lote de presença criado com sucesso."
 
 msgid "Batch attendance title updated sucessfully."
-msgstr "Título de participação em lote atualizado com sucesso."
+msgstr "Título de presença em lote atualizado com sucesso."
 
 msgid "Something went wrong."
 msgstr "Algo deu errado."
@@ -2666,7 +2666,7 @@ msgstr "Este {} já está em uso para {}."
 
 #| msgid "Your attendance for the date "
 msgid "No Attendance found matching the query."
-msgstr "Nenhuma frequência encontrada correspondente à consulta."
+msgstr "Nenhuma presença encontrada correspondente à consulta."
 
 msgid "Attendance request has been approved"
 msgstr "O pedido de presença foi aprovado"
@@ -2717,16 +2717,14 @@ msgid "Invalid list of IDs provided."
 msgstr "Lista de IDs informada inválida."
 
 msgid "No attendance activities selected for deletion."
-msgstr "Nenhuma atividade de participação selecionada para exclusão."
+msgstr "Nenhuma atividade de presença selecionada para exclusão."
 
 #, python-brace-format
 msgid "{count} attendance activities deleted successfully."
-msgstr "Atividades de participação {count} excluídas com sucesso."
+msgstr "{count} atividades de presença excluídas com sucesso."
 
 msgid "No matching attendance activities were found to delete."
-msgstr ""
-"Não foram encontradas atividades de participação correspondentes para "
-"excluir."
+msgstr "Não foram encontradas atividades de presença correspondentes para excluir."
 
 #, python-brace-format
 msgid "Failed to delete attendance activities: {error}"
@@ -2748,10 +2746,10 @@ msgid "validation condition Does not exists.."
 msgstr "condição de validação não existe."
 
 msgid "Attendance not found"
-msgstr "Frequência não encontrada"
+msgstr "Presença não encontrada"
 
 msgid "Invalid attendance ID"
-msgstr "Invalid attendance ID"
+msgstr "ID de presença inválido"
 
 msgid "Pending attendance update request for {}'s attendance on {}!"
 msgstr "Solicitação pendente de atualização da presença de {} em {}!"
@@ -4999,7 +4997,7 @@ msgstr "Horas trabalhadas esta semana"
 
 #| msgid "My Attendances"
 msgid "My Attendance"
-msgstr "Minha frequência"
+msgstr "Minha presença"
 
 #| msgid "Late Come"
 msgid "Late"
@@ -5028,7 +5026,7 @@ msgid "Apply Leave"
 msgstr "Solicitar licença"
 
 msgid "Payslips"
-msgstr "Planejamentos"
+msgstr "Holerites"
 
 msgid "My Profile"
 msgstr "Meu Perfil"
@@ -6331,7 +6329,7 @@ msgid "Out from"
 msgstr "Fora de"
 
 msgid "Attendance date till"
-msgstr "Attendance date till"
+msgstr "Data de presença até"
 
 msgid "Out till"
 msgstr "Saída até"
@@ -6502,7 +6500,7 @@ msgid "attendance-view"
 msgstr "visualização-presença"
 
 msgid "request-attendance-view"
-msgstr "visualização-solicitação-participante"
+msgstr "visualização-solicitação-presença"
 
 msgid "attendance-overtime-view"
 msgstr "overtime de presença"
@@ -6514,7 +6512,7 @@ msgid "late-come-early-out-view"
 msgstr "atraso-come-começar"
 
 msgid "view-my-attendance"
-msgstr "visualizar-meu-comparecimento"
+msgstr "visualizar-minha-presença"
 
 msgid "leave-dashboard"
 msgstr "deixar-dashboard"
@@ -6644,7 +6642,7 @@ msgid "rotating-shift-view"
 msgstr "rotação-turma-visão"
 
 msgid "attendance-settings-view"
-msgstr "configurações-participação"
+msgstr "configurações-presença"
 
 msgid "user-group-view"
 msgstr "grupo-visão"
@@ -7024,7 +7022,7 @@ msgstr "Acesso de exportação padrão"
 
 #| msgid "attendance-view"
 msgid "attendance-rule-view"
-msgstr "Regras de frequência"
+msgstr "Regras de presença"
 
 #| msgid "leave-allocation-request-view"
 msgid "leave-rules-view"
@@ -7906,13 +7904,13 @@ msgid "Employees in Biometric Device"
 msgstr "Funcionários em Dispositivo Biométrico"
 
 msgid "COSEC Attendance Arguments"
-msgstr "COSEC Attendance Arguments"
+msgstr "Argumentos de Presença COSEC"
 
 msgid "Test"
 msgstr "teste"
 
 msgid "Do you want to unschedule the device attendance fetching?"
-msgstr "Deseja cancelar o agendamento da busca de frequência do dispositivo?"
+msgstr "Deseja cancelar o agendamento da busca de presença do dispositivo?"
 
 msgid "Unschedule"
 msgstr "Desprogramar"
@@ -9375,16 +9373,16 @@ msgid "View assets"
 msgstr "Ver mídias"
 
 msgid "Validate Attendance"
-msgstr "Validate Attendance"
+msgstr "Validar Presença"
 
 msgid "No attendance requests have been generated."
-msgstr "Nenhuma solicitação de participação foi gerada."
+msgstr "Nenhuma solicitação de presença foi gerada."
 
 msgid "The hour account is currently empty."
 msgstr "A conta hora está vazia no momento."
 
 msgid "No attendance requests to validate."
-msgstr "Nenhuma solicitação de participação para validar."
+msgstr "Nenhuma solicitação de presença para validar."
 
 msgid "Update Attendances Request"
 msgstr "Atualizar Requisição de Presenças"
@@ -10540,8 +10538,7 @@ msgstr ""
 "configurações"
 
 msgid "Please activate the biometric attendance feature in the settings menu."
-msgstr ""
-"Por favor ative o recurso de presença biométrica no menu de configurações."
+msgstr "Por favor, ative o recurso de presença biométrica no menu de configurações."
 
 msgid "Created At"
 msgstr "Criado em"
@@ -11604,7 +11601,7 @@ msgstr "CSV (.csv)"
 
 #| msgid "On leave, But attendance exist"
 msgid "On Leave, But Attendance Exist"
-msgstr "Com licença, mas já existe frequência"
+msgstr "Com licença, mas já existe presença"
 
 #| msgid "Allow admins to block or unblock employee login"
 msgid "Allow administrators to block or unblock employee login accounts."
@@ -12023,15 +12020,15 @@ msgstr ""
 
 #| msgid "Do you want to Approve this leave request?"
 msgid "Do you want to approve this attendance request?"
-msgstr "Você quer aprovar esta solicitação de frequência?"
+msgstr "Você quer aprovar esta solicitação de presença?"
 
 #| msgid "Do you want to reject this asset request?"
 msgid "Do you want to reject this attendance request?"
-msgstr "Você deseja rejeitar esta solicitação de frequência?"
+msgstr "Você deseja rejeitar esta solicitação de presença?"
 
 #| msgid "Are you sure want to delete this attendance?"
 msgid "Are you sure you want to delete this attendance?"
-msgstr "Tem certeza que deseja excluir este registro de frequência?"
+msgstr "Tem certeza que deseja excluir este registro de presença?"
 
 #| msgid "Date of Birth"
 msgid "Date of birth"
@@ -14832,7 +14829,7 @@ msgid "Available Leave Created Successfully"
 msgstr "Saldo de ausências criado com sucesso"
 
 msgid "Attendance Dates"
-msgstr "Datas de comparecimento"
+msgstr "Datas de presença"
 
 msgid "Compensatory Leave Requests"
 msgstr "Solicitações de licenças compensatórias"
@@ -15348,7 +15345,7 @@ msgid "There are no compensatory leave requests at the moment."
 msgstr "Neste momento não há pedidos de licenças compensatórias."
 
 msgid "Attendance Days"
-msgstr "Dias de Comparecimento"
+msgstr "Dias de Presença"
 
 msgid "Do you want to Approve this leave allocation request?"
 msgstr "Deseja aprovar este pedido de alocação de licença?"
@@ -15891,7 +15888,7 @@ msgstr "A licença compensatória foi desativada com sucesso!"
 
 #| msgid "Your attendance for the date "
 msgid "No attendance found matching the query."
-msgstr "Nenhuma frequência encontrada correspondente à consulta."
+msgstr "Nenhuma presença encontrada correspondente à consulta."
 
 msgid "No leave comment found matching the query."
 msgstr "Nenhum comentário de licença encontrado correspondente à consulta."
@@ -17420,8 +17417,7 @@ msgstr ""
 "extras"
 
 msgid "The fixed amount for one validated attendance with that work type"
-msgstr ""
-"A quantidade fixa para uma presença validada com esse tipo de trabalho"
+msgstr "A quantidade fixa para uma presença validada com esse tipo de trabalho"
 
 msgid "Has max limit for allowance"
 msgstr "Tem limite máximo de permissão"
@@ -21379,7 +21375,7 @@ msgstr "Aprovações Pendentes"
 
 #| msgid "Attendance overtime approve"
 msgid "Attendance & Overtime"
-msgstr "Frequência e Horas Extras"
+msgstr "Presença e Horas Extras"
 
 #| msgid "Weekly Leave Analytics"
 msgid "Leave Analytics"

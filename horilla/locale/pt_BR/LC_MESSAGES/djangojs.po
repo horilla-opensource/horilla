@@ -239,7 +239,7 @@ msgid "This move is not allowed."
 msgstr "Este movimento não é permitido."
 
 msgid "Do you really want to delete all the selected attendances?"
-msgstr "Deseja realmente excluir todos os atendimentos selecionados?"
+msgstr "Deseja realmente excluir todas as presenças selecionadas?"
 
 msgid "Do you really want to delete this employee?"
 msgstr "Você realmente deseja excluir este funcionário?"
