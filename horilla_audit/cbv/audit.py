@@ -74,6 +74,7 @@ class AudiTagsList(HorillaListView):
                 hx-post="{{get_delete_url}}"
                 hx-target="#auditTagTr{{get_delete_instance}}"
                 hx-swap="delete"
+                hx-on-htmx-after-request="$('#reloadMessagesButton').click();"
             """,
         },
     ]
