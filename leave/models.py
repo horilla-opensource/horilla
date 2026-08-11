@@ -1025,9 +1025,10 @@ class LeaveRequest(HorillaModel):
         method for rendering detail view action
         """
 
+        current_date = date.today()
         return render_template(
             path="cbv/my_leave_request/detail_leave_actions.html",
-            context={"instance": self},
+            context={"instance": self, "current_date": current_date},
         )
 
     def get_period(self):
