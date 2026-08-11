@@ -3,22 +3,24 @@
     "model": "offboarding.offboarding",
     "pk": 1,
     "fields": {
-      "created_at": "2025-07-12T09:48:40.988Z",
+      "created_at": "2025-07-01T09:00:00.000Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "Offboarding 2024",
-      "description": "Offboarding Pipeline for 2024",
+      "title": "Offboarding 2025",
+      "description": "Offboarding Pipeline for 2025",
       "status": "ongoing",
       "company_id": 1,
-      "managers": [1]
+      "managers": [
+        1
+      ]
     }
   },
   {
     "model": "offboarding.offboardingstage",
     "pk": 13,
     "fields": {
-      "created_at": "2025-07-12T09:48:41.001Z",
+      "created_at": "2025-07-01T09:00:10.000Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -33,14 +35,14 @@
     "model": "offboarding.offboardingstage",
     "pk": 14,
     "fields": {
-      "created_at": "2025-07-12T09:48:41.028Z",
+      "created_at": "2025-07-01T09:00:10.000Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "title": "Exit interview",
       "type": "interview",
       "offboarding_id": 1,
-      "sequence": 0,
+      "sequence": 1,
       "managers": []
     }
   },
@@ -48,14 +50,14 @@
     "model": "offboarding.offboardingstage",
     "pk": 15,
     "fields": {
-      "created_at": "2025-07-12T09:48:41.045Z",
+      "created_at": "2025-07-01T09:00:10.000Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "title": "Work Handover",
       "type": "handover",
       "offboarding_id": 1,
-      "sequence": 0,
+      "sequence": 2,
       "managers": []
     }
   },
@@ -63,14 +65,14 @@
     "model": "offboarding.offboardingstage",
     "pk": 16,
     "fields": {
-      "created_at": "2025-07-12T09:48:41.063Z",
+      "created_at": "2025-07-01T09:00:10.000Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "title": "FNF",
       "type": "fnf",
       "offboarding_id": 1,
-      "sequence": 0,
+      "sequence": 3,
       "managers": []
     }
   },
@@ -78,14 +80,14 @@
     "model": "offboarding.offboardingstage",
     "pk": 17,
     "fields": {
-      "created_at": "2025-07-12T09:48:41.080Z",
+      "created_at": "2025-07-01T09:00:10.000Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "title": "Farewell",
       "type": "other",
       "offboarding_id": 1,
-      "sequence": 0,
+      "sequence": 4,
       "managers": []
     }
   },
@@ -93,54 +95,919 @@
     "model": "offboarding.offboardingstage",
     "pk": 18,
     "fields": {
-      "created_at": "2025-07-12T09:48:41.097Z",
+      "created_at": "2025-07-01T09:00:10.000Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "title": "Archived",
       "type": "archived",
       "offboarding_id": 1,
-      "sequence": 0,
+      "sequence": 5,
       "managers": []
+    }
+  },
+  {
+    "model": "offboarding.offboardingemployee",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-02T06:10:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 12,
+      "stage_id": 13,
+      "notice_period": 30,
+      "unit": "day",
+      "notice_period_starts": "2025-06-20",
+      "notice_period_ends": "2025-07-15"
+    }
+  },
+  {
+    "model": "offboarding.offboardingemployee",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-03T07:20:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 15,
+      "stage_id": 13,
+      "notice_period": 30,
+      "unit": "day",
+      "notice_period_starts": "2025-06-25",
+      "notice_period_ends": "2025-07-14"
+    }
+  },
+  {
+    "model": "offboarding.offboardingemployee",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-07-04T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 22,
+      "stage_id": 14,
+      "notice_period": 30,
+      "unit": "day",
+      "notice_period_starts": "2025-06-15",
+      "notice_period_ends": "2025-07-20"
+    }
+  },
+  {
+    "model": "offboarding.offboardingemployee",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-07-05T09:15:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 31,
+      "stage_id": 14,
+      "notice_period": 1,
+      "unit": "month",
+      "notice_period_starts": "2025-06-10",
+      "notice_period_ends": "2025-07-25"
+    }
+  },
+  {
+    "model": "offboarding.offboardingemployee",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-07-01T05:30:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 35,
+      "stage_id": 15,
+      "notice_period": 30,
+      "unit": "day",
+      "notice_period_starts": "2025-06-01",
+      "notice_period_ends": "2025-07-18"
+    }
+  },
+  {
+    "model": "offboarding.offboardingemployee",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-06-28T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 10,
+      "stage_id": 15,
+      "notice_period": 30,
+      "unit": "day",
+      "notice_period_starts": "2025-06-05",
+      "notice_period_ends": "2025-07-22"
+    }
+  },
+  {
+    "model": "offboarding.offboardingemployee",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-07-06T11:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 27,
+      "stage_id": 16,
+      "notice_period": 30,
+      "unit": "day",
+      "notice_period_starts": "2025-05-20",
+      "notice_period_ends": "2025-07-10"
+    }
+  },
+  {
+    "model": "offboarding.offboardingemployee",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-07-07T12:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 33,
+      "stage_id": 17,
+      "notice_period": 30,
+      "unit": "day",
+      "notice_period_starts": "2025-05-15",
+      "notice_period_ends": "2025-07-12"
+    }
+  },
+  {
+    "model": "offboarding.offboardingemployee",
+    "pk": 9,
+    "fields": {
+      "created_at": "2025-07-02T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 36,
+      "stage_id": 18,
+      "notice_period": 30,
+      "unit": "day",
+      "notice_period_starts": "2025-05-01",
+      "notice_period_ends": "2025-07-05"
+    }
+  },
+  {
+    "model": "offboarding.offboardingemployee",
+    "pk": 10,
+    "fields": {
+      "created_at": "2025-07-04T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 18,
+      "stage_id": 18,
+      "notice_period": 45,
+      "unit": "day",
+      "notice_period_starts": "2025-04-20",
+      "notice_period_ends": "2025-07-03"
+    }
+  },
+  {
+    "model": "offboarding.offboardingemployee",
+    "pk": 11,
+    "fields": {
+      "created_at": "2025-06-12T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 5,
+      "stage_id": 18,
+      "notice_period": 30,
+      "unit": "day",
+      "notice_period_starts": "2025-05-10",
+      "notice_period_ends": "2025-06-25"
+    }
+  },
+  {
+    "model": "offboarding.offboardingemployee",
+    "pk": 12,
+    "fields": {
+      "created_at": "2025-07-08T14:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 8,
+      "stage_id": 13,
+      "notice_period": 30,
+      "unit": "day",
+      "notice_period_starts": "2025-07-01",
+      "notice_period_ends": "2025-07-31"
+    }
+  },
+  {
+    "model": "offboarding.offboardingemployee",
+    "pk": 13,
+    "fields": {
+      "created_at": "2025-07-09T15:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 34,
+      "stage_id": 14,
+      "notice_period": 30,
+      "unit": "day",
+      "notice_period_starts": "2025-06-28",
+      "notice_period_ends": "2025-07-28"
     }
   },
   {
     "model": "offboarding.resignationletter",
     "pk": 1,
     "fields": {
-      "created_at": "2025-07-15T03:45:33.566Z",
+      "created_at": "2025-07-02T06:05:00.000Z",
       "created_by": 13,
       "modified_by": 13,
       "is_active": true,
       "employee_id": 12,
       "title": "Resignation",
-      "description": "<p>After much consideration, I have decided to pursue a new opportunity that aligns with my career goals and personal aspirations. Working at Horilla has been an incredibly rewarding experience, and I deeply appreciate the support, guidance, and opportunities for growth provided by the company and my colleagues.</p><p>I am committed to ensuring a smooth transition and will do my best to complete my ongoing tasks and assist in handing over responsibilities. Please let me know how I can support the transition process.</p><p>I want to express my gratitude to the entire team at Horilla for the collaboration, learning, and support throughout my time here. I will cherish the experience and the relationships I have built.</p><p>Thank you once again for the opportunity to be a part of Horilla, and I wish the company continued success in the future.</p>",
-      "planned_to_leave_on": "2025-07-30",
+      "description": "<p>After careful consideration, I have decided to pursue a new opportunity. I appreciate the support and opportunities provided during my time at Horilla and will assist with a smooth transition.</p>",
+      "planned_to_leave_on": "2025-07-15",
       "status": "requested",
-      "offboarding_employee_id": null
+      "offboarding_employee_id": 1
     }
   },
   {
     "model": "offboarding.resignationletter",
     "pk": 2,
     "fields": {
-      "created_at": "2025-07-15T03:46:37.925Z",
-      "created_by": 29,
-      "modified_by": 29,
+      "created_at": "2025-07-03T07:10:00.000Z",
+      "created_by": 15,
+      "modified_by": 15,
       "is_active": true,
-      "employee_id": 28,
+      "employee_id": 15,
       "title": "Resignation Letter",
-      "description": "<p>This was not an easy decision, but after careful thought, I believe it is the right time for me to explore new professional challenges. My time at Horilla has been an enriching journey, and I am truly grateful for the opportunities I have had to contribute and grow, both professionally and personally.</p><p>I will do my best to ensure a smooth transition and am happy to assist in handing over my current projects or training a replacement if necessary. Please feel free to guide me on how I can assist during this period.</p><p>Thank you once again for the support and for allowing me to be part of such a fantastic team. I wish Horilla continued growth and success, and I look forward to staying connected in the future.</p>",
+      "description": "<p>After careful consideration, I have decided to pursue a new opportunity. I appreciate the support and opportunities provided during my time at Horilla and will assist with a smooth transition.</p>",
+      "planned_to_leave_on": "2025-07-14",
+      "status": "requested",
+      "offboarding_employee_id": 2
+    }
+  },
+  {
+    "model": "offboarding.resignationletter",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-07-04T07:50:00.000Z",
+      "created_by": 22,
+      "modified_by": 22,
+      "is_active": true,
+      "employee_id": 22,
+      "title": "Resignation",
+      "description": "<p>After careful consideration, I have decided to pursue a new opportunity. I appreciate the support and opportunities provided during my time at Horilla and will assist with a smooth transition.</p>",
+      "planned_to_leave_on": "2025-07-20",
+      "status": "approved",
+      "offboarding_employee_id": 3
+    }
+  },
+  {
+    "model": "offboarding.resignationletter",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-07-05T09:00:00.000Z",
+      "created_by": 31,
+      "modified_by": 31,
+      "is_active": true,
+      "employee_id": 31,
+      "title": "Resignation Letter",
+      "description": "<p>After careful consideration, I have decided to pursue a new opportunity. I appreciate the support and opportunities provided during my time at Horilla and will assist with a smooth transition.</p>",
+      "planned_to_leave_on": "2025-07-25",
+      "status": "approved",
+      "offboarding_employee_id": 4
+    }
+  },
+  {
+    "model": "offboarding.resignationletter",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-07-01T05:20:00.000Z",
+      "created_by": 35,
+      "modified_by": 35,
+      "is_active": true,
+      "employee_id": 35,
+      "title": "Resignation",
+      "description": "<p>After careful consideration, I have decided to pursue a new opportunity. I appreciate the support and opportunities provided during my time at Horilla and will assist with a smooth transition.</p>",
+      "planned_to_leave_on": "2025-07-18",
+      "status": "approved",
+      "offboarding_employee_id": 5
+    }
+  },
+  {
+    "model": "offboarding.resignationletter",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-06-28T09:45:00.000Z",
+      "created_by": 10,
+      "modified_by": 10,
+      "is_active": true,
+      "employee_id": 10,
+      "title": "Resignation Letter",
+      "description": "<p>After careful consideration, I have decided to pursue a new opportunity. I appreciate the support and opportunities provided during my time at Horilla and will assist with a smooth transition.</p>",
+      "planned_to_leave_on": "2025-07-22",
+      "status": "approved",
+      "offboarding_employee_id": 6
+    }
+  },
+  {
+    "model": "offboarding.resignationletter",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-07-06T10:40:00.000Z",
+      "created_by": 27,
+      "modified_by": 27,
+      "is_active": true,
+      "employee_id": 27,
+      "title": "Resignation",
+      "description": "<p>After careful consideration, I have decided to pursue a new opportunity. I appreciate the support and opportunities provided during my time at Horilla and will assist with a smooth transition.</p>",
+      "planned_to_leave_on": "2025-07-10",
+      "status": "approved",
+      "offboarding_employee_id": 7
+    }
+  },
+  {
+    "model": "offboarding.resignationletter",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-07-07T11:50:00.000Z",
+      "created_by": 33,
+      "modified_by": 33,
+      "is_active": true,
+      "employee_id": 33,
+      "title": "Resignation Letter",
+      "description": "<p>After careful consideration, I have decided to pursue a new opportunity. I appreciate the support and opportunities provided during my time at Horilla and will assist with a smooth transition.</p>",
+      "planned_to_leave_on": "2025-07-12",
+      "status": "approved",
+      "offboarding_employee_id": 8
+    }
+  },
+  {
+    "model": "offboarding.resignationletter",
+    "pk": 9,
+    "fields": {
+      "created_at": "2025-07-02T07:50:00.000Z",
+      "created_by": 36,
+      "modified_by": 36,
+      "is_active": true,
+      "employee_id": 36,
+      "title": "Resignation",
+      "description": "<p>After careful consideration, I have decided to pursue a new opportunity. I appreciate the support and opportunities provided during my time at Horilla and will assist with a smooth transition.</p>",
+      "planned_to_leave_on": "2025-07-05",
+      "status": "approved",
+      "offboarding_employee_id": 9
+    }
+  },
+  {
+    "model": "offboarding.resignationletter",
+    "pk": 10,
+    "fields": {
+      "created_at": "2025-07-04T08:50:00.000Z",
+      "created_by": 18,
+      "modified_by": 18,
+      "is_active": true,
+      "employee_id": 18,
+      "title": "Resignation Letter",
+      "description": "<p>After careful consideration, I have decided to pursue a new opportunity. I appreciate the support and opportunities provided during my time at Horilla and will assist with a smooth transition.</p>",
+      "planned_to_leave_on": "2025-07-03",
+      "status": "approved",
+      "offboarding_employee_id": 10
+    }
+  },
+  {
+    "model": "offboarding.resignationletter",
+    "pk": 11,
+    "fields": {
+      "created_at": "2025-07-08T13:50:00.000Z",
+      "created_by": 8,
+      "modified_by": 8,
+      "is_active": true,
+      "employee_id": 8,
+      "title": "Resignation",
+      "description": "<p>After careful consideration, I have decided to pursue a new opportunity. I appreciate the support and opportunities provided during my time at Horilla and will assist with a smooth transition.</p>",
+      "planned_to_leave_on": "2025-07-31",
+      "status": "requested",
+      "offboarding_employee_id": 12
+    }
+  },
+  {
+    "model": "offboarding.resignationletter",
+    "pk": 12,
+    "fields": {
+      "created_at": "2025-07-09T14:50:00.000Z",
+      "created_by": 34,
+      "modified_by": 34,
+      "is_active": true,
+      "employee_id": 34,
+      "title": "Resignation Letter",
+      "description": "<p>After careful consideration, I have decided to pursue a new opportunity. I appreciate the support and opportunities provided during my time at Horilla and will assist with a smooth transition.</p>",
+      "planned_to_leave_on": "2025-07-28",
+      "status": "requested",
+      "offboarding_employee_id": 13
+    }
+  },
+  {
+    "model": "offboarding.resignationletter",
+    "pk": 13,
+    "fields": {
+      "created_at": "2025-07-05T16:00:00.000Z",
+      "created_by": 19,
+      "modified_by": 19,
+      "is_active": true,
+      "employee_id": 19,
+      "title": "Resignation",
+      "description": "<p>After careful consideration, I have decided to pursue a new opportunity. I appreciate the support and opportunities provided during my time at Horilla and will assist with a smooth transition.</p>",
       "planned_to_leave_on": "2025-07-30",
+      "status": "rejected",
+      "offboarding_employee_id": null
+    }
+  },
+  {
+    "model": "offboarding.resignationletter",
+    "pk": 14,
+    "fields": {
+      "created_at": "2025-06-12T10:00:00.000Z",
+      "created_by": 16,
+      "modified_by": 16,
+      "is_active": true,
+      "employee_id": 16,
+      "title": "Resignation Letter",
+      "description": "<p>After careful consideration, I have decided to pursue a new opportunity. I appreciate the support and opportunities provided during my time at Horilla and will assist with a smooth transition.</p>",
+      "planned_to_leave_on": "2025-06-20",
+      "status": "rejected",
+      "offboarding_employee_id": null
+    }
+  },
+  {
+    "model": "offboarding.resignationletter",
+    "pk": 15,
+    "fields": {
+      "created_at": "2025-07-10T11:00:00.000Z",
+      "created_by": 14,
+      "modified_by": 14,
+      "is_active": true,
+      "employee_id": 14,
+      "title": "Resignation",
+      "description": "<p>After careful consideration, I have decided to pursue a new opportunity. I appreciate the support and opportunities provided during my time at Horilla and will assist with a smooth transition.</p>",
+      "planned_to_leave_on": "2025-08-05",
       "status": "requested",
       "offboarding_employee_id": null
+    }
+  },
+  {
+    "model": "offboarding.offboardingtask",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-02T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Collect feedback",
+      "stage_id": 14,
+      "is_required": true,
+      "managers": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "offboarding.offboardingtask",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-02T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Knowledge transfer",
+      "stage_id": 15,
+      "is_required": true,
+      "managers": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "model": "offboarding.offboardingtask",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-07-02T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Return assets",
+      "stage_id": 15,
+      "is_required": true,
+      "managers": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "offboarding.offboardingtask",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-07-02T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Settle dues",
+      "stage_id": 16,
+      "is_required": true,
+      "managers": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "offboarding.offboardingtask",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-07-02T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Clearance form",
+      "stage_id": 16,
+      "is_required": true,
+      "managers": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "offboarding.offboardingtask",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-07-02T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Exit checklist",
+      "stage_id": 13,
+      "is_required": true,
+      "managers": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "offboarding.offboardingtask",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-07-02T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Farewell note",
+      "stage_id": 17,
+      "is_required": true,
+      "managers": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-02T06:30:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 1,
+      "status": "in_progress",
+      "task_id": 6,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-03T07:30:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 2,
+      "status": "todo",
+      "task_id": 6,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-07-04T08:30:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 3,
+      "status": "completed",
+      "task_id": 1,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-07-05T09:30:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 4,
+      "status": "in_progress",
+      "task_id": 1,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-07-01T06:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 5,
+      "status": "completed",
+      "task_id": 2,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-07-01T06:05:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 5,
+      "status": "stuck",
+      "task_id": 3,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-06-28T10:30:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 6,
+      "status": "in_progress",
+      "task_id": 2,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-06-28T10:35:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 6,
+      "status": "todo",
+      "task_id": 3,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 9,
+    "fields": {
+      "created_at": "2025-07-06T11:30:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 7,
+      "status": "completed",
+      "task_id": 4,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 10,
+    "fields": {
+      "created_at": "2025-07-06T11:35:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 7,
+      "status": "in_progress",
+      "task_id": 5,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 11,
+    "fields": {
+      "created_at": "2025-07-07T12:30:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 8,
+      "status": "completed",
+      "task_id": 7,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 12,
+    "fields": {
+      "created_at": "2025-07-02T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 9,
+      "status": "completed",
+      "task_id": 4,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 13,
+    "fields": {
+      "created_at": "2025-07-03T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 9,
+      "status": "completed",
+      "task_id": 5,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 14,
+    "fields": {
+      "created_at": "2025-07-04T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 10,
+      "status": "completed",
+      "task_id": 2,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 15,
+    "fields": {
+      "created_at": "2025-07-05T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 10,
+      "status": "completed",
+      "task_id": 3,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 16,
+    "fields": {
+      "created_at": "2025-07-08T14:30:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 12,
+      "status": "todo",
+      "task_id": 6,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.employeetask",
+    "pk": 17,
+    "fields": {
+      "created_at": "2025-07-09T15:30:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 13,
+      "status": "todo",
+      "task_id": 1,
+      "description": null
+    }
+  },
+  {
+    "model": "offboarding.exitreason",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-05T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Better opportunity",
+      "description": "Accepted a role with stronger growth prospects.",
+      "offboarding_employee_id": 9,
+      "attachments": []
+    }
+  },
+  {
+    "model": "offboarding.exitreason",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-03T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Relocation",
+      "description": "Moving to another city for personal reasons.",
+      "offboarding_employee_id": 10,
+      "attachments": []
+    }
+  },
+  {
+    "model": "offboarding.exitreason",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-06-25T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Career change",
+      "description": "Switching to a different industry.",
+      "offboarding_employee_id": 11,
+      "attachments": []
+    }
+  },
+  {
+    "model": "offboarding.exitreason",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-07-02T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Compensation",
+      "description": "Offer package was not competitive.",
+      "offboarding_employee_id": 5,
+      "attachments": []
+    }
+  },
+  {
+    "model": "offboarding.exitreason",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-07-06T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Work-life balance",
+      "description": "Seeking a role with more flexible hours.",
+      "offboarding_employee_id": 3,
+      "attachments": []
+    }
+  },
+  {
+    "model": "offboarding.exitreason",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-07-08T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Better opportunity",
+      "description": "Joined a competitor for a senior role.",
+      "offboarding_employee_id": 7,
+      "attachments": []
+    }
+  },
+  {
+    "model": "offboarding.exitreason",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-07-09T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Relocation",
+      "description": "Family relocating overseas.",
+      "offboarding_employee_id": 8,
+      "attachments": []
     }
   },
   {
     "model": "offboarding.offboardinggeneralsetting",
     "pk": 1,
     "fields": {
-      "created_at": "2025-07-15T03:43:33.290Z",
+      "created_at": "2025-07-01T08:00:00.000Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
