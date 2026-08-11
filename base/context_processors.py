@@ -259,17 +259,25 @@ def resignation_request_enabled(request):
 
 def timerunner_enabled(request):
     """
-    Check weather resignation_request enabled of not in offboarding
+    Whether Time Runner (at-work tracker) is enabled for the selected company.
+    Prefers the company-specific AttendanceGeneralSetting, then the global
+    (company_id=None) row, then defaults to enabled.
     """
-    first = None
     enabled_timerunner = True
     if apps.is_installed("attendance"):
         AttendanceGeneralSetting = get_horilla_model_class(
             app_label="attendance", model="attendancegeneralsetting"
         )
-        first = AttendanceGeneralSetting.objects.first()
-    if first:
-        enabled_timerunner = first.time_runner
+        selected_company = request.session.get("selected_company")
+        if selected_company and selected_company != "all":
+            company = Company.objects.filter(id=selected_company).first()
+        else:
+            company = None
+        setting = AttendanceGeneralSetting.objects.filter(company_id=company).first()
+        if not setting and company is not None:
+            setting = AttendanceGeneralSetting.objects.filter(company_id=None).first()
+        if setting:
+            enabled_timerunner = setting.time_runner
     return {"enabled_timerunner": enabled_timerunner}
 
 

@@ -292,19 +292,14 @@ def main_dashboard_view(request):
     """Render the modern dashboard page."""
     from django.apps import apps
 
-    from horilla.methods import get_horilla_model_class
-
     enabled_timerunner = True
     get_forecasted_at_work = None
 
     if apps.is_installed("attendance"):
         try:
-            AttendanceGeneralSetting = get_horilla_model_class(
-                app_label="attendance", model="attendancegeneralsetting"
-            )
-            first = AttendanceGeneralSetting.objects.first()
-            if first:
-                enabled_timerunner = first.time_runner
+            from base.context_processors import timerunner_enabled
+
+            enabled_timerunner = timerunner_enabled(request)["enabled_timerunner"]
         except Exception:
             pass
 

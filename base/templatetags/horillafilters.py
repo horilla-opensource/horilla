@@ -362,6 +362,38 @@ def is_check_in_enabled(request):
     return bool(attendance_settings and attendance_settings.enable_check_in)
 
 
+@register.filter(name="is_timerunner_enabled")
+def is_timerunner_enabled(request):
+    """
+    Whether the navbar at-work timer should run for this request.
+
+    Uses the selected company when one is chosen; when the switcher is on
+    "all", uses the logged-in employee's company (the Check-In/Out control is
+    personal). Falls back to the global (company_id=None) row, then True.
+    """
+    from attendance.models import AttendanceGeneralSetting
+
+    if not apps.is_installed("attendance"):
+        return True
+
+    selected_company = request.session.get("selected_company")
+    company = None
+    if selected_company and selected_company != "all":
+        company = Company.objects.filter(id=selected_company).first()
+    else:
+        try:
+            company = request.user.employee_get.get_company()
+        except Exception:
+            company = None
+
+    setting = AttendanceGeneralSetting.objects.filter(company_id=company).first()
+    if not setting:
+        setting = AttendanceGeneralSetting.objects.filter(company_id=None).first()
+    if setting is None:
+        return True
+    return bool(setting.time_runner)
+
+
 @register.filter
 def verbose_name(instance, field_name):
     """Return verbose name of a model field."""

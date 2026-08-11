@@ -3052,14 +3052,41 @@ def work_record_export(request):
 @permission_required("attendance.add_attendancegeneralsetting")
 def enable_timerunner(request):
     """
-    This method is used to enable/disable the timerunner feature
+    Enable/disable Time Runner for the currently selected company, then refresh
+    the navbar Check-In/Out control so the live timer appears immediately.
+    When the company switcher is on "all", apply the change to every
+    AttendanceGeneralSetting row (global + per-company).
     """
+    company = _get_session_company(request)
+    enabled = "time_runner" in request.GET.keys()
+    if company is None:
+        # "All companies" — keep every tenant row in sync so the navbar timer
+        # works no matter which company an employee belongs to.
+        updated = AttendanceGeneralSetting.objects.entire().update(time_runner=enabled)
+        if not updated:
+            AttendanceGeneralSetting(company_id=None, time_runner=enabled).save()
+    else:
+        settings_qs = AttendanceGeneralSetting.objects.filter(company_id=company)
+        if settings_qs.exists():
+            settings_qs.update(time_runner=enabled)
+        else:
+            AttendanceGeneralSetting(company_id=company, time_runner=enabled).save()
 
-    time_runner = AttendanceGeneralSetting.objects.first()
-    time_runner = time_runner if time_runner else AttendanceGeneralSetting()
-    time_runner.time_runner = "time_runner" in request.GET.keys()
-    time_runner.save()
-    return HttpResponse("success")
+    message = _("enabled") if enabled else _("disabled")
+    messages.success(
+        request, _("Time Runner has been {} successfully.").format(message)
+    )
+
+    # Retarget so the settings toggle form is left alone, while the navbar
+    # attendance button re-renders with/without the live timer.
+    response = render(
+        request,
+        "attendance/components/in_out_component.html",
+        {"run": 1},
+    )
+    response["HX-Retarget"] = "#attendance-activity-container"
+    response["HX-Reswap"] = "innerHTML"
+    return response
 
 
 @login_required

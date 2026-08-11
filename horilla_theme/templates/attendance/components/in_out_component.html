@@ -18,18 +18,24 @@
                         hx-get="{% url 'clock-out' %}"
                         hx-target="#attendance-activity-container"
                         hx-swap="innerHTML"
-                        {% if enabled_timerunner and get_forecasted_at_work.has_attendance %}
+                        {% if request|is_timerunner_enabled and get_forecasted_at_work.has_attendance %}
                             onmouseenter="$(this).find('span.hr-Check-In-out-text').show();$(this).find('.time-runner').hide()"
                             onmouseleave="$(this).find('span.hr-Check-In-out-text').hide();$(this).find('.time-runner').show()"
                         {% endif %}
                     >
                         <span class="date">
                             <i class="fa-solid fa-right-from-bracket pe-2"></i>
-                            <div class="time-runner">{% trans "Check Out" %}</div>
+                            <div class="time-runner">
+                                {% if request|is_timerunner_enabled %}
+                                    {{ get_forecasted_at_work.forecasted_at_work|default:"00:00:00" }}
+                                {% else %}
+                                    {% trans "Check Out" %}
+                                {% endif %}
+                            </div>
                         </span>
                         <span
                             class="con hr-Check-In-out-text"
-                            {% if enabled_timerunner and get_forecasted_at_work.has_attendance %}
+                            {% if request|is_timerunner_enabled and get_forecasted_at_work.has_attendance %}
                                 style="display: none"
                             {% endif %}
                         >
@@ -55,18 +61,24 @@
                         hx-get="{% url 'clock-in' %}"
                         hx-target="#attendance-activity-container"
                         hx-swap="innerHTML"
-                        {% if enabled_timerunner %}
+                        {% if request|is_timerunner_enabled %}
                             onmouseenter="$(this).find('span.hr-Check-In-out-text').show();$(this).find('.at-work-seconds').hide()"
                             onmouseleave="$(this).find('span.hr-Check-In-out-text').hide();$(this).find('.at-work-seconds').show()"
                         {% endif %}
                     >
                         <span class="date">
                             <i class="fa-solid fa-right-to-bracket pe-2"></i>
-                            <div class="at-work-seconds">{% trans "Check In" %}</div>
+                            <div class="at-work-seconds">
+                                {% if request|is_timerunner_enabled %}
+                                    {{ get_forecasted_at_work.forecasted_at_work|default:"00:00:00" }}
+                                {% else %}
+                                    {% trans "Check In" %}
+                                {% endif %}
+                            </div>
                         </span>
                         <span
                             class="con hr-Check-In-out-text"
-                            {% if enabled_timerunner %}
+                            {% if request|is_timerunner_enabled %}
                                 style="display: none"
                             {% endif %}
                         >
@@ -80,7 +92,7 @@
                     >
                     </span>
 
-                    {% if enabled_timerunner %}
+                    {% if request|is_timerunner_enabled %}
                         <script>
                             $(document).ready(function () {
                                 $('.at-work-seconds').html(secondsToDuration({{get_forecasted_at_work.forecasted_at_work_seconds}}))
@@ -94,7 +106,7 @@
     {% endwith %}
 {% endif %}
 
-{% if enabled_timerunner %}
+{% if request|is_timerunner_enabled %}
     <script>
         var at_work_seconds = $(".at_work_seconds").data("at-work-seconds");
         var run = $(".at_work_seconds").data("run");

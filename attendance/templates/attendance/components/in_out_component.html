@@ -8,7 +8,7 @@
                 {% if request.user|is_clocked_in and get_forecasted_at_work.has_attendance %}
                     <button
                         class="oh-btn oh-btn--warning mr-2"
-                        {% if enabled_timerunner and get_forecasted_at_work.has_attendance %}
+                        {% if request|is_timerunner_enabled and get_forecasted_at_work.has_attendance %}
                             onmouseenter="$(this).find('span').show();$(this).find('.time-runner').hide()"
                             onmouseleave="$(this).find('span').hide();$(this).find('.time-runner').show()"
                         {% endif %}
@@ -19,12 +19,16 @@
                         <ion-icon class="oh-navbar__clock-icon mr-2 text-white" name="exit-outline"></ion-icon>
                         <span
                             class="hr-Check-In-out-text"
-                            {% if enabled_timerunner and get_forecasted_at_work.has_attendance %}
+                            {% if request|is_timerunner_enabled and get_forecasted_at_work.has_attendance %}
                                 style="display: none"
                             {% endif %}
                         >{% trans "Check-Out" %}</span>
                         {% if get_forecasted_at_work.has_attendance %}
-                            <div class="time-runner"></div>
+                            <div class="time-runner">
+                                {% if request|is_timerunner_enabled %}
+                                    {{ get_forecasted_at_work.forecasted_at_work|default:"00:00:00" }}
+                                {% endif %}
+                            </div>
                         {% endif %}
                     </button>
                     <script>
@@ -32,7 +36,7 @@
                     </script>
                 {% else %}
                     <button
-                        {% if enabled_timerunner %}
+                        {% if request|is_timerunner_enabled %}
                             onmouseenter="$(this).find('span').show();$(this).find('.at-work-seconds').hide()"
                             onmouseleave="$(this).find('span').hide();$(this).find('.at-work-seconds').show()"
                         {% endif %}
@@ -44,13 +48,13 @@
                         <ion-icon class="oh-navbar__clock-icon mr-2 text-white" name="enter-outline"></ion-icon>
                         <span
                             class="hr-Check-In-out-text"
-                            {% if enabled_timerunner %}
+                            {% if request|is_timerunner_enabled %}
                                 style="display: none"
                             {% endif %}
                         >{% trans "Check-In" %}</span>
                         <div class="at-work-seconds"></div>
                     </button>
-                    {% if enabled_timerunner %}
+                    {% if request|is_timerunner_enabled %}
                         <script>
                             $(document).ready(function () {
                             $('.at-work-seconds').html(secondsToDuration({{get_forecasted_at_work.forecasted_at_work_seconds}}))
