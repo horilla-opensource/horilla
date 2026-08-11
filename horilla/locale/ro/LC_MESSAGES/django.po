@@ -527,10 +527,10 @@ msgid "First"
 msgstr "Prima"
 
 msgid "Previous"
-msgstr "Anterioara"
+msgstr "Anterior"
 
 msgid "Next"
-msgstr "Următoarea"
+msgstr "Următor"
 
 msgid "Last"
 msgstr "Ultima"
