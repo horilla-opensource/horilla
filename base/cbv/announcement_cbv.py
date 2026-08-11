@@ -179,6 +179,8 @@ class AnnouncementDetailView(HorillaDetailedView):
         announcement_view_obj.viewed = True
         announcement_view_obj.save()
 
+        context["announcement"] = self.instance
+
         if instance_ids:
             prev_id, next_id = closest_numbers(instance_ids, self.instance.pk)
 

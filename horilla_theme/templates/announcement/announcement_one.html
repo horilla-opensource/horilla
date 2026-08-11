@@ -71,6 +71,32 @@
         <!-- Modal header -->
         <div class="flex justify-between items-center px-5 py-4">
             <h2 class="text-base font-semibold text-gray-900">{% trans "Announcement" %}</h2>
+            {% if instance_ids %}
+                <div class="flex gap-1 ml-auto mr-5">
+                    <button
+                        type="button"
+                        data-action="previous"
+                        hx-get="{{ previous_url }}?{{ ids_key }}={{ instance_ids }}{% if extra_query %}&{{ extra_query }}{% endif %}"
+                        hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');"
+                        hx-target="#objectDetailsModalTarget"
+                        class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+                        title="{% trans 'Previous' %}"
+                    >
+                        <i class="fa-solid fa-angle-left"></i>
+                    </button>
+                    <button
+                        type="button"
+                        data-action="next"
+                        hx-get="{{ next_url }}?{{ ids_key }}={{ instance_ids }}{% if extra_query %}&{{ extra_query }}{% endif %}"
+                        hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');"
+                        hx-target="#objectDetailsModalTarget"
+                        class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+                        title="{% trans 'Next' %}"
+                    >
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                </div>
+            {% endif %}
             <button
                 type="button"
                 class="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition"
@@ -246,31 +272,6 @@
                     <ion-icon name="chatbox-outline" style="font-size: 16px"></ion-icon>
                     {% trans "Comments" %}
                 </button>
-            {% endif %}
-
-            {% if instance_ids %}
-                <div class="flex items-center gap-1.5">
-                    <button
-                        type="button"
-                        data-action="previous"
-                        hx-get="{{ previous_url }}?{{ ids_key }}={{ instance_ids }}{% if extra_query %}&{{ extra_query }}{% endif %}"
-                        hx-target="#objectDetailsModalTarget"
-                        class="w-8 h-8 flex items-center justify-center bg-primary-600 text-white rounded-full text-xs hover:opacity-90 transition"
-                        title="{% trans 'Previous' %}"
-                    >
-                        <i class="fa-solid fa-angle-left"></i>
-                    </button>
-                    <button
-                        type="button"
-                        data-action="next"
-                        hx-get="{{ next_url }}?{{ ids_key }}={{ instance_ids }}{% if extra_query %}&{{ extra_query }}{% endif %}"
-                        hx-target="#objectDetailsModalTarget"
-                        class="w-8 h-8 flex items-center justify-center bg-primary-600 text-white rounded-full text-xs hover:opacity-90 transition"
-                        title="{% trans 'Next' %}"
-                    >
-                        <i class="fa-solid fa-angle-right"></i>
-                    </button>
-                </div>
             {% endif %}
         </div>
 

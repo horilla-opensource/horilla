@@ -27,33 +27,28 @@
     </div>
     <div class="oh-modal__dialog-body">
         {% if instance_ids %}
-            <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+            <div class="flex gap-1 float-end me-4 mb-2">
                 <button
+                    type="button"
+                    data-action="previous"
                     hx-get="{% url 'announcement-single-view' previous_instance_id %}?instance_ids={{instance_ids}}"
                     hx-target="#objectDetailsModalTarget"
-                    class="oh-modal__diaglog-nav oh-modal__nav-prev"
-                    data-action="previous"
+                    hx-on:click="$(this).closest('.oh-modal__dialog-body').toggleClass('animate-pulse');"
+                    class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+                    title="{% trans 'Previous' %}"
                 >
-                    <ion-icon
-                        name="chevron-back-outline"
-                        class="md hydrated"
-                        role="img"
-                        aria-label="{% trans 'chevron back outline' %}"
-                    ></ion-icon>
+                    <i class="fa-solid fa-angle-left"></i>
                 </button>
-
                 <button
+                    type="button"
+                    data-action="next"
                     hx-get="{% url 'announcement-single-view' next_instance_id %}?instance_ids={{instance_ids}}"
                     hx-target="#objectDetailsModalTarget"
-                    class="oh-modal__diaglog-nav oh-modal__nav-next"
-                    data-action="next"
+                    hx-on:click="$(this).closest('.oh-modal__dialog-body').toggleClass('animate-pulse');"
+                    class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+                    title="{% trans 'Next' %}"
                 >
-                    <ion-icon
-                        name="chevron-forward-outline"
-                        class="md hydrated"
-                        role="img"
-                        aria-label="{% trans 'chevron forward outline' %}"
-                    ></ion-icon>
+                    <i class="fa-solid fa-angle-right"></i>
                 </button>
             </div>
         {% endif %}
