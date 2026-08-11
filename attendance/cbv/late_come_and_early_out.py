@@ -143,6 +143,7 @@ class LateComeAndEarlyOutListNav(HorillaNavView):
                 data-target="#attendanceExport"
                 hx-get="{reverse('late-come-and-early-out-export')}"
                 hx-target="#attendanceExportForm"
+                hx-vals='js:{{"has_selection": (JSON.parse(document.getElementById("selectedInstances")?.getAttribute("data-ids")||"[]").length>0)}}'
                 style="cursor: pointer;"
                 """,
                 }
@@ -218,6 +219,7 @@ class LateEarlyExportView(TemplateView):
         export = LateComeEarlyOutFilter(queryset=data)
         context["export_form"] = export_form
         context["export"] = export
+        context["hide_export_filters"] = self.request.GET.get("has_selection") == "true"
         return context
 
 

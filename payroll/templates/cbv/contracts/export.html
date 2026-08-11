@@ -1,5 +1,6 @@
 {% load static %} {% load i18n %}
 <input type="hidden" name="instance_ids">
+{% if not hide_export_filters %}
 <div class="oh-dropdown__filter-body">
   <div class="oh-accordion">
     <div class="oh-accordion-header">{% trans "Excel columns" %}</div>
@@ -160,6 +161,7 @@
     </div>
   </div>
 </div>
+{% endif %}
 <div class="oh-dropdown__filter-footer">
   <button
       class="oh-btn oh-btn--secondary oh-btn--small w-100"

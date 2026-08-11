@@ -694,6 +694,7 @@ class CandidateNav(HorillaNavView):
                  data-target="#genericModal"
                  hx-get="{reverse('export')}"
                  hx-target="#genericModalBody"
+                 hx-vals='js:{{"has_selection": (JSON.parse(document.getElementById("selectedInstances")?.getAttribute("data-ids")||"[]").length>0)}}'
                  """,
                 }
             )
@@ -798,6 +799,7 @@ class ExportView(TemplateView):
         export_filter = CandidateFilter(queryset=candidates)
         context["export_column"] = export_column
         context["export_filter"] = export_filter
+        context["hide_export_filters"] = self.request.GET.get("has_selection") == "true"
         return context
 
 

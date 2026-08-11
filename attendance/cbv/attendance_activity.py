@@ -130,6 +130,7 @@ class AttendanceActivityNavView(HorillaNavView):
                     data-target = "#genericModal"
                     hx-target="#genericModalBody"
                     hx-get ="{reverse_lazy('attendance-bulk-export')}"
+                    hx-vals='js:{{"has_selection": (JSON.parse(document.getElementById("selectedInstances")?.getAttribute("data-ids")||"[]").length>0)}}'
                     style="cursor: pointer;"
                 """,
                 }
@@ -227,4 +228,5 @@ class AttendanceBulkExport(TemplateView):
         context = super().get_context_data(**kwargs)
         context["export_form"] = export_form
         context["export"] = export
+        context["hide_export_filters"] = self.request.GET.get("has_selection") == "true"
         return context

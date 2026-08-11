@@ -20,6 +20,7 @@
     >
         {% csrf_token %}
         <input type="hidden" name="instance_ids">
+        {% if not hide_export_filters %}
         <div class="oh-dropdown__filter-body">
             <div class="oh-accordion">
                 <div class="oh-accordion-header">
@@ -72,6 +73,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
         <div class="oh-modal__dialog-footer p-0 mt-3">
             <button
                 type="submit"

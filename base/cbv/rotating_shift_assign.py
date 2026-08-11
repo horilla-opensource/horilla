@@ -179,6 +179,7 @@ class RotatingShiftAssignNav(HorillaNavView):
                         data-target="#genericModal"
                         hx-get="{reverse('export-rshift')}"
                         hx-target ="#genericModalBody"
+                        hx-vals='js:{{"has_selection": (JSON.parse(document.getElementById("selectedInstances")?.getAttribute("data-ids")||"[]").length>0)}}'
                         style="cursor: pointer;"
                         """,
                 },
@@ -293,6 +294,7 @@ class RotatingExportView(TemplateView):
         export_filter = RotatingShiftAssignFilters(queryset=rshift_requests)
         context["export_columns"] = export_columns
         context["export_filter"] = export_filter
+        context["hide_export_filters"] = self.request.GET.get("has_selection") == "true"
         return context
 
 

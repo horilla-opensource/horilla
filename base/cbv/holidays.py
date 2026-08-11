@@ -121,6 +121,7 @@ class HolidayNavView(HorillaNavView):
                         data-target = "#genericModal"
                         hx-target="#genericModalBody"
                         hx-get ="{reverse('holiday-nav-export')}"
+                        hx-vals='js:{{"has_selection": (JSON.parse(document.getElementById("selectedInstances")?.getAttribute("data-ids")||"[]").length>0)}}'
                         style="cursor: pointer;"
                     """,
                 }
@@ -187,6 +188,7 @@ class HolidayExport(TemplateView):
         context = super().get_context_data(**kwargs)
         context["export_column"] = export_column
         context["export_filter"] = export_filter
+        context["hide_export_filters"] = self.request.GET.get("has_selection") == "true"
         return context
 
 

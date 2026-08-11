@@ -95,7 +95,9 @@ class LeaveRequestsListView(HorillaListView):
         queryset = filter_conditional_leave_request(self.request)
         qs = data.filter(id__in=queryset.values_list("id", flat=True))
         data = filtersubordinates(self.request, data, "leave.view_leaverequest") | qs
-        return data.distinct()
+        return data.distinct().select_related(
+            "employee_id", "employee_id__employee_work_info", "leave_type_id"
+        )
 
     filter_class = LeaveRequestFilter
     model = LeaveRequest
@@ -244,6 +246,7 @@ class LeaveRequestsNavView(HorillaNavView):
                     data-target = "#genericModal"
                     hx-target="#genericModalBody"
                     hx-get ="{reverse('leave-requests-nav-export')}"
+                    hx-vals='js:{{"has_selection": (JSON.parse(document.getElementById("selectedInstances")?.getAttribute("data-ids")||"[]").length>0)}}'
                     style="cursor: pointer;"
                 """,
                 }
@@ -313,6 +316,7 @@ class LeaveRequestsExportNav(TemplateView):
         context = super().get_context_data(**kwargs)
         context["export_form"] = export_form
         context["export_filter"] = export_filter
+        context["hide_export_filters"] = self.request.GET.get("has_selection") == "true"
         return context
 
 

@@ -21,7 +21,9 @@
         >
             {% csrf_token %}
             <input type="hidden" name="instance_ids">
+            {% if not hide_export_filters %}
             {% include "base/rotating_shift/rotating_shift_assign_export.html" %}
+            {% endif %}
             <div class="oh-dropdown__filter-footer">
                 <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
                     {% trans "Export" %}
