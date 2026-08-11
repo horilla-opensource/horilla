@@ -17,11 +17,11 @@ class TestCompanyLeaveAndRange(HolidayFixtureMixin, TestCase):
         sunday = date.today() - timedelta(days=90)
         while sunday.weekday() != 6:
             sunday -= timedelta(days=1)
-        CompanyLeaves.objects.create(
+        company_leave = CompanyLeaves.objects.create(
             based_on_week=None,
             based_on_week_day="6",
-            company_id=self.company,
         )
+        company_leave.company_id.set([self.company])
         self.assertEqual(
             attendance_day_checking(str(sunday), "08:00"),
             "00:00",

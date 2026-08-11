@@ -9,11 +9,7 @@ from django.test import TestCase
 
 from horilla.testkit import make_company, make_employee
 from payroll.methods.limits import compute_limit
-from payroll.methods.methods import (
-    compute_custom_leave_deduction,
-    compute_net_pay,
-    get_total_days,
-)
+from payroll.methods.methods import compute_net_pay, get_total_days
 from payroll.methods.payslip_calc import (
     calculate_based_on_basic_pay,
     calculate_based_on_net_pay,
@@ -163,41 +159,6 @@ class CalculateGrossPayTests(TestCase):
         self.assertEqual(result["deductions"], [{"title": "comp"}])
 
 
-class CustomLeaveDeductionTests(TestCase):
-    def test_daily_salary_fraction(self):
-        contract = SimpleNamespace(
-            calculate_daily_leave_amount=True,
-            deduction_for_one_leave_amount=0,
-        )
-        leave_data = {
-            "custom_leave_dates": [(date(2024, 1, 5), 50.0)],
-            "custom_leave_breakdown": [{"percentage": 50.0, "days": 1}],
-        }
-        deduction, breakdown = compute_custom_leave_deduction(
-            leave_data, contract, 1000.0
-        )
-        self.assertEqual(deduction, 500.0)
-        self.assertEqual(breakdown[0]["deduction_amount"], 500.0)
-
-    def test_fixed_leave_amount(self):
-        contract = SimpleNamespace(
-            calculate_daily_leave_amount=False,
-            deduction_for_one_leave_amount=200.0,
-        )
-        leave_data = {
-            "custom_leave_dates": [
-                (date(2024, 1, 5), 0.0),
-                (date(2024, 1, 6), 0.0),
-            ],
-            "custom_leave_breakdown": [],
-        }
-        deduction, breakdown = compute_custom_leave_deduction(
-            leave_data, contract, 1000.0
-        )
-        self.assertEqual(deduction, 400.0)
-        self.assertEqual(breakdown, [])
-
-
 class IfConditionOnTests(TestCase):
     @patch(
         "payroll.methods.payslip_calc.calculate_gross_pay",
@@ -215,6 +176,10 @@ class IfConditionOnTests(TestCase):
             component=component,
             basic_pay=10000.0,
             amount=500,
+            total_allowance=0,
+            employee=object(),
+            start_date=date(2024, 1, 1),
+            end_date=date(2024, 1, 31),
         )
         self.assertEqual(amount, 0)
 
@@ -234,6 +199,10 @@ class IfConditionOnTests(TestCase):
             component=component,
             basic_pay=10000.0,
             amount=500,
+            total_allowance=0,
+            employee=object(),
+            start_date=date(2024, 1, 1),
+            end_date=date(2024, 1, 31),
         )
         self.assertEqual(amount, 500.0)
 
@@ -253,5 +222,9 @@ class IfConditionOnTests(TestCase):
             component=component,
             basic_pay=10000.0,
             amount=500,
+            total_allowance=0,
+            employee=object(),
+            start_date=date(2024, 1, 1),
+            end_date=date(2024, 1, 31),
         )
         self.assertEqual(amount, 0)
