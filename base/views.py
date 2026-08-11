@@ -288,7 +288,9 @@ def _shift_fixture_dates(file_path):
     if delta == 0:
         return None
 
-    DATE_RE = re.compile(r"\b(\d{4}-\d{2}-\d{2})\b")
+    # Match date-only values and the date prefix of ISO datetimes
+    # (e.g. 2025-07-02T06:10:00Z). A trailing \b fails before "T".
+    DATE_RE = re.compile(r"(?<!\d)(\d{4}-\d{2}-\d{2})(?!\d)")
     SHIFT_MIN = datetime(2020, 1, 1).date()
     SHIFT_MAX = datetime(2030, 12, 31).date()
 
