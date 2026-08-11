@@ -1,107 +1,132 @@
 {% load i18n %}
 {% load horillafilters %}
 {% load static %}
-<div class="d-flex justify-content-end">
-    <div class="oh-btn-group mb-4">
-        <a
-            type="submit"
-            hx-get="{% url 'file-upload' document.id %}"
-            hx-target="#objectCreateModalTarget"
-            data-toggle="oh-modal-toggle"
-            data-target="#objectCreateModal"
-            title="{% trans 'Upload file' %}"
-            class="oh-btn oh-btn--warning w-100"
-        >
-            <ion-icon name="attach-outline"></ion-icon>
-        </a>
+
+<div class="modal-box px-5 bg-white w-full max-w-md md:min-w-[700px] rounded-lg shadow-card p-0 transition-all duration-300 opacity-100 scale-100">
+    <div class="p-5" id="detailViewContainer">
+        <div class="flex justify-between items-center mb-2">
+            <h2 class="text-md font-semibold">
+                {% if document.title %}
+                    {{ document.title }}
+                {% else %}
+                    {% trans "Document" %}
+                {% endif %}
+            </h2>
+            <button
+                type="button"
+                class="text-gray-500 hover:text-red-500 text-xl static oh-modal__close oh-modal__close--custom"
+                aria-label="{% trans 'Close' %}"
+                onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+            >
+                <img src="{% static 'horilla_theme/assets/icons/close.svg' %}" alt="">
+            </button>
+        </div>
+
+        <div class="flex justify-end mb-5">
+            <div class="oh-btn-group">
+                <a
+                    type="submit"
+                    hx-get="{% url 'file-upload' document.id %}"
+                    hx-target="#objectCreateModalTarget"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#objectCreateModal"
+                    title="{% trans 'Upload file' %}"
+                    class="oh-btn oh-btn--warning w-100"
+                >
+                    <ion-icon name="attach-outline"></ion-icon>
+                </a>
+                {% if document.document %}
+                    {% if perms.horilla_documents.change_documentrequest %}
+                        {% if document.status == "approved" %}
+                            <a class="oh-btn oh-btn--success w-100 oh-btn--disabled" title="{% trans 'Approved' %}">
+                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                            </a>
+                        {% else %}
+                            <a
+                                type="submit"
+                                hx-get="{% url 'document-approve' document.id %}"
+                                hx-target="#viewFile"
+                                title="{% trans 'Approve' %}"
+                                class="oh-btn oh-btn--success w-100"
+                            >
+                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                            </a>
+                        {% endif %}
+                        {% if document.status == "rejected" %}
+                            <a class="oh-btn oh-btn--danger w-100 oh-btn--disabled" title="{% trans 'Rejected' %}">
+                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                            </a>
+                        {% else %}
+                            <a
+                                type="submit"
+                                hx-get="{% url 'document-reject' document.id %}"
+                                hx-target="#objectCreateModalTarget"
+                                data-target="#objectCreateModal"
+                                data-toggle="oh-modal-toggle"
+                                title="{% trans 'Reject' %}"
+                                class="oh-btn oh-btn--danger w-100"
+                            >
+                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                    <a
+                        href="data:{{ content_type }};base64,{{ file_content|base64_encode }}"
+                        class="oh-btn oh-btn--info w-100"
+                        download="{{ document.title }}"
+                        title="{% trans 'Download' %}"
+                    ><ion-icon class="me-1" name="download-outline"></ion-icon></a>
+                {% endif %}
+            </div>
+        </div>
+
         {% if document.document %}
-            {% if perms.horilla_documents.change_documentrequest %}
-                {% if document.status == "approved" %}
-                    <a class="oh-btn oh-btn--success w-100 oh-btn--disabled" title="{% trans 'Approved' %}">
-                        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                    </a>
-                {% else %}
-                    <a
-                        type="submit"
-                        hx-get="{% url 'document-approve' document.id %}"
-                        hx-target="#viewFile"
-                        title="{% trans 'Approve' %}"
-                        class="oh-btn oh-btn--success w-100"
+            <div class="modal-body" {% if document.status == "rejected" %}style="border: 5px solid red"{% endif %}>
+                {% if file_extension == 'pdf' or file_extension == 'txt' %}
+                    <iframe
+                        src="{{ document.document.url }}"
+                        width="100%"
+                        height="500px"
                     >
-                        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                    </a>
-                {% endif %}
-                {% if document.status == "rejected" %}
-                    <a class="oh-btn oh-btn--danger w-100 oh-btn--disabled" title="{% trans 'Rejected' %}">
-                        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                    </a>
+                    </iframe>
+                {% elif file_extension == 'docx' or file_extension == 'xlsx' %}
+                    <div class="text-center p-5">
+                        <p class="pb-">{% trans "Preview not available for this file type." %}</p>
+                        <a href="{{ document.document.url }}" download class="oh-btn oh-btn--info">
+                            {% trans "Download File" %}
+                        </a>
+                    </div>
+                {% elif file_extension == 'jpg' or file_extension == 'jpeg' or file_extension == 'png' or file_extension == 'webp' %}
+                    <div class="container">
+                        <img
+                            src="data:{{ content_type }};base64,{{ file_content|base64_encode }}"
+                            alt="{% trans 'File Preview' %}"
+                            class="img-fluid"
+                            style="display: block; width: 100%; height: 500px"
+                        >
+                    </div>
                 {% else %}
-                    <a
-                        type="submit"
-                        hx-get="{% url 'document-reject' document.id %}"
-                        hx-target="#objectCreateModalTarget"
-                        data-target="#objectCreateModal"
-                        data-toggle="oh-modal-toggle"
-                        title="{% trans 'Reject' %}"
-                        class="oh-btn oh-btn--danger w-100"
-                    >
-                        <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                    </a>
+                    <p>{% trans "File format not supported for preview." %}</p>
                 {% endif %}
+            </div>
+            {% if document.status == 'rejected' %}
+                <h2 class="oh-label"><b>{% trans "Rejection Reason: " %}</b></h2>
+                <p class="ms-4">{{ document.reject_reason }}</p>
             {% endif %}
-            <a
-                href="data:{{ content_type }};base64,{{ file_content|base64_encode }}"
-                class="oh-btn oh-btn--info w-100"
-                download="{{document.title}}"
-                title="{% trans 'Download' %}"
-            ><ion-icon class="me-1" name="download-outline"></ion-icon></a>
+        {% else %}
+            <div class="flex flex-col items-center justify-center py-10">
+                <img
+                    src="{% static 'images/ui/document.png' %}"
+                    alt=""
+                    style="width: 150px; height: 150px"
+                    width="150"
+                    class="mb-4"
+                >
+                <p class="text-[#666]">{% trans "No Document to view." %}</p>
+            </div>
         {% endif %}
     </div>
 </div>
-{% if document.document %}
-    <div class="modal-body" {% if document.status == "rejected" %}style="border: 5px solid red"{% endif %}>
-        <!-- Display the file content based on the file type -->
-        {% if file_extension == 'pdf' or file_extension == 'txt' %}
-            <iframe
-                src="{{ document.document.url }}"
-                width="100%"
-                height="500px"
-            >
-            </iframe>
-        {% elif file_extension == 'docx' or file_extension == 'xlsx' %}
-            <div class="text-center p-5">
-                <p class="pb-">{% trans "Preview not available for this file type." %}</p>
-                <a href="{{ document.document.url }}" download class="oh-btn oh-btn--info">
-                    {% trans "Download File" %}
-                </a>
-            </div>
-        {% elif file_extension == 'jpg' or file_extension == 'jpeg' or file_extension == 'png' or file_extension == 'webp' %}
-            <div class="container">
-                <img
-                    src="data:{{ content_type }};base64,{{ file_content|base64_encode }}"
-                    alt="{% trans 'File Preview' %}"
-                    class="img-fluid"
-                    style="display: block; width: 100%; height: 500px"
-                >
-            </div>
-        {% else %}
-            <p>{% trans "File format not supported for preview." %}</p>
-        {% endif %}
-    </div>
-    {% if document.status == 'rejected' %}
-        <h2 class="oh-label"><b>{% trans "Rejection Reason: " %}</b></h2>
-        <p class="ms-4">{{ document.reject_reason }}</p>
-    {% endif %}
-{% else %}
-    <div class="oh-wrapper h-full" align="center" >
-        <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
-            <div class="flex flex-col items-center justify-center h-full">
-                <img src="{% static 'images/ui/document.png' %}" alt="" style="width: 150px; height: 150px" width="300" class="mb-4">
-                <p class="text-[#666] mb-5">{% trans "No Document to view." %}</p>
-            </div>
-        </div>
-    </div>
-{% endif %}
 
 <div class="oh-modal" id="objectCreateModal" role="dialog" aria-labelledby="objectCreateModalLabel" aria-hidden="true">
     <div class="oh-modal__dialog" id="objectCreateModalTarget"></div>
