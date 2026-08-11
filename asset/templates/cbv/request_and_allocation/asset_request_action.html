@@ -7,7 +7,7 @@
                 class="oh-btn oh-btn--light-bkg oh-btn--disabled oh-btn--sq-sm"
                 title="{% trans 'Edit' %}"
             >
-                <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+                <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="{% trans 'create outline' %}"></ion-icon>
             </a>
         {% else %}
             <a
@@ -18,7 +18,7 @@
                 hx-put="{% url 'asset-request-update' instance.id %}"
                 hx-target="#genericModalBody"
             >
-                <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+                <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="{% trans 'create outline' %}"></ion-icon>
             </a>
         {% endif %}
     {% endif %}

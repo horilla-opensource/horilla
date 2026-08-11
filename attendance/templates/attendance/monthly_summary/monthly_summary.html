@@ -405,7 +405,7 @@ window.msCalHoursSave = function (empPk, dateStr, fromDate, toDate, computedSec)
         var hasOT = otSec > 0;
         var excessHtml = excessSec > 0
           ? '<span style="font-size:.68rem;color:#9ca3af;">+</span>' +
-            '<span style="font-size:.7rem;background:#fdf4ff;color:#7e22ce;border-radius:4px;padding:2px 7px;border:1px solid #e9d5ff;font-weight:600;" title="Hours beyond the OT cap">&#9663; ' + eH + 'h ' + eM + 'm</span>'
+            '<span style="font-size:.7rem;background:#fdf4ff;color:#7e22ce;border-radius:4px;padding:2px 7px;border:1px solid #e9d5ff;font-weight:600;" title="{% trans 'Hours beyond the OT cap' %}">&#9663; ' + eH + 'h ' + eM + 'm</span>'
           : '';
         attEl.innerHTML =
           '<span style="font-size:.7rem;background:#f0fdf4;color:#166534;border-radius:4px;padding:2px 7px;border:1px solid #bbf7d0;font-weight:600;">Reg ' + rH + 'h ' + rM + 'm</span>' +

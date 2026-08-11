@@ -87,7 +87,7 @@
                     </div>
                 </a>
                 <div class="oh-tabs__input-badge-container">
-                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1" title="{{ project.task_set.all|length}} Tasks">
+                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1" title="{% blocktrans with count=project.task_set.all|length %}{{ count }} Tasks{% endblocktrans %}">
                     {{ project.task_set.all|length}}
                 </span>
                 </div>

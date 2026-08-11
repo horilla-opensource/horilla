@@ -92,7 +92,7 @@
         </tr>
         <tr>
           <td style="padding:15px 25px 0 25px; font-size: 24px;" align="center">
-            <strong>Hello {{ instance.get_full_name }}, {{subject}}!</strong>
+            <strong>{% blocktrans with full_name=instance.get_full_name %}Hello {{ full_name }}, {{ subject }}!{% endblocktrans %}</strong>
           </td>
         </tr>
         <tr>
@@ -125,8 +125,8 @@
               color: #5c5c5c;
               font-size: 12px;
             ">
-            This mail was sent you because your email has been enrolled as an employee at {{ instance.recruitment_id.company_id.company }}.<br />
-            Don't want to receive mails like these anymore?
+            {% blocktrans with company=instance.recruitment_id.company_id.company %}This mail was sent you because your email has been enrolled as an employee at {{ company }}.{% endblocktrans %}<br />
+            {% trans "Don't want to receive mails like these anymore?" %}
             <a href="#" style="color: #5c5c5c">{% trans "Unsubscribe here" %}</a>.
           </td>
         </tr>

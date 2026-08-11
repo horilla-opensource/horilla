@@ -46,7 +46,7 @@
                                         <div class="oh-modal__dialog">
                                             <div class="oh-modal__dialog-header">
                                                 <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel">
-                                                    Upload Photo
+                                                    {% trans "Upload Photo" %}
                                                 </span>
                                                 <button
                                                     type="button"
@@ -219,7 +219,7 @@
                                             >{% trans "Resume" %}</label>
                                             {% if resume.file %}
                                                 <p>
-                                                    Currently: <a
+                                                    {% trans "Currently:" %} <a
                                                         href="{{ resume.file.url }}"
                                                         target="_blank"
                                                     >{{ resume.file.name }}</a>

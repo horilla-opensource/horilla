@@ -10,7 +10,7 @@
         </button>
         <span class="oh-permission-table__user">{{instance}}</span>
         {% if instance.linkedin_account_id %}
-          <div style="margin-left: 8px;" title="{{ instance }} posted on {{ instance.linkedin_account_id }} LinkedIn account.">
+          <div style="margin-left: 8px;" title="{% blocktrans %}{{ instance }} posted on {{ instance.linkedin_account_id }} LinkedIn account.{% endblocktrans %}">
             <ion-icon name="logo-linkedin"></ion-icon>
           </div>
         {% endif %}

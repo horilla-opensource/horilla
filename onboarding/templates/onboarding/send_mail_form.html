@@ -1,6 +1,6 @@
 {% load i18n %}
 <div class="p-2 mb-3" style="background-color:#6089d54e;color:#6089d5fd;border-radius: 5px;">
-    Mail to {{candidate.email}}
+    {% blocktrans with candidate_email=candidate.email %}Mail to {{ candidate_email }}{% endblocktrans %}
 </div>
 <form hx-post="{% url 'onboarding-send-mail' candidate.id %}" hx-target="#sendMailModalBody" method="post">
     {% csrf_token %}

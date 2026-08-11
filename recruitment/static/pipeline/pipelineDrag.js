@@ -67,7 +67,7 @@ function stageSequenceGet(stage) {
     success: function (response) {
         Toast.fire({
             icon: "success",
-            title: "Stage sequence updated",
+            title: gettext("Stage sequence updated"),
             position: "top-end",
         });
       // count_element();

@@ -161,11 +161,11 @@
                 var meetingCount = $(this).data("employees") + $(this).data("manager");
                 var credential = "{{request.user.employee_get.google_credential}}";
 
-                var confirmationMessage = `Are you sure you want to send the meeting link to the  ${meetingCount} participants?\n\nDate: ${meetingDate}\nTime: ${meetingTime}`;
+                var confirmationMessage = `{% trans "Are you sure you want to send the meeting link to the" %}  ${meetingCount} {% trans "participants?" %}\n\n{% trans "Date:" %} ${meetingDate}\n{% trans "Time:" %} ${meetingTime}`;
                 confirmationMessage = confirmationMessage.replace(/\n/g, '<br />');
 
                 Swal.fire({
-                    title: 'Are you sure?',
+                    title: '{% trans "Are you sure?" %}',
                     html: confirmationMessage,
                     icon: 'warning',
                     showCancelButton: true,

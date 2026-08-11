@@ -106,7 +106,7 @@
                                                 <div class="oh-dropdown__menu oh-dropdown__menu--right">
                                                     <ul class="oh-dropdown__items">
                                                         {% comment %} <li class="oh-dropdown__item">
-                                                            <a href="#" class="oh-dropdown__link oh-dropdown__link--danger oh-kanban__card-delete">Delete</a>
+                                                            <a href="#" class="oh-dropdown__link oh-dropdown__link--danger oh-kanban__card-delete">{% trans "Delete" %}</a>
                                                         </li> {% endcomment %}
                                                         <li class="oh-dropdown__item">
                                                             <a href="#" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" hx-get="{% url 'onboarding-send-mail' candidate.candidate_id.id %}" hx-target="#objectCreateModalTarget" class="oh-dropdown__link">{% trans "Send Mail" %}</a>

@@ -37,11 +37,11 @@ class WorkEntry {
     this.monthView = !this.monthView;
     if (this.monthView) {
       this.monthCells(moment().month() + 1, moment().year());
-      $("#toggleView").text("Week");
+      $("#toggleView").text(gettext("Week"));
     } else {
       this.weekCells(moment());
       // Change button text
-      $("#toggleView").text("Month");
+      $("#toggleView").text(gettext("Month"));
     }
     $(".oh-we-calendar").toggleClass("oh-we-calendar--week");
   }

@@ -10,7 +10,7 @@
 
         <!-- Schedule / Unschedule Button -->
         {% if is_scheduler %}
-            <a hx-confirm="Do you want to unschedule the device attendance fetching?"
+            <a hx-confirm="{% trans 'Do you want to unschedule the device attendance fetching?' %}"
                 hx-post="{% url 'biometric-device-unschedule' device.id %}" hx-target="#biometricDeviceList"
                 class="oh-checkpoint-badge text-info" style="border: 2px solid #17a2b8; padding: 5px 10px; border-radius: 4px; display: inline-block; color: #17a2b8;">
                 {% trans "Unschedule" %}

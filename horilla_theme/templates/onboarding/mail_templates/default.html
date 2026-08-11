@@ -95,15 +95,15 @@
                 </tr>
                 <tr>
                     <td style="padding: 15px 25px 0 25px; font-size: 24px" align="center">
-                        <strong>Hello {{ instance.name }}, Congratulations on your selection!</strong>
+                        <strong>{% blocktrans with name=instance.name %}Hello {{ name }}, Congratulations on your selection!{% endblocktrans %}</strong>
                     </td>
                 </tr>
                 <tr>
                     <td align="center" style="padding-top: 0px">
                         <p style="width: 90%">
-                            Your dedication is valued, and we wish you continued success. If you have questions or need
+                            {% blocktrans %}Your dedication is valued, and we wish you continued success. If you have questions or need
                             assistance, feel free to ask. Best wishes for your journey! Kindly complete your profile
-                            when convenient.
+                            when convenient.{% endblocktrans %}
                         </p>
                     </td>
                 </tr>
@@ -121,9 +121,9 @@
                         align="center"
                         style="padding-left: 15px; padding-right: 15px; padding-top: 30px; padding-bottom: 15px; color: #5c5c5c; font-size: 12px"
                     >
-                        This mail was sent you because your email has been enrolled as an candidate at
-                        {{ instance.recruitment_id.company_id.company }}.<br>
-                        Don't want to receive mails like these anymore?
+                        {% blocktrans with company=instance.recruitment_id.company_id.company %}This mail was sent you because your email has been enrolled as an candidate at
+                        {{ company }}.{% endblocktrans %}<br>
+                        {% trans "Don't want to receive mails like these anymore?" %}
                         <a href="#" style="color: #5c5c5c">{% trans 'Unsubscribe here' %}</a>.
                     </td>
                 </tr>

@@ -1277,7 +1277,7 @@
         async function exportTableToExcel(containerId, filename) {
             let table = document.querySelector(`#${containerId} .pvtTable`);
             if (!table) {
-                alert("No table found to export.");
+                alert("{% trans 'No table found to export.' %}");
                 return;
             }
 
@@ -1396,7 +1396,7 @@
 
             const downloadCell = worksheet.getCell(currentRow, baseCol);
             worksheet.mergeCells(currentRow, baseCol, currentRow, baseCol + 3);
-            downloadCell.value = `Generated on: ${timestamp}`;
+            downloadCell.value = `{% trans "Generated on" %}: ${timestamp}`;
             downloadCell.alignment = { horizontal: 'left', vertical: 'middle', wrapText: true };
             downloadCell.font = { size: 10, italic: true, color: { argb: 'FF666666' }, bold: true };
             headerRows.push(currentRow);
@@ -1573,7 +1573,7 @@
         function exportTableToCSV(containerId, filename) {
             var table = document.querySelector(`#${containerId} .pvtTable`);
             if (!table) {
-                alert("No table found to export.");
+                alert("{% trans 'No table found to export.' %}");
                 return;
             }
 
@@ -1583,13 +1583,13 @@
                 lines.push(csvField("{{ company.company|escapejs }}"));
                 lines.push(csvField("{{ company.address|escapejs }}"));
                 lines.push(csvField("{{ company.country|escapejs }}, {{ company.state|escapejs }}, {{ company.city|escapejs }}"));
-                lines.push(csvField("ZIP: {{ company.zip|escapejs }}"));
+                lines.push(csvField("{% trans 'ZIP' %}: {{ company.zip|escapejs }}"));
                 lines.push("");
             }
 
             if (appliedFilters && appliedFilters.length > 0) {
                 var filterSummary = appliedFilters.map(function (f, ix) { return chipTextFor(f, ix); }).join("   ");
-                lines.push(csvField("Applied Filters: " + filterSummary));
+                lines.push(csvField("{% trans 'Applied Filters' %}: " + filterSummary));
                 lines.push("");
             }
 
@@ -1597,7 +1597,7 @@
                 new Date().toLocaleTimeString('en-US', {
                     hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
                 });
-            lines.push(csvField("Generated on: " + timestamp));
+            lines.push(csvField("{% trans 'Generated on' %}: " + timestamp));
             lines.push("");
 
             buildTableGrid(table).forEach(function (row) {
@@ -1653,7 +1653,7 @@
         async function exportTableToPDF(containerId, filename) {
             var table = document.querySelector(`#${containerId} .pvtTable`);
             if (!table) {
-                alert("No table found to export.");
+                alert("{% trans 'No table found to export.' %}");
                 return;
             }
 
@@ -1688,7 +1688,7 @@
                 doc.setFontSize(10);
                 doc.text("{{ company.address|escapejs }}", margin + 55, cursorY + 28);
                 doc.text("{{ company.country|escapejs }}, {{ company.state|escapejs }}, {{ company.city|escapejs }}", margin + 55, cursorY + 40);
-                doc.text("ZIP: {{ company.zip|escapejs }}", margin + 55, cursorY + 52);
+                doc.text("{% trans 'ZIP' %}: {{ company.zip|escapejs }}", margin + 55, cursorY + 52);
                 cursorY += 70;
             }
 
@@ -1700,8 +1700,8 @@
                 doc.setFont(undefined, "bold");
                 doc.setFontSize(9);
                 doc.setTextColor(51, 51, 51);
-                doc.text("Applied Filters: ", margin + 6, cursorY + 13);
-                var labelWidth = doc.getTextWidth("Applied Filters: ");
+                doc.text("{% trans 'Applied Filters' %}: ", margin + 6, cursorY + 13);
+                var labelWidth = doc.getTextWidth("{% trans 'Applied Filters' %}: ");
                 doc.setFont(undefined, "normal");
                 doc.text(filterSummary, margin + 6 + labelWidth, cursorY + 13);
                 cursorY += 30;
@@ -1714,7 +1714,7 @@
             doc.setFont(undefined, "italic");
             doc.setFontSize(9);
             doc.setTextColor(102, 102, 102);
-            doc.text(`Generated on: ${timestamp}`, margin, cursorY + 10);
+            doc.text(`{% trans "Generated on" %}: ${timestamp}`, margin, cursorY + 10);
             cursorY += 25;
 
             var tableData = buildAutoTableRows(table);

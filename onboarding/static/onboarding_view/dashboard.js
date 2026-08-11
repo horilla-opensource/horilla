@@ -32,7 +32,7 @@ $(document).ready(function () {
         labels: stages,
         datasets: [
           {
-            label: "Candidates per Stage",
+            label: gettext("Candidates per Stage"),
             data: candidatesPerStage,
             backgroundColor: backgroundColor,
             borderColor: borderColor,
@@ -45,7 +45,7 @@ $(document).ready(function () {
           y: {
             title: {
               display: true,
-              text: "Number of Candidates",
+              text: gettext("Number of Candidates"),
               font: {
                 weight: "bold",
                 size: 16,

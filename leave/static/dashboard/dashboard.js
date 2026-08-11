@@ -157,7 +157,7 @@ $(document).ready(function () {
             stacked: true,
             title: {
               display: true,
-              text: "Employees",
+              text: gettext("Employees"),
               font: {
                 weight: "bold",
                 size: 16,
@@ -170,7 +170,7 @@ $(document).ready(function () {
             stacked: true,
             title: {
               display: true,
-              text: "Number of days",
+              text: gettext("Number of days"),
               font: {
                 weight: "bold",
                 size: 16,

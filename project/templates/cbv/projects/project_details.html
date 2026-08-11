@@ -97,7 +97,7 @@
             >{{project.end_date}}
             </span
           >
-              <span title = 'due  {% if project.end_date == today %} today {% else %}in {{project.end_date|sub:today}}{% endif %}'>
+              <span title="{% if project.end_date == today %}{% trans 'Due today' %}{% else %}{% blocktrans %}Due in {{ project.end_date|sub:today }}{% endblocktrans %}{% endif %}">
                   <ion-icon
                       class="text-{% if project.end_date < today %}danger {% elif project.end_date == today %}warning {% else %}success{% endif %}"
                       name="time-sharp"

@@ -82,7 +82,7 @@ $("#importProject").click(function (e) {
                 if (e.lengthComputable) {
                     var percent = (e.loaded / e.total) * 100;
                     $(".progress-bar").width(percent + "%").attr("aria-valuenow", percent);
-                    $("#progress-text").text("Uploading... " + percent.toFixed(2) + "%");
+                    $("#progress-text").text(gettext("Uploading...") + " " + percent.toFixed(2) + "%");
                 }
             };
 
@@ -132,7 +132,7 @@ $(document).on('click', '#importProject', function (e) {
                 if (e.lengthComputable) {
                     var percent = (e.loaded / e.total) * 100;
                     $(".progress-bar").width(percent + "%").attr("aria-valuenow", percent);
-                    $("#progress-text").text("Uploading... " + percent.toFixed(2) + "%");
+                    $("#progress-text").text(gettext("Uploading...") + " " + percent.toFixed(2) + "%");
                 }
             };
 

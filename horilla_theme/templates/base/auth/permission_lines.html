@@ -113,6 +113,8 @@
     {% endif %}
 </div>
 <script>
+    var permissionsLabel = "{% trans 'Permissions' %}";
+
     document.body.addEventListener("htmx:afterSwap", function () {
       updateBadge();
     });
@@ -169,7 +171,7 @@
           const checkedCount = panel.find("[name=permissions]:checked").length;
 
           badge.text(checkedCount);
-          badge.attr("title", checkedCount + " Permissions");
+          badge.attr("title", checkedCount + " " + permissionsLabel);
         });
 
         wrapper.find("tbody tr").each(function () {

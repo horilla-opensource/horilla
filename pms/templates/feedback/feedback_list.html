@@ -74,7 +74,7 @@
                 class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
                 id=""
                 data-category-id="1"
-                title="{{self_feedback|length}} feedback"
+                title="{% blocktrans with counter=self_feedback|length %}{{ counter }} feedback{% endblocktrans %}"
                 onclick="event.stopPropagation()"
             >{{ self_feedback|length }}</span>
         </li>
@@ -84,7 +84,7 @@
                 class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
                 id=""
                 data-category-id="1"
-                title="{{requested_feedback|length}} feedback"
+                title="{% blocktrans with counter=requested_feedback|length %}{{ counter }} feedback{% endblocktrans %}"
                 onclick="event.stopPropagation()"
             >{{ requested_feedback|length }}</span>
         </li>
@@ -96,7 +96,7 @@
                     class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
                     id=""
                     data-category-id="1"
-                    title="{{all_feedbacks|length}} feedback"
+                    title="{% blocktrans with counter=all_feedbacks|length %}{{ counter }} feedback{% endblocktrans %}"
                     onclick="event.stopPropagation()"
                 >{{ all_feedbacks|length }}</span>
             </li>

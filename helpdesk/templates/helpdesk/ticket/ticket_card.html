@@ -312,7 +312,7 @@
                                                             <div>
                                                                 <span
                                                                     class="float-end"
-                                                                    title="due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}"
+                                                                    title="{% if ticket.deadline == today %}{% trans 'due today' %}{% else %}{% blocktrans with days=ticket.deadline|sub:today %}due in {{ days }}{% endblocktrans %}{% endif %}"
                                                                 ><ion-icon
                                                                         class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}"
                                                                         name="time-sharp"
@@ -803,7 +803,7 @@
                                                             <div>
                                                                 <span
                                                                     class="float-end"
-                                                                    title="due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}"
+                                                                    title="{% if ticket.deadline == today %}{% trans 'due today' %}{% else %}{% blocktrans with days=ticket.deadline|sub:today %}due in {{ days }}{% endblocktrans %}{% endif %}"
                                                                 ><ion-icon
                                                                         class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}"
                                                                         name="time-sharp"
@@ -1174,7 +1174,7 @@
                                                             <div>
                                                                 <span
                                                                     class="float-end"
-                                                                    title="due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}"
+                                                                    title="{% if ticket.deadline == today %}{% trans 'due today' %}{% else %}{% blocktrans with days=ticket.deadline|sub:today %}due in {{ days }}{% endblocktrans %}{% endif %}"
                                                                 ><ion-icon
                                                                         class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}"
                                                                         name="time-sharp"

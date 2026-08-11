@@ -59,9 +59,9 @@
                 hx-get = "{% url 'ticket-archive' ticket.id %}"
                 hx-swap = "outerHTML"
                 {% if ticket.is_active %}
-                hx-confirm = "Do you want to archive this ticket?"
+                hx-confirm = "{% trans 'Do you want to archive this ticket?' %}"
                 {% else %}
-                    hx-confirm = "Do you want to Un-archive this ticket?"
+                    hx-confirm = "{% trans 'Do you want to Un-archive this ticket?' %}"
                 {% endif %}
                 hx-on-htmx-after-request="$('.reload-record').click()"
             >

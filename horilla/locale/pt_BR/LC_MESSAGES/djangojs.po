@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-18 13:57+0530\n"
+"POT-Creation-Date: 2026-08-12 00:52+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,338 +17,433 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: attendance/static/attendance/actions.js:37
 msgid "An unexpected error occurred. Please refresh the page."
 msgstr "Ocorreu um erro inesperado. Atualize a página."
 
+#: attendance/static/attendance/actions.js:760
+#: attendance/static/cbv/attendance_activity.js:246
 msgid "Do you really want to validate all the selected attendances?"
 msgstr "Deseja realmente validar todas as presenças selecionadas?"
 
+#: attendance/static/attendance/actions.js:761
+#: attendance/static/cbv/attendance/hour_account.js:166
 msgid "No rows are selected from Validate Attendances."
 msgstr "Nenhuma linha foi selecionada em Validar presenças."
 
+#: attendance/static/attendance/actions.js:807
+#: attendance/static/cbv/attendance_activity.js:286
 msgid "Do you really want to approve OT for all the selected attendances?"
-msgstr "Deseja realmente aprovar as horas extras de todas as presenças selecionadas?"
+msgstr ""
+"Deseja realmente aprovar as horas extras de todas as presenças selecionadas?"
 
+#: attendance/static/attendance/actions.js:808
+#: attendance/static/cbv/attendance_activity.js:280
 msgid "No rows are selected from OT Attendances."
 msgstr "Nenhuma linha foi selecionada em Presenças de horas extras."
 
+#: attendance/static/cbv/attendance/hour_account.js:172
 msgid "Do you really want to reject all the selected attendance requests?"
-msgstr "Deseja realmente rejeitar todas as solicitações de presença selecionadas?"
+msgstr ""
+"Deseja realmente rejeitar todas as solicitações de presença selecionadas?"
 
+#: attendance/static/cbv/attendance_activity.js:218
 msgid "Pending Attendance Update Request!"
 msgstr "Solicitação de atualização de presença pendente!"
 
+#: attendance/static/cbv/attendance_activity.js:219
 msgid ""
 "An attendance request exists for updating this attendance prior to "
 "validation."
-msgstr "Existe uma solicitação de presença para atualizar esta presença antes da validação."
+msgstr ""
+"Existe uma solicitação de presença para atualizar esta presença antes da "
+"validação."
 
+#: attendance/static/cbv/attendance_activity.js:221
 msgid "View Request"
 msgstr "Ver solicitação"
 
-msgid "Some selected requests have already been approved."
-msgstr "Algumas solicitações selecionadas já foram aprovadas."
+#: horilla_theme/static/horilla_theme/assets/js/footerScripts.js:14
+msgid "General Title"
+msgstr "Título Geral"
 
-msgid "Some selected requests have already been rejected."
-msgstr "Algumas solicitações selecionadas já foram rejeitadas."
+#: horilla_theme/static/horilla_theme/assets/js/footerScripts.js:474
+msgid "Invalid File"
+msgstr "Arquivo Inválido"
 
-msgid "Do you wish to create a Leave Report?"
-msgstr "Deseja criar um relatório de afastamentos?"
+#: horilla_theme/static/horilla_theme/assets/js/footerScripts.js:475
+msgid "Please upload a valid XLSX file."
+msgstr "Envie um arquivo XLSX válido."
 
-msgid "Do you want to reject the selected leave requests?"
-msgstr "Deseja rejeitar as solicitações de afastamento selecionadas?"
+#: horilla_views/static/js/genericKanban.js:43
+msgid "Group sequence updated successfully."
+msgstr "Sequência do grupo atualizada com sucesso."
 
-msgid "Do you want to send the payslip by mail?"
-msgstr "Deseja enviar o contracheque por e-mail?"
-
-msgid "Name of Employees"
-msgstr "Nomes dos funcionários"
-
-msgid "Amount"
-msgstr "Valor"
-
-msgid "Upload Completed!"
-msgstr "Envio concluído!"
-
-msgid "Imported Successfully!"
-msgstr "Importação realizada com sucesso!"
-
-msgid "Please upload a file with the .xlsx extension only."
-msgstr "Envie apenas um arquivo com a extensão .xlsx."
-
-msgid "visible"
-msgstr ""
-
-msgid "bgcolor"
-msgstr ""
-
-msgid "bordercolor"
-msgstr ""
-
-msgid "borderwidth"
-msgstr ""
-
-msgid "thickness"
-msgstr ""
-
-msgid "autorange"
-msgstr ""
-
-msgid "range"
-msgstr ""
-
-msgid "x"
-msgstr ""
-
-msgid "y"
-msgstr ""
-
-msgid "minor"
-msgstr ""
-
-msgid "label"
-msgstr ""
-
-msgid "arrowlen"
-msgstr ""
-
-msgid "source"
-msgstr ""
-
-msgid "target"
-msgstr ""
-
-msgid "value"
-msgstr ""
-
-msgid "line.color"
-msgstr ""
-
-msgid "line.width"
-msgstr ""
-
-msgid "hoverinfo"
-msgstr ""
-
-msgid "hovertemplate"
-msgstr ""
-
-msgid "color"
-msgstr ""
-
-msgid "hovercolor"
-msgstr ""
-
-msgid "customdata"
-msgstr ""
-
-msgid "punc"
-msgstr ""
-
-msgid "name"
-msgstr ""
-
-msgid "keyword"
-msgstr ""
-
-msgid "arrow"
-msgstr ""
-
-msgid "operator"
-msgstr ""
-
-msgid "close"
-msgstr ""
-
-msgid "Confirm"
-msgstr "Confirmar"
-
-msgid "Close"
-msgstr "Fechar"
-
-msgid "Cancel"
-msgstr "Cancelar"
-
-msgid "Selected"
-msgstr "Selecionado"
-
-msgid "Uploading..."
-msgstr "Enviando..."
-
-msgid "No Records found"
-msgstr "Nenhum registro encontrado"
-
-msgid "Do you want to download the excel file?"
-msgstr "Deseja baixar o arquivo Excel?"
-
-msgid "Do you want to download the template?"
-msgstr "Deseja baixar o modelo?"
-
-msgid "No rows are selected from the records."
-msgstr "Nenhuma linha foi selecionada entre os registros."
-
-msgid "Do you really want to delete all the selected records?"
-msgstr "Deseja realmente excluir todos os registros selecionados?"
-
-msgid "Do you really want to archive all the selected records?"
-msgstr "Deseja realmente arquivar todos os registros selecionados?"
-
-msgid "Do you really want to approve all the selected requests?"
-msgstr "Deseja realmente aprovar todas as solicitações selecionadas?"
-
-msgid "Do you really want to unarchive all the selected records?"
-msgstr "Deseja realmente desarquivar todos os registros selecionados?"
-
-msgid "Ok"
-msgstr "OK"
-
-msgid "Total vacancy is %(vacancy)s."
-msgstr "A vaga total é %(vacancy)s."
-
-msgid "Are you sure to change the candidate from %(from)s stage to %(to)s stage"
-msgstr "Tem certeza de que deseja alterar o candidato do estágio %(from)s para o estágio %(to)s"
-
+#: horilla_views/static/js/genericKanban.js:89
 msgid "Stage updated"
 msgstr "Etapa atualizada"
 
+#: horilla_views/static/js/genericKanban.js:107
+msgid "Failed to update sequence: "
+msgstr "Falha ao atualizar a sequência: "
+
+#: horilla_views/static/js/genericKanban.js:107
+msgid "Unknown error"
+msgstr "Erro desconhecido"
+
+#: horilla_views/static/js/genericKanban.js:150
+#| msgid "Stage updated"
+msgid "Sequence updated"
+msgstr "Sequência atualizada"
+
+#: horilla_views/static/js/genericKanban.js:306
 msgid "Confirm Stage Change"
 msgstr "Confirmar mudança de estágio"
 
-msgid "The candidate is being moved from %(from)s to the %(to)s stage. Do you want to proceed?"
-msgstr "O candidato está sendo movido do estágio %(from)s para o estágio %(to)s. Você quer prosseguir?"
+#: horilla_views/static/js/genericKanban.js:310
+msgid ""
+"The candidate is being moved from %(from)s to the %(to)s stage. Do you want "
+"to proceed?"
+msgstr ""
+"O candidato está sendo movido do estágio %(from)s para o estágio %(to)s. "
+"Você quer prosseguir?"
 
+#: horilla_views/static/js/genericKanban.js:316
 msgid "Don't show this again in this session"
 msgstr "Não mostrar isso novamente nesta sessão"
 
+#: horilla_views/static/js/genericKanban.js:358
 msgid "Cannot Change Stage"
 msgstr "Não é possível alterar o estágio"
 
+#: horilla_views/static/js/genericKanban.js:359
 msgid "This move is not allowed."
 msgstr "Este movimento não é permitido."
 
-msgid "Do you really want to delete all the selected attendances?"
-msgstr "Deseja realmente excluir todos os atendimentos selecionados?"
-msgid "Do you really want to delete this employee?"
-msgstr "Você realmente deseja excluir este funcionário?"
-msgid "No rows are selected for deleting attendances."
-msgstr "Nenhuma linha é selecionada para exclusão de presenças."
+#: leave/static/dashboard/dashboard.js:160
+#| msgid "Name of Employees"
+msgid "Employees"
+msgstr "Funcionários"
 
+#: leave/static/dashboard/dashboard.js:173
+msgid "Number of days"
+msgstr "Número de dias"
 
-msgid "Add Stage"
-msgstr "Adicionar etapa"
-msgid "Add announcement"
-msgstr "Adicionar anúncio"
-msgid "Add candidate"
-msgstr "Adicionar candidato"
-msgid "Add candidate to stage option"
-msgstr "Opção para adicionar candidato à etapa"
-msgid "Add new recruitment"
-msgstr "Adicionar novo recrutamento"
-msgid "Add new stage to recruitment"
-msgstr "Adicionar nova etapa ao recrutamento"
-msgid "All your company and base configurations"
-msgstr "Todas as configurações da empresa e básicas"
-msgid "App"
-msgstr "App"
-msgid "Approve or Reject Options"
-msgstr "Opções de aprovar ou rejeitar"
-msgid "Candidate"
-msgstr "Candidato"
-msgid "Candidate change stage option"
-msgstr "Opção de alterar etapa do candidato"
-msgid "Candidate management options"
-msgstr "Opções de gerenciamento de candidatos"
-msgid "Candidate rating option"
-msgstr "Opção de avaliação do candidato"
-msgid "Candidate record"
-msgstr "Registro do candidato"
-msgid "Change Stage"
-msgstr "Alterar etapa"
-msgid "Company"
-msgstr "Empresa"
-msgid "Create Quick Requests"
-msgstr "Criar solicitações rápidas"
-msgid "Create announcement from dashboard"
-msgstr "Criar anúncio pelo painel"
-msgid "Dashboard"
-msgstr "Painel"
-msgid "Dashboard Actions"
-msgstr "Ações do painel"
-msgid "Dashboard Tiles"
-msgstr "Cartões do painel"
-msgid "Filter"
-msgstr "Filtro"
-msgid "Filter Tag"
-msgstr "Tag de filtro"
-msgid "Filter tag option"
-msgstr "Opção de tag de filtro"
-msgid "Horilla Dashboard Tiles"
-msgstr "Cartões do painel Horilla"
-msgid "Horilla Hr Apps. eg Dashboard"
-msgstr "Apps Horilla RH, ex. Painel"
-msgid "Horilla dashboard section"
-msgstr "Seção do painel Horilla"
-msgid "Language"
-msgstr "Idioma"
-msgid "Mark Attendance"
-msgstr "Registrar presença"
-msgid "Multi-Company"
-msgstr "Multiempresa"
-msgid "Multi-Company options"
-msgstr "Opções multiempresa"
-msgid "Multi-Language options"
-msgstr "Opções multilíngues"
-msgid "New Recruitment"
-msgstr "Novo recrutamento"
-msgid "Notification"
-msgstr "Notificação"
-msgid "Notifications section"
-msgstr "Seção de notificações"
-msgid "Options"
-msgstr "Opções"
-msgid "Pipeline"
-msgstr "Pipeline"
-msgid "Pipeline filter option"
-msgstr "Opção de filtro da pipeline"
-msgid "Profile"
-msgstr "Perfil"
-msgid "Profile and change password options"
-msgstr "Opções de perfil e alteração de senha"
-msgid "Quick Actions"
-msgstr "Ações rápidas"
-msgid "Quick Filters"
-msgstr "Filtros rápidos"
-msgid "Rating"
-msgstr "Avaliação"
-msgid "Recruitment"
-msgstr "Recrutamento"
-msgid "Recruitment pipeline management"
-msgstr "Gerenciamento da pipeline de recrutamento"
-msgid "Recruitment stage"
-msgstr "Etapa de recrutamento"
-msgid "Search"
-msgstr "Pesquisar"
-msgid "Search in candidate, recruitment and stage"
-msgstr "Pesquisar em candidato, recrutamento e etapa"
-msgid "Selected settings view"
-msgstr "Visualização de configurações selecionada"
-msgid "Settings"
-msgstr "Configurações"
-msgid "Settings Options"
-msgstr "Opções de configurações"
-msgid "Settings View"
-msgstr "Visualização de configurações"
-msgid "Settings configurations"
-msgstr "Configurações dos ajustes"
-msgid "Settings menu bar"
-msgstr "Barra de menu de configurações"
-msgid "Stage"
-msgstr "Etapa"
-msgid "Toggle View"
-msgstr "Alternar visualização"
-msgid "Toggle view type"
-msgstr "Alternar tipo de visualização"
-msgid "Used to mark your attendance"
-msgstr "Usado para registrar sua presença"
-msgid "Your current company access"
-msgstr "Seu acesso atual à empresa"
+#: leave/static/leave_request/action.js:209
+msgid "Do you wish to create a Leave Report?"
+msgstr "Deseja criar um relatório de afastamentos?"
+
+#: leave/static/leave_request/action.js:284
+msgid "Do you want to reject the selected leave requests?"
+msgstr "Deseja rejeitar as solicitações de afastamento selecionadas?"
+
+#: onboarding/static/onboarding_view/dashboard.js:35
+#| msgid "Candidate record"
+msgid "Candidates per Stage"
+msgstr "Candidatos por Etapa"
+
+#: onboarding/static/onboarding_view/dashboard.js:48
+#| msgid "Candidate"
+msgid "Number of Candidates"
+msgstr "Número de Candidatos"
+
+#: payroll/static/cbv/payslip.js:37
+msgid "Do you want to send the payslip by mail?"
+msgstr "Deseja enviar o contracheque por e-mail?"
+
+#: payroll/static/payroll/dashboard.js:64
+msgid "Name of Employees"
+msgstr "Nomes dos funcionários"
+
+#: payroll/static/payroll/dashboard.js:77
+msgid "Amount"
+msgstr "Valor"
+
+#: project/static/project/import.js:85 project/static/project/import.js:135
+#: static/index/index.js:8
+msgid "Uploading..."
+msgstr "Enviando..."
+
+#: project/static/project/import.js:182
+msgid "Upload Completed!"
+msgstr "Envio concluído!"
+
+#: project/static/project/import.js:187
+msgid "Imported Successfully!"
+msgstr "Importação realizada com sucesso!"
+
+#: project/static/project/import.js:217
+msgid "Please upload a file with the .xlsx extension only."
+msgstr "Envie apenas um arquivo com a extensão .xlsx."
+
+#: recruitment/static/pipeline/pipelineDrag.js:70
+#| msgid "Stage updated"
+msgid "Stage sequence updated"
+msgstr "Sequência de etapas atualizada"
+
+#: static/index/country.js:698 templates/filter_country.js:279
+#| msgid "Selected"
+msgid "Select State"
+msgstr "Selecione o Estado"
+
+#: static/index/country.js:723
+msgid "Select Country"
+msgstr "Selecione o País"
+
+#: static/index/index.js:4
+msgid "Confirm"
+msgstr "Confirmar"
+
+#: static/index/index.js:5
+msgid "Close"
+msgstr "Fechar"
+
+#: static/index/index.js:6
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: static/index/index.js:7
+msgid "Selected"
+msgstr "Selecionado"
+
+#: static/index/index.js:9
+msgid "No Records found"
+msgstr "Nenhum registro encontrado"
+
+#: static/index/index.js:10
+msgid "Ok"
+msgstr "OK"
+
+#: static/index/index.js:11
+msgid "Do you want to download the excel file?"
+msgstr "Deseja baixar o arquivo Excel?"
+
+#: static/index/index.js:12
+msgid "Do you want to download the template?"
+msgstr "Deseja baixar o modelo?"
+
+#: static/index/index.js:13
+msgid "No rows are selected from the records."
+msgstr "Nenhuma linha foi selecionada entre os registros."
+
+#: static/index/index.js:14
+msgid "Do you really want to delete all the selected records?"
+msgstr "Deseja realmente excluir todos os registros selecionados?"
+
+#: static/index/index.js:15
+msgid "Do you really want to archive all the selected records?"
+msgstr "Deseja realmente arquivar todos os registros selecionados?"
+
+#: static/index/index.js:16 static/index/index.js:17
+msgid "Do you really want to approve all the selected requests?"
+msgstr "Deseja realmente aprovar todas as solicitações selecionadas?"
+
+#: static/index/index.js:18
+msgid "Do you really want to unarchive all the selected records?"
+msgstr "Deseja realmente desarquivar todos os registros selecionados?"
+
+#: static/index/index.js:19
+msgid "Total vacancy is %(vacancy)s."
+msgstr "A vaga total é %(vacancy)s."
+
+#: static/index/index.js:21
+msgid ""
+"Are you sure to change the candidate from %(from)s stage to %(to)s stage"
+msgstr ""
+"Tem certeza de que deseja alterar o candidato do estágio %(from)s para o "
+"estágio %(to)s"
+
+#: static/src/js/modules/dashboard/WorkEntry.js:40
+msgid "Week"
+msgstr "Semana"
+
+#: static/src/js/modules/dashboard/WorkEntry.js:44
+msgid "Month"
+msgstr "Mês"
+
+#~ msgid "Some selected requests have already been approved."
+#~ msgstr "Algumas solicitações selecionadas já foram aprovadas."
+
+#~ msgid "Some selected requests have already been rejected."
+#~ msgstr "Algumas solicitações selecionadas já foram rejeitadas."
+
+#~ msgid "Do you really want to delete all the selected attendances?"
+#~ msgstr "Deseja realmente excluir todos os atendimentos selecionados?"
+
+#~ msgid "Do you really want to delete this employee?"
+#~ msgstr "Você realmente deseja excluir este funcionário?"
+
+#~ msgid "No rows are selected for deleting attendances."
+#~ msgstr "Nenhuma linha é selecionada para exclusão de presenças."
+
+#~ msgid "Add Stage"
+#~ msgstr "Adicionar etapa"
+
+#~ msgid "Add announcement"
+#~ msgstr "Adicionar anúncio"
+
+#~ msgid "Add candidate"
+#~ msgstr "Adicionar candidato"
+
+#~ msgid "Add candidate to stage option"
+#~ msgstr "Opção para adicionar candidato à etapa"
+
+#~ msgid "Add new recruitment"
+#~ msgstr "Adicionar novo recrutamento"
+
+#~ msgid "Add new stage to recruitment"
+#~ msgstr "Adicionar nova etapa ao recrutamento"
+
+#~ msgid "All your company and base configurations"
+#~ msgstr "Todas as configurações da empresa e básicas"
+
+#~ msgid "App"
+#~ msgstr "App"
+
+#~ msgid "Approve or Reject Options"
+#~ msgstr "Opções de aprovar ou rejeitar"
+
+#~ msgid "Candidate change stage option"
+#~ msgstr "Opção de alterar etapa do candidato"
+
+#~ msgid "Candidate management options"
+#~ msgstr "Opções de gerenciamento de candidatos"
+
+#~ msgid "Candidate rating option"
+#~ msgstr "Opção de avaliação do candidato"
+
+#~ msgid "Change Stage"
+#~ msgstr "Alterar etapa"
+
+#~ msgid "Company"
+#~ msgstr "Empresa"
+
+#~ msgid "Create Quick Requests"
+#~ msgstr "Criar solicitações rápidas"
+
+#~ msgid "Create announcement from dashboard"
+#~ msgstr "Criar anúncio pelo painel"
+
+#~ msgid "Dashboard"
+#~ msgstr "Painel"
+
+#~ msgid "Dashboard Actions"
+#~ msgstr "Ações do painel"
+
+#~ msgid "Dashboard Tiles"
+#~ msgstr "Cartões do painel"
+
+#~ msgid "Filter"
+#~ msgstr "Filtro"
+
+#~ msgid "Filter Tag"
+#~ msgstr "Tag de filtro"
+
+#~ msgid "Filter tag option"
+#~ msgstr "Opção de tag de filtro"
+
+#~ msgid "Horilla Dashboard Tiles"
+#~ msgstr "Cartões do painel Horilla"
+
+#~ msgid "Horilla Hr Apps. eg Dashboard"
+#~ msgstr "Apps Horilla RH, ex. Painel"
+
+#~ msgid "Horilla dashboard section"
+#~ msgstr "Seção do painel Horilla"
+
+#~ msgid "Language"
+#~ msgstr "Idioma"
+
+#~ msgid "Mark Attendance"
+#~ msgstr "Registrar presença"
+
+#~ msgid "Multi-Company"
+#~ msgstr "Multiempresa"
+
+#~ msgid "Multi-Company options"
+#~ msgstr "Opções multiempresa"
+
+#~ msgid "Multi-Language options"
+#~ msgstr "Opções multilíngues"
+
+#~ msgid "New Recruitment"
+#~ msgstr "Novo recrutamento"
+
+#~ msgid "Notification"
+#~ msgstr "Notificação"
+
+#~ msgid "Notifications section"
+#~ msgstr "Seção de notificações"
+
+#~ msgid "Options"
+#~ msgstr "Opções"
+
+#~ msgid "Pipeline"
+#~ msgstr "Pipeline"
+
+#~ msgid "Pipeline filter option"
+#~ msgstr "Opção de filtro da pipeline"
+
+#~ msgid "Profile"
+#~ msgstr "Perfil"
+
+#~ msgid "Profile and change password options"
+#~ msgstr "Opções de perfil e alteração de senha"
+
+#~ msgid "Quick Actions"
+#~ msgstr "Ações rápidas"
+
+#~ msgid "Quick Filters"
+#~ msgstr "Filtros rápidos"
+
+#~ msgid "Rating"
+#~ msgstr "Avaliação"
+
+#~ msgid "Recruitment"
+#~ msgstr "Recrutamento"
+
+#~ msgid "Recruitment pipeline management"
+#~ msgstr "Gerenciamento da pipeline de recrutamento"
+
+#~ msgid "Recruitment stage"
+#~ msgstr "Etapa de recrutamento"
+
+#~ msgid "Search"
+#~ msgstr "Pesquisar"
+
+#~ msgid "Search in candidate, recruitment and stage"
+#~ msgstr "Pesquisar em candidato, recrutamento e etapa"
+
+#~ msgid "Selected settings view"
+#~ msgstr "Visualização de configurações selecionada"
+
+#~ msgid "Settings"
+#~ msgstr "Configurações"
+
+#~ msgid "Settings Options"
+#~ msgstr "Opções de configurações"
+
+#~ msgid "Settings View"
+#~ msgstr "Visualização de configurações"
+
+#~ msgid "Settings configurations"
+#~ msgstr "Configurações dos ajustes"
+
+#~ msgid "Settings menu bar"
+#~ msgstr "Barra de menu de configurações"
+
+#~ msgid "Stage"
+#~ msgstr "Etapa"
+
+#~ msgid "Toggle View"
+#~ msgstr "Alternar visualização"
+
+#~ msgid "Toggle view type"
+#~ msgstr "Alternar tipo de visualização"
+
+#~ msgid "Used to mark your attendance"
+#~ msgstr "Usado para registrar sua presença"
+
+#~ msgid "Your current company access"
+#~ msgstr "Seu acesso atual à empresa"

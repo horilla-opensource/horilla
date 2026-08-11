@@ -6,7 +6,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login - {{ white_label_company_name }} Dashboard</title>
+        <title>{% blocktrans %}Login - {{ white_label_company_name }} Dashboard{% endblocktrans %}</title>
         <link
             rel="apple-touch-icon"
             sizes="180x180"
@@ -165,10 +165,10 @@
             $(document).ready(function () {
                 if ($(".oh-alert--warning").length > 0) {
                     Swal.fire({
-                        title: 'Access Denied !',
-                        text: 'Your login credentials are currently blocked. Please contact HR administrators for assistance.',
+                        title: '{% trans "Access Denied !" %}',
+                        text: '{% trans "Your login credentials are currently blocked. Please contact HR administrators for assistance." %}',
                         icon: 'warning',
-                        confirmButtonText: 'OK',
+                        confirmButtonText: '{% trans "OK" %}',
                     });
                 }
             });

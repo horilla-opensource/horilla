@@ -34,12 +34,12 @@
 
             	if (fieldValue.trim() === "") {
             		$(errorElement).show();
-            		errorElement.text("This field is required.");
+            		errorElement.text("{% trans 'This field is required.' %}");
             		errorElement.insertAfter($("#id_question_template"));
             	} else if (fieldValue.length > 100) {
             		$(errorElement).show();
             		errorElement.text(
-            			"The field cannot contain more than 100 characters."
+            			"{% trans 'The field cannot contain more than 100 characters.' %}"
             		);
             		errorElement.insertAfter($("#id_question_template"));
             	} else {

@@ -96,7 +96,7 @@
       </tr>
       <tr>
         <td style="padding:15px 25px 0 25px; font-size: 24px;" align="center">
-          <strong>Hello {{record.instances.0.get_name}}, Your Payslips are ready!</strong>
+          <strong>{% blocktrans with name=record.instances.0.get_name %}Hello {{ name }}, Your Payslips are ready!{% endblocktrans %}</strong>
         </td>
       </tr>
       <tr>

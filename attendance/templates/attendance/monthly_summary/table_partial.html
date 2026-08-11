@@ -875,7 +875,7 @@ reloadSelectedCount($('.count_msAttendance'),'selectedInstances');">
                 data-url="{% url 'attendance-monthly-summary-detail' %}?employee_id={{ row.employee.pk }}&from_date={{ from_date }}&to_date={{ to_date }}&metric=conflict">
               {% if row.resolved_conflicts == row.conflict_days %}
                 {# All resolved: green number + âœ" #}
-                <span style="color:#30a180;" title="All {{ row.conflict_days }} conflict{{ row.conflict_days|pluralize }} resolved">
+                <span style="color:#30a180;" title="{% blocktrans with count=row.conflict_days %}All {{ count }} conflict{{ count|pluralize }} resolved{% endblocktrans %}">
                   {{ row.conflict_days }} <span style="font-size:.7rem;">&#10003;</span>
                 </span>
               {% elif row.resolved_conflicts %}
@@ -980,7 +980,7 @@ reloadSelectedCount($('.count_msAttendance'),'selectedInstances');">
     fetch(url, { headers: { 'HX-Request': 'true', 'X-Requested-With': 'XMLHttpRequest' } })
       .then(r => r.text())
       .then(html => { pop.innerHTML = html; })
-      .catch(() => { pop.innerHTML = '<p class="ms-pop-empty">Failed to load.</p>'; });
+      .catch(() => { pop.innerHTML = '<p class="ms-pop-empty">{% trans "Failed to load." %}</p>'; });
   }
 
   function scheduleHide() {
@@ -1236,7 +1236,7 @@ reloadSelectedCount($('.count_msAttendance'),'selectedInstances');">
       .then(function (r) { return r.text(); })
       .then(function (html) { content.innerHTML = html; })
       .catch(function () {
-        content.innerHTML = '<p style="padding:24px;color:#dc3545;">Failed to load calendar.</p>';
+        content.innerHTML = '<p style="padding:24px;color:#dc3545;">{% trans "Failed to load calendar." %}</p>';
       });
   }
 
@@ -1306,7 +1306,7 @@ reloadSelectedCount($('.count_msAttendance'),'selectedInstances');">
           panel.className = 'panel-resolved';
         }
       })
-      .catch(function () { panel.innerHTML = '<p style="padding:12px;color:#dc3545;">Failed to load.</p>'; });
+      .catch(function () { panel.innerHTML = '<p style="padding:12px;color:#dc3545;">{% trans "Failed to load." %}</p>'; });
   };
 
   window.msCalResolvePost = function (resolution, conflictType) {
@@ -1339,7 +1339,7 @@ reloadSelectedCount($('.count_msAttendance'),'selectedInstances');">
     }).then(function (r) { return r.text(); })
       .then(function (html) { content.innerHTML = html; })
       .catch(function () {
-        content.innerHTML = '<p style="padding:24px;color:#dc3545;">Failed to save resolution.</p>';
+        content.innerHTML = '<p style="padding:24px;color:#dc3545;">{% trans "Failed to save resolution." %}</p>';
       });
   };
 })();

@@ -24,11 +24,11 @@
         $('.oh-payslip__header').append(`<div class="d-flex">
             {% if show %}
             {% if active %}
-            <a class="oh-btn oh-btn--danger mr-2" href="{% url 'start_stop' %}" title="Stop">Stop</a>
+            <a class="oh-btn oh-btn--danger mr-2" href="{% url 'start_stop' %}" title="{% trans 'Stop' %}">{% trans "Stop" %}</a>
             {% else %}
-            <a class="oh-btn oh-btn--success mr-2" href="{% url 'start_stop' %}" title="Start">Start</a>
+            <a class="oh-btn oh-btn--success mr-2" href="{% url 'start_stop' %}" title="{% trans 'Start' %}">{% trans "Start" %}</a>
             {% endif %}
-            <a class="oh-btn oh-btn--danger" href="{% url 'backup_delete' %}" title="Remove">
+            <a class="oh-btn oh-btn--danger" href="{% url 'backup_delete' %}" title="{% trans 'Remove' %}">
                 <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
             </a>
             {% endif %}

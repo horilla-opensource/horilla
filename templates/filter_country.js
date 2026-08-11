@@ -276,7 +276,7 @@ function populateStates(countryElementId, stateElementId) {
     }
 
     stateElement.length = 0; // Clear existing options
-    stateElement.options[0] = new Option('Select State', '');
+    stateElement.options[0] = new Option(gettext('Select State'), '');
     stateElement.selectedIndex = 0;
 
     if (s_a[selectedCountryIndex]) {

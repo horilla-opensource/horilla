@@ -74,7 +74,7 @@
                     <span class="oh-timeoff-modal__stat-count">{{allowance.amount}}</span>
                 {% else %}
                     {% if allowance.based_on == "basic_pay" %}
-                        <span class="oh-timeoff-modal__stat-count">{{allowance.rate}}% of {{allowance.get_based_on_display}}</span>
+                        <span class="oh-timeoff-modal__stat-count">{% blocktrans %}{{allowance.rate}}% of {{allowance.get_based_on_display}}{% endblocktrans %}</span>
                     {% endif %}
                         {% if allowance.based_on == "attendance" %}
                             <span class="oh-timeoff-modal__stat-title">{{allowance.per_attendance_fixed_amount|currency_symbol_position}}{% trans "Amount Per Attendance" %}</span>
@@ -102,7 +102,7 @@
         </div>
         <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
             <span class="oh-timeoff-modal__stat-title">{% trans "Allowance Eligibility" %}</span>
-            <span class="oh-timeoff-modal__stat-count">If {{allowance.get_if_choice_display}} {{allowance.get_if_condition_display}} {{allowance.if_amount}}</span>
+            <span class="oh-timeoff-modal__stat-count">{% blocktrans %}If {{allowance.get_if_choice_display}} {{allowance.get_if_condition_display}} {{allowance.if_amount}}{% endblocktrans %}</span>
         </div>
     </div>
     {% if perms.payroll.change_allowance or perms.payroll.delete_allowance %}
@@ -133,7 +133,7 @@
 </div>
 {% else %}
     <div class="oh-empty">
-        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}" />
         <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
         <p class="oh-empty__subtitle">{% trans "There are currently no allowances to consider." %}</p>
     </div>

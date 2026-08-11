@@ -80,7 +80,7 @@
                 class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
                 id=""
                 data-category-id="1"
-                title="{{own_objectives|length}} objective"
+                title="{% blocktrans count counter=own_objectives|length %}{{ counter }} objective{% plural %}{{ counter }} objectives{% endblocktrans %}"
                 onclick="event.stopPropagation()"
             >{{ own_objectives|length }}</span>
         </li>
@@ -92,7 +92,7 @@
                     class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
                     id=""
                     data-category-id="1"
-                    title="{{all_objectives|length}} objective"
+                    title="{% blocktrans count counter=all_objectives|length %}{{ counter }} objective{% plural %}{{ counter }} objectives{% endblocktrans %}"
                     onclick="event.stopPropagation()"
                 >{{ all_objectives|length }}</span>
             </li>

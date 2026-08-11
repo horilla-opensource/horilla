@@ -1,8 +1,9 @@
+{% load i18n %}
 {% if instance.asset_status != "Available" %}
 <div class="d-flex align-items-center">
     <span class="oh-dot oh-dot--small me-1 oh-dot--color  oh-dot--success ">
     </span>
-    <span class=" link-success ">Allocated
+    <span class=" link-success ">{% trans "Allocated" %}
     </span>
 </div>
 {% else %}
@@ -12,5 +13,5 @@
     <span class=" link-info ">Available
     </span>
 </div> {% endcomment %}
-Available
+{% trans "Available" %}
 {% endif %}

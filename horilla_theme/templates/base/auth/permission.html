@@ -1,4 +1,5 @@
 {% extends 'settings.html' %}
+{% load i18n %}
 {% block settings %}
     <script>
         function checkSelected(names, target, initial = false) {
@@ -70,6 +71,8 @@
             }
         });
 
+        var permissionsLabel = "{% trans 'Permissions' %}";
+
         function updateBadge() {
           if (typeof refreshPermPicker === "function") {
             $("[data-perm-picker]").each(function () {
@@ -87,7 +90,7 @@
               const checkedCount = panel.find("[name=permissions]:checked").length;
 
               badge.text(checkedCount);
-              badge.attr("title", checkedCount + " Permissions");
+              badge.attr("title", checkedCount + " " + permissionsLabel);
             });
 
             wrapper.find("table").each(function () {

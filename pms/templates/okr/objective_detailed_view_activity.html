@@ -196,8 +196,8 @@
       var ui = $.summernote.ui
       return ui
         .button({
-          contents: 'Add comment <ion-icon name="paper-plane-outline"></ion-icon>',
-          tooltip: 'Send Content',
+          contents: '{% trans "Add comment" %} <ion-icon name="paper-plane-outline"></ion-icon>',
+          tooltip: '{% trans "Send Content" %}',
           click: function () {
             const content = context.invoke('code')
             $("#commentEditor button[type=submit]").click()
@@ -209,7 +209,7 @@
     // ✅ Summernote Init
     $('#editor').summernote({
       height: 70, // compact height
-      placeholder: 'Write something...',
+      placeholder: '{% trans "Write something..." %}',
       toolbar: [
         ['insert', ['picture', 'link', 'pdfUpload']],
         ['sendGroup', ['send']]

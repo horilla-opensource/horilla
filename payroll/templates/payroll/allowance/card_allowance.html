@@ -34,7 +34,7 @@
                 <span class="oh-timeoff-modal__stat-title">{{allowance.amount}}</span>
             {% else %}
                 {% if allowance.based_on == "basic_pay" %}
-                    <span class="oh-timeoff-modal__stat-title">{{allowance.rate}}% of {{allowance.get_based_on_display}}</span>
+                    <span class="oh-timeoff-modal__stat-title">{% blocktrans %}{{allowance.rate}}% of {{allowance.get_based_on_display}}{% endblocktrans %}</span>
                 {% endif %}
 
                   {% if allowance.based_on == "attendance" %}

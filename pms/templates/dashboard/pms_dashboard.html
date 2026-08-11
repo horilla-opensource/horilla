@@ -26,7 +26,7 @@
 
             <div id="employeeKeyRes" class="d-none oh-main__titlebar oh-main__titlebar--left">
                 <h1 class="oh-main__titlebar-title fw-bold">
-                    Employee Key Results
+                    {% trans "Employee Key Results" %}
                 </h1>
             </div>
 
@@ -129,7 +129,7 @@
                                                     style="display: block; width: 100px; margin: 20px auto"
                                                     src="{% static 'images/ui/goal.png' %}"
                                                     class=""
-                                                    alt="Page not found. 404."
+                                                    alt="{% trans 'Page not found. 404.' %}"
                                                 >
                                                 <h3 style="font-size: 16px" class="oh-404__subtitle">
                                                     {% trans "No objectives are available." %}

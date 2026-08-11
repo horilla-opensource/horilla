@@ -134,15 +134,15 @@
         clearErrors();
         let valid = true;
         if (!$('#employees').val().length && !hasEmployee) {
-            showError("Please select at least one employee.");
+            showError("{% trans 'Please select at least one employee.' %}");
             valid = false;
         } else if (!$("#subject").val().trim()) {
-            showError("The message subject is required.");
+            showError("{% trans 'The message subject is required.' %}");
             valid = false;
         } else {
             let body = $(`#writeField`).summernote('code');
             if (!body || body === '<p><br></p>') {
-                showError("The message body is required.");
+                showError("{% trans 'The message body is required.' %}");
                 valid = false;
             }
         }
@@ -156,8 +156,8 @@
         if (!validateForm(empId, hasEmployee)) return false;
 
         Swal.fire({
-            title: "Processing",
-            text: "Mail will be sent in the background",
+            title: "{% trans 'Processing' %}",
+            text: "{% trans 'Mail will be sent in the background' %}",
             icon: "info",
             timer: 1500,
             showConfirmButton: false
@@ -182,7 +182,7 @@
     function loadTemplateIntoWriteField() {
         var id = $("#template").val();
         if (!id) {
-            showError("Select a template first, or type in the editor.");
+            showError("{% trans 'Select a template first, or type in the editor.' %}");
             return;
         }
         $.ajax({
@@ -206,7 +206,7 @@
         }
         var stripped = body.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim();
         if (!stripped && (!body || body === '<p><br></p>')) {
-            showError("Add some message body before preview.");
+            showError("{% trans 'Add some message body before preview.' %}");
             return;
         }
         var form = document.getElementById('ack-form-{{ employee.id }}');

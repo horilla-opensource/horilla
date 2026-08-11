@@ -120,16 +120,16 @@
     if (id === "#dynamicDept") {
       url = '{% url "get-job-positions" %}';
       dropdownId = "#id_job_position_id";
-      createText = "Create New Job Position";
-      emptyText = "---Choose Job Position---";
+      createText = "{% trans 'Create New Job Position' %}";
+      emptyText = "{% trans '---Choose Job Position---' %}";
       $("#id_job_role_id").html(
         '<option value="">{% trans "---Choose Job Role---" %}</option>'
       );
     } else if (id === "#dynamicJobPosition") {
       url = '{% url "get-job-roles" %}';
       dropdownId = "#id_job_role_id";
-      createText = "Create New Job Role";
-      emptyText = "---Choose Job Role---";
+      createText = "{% trans 'Create New Job Role' %}";
+      emptyText = "{% trans '---Choose Job Role---' %}";
     }
 
     if (value) {
@@ -157,7 +157,7 @@
         $("#id_job_role_id").append(
           $("<option>", {
             value: "create",
-            text: "Create New Job Role",
+            text: "{% trans 'Create New Job Role' %}",
           })
         );
       }
@@ -185,7 +185,7 @@
         $("#id_job_position_id").append(
           $("<option>", {
             value: "",
-            text: "---Choose Job Position---",
+            text: "{% trans '---Choose Job Position---' %}",
           })
         );
         // Append new options based on the response
@@ -200,7 +200,7 @@
         $("#id_job_position_id").append(
           $("<option>", {
             value: "create",
-            text: "Create New Job Position",
+            text: "{% trans 'Create New Job Position' %}",
           })
         );
         // Set the selected job position back to the dropdown

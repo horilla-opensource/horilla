@@ -40,7 +40,7 @@ function groupSequenceGet(groupHead) {
 			"orderBy": groupOrderBy,
 		},
 		success: function (response) {
-			message = response.message || "Group sequence updated successfully.";
+			message = response.message || gettext("Group sequence updated successfully.");
 			Toast.fire({
 				icon: "success",
 				title: message,
@@ -104,7 +104,7 @@ function handleValidDrop(groupId, objectId, row) {
 			error: function (xhr) {
 				Toast.fire({
 					icon: "error",
-					title: "Failed to update sequence: " + xhr.responseJSON?.error || "Unknown error",
+					title: gettext("Failed to update sequence: ") + xhr.responseJSON?.error || gettext("Unknown error"),
 					position: "top-end",
 				});
 			},
@@ -147,7 +147,7 @@ function handleSortableUpdate(event, ui, container) {
 			else if (!response.error) {
 				Toast.fire({
 					icon: "success",
-					title: "Sequence updated",
+					title: gettext("Sequence updated"),
 					position: "top-end",
 				});
 			}

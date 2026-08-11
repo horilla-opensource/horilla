@@ -343,7 +343,7 @@
                                     $("#messages").html(
                                         $(`
                                     <div class="oh-alert oh-alert--animated oh-alert--danger">
-                                        Sever error.
+                                        {% trans "Sever error." %}
                                     </div>
                                 `)
                                     );
@@ -387,7 +387,7 @@
                     $.each(panels, function (indexInArray, valueOfElement) {
                         var check = $(valueOfElement).find("[name=permissions]:checked").length;
                         $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
-                        $(valueOfElement).prev().find(".oh-badge.permission-badge").attr("title", check + " Permissions");
+                        $(valueOfElement).prev().find(".oh-badge.permission-badge").attr("title", check + " {% trans 'Permissions' %}");
                     });
 
                     var permissionLine = $(".oh-sticky-table__tr");
