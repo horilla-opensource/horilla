@@ -309,7 +309,9 @@ class RecruitmentCreationForm(BaseModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
+        self.fields["open_positions"].required = True
         if not self.instance.pk:
+            self.fields["vacancy"].initial = 1
             self.fields["recruitment_managers"] = HorillaMultiSelectField(
                 queryset=Employee.objects.filter(is_active=True),
                 widget=HorillaMultiSelectWidget(
@@ -342,12 +344,6 @@ class RecruitmentCreationForm(BaseModelForm):
             ids = self.data.getlist("recruitment_managers")
             if ids:
                 self.errors.pop("recruitment_managers", None)
-        open_positions = self.cleaned_data.get("open_positions")
-        is_published = self.cleaned_data.get("is_published")
-        if is_published and not open_positions:
-            raise forms.ValidationError(
-                _("Job position is required if the recruitment is publishing.")
-            )
         if (
             self.cleaned_data.get("publish_in_linkedin")
             and not self.cleaned_data["linkedin_account_id"]

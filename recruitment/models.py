@@ -287,9 +287,11 @@ class Recruitment(HorillaModel):
         if self.is_published:
             if self.vacancy <= 0:
                 raise ValidationError(
-                    _(
-                        "Vacancy must be greater than zero if the recruitment is publishing."
-                    )
+                    {
+                        "vacancy": _(
+                            "Vacancy must be greater than zero if the recruitment is publishing."
+                        )
+                    }
                 )
 
         if self.end_date is not None and (
