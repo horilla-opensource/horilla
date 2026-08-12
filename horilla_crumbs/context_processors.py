@@ -5,6 +5,7 @@ from django.apps import apps
 from django.shortcuts import redirect
 from django.urls import Resolver404, path, resolve, reverse
 from django.utils.translation import gettext as _trans
+from django.utils.translation import gettext_lazy as _
 
 from base.context_processors import white_labelling_company
 from employee.models import Employee
@@ -53,6 +54,7 @@ def _resolve_menu_section(path, menus):
 
 
 BREADCRUMB_URL_NAMES = {
+    "monthly-summary": _("Monthly Summary"),
     "ess": "Employee",
     "offboarding": "Offboarding",
     "helpdesk": "Helpdesk",
@@ -96,6 +98,7 @@ sidebar_urls = [
     "work-records",
     "request-attendance-view",
     "attendance-overtime-view",
+    "monthly-summary",
     "attendance-activity-view",
     "late-come-early-out-view",
     "view-my-attendance",
@@ -409,7 +412,11 @@ def breadcrumbs(request):
 
             new_dict = {
                 "url": path,
-                "name": BREADCRUMB_URL_NAMES.get(item, item),
+                # str() resolves any gettext_lazy() entries to a plain string
+                # now, in the request's own active locale, since breadcrumbs
+                # get JSON-serialized into the session (a lazy translation
+                # proxy isn't JSON-serializable and would 500 the request).
+                "name": str(BREADCRUMB_URL_NAMES.get(item, item)),
                 "found": found,
                 "clickable": clickable,
             }
