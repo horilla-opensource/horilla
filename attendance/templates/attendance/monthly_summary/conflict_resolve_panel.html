@@ -37,6 +37,7 @@
 .crp-hol     { color:#134e4a; border-color:#5eead4; background:#ccfbf1; }
 .crp-woff    { color:#4c1d95; border-color:#c4b5fd; background:#ede9fe; }
 .crp-partial { color:#0e7490; border-color:#67e8f9; background:#ecfeff; }
+.crp-approve-ot { color:#92400e; border-color:#fed7aa; background:#ffedd5; }
 
 .crp-pill {
   display: inline-block;
@@ -294,18 +295,48 @@
   </div>
   <div class="crp-mark-grid">
 
+    {% if conflict_type == "holiday_ot" or conflict_type == "week_off_ot" %}
+    <!-- Two ways to resolve holiday/week-off attendance: approve it as
+         overtime (keeps the Holiday/Week Off bucket, credits 100% OT), or
+         "Remove Holiday/Week Off" via Full Present/Half Day below (moves
+         the day into the Present bucket and switches the hour split to
+         the normal regular+OT rule instead of 100% OT). -->
+    <button class="crp-mark-btn crp-approve-ot"
+            onclick="msCalResolvePost('approve_ot', '{{ conflict_type }}')"
+            {% if existing_resolution == "approve_ot" or att_ot_approved %}disabled{% endif %}>
+      <ion-icon name="checkmark-done-outline"></ion-icon>
+      {% trans "Approve as Overtime" %}
+    </button>
+    {% endif %}
+
     <button class="crp-mark-btn crp-full"
             onclick="msCalResolvePost('full_present', '{{ conflict_type }}')"
             {% if existing_resolution == "full_present" %}disabled{% endif %}>
       <ion-icon name="checkmark-circle-outline"></ion-icon>
-      {% trans "Full Present" %}
+      {% if conflict_type == "holiday_ot" %}
+        {% trans "Remove Holiday" %}
+        <span style="font-size:.65rem;opacity:.8;">({% trans "Full Present" %})</span>
+      {% elif conflict_type == "week_off_ot" %}
+        {% trans "Remove Week Off" %}
+        <span style="font-size:.65rem;opacity:.8;">({% trans "Full Present" %})</span>
+      {% else %}
+        {% trans "Full Present" %}
+      {% endif %}
     </button>
 
     <button class="crp-mark-btn crp-half"
             onclick="msCalResolvePost('half_present', '{{ conflict_type }}')"
             {% if existing_resolution == "half_present" %}disabled{% endif %}>
       <ion-icon name="remove-circle-outline"></ion-icon>
-      {% trans "Half Day" %}
+      {% if conflict_type == "holiday_ot" %}
+        {% trans "Remove Holiday" %}
+        <span style="font-size:.65rem;opacity:.8;">({% trans "Half Day" %})</span>
+      {% elif conflict_type == "week_off_ot" %}
+        {% trans "Remove Week Off" %}
+        <span style="font-size:.65rem;opacity:.8;">({% trans "Half Day" %})</span>
+      {% else %}
+        {% trans "Half Day" %}
+      {% endif %}
     </button>
 
     {% if panel_hours_sec %}
@@ -422,13 +453,18 @@
         <span>
           {% trans "Regularized as" %}
           <strong>
-            {% if existing_resolution == "full_present" %}{% trans "Full Present" %}
+            {% if existing_resolution == "full_present" and conflict_type == "holiday_ot" %}{% trans "Remove Holiday — Full Present" %}
+            {% elif existing_resolution == "full_present" and conflict_type == "week_off_ot" %}{% trans "Remove Week Off — Full Present" %}
+            {% elif existing_resolution == "full_present" %}{% trans "Full Present" %}
+            {% elif existing_resolution == "half_present" and conflict_type == "holiday_ot" %}{% trans "Remove Holiday — Half Day" %}
+            {% elif existing_resolution == "half_present" and conflict_type == "week_off_ot" %}{% trans "Remove Week Off — Half Day" %}
             {% elif existing_resolution == "half_present" %}{% trans "Half Day" %}
             {% elif existing_resolution == "absent" %}{% trans "Absent" %}
             {% elif existing_resolution == "paid_leave" %}{% trans "Paid Leave" %}
             {% elif existing_resolution == "unpaid_leave" %}{% trans "Unpaid Leave" %}
             {% elif existing_resolution == "holiday" %}{% trans "Holiday" %}
             {% elif existing_resolution == "week_off" %}{% trans "Week Off" %}
+            {% elif existing_resolution == "approve_ot" %}{% trans "Overtime Approved" %}
             {% else %}{{ existing_resolution }}{% endif %}
           </strong>
           {% if existing_obj.modified_by %}
