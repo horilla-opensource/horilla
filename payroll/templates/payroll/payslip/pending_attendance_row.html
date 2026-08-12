@@ -1,0 +1,32 @@
+{% load i18n %}
+<div id="pending-row-{{ pa.id }}" class="flex items-center justify-between text-sm mb-2 px-2 gap-2">
+    <div>
+        <span class="font-medium">{{ pa.date_label }}</span>
+        <span class="text-xs" style="color:#6c757d;margin-left:8px;">
+            {% trans "Worked" %}: {{ pa.worked_label }}
+            {% if pa.needs_ot_approval %} &middot; {% trans "OT" %}: {{ pa.overtime_label }}{% endif %}
+        </span>
+    </div>
+    <div class="flex gap-2" style="flex-shrink:0;">
+        {% if pa.needs_validation %}
+        <button type="button"
+                class="oh-btn oh-btn--secondary-outline oh-btn--small"
+                hx-post="{% url 'payslip-pending-attendance-action' %}"
+                hx-vals='{"attendance_id": "{{ pa.id }}", "action": "validate"}'
+                hx-target="#pending-row-{{ pa.id }}"
+                hx-swap="outerHTML">
+            {% trans "Validate" %}
+        </button>
+        {% endif %}
+        {% if pa.needs_ot_approval %}
+        <button type="button"
+                class="oh-btn oh-btn--secondary-outline oh-btn--small"
+                hx-post="{% url 'payslip-pending-attendance-action' %}"
+                hx-vals='{"attendance_id": "{{ pa.id }}", "action": "approve_ot"}'
+                hx-target="#pending-row-{{ pa.id }}"
+                hx-swap="outerHTML">
+            {% trans "Approve OT" %}
+        </button>
+        {% endif %}
+    </div>
+</div>

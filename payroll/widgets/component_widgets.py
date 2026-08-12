@@ -2,10 +2,25 @@
 Custom form widgets for conditional visibility and styling.
 """
 
+import os
+
 from django import forms
 from django.utils.safestring import SafeText, mark_safe
 
 from horilla import settings
+
+
+def _static_file_version(*rel_path_parts):
+    """
+    File mtime, used as a cache-busting query param on hand-loaded script
+    tags (these aren't run through {% static %}/ManifestStaticFilesStorage,
+    so nothing else invalidates the browser cache when the file changes).
+    """
+    try:
+        path = os.path.join(settings.BASE_DIR, "static", *rel_path_parts)
+        return int(os.path.getmtime(path))
+    except OSError:
+        return 0
 
 
 class AllowanceConditionalVisibility(forms.Widget):
@@ -20,9 +35,8 @@ class AllowanceConditionalVisibility(forms.Widget):
 
     def render(self, name, value, attrs=None, renderer=None):
         # Exclude the label from the rendered HTML
-        rendered_script = (
-            f'<script src="/{settings.STATIC_URL}build/js/allowanceWidget.js"></script>'
-        )
+        version = _static_file_version("build", "js", "allowanceWidget.js")
+        rendered_script = f'<script src="/{settings.STATIC_URL}build/js/allowanceWidget.js?v={version}"></script>'
         additional_script = f"""
         <script id="{name}Script">
             $(document).ready(function () {{
@@ -48,9 +62,8 @@ class DeductionConditionalVisibility(forms.Widget):
 
     def render(self, name, value, attrs, renderer) -> SafeText:
         # Exclude the label from the rendered HTML
-        rendered_script = (
-            f'<script src="/{settings.STATIC_URL}build/js/deductionWidget.js"></script>'
-        )
+        version = _static_file_version("build", "js", "deductionWidget.js")
+        rendered_script = f'<script src="/{settings.STATIC_URL}build/js/deductionWidget.js?v={version}"></script>'
         additional_script = f"""
         <script id="{name}Script">
             $(document).ready(function () {{
@@ -99,9 +112,8 @@ class StyleWidget(forms.Widget):
         Returns:
             str: The rendered HTML representation of the widget.
         """
-        rendered_script = (
-            f'<script src="/{settings.STATIC_URL}build/js/styleWidget.js"></script>'
-        )
+        version = _static_file_version("build", "js", "styleWidget.js")
+        rendered_script = f'<script src="/{settings.STATIC_URL}build/js/styleWidget.js?v={version}"></script>'
         additional_script = f"""
         <script id="{name}Script">
             $(document).ready(function () {{

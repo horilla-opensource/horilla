@@ -63,6 +63,22 @@ filter_mapping = {
             "attendance_validated": True,
         }
     },
+    "week_off_overtime": {
+        "filter": lambda employee, allowance, start_date, end_date: {
+            "employee_id": employee,
+            "attendance_date__range": (start_date, end_date),
+            "attendance_overtime_approve": True,
+            "attendance_validated": True,
+        }
+    },
+    "holiday_overtime": {
+        "filter": lambda employee, allowance, start_date, end_date: {
+            "employee_id": employee,
+            "attendance_date__range": (start_date, end_date),
+            "attendance_overtime_approve": True,
+            "attendance_validated": True,
+        }
+    },
     "attendance": {
         "filter": lambda employee, allowance, start_date, end_date: {
             "employee_id": employee,
@@ -937,9 +953,70 @@ def calculate_based_on_shift(*_args, **kwargs):
     return amount
 
 
+def _classify_approved_overtime_seconds(employee, start_date, end_date):
+    """
+    Splits APPROVED overtime attendance in the period into three mutually
+    exclusive buckets, so "Regular Overtime", "Week Off Overtime", and
+    "Holiday Overtime" allowances never double-pay the same hours:
+      - regular:  overtime_second on a normal scheduled working day
+      - week_off: at_work_second on a week-off day (entirely overtime)
+      - holiday:  at_work_second on a holiday (entirely overtime)
+
+    A holiday/week-off day HR has regularized away from that classification
+    (Full Present/Half Day via AttendanceConflictResolution) is treated as
+    a normal working day here too — matching build_monthly_summary's same
+    rule, so the payslip's overtime allowance stays consistent with what
+    the monthly attendance summary displays for that day.
+    """
+    if not apps.is_installed("attendance"):
+        return 0, 0, 0
+
+    from attendance.models import AttendanceConflictResolution
+    from base.methods import get_holiday_dates, get_working_days
+
+    Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
+    working_day_dates = set(
+        get_working_days(start_date, end_date, employee)["working_days_on"]
+    )
+    holiday_dates = set(get_holiday_dates(start_date, end_date, employee))
+    regularized_dates = set(
+        AttendanceConflictResolution.objects.filter(
+            employee_id=employee,
+            date__range=(start_date, end_date),
+            resolution__in=("full_present", "half_present"),
+        ).values_list("date", flat=True)
+    )
+
+    attendances = Attendance.objects.filter(
+        employee_id=employee,
+        attendance_date__range=(start_date, end_date),
+        attendance_overtime_approve=True,
+    )
+    regular_ot = week_off_ot = holiday_ot = 0
+    for attendance in attendances:
+        att_date = attendance.attendance_date
+        if att_date in working_day_dates or att_date in regularized_dates:
+            regular_ot += attendance.overtime_second or 0
+        elif att_date in holiday_dates:
+            holiday_ot += attendance.at_work_second or 0
+        else:
+            week_off_ot += attendance.at_work_second or 0
+    return regular_ot, week_off_ot, holiday_ot
+
+
+def _amount_from_seconds(seconds, component, day_dict):
+    amount_per_second = component.amount_per_one_hr / (60 * 60)
+    amount = round(seconds * amount_per_second, 2)
+    return compute_limit(component, amount, day_dict)
+
+
 def calculate_based_on_overtime(*_args, **kwargs):
     """
-    Calculates the amount of an allowance or deduction based on employee's overtime hours.
+    Calculates the amount of an allowance or deduction based on employee's
+    REGULAR overtime hours — overtime worked on a normal scheduled working
+    day only. Week-off and holiday overtime are paid via the dedicated
+    "week_off_overtime" / "holiday_overtime" allowance types instead, so
+    they don't get double-counted here.
 
     Args:
         employee (Employee): The employee for whom the overtime is being calculated.
@@ -954,27 +1031,58 @@ def calculate_based_on_overtime(*_args, **kwargs):
     if not apps.is_installed("attendance"):
         return 0
 
-    Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
     employee = kwargs["employee"]
     start_date = kwargs["start_date"]
     end_date = kwargs["end_date"]
     component = kwargs["component"]
     day_dict = kwargs["day_dict"]
 
-    attendances = Attendance.objects.filter(
-        employee_id=employee,
-        attendance_date__range=(start_date, end_date),
-        attendance_overtime_approve=True,
+    regular_ot, _week_off_ot, _holiday_ot = _classify_approved_overtime_seconds(
+        employee, start_date, end_date
     )
-    overtime = sum(attendance.overtime_second for attendance in attendances)
-    amount_per_hour = component.amount_per_one_hr
-    amount_per_second = amount_per_hour / (60 * 60)
-    amount = overtime * amount_per_second
-    amount = round(amount, 2)
+    return _amount_from_seconds(regular_ot, component, day_dict)
 
-    amount = compute_limit(component, amount, day_dict)
 
-    return amount
+def calculate_based_on_week_off_overtime(*_args, **kwargs):
+    """
+    Calculates the allowance/deduction amount for approved overtime worked
+    on week-off days (entirely overtime, since week-off days have no
+    scheduled hours), at the component's configured hourly rate.
+    """
+    if not apps.is_installed("attendance"):
+        return 0
+
+    employee = kwargs["employee"]
+    start_date = kwargs["start_date"]
+    end_date = kwargs["end_date"]
+    component = kwargs["component"]
+    day_dict = kwargs["day_dict"]
+
+    _regular_ot, week_off_ot, _holiday_ot = _classify_approved_overtime_seconds(
+        employee, start_date, end_date
+    )
+    return _amount_from_seconds(week_off_ot, component, day_dict)
+
+
+def calculate_based_on_holiday_overtime(*_args, **kwargs):
+    """
+    Calculates the allowance/deduction amount for approved overtime worked
+    on holidays (entirely overtime, since holidays have no scheduled
+    hours), at the component's configured hourly rate.
+    """
+    if not apps.is_installed("attendance"):
+        return 0
+
+    employee = kwargs["employee"]
+    start_date = kwargs["start_date"]
+    end_date = kwargs["end_date"]
+    component = kwargs["component"]
+    day_dict = kwargs["day_dict"]
+
+    _regular_ot, _week_off_ot, holiday_ot = _classify_approved_overtime_seconds(
+        employee, start_date, end_date
+    )
+    return _amount_from_seconds(holiday_ot, component, day_dict)
 
 
 def calculate_based_on_work_type(*_args, **kwargs):
@@ -1048,6 +1156,8 @@ calculation_mapping = {
     "attendance": calculate_based_on_attendance,
     "shift_id": calculate_based_on_shift,
     "overtime": calculate_based_on_overtime,
+    "week_off_overtime": calculate_based_on_week_off_overtime,
+    "holiday_overtime": calculate_based_on_holiday_overtime,
     "work_type_id": calculate_based_on_work_type,
     "children": calculate_based_on_children,
 }

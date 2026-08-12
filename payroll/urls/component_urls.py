@@ -32,11 +32,11 @@ urlpatterns = [
         payslip.PayslipBulkExport.as_view(),
         name="payslip-bulk-export-data",
     ),
-    path(
-        "payroll-create-form-view/",
-        payslip.PayrollCreateFormView.as_view(),
-        name="payroll-create-form-view",
-    ),
+    # path(
+    #     "payroll-create-form-view/",
+    #     payslip.PayrollCreateFormView.as_view(),
+    #     name="payroll-create-form-view",
+    # ),
     path(
         "deduction-tab-list/<int:pk>/",
         allowance_deduction.DeductionTab.as_view(),
@@ -229,6 +229,11 @@ urlpatterns = [
         "view-individual-payslip/<int:employee_id>/<str:start_date>/<str:end_date>/",
         component_views.view_individual_payslip,
         name="view-individual-payslip",
+    ),
+    path(
+        "payslip-pending-attendance-action/",
+        component_views.payslip_pending_attendance_action,
+        name="payslip-pending-attendance-action",
     ),
     # path("view-payslip/", component_views.view_payslip, name="view-payslip"),
     path(

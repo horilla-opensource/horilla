@@ -46,6 +46,7 @@ from horilla.decorators import (
     handle_no_permission,
     hx_request_required,
     login_required,
+    manager_can_enter,
     owner_can_enter,
     permission_required,
 )
@@ -112,7 +113,45 @@ operator_mapping = {
 }
 
 
-def payroll_calculation(employee, start_date, end_date):
+def get_pending_attendance(employee, start_date, end_date):
+    """
+    Attendance records in the payslip period that still need validation
+    and/or overtime approval — surfaced on the payslip so HR can act on
+    them without leaving the page. Unvalidated attendance doesn't count
+    toward pay (see get_attendance() in payroll/methods/methods.py).
+    """
+    if not apps.is_installed("attendance"):
+        return []
+    Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
+    records = Attendance.objects.filter(
+        employee_id=employee,
+        attendance_date__range=(start_date, end_date),
+    ).order_by("attendance_date")
+
+    pending = []
+    for att in records:
+        needs_validation = not att.attendance_validated
+        needs_ot_approval = (
+            bool(att.overtime_second) and not att.attendance_overtime_approve
+        )
+        if not needs_validation and not needs_ot_approval:
+            continue
+        worked = att.at_work_second or 0
+        overtime = att.overtime_second or 0
+        pending.append(
+            {
+                "id": att.id,
+                "date_label": att.attendance_date.strftime("%d %b %Y"),
+                "worked_label": f"{worked // 3600}h {(worked % 3600) // 60:02d}m",
+                "overtime_label": f"{overtime // 3600}h {(overtime % 3600) // 60:02d}m",
+                "needs_validation": needs_validation,
+                "needs_ot_approval": needs_ot_approval,
+            }
+        )
+    return pending
+
+
+def payroll_calculation(employee, start_date, end_date, month_summary={}):
     """
     Calculate payroll components for the specified employee within the given date range.
 
@@ -126,8 +165,10 @@ def payroll_calculation(employee, start_date, end_date):
     Returns:
         dict: A dictionary containing the calculated payroll components:
     """
+    basic_pay_details = compute_salary_on_period(
+        employee, start_date, end_date, month_summary=month_summary
+    )
 
-    basic_pay_details = compute_salary_on_period(employee, start_date, end_date)
     if not basic_pay_details:
         return None
     contract = basic_pay_details["contract"]
@@ -139,6 +180,32 @@ def payroll_calculation(employee, start_date, end_date):
     paid_days = basic_pay_details["paid_days"]
     unpaid_days = basic_pay_details["unpaid_days"]
     partial_pay_days = basic_pay_details.get("partial_pay_days", 0)
+
+    def _secs_to_label(secs):
+        secs = int(secs or 0)
+        return f"{secs // 3600}h {(secs % 3600) // 60:02d}m"
+
+    regular_seconds = basic_pay_details.get("regular_seconds")
+    ot_seconds = basic_pay_details.get("ot_seconds")
+    regular_hours_label = (
+        _secs_to_label(regular_seconds) if regular_seconds is not None else None
+    )
+    ot_hours_label = _secs_to_label(ot_seconds) if ot_seconds is not None else None
+
+    ot_regular_seconds = basic_pay_details.get("ot_regular_seconds", 0)
+    ot_week_off_seconds = basic_pay_details.get("ot_week_off_seconds", 0)
+    ot_holiday_seconds = basic_pay_details.get("ot_holiday_seconds", 0)
+    ot_regular_hours_label = (
+        _secs_to_label(ot_regular_seconds) if ot_regular_seconds else None
+    )
+    ot_week_off_hours_label = (
+        _secs_to_label(ot_week_off_seconds) if ot_week_off_seconds else None
+    )
+    ot_holiday_hours_label = (
+        _secs_to_label(ot_holiday_seconds) if ot_holiday_seconds else None
+    )
+
+    pending_attendance = get_pending_attendance(employee, start_date, end_date)
 
     working_days_details = basic_pay_details["month_data"]
 
@@ -162,6 +229,11 @@ def payroll_calculation(employee, start_date, end_date):
         "day_dict": working_days_details,
     }
     # basic pay will be basic_pay = basic_pay - update_compensation_amount
+    # Overtime pay (regular/week-off/holiday) comes from the configurable
+    # "Regular Overtime" / "Week Off Overtime" / "Holiday Overtime"
+    # Allowance types — see calculate_based_on_overtime and friends in
+    # payroll/methods/payslip_calc.py. Nothing to inject here; it's just
+    # part of whatever calculate_allowance() returns below.
     allowances = calculate_allowance(**kwargs)
 
     # finding the total allowance
@@ -172,7 +244,6 @@ def payroll_calculation(employee, start_date, end_date):
     updated_gross_pay_data = calculate_gross_pay(**kwargs)
     gross_pay = updated_gross_pay_data["gross_pay"]
     gross_pay_deductions = updated_gross_pay_data["deductions"]
-
     kwargs["gross_pay"] = gross_pay
     pretax_deductions = calculate_pre_tax_deduction(**kwargs)
     post_tax_deductions = calculate_post_tax_deduction(**kwargs)
@@ -244,6 +315,12 @@ def payroll_calculation(employee, start_date, end_date):
         "paid_days": paid_days,
         "unpaid_days": unpaid_days,
         "partial_pay_days": partial_pay_days,
+        "regular_hours_label": regular_hours_label,
+        "ot_hours_label": ot_hours_label,
+        "ot_regular_hours_label": ot_regular_hours_label,
+        "ot_week_off_hours_label": ot_week_off_hours_label,
+        "ot_holiday_hours_label": ot_holiday_hours_label,
+        "pending_attendance": pending_attendance,
         "basic_pay_deductions": basic_pay_deductions,
         "gross_pay_deductions": gross_pay_deductions,
         "pretax_deductions": pretax_deductions["pretax_deductions"],
@@ -910,6 +987,12 @@ def generate_payslip(request):
 
             group_name = form.cleaned_data["group_name"]
             emp_count = employees.count()
+
+            from attendance.views.summary import build_monthly_summary
+
+            att_rows, _, _ = build_monthly_summary(start_date, end_date, employees)
+            att_summary = {row["employee"].pk: row for row in att_rows}
+
             for employee in employees:
                 contract = Contract.objects.filter(
                     employee_id=employee, contract_status="active"
@@ -924,7 +1007,12 @@ def generate_payslip(request):
                     emp_count -= 1
                     continue
 
-                payslip = payroll_calculation(employee, start_date, end_date)
+                payslip = payroll_calculation(
+                    employee,
+                    start_date,
+                    end_date,
+                    month_summary=att_summary.get(employee.pk, dict({})),
+                )
                 payslips.append(payslip)
                 json_data.append(payslip["json_data"])
 
@@ -1191,6 +1279,54 @@ def view_individual_payslip(request, employee_id, start_date, end_date):
         request,
         "payroll/payslip/individual_payslip.html",
         payslip_data,
+    )
+
+
+@login_required
+@manager_can_enter("attendance.change_attendance")
+@hx_request_required
+def payslip_pending_attendance_action(request):
+    """
+    Validate or approve overtime for a single attendance record directly
+    from the payslip page, without navigating away. Does not regenerate
+    the payslip itself — re-run payroll to pick up the updated hours.
+    """
+    if not apps.is_installed("attendance"):
+        return HttpResponse("")
+
+    attendance_id = request.POST.get("attendance_id")
+    action = request.POST.get("action")
+
+    Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
+    try:
+        attendance = Attendance.objects.get(pk=attendance_id)
+    except (Attendance.DoesNotExist, ValueError, TypeError):
+        return HttpResponse("")
+
+    if action == "validate":
+        attendance.attendance_validated = True
+        attendance.save()
+    elif action == "approve_ot":
+        attendance.attendance_overtime_approve = True
+        attendance.save()
+
+    worked = attendance.at_work_second or 0
+    overtime = attendance.overtime_second or 0
+    pending_row = {
+        "id": attendance.id,
+        "date_label": attendance.attendance_date.strftime("%d %b %Y"),
+        "worked_label": f"{worked // 3600}h {(worked % 3600) // 60:02d}m",
+        "overtime_label": f"{overtime // 3600}h {(overtime % 3600) // 60:02d}m",
+        "needs_validation": not attendance.attendance_validated,
+        "needs_ot_approval": bool(attendance.overtime_second)
+        and not attendance.attendance_overtime_approve,
+    }
+    if not pending_row["needs_validation"] and not pending_row["needs_ot_approval"]:
+        return HttpResponse("")
+    return render(
+        request,
+        "payroll/payslip/pending_attendance_row.html",
+        {"pa": pending_row},
     )
 
 

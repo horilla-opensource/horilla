@@ -420,7 +420,7 @@ class GeneratePayslipForm(HorillaForm):
 
     group_name = forms.CharField(
         label="Batch name",
-        required=True,
+        required=False,
         # help_text="Enter +-something if you want to generate payslips by batches",
     )
     employee_id = HorillaMultiSelectField(

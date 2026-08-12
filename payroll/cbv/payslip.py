@@ -188,11 +188,16 @@ class PayslipNav(HorillaNavView):
         self.search_url = reverse("payslip-list")
         self.actions = []
         if self.request.user.has_perm("payroll.add_payslip"):
-            self.create_attrs = f"""
-                data-target="#genericModal"
+            # self.create_attrs = f"""
+            #     data-target="#genericModal"
+            #     data-toggle="oh-modal-toggle"
+            #     hx-get="{reverse('payroll-create-form-view')}"
+            #     hx-target="#genericModalBody"
+            # """
+            self.create_attrs = """
                 data-toggle="oh-modal-toggle"
-                hx-get="{reverse('payroll-create-form-view')}"
-                hx-target="#genericModalBody"
+                data-target="#bulkPayslipModal"
+                style="cursor:pointer;"
             """
 
             self.actions.extend(
