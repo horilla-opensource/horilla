@@ -155,11 +155,15 @@
             </div>
           </div>
 
-          <!-- Export -->
+          <!-- Export — msSyncExportLink() switches this to exporting only
+               the checked rows whenever the table's own selection
+               (#selectedInstances) is non-empty, same idea as the
+               Select/Unselect/Update toolbar already reacting to it. -->
           <a id="export-btn"
              href="{% url 'attendance-monthly-summary-export' %}?{{ pd }}"
              class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-brand-800 transition duration-300 cursor-pointer">
-            <ion-icon name="download-outline"></ion-icon> {% trans "Export XLSX" %}
+            <ion-icon name="download-outline"></ion-icon>
+            <span id="export-btn-label">{% trans "Export XLSX" %}</span>
           </a>
         </div>
       </div>
@@ -306,6 +310,21 @@ msRenderFilterTags();
 
 function msSyncExportLink() {
   const params = new URLSearchParams(new FormData(document.getElementById('summary-filter-form')));
+  const selectedEl = document.getElementById('selectedInstances');
+  let selectedIds = [];
+  if (selectedEl) {
+    try { selectedIds = JSON.parse(selectedEl.getAttribute('data-ids') || '[]'); } catch (e) {}
+  }
+  const label = document.getElementById('export-btn-label');
+  if (selectedIds.length) {
+    // Selected rows override the filter bar entirely — see the matching
+    // comment in attendance_monthly_summary_export().
+    params.delete('employee_ids');
+    selectedIds.forEach(id => params.append('employee_ids', id));
+    if (label) label.textContent = "{% trans 'Export Selected' %} (" + selectedIds.length + ")";
+  } else if (label) {
+    label.textContent = "{% trans 'Export XLSX' %}";
+  }
   document.getElementById('export-btn').href =
     "{% url 'attendance-monthly-summary-export' %}?" + params.toString();
 }
@@ -318,7 +337,25 @@ document.getElementById('summary-table-container').addEventListener('htmx:afterS
 
 // Row/header selection (Select/Unselect, highlight, count badges) is handled
 // entirely by the shared index.js functions via each checkbox's own inline
-// onchange, same as the Employee list — no delegation needed here.
+// onchange, same as the Employee list — no delegation needed here. But the
+// export link also needs to react to selection changes, which happen via
+// plain JS (no htmx request), so htmx:afterSwap above won't catch them.
+// Observing #summary-table-container itself (which htmx swaps the INSIDE
+// of, but never replaces) with subtree:true means the observer keeps
+// working across every swap without needing to re-attach it each time.
+(function () {
+  const container = document.getElementById('summary-table-container');
+  if (!container) return;
+  const observer = new MutationObserver(function (mutations) {
+    for (const m of mutations) {
+      if (m.target.id === 'selectedInstances') {
+        msSyncExportLink();
+        return;
+      }
+    }
+  });
+  observer.observe(container, { attributes: true, attributeFilter: ['data-ids'], subtree: true });
+}());
 
 // ── Per-day hours editing — must live here (server-rendered template) so
 //    the functions are guaranteed to be defined regardless of HTMX reloads.
