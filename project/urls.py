@@ -141,7 +141,11 @@ urlpatterns = [
     path("delete-task/<int:task_id>/", views.delete_task, name="delete-task"),
     path("task-details/<int:task_id>/", views.task_details, name="task-details"),
     path("task-filter/<int:project_id>/", views.task_filter, name="task-filter"),
-    path("task-stage-change/", views.task_stage_change, name="task-stage-change"),
+    path(
+        "task-stage-change/<int:task_id>/",
+        views.task_stage_change,
+        name="task-stage-change",
+    ),
     # path("task-timesheet/<int:task_id>/", views.task_timesheet, name="task-timesheet"),
     path(
         "task-timesheet/<int:task_id>/",

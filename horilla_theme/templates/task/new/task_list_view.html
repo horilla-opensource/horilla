@@ -1,5 +1,6 @@
 {% load static i18n horillafilters taskfilters %}
 
+<div id="taskListRoot">
 {% if messages %}
     <div class="oh-alert-container" id="ohMessages">
         {% for message in messages %}
@@ -15,7 +16,10 @@
     <div class="accordion-wrapper space-y-2" id="projectStages">
         {% for stage in stages %}
             <div class="accordion-item border border-primary-300 rounded-md">
-                <button class="accordion-btn-pr w-full flex justify-between items-center px-4 py-2 bg-primary-100 text-primary-600 text-sm transition-all">
+                <button
+                    id="stageAccordionBtn{{stage.id}}"
+                    class="accordion-btn-pr w-full flex justify-between items-center px-4 py-2 bg-primary-100 text-primary-600 text-sm transition-all"
+                >
                     <div class="flex items-center gap-2">
                         <span
                             class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs"
@@ -89,7 +93,7 @@
                                             <th class="p-3">{% trans "Task Managers" %}</th>
                                             <th class="p-3">{% trans "End Date" %}</th>
                                             <th class="p-3">{% trans "Status" %}</th>
-                                            {% comment %} <th class="p-3">{% trans "Stage" %}</th> {% endcomment %}
+                                            <th class="p-3">{% trans "Stage" %}</th>
                                             <th class="p-3 text-center">{% trans "Document" %}</th>
                                             <th class="p-3 w-[320px]">{% trans "Description" %}</th>
                                             {% if request.user|is_project_manager:stage.project %}
@@ -138,6 +142,35 @@
                                                                         {% endif %}
                                                                     >
                                                                         {{ option.1 }}
+                                                                    </option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </td>
+                                                    <td class="p-3 relative">
+                                                        <div
+                                                            class="oh-sticky-table__td oh-table-config__td"
+                                                            onclick="event.stopPropagation()"
+                                                        >
+                                                            <select
+                                                                class="oh-select"
+                                                                hx-get="{% url 'task-stage-change' task.id %}?view=list"
+                                                                hx-trigger="change"
+                                                                hx-target="#taskListRoot"
+                                                                hx-select="#taskListRoot"
+                                                                hx-swap="outerHTML"
+                                                                tabindex="-1"
+                                                                aria-hidden="true"
+                                                                name="stage"
+                                                            >
+                                                                {% for project_stage in stages %}
+                                                                    <option
+                                                                        value="{{project_stage.id}}"
+                                                                        {% if project_stage.id == task.stage_id %}
+                                                                            selected
+                                                                        {% endif %}
+                                                                    >
+                                                                        {{ project_stage.title }}
                                                                     </option>
                                                                 {% endfor %}
                                                             </select>
@@ -251,7 +284,12 @@
             }
         });
     });
+
+    {% if reopen_stage_id %}
+        document.getElementById('stageAccordionBtn{{ reopen_stage_id }}')?.click();
+    {% endif %}
 </script>
+</div>
 
 <!-- COLLAPSE -->
 <script>

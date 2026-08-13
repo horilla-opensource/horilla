@@ -980,26 +980,50 @@ def task_filter(request, project_id):
 
 
 @login_required
-def task_stage_change(request):
+def task_stage_change(request, task_id):
     """
     This method is used to change the current stage of a task
     """
-    task_id = request.POST.get("task")
-    stage_id = request.POST.get("stage")
-    if not task_id or not stage_id:
-        messages.error(request, _("Missing required parameters"))
-        return JsonResponse({"error": "Missing required parameters"}, status=400)
+    stage_id = request.GET.get("stage")
+    task = Task.find(task_id)
+    if not task:
+        return HorillaRedirect(request, message=_("Task not found"))
+
     stage = ProjectStage.objects.filter(id=stage_id).first()
     if not stage:
         messages.error(request, _("Stage not found"))
-        return JsonResponse({"error": "Stage not found"}, status=404)
-    Task.objects.filter(id=task_id).update(stage=stage)
-    return JsonResponse(
-        {
-            "type": "success",
-            "message": _("Task stage updated"),
-        }
-    )
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+
+    if task.end_date and task.end_date < datetime.date.today():
+        messages.warning(request, _("Cannot update stage. Task has already expired."))
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+
+    project = task.project
+    if not (
+        request.user.has_perm("project.change_task")
+        or request.user.has_perm("project.change_project")
+        or request.user.employee_get in task.task_managers.all()
+        or request.user.employee_get in task.task_members.all()
+        or request.user.employee_get in project.managers.all()
+        or request.user.employee_get in project.members.all()
+    ):
+        messages.info(request, _("You dont have permission."))
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+
+    task.stage = stage
+    task.save()
+    messages.success(request, _("Task stage has been updated successfully"))
+
+    stages = ProjectStage.objects.filter(project=project).order_by("sequence")
+    tasks = Task.objects.filter(project=project)
+    context = {
+        "tasks": tasks.distinct(),
+        "stages": stages,
+        "project_id": project.id,
+        "reopen_stage_id": stage.id,
+    }
+    html = render_to_string("task/new/task_list_view.html", context, request)
+    return HttpResponse(html)
 
 
 @login_required
