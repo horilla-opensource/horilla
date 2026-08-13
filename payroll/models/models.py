@@ -2621,6 +2621,7 @@ class PayrollGeneralSetting(models.Model):
         default=30,
     )
     company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
+    objects = HorillaCompanyManager("company_id")
 
 
 class EncashmentGeneralSettings(models.Model):
