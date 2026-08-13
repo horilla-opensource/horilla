@@ -251,7 +251,7 @@ class ProjectsList(HorillaListView):
         ),
         (
             "cancelled--dot",
-            _("Completed"),
+            _("Cancelled"),
             """
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('cancelled');
@@ -459,7 +459,7 @@ class ProjectCardView(HorillaCardView):
         ),
         (
             "cancelled--dot",
-            _("Completed"),
+            _("Cancelled"),
             """
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('cancelled');
