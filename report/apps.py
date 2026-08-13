@@ -15,4 +15,14 @@ class ReportConfig(AppConfig):
             path("report/", include("report.urls")),
         )
 
+        # Load standard report definitions + optional subscription scheduler
+        try:
+            import report.metrics  # noqa: F401
+        except Exception:
+            pass
+        try:
+            import report.scheduler  # noqa: F401
+        except Exception:
+            pass
+
         return ready

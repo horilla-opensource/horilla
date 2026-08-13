@@ -15,6 +15,7 @@ from report.dynamic_filter_utils import (
     parse_multi_value,
     resolve_relative_date_range,
 )
+from report.pivot_limits import pivot_json_with_meta
 
 # Maps the field ids used by the dynamic Filters modal to the ORM path
 # `employee_pivot` filters on. "name" and "reporting_manager" are handled
@@ -346,4 +347,4 @@ def employee_pivot(request):
         }
         for item in data
     ]
-    return JsonResponse(data_list, safe=False)
+    return pivot_json_with_meta(data_list)

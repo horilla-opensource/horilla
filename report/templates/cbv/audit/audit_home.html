@@ -1,0 +1,17 @@
+{% extends "index.html" %}
+{% load static i18n %}
+
+{% block content %}
+<div hx-get='{% url "report-audit-nav" %}' hx-trigger="load"></div>
+
+{% include "generic/components.html" %}
+
+<div
+    class="oh-wrapper"
+    hx-get='{% url "report-audit-list" %}'
+    hx-trigger="load"
+    id="listContainer"
+>
+    <div class="animated-background"></div>
+</div>
+{% endblock %}

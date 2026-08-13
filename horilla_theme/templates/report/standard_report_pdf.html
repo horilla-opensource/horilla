@@ -1,0 +1,354 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>{{ report_title }}</title>
+  <style>
+    @page {
+      size: A4 {% if landscape %}landscape{% else %}portrait{% endif %};
+      margin: 12mm 12mm 20mm 12mm;
+      @frame footer_frame {
+        -pdf-frame-content: footerContent;
+        bottom: 8mm;
+        margin-left: 12mm;
+        margin-right: 12mm;
+        height: 12mm;
+      }
+    }
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 10px;
+      color: #333333;
+      line-height: 1.35;
+    }
+    #footerContent {
+      font-size: 8px;
+      color: #777777;
+      border-top: 1px solid #dddddd;
+      padding-top: 3px;
+      text-align: center;
+    }
+    .section-break {
+      page-break-before: always;
+    }
+    .kpi-table tr, .data-table tr {
+      page-break-inside: avoid;
+    }
+    .chart-block {
+      page-break-inside: avoid;
+      text-align: center;
+      margin: 4px 0 14px;
+    }
+    .chart-title {
+      font-size: 10px;
+      font-weight: bold;
+      color: #333333;
+      margin-bottom: 4px;
+      text-align: left;
+    }
+    .chart-img {
+      max-width: 100%;
+    }
+    .truncation-note {
+      background: #FFF4CE;
+      border: 1px solid #E8B84B;
+      color: #7A5B12;
+      padding: 6px 10px;
+      margin: 6px 0 10px;
+      font-size: 9px;
+    }
+
+    /* ---- Letterhead ---- */
+    .letterhead {
+      border-bottom: 2px solid #E54F38;
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+    }
+    .letterhead-table { width: 100%; border-collapse: collapse; }
+    .letterhead-table td { vertical-align: top; }
+    .letterhead-table td.logo-col { width: 18mm; padding-right: 4mm; }
+    .letterhead-table td.company-col { width: 48%; }
+    .letterhead-table td.meta-col { width: 42%; }
+    .logo img { max-width: 52px; max-height: 52px; }
+    .company-name {
+      font-size: 14px;
+      font-weight: bold;
+      margin: 0 0 3px;
+      color: #222222;
+    }
+    .company-line { margin: 0 0 1px; color: #555555; font-size: 9px; }
+    .report-meta { text-align: right; }
+    .badge {
+      display: inline-block;
+      background: #FCEDEB;
+      color: #E54F38;
+      font-size: 9px;
+      font-weight: bold;
+      padding: 2px 6px;
+      margin-bottom: 4px;
+    }
+    .report-title {
+      font-size: 17px;
+      font-weight: bold;
+      color: #E54F38;
+      margin: 0 0 4px;
+    }
+    .period { color: #555555; font-size: 9px; margin: 0; }
+
+    /* ---- Document control strip ---- */
+    .doc-control {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 12px;
+    }
+    .doc-control td {
+      border: 1px solid #E7E7E7;
+      background: #FAFAFA;
+      padding: 4px 8px;
+      font-size: 8.5px;
+      color: #444444;
+    }
+    .doc-control .dc-label {
+      font-size: 7.5px;
+      font-weight: bold;
+      color: #888888;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-size: 12px;
+      color: #E54F38;
+      margin: 14px 0 6px;
+      border-bottom: 1px solid #F7C8C1;
+      padding-bottom: 3px;
+    }
+    .narrative {
+      background: #FFF8E8;
+      border: 1px solid #F0D48A;
+      padding: 8px 10px;
+      margin: 8px 0 12px;
+      font-size: 10px;
+    }
+
+    /* ---- Applied filters ---- */
+    .filter-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 4px;
+    }
+    .filter-table th, .filter-table td {
+      border: 1px solid #EAD9A8;
+      padding: 4px 8px;
+      font-size: 9px;
+      vertical-align: top;
+    }
+    .filter-table th {
+      background: #F7EBC9;
+      color: #6B5310;
+      font-weight: bold;
+      text-align: left;
+    }
+    .filter-table td { background: #FFFBEF; }
+    .filter-table td.f-label { width: 30%; font-weight: bold; color: #555555; }
+    .filters { margin: 0 0 8px; padding: 0; }
+    .filters li { margin: 0 0 2px; }
+
+    /* ---- KPI + data tables ---- */
+    .kpi-table, .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      margin-top: 4px;
+    }
+    .kpi-table th, .kpi-table td,
+    .data-table th, .data-table td {
+      border: 1px solid #DDDDDD;
+      padding: 4px 6px;
+      font-size: 9px;
+      vertical-align: top;
+      word-wrap: break-word;
+    }
+    .data-table.dense th, .data-table.dense td {
+      font-size: 7.5px;
+      padding: 3px 4px;
+    }
+    .kpi-table th, .data-table th {
+      background: #E54F38;
+      color: #FFFFFF;
+      font-weight: bold;
+    }
+    tr.row-even td { background: #FEF6F5; }
+    td.num, th.num { text-align: right; }
+    td.txt, th.txt { text-align: left; }
+    .kpi-value { color: #AC3B2A; font-weight: bold; }
+    .delta-up { color: #1B7A45; font-weight: bold; }
+    .delta-down { color: #B42318; font-weight: bold; }
+    .delta-flat { color: #666666; }
+    .muted { color: #777777; }
+  </style>
+</head>
+<body>
+  <!-- ==================== Letterhead ==================== -->
+  <div class="letterhead">
+    <table class="letterhead-table">
+      <tr>
+        {% if logo_path %}
+        <td class="logo-col">
+          <div class="logo"><img src="{{ logo_path }}" alt="" /></div>
+        </td>
+        {% endif %}
+        <td class="company-col">
+          <p class="company-name">{{ company_name }}</p>
+          {% for line in address_lines %}
+            {% if not forloop.first %}<p class="company-line">{{ line }}</p>{% endif %}
+          {% endfor %}
+        </td>
+        <td class="report-meta meta-col">
+          {% if domain_label %}<div class="badge">{{ domain_label }}</div>{% endif %}
+          <div class="report-title">{{ report_title }}</div>
+          {% if period_label %}<p class="period">{% trans "Reporting period" %}: {{ period_label }}</p>{% endif %}
+          {% if compare_label %}<p class="period">{{ compare_label }}</p>{% endif %}
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ==================== Document control ==================== -->
+  <table class="doc-control">
+    <tr>
+      <td>
+        <div class="dc-label">{% trans "Generated on" %}</div>
+        {{ generated_at }}
+      </td>
+      <td>
+        <div class="dc-label">{% trans "Generated by" %}</div>
+        {% if generated_by %}{{ generated_by }}{% else %}—{% endif %}
+      </td>
+      <td>
+        <div class="dc-label">{% trans "Report ID" %}</div>
+        {% if report_ref %}{{ report_ref }}{% else %}—{% endif %}
+      </td>
+      <td>
+        <div class="dc-label">{% trans "Data rows" %}</div>
+        {{ total_rows }}
+      </td>
+      <td>
+        <div class="dc-label">{% trans "Source" %}</div>
+        {{ product_name }}
+      </td>
+    </tr>
+  </table>
+
+  {% if narrative %}
+  <div class="narrative">{{ narrative }}</div>
+  {% endif %}
+
+  <!-- ==================== Applied filters ==================== -->
+  {% if filter_pairs %}
+  <h2>{% trans "Applied filters" %}</h2>
+  <table class="filter-table">
+    <thead>
+      <tr>
+        <th style="width: 30%;">{% trans "Filter" %}</th>
+        <th>{% trans "Selection" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for label, value in filter_pairs %}
+      <tr>
+        <td class="f-label">{{ label }}</td>
+        <td>{{ value }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% elif filter_chips %}
+  <h2>{% trans "Applied filters" %}</h2>
+  <ul class="filters">
+    {% for chip in filter_chips %}
+    <li>{{ chip }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <!-- ==================== KPIs ==================== -->
+  {% if kpis %}
+  <h2>{% trans "Key metrics" %}</h2>
+  <table class="kpi-table">
+    <thead>
+      <tr>
+        <th>{% trans "Metric" %}</th>
+        <th class="num">{% trans "Value" %}</th>
+        {% if has_compare %}
+        <th class="num">{% trans "Prior" %}</th>
+        <th class="num">{% trans "Change" %}</th>
+        {% endif %}
+        <th>{% trans "Notes" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for kpi in kpis %}
+      <tr class="{% cycle 'row-odd' 'row-even' %}">
+        <td>{{ kpi.label }}</td>
+        <td class="kpi-value num">{{ kpi.value }}</td>
+        {% if has_compare %}
+        <td class="num">{% if kpi.prior_value != None %}{{ kpi.prior_value }}{% else %}—{% endif %}</td>
+        <td class="num delta-{{ kpi.delta_direction|default:'flat' }}">
+          {% if kpi.delta_label %}{{ kpi.delta_label }}{% else %}—{% endif %}
+        </td>
+        {% endif %}
+        <td class="muted">{{ kpi.hint }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  <!-- ==================== Charts ==================== -->
+  {% if chart_images %}
+  <h2>{% trans "Charts" %}</h2>
+  {% for chart in chart_images %}
+  <div class="chart-block">
+    <div class="chart-title">{{ chart.title }}</div>
+    <img class="chart-img" src="{{ chart.path }}" />
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <!-- ==================== Detail data ==================== -->
+  {% if headers %}
+  {# Start the detail table on a fresh page only when preceding sections exist #}
+  <h2 {% if kpis or chart_images %}class="section-break"{% endif %}>{% trans "Detail data" %}</h2>
+  {% if truncated %}
+  <div class="truncation-note">
+    {% blocktrans %}Showing the first {{ shown_rows }} of {{ total_rows }} rows. Narrow the filters or export to CSV for the complete data set.{% endblocktrans %}
+  </div>
+  {% endif %}
+  <table class="data-table{% if dense %} dense{% endif %}" repeat="1">
+    <tr>
+      {% for h, cls in headers %}
+      <th class="{{ cls }}">{{ h }}</th>
+      {% endfor %}
+    </tr>
+    {% for row in rows %}
+    <tr class="{% cycle 'row-odd' 'row-even' %}">
+      {% for cell, cls in row %}
+      <td class="{{ cls }}">{{ cell }}</td>
+      {% endfor %}
+    </tr>
+    {% empty %}
+    <tr><td colspan="{{ col_count }}" class="muted">{% trans "No rows" %}</td></tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+
+  <!-- ==================== Running footer ==================== -->
+  <div id="footerContent">
+    {{ product_name }}{% if report_ref %} &nbsp;·&nbsp; {{ report_ref }}{% endif %}
+    &nbsp;·&nbsp; {% trans "Confidential — for internal use only" %} &nbsp;·&nbsp;
+    {% trans "Page" %} <pdf:pagenumber /> {% trans "of" %} <pdf:pagecount />
+    {% if generated_at %} &nbsp;·&nbsp; {% trans "Generated" %} {{ generated_at }}{% if generated_by %} {% trans "by" %} {{ generated_by }}{% endif %}{% endif %}
+  </div>
+</body>
+</html>

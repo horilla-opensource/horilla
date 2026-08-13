@@ -1214,6 +1214,64 @@
                 width: 100%;
             }
         }
+
+        .md-std-pins {
+            margin: 0 0 1.25rem;
+        }
+        .md-std-pins__head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .md-std-pins__head .md-section-title {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .md-std-pins__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 12px;
+        }
+        .md-std-pin {
+            background: var(--oh-card-bg, #fff);
+            border: 1px solid rgba(0,0,0,.06);
+            border-radius: 12px;
+            padding: 14px 16px;
+            text-decoration: none;
+            color: inherit;
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+        .dark .md-std-pin {
+            background: #242424;
+            border-color: rgba(255,255,255,.08);
+        }
+        .md-std-pin:hover {
+            border-color: var(--primary-600, #E54F38);
+            box-shadow: 0 4px 14px rgba(0,0,0,.06);
+        }
+        .md-std-pin__title {
+            font-size: 13px;
+            font-weight: 600;
+            margin: 0 0 8px;
+        }
+        .md-std-pin__kpis {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 10px;
+        }
+        .md-std-pin__kpi-label {
+            font-size: 10px;
+            color: hsl(0,0%,45%);
+            display: block;
+        }
+        .md-std-pin__kpi-value {
+            font-size: 15px;
+            font-weight: 650;
+            font-variant-numeric: tabular-nums;
+        }
     </style>
 
     <div class="md-dashboard">
@@ -1273,6 +1331,16 @@
         {% endif %}
 
         <!-- KPI Cards -->
+        </div>
+
+        <div class="md-std-pins" id="md-std-pins" hidden>
+            <div class="md-std-pins__head">
+                <h2 class="md-section-title">{% trans "Pinned standard reports" %}</h2>
+                <a class="md-link" href="{% url 'standard-report-catalog' %}">{% trans "Browse reports" %}</a>
+            </div>
+            <div class="md-std-pins__grid" id="md-std-pins-grid"></div>
+        </div>
+
         <div class="md-kpi-grid" id="md-kpi-grid">
             <div class="md-kpi-card md-kpi-card--skeleton"><div class="md-skeleton md-skeleton--icon"></div><div class="md-skeleton md-skeleton--label"></div><div class="md-skeleton md-skeleton--value"></div><div class="md-skeleton md-skeleton--sub"></div></div>
             <div class="md-kpi-card md-kpi-card--skeleton"><div class="md-skeleton md-skeleton--icon"></div><div class="md-skeleton md-skeleton--label"></div><div class="md-skeleton md-skeleton--value"></div><div class="md-skeleton md-skeleton--sub"></div></div>
@@ -1646,6 +1714,48 @@
 
     <script>
         (function() {
+            // Phase 9 — pinned standard-report KPI cards (from favorites)
+            (function loadStandardReportPins() {
+                const wrap = document.getElementById('md-std-pins');
+                const grid = document.getElementById('md-std-pins-grid');
+                if (!wrap || !grid) return;
+                fetch("{% url 'standard-report-dashboard-pins' %}?period_preset=this_month", {
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                })
+                    .then(function (r) { return r.ok ? r.json() : null; })
+                    .then(function (data) {
+                        if (!data || !data.pins || !data.pins.length) return;
+                        wrap.hidden = false;
+                        grid.innerHTML = "";
+                        data.pins.forEach(function (pin) {
+                            const a = document.createElement("a");
+                            a.className = "md-std-pin";
+                            a.href = pin.report_url || "#";
+                            const title = document.createElement("h3");
+                            title.className = "md-std-pin__title";
+                            title.textContent = pin.title || pin.slug;
+                            a.appendChild(title);
+                            const kpis = document.createElement("div");
+                            kpis.className = "md-std-pin__kpis";
+                            (pin.kpis || []).slice(0, 4).forEach(function (kpi) {
+                                const cell = document.createElement("div");
+                                const lab = document.createElement("span");
+                                lab.className = "md-std-pin__kpi-label";
+                                lab.textContent = kpi.label || "";
+                                const val = document.createElement("span");
+                                val.className = "md-std-pin__kpi-value";
+                                val.textContent = kpi.value == null ? "—" : String(kpi.value);
+                                cell.appendChild(lab);
+                                cell.appendChild(val);
+                                kpis.appendChild(cell);
+                            });
+                            a.appendChild(kpis);
+                            grid.appendChild(a);
+                        });
+                    })
+                    .catch(function () { /* silent */ });
+            })();
+
             const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
             const textColor = isDark ? '#cbd5e1' : '#334155';
             const subTextColor = isDark ? '#64748b' : '#94a3b8';

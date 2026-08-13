@@ -1,0 +1,28 @@
+{% extends "index.html" %}
+{% load static i18n %}
+
+{% block content %}
+<style>
+    /* Same status-pill/left-border convention as payroll's Payslip list
+       (payroll/templates/cbv/payslip/payslip_home.html) — colors chosen to
+       match its closest equivalent states (Active ~ Paid/Confirmed,
+       Paused ~ Draft). */
+    .active--dot { background-color: green; }
+    .paused--dot { background-color: grey; }
+    .status-active { border-left: 3.4px solid green !important; border-radius: 4px 0 0 4px; }
+    .status-paused { border-left: 3.4px solid grey !important; border-radius: 4px 0 0 4px; }
+</style>
+<div hx-get='{% url "report-subscriptions-nav" %}' hx-trigger="load"></div>
+
+{% include "generic/components.html" %}
+<div id="relatedModel"></div>
+
+<div
+    class="oh-wrapper"
+    hx-get='{% url "report-subscriptions-list" %}'
+    hx-trigger="load"
+    id="listContainer"
+>
+    <div class="animated-background"></div>
+</div>
+{% endblock %}

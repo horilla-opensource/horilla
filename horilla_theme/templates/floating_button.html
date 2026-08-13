@@ -20,6 +20,18 @@
             box-shadow 0.3s ease;
     }
 
+    /* Every dashboard's "Customize Dashboard" slide-out panel uses its own
+       per-app class prefix (md-, am-, ld-, pd-, ...) but they all share the
+       "customize-panel--open" suffix. This fixed-position FAB sits at
+       bottom-left with a low z-index (9) so it's meant to stay behind
+       overlays, but on narrower viewports the panel's footer can extend
+       over the FAB's screen position, and it renders through. Hide it
+       outright whenever any of those panels is open rather than chase
+       z-index/stacking-context specifics per panel. */
+    body:has([class*="customize-panel--open"]) #floating-buttons {
+        display: none;
+    }
+
     .fab {
         width: 40px;
         height: 40px;

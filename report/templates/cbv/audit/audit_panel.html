@@ -1,0 +1,11 @@
+{% load static i18n %}
+<div hx-get='{% url "report-audit-nav" %}' hx-trigger="load"></div>
+
+<div
+    class="oh-wrapper"
+    hx-get='{% url "report-audit-list" %}'
+    hx-trigger="load"
+    id="listContainer"
+>
+    <div class="animated-background"></div>
+</div>

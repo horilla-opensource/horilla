@@ -20,6 +20,7 @@ if apps.is_installed("recruitment"):
         parse_multi_value,
         resolve_relative_date_range,
     )
+    from report.pivot_limits import pivot_json_with_meta
 
     # Maps the field ids used by the dynamic Filters panel to the ORM path
     # `recruitment_pivot` filters on, keyed by the report's `model` type
@@ -573,4 +574,4 @@ if apps.is_installed("recruitment"):
             ]
         else:
             data_list = []
-        return JsonResponse(data_list, safe=False)
+        return pivot_json_with_meta(data_list)

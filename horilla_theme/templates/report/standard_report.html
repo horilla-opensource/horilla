@@ -1,0 +1,1338 @@
+{% extends "index.html" %}
+{% load static i18n %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<style>
+    .sr-page { padding-bottom: 32px; }
+    .sr-link-btn {
+        background: none; border: none; padding: 0;
+        color: var(--primary-600, #E54F38);
+        font-size: 13px; cursor: pointer; text-decoration: none;
+    }
+    .sr-link-btn:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+    /* Favorite button active state — content-driven, not covered by the base button classes. */
+    .sr-page .oh-btn--secondary-outline.is-on {
+        background: var(--primary-100, #FFF5F1);
+        border-color: var(--primary-600, #E54F38);
+    }
+
+    .sr-letterhead {
+        display: flex; flex-direction: column; gap: 10px;
+        margin-bottom: 16px;
+        border-left: 4px solid var(--primary-600, #E54F38);
+    }
+    .sr-letterhead__top {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        gap: 12px; flex-wrap: wrap;
+    }
+    .sr-letterhead__company { display: flex; gap: 12px; align-items: flex-start; min-width: 0; }
+    .sr-letterhead__logo {
+        width: 40px; height: 40px; border-radius: 8px; object-fit: contain;
+        background: var(--primary-200, #FEF6F5); border: 1px solid var(--primary-500, #F7C8C1);
+        flex-shrink: 0; padding: 3px;
+    }
+    .sr-letterhead__name { margin: 0 0 2px; font-size: 14px; font-weight: 650; }
+    .sr-letterhead__line { margin: 0; font-size: 12px; color: hsl(0,0%,45%); line-height: 1.4; }
+    .dark .sr-letterhead__line { color: hsl(0,0%,70%); }
+    .sr-letterhead__desc { margin: 0; font-size: 13px; color: hsl(0,0%,42%); line-height: 1.45; max-width: 720px; }
+    .dark .sr-letterhead__desc { color: hsl(0,0%,68%); }
+    .sr-letterhead__period { margin: 0; font-size: 12px; font-weight: 500; color: hsl(0,0%,38%); min-height: 16px; }
+    .dark .sr-letterhead__period { color: hsl(0,0%,72%); }
+    .sr-page .oh-card { border-radius: 8px; }
+
+    .sr-section { margin-bottom: 18px; }
+    .sr-section__head {
+        display: flex; align-items: baseline; justify-content: space-between;
+        gap: 12px; margin-bottom: 10px;
+    }
+    .sr-section__title { margin: 0; font-size: 14px; font-weight: 600; }
+
+    .sr-filter-panel { width: min(560px, 90vw); }
+    .sr-preset-row {
+        display: grid; grid-template-columns: 1fr auto;
+        gap: 10px 12px; align-items: end; margin-bottom: 14px; padding-bottom: 14px;
+        border-bottom: 1px solid hsl(213,22%,93%);
+    }
+    .dark .sr-preset-row { border-bottom-color: rgba(255,255,255,.1); }
+    .sr-preset-row__actions {
+        display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    }
+    .sr-filter-grid {
+        display: grid; grid-template-columns: repeat(2, minmax(0,1fr));
+        gap: 12px 14px; align-items: end;
+    }
+    .sr-filter-grid--advanced {
+        margin-top: 14px; padding-top: 14px;
+        border-top: 1px solid hsl(213,22%,93%);
+    }
+    .dark .sr-filter-grid--advanced { border-top-color: rgba(255,255,255,.1); }
+    .sr-field .select2-container { width: 100% !important; }
+    .oh-dropdown__filter .select2-container--open,
+    .oh-modal .select2-container--open { z-index: 1400; }
+    .sr-filter-toolbar {
+        display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+        gap: 10px; margin-top: 14px; padding-top: 12px;
+        border-top: 1px solid hsl(213,22%,93%);
+    }
+    .dark .sr-filter-toolbar { border-top-color: rgba(255,255,255,.1); }
+    .sr-filter-toolbar__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sr-chips {
+        display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px;
+        padding: 10px 12px; border-radius: 8px;
+        background: #FFF8E8; border: 1px solid #F0D48A;
+    }
+    .dark .sr-chips { background: rgba(232,184,75,.12); border-color: rgba(232,184,75,.35); }
+    .sr-chips[hidden] { display: none !important; }
+    .sr-chip {
+        display: inline-flex; align-items: center; padding: 3px 10px;
+        border-radius: 999px; background: #fff; color: hsl(0,0%,25%);
+        font-size: 12px; font-weight: 500; border: 1px solid #E8B84B;
+    }
+    .dark .sr-chip { background: rgba(0,0,0,.25); color: #f7e7b8; border-color: rgba(232,184,75,.45); }
+    .sr-field--dates[hidden], .sr-advanced[hidden] { display: none !important; }
+
+    .sr-status {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 13px; color: hsl(0,0%,45%); padding: 10px 0 4px;
+    }
+    .sr-status[hidden] { display: none !important; }
+    .sr-status--error { color: #dc2626; }
+    .sr-status__dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--primary-600, #E54F38);
+        animation: sr-pulse 1s ease-in-out infinite;
+    }
+    @keyframes sr-pulse {
+        0%,100% { opacity: .35; transform: scale(.9); }
+        50% { opacity: 1; transform: scale(1); }
+    }
+
+    .sr-kpi-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;
+    }
+    .sr-kpi-compare { font-size: 11px; color: hsl(0,0%,45%); margin-top: 6px; }
+    .sr-kpi-delta { font-weight: 650; }
+    .sr-kpi-delta.is-up { color: #1B7A45; }
+    .sr-kpi-delta.is-down { color: #B42318; }
+    .sr-kpi-delta.is-flat { color: hsl(0,0%,45%); }
+    .sr-kpi-hint { font-size: 11px; color: hsl(0,0%,50%); margin-top: 6px; line-height: 1.35; }
+    .sr-kpi-hint:empty { display: none; }
+
+    .sr-charts {
+        display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px;
+    }
+    .sr-charts--single { grid-template-columns: 1fr; }
+    .sr-chart-card h3 { margin: 0 0 8px; font-size: 13px; font-weight: 600; }
+    .sr-chart-prior-note { margin: 0 0 8px; font-size: 11px; color: hsl(0,0%,45%); }
+    .sr-chart-plot { min-height: 230px; }
+    .sr-charts--single .sr-chart-card--donut { max-width: 480px; }
+
+    .sr-table-meta { font-size: 12px; color: hsl(0,0%,45%); }
+    .sr-drill-meta { font-size: 13px; color: hsl(0,0%,40%); margin: 0 0 12px; }
+    .oh-sticky-table__tr:not(.sr-row--drill) { cursor: default; }
+
+    @media (max-width: 900px) {
+        .sr-charts { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+        .sr-filter-panel { width: 90vw; }
+        .sr-filter-grid { grid-template-columns: 1fr; }
+        .sr-kpi-grid { grid-template-columns: 1fr 1fr; }
+        .sr-preset-row { grid-template-columns: 1fr; }
+    }
+</style>
+
+<section class="oh-wrapper oh-main__topbar">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold mb-0">{{ report_name }}</h1>
+    </div>
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+        <div class="relative dropdown-wrapper">
+            <span id="sr-filter-toggle" class="px-5 py-2 h-full bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 cursor-pointer">
+                <ion-icon name="filter"></ion-icon>{% trans "Filter" %}
+            </span>
+            <div class="oh-filter-dropdown dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[400px] p-3 right-0 sr-filter-panel" id="sr-filters">
+                <div class="sr-preset-row">
+                    <div class="sr-field">
+                        <label class="oh-label" for="sr-saved-preset">{% trans "Saved filters" %}</label>
+                        <select class="oh-select w-100" id="sr-saved-preset">
+                            <option value="">{% trans "— Select a preset —" %}</option>
+                            {% for preset in filter_presets %}
+                            <option value="{{ preset.id }}">{{ preset.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="sr-preset-row__actions">
+                        <button type="button" class="oh-btn oh-btn--secondary-outline oh-btn--small" id="sr-load-preset">{% trans "Load" %}</button>
+                        <button type="button" class="oh-btn oh-btn--secondary-outline oh-btn--small" id="sr-delete-preset">{% trans "Delete" %}</button>
+                        <button type="button" class="oh-btn oh-btn--secondary oh-btn--small" id="sr-save-preset">{% trans "Save as…" %}</button>
+                    </div>
+                </div>
+                {{ filter_presets|json_script:"sr-presets-data" }}
+
+                <div class="sr-filter-grid">
+                    <div class="sr-field">
+                        <label class="oh-label" for="sr-preset">{% trans "Period" %}</label>
+                        <select class="oh-select w-100" id="sr-preset">
+                            {% for p in filter_options.period_presets %}
+                            <option value="{{ p.id }}" {% if p.id == "this_month" %}selected{% endif %}>{{ p.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="sr-field">
+                        <label class="oh-label" for="sr-compare">{% trans "Compare" %}</label>
+                        <select class="oh-select w-100" id="sr-compare">
+                            <option value="none" selected>{% trans "No comparison" %}</option>
+                            <option value="prior_period">{% trans "Prior period" %}</option>
+                            <option value="prior_year">{% trans "Prior year" %}</option>
+                        </select>
+                    </div>
+                    <div class="sr-field sr-field--dates" id="sr-custom-dates" hidden>
+                        <label class="oh-label" for="sr-from">{% trans "From" %}</label>
+                        <input class="oh-input w-100" type="date" id="sr-from">
+                    </div>
+                    <div class="sr-field sr-field--dates" id="sr-custom-dates-to" hidden>
+                        <label class="oh-label" for="sr-to">{% trans "To" %}</label>
+                        <input class="oh-input w-100" type="date" id="sr-to">
+                    </div>
+                    {% for field in filter_schema.primary %}
+                    <div class="sr-field">
+                        <label class="oh-label" for="sr-f-{{ field.id }}">{{ field.label }}</label>
+                        <select class="oh-select w-100 sr-filter-input" id="sr-f-{{ field.id }}" data-filter="{{ field.id }}">
+                            {% if field.empty_label %}<option value="">{{ field.empty_label }}</option>{% endif %}
+                            {% for choice in field.choices %}
+                            <option value="{{ choice.id }}" {% if field.default and choice.id == field.default %}selected{% endif %}>{{ choice.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% if filter_schema.advanced %}
+                <div class="sr-filter-grid sr-filter-grid--advanced sr-advanced" id="sr-advanced" hidden>
+                    {% for field in filter_schema.advanced %}
+                    <div class="sr-field">
+                        <label class="oh-label" for="sr-f-{{ field.id }}">{{ field.label }}</label>
+                        <select class="oh-select w-100 sr-filter-input" id="sr-f-{{ field.id }}" data-filter="{{ field.id }}">
+                            {% if field.empty_label %}<option value="">{{ field.empty_label }}</option>{% endif %}
+                            {% for choice in field.choices %}
+                            <option value="{{ choice.id }}">{{ choice.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="sr-filter-toolbar">
+                    {% if filter_schema.advanced %}
+                    <button type="button" class="sr-link-btn" id="sr-toggle-advanced">{% trans "More filters" %}</button>
+                    {% else %}<span></span>{% endif %}
+                    <div class="sr-filter-toolbar__actions">
+                        <button type="button" class="px-4 py-2 rounded-md text-xs flex items-center gap-2 border border-gray-300 hover:bg-gray-50 transition duration-300" id="sr-reset">{% trans "Reset" %}</button>
+                        <button type="button" class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300" id="sr-apply">{% trans "Apply" %}</button>
+                    </div>
+                </div>
+                <div class="sr-chips" id="sr-chips" hidden></div>
+            </div>
+        </div>
+
+        <div class="relative dropdown-wrapper">
+            <button class="px-5 py-2 h-full bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
+                {% trans "Actions" %}
+            </button>
+            <div class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[180px] py-2 right-0">
+                <ul class="text-sm">
+                    <li>
+                        <a class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full cursor-pointer" id="sr-favorite" aria-pressed="{% if is_favorite %}true{% else %}false{% endif %}">
+                            <span id="sr-favorite-icon">{% if is_favorite %}★{% else %}☆{% endif %}</span>
+                            <span id="sr-favorite-label">{% if is_favorite %}{% trans "Favorited" %}{% else %}{% trans "Favorite" %}{% endif %}</span>
+                        </a>
+                    </li>
+                    {% if can_subscribe %}
+                    <li>
+                        <a class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full cursor-pointer" id="sr-subscribe">{% trans "Subscribe" %}</a>
+                    </li>
+                    {% endif %}
+                    {% if explorer_url %}
+                    <li>
+                        <a class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full" href="{{ explorer_url }}">{% trans "Open in Explorer" %}</a>
+                    </li>
+                    {% endif %}
+                    {% if can_export %}
+                    <li>
+                        <a class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full cursor-pointer" id="sr-export-csv">{% trans "Export CSV" %}</a>
+                    </li>
+                    <li>
+                        <a class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full cursor-pointer" id="sr-export-pdf">{% trans "Export PDF" %}</a>
+                    </li>
+                    <li>
+                        <a class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full cursor-pointer" id="sr-export-xlsx">{% trans "Export Excel" %}</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="oh-wrapper mt-3 sr-page" id="sr-page"
+     data-url="{{ data_url }}"
+     data-domain="{{ domain }}"
+     data-export-xlsx="{{ export_xlsx_url }}"
+     data-export-csv="{{ export_csv_url }}"
+     data-export-pdf="{{ export_pdf_url }}"
+     data-favorite-url="{{ favorite_url }}"
+     data-presets-url="{{ presets_url }}"
+     data-subscribe-url="{{ subscribe_url }}"
+     data-subscriptions-url="{{ subscriptions_url }}"
+     data-drilldown-url="{{ drilldown_url }}"
+     data-has-drilldown="{% if has_drilldown %}1{% else %}0{% endif %}"
+     data-default-recipient="{{ default_recipient|escape }}"
+     data-favorited="{% if is_favorite %}1{% else %}0{% endif %}">
+
+    <div class="sr-letterhead oh-card">
+        <div class="sr-letterhead__top">
+            <div class="sr-letterhead__company">
+                {% if company.logo_url %}
+                <img class="sr-letterhead__logo" src="{{ company.logo_url }}" alt="">
+                {% endif %}
+                <div>
+                    <h2 class="sr-letterhead__name">{{ company.name }}</h2>
+                    {% if not company.is_all %}
+                        {% if company.address %}<p class="sr-letterhead__line">{{ company.address }}</p>{% endif %}
+                        {% if company.location_line %}<p class="sr-letterhead__line">{{ company.location_line }}</p>{% endif %}
+                        {% if company.zip %}<p class="sr-letterhead__line">{% trans "ZIP" %}: {{ company.zip }}</p>{% endif %}
+                    {% else %}
+                        <p class="sr-letterhead__line">{% trans "Scoped to all companies in this session" %}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <span class="oh-badge oh-badge--secondary oh-badge--small">{{ domain_label }}</span>
+        </div>
+        {% if report_description %}<p class="sr-letterhead__desc">{{ report_description }}</p>{% endif %}
+        <p class="sr-letterhead__period" id="sr-period-label"></p>
+    </div>
+
+    <div class="sr-status" id="sr-status">
+        <span class="sr-status__dot" id="sr-status-dot" aria-hidden="true"></span>
+        <span id="sr-status-text">{% trans "Loading…" %}</span>
+    </div>
+
+    <div class="sr-section" id="sr-kpi-section" hidden>
+        <div class="sr-section__head"><h3 class="sr-section__title">{% trans "Key metrics" %}</h3></div>
+        <div class="sr-kpi-grid" id="sr-kpis"></div>
+    </div>
+
+    <div class="sr-section" id="sr-chart-section" hidden>
+        <div class="sr-section__head"><h3 class="sr-section__title">{% trans "Charts" %}</h3></div>
+        <div class="sr-charts" id="sr-charts"></div>
+    </div>
+
+    <div class="sr-section" id="sr-table-section" hidden>
+        <div class="sr-section__head">
+            <h3 class="sr-section__title">{% trans "Detail data" %}</h3>
+            <span class="sr-table-meta" id="sr-table-meta"></span>
+        </div>
+        <div class="oh-table_sticky--wrapper" id="sr-table-wrap">
+            <div class="oh-sticky-table">
+                <div class="oh-sticky-table__table" style="width:100%;">
+                    <div class="oh-sticky-table__thead" id="sr-thead"></div>
+                    <div class="oh-sticky-table__tbody" id="sr-tbody"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="oh-modal" id="sr-subscribe-modal" role="dialog" aria-modal="true" aria-labelledby="sr-subscribe-title" aria-hidden="true">
+        <div class="oh-modal__dialog">
+            <div class="oh-modal__dialog-header">
+                <h2 class="oh-modal__dialog-title" id="sr-subscribe-title">{% trans "Subscribe to this report" %}</h2>
+                <button type="button" class="oh-modal__close" id="sr-sub-close">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body">
+                <p>{% trans "Email the current filters on a schedule. Recipients can be any comma-separated addresses." %}</p>
+                <div class="sr-field oh-input-group">
+                    <label class="oh-label" for="sr-sub-name">{% trans "Name" %}</label>
+                    <input class="oh-input w-100" type="text" id="sr-sub-name" value="{{ report_name }}">
+                </div>
+                <div class="sr-field oh-input-group">
+                    <label class="oh-label" for="sr-sub-frequency">{% trans "Frequency" %}</label>
+                    <select class="oh-select w-100" id="sr-sub-frequency">
+                        <option value="daily">{% trans "Daily" %}</option>
+                        <option value="weekly" selected>{% trans "Weekly" %}</option>
+                        <option value="monthly">{% trans "Monthly" %}</option>
+                    </select>
+                </div>
+                <div class="sr-field oh-input-group">
+                    <label class="oh-label" for="sr-sub-format">{% trans "Attachment" %}</label>
+                    <select class="oh-select w-100" id="sr-sub-format">
+                        <option value="xlsx" selected>{% trans "Excel" %}</option>
+                        <option value="pdf">{% trans "PDF" %}</option>
+                    </select>
+                </div>
+                <div class="sr-field oh-input-group">
+                    <label class="oh-label" for="sr-sub-recipients">{% trans "Recipients" %}</label>
+                    <input class="oh-input w-100" type="text" id="sr-sub-recipients" value="{{ default_recipient }}" placeholder="name@company.com, other@company.com">
+                </div>
+            </div>
+            <div class="oh-modal__dialog-footer">
+                <button type="button" class="oh-btn oh-btn--secondary-outline oh-btn--small" id="sr-sub-cancel">{% trans "Cancel" %}</button>
+                <button type="button" class="oh-btn oh-btn--secondary oh-btn--small" id="sr-sub-save">{% trans "Create subscription" %}</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="oh-modal" id="sr-drilldown-modal" role="dialog" aria-modal="true" aria-labelledby="sr-drill-title" aria-hidden="true">
+        <div class="oh-modal__dialog oh-modal__dialog--wide">
+            <div class="oh-modal__dialog-header">
+                <h2 class="oh-modal__dialog-title" id="sr-drill-title">{% trans "Drill-down" %}</h2>
+                <button type="button" class="oh-modal__close" id="sr-drill-close-x">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body">
+                <p class="sr-drill-meta" id="sr-drill-meta"></p>
+                <div class="oh-table_sticky--wrapper" style="max-height:420px;">
+                    <div class="oh-sticky-table">
+                        <div class="oh-sticky-table__table" style="width:100%;">
+                            <div class="oh-sticky-table__thead" id="sr-drill-thead"></div>
+                            <div class="oh-sticky-table__tbody" id="sr-drill-tbody"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="oh-modal__dialog-footer">
+                <button type="button" class="oh-btn oh-btn--secondary-outline oh-btn--small" id="sr-drill-close">{% trans "Close" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const page = document.getElementById("sr-page");
+    const statusEl = document.getElementById("sr-status");
+    const statusText = document.getElementById("sr-status-text");
+    const statusDot = document.getElementById("sr-status-dot");
+    const kpisEl = document.getElementById("sr-kpis");
+    const chartsEl = document.getElementById("sr-charts");
+    const thead = document.getElementById("sr-thead");
+    const tbody = document.getElementById("sr-tbody");
+    const chipsEl = document.getElementById("sr-chips");
+    const kpiSection = document.getElementById("sr-kpi-section");
+    const chartSection = document.getElementById("sr-chart-section");
+    const tableSection = document.getElementById("sr-table-section");
+    const tableMeta = document.getElementById("sr-table-meta");
+    const periodLabel = document.getElementById("sr-period-label");
+    const presetInput = document.getElementById("sr-preset");
+    const compareInput = document.getElementById("sr-compare");
+    const fromInput = document.getElementById("sr-from");
+    const toInput = document.getElementById("sr-to");
+    const customFrom = document.getElementById("sr-custom-dates");
+    const customTo = document.getElementById("sr-custom-dates-to");
+    const advanced = document.getElementById("sr-advanced");
+    const filterInputs = Array.from(document.querySelectorAll(".sr-filter-input"));
+    const chartInstances = [];
+
+    const brand = getComputedStyle(document.documentElement).getPropertyValue("--primary-600").trim() || "#E54F38";
+    const brandSoft = getComputedStyle(document.documentElement).getPropertyValue("--primary-500").trim() || "#F7C8C1";
+    const isDark = document.documentElement.classList.contains("dark")
+        || document.body.classList.contains("dark");
+
+    const filterDefaults = {};
+    filterInputs.forEach((el) => {
+        filterDefaults[el.dataset.filter] = el.value;
+    });
+
+    function setSelectValue(el, value) {
+        if (!el) return;
+        const next = value == null ? "" : String(value);
+        el.value = next;
+        if (window.jQuery) {
+            const $el = window.jQuery(el);
+            if ($el.hasClass("select2-hidden-accessible")) {
+                $el.val(next).trigger("change.select2");
+            }
+        }
+    }
+
+    function initOhSelects(root, dropdownParent) {
+        if (!window.jQuery || !window.jQuery.fn.select2) return;
+        const $root = window.jQuery(root || page);
+        const parent = dropdownParent
+            ? window.jQuery(dropdownParent)
+            : window.jQuery(document.body);
+        $root.find("select.oh-select").each(function () {
+            const $el = window.jQuery(this);
+            if ($el.hasClass("select2-hidden-accessible")) {
+                try { $el.select2("destroy"); } catch (e) {}
+            }
+            $el.select2({ width: "100%", dropdownParent: parent });
+        });
+    }
+
+    function iso(d) { return d.toISOString().slice(0, 10); }
+
+    function defaultDates() {
+        if (fromInput.value && toInput.value) return;
+        const today = new Date();
+        const first = new Date(today.getFullYear(), today.getMonth(), 1);
+        if (!fromInput.value) fromInput.value = iso(first);
+        if (!toInput.value) toInput.value = iso(today);
+    }
+
+    function syncCustomVisibility() {
+        const custom = presetInput.value === "custom";
+        customFrom.hidden = !custom;
+        customTo.hidden = !custom;
+    }
+
+    function queryString() {
+        const params = new URLSearchParams();
+        params.set("period_preset", presetInput.value || "this_month");
+        if (compareInput && compareInput.value && compareInput.value !== "none") {
+            params.set("compare_preset", compareInput.value);
+        }
+        if (presetInput.value === "custom") {
+            if (fromInput.value) params.set("from_date", fromInput.value);
+            if (toInput.value) params.set("to_date", toInput.value);
+        }
+        filterInputs.forEach((el) => {
+            if (el.value) params.set(el.dataset.filter, el.value);
+        });
+        return params.toString();
+    }
+
+    function clearCharts() {
+        while (chartInstances.length) {
+            const c = chartInstances.pop();
+            try { c.destroy(); } catch (e) {}
+        }
+        chartsEl.innerHTML = "";
+        chartsEl.classList.remove("sr-charts--single");
+    }
+
+    function setPeriodLabel(period, compare) {
+        if (!period) {
+            periodLabel.textContent = "";
+            return;
+        }
+        const from = period.from_date || "";
+        const to = period.to_date || "";
+        let text = from && to
+            ? "{% trans 'Period' %}: " + from + " → " + to
+            : "";
+        if (compare && compare.period) {
+            const cf = compare.period.from_date || "";
+            const ct = compare.period.to_date || "";
+            const clabel = compare.label || "{% trans 'Compare' %}";
+            if (cf && ct) {
+                text += text ? "  ·  " : "";
+                text += clabel + ": " + cf + " → " + ct;
+            }
+        }
+        periodLabel.textContent = text;
+    }
+
+    function renderChips(list) {
+        chipsEl.innerHTML = "";
+        (list || []).forEach((text) => {
+            const chip = document.createElement("span");
+            chip.className = "sr-chip";
+            chip.textContent = text;
+            chipsEl.appendChild(chip);
+        });
+        chipsEl.hidden = !(list && list.length);
+    }
+
+    function renderKpis(kpis) {
+        kpisEl.innerHTML = "";
+        (kpis || []).forEach((kpi) => {
+            const card = document.createElement("div");
+            card.className = "oh-card-dashboard oh-card-dashboard--neutral";
+
+            const header = document.createElement("div");
+            header.className = "oh-card-dashboard__header";
+            const label = document.createElement("span");
+            label.className = "oh-card-dashboard__title";
+            label.textContent = kpi.label || "";
+            header.appendChild(label);
+
+            const body = document.createElement("div");
+            body.className = "oh-card-dashboard__body";
+            const counts = document.createElement("div");
+            counts.className = "oh-card-dashboard__counts";
+            const value = document.createElement("span");
+            value.className = "oh-card-dashboard__count";
+            value.textContent = kpi.value == null ? "" : String(kpi.value);
+            counts.appendChild(value);
+            body.appendChild(counts);
+
+            if (kpi.prior_value != null && kpi.prior_value !== "") {
+                const cmp = document.createElement("div");
+                cmp.className = "sr-kpi-compare";
+                const prior = document.createElement("span");
+                prior.textContent = "{% trans 'Prior' %}: " + String(kpi.prior_value);
+                cmp.appendChild(prior);
+                if (kpi.delta_label) {
+                    const delta = document.createElement("span");
+                    delta.className = "sr-kpi-delta is-" + (kpi.delta_direction || "flat");
+                    delta.textContent = " " + kpi.delta_label;
+                    cmp.appendChild(delta);
+                }
+                body.appendChild(cmp);
+            }
+            if (kpi.hint) {
+                const hint = document.createElement("div");
+                hint.className = "sr-kpi-hint";
+                hint.textContent = kpi.hint;
+                body.appendChild(hint);
+            }
+
+            card.appendChild(header);
+            card.appendChild(body);
+            kpisEl.appendChild(card);
+        });
+        kpiSection.hidden = !(kpis && kpis.length);
+    }
+
+    function chartColors(n) {
+        const palette = [brand, "#ce4732", "#AC3B2A", "#9ca3af", brandSoft, "#6b7280", "#FBE5E1"];
+        const out = [];
+        for (let i = 0; i < Math.max(n, 1); i++) out.push(palette[i % palette.length]);
+        return out;
+    }
+
+    function baseChartOptions(height) {
+        return {
+            chart: {
+                fontFamily: "inherit",
+                toolbar: { show: false },
+                background: "transparent",
+                height: height || 250,
+                width: "100%",
+                parentHeightOffset: 0,
+                animations: { enabled: false },
+                redrawOnParentResize: true,
+                redrawOnWindowResize: true,
+            },
+            theme: { mode: isDark ? "dark" : "light" },
+            grid: {
+                borderColor: isDark ? "rgba(255,255,255,0.08)" : "#eee",
+                strokeDashArray: 3,
+                padding: { left: 8, right: 8, top: 0, bottom: 0 },
+            },
+            dataLabels: { enabled: false },
+            legend: {
+                position: "bottom",
+                fontSize: "12px",
+                horizontalAlign: "center",
+                markers: { width: 8, height: 8, radius: 8 },
+                itemMargin: { horizontal: 8, vertical: 0 },
+            },
+            tooltip: { theme: isDark ? "dark" : "light" },
+        };
+    }
+
+    function renderCharts(charts) {
+        clearCharts();
+        if (!charts || !charts.length) {
+            chartSection.hidden = true;
+            return;
+        }
+        chartSection.hidden = false;
+        if (charts.length === 1) chartsEl.classList.add("sr-charts--single");
+
+        const chartDimMap = {
+            by_dept: "department",
+            by_type: "employee_type",
+            funnel_stages: "stage",
+            sources: "source",
+            ot_dept: "department",
+            span_managers: "manager",
+            age_buckets: "age_bucket",
+            stage_avg: "stage",
+            source_rate: "source",
+            expiry_buckets: "bucket",
+            ot_top: "employee",
+        };
+
+        charts.forEach((chart) => {
+            const type = chart.type || "bar";
+            const wrap = document.createElement("div");
+            wrap.className = "oh-card sr-chart-card sr-chart-card--" + type;
+            const title = document.createElement("h3");
+            title.textContent = chart.title || chart.id || "";
+            wrap.appendChild(title);
+            if (type === "donut" && chart.prior_data && chart.prior_data.length) {
+                const note = document.createElement("p");
+                note.className = "sr-chart-prior-note";
+                const priorTotal = chart.prior_data.reduce(function (a, b) {
+                    return a + (Number(b) || 0);
+                }, 0);
+                note.textContent = (chart.compare_label || "{% trans 'Prior' %}")
+                    + " {% trans 'total' %}: " + priorTotal;
+                wrap.appendChild(note);
+            }
+            const el = document.createElement("div");
+            el.className = "sr-chart-plot";
+            wrap.appendChild(el);
+            chartsEl.appendChild(wrap);
+
+            const categories = chart.categories || [];
+            const series = (chart.series || []).map((s) => ({
+                name: s.name || "Series",
+                data: s.data || [],
+            }));
+            const hasCompare = (chart.series || []).some((s) => s.is_compare);
+            let height = 250;
+            if (type === "donut") height = 240;
+            if (type === "line" || type === "area") height = 260;
+            const base = baseChartOptions(height);
+            const canDrill = page.dataset.hasDrilldown === "1";
+            const onPoint = function (_event, _ctx, config) {
+                if (!canDrill) return;
+                const idx = config.dataPointIndex;
+                if (idx == null || idx < 0) return;
+                const value = categories[idx];
+                if (!value) return;
+                const dimension = chartDimMap[chart.id] || chart.dimension || chart.id || "value";
+                openDrilldown(dimension, value, chart.id);
+            };
+            let options;
+            const colors = hasCompare
+                ? [brand, "#9ca3af"].concat(chartColors(Math.max(series.length - 2, 0)).slice(2))
+                : chartColors(series.length);
+
+            if (type === "donut") {
+                const data = (series[0] && series[0].data) || [];
+                options = Object.assign({}, base, {
+                    chart: Object.assign({}, base.chart, {
+                        type: "donut",
+                        height: height,
+                        events: canDrill ? { dataPointSelection: onPoint } : {},
+                    }),
+                    labels: categories,
+                    series: data,
+                    colors: chartColors(data.length),
+                    plotOptions: {
+                        pie: {
+                            donut: { size: "65%" },
+                            expandOnClick: false,
+                        },
+                    },
+                    stroke: { width: 0 },
+                });
+            } else if (type === "line" || type === "area") {
+                options = Object.assign({}, base, {
+                    chart: Object.assign({}, base.chart, {
+                        type: "area",
+                        height: height,
+                        zoom: { enabled: false },
+                        events: canDrill ? { dataPointSelection: onPoint } : {},
+                    }),
+                    stroke: {
+                        curve: "smooth",
+                        width: hasCompare ? [2.5, 2] : 2.5,
+                        dashArray: hasCompare ? [0, 5] : 0,
+                    },
+                    fill: {
+                        type: "gradient",
+                        gradient: {
+                            shadeIntensity: 1,
+                            opacityFrom: hasCompare ? 0.22 : 0.28,
+                            opacityTo: 0.04,
+                            stops: [0, 90, 100],
+                        },
+                    },
+                    colors: colors,
+                    markers: { size: 3, strokeWidth: 0, hover: { size: 5 } },
+                    xaxis: {
+                        categories,
+                        tickAmount: Math.min(categories.length, 8),
+                        labels: {
+                            style: { fontSize: "11px" },
+                            rotate: categories.length > 8 ? -30 : 0,
+                            hideOverlappingLabels: true,
+                            trim: true,
+                        },
+                        axisBorder: { show: false },
+                        axisTicks: { show: false },
+                    },
+                    yaxis: {
+                        min: 0,
+                        tickAmount: 4,
+                        labels: {
+                            style: { fontSize: "11px" },
+                            formatter: function (val) {
+                                if (val == null) return "";
+                                if (Math.abs(val) >= 1000) return Math.round(val).toLocaleString();
+                                return Number.isInteger(val) ? val : Number(val).toFixed(1);
+                            },
+                        },
+                    },
+                    series,
+                });
+            } else {
+                options = Object.assign({}, base, {
+                    chart: Object.assign({}, base.chart, {
+                        type: "bar",
+                        height: height,
+                        events: canDrill ? { dataPointSelection: onPoint } : {},
+                    }),
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 4,
+                            columnWidth: categories.length > 10
+                                ? (hasCompare ? "70%" : "55%")
+                                : (hasCompare ? "55%" : "42%"),
+                            borderRadiusApplication: "end",
+                        },
+                    },
+                    colors: colors,
+                    xaxis: {
+                        categories,
+                        labels: {
+                            style: { fontSize: "11px" },
+                            rotate: categories.length > 8 ? -30 : 0,
+                            hideOverlappingLabels: true,
+                            trim: true,
+                        },
+                        axisBorder: { show: false },
+                        axisTicks: { show: false },
+                    },
+                    yaxis: {
+                        min: 0,
+                        tickAmount: 4,
+                        labels: { style: { fontSize: "11px" } },
+                    },
+                    series,
+                });
+            }
+            const instance = new ApexCharts(el, options);
+            instance.render();
+            chartInstances.push(instance);
+        });
+    }
+
+    function looksNumeric(val) {
+        if (typeof val === "number") return true;
+        if (typeof val !== "string") return false;
+        const t = val.trim();
+        if (!t) return false;
+        return /^-?\d+(\.\d+)?%?$/.test(t) || /^-?\d{1,3}(,\d{3})*(\.\d+)?$/.test(t);
+    }
+
+    const drillModal = document.getElementById("sr-drilldown-modal");
+    const drillTitle = document.getElementById("sr-drill-title");
+    const drillMeta = document.getElementById("sr-drill-meta");
+    const drillThead = document.getElementById("sr-drill-thead");
+    const drillTbody = document.getElementById("sr-drill-tbody");
+    const drillClose = document.getElementById("sr-drill-close");
+
+    function closeDrilldown() {
+        if (!drillModal) return;
+        drillModal.classList.remove("oh-modal--show");
+        drillModal.setAttribute("aria-hidden", "true");
+    }
+
+    async function openDrilldown(dimension, value, chartId) {
+        if (page.dataset.hasDrilldown !== "1" || !page.dataset.drilldownUrl) return;
+        if (!drillModal) return;
+        drillModal.classList.add("oh-modal--show");
+        drillModal.setAttribute("aria-hidden", "false");
+        if (drillTitle) drillTitle.textContent = "{% trans 'Drill-down' %}: " + (value || "");
+        if (drillMeta) drillMeta.textContent = "{% trans 'Loading…' %}";
+        if (drillThead) drillThead.innerHTML = "";
+        if (drillTbody) drillTbody.innerHTML = "";
+        try {
+            const params = new URLSearchParams(queryString());
+            params.set("dimension", dimension || "");
+            params.set("value", value || "");
+            if (chartId) params.set("chart_id", chartId);
+            const res = await fetch(page.dataset.drilldownUrl + "?" + params.toString(), {
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Failed to load");
+            if (drillTitle) drillTitle.textContent = data.title || ("{% trans 'Drill-down' %}: " + value);
+            if (drillMeta) {
+                drillMeta.textContent = (data.count != null ? data.count + " {% trans 'rows' %}" : "")
+                    + (data.message ? " · " + data.message : "");
+            }
+            const columns = data.columns || [];
+            const rows = data.rows || [];
+            if (drillThead) {
+                const tr = document.createElement("div");
+                tr.className = "oh-sticky-table__tr";
+                columns.forEach((col) => {
+                    const th = document.createElement("div");
+                    th.className = "oh-sticky-table__th";
+                    th.textContent = col.label || col.key;
+                    tr.appendChild(th);
+                });
+                drillThead.appendChild(tr);
+            }
+            if (drillTbody) {
+                rows.forEach((row) => {
+                    const r = document.createElement("div");
+                    r.className = "oh-sticky-table__tr";
+                    columns.forEach((col) => {
+                        const td = document.createElement("div");
+                        td.className = "oh-sticky-table__td";
+                        const val = row[col.key];
+                        if (col.type === "link" && val) {
+                            const a = document.createElement("a");
+                            a.href = val;
+                            a.textContent = "{% trans 'Open' %}";
+                            a.target = "_blank";
+                            a.rel = "noopener";
+                            td.appendChild(a);
+                        } else {
+                            td.textContent = val == null ? "" : String(val);
+                        }
+                        r.appendChild(td);
+                    });
+                    drillTbody.appendChild(r);
+                });
+            }
+        } catch (err) {
+            if (drillMeta) drillMeta.textContent = err.message || String(err);
+        }
+    }
+    const drillCloseX = document.getElementById("sr-drill-close-x");
+    if (drillClose) drillClose.addEventListener("click", closeDrilldown);
+    if (drillCloseX) drillCloseX.addEventListener("click", closeDrilldown);
+    if (drillModal) {
+        drillModal.addEventListener("click", function (e) {
+            if (e.target === drillModal) closeDrilldown();
+        });
+    }
+
+    function renderTable(table) {
+        thead.innerHTML = "";
+        tbody.innerHTML = "";
+        const columns = (table && table.columns) || [];
+        const rows = (table && table.rows) || [];
+        if (!columns.length) {
+            tableSection.hidden = true;
+            tableMeta.textContent = "";
+            return;
+        }
+        tableSection.hidden = false;
+        tableMeta.textContent = rows.length === 1
+            ? "1 {% trans 'row' %}"
+            : rows.length + " {% trans 'rows' %}";
+
+        const numericCols = {};
+        columns.forEach((col) => {
+            let hits = 0;
+            let seen = 0;
+            rows.slice(0, 30).forEach((row) => {
+                const val = row[col.key];
+                if (val == null || val === "") return;
+                seen += 1;
+                if (looksNumeric(val)) hits += 1;
+            });
+            numericCols[col.key] = seen > 0 && hits / seen >= 0.6;
+        });
+
+        const tr = document.createElement("div");
+        tr.className = "oh-sticky-table__tr";
+        columns.forEach((col) => {
+            const th = document.createElement("div");
+            th.className = "oh-sticky-table__th";
+            th.textContent = col.label || col.key;
+            if (numericCols[col.key]) th.classList.add("text-end");
+            tr.appendChild(th);
+        });
+        thead.appendChild(tr);
+
+        rows.forEach((row) => {
+            const r = document.createElement("div");
+            r.className = "oh-sticky-table__tr";
+            columns.forEach((col) => {
+                const td = document.createElement("div");
+                td.className = "oh-sticky-table__td";
+                const val = row[col.key];
+                td.textContent = val == null ? "" : String(val);
+                if (numericCols[col.key]) td.classList.add("text-end");
+                r.appendChild(td);
+            });
+            if (page.dataset.hasDrilldown === "1") {
+                let dim = null;
+                let val = null;
+                if (row.dimension && row.value) {
+                    const d = String(row.dimension).toLowerCase();
+                    if (d.indexOf("department") >= 0) dim = "department";
+                    else if (d.indexOf("job") >= 0) dim = "job_position";
+                    else if (d.indexOf("location") >= 0) dim = "location";
+                    else if (d.indexOf("stage") >= 0) dim = "stage";
+                    else dim = "department";
+                    val = row.value;
+                } else if (row.department) {
+                    dim = "department";
+                    val = row.department;
+                } else if (row.stage) {
+                    dim = "stage";
+                    val = row.stage;
+                }
+                if (dim && val) {
+                    r.classList.add("sr-row--drill");
+                    r.title = "{% trans 'Click to drill down' %}";
+                    r.addEventListener("click", function () {
+                        openDrilldown(dim, val, "");
+                    });
+                }
+            }
+            tbody.appendChild(r);
+        });
+    }
+
+    async function load() {
+        statusEl.className = "sr-status";
+        statusText.textContent = "{% trans 'Loading…' %}";
+        if (statusDot) statusDot.hidden = false;
+        statusEl.hidden = false;
+        kpiSection.hidden = true;
+        chartSection.hidden = true;
+        tableSection.hidden = true;
+        chipsEl.hidden = true;
+        try {
+            const res = await fetch(page.dataset.url + "?" + queryString(), {
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Failed to load");
+            statusEl.hidden = true;
+            if (data.message) {
+                statusEl.className = "sr-status";
+                statusEl.hidden = false;
+                if (statusDot) statusDot.hidden = true;
+                statusText.textContent = data.message;
+            }
+            if (data.period && presetInput.value !== "custom") {
+                fromInput.value = data.period.from_date || fromInput.value;
+                toInput.value = data.period.to_date || toInput.value;
+            }
+            setPeriodLabel(data.period, data.compare);
+            renderChips(data.filters || []);
+            renderKpis(data.kpis);
+            renderCharts(data.charts);
+            renderTable(data.table);
+        } catch (err) {
+            statusEl.className = "sr-status sr-status--error";
+            if (statusDot) statusDot.hidden = true;
+            statusText.textContent = err.message || String(err);
+            statusEl.hidden = false;
+        }
+    }
+
+    function resetFilters() {
+        setSelectValue(presetInput, "this_month");
+        if (compareInput) setSelectValue(compareInput, "none");
+        filterInputs.forEach((el) => {
+            setSelectValue(el, filterDefaults[el.dataset.filter] || "");
+        });
+        fromInput.value = "";
+        toInput.value = "";
+        defaultDates();
+        syncCustomVisibility();
+        load();
+    }
+
+    const toggleAdvanced = document.getElementById("sr-toggle-advanced");
+    if (toggleAdvanced && advanced) {
+        toggleAdvanced.addEventListener("click", function () {
+            const open = advanced.hidden;
+            advanced.hidden = !open;
+            this.textContent = open
+                ? "{% trans 'Hide filters' %}"
+                : "{% trans 'More filters' %}";
+            if (open) initOhSelects(advanced, document.getElementById("sr-filters"));
+        });
+    }
+    presetInput.addEventListener("change", syncCustomVisibility);
+    document.getElementById("sr-apply").addEventListener("click", load);
+    document.getElementById("sr-reset").addEventListener("click", resetFilters);
+    const exportXlsxBtn = document.getElementById("sr-export-xlsx");
+    if (exportXlsxBtn) {
+        exportXlsxBtn.addEventListener("click", function () {
+            const base = page.dataset.exportXlsx;
+            window.location.href = base + (base.includes("?") ? "&" : "?") + queryString();
+        });
+    }
+    const exportCsvBtn = document.getElementById("sr-export-csv");
+    if (exportCsvBtn) {
+        exportCsvBtn.addEventListener("click", function () {
+            const base = page.dataset.exportCsv;
+            window.location.href = base + (base.includes("?") ? "&" : "?") + queryString();
+        });
+    }
+    const exportPdfBtn = document.getElementById("sr-export-pdf");
+    if (exportPdfBtn) {
+        exportPdfBtn.addEventListener("click", function () {
+            const base = page.dataset.exportPdf;
+            window.location.href = base + (base.includes("?") ? "&" : "?") + queryString();
+        });
+    }
+
+    const csrfToken = "{{ csrf_token }}";
+    const favoriteBtn = document.getElementById("sr-favorite");
+    const favoriteIcon = document.getElementById("sr-favorite-icon");
+    const favoriteLabel = document.getElementById("sr-favorite-label");
+    const savedPresetSelect = document.getElementById("sr-saved-preset");
+    let presetsById = {};
+
+    function syncFavoriteUi(on) {
+        page.dataset.favorited = on ? "1" : "0";
+        favoriteBtn.classList.toggle("is-on", !!on);
+        favoriteBtn.setAttribute("aria-pressed", on ? "true" : "false");
+        favoriteIcon.textContent = on ? "★" : "☆";
+        favoriteLabel.textContent = on
+            ? "{% trans 'Favorited' %}"
+            : "{% trans 'Favorite' %}";
+    }
+
+    function refreshPresetSelect(presets) {
+        presetsById = {};
+        const current = savedPresetSelect.value;
+        savedPresetSelect.innerHTML = "";
+        const blank = document.createElement("option");
+        blank.value = "";
+        blank.textContent = "{% trans '— Select a preset —' %}";
+        savedPresetSelect.appendChild(blank);
+        (presets || []).forEach((p) => {
+            presetsById[String(p.id)] = p.filters || {};
+            const opt = document.createElement("option");
+            opt.value = String(p.id);
+            opt.textContent = p.name;
+            savedPresetSelect.appendChild(opt);
+        });
+        if (current && presetsById[current]) {
+            setSelectValue(savedPresetSelect, current);
+        } else {
+            setSelectValue(savedPresetSelect, "");
+        }
+        initOhSelects(savedPresetSelect.parentElement, document.getElementById("sr-filters"));
+    }
+
+    function readInitialPresets() {
+        const el = document.getElementById("sr-presets-data");
+        if (!el) return;
+        try {
+            refreshPresetSelect(JSON.parse(el.textContent));
+        } catch (e) {}
+    }
+
+    function collectFiltersObject() {
+        const filters = {
+            period_preset: presetInput.value || "this_month",
+            compare_preset: (compareInput && compareInput.value) || "none",
+        };
+        if (presetInput.value === "custom") {
+            if (fromInput.value) filters.from_date = fromInput.value;
+            if (toInput.value) filters.to_date = toInput.value;
+        }
+        filterInputs.forEach((el) => {
+            if (el.value) filters[el.dataset.filter] = el.value;
+        });
+        return filters;
+    }
+
+    function applyFiltersObject(filters) {
+        if (!filters) return;
+        if (filters.period_preset) setSelectValue(presetInput, filters.period_preset);
+        if (compareInput && filters.compare_preset) {
+            setSelectValue(compareInput, filters.compare_preset);
+        }
+        if (filters.from_date) fromInput.value = filters.from_date;
+        if (filters.to_date) toInput.value = filters.to_date;
+        filterInputs.forEach((el) => {
+            const key = el.dataset.filter;
+            if (Object.prototype.hasOwnProperty.call(filters, key)) {
+                setSelectValue(el, filters[key] || "");
+            }
+        });
+        if (advanced && Object.keys(filters).some((k) => {
+            const input = document.getElementById("sr-f-" + k);
+            return input && advanced.contains(input) && filters[k];
+        })) {
+            advanced.hidden = false;
+            if (toggleAdvanced) toggleAdvanced.textContent = "{% trans 'Hide filters' %}";
+            initOhSelects(advanced, document.getElementById("sr-filters"));
+        }
+        syncCustomVisibility();
+    }
+
+    if (favoriteBtn) favoriteBtn.addEventListener("click", async function () {
+        try {
+            const res = await fetch(page.dataset.favoriteUrl, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": csrfToken,
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Failed");
+            syncFavoriteUi(!!data.favorited);
+        } catch (err) {
+            statusEl.className = "sr-status sr-status--error";
+            statusEl.hidden = false;
+            if (statusDot) statusDot.hidden = true;
+            statusText.textContent = err.message || String(err);
+        }
+    });
+
+    document.getElementById("sr-load-preset").addEventListener("click", function () {
+        const id = savedPresetSelect.value;
+        if (!id || !presetsById[id]) return;
+        applyFiltersObject(presetsById[id]);
+        load();
+    });
+
+    document.getElementById("sr-save-preset").addEventListener("click", async function () {
+        const name = window.prompt("{% trans 'Name this filter preset' %}");
+        if (!name || !name.trim()) return;
+        try {
+            const res = await fetch(page.dataset.presetsUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken,
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+                body: JSON.stringify({ name: name.trim(), filters: collectFiltersObject() }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Failed to save");
+            refreshPresetSelect(data.presets || []);
+            if (data.preset && data.preset.id) setSelectValue(savedPresetSelect, String(data.preset.id));
+        } catch (err) {
+            statusEl.className = "sr-status sr-status--error";
+            statusEl.hidden = false;
+            if (statusDot) statusDot.hidden = true;
+            statusText.textContent = err.message || String(err);
+        }
+    });
+
+    document.getElementById("sr-delete-preset").addEventListener("click", async function () {
+        const id = savedPresetSelect.value;
+        if (!id) return;
+        if (!window.confirm("{% trans 'Delete this saved filter preset?' %}")) return;
+        const url = page.dataset.presetsUrl.replace(/\/?$/, "/") + id + "/delete/";
+        try {
+            const res = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": csrfToken,
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Failed to delete");
+            refreshPresetSelect(data.presets || []);
+        } catch (err) {
+            statusEl.className = "sr-status sr-status--error";
+            statusEl.hidden = false;
+            if (statusDot) statusDot.hidden = true;
+            statusText.textContent = err.message || String(err);
+        }
+    });
+
+    const subscribeModal = document.getElementById("sr-subscribe-modal");
+    function openSubscribeModal() {
+        if (!subscribeModal) return;
+        subscribeModal.classList.add("oh-modal--show");
+        subscribeModal.setAttribute("aria-hidden", "false");
+        const dialog = subscribeModal.querySelector(".oh-modal__dialog");
+        initOhSelects(dialog, dialog);
+    }
+    function closeSubscribeModal() {
+        if (!subscribeModal) return;
+        subscribeModal.classList.remove("oh-modal--show");
+        subscribeModal.setAttribute("aria-hidden", "true");
+    }
+    const subscribeBtn = document.getElementById("sr-subscribe");
+    if (subscribeBtn) {
+        subscribeBtn.addEventListener("click", openSubscribeModal);
+    }
+    const subCancel = document.getElementById("sr-sub-cancel");
+    const subCloseX = document.getElementById("sr-sub-close");
+    if (subCancel) subCancel.addEventListener("click", closeSubscribeModal);
+    if (subCloseX) subCloseX.addEventListener("click", closeSubscribeModal);
+    if (subscribeModal) {
+        subscribeModal.addEventListener("click", function (e) {
+            if (e.target === subscribeModal) closeSubscribeModal();
+        });
+    }
+    const subSave = document.getElementById("sr-sub-save");
+    if (subSave) {
+    subSave.addEventListener("click", async function () {
+        const name = (document.getElementById("sr-sub-name").value || "").trim();
+        const frequency = document.getElementById("sr-sub-frequency").value;
+        const recipients = (document.getElementById("sr-sub-recipients").value || "").trim();
+        const attachmentFormat = document.getElementById("sr-sub-format").value || "xlsx";
+        if (!recipients) {
+            window.alert("{% trans 'Add at least one recipient email.' %}");
+            return;
+        }
+        try {
+            const filters = collectFiltersObject();
+            filters.format = attachmentFormat;
+            const res = await fetch(page.dataset.subscribeUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken,
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+                body: JSON.stringify({
+                    name: name,
+                    frequency: frequency,
+                    recipients: recipients,
+                    filters: filters,
+                }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Failed to subscribe");
+            closeSubscribeModal();
+            if (data.manage_url && window.confirm(
+                (data.message || "{% trans 'Subscription created.' %}") +
+                "\n\n{% trans 'Open subscriptions list?' %}"
+            )) {
+                window.location.href = data.manage_url;
+            }
+        } catch (err) {
+            window.alert(err.message || String(err));
+        }
+    });
+    }
+
+    // Restore filters from URL query (deep link / shared)
+    (function applyUrlFilters() {
+        const params = new URLSearchParams(window.location.search);
+        if (![...params.keys()].length) return;
+        const filters = {};
+        params.forEach((v, k) => { filters[k] = v; });
+        applyFiltersObject(filters);
+    })();
+
+    readInitialPresets();
+    defaultDates();
+    syncCustomVisibility();
+    // The filter panel is revealed via CSS (opacity/visibility on
+    // .dropdown-content, see global.css), not display:none, so it keeps
+    // real layout dimensions even while "closed" — Select2 can measure it
+    // correctly on page load without needing a reveal-triggered re-init.
+    initOhSelects(document.getElementById("sr-filters"), document.getElementById("sr-filters"));
+    load();
+})();
+</script>
+{% endblock %}
