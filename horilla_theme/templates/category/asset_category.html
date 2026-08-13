@@ -1,5 +1,73 @@
 {% load static i18n %}
 <div class="accordion-wrapper space-y-2">
+    {% if asset_categories.paginator.num_pages > 1 %}
+        <!-- pagination start -->
+        <div class="flex justify-end w-full">
+            <div class="hlv-pagination inline-flex items-center h-8 gap-0.5 bg-white border border-[#e6e6e6] rounded-md px-1 flex-shrink-0">
+                <button
+                    type="button"
+                    class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if asset_categories.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                    {% if asset_categories.has_previous %}
+                    hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page=1"
+                    hx-target="#assetCategoryList"
+                    hx-on:click="htmxLoadIndicator(this);"
+                    {% endif %}
+                >
+                    <i class="fa-solid fa-angles-left"></i>
+                </button>
+                <button
+                    type="button"
+                    class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if asset_categories.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                    {% if asset_categories.has_previous %}
+                    hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page={{ asset_categories.previous_page_number }}"
+                    hx-target="#assetCategoryList"
+                    hx-on:click="htmxLoadIndicator(this);"
+                    {% endif %}
+                >
+                    <i class="fa-solid fa-angle-left"></i>
+                </button>
+                <div class="flex items-center gap-1 px-1 h-7 text-xs text-[#666] leading-none">
+                    <input
+                        type="number"
+                        name="page"
+                        min="1"
+                        max="{{ asset_categories.paginator.num_pages }}"
+                        value="{{ asset_categories.number }}"
+                        title="{% trans 'Enter a page number and press Enter' %}"
+                        class="w-9 h-6 m-0 py-0 px-1 text-center text-xs leading-6 border border-[#e6e6e6] rounded outline-none focus:border-primary-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        hx-target="#assetCategoryList"
+                        hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}"
+                        hx-trigger="keyup[keyCode==13] changed, blur changed"
+                        onclick="this.select()"
+                    >
+                    <span class="inline-flex items-center h-6 leading-none whitespace-nowrap">/ {{ asset_categories.paginator.num_pages }}</span>
+                </div>
+                <button
+                    type="button"
+                    class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if asset_categories.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                    {% if asset_categories.has_next %}
+                    hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page={{ asset_categories.next_page_number }}"
+                    hx-target="#assetCategoryList"
+                    hx-on:click="htmxLoadIndicator(this);"
+                    {% endif %}
+                >
+                    <i class="fa-solid fa-angle-right"></i>
+                </button>
+                <button
+                    type="button"
+                    class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if asset_categories.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                    {% if asset_categories.has_next %}
+                    hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page={{ asset_categories.paginator.num_pages }}"
+                    hx-target="#assetCategoryList"
+                    hx-on:click="htmxLoadIndicator(this);"
+                    {% endif %}
+                >
+                    <i class="fa-solid fa-angles-right"></i>
+                </button>
+            </div>
+        </div>
+        <!-- end of pagination -->
+    {% endif %}
     <!-- Accordion Item -->
     {% for asset_category in asset_categories %}
         <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
@@ -104,35 +172,6 @@
             </div>
         </div>
     {% endfor %}
-    <div class="flex justify-between sticky bottom-0 items-center mt-4 w-full inset-0">
-        <p class="text-xs text-[#666]">
-            {% trans "Page" %}
-            {{ asset_categories.number }}
-            {% trans "of" %}
-            {{ asset_categories.paginator.num_pages }}
-        </p>
-        <div class="flex gap-3 text-[#666] items-center">
-            {% if asset_categories.has_previous %}
-                <button
-                    class="text-xs hover:text-primary-600 transition duration-300"
-                    hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page={{ asset_categories.previous_page_number }}"
-                    hx-target="#assetCategoryList"
-                >
-                    <i class="fa-solid fa-arrow-left"></i>
-                </button>
-            {% endif %}
-            {{ asset_categories.number }} / {{ asset_categories.paginator.num_pages }}
-            {% if asset_categories.has_next %}
-                <button
-                    class="text-xs hover:text-primary-600 transition duration-300"
-                    hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page={{ asset_categories.next_page_number}}"
-                    hx-target="#assetCategoryList"
-                >
-                    <i class="fa-solid fa-arrow-right"></i>
-                </button>
-            {% endif %}
-        </div>
-    </div>
 </div>
 {% if perms.asset.add_assetlot %}
     <span
