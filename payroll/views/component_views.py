@@ -151,7 +151,7 @@ def get_pending_attendance(employee, start_date, end_date):
     return pending
 
 
-def payroll_calculation(employee, start_date, end_date, month_summary={}):
+def payroll_calculation(employee, start_date, end_date, month_summary=None):
     """
     Calculate payroll components for the specified employee within the given date range.
 
