@@ -4015,9 +4015,20 @@ $(document).ready(function () {
 
 $(document).on("htmx:afterSettle", function (event) {
     var target = $(event.target);
-    target.find(".oh-select").select2({ width: '100%' });
+    // `.find()` only matches descendants -- when a swap targets a <select>
+    // directly (hx-target="#some-select"), the target itself needs reinit too,
+    // or it's left bound to its pre-swap option list.
+    var selects = target.filter(".oh-select").add(target.find(".oh-select"));
+    selects.each(function () {
+        var select = $(this);
+        if (select.hasClass("select2-hidden-accessible") && select.data("select2")) {
+            select.select2("destroy");
+        }
+        select.select2({ width: '100%' });
+    });
 
-    target.find("select").off("select2:select").on("select2:select", function (e) {
+    var allSelects = target.filter("select").add(target.find("select"));
+    allSelects.off("select2:select").on("select2:select", function (e) {
         this.dispatchEvent(new Event("change"));
     });
 });

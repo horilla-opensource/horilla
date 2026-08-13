@@ -26,6 +26,7 @@ from typing import Any
 
 from django import forms
 from django.template.loader import render_to_string
+from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 from base.forms import ModelForm
@@ -322,7 +323,10 @@ class DepartmentManagerCreateForm(ModelForm):
         widgets = {
             "department": forms.Select(
                 attrs={
-                    "onchange": "getDepartmentEmployees($(this))",
+                    "hx-get": reverse_lazy("get-department-employee"),
+                    "hx-trigger": "change",
+                    "hx-target": "#id_manager",
+                    "hx-vals": 'js:{"dep_id": event.target.value}',
                 }
             ),
         }
