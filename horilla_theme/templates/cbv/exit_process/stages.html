@@ -1,0 +1,59 @@
+{% load i18n recruitmentfilters i18n %}
+{% load generic_template_filters %}
+<div id="{{view_id}}">
+  {% for group in groups %}
+  <div id="{{selected_instances_key_name}}{{ group.id }}" data-ids="[]"></div>
+  <div class="oh-tabs__movable-area mb-2">
+    <div class="oh-tabs__movable group">
+      <div class="oh-tabs__movable-header bg-primary-100 text-primary-600 group-hover:bg-primary-200" style="cursor:pointer;" onclick="var icon = this.querySelector('.movable-toggle-icon'); if (icon) { var name = icon.getAttribute('name'); icon.setAttribute('name', name === 'chevron-down-outline' ? 'chevron-up-outline' : 'chevron-down-outline'); } $(this).parent().find('.oh-tabs__movable-body').toggleClass('d-none');">
+        <span class="oh-tabs__movable-title" style="display:flex;align-items:center;gap:0.5rem;">
+          <span
+            class="stage-count-badge w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs"
+            data-server-count="{{ group.employee_count }}"
+          >
+            {{ group.employee_count }}
+          </span>
+          {{group}}
+        </span>
+
+        <div class="flex items-center gap-4">
+          <ion-icon name="chevron-down-outline" class="movable-toggle-icon icon text-lg"></ion-icon>
+
+          <div onclick="event.stopPropagation()" class="relative inline-block dropdown-wrapper" role="button" title="{% trans 'Actions' %}">
+            <button class="cursor-pointer dropdown-toggle w-[20px]" onclick="event.stopPropagation(); var m = $(this).next('.dropdown-menu'); $('.dropdown-menu').not(m).addClass('hidden'); m.toggleClass('hidden');">
+              <i class="fa-solid fa-ellipsis-vertical text-black"></i>
+            </button>
+            <div class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200" style="min-width:120px !important;">
+              <ul class="text-xs text-dark-600">
+                {% for action in actions %}
+                {% if action.accessibility|accessibility:group %}
+                <li>
+                  <a {{action.attrs|format:group|safe}} class="block w-full text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300 cursor-pointer">{{action.action}}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+      class="oh-tabs__movable-body position-relative"
+      hx-get="{{url}}?{% for parameter in parameters %}{{parameter|format:group}}&{% endfor %}{{request.GET.urlencode}}"
+      hx-trigger="load"
+
+      >
+    </div>
+    </div>
+  </div>
+  {% endfor %}
+  <script>
+    var tabId = $("#{{view_id}}").closest(".oh-tabs__content").attr("id");
+    var badge = $(".oh-tabs__tab--active").find(".tab-badge");
+    var count = "{{groups|length}}";
+    var label = badge.attr("data-badge-label") || "";
+    var title = count + " " + label;
+    badge.html(count);
+    badge.attr("title", title);
+  </script>
+</div>

@@ -57,6 +57,15 @@
             class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             ><ion-icon name="people-outline"></ion-icon
         ></a>
+        {% else %}
+        <button
+            type="button"
+            title="{% trans 'Show managing records' %}"
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm opacity-40 cursor-not-allowed"
+            disabled
+            onclick="return false;"
+            ><ion-icon name="people-outline"></ion-icon
+        ></button>
         {% endif %}
         {% if perms.offboarding.delete_offboardingemployee %}
         <a

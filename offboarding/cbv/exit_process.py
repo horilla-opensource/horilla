@@ -10,6 +10,7 @@ from urllib.parse import urlencode, urlparse
 from django import forms
 from django.apps import apps
 from django.contrib import messages
+from django.db.models import Count
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -494,6 +495,7 @@ class OffboardingPipelineStage(Pipeline):
     filter_class = PipelineEmployeeFilter
     grouper = "stage_id"
     selected_instances_key_name = "OffboardingEmployeeRecords"
+    template_name = "cbv/exit_process/stages.html"
     allowed_fields = [
         {
             "field": "stage_id",
@@ -542,6 +544,9 @@ class OffboardingPipelineStage(Pipeline):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        queryset = queryset.annotate(
+            employee_count=Count("offboardingemployee", distinct=True)
+        )
         self.queryset = queryset.order_by("sequence")
         return self.queryset
 
@@ -772,7 +777,7 @@ class OffboardingEmployeeList(HorillaListView):
 
     def get(self, request, *args, **kwargs):
         self.selected_instances_key_id = (
-            f"OffboardingEmployeeRecords{self.request.GET['offboarding_stage_id']}"
+            f"OffboardingEmployeeRecords{self.request.GET.get('offboarding_stage_id')}"
         )
         return super().get(request, *args, **kwargs)
 
