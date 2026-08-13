@@ -247,7 +247,12 @@ class Project(HorillaModel):
         is_new, request = self.pk is None, getattr(
             horilla_middlewares._thread_locals, "request", None
         )
-        if is_new and (cid := request.session.get("selected_company")) and cid != "all":
+        if (
+            is_new
+            and request is not None
+            and (cid := request.session.get("selected_company"))
+            and cid != "all"
+        ):
             self.company_id = Company.find(cid)
         super().save(*args, **kwargs)
         if is_new:

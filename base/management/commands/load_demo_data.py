@@ -10,7 +10,11 @@ from django.core.management.base import BaseCommand
 from base.demo_data import run_enterprise_demo_seeder
 from base.demo_data.media import copy_demo_media
 from base.demo_roles import assign_demo_user_groups
-from base.views import _shift_fixture_dates, normalize_demo_payslips
+from base.views import (
+    _shift_fixture_dates,
+    normalize_demo_payslips,
+    reset_backfilled_rows_before_reload,
+)
 
 
 class Command(BaseCommand):
@@ -93,6 +97,7 @@ class Command(BaseCommand):
 
             tmp = None
             try:
+                reset_backfilled_rows_before_reload(fname)
                 shifted = _shift_fixture_dates(str(file_path))
                 if shifted is not None:
                     suffix = file_path.suffix

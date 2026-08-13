@@ -309,6 +309,32 @@ def _shift_fixture_dates(file_path):
     return DATE_RE.sub(_shift, content)
 
 
+# Fixtures whose rows the trailing-6-month backfill (base/demo_data/modules/)
+# redates after loading. On a non-flushed re-run, loaddata tries to restore
+# each row's *original* fixture date over that already-redated state, which
+# can collide with whatever other row the backfill moved onto that exact
+# date (e.g. Attendance's per-employee unique_together). Clearing first
+# makes the reload safe; on a --flush run the tables are already empty, so
+# this is a no-op.
+_RELOAD_RESET_MODELS = {
+    # Order matters: models that PROTECT their FK to Attendance must be
+    # cleared before Attendance itself, or the delete is refused.
+    "attendance_data.json": (
+        ("attendance", "AttendanceLateComeEarlyOut"),
+        ("attendance", "WorkRecords"),
+        ("attendance", "Attendance"),
+    ),
+}
+
+
+def reset_backfilled_rows_before_reload(fname: str) -> None:
+    """Delete existing rows for models the demo backfill redates, so
+    re-loading `fname` without --flush doesn't collide with that state."""
+    for app_label, model_name in _RELOAD_RESET_MODELS.get(fname, ()):
+        model = apps.get_model(app_label, model_name)
+        model._base_manager.all().delete()
+
+
 DEMO_PAYROLL_GROUP_PREFIX = "Demo Payroll M-"
 
 
@@ -417,6 +443,7 @@ def load_demo_database(request):
                     file_path = path.join(settings.BASE_DIR, "load_data", file)
                     tmp = None
                     try:
+                        reset_backfilled_rows_before_reload(file)
                         shifted = _shift_fixture_dates(file_path)
                         if shifted is not None:
                             suffix = path.splitext(file)[1]

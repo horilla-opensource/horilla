@@ -1,0 +1,135 @@
+"""Spread demo LeaveRequest dates across a real trailing 6 months.
+
+The fixture only ships ~49 leave requests across ~41 employees -- mostly one
+each -- all within about a month and a half. That's too thin for a 6-month
+trend either way, so this pads the pool with a modest set of synthetic
+requests (idempotent via a marker in `description`) and then spreads the
+WHOLE pool -- original and padded alike -- evenly across the trailing
+window on every run. Ranking is global, not per-employee: with most
+employees holding only one request, per-employee ranking would pin every
+single one of them to the exact same start-of-window day instead of
+spreading them out.
+"""
+
+from __future__ import annotations
+
+import logging
+from datetime import date, timedelta
+
+from django.apps import apps
+from django.db import transaction
+
+logger = logging.getLogger(__name__)
+
+TRAILING_DAYS = 180
+PAD_TARGET = 30
+PAD_MARKER = "[Demo seed]"
+
+
+@transaction.atomic
+def backfill_leave_spread(today: date | None = None) -> int:
+    """Pad thin demo leave data, then spread it across the trailing 6 months."""
+    if not apps.is_installed("leave"):
+        return 0
+
+    today = today or date.today()
+    window_start = today - timedelta(days=TRAILING_DAYS)
+
+    from leave.models import LeaveRequest
+
+    _pad_leave_requests(today)
+
+    rows = list(
+        LeaveRequest._base_manager.order_by("id").values("id", "start_date", "end_date")
+    )
+    count = len(rows)
+    if count == 0:
+        return 0
+
+    # count-1, not count: N evenly-spaced points spanning [0, step*(N-1)]
+    # anchors the first row at window_start and the last at exactly today,
+    # instead of falling one step short of today (which, for a small N,
+    # is enough to leave the current month's bucket empty).
+    step = TRAILING_DAYS / max(count - 1, 1)
+    updated = 0
+    for i, row in enumerate(rows):
+        new_start = window_start + timedelta(days=int(i * step))
+
+        new_end = None
+        if row["end_date"]:
+            span = (row["end_date"] - row["start_date"]).days
+            new_end = new_start + timedelta(days=max(span, 0))
+
+        LeaveRequest._base_manager.filter(pk=row["id"]).update(
+            start_date=new_start, end_date=new_end
+        )
+        updated += 1
+
+    logger.info(
+        "Leave backfill: spread %s row(s) over the trailing %s days",
+        updated,
+        TRAILING_DAYS,
+    )
+    return updated
+
+
+def _pad_leave_requests(today: date) -> int:
+    """Create synthetic leave requests up to PAD_TARGET, skipped if already seeded."""
+    from base.models import Company
+    from employee.models import Employee, EmployeeWorkInformation
+    from leave.models import LeaveRequest, LeaveType
+
+    existing = LeaveRequest._base_manager.filter(
+        description__startswith=PAD_MARKER
+    ).count()
+    to_create = PAD_TARGET - existing
+    if to_create <= 0:
+        return 0
+
+    # The org-wide leave trend is company-scoped by session, defaulting to
+    # the lowest-id company on a fresh login -- bias padded requests toward
+    # its employees first so that chart isn't thin just because the round
+    # -robin pool happened to land mostly in other companies.
+    default_company_id = (
+        Company._base_manager.order_by("id").values_list("id", flat=True).first()
+    )
+    same_company_ids = set(
+        EmployeeWorkInformation._base_manager.filter(
+            company_id=default_company_id
+        ).values_list("employee_id", flat=True)
+    )
+    all_active_ids = list(
+        Employee._base_manager.filter(is_active=True)
+        .order_by("id")
+        .values_list("id", flat=True)
+    )
+    employee_ids = [i for i in all_active_ids if i in same_company_ids][:40] + [
+        i for i in all_active_ids if i not in same_company_ids
+    ][:20]
+    leave_type_ids = list(LeaveType.objects.values_list("id", flat=True))
+    if not employee_ids or not leave_type_ids:
+        return 0
+
+    statuses = ["approved", "approved", "requested", "rejected", "cancelled"]
+    created = 0
+    for i in range(to_create):
+        idx = existing + i
+        employee_id = employee_ids[idx % len(employee_ids)]
+        leave_type_id = leave_type_ids[idx % len(leave_type_ids)]
+        span_days = (idx % 3) + 1
+        start = today - timedelta(days=(idx * 5) % 170)
+        end = start + timedelta(days=span_days - 1)
+        LeaveRequest._base_manager.create(
+            employee_id_id=employee_id,
+            leave_type_id_id=leave_type_id,
+            start_date=start,
+            end_date=end,
+            requested_days=float(span_days),
+            status=statuses[idx % len(statuses)],
+            description=f"{PAD_MARKER} #{idx} auto-generated demo leave request.",
+            created_by_id=employee_id,
+        )
+        created += 1
+
+    logger.info("Leave backfill: created %s padding leave request(s)", created)
+    return created
