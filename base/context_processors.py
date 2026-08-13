@@ -291,7 +291,15 @@ def intial_notice_period(request):
         PayrollGeneralSetting = get_horilla_model_class(
             app_label="payroll", model="payrollgeneralsetting"
         )
-        first = PayrollGeneralSetting.objects.first()
+        selected_company = request.session.get("selected_company")
+        if selected_company and selected_company != "all":
+            first = PayrollGeneralSetting.objects.filter(
+                company_id=selected_company
+            ).first()
+            if not first:
+                first = PayrollGeneralSetting.objects.filter(company_id=None).first()
+        else:
+            first = PayrollGeneralSetting.objects.first()
     if first:
         initial = first.notice_period
     return {"get_initial_notice_period": initial}

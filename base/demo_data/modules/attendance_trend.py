@@ -70,6 +70,7 @@ def backfill_attendance_spread(today: date | None = None) -> int:
         # the last point exactly at today.
         step = TRAILING_DAYS / max(count - 1, 1)
         last_assigned: date | None = None
+        plan = []
         for rank, row in enumerate(emp_rows):
             candidate = window_start + timedelta(days=int(rank * step))
             if last_assigned is not None and candidate <= last_assigned:
@@ -94,19 +95,66 @@ def backfill_attendance_spread(today: date | None = None) -> int:
             )
             new_shift_day_pk = seen_days.get(new_date.strftime("%A").lower())
 
-            update_fields = {
-                "attendance_date": new_date,
-                "attendance_clock_in_date": new_clock_in_date,
-                "attendance_clock_out_date": new_clock_out_date,
-            }
-            if new_shift_day_pk:
-                update_fields["attendance_day_id"] = new_shift_day_pk
-
-            Attendance._base_manager.filter(pk=row["id"]).update(**update_fields)
-
-            WorkRecords.objects.filter(employee_id=employee_id, date=old_date).update(
-                date=new_date
+            plan.append(
+                {
+                    "id": row["id"],
+                    "old_date": old_date,
+                    "new_date": new_date,
+                    "attendance_clock_in_date": new_clock_in_date,
+                    "attendance_clock_out_date": new_clock_out_date,
+                    "attendance_day_id": new_shift_day_pk,
+                    # Placeholder keyed by this Attendance row's own pk, far
+                    # outside any real date range -- guaranteed unique across
+                    # this employee's rows (distinct pks) and never collides
+                    # with a real target date.
+                    "placeholder": date(1970, 1, 1) + timedelta(days=row["id"]),
+                }
             )
+
+        # Phase 1: park every row of this employee at its placeholder date.
+        # Freshly-loaded fixture dates (already shifted near "today") and the
+        # trailing-180-day target window overlap heavily, so assigning real
+        # dates one row at a time regularly lands on some *other* row's
+        # still-unprocessed current date -- violating the (employee, date)
+        # uniqueness Attendance and WorkRecords both enforce. Vacating every
+        # row from the real date range first removes that possibility.
+        for item in plan:
+            Attendance._base_manager.filter(pk=item["id"]).update(
+                attendance_date=item["placeholder"]
+            )
+            WorkRecords.objects.filter(
+                employee_id=employee_id, date=item["old_date"]
+            ).update(date=item["placeholder"])
+
+        # Phase 2: move every row from its placeholder to the real target
+        # date. Every target date in `plan` is distinct by construction, but
+        # WorkRecords isn't 1:1 with Attendance -- some employees have more
+        # WorkRecords rows than Attendance rows (leave/holiday/absence days
+        # also get a WorkRecords entry with no Attendance row behind them),
+        # so a target date can already have its own unrelated WorkRecords
+        # row. Drop the now-redundant placeholder one rather than clobber
+        # whatever already legitimately represents that day.
+        for item in plan:
+            update_fields = {
+                "attendance_date": item["new_date"],
+                "attendance_clock_in_date": item["attendance_clock_in_date"],
+                "attendance_clock_out_date": item["attendance_clock_out_date"],
+            }
+            if item["attendance_day_id"]:
+                update_fields["attendance_day_id"] = item["attendance_day_id"]
+
+            Attendance._base_manager.filter(pk=item["id"]).update(**update_fields)
+
+            if WorkRecords.objects.filter(
+                employee_id=employee_id, date=item["new_date"]
+            ).exists():
+                WorkRecords.objects.filter(
+                    employee_id=employee_id, date=item["placeholder"]
+                ).delete()
+            else:
+                WorkRecords.objects.filter(
+                    employee_id=employee_id, date=item["placeholder"]
+                ).update(date=item["new_date"])
 
             updated += 1
 
