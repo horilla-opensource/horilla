@@ -1725,8 +1725,13 @@ def add_biometric_user(request, device_id):
                 )
                 conn = zk_device.connect()
                 conn.enable_device()
-                existing_uids = [user.uid for user in conn.get_users()]
-                existing_user_ids = [user.user_id for user in conn.get_users()]
+                # Fetch once: get_users() is a round trip to the device.
+                device_users = conn.get_users()
+                existing_uids = [user.uid for user in device_users]
+                # The device reports user_id as a string. Compare like with like,
+                # otherwise the guard below never detects a taken user_id and can
+                # hand out one that already belongs to an enrolled employee.
+                existing_user_ids = {str(user.user_id) for user in device_users}
                 uid = 1
                 user_id = 1000
                 employee_ids = request.POST.getlist("employee_ids")
@@ -1736,12 +1741,11 @@ def add_biometric_user(request, device_id):
                         employee_id=employee, device_id=device
                     ).first()
                     if existing_biometric_employee is None:
-                        while uid in existing_uids or user_id in existing_user_ids:
-                            user_id = int(user_id)
+                        while uid in existing_uids or str(user_id) in existing_user_ids:
                             uid += 1
                             user_id += 1
                         existing_uids.append(uid)
-                        existing_user_ids.append(user_id)
+                        existing_user_ids.add(str(user_id))
                         employee_name = employee.get_full_name()
                         conn.set_user(
                             uid=uid,
