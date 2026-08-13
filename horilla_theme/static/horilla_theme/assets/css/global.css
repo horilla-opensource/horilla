@@ -1,3 +1,8 @@
+/* Hide Alpine-bound elements until Alpine has initialized, preventing a flash of the unhidden state (e.g. dropdown menus briefly showing on page load) */
+[x-cloak] {
+  display: none !important;
+}
+
 /* CUSTOM DROPDOWN */
 .dropdown-content {
   opacity: 0;
