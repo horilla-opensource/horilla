@@ -279,6 +279,10 @@
     </div>
 
 
+    {# This page is standalone (it does not extend index.html), so its dependencies
+       have to be listed here. The inline block below inlines the whole Select2
+       library and then uses $(...) throughout, so jQuery must load first. #}
+    <script src="{% static '/jquery/jquery.min.js' %}"></script>
     <script src="{% static '/index/country.js' %}"></script>
     <script>
         {% include 'select2.js' %}
