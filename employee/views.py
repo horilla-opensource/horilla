@@ -53,6 +53,7 @@ from base.methods import (
     filtersubordinatesemployeemodel,
     get_key_instances,
     get_pagination,
+    get_session_company,
     has_export_access,
     sortby,
 )
@@ -3902,9 +3903,10 @@ def initial_prefix(request):
     """
     This method is used to set the initial prefix using a form.
     """
-    instance = EmployeeGeneralSetting.objects.first()  # Get the first instance or None
-    if not instance:
-        instance = EmployeeGeneralSetting()  # Create a new instance if none exists
+    tracking_company = get_session_company(request)
+    instance, _created = EmployeeGeneralSetting.objects.get_or_create(
+        company_id=tracking_company
+    )
 
     if request.method == "POST":
         form = EmployeeGeneralSettingPrefixForm(request.POST, instance=instance)
