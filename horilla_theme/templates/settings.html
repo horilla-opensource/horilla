@@ -20,6 +20,14 @@
                         {% endblocktrans %}
                     </p>
                 </div>
+            {% else %}
+                <div class="bg-primary-100 border border-primary-500 rounded-md px-4 py-3">
+                    <p class="mb-0 text-primary-600" style="font-size: 13.5px; line-height: 1.4">
+                        <strong class="text-primary-600">{% trans "Organisation settings" %}</strong>
+                        &nbsp;—
+                        {% trans "You are currently setting these settings for all companies." %}
+                    </p>
+                </div>
             {% endif %}
         </div>
     </div>
