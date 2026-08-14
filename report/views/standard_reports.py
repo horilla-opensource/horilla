@@ -30,6 +30,9 @@ from report.models import (
     ReportSubscription,
 )
 from report.personalization import (
+    DASHBOARD_PIN_PRIORITY_SLUGS,
+    MAX_DASHBOARD_REPORT_PINS,
+    SUGGESTED_REPORT_SLUGS,
     catalog_cards_for_slugs,
     favorite_slugs_for_user,
     filters_dict_from_request,
@@ -555,7 +558,7 @@ def standard_report_dashboard_pins(request):
     """
     _ensure_definitions_loaded()
     company_id = company_id_from_request(request)
-    slugs = sorted(favorite_slugs_for_user(request))[:6]
+    slugs = sorted(favorite_slugs_for_user(request))[:MAX_DASHBOARD_REPORT_PINS]
     cards = []
     for slug in slugs:
         definition = get_report(slug)
@@ -578,7 +581,94 @@ def standard_report_dashboard_pins(request):
                 "period": payload.get("period"),
             }
         )
-    return JsonResponse({"pins": cards})
+    return JsonResponse(
+        {
+            "pins": cards,
+            "favorite_count": len(favorite_slugs_for_user(request)),
+            "max_pins": MAX_DASHBOARD_REPORT_PINS,
+        }
+    )
+
+
+@login_required
+@require_http_methods(["GET"])
+def standard_report_suggested_pack(request):
+    """
+    Opt-in Suggested reports for the home dashboard.
+
+    Never auto-favorites — the client must call favorite toggle / pin-recommended.
+    """
+    _ensure_definitions_loaded()
+    company_id = company_id_from_request(request)
+    fav = favorite_slugs_for_user(request)
+    suggestions = []
+    for slug in SUGGESTED_REPORT_SLUGS:
+        definition = get_report(slug)
+        if not definition or not user_can_view_report(
+            request.user, definition, company_id=company_id
+        ):
+            continue
+        suggestions.append(
+            {
+                "slug": slug,
+                "title": str(definition.name),
+                "description": str(definition.description or ""),
+                "domain": definition.domain,
+                "report_url": reverse("standard-report-detail", args=[slug]),
+                "is_favorite": slug in fav,
+                "priority": slug in DASHBOARD_PIN_PRIORITY_SLUGS,
+            }
+        )
+    return JsonResponse(
+        {
+            "suggestions": suggestions,
+            "priority_slugs": [
+                s
+                for s in DASHBOARD_PIN_PRIORITY_SLUGS
+                if s in {x["slug"] for x in suggestions}
+            ],
+            "favorite_count": len(fav),
+            "max_pins": MAX_DASHBOARD_REPORT_PINS,
+        }
+    )
+
+
+@login_required
+@require_http_methods(["POST"])
+def standard_report_pin_recommended(request):
+    """
+    Opt-in: favorite recommended Suggested slugs until the 6-pin cap is reached.
+
+    Does not unfavorite existing pins; only fills empty slots.
+    """
+    _ensure_definitions_loaded()
+    company_id = company_id_from_request(request)
+    fav = set(favorite_slugs_for_user(request))
+    added = []
+    for slug in DASHBOARD_PIN_PRIORITY_SLUGS:
+        if len(fav) >= MAX_DASHBOARD_REPORT_PINS:
+            break
+        if slug in fav:
+            continue
+        definition = get_report(slug)
+        if not definition or not user_can_view_report(
+            request.user, definition, company_id=company_id
+        ):
+            continue
+        ReportFavorite.objects.create(
+            user=request.user,
+            report_slug=slug,
+            company_id_id=company_id,
+        )
+        fav.add(slug)
+        added.append(slug)
+    return JsonResponse(
+        {
+            "added": added,
+            "favorite_count": len(fav),
+            "max_pins": MAX_DASHBOARD_REPORT_PINS,
+        }
+    )
 
 
 @login_required
@@ -601,14 +691,41 @@ def standard_report_favorite_toggle(request, slug):
     existing = qs.first()
     if existing:
         existing.delete()
-        return JsonResponse({"favorited": False, "slug": slug})
+        return JsonResponse(
+            {
+                "favorited": False,
+                "slug": slug,
+                "favorite_count": len(favorite_slugs_for_user(request)),
+                "max_pins": MAX_DASHBOARD_REPORT_PINS,
+            }
+        )
+
+    if len(favorite_slugs_for_user(request)) >= MAX_DASHBOARD_REPORT_PINS:
+        return JsonResponse(
+            {
+                "error": _("Pin limit reached (%(n)s). Unpin a report first.")
+                % {"n": MAX_DASHBOARD_REPORT_PINS},
+                "favorited": False,
+                "slug": slug,
+                "favorite_count": MAX_DASHBOARD_REPORT_PINS,
+                "max_pins": MAX_DASHBOARD_REPORT_PINS,
+            },
+            status=400,
+        )
 
     ReportFavorite.objects.create(
         user=request.user,
         report_slug=slug,
         company_id_id=company_id,
     )
-    return JsonResponse({"favorited": True, "slug": slug})
+    return JsonResponse(
+        {
+            "favorited": True,
+            "slug": slug,
+            "favorite_count": len(favorite_slugs_for_user(request)),
+            "max_pins": MAX_DASHBOARD_REPORT_PINS,
+        }
+    )
 
 
 @login_required

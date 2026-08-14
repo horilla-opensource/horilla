@@ -33,3 +33,16 @@ def ot_concentration_share(top_seconds: float, total_seconds: float) -> float:
     if not total_seconds:
         return 0.0
     return round(top_seconds / total_seconds * 100, 1)
+
+
+def early_attrition_rate(early_exits: int, cohort_hires: int) -> float:
+    """Share of a hire cohort that exits within the early window (e.g. 90 days)."""
+    if not cohort_hires:
+        return 0.0
+    return round(early_exits / cohort_hires * 100, 1)
+
+
+def retention_rate(retained: int, hired: int) -> float:
+    if not hired:
+        return 0.0
+    return round(retained / hired * 100, 1)

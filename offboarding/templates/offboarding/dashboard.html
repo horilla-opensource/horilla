@@ -507,8 +507,8 @@
         .then(data => {
             if (!data.departments.length) { document.querySelector("#chart-dept-attrition").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
             renderChart('dept-attrition', document.querySelector("#chart-dept-attrition"), {
-                series: data.departments.map(d => d.count),
-                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                series: [{ name: '{% trans "Exits" %}', data: data.departments.map(d => d.count) }],
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
                         const d = data.departments[config.dataPointIndex];
                         const base = "{% url 'resignation-request-view' %}";
@@ -519,11 +519,13 @@
                         }
                     }}
                 },
-                labels: data.departments.map(d => d.department),
-                colors: COLORS.slice(0, data.departments.length),
-                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
-                stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
-                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                colors: COLORS,
+                plotOptions: { bar: { borderRadius: 6, horizontal: true, barHeight: '55%', distributed: true } },
+                xaxis: { categories: data.departments.map(d => d.department), labels: { style: { colors: textColor } } },
+                yaxis: { labels: { style: { colors: textColor, fontSize: '11px' } } },
+                grid: { borderColor: gridColor },
+                dataLabels: { enabled: true, style: { fontSize: '11px' } },
+                legend: { show: false },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
             });
         });

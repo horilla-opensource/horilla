@@ -125,11 +125,48 @@ class RegistryTests(SimpleTestCase):
             "source-quality",
             "document-expiry-aging",
             "ot-concentration",
+            "headcount-bridge",
+            "exit-analysis",
+            "new-hire-90-day-attrition",
+            "unscheduled-absence",
+            "visa-contract-expiry",
+            "quality-of-hire",
         ):
             self.assertIn(expected, slugs)
 
         composition = get_report("workforce-composition")
         self.assertIsNotNone(composition.drilldown_fn)
+
+    def test_suggested_report_slugs_registered(self):
+        import report.metrics  # noqa: F401
+        from report.personalization import SUGGESTED_REPORT_SLUGS
+
+        slugs = {r.slug for r in list_reports()}
+        for slug in SUGGESTED_REPORT_SLUGS:
+            self.assertIn(slug, slugs)
+        # Culture-sensitive defaults stay out of Suggested pack
+        for excluded in (
+            "absenteeism-rate",
+            "payslip-register",
+            "diversity-snapshot",
+            "performance-distribution",
+        ):
+            self.assertNotIn(excluded, SUGGESTED_REPORT_SLUGS)
+
+    def test_dashboard_pin_priority_subset(self):
+        from report.personalization import (
+            DASHBOARD_PIN_PRIORITY_SLUGS,
+            MAX_DASHBOARD_REPORT_PINS,
+            SUGGESTED_REPORT_SLUGS,
+        )
+
+        self.assertEqual(MAX_DASHBOARD_REPORT_PINS, 6)
+        self.assertTrue(
+            set(DASHBOARD_PIN_PRIORITY_SLUGS).issubset(set(SUGGESTED_REPORT_SLUGS))
+        )
+        self.assertLessEqual(
+            len(DASHBOARD_PIN_PRIORITY_SLUGS), MAX_DASHBOARD_REPORT_PINS
+        )
 
     def test_run_report_attaches_metadata(self):
         def fake_query(filters):
@@ -648,6 +685,160 @@ class FormulaTests(SimpleTestCase):
         self.assertEqual(leave_utilization_rate(40, 80), 50.0)
         self.assertEqual(offer_acceptance_rate(8, 10), 80.0)
         self.assertEqual(ot_concentration_share(600, 1000), 60.0)
+        from report.formulas import early_attrition_rate, retention_rate
+
+        self.assertEqual(early_attrition_rate(2, 10), 20.0)
+        self.assertEqual(early_attrition_rate(1, 0), 0.0)
+        self.assertEqual(retention_rate(8, 10), 80.0)
+
+
+class TimeToHireHelperTests(SimpleTestCase):
+    def test_median(self):
+        from report.metrics.talent import _median
+
+        self.assertEqual(_median([]), 0)
+        self.assertEqual(_median([10]), 10)
+        self.assertEqual(_median([1, 3, 5]), 3)
+        self.assertEqual(_median([1, 2, 3, 4]), 2)
+
+
+class CalendarExpectedDaysTests(SimpleTestCase):
+    def test_weekday_only_default(self):
+        from report.metrics._calendar import count_expected_working_days
+
+        # Mon 2026-01-05 .. Fri 2026-01-09 = 5 days
+        self.assertEqual(
+            count_expected_working_days(date(2026, 1, 5), date(2026, 1, 9)),
+            5,
+        )
+        # Include weekend Sat-Sun → still 5
+        self.assertEqual(
+            count_expected_working_days(date(2026, 1, 5), date(2026, 1, 11)),
+            5,
+        )
+
+    def test_holiday_reduces_expected_days(self):
+        from unittest.mock import patch
+
+        from report.metrics._calendar import count_expected_working_days
+
+        with patch(
+            "report.metrics._calendar._holiday_dates",
+            return_value={date(2026, 1, 7)},
+        ), patch(
+            "report.metrics._calendar._is_company_leave",
+            return_value=False,
+        ):
+            # Mon–Fri minus Wed holiday → 4
+            self.assertEqual(
+                count_expected_working_days(date(2026, 1, 5), date(2026, 1, 9)),
+                4,
+            )
+
+
+class NamedOtPrivacyTests(SimpleTestCase):
+    def test_names_require_flag_and_perm(self):
+        from types import SimpleNamespace
+
+        from report.engine import ReportFilters
+        from report.metrics._privacy import allow_named_ot_rows
+
+        filters = ReportFilters(from_date=date(2026, 1, 1), to_date=date(2026, 1, 31))
+        self.assertFalse(allow_named_ot_rows(filters))
+
+        request = RequestFactory().get("/", {"include_names": "1"})
+        request.user = SimpleNamespace(
+            is_authenticated=True,
+            is_superuser=False,
+            has_perm=lambda p: False,
+        )
+        filters.request = request
+        self.assertFalse(allow_named_ot_rows(filters))
+
+        request.user.has_perm = lambda p: p == "attendance.change_attendance"
+        self.assertTrue(allow_named_ot_rows(filters))
+
+        request_no_flag = RequestFactory().get("/")
+        request_no_flag.user = request.user
+        filters.request = request_no_flag
+        self.assertFalse(allow_named_ot_rows(filters))
+
+
+class ExitHelperPriorityTests(SimpleTestCase):
+    def test_iter_exits_priority_merge(self):
+        from unittest.mock import patch
+
+        from report.engine import ReportFilters
+        from report.metrics._exits import iter_exits
+
+        filters = ReportFilters(from_date=date(2026, 1, 1), to_date=date(2026, 1, 31))
+        offboarding = [
+            {
+                "employee_id": 1,
+                "exit_date": date(2026, 1, 10),
+                "source": "offboarding_archived",
+                "employee": None,
+            }
+        ]
+        resignation = [
+            {
+                "employee_id": 1,
+                "exit_date": date(2026, 1, 12),
+                "source": "resignation_approved",
+                "employee": None,
+            },
+            {
+                "employee_id": 2,
+                "exit_date": date(2026, 1, 15),
+                "source": "resignation_approved",
+                "employee": None,
+            },
+        ]
+        inactive = [
+            {
+                "employee_id": 2,
+                "exit_date": date(2026, 1, 20),
+                "source": "inactive_contract_end",
+                "employee": None,
+            },
+            {
+                "employee_id": 3,
+                "exit_date": date(2026, 1, 18),
+                "source": "inactive_contract_end",
+                "employee": None,
+            },
+        ]
+        with patch(
+            "report.metrics._exits._offboarding_archived_exits",
+            return_value=offboarding,
+        ), patch(
+            "report.metrics._exits._resignation_exits",
+            return_value=resignation,
+        ), patch(
+            "report.metrics._exits._inactive_contract_exits",
+            return_value=inactive,
+        ):
+            rows = iter_exits(filters)
+        by_id = {r["employee_id"]: r["source"] for r in rows}
+        self.assertEqual(by_id[1], "offboarding_archived")
+        self.assertEqual(by_id[2], "resignation_approved")
+        self.assertEqual(by_id[3], "inactive_contract_end")
+        self.assertEqual(len(rows), 3)
+
+
+class DocumentExpiryModelTests(SimpleTestCase):
+    def test_no_employee_document_probe(self):
+        import pathlib
+
+        metrics_root = pathlib.Path(__file__).resolve().parents[1] / "metrics"
+        bad = []
+        for path in metrics_root.rglob("*.py"):
+            text = path.read_text(encoding="utf-8")
+            if 'get_model("employee", "Document")' in text:
+                bad.append(str(path))
+            if 'get_model("employee", "EmployeeDocument")' in text:
+                bad.append(str(path))
+        self.assertEqual(bad, [])
 
 
 class DrilldownRegistryTests(SimpleTestCase):

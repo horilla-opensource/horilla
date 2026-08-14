@@ -237,7 +237,7 @@
 
                 <!-- Monthly Trend -->
                 <div class="ld-chart-card ld-chart-card--wide" data-chart-id="monthly_trend" data-chart-label="{% trans 'Leave Request Trend' %}">
-                    <div class="ld-chart-card__header"><div><div class="ld-chart-card__title">{% trans "Leave Request Trend" %}</div><div class="ld-chart-card__subtitle">{% trans "Approved, rejected & pending — last 6 months" %}</div></div></div>
+                    <div class="ld-chart-card__header"><div><div class="ld-chart-card__title">{% trans "Leave Request Trend" %}</div><div class="ld-chart-card__subtitle">{% trans "Stacked status mix — last 6 months" %}</div></div></div>
                     <div class="ld-chart-card__body"><div id="chart-monthly-trend"></div></div>
                 </div>
 
@@ -544,7 +544,7 @@
                     { name: '{% trans "Rejected" %}', data: data.months.map(m => m.rejected) },
                     { name: '{% trans "Pending" %}', data: data.months.map(m => m.pending) },
                 ],
-                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: false,
+                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: true,
                     events: { dataPointSelection: (e, ctx, config) => {
                         const m = data.months[config.dataPointIndex];
                         const status = statusForSeries[config.seriesIndex] || 'approved';
@@ -555,7 +555,7 @@
                     }}
                 },
                 colors: ['#22c55e', '#ef4444', '#f59e0b'],
-                plotOptions: { bar: { borderRadius: 5, columnWidth: '55%' } },
+                plotOptions: { bar: { borderRadius: 4, columnWidth: '55%', borderRadiusApplication: 'end' } },
                 xaxis: { categories: data.months.map(m => m.month), labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
                 yaxis: { labels: { style: { colors: textColor } } },
                 grid: { borderColor: gridColor, strokeDashArray: 4 },

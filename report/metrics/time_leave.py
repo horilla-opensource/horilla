@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-from django.db.models import Count, Sum
+from django.db.models import Count, Q, Sum
 from django.utils.translation import gettext as _
 
 from report.engine import ReportFilters, apply_org_filters, iter_months
@@ -133,8 +133,11 @@ def attendance_summary(filters: ReportFilters) -> dict:
 
 
 def absenteeism_rate(filters: ReportFilters) -> dict:
+    """Calendar-aware punch-gap absenteeism (leave-adjusted when possible)."""
     from attendance.models import Attendance
     from employee.models import Employee
+    from report.formulas import absenteeism_rate as formula_absenteeism
+    from report.metrics._calendar import count_expected_working_days
 
     total_employees = apply_org_filters(
         Employee.objects.all(), filters, prefix="employee_work_info", employee_prefix=""
@@ -143,13 +146,7 @@ def absenteeism_rate(filters: ReportFilters) -> dict:
     months = []
     for month_start, month_end, label in iter_months(filters.to_date, 6):
         end = min(month_end, filters.to_date)
-        working_days = 0
-        d = month_start
-        while d <= end:
-            if d.weekday() < 5:
-                working_days += 1
-            d += timedelta(days=1)
-
+        working_days = count_expected_working_days(month_start, end)
         if working_days == 0 or total_employees == 0:
             months.append(
                 {
@@ -157,6 +154,7 @@ def absenteeism_rate(filters: ReportFilters) -> dict:
                     "rate": 0,
                     "absent_days": 0,
                     "expected_days": 0,
+                    "leave_days": 0,
                 }
             )
             continue
@@ -174,14 +172,45 @@ def absenteeism_rate(filters: ReportFilters) -> dict:
         present_days = (
             present_qs.values("employee_id", "attendance_date").distinct().count()
         )
+
+        leave_days = 0
+        try:
+            from leave.models import LeaveRequest
+
+            leave_qs = LeaveRequest.objects.filter(
+                status="approved",
+                start_date__lte=end,
+            ).filter(Q(end_date__gte=month_start) | Q(end_date__isnull=True))
+            leave_qs = apply_org_filters(
+                leave_qs,
+                filters,
+                prefix="employee_id__employee_work_info",
+                employee_prefix="employee_id",
+            )
+            # Approximate leave-employee-days in month via requested_days (capped
+            # by month length); not perfect overlap math but avoids counting leave
+            # as unscheduled absence.
+            for lr in leave_qs.only(
+                "start_date", "end_date", "requested_days"
+            ).iterator():
+                lr_start = max(lr.start_date, month_start)
+                lr_end = min(lr.end_date or lr.start_date, end)
+                if lr_end < lr_start:
+                    continue
+                span = (lr_end - lr_start).days + 1
+                leave_days += min(float(lr.requested_days or span), span)
+        except Exception:
+            leave_days = 0
+
         expected = total_employees * working_days
-        absent = max(0, expected - present_days)
+        absent = max(0, expected - present_days - leave_days)
         months.append(
             {
                 "month": label,
-                "rate": round(absent / expected * 100, 1),
-                "absent_days": absent,
+                "rate": formula_absenteeism(absent, expected),
+                "absent_days": round(absent, 1),
                 "expected_days": expected,
+                "leave_days": round(leave_days, 1),
             }
         )
 
@@ -194,12 +223,12 @@ def absenteeism_rate(filters: ReportFilters) -> dict:
             {
                 "label": _("Latest month rate"),
                 "value": f"{latest}%",
-                "hint": _("Absent / expected working days"),
+                "hint": _("Unscheduled absence / calendar expected days"),
             },
             {
                 "label": _("6-month avg"),
                 "value": f"{avg_rate}%",
-                "hint": _("Average absenteeism"),
+                "hint": _("Average rate"),
             },
             {
                 "label": _("Active headcount"),
@@ -209,7 +238,7 @@ def absenteeism_rate(filters: ReportFilters) -> dict:
             {
                 "label": _("Absent days (latest)"),
                 "value": months[-1]["absent_days"] if months else 0,
-                "hint": _("Estimated"),
+                "hint": _("After subtracting approved leave"),
             },
         ],
         "charts": [
@@ -225,7 +254,8 @@ def absenteeism_rate(filters: ReportFilters) -> dict:
             "columns": [
                 {"key": "month", "label": _("Month")},
                 {"key": "rate", "label": _("Rate %")},
-                {"key": "absent_days", "label": _("Absent Days")},
+                {"key": "absent_days", "label": _("Unscheduled Absent Days")},
+                {"key": "leave_days", "label": _("Approved Leave Days")},
                 {"key": "expected_days", "label": _("Expected Days")},
             ],
             "rows": months,
@@ -236,6 +266,7 @@ def absenteeism_rate(filters: ReportFilters) -> dict:
 
 def overtime_analysis(filters: ReportFilters) -> dict:
     from attendance.models import Attendance
+    from report.metrics._privacy import allow_named_ot_rows
 
     att_qs = Attendance.objects.filter(
         attendance_date__gte=filters.from_date,
@@ -268,15 +299,50 @@ def overtime_analysis(filters: ReportFilters) -> dict:
         .order_by("-total_seconds")[:20]
     )
 
-    by_emp = list(
-        att_qs.values(
-            "employee_id__employee_first_name",
-            "employee_id__employee_last_name",
-            "employee_id__employee_work_info__department_id__department",
+    include_names = allow_named_ot_rows(filters)
+    table_columns = [
+        {"key": "department", "label": _("Department")},
+        {"key": "ot_hours", "label": _("OT Hours")},
+        {"key": "employees", "label": _("Employees")},
+    ]
+    table_rows = [
+        {
+            "department": r[
+                "employee_id__employee_work_info__department_id__department"
+            ]
+            or "",
+            "ot_hours": round((r["total_seconds"] or 0) / 3600, 1),
+            "employees": r["employees"],
+        }
+        for r in by_dept
+    ]
+
+    if include_names:
+        by_emp = list(
+            att_qs.values(
+                "employee_id__employee_first_name",
+                "employee_id__employee_last_name",
+                "employee_id__employee_work_info__department_id__department",
+            )
+            .annotate(total_seconds=Sum("overtime_second"))
+            .order_by("-total_seconds")[:25]
         )
-        .annotate(total_seconds=Sum("overtime_second"))
-        .order_by("-total_seconds")[:25]
-    )
+        table_columns = [
+            {"key": "employee", "label": _("Employee")},
+            {"key": "department", "label": _("Department")},
+            {"key": "ot_hours", "label": _("OT Hours")},
+        ]
+        table_rows = [
+            {
+                "employee": f"{r['employee_id__employee_first_name']} {r['employee_id__employee_last_name'] or ''}".strip(),
+                "department": r[
+                    "employee_id__employee_work_info__department_id__department"
+                ]
+                or "",
+                "ot_hours": round((r["total_seconds"] or 0) / 3600, 1),
+            }
+            for r in by_emp
+        ]
 
     return {
         "title": _("Overtime Analysis"),
@@ -294,7 +360,7 @@ def overtime_analysis(filters: ReportFilters) -> dict:
             {
                 "label": _("Employees with OT"),
                 "value": att_qs.values("employee_id").distinct().count(),
-                "hint": "",
+                "hint": _("Names hidden unless include_names + change_attendance"),
             },
             {
                 "label": _("Departments"),
@@ -323,29 +389,17 @@ def overtime_analysis(filters: ReportFilters) -> dict:
             }
         ],
         "table": {
-            "columns": [
-                {"key": "employee", "label": _("Employee")},
-                {"key": "department", "label": _("Department")},
-                {"key": "ot_hours", "label": _("OT Hours")},
-            ],
-            "rows": [
-                {
-                    "employee": f"{r['employee_id__employee_first_name']} {r['employee_id__employee_last_name'] or ''}".strip(),
-                    "department": r[
-                        "employee_id__employee_work_info__department_id__department"
-                    ]
-                    or "",
-                    "ot_hours": round((r["total_seconds"] or 0) / 3600, 1),
-                }
-                for r in by_emp
-            ],
+            "columns": table_columns,
+            "rows": table_rows,
         },
         "explorer_url_name": "attendance-report",
     }
 
 
 def leave_utilization(filters: ReportFilters) -> dict:
+    """Period leave used vs current entitlement snapshot (planner metric)."""
     from leave.models import AvailableLeave, LeaveRequest
+    from report.formulas import leave_utilization_rate
 
     allocations = AvailableLeave.objects.filter(employee_id__is_active=True)
     allocations = apply_org_filters(
@@ -367,7 +421,6 @@ def leave_utilization(filters: ReportFilters) -> dict:
     )
 
     leave_qs = LeaveRequest.objects.filter(
-        status="approved",
         start_date__lte=filters.to_date,
         end_date__gte=filters.from_date,
     )
@@ -381,6 +434,8 @@ def leave_utilization(filters: ReportFilters) -> dict:
         leave_qs = leave_qs.filter(leave_type_id=filters.leave_type_id)
     if filters.leave_status:
         leave_qs = leave_qs.filter(status=filters.leave_status)
+    else:
+        leave_qs = leave_qs.filter(status="approved")
     used_by_type = {
         row["leave_type_id"]: float(row["total"] or 0)
         for row in leave_qs.values("leave_type_id").annotate(
@@ -396,7 +451,7 @@ def leave_utilization(filters: ReportFilters) -> dict:
             item["total_carryforward"] or 0
         )
         used = used_by_type.get(lt_id, 0.0)
-        rate = round((used / allocated * 100), 1) if allocated > 0 else 0
+        rate = leave_utilization_rate(used, allocated)
         utilization.append(
             {
                 "type": item["leave_type_id__name"] or _("Unknown"),
@@ -409,25 +464,27 @@ def leave_utilization(filters: ReportFilters) -> dict:
 
     total_used = sum(u["used"] for u in utilization)
     total_alloc = sum(u["allocated"] for u in utilization)
-    overall = round(total_used / total_alloc * 100, 1) if total_alloc else 0
+    overall = leave_utilization_rate(total_used, total_alloc)
 
     return {
-        "title": _("Leave Utilization"),
+        "title": _("Leave Planning (Used vs Entitlement)"),
         "kpis": [
             {
-                "label": _("Overall utilization"),
+                "label": _("Period used / entitlement"),
                 "value": f"{overall}%",
-                "hint": _("Used / allocated"),
+                "hint": _(
+                    "Planner ratio — period approved days ÷ current entitlement snapshot"
+                ),
             },
             {
-                "label": _("Days used"),
+                "label": _("Days used (period)"),
                 "value": round(total_used, 1),
-                "hint": _("Period"),
+                "hint": _("Approved leave in period"),
             },
             {
-                "label": _("Days allocated"),
+                "label": _("Entitlement snapshot"),
                 "value": round(total_alloc, 1),
-                "hint": _("Current balances"),
+                "hint": _("Current total_leave_days (not period accrual)"),
             },
             {"label": _("Leave types"), "value": len(utilization), "hint": ""},
         ],
@@ -435,12 +492,15 @@ def leave_utilization(filters: ReportFilters) -> dict:
             {
                 "id": "leave_util",
                 "type": "bar",
-                "title": _("Utilization by Leave Type"),
+                "title": _("Used vs entitlement by type"),
                 "categories": [u["type"] for u in utilization],
                 "series": [
-                    {"name": _("Used"), "data": [u["used"] for u in utilization]},
                     {
-                        "name": _("Allocated"),
+                        "name": _("Used (period)"),
+                        "data": [u["used"] for u in utilization],
+                    },
+                    {
+                        "name": _("Entitlement snapshot"),
                         "data": [u["allocated"] for u in utilization],
                     },
                 ],
@@ -449,10 +509,10 @@ def leave_utilization(filters: ReportFilters) -> dict:
         "table": {
             "columns": [
                 {"key": "type", "label": _("Leave Type")},
-                {"key": "allocated", "label": _("Allocated")},
-                {"key": "used", "label": _("Used")},
-                {"key": "remaining", "label": _("Remaining")},
-                {"key": "rate", "label": _("Rate %")},
+                {"key": "allocated", "label": _("Entitlement snapshot")},
+                {"key": "used", "label": _("Used (period)")},
+                {"key": "remaining", "label": _("Open balance")},
+                {"key": "rate", "label": _("Ratio %")},
             ],
             "rows": utilization,
         },
@@ -516,12 +576,12 @@ def leave_liability(filters: ReportFilters) -> dict:
     total_liability = sum(r["remaining"] for r in by_type)
 
     return {
-        "title": _("Leave Liability"),
+        "title": _("Open Leave Balance (Days)"),
         "kpis": [
             {
                 "label": _("Open balance (days)"),
                 "value": round(total_liability, 1),
-                "hint": _("Available + carry forward"),
+                "hint": _("Available + carry forward — not currency liability"),
             },
             {"label": _("Leave types"), "value": len(by_type), "hint": ""},
             {
@@ -563,4 +623,144 @@ def leave_liability(filters: ReportFilters) -> dict:
             ],
         },
         "explorer_url_name": "leave-report",
+    }
+
+
+def unscheduled_absence(filters: ReportFilters) -> dict:
+    """
+    Period unscheduled absence using calendar expected days.
+
+    Absent ≈ expected − present punch days − approved leave days (same method as
+    absenteeism-rate, scoped to the selected period rather than a fixed 6m chart).
+    """
+    from attendance.models import Attendance
+    from employee.models import Employee
+    from report.formulas import absenteeism_rate as formula_absenteeism
+    from report.metrics._calendar import count_expected_working_days
+
+    employees = apply_org_filters(
+        Employee.objects.all(), filters, prefix="employee_work_info", employee_prefix=""
+    )
+    total_employees = employees.count()
+    working_days = count_expected_working_days(filters.from_date, filters.to_date)
+    expected = total_employees * working_days
+
+    present_qs = Attendance.objects.filter(
+        attendance_date__gte=filters.from_date,
+        attendance_date__lte=filters.to_date,
+    )
+    present_qs = apply_org_filters(
+        present_qs,
+        filters,
+        prefix="employee_id__employee_work_info",
+        employee_prefix="employee_id",
+    )
+    present_days = (
+        present_qs.values("employee_id", "attendance_date").distinct().count()
+    )
+
+    leave_days = 0.0
+    try:
+        from leave.models import LeaveRequest
+
+        leave_qs = LeaveRequest.objects.filter(
+            status="approved",
+            start_date__lte=filters.to_date,
+            end_date__gte=filters.from_date,
+        )
+        leave_qs = apply_org_filters(
+            leave_qs,
+            filters,
+            prefix="employee_id__employee_work_info",
+            employee_prefix="employee_id",
+        )
+        for lr in leave_qs.only("start_date", "end_date", "requested_days").iterator():
+            lr_start = max(lr.start_date, filters.from_date)
+            lr_end = min(lr.end_date or lr.start_date, filters.to_date)
+            if lr_end < lr_start:
+                continue
+            span = (lr_end - lr_start).days + 1
+            leave_days += min(float(lr.requested_days or span), span)
+    except Exception:
+        leave_days = 0.0
+
+    absent = max(0.0, expected - present_days - leave_days)
+    rate = formula_absenteeism(absent, expected)
+
+    months = []
+    for month_start, month_end, label in iter_months(filters.to_date, 6):
+        start = max(month_start, filters.from_date)
+        end = min(month_end, filters.to_date)
+        if end < start:
+            continue
+        wd = count_expected_working_days(start, end)
+        exp = total_employees * wd
+        if exp == 0:
+            months.append(
+                {"month": label, "rate": 0, "absent_days": 0, "expected_days": 0}
+            )
+            continue
+        pqs = Attendance.objects.filter(
+            attendance_date__gte=start, attendance_date__lte=end
+        )
+        pqs = apply_org_filters(
+            pqs,
+            filters,
+            prefix="employee_id__employee_work_info",
+            employee_prefix="employee_id",
+        )
+        present = pqs.values("employee_id", "attendance_date").distinct().count()
+        month_absent = max(0, exp - present)
+        months.append(
+            {
+                "month": label,
+                "rate": formula_absenteeism(month_absent, exp),
+                "absent_days": round(month_absent, 1),
+                "expected_days": exp,
+            }
+        )
+
+    return {
+        "title": _("Unscheduled Absence"),
+        "kpis": [
+            {
+                "label": _("Unscheduled absence rate"),
+                "value": f"{rate}%",
+                "hint": _("After subtracting approved leave"),
+            },
+            {
+                "label": _("Absent days"),
+                "value": round(absent, 1),
+                "hint": _("Expected − present − approved leave"),
+            },
+            {
+                "label": _("Expected days"),
+                "value": expected,
+                "hint": _("Calendar working days × headcount"),
+            },
+            {
+                "label": _("Approved leave days"),
+                "value": round(leave_days, 1),
+                "hint": _("Excluded from unscheduled"),
+            },
+        ],
+        "charts": [
+            {
+                "id": "unscheduled_trend",
+                "type": "line",
+                "title": _("Monthly rate (present-gap proxy)"),
+                "categories": [m["month"] for m in months],
+                "series": [{"name": _("Rate %"), "data": [m["rate"] for m in months]}],
+            }
+        ],
+        "table": {
+            "columns": [
+                {"key": "month", "label": _("Month")},
+                {"key": "rate", "label": _("Rate %")},
+                {"key": "absent_days", "label": _("Absent days")},
+                {"key": "expected_days", "label": _("Expected days")},
+            ],
+            "rows": months,
+        },
+        "explorer_url_name": "attendance-report",
     }

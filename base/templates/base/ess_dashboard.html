@@ -58,13 +58,6 @@
   .ess-period-preset--active { background: var(--ess-indigo); color: #fff; border-color: var(--ess-indigo); }
   .dark .ess-period-picker input[type="date"] { color-scheme: dark; }
 
-  .ess-btn-back {
-    padding: 6px 14px; border-radius: 8px; font-size: 13px;
-    border: 1px solid rgba(128,128,128,0.2); color: inherit;
-    text-decoration: none; transition: all 0.15s;
-  }
-  .ess-btn-back:hover { border-color: var(--ess-indigo); color: var(--ess-indigo); text-decoration: none; }
-
   /* ── KPI Grid ── */
   .ess-kpi-grid {
     display: grid;
@@ -157,7 +150,7 @@
     background: #ffffff;
     border: 1px solid rgba(128,128,128,0.09);
     box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.05);
-    overflow: hidden;
+    overflow: visible;
     transition: box-shadow 0.25s ease, transform 0.25s ease;
     position: relative;
   }
@@ -179,6 +172,8 @@
     top: 0; left: 0; right: 0;
     height: 3px;
     border-radius: 16px 16px 0 0;
+    pointer-events: none;
+    z-index: 1;
   }
   .ess-chart-card[data-section="leave"]::before       { background: linear-gradient(90deg, #E54F38, #a855f7); }
   .ess-chart-card[data-section="attendance"]::before  { background: linear-gradient(90deg, #22c55e, #06b6d4); }
@@ -196,7 +191,18 @@
   }
   .ess-chart-card__title    { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; }
   .ess-chart-card__subtitle { font-size: 11px; opacity: 0.45; margin-top: 2px; font-weight: 500; }
-  .ess-chart-card__body     { padding: 4px 12px 12px; }
+  .ess-chart-card__body     { padding: 4px 12px 16px; overflow: visible; }
+
+  .ess-dashboard .apexcharts-xaxis text,
+  .ess-dashboard .apexcharts-yaxis text,
+  .ess-dashboard .apexcharts-legend-text {
+    fill: #334155 !important;
+  }
+  .dark .ess-dashboard .apexcharts-xaxis text,
+  .dark .ess-dashboard .apexcharts-yaxis text,
+  .dark .ess-dashboard .apexcharts-legend-text {
+    fill: #cbd5e1 !important;
+  }
 
   /* ── Attendance Calendar ── */
   .ess-calendar-legend {
@@ -620,19 +626,20 @@
         var iconGoals   = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>';
         var iconPay     = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>';
         document.getElementById('essKpiGrid').innerHTML =
-          kpiCard('indigo', iconLeave, '{% trans "Leave Available" %}',
-                  d.total_available_leave, '{% trans "days remaining" %}',
-                  '{% url "user-request-view" %}') +
           kpiCard('green',  iconPresent, '{% trans "Present This Month" %}',
                   d.present_this_month, d.late_this_month + ' {% trans "late" %}',
                   '{% url "view-my-attendance" %}') +
-          kpiCard('amber',  iconGoals, '{% trans "Open Goals" %}',
+          kpiCard('amber', iconLeave, '{% trans "Pending Leave" %}',
+                  d.pending_leave_requests != null ? d.pending_leave_requests : 0,
+                  '{% trans "awaiting approval" %}',
+                  '{% url "user-request-view" %}?status=requested') +
+          kpiCard('indigo', iconLeave, '{% trans "Upcoming Leave" %}',
+                  d.upcoming_leave_count != null ? d.upcoming_leave_count : 0,
+                  '{% trans "approved & ahead" %}',
+                  '{% url "user-request-view" %}?status=approved') +
+          kpiCard('purple', iconGoals, '{% trans "Open Goals" %}',
                   d.open_objectives, '{% trans "active objectives" %}',
-                  '{% url "dashboard-view" %}') +
-          kpiCard('purple', iconPay, '{% trans "Last Net Pay" %}',
-                  d.latest_net_pay !== null ? d.latest_net_pay : '—',
-                  d.latest_payslip_period || '',
-                  '{% url "view-payslip" %}');
+                  '{% url "dashboard-view" %}');
       })
       .catch(function () {});
   }

@@ -53,10 +53,14 @@ def ess_dashboard(request):
 
         messages.error(request, _("Your account is not linked to an employee record."))
         return HorillaRedirect(request)
+
     return render(
         request,
         "base/ess_dashboard.html",
-        {"employee": employee, "today": date.today()},
+        {
+            "employee": employee,
+            "today": date.today(),
+        },
     )
 
 
@@ -80,13 +84,27 @@ def ess_kpi_data(request):
     # Don't count attendance in future days of the selected month
     range_end = min(to_date, date.today())
 
-    # Leave balances
+    # Leave balances (available for balance chart — not a hero KPI)
     total_available = 0.0
     try:
         balances = AvailableLeave.objects.filter(employee_id=employee)
         total_available = sum(
             float(b.available_days) + float(b.carryforward_days) for b in balances
         )
+    except Exception:
+        pass
+
+    pending_leave_requests = 0
+    upcoming_leave_count = 0
+    try:
+        pending_leave_requests = LeaveRequest.objects.filter(
+            employee_id=employee, status="requested"
+        ).count()
+        upcoming_leave_count = LeaveRequest.objects.filter(
+            employee_id=employee,
+            status="approved",
+            start_date__gte=date.today(),
+        ).count()
     except Exception:
         pass
 
@@ -152,6 +170,8 @@ def ess_kpi_data(request):
     return JsonResponse(
         {
             "total_available_leave": round(total_available, 1),
+            "pending_leave_requests": pending_leave_requests,
+            "upcoming_leave_count": upcoming_leave_count,
             "present_this_month": present_count,
             "late_this_month": late_count,
             "open_objectives": open_objectives,

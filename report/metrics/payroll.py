@@ -65,6 +65,8 @@ def labor_cost_summary(filters: ReportFilters) -> dict:
             prefix="employee_id__employee_work_info",
             employee_prefix="employee_id",
         )
+        if filters.payslip_status:
+            month_qs = month_qs.filter(status=filters.payslip_status)
         m = month_qs.aggregate(gross=Sum("gross_pay"), net=Sum("net_pay"))
         trend.append(
             {
@@ -81,7 +83,7 @@ def labor_cost_summary(filters: ReportFilters) -> dict:
             {"label": _("Net pay"), "value": net, "hint": _("Period payslips")},
             {"label": _("Deductions"), "value": deduction, "hint": _("Period")},
             {
-                "label": _("Employer cost (proxy)"),
+                "label": _("Gross (employer cost proxy)"),
                 "value": employer_proxy,
                 "hint": _("≈ gross until employer contribs modeled"),
             },
@@ -188,12 +190,14 @@ def cost_composition(filters: ReportFilters) -> dict:
                 deduction_total += amount
 
     # Fallback if pay_head_data lacks structured lists
+    unsplit_fallback = False
     if not allowance_total and not deduction_total:
         agg = qs.aggregate(gross=Sum("gross_pay"), deduction=Sum("deduction"))
         allowance_total = float(agg["gross"] or 0)
         deduction_total = float(agg["deduction"] or 0)
         allowance_map[_("Gross (unsplit)")] = allowance_total
         deduction_map[_("Deductions (unsplit)")] = deduction_total
+        unsplit_fallback = True
 
     allow_rows = sorted(
         [
@@ -216,17 +220,25 @@ def cost_composition(filters: ReportFilters) -> dict:
             {
                 "label": _("Allowances total"),
                 "value": round(allowance_total, 2),
-                "hint": _("From payslip heads"),
+                "hint": (
+                    _("Unsplit gross — pay_head_data missing structured lists")
+                    if unsplit_fallback
+                    else _("From payslip heads")
+                ),
             },
             {
                 "label": _("Deductions total"),
                 "value": round(deduction_total, 2),
-                "hint": _("From payslip heads"),
+                "hint": (
+                    _("Unsplit deduction field — not componentized")
+                    if unsplit_fallback
+                    else _("From payslip heads")
+                ),
             },
             {
                 "label": _("Allowance components"),
                 "value": len(allowance_map),
-                "hint": "",
+                "hint": _("Unsplit fallback") if unsplit_fallback else "",
             },
             {
                 "label": _("Deduction components"),
@@ -321,9 +333,9 @@ def payroll_headcount_cost(filters: ReportFilters) -> dict:
         "title": _("Payroll Headcount Cost"),
         "kpis": [
             {
-                "label": _("Cost per FTE"),
+                "label": _("Cost per head (proxy)"),
                 "value": cost_per_fte,
-                "hint": _("Gross / active headcount"),
+                "hint": _("Gross / active headcount — not hours-based FTE"),
             },
             {
                 "label": _("Avg net pay"),

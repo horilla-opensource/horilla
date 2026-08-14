@@ -69,7 +69,6 @@ from base.filters import (
     WorkTypeRequestReGroup,
 )
 from base.forms import (
-    AnnouncementExpireForm,
     AssignPermission,
     AssignUserGroup,
     AuditTagForm,
@@ -81,7 +80,6 @@ from base.forms import (
     DriverForm,
     DynamicMailConfForm,
     DynamicMailTestForm,
-    DynamicPaginationForm,
     EmployeeShiftForm,
     EmployeeShiftScheduleForm,
     EmployeeShiftScheduleUpdateForm,
@@ -126,6 +124,7 @@ from base.methods import (
     generate_colors,
     generate_otp,
     get_key_instances,
+    get_session_company,
     is_reportingmanager,
     paginator_qry,
     sortby,
@@ -1160,9 +1159,13 @@ class Workinfo:
 @login_required
 def home(request):
     """
-    This method is used to render index page — redirects to the modern dashboard.
+    Role-aware home: employees → ESS; managers/HR/leadership → analytics dashboard.
     """
-    return redirect("dashboard")
+    from base.dashboard_roles import can_see_analytics_home, resolve_home_role
+
+    if can_see_analytics_home(resolve_home_role(request)):
+        return redirect("dashboard")
+    return redirect("ess-dashboard")
 
 
 @login_required
@@ -5933,13 +5936,17 @@ def _system_preferences_context(request):
     """
     Build template context shared by the System Preferences settings page.
     """
+    tracking_company = get_session_company(request)
+
     if apps.is_installed("payroll"):
         PayrollSettings = get_horilla_model_class(
             app_label="payroll", model="payrollsettings"
         )
         from payroll.forms.component_forms import PayrollSettingsForm
 
-        currency_instance = PayrollSettings.objects.first()
+        currency_instance, _created = PayrollSettings.objects.get_or_create(
+            company_id=tracking_company
+        )
         currency_form = PayrollSettingsForm(instance=currency_instance)
     else:
         currency_form = None
@@ -5951,10 +5958,17 @@ def _system_preferences_context(request):
     else:
         companies = Company.objects.filter(id=selected_company_id)
 
-    prefix_instance = EmployeeGeneralSetting.objects.first()
+    prefix_instance, _created = EmployeeGeneralSetting.objects.get_or_create(
+        company_id=tracking_company
+    )
     prefix_form = EmployeeGeneralSettingPrefixForm(instance=prefix_instance)
-    instance = AnnouncementExpire.objects.first()
-    form = AnnouncementExpireForm(instance=instance)
+
+    expire_instance, _created = AnnouncementExpire.objects.get_or_create(
+        company_id=tracking_company
+    )
+    announcement_expire_settings = [expire_instance]
+    show_expire_company = len(announcement_expire_settings) > 1
+
     enabled_block_unblock = (
         AccountBlockUnblock.objects.exists()
         and AccountBlockUnblock.objects.first().is_enabled
@@ -5963,12 +5977,11 @@ def _system_preferences_context(request):
         ProfileEditFeature.objects.exists()
         and ProfileEditFeature.objects.first().is_enabled
     )
-    tracking_company = _selected_company(request)
     history_tracking_instance = HistoryTrackingFields.for_settings_ui(tracking_company)
     history_fields_form_initial = {
         "tracking_fields": history_tracking_instance.tracked_field_names()
     }
-    export_access_company = _selected_company(request)
+    export_access_company = get_session_company(request)
     export_access_instance = DefaultExportPermission.objects.filter(
         company_id=export_access_company
     ).first()
@@ -5994,11 +6007,11 @@ def _system_preferences_context(request):
     # Default: all companies selected for assignment.
     tracking_assigned_company_ids = [c.id for c in tracking_assign_companies]
 
-    if DynamicPagination.objects.filter(user_id=request.user).exists():
-        pagination = DynamicPagination.objects.filter(user_id=request.user).first()
-        pagination_form = DynamicPaginationForm(instance=pagination)
-    else:
-        pagination_form = DynamicPaginationForm()
+    pagination_instance, _created = DynamicPagination.objects.get_or_create(
+        user_id=request.user, company_id=tracking_company
+    )
+    pagination_settings = [pagination_instance]
+    show_pagination_company = len(pagination_settings) > 1
 
     language_company = tracking_company
     language_setting = CompanyLanguageSetting.objects.filter(
@@ -6044,9 +6057,11 @@ def _system_preferences_context(request):
     ]
 
     return {
-        "form": form,
+        "announcement_expire_settings": announcement_expire_settings,
+        "show_expire_company": show_expire_company,
         "currency_form": currency_form,
-        "pagination_form": pagination_form,
+        "pagination_settings": pagination_settings,
+        "show_pagination_company": show_pagination_company,
         "history_fields_form": history_fields_form,
         "history_tracking_instance": history_tracking_instance,
         "tracking_company": tracking_company,
@@ -6059,7 +6074,6 @@ def _system_preferences_context(request):
         "prefix_form": prefix_form,
         "companies": companies,
         "selected_company_id": selected_company_id,
-        "announcement_expire_instance": instance,
         "current_company": companies.first(),
         "languages": settings.LANGUAGES,
         "enabled_languages": enabled_languages,
@@ -6079,17 +6093,24 @@ def system_preferences_settings_view(request):
     formatting/localization, and data access controls under a single header.
     """
     context = _system_preferences_context(request)
-    instance = context["announcement_expire_instance"]
-
-    if request.method == "POST":
-        form = AnnouncementExpireForm(request.POST, instance=instance)
-        if form.is_valid():
-            form.save()
-            messages.success(request, _("Settings updated."))
-            return HorillaRedirect(request)
-        context["form"] = form
-
     return render(request, "base/settings/system_preferences.html", context)
+
+
+@login_required
+@hx_request_required
+@permission_required("base.change_announcementexpire")
+def update_announcement_expire_days(request):
+    """
+    Updates the "Default Expire Days" setting for one company row (or the
+    "All Companies" row) on the System Preferences page.
+    """
+    if request.method == "POST":
+        setting_id = request.POST.get("setting_id")
+        days = request.POST.get("days")
+        updated = AnnouncementExpire.objects.filter(id=setting_id).update(days=days)
+        if updated:
+            messages.success(request, _("Default expire days updated."))
+    return HttpResponse("")
 
 
 @login_required
@@ -6366,7 +6387,7 @@ def history_field_settings(request):
     When All Companies is selected, the fields form can also post
     ``assign_companies`` so the same settings are applied to those companies.
     """
-    company = _selected_company(request)
+    company = get_session_company(request)
 
     if request.method == "POST":
         updating_fields = request.POST.get("update_tracking_fields") == "1"
@@ -6490,13 +6511,6 @@ def enable_profile_edit_feature(request):
     return HttpResponse(status=405)
 
 
-def _selected_company(request):
-    selected_company = request.session.get("selected_company")
-    if not selected_company or selected_company == "all":
-        return None
-    return Company.objects.filter(id=selected_company).first()
-
-
 @login_required
 @permission_required("base.view_defaultexportpermission")
 def default_export_access_settings_view(request):
@@ -6505,7 +6519,7 @@ def default_export_access_settings_view(request):
     all users of that company can export data, or export access is
     restricted to users holding the per-module export permission.
     """
-    company = _selected_company(request)
+    company = get_session_company(request)
     instance = DefaultExportPermission.objects.filter(company_id=company).first()
     enabled_export_access = instance is None or instance.is_enabled
     return render(
@@ -6520,7 +6534,7 @@ def default_export_access_settings_view(request):
 def enable_default_export_access(request):
     if request.method == "POST":
         enabled = request.POST.get("enable_export_access") == "on"
-        company = _selected_company(request)
+        company = get_session_company(request)
         instance, _created = DefaultExportPermission.objects.get_or_create(
             company_id=company
         )
@@ -6553,7 +6567,7 @@ def update_language_settings(request):
         selected_languages = [
             code for code in selected_languages if code in valid_codes
         ]
-        company = _selected_company(request)
+        company = get_session_company(request)
         instance, _created = CompanyLanguageSetting.objects.get_or_create(
             company_id=company
         )
@@ -7586,23 +7600,19 @@ def delete_worktyperequest_comment(request, comment_id):
 
 @login_required
 def pagination_settings_view(request):
-    if DynamicPagination.objects.filter(user_id=request.user).exists():
-        pagination = DynamicPagination.objects.filter(user_id=request.user).first()
-        pagination_form = DynamicPaginationForm(instance=pagination)
-        if request.method == "POST":
-            pagination_form = DynamicPaginationForm(request.POST, instance=pagination)
-            if pagination_form.is_valid():
-                pagination_form.save()
-                messages.success(request, _("Default pagination updated."))
-    else:
-        pagination_form = DynamicPaginationForm()
-        if request.method == "POST":
-            pagination_form = DynamicPaginationForm(
-                request.POST,
-            )
-            if pagination_form.is_valid():
-                pagination_form.save()
-                messages.success(request, _("Default pagination updated."))
+    """
+    Updates one of the current user's Default Records Per Page rows (one
+    row per company, plus the "All Companies" row) on the System
+    Preferences page.
+    """
+    if request.method == "POST":
+        setting_id = request.POST.get("setting_id")
+        pagination = request.POST.get("pagination")
+        updated = DynamicPagination.objects.filter(
+            id=setting_id, user_id=request.user
+        ).update(pagination=pagination)
+        if updated:
+            messages.success(request, _("Default pagination updated."))
     if request.META.get("HTTP_HX_REQUEST"):
         return HttpResponse()
     return HorillaRedirect(request)
@@ -7720,6 +7730,16 @@ def driver_viewed_status(request):
     return HttpResponse("")
 
 
+def _charts_use_modern_prefs(charts) -> bool:
+    """True when DashboardEmployeeCharts.charts is modern ``[{id, visible}, ...]``."""
+    return bool(
+        charts
+        and isinstance(charts, list)
+        and isinstance(charts[0], dict)
+        and charts[0].get("id")
+    )
+
+
 @login_required
 @hx_request_required
 def dashboard_components_toggle(request):
@@ -7730,6 +7750,9 @@ def dashboard_components_toggle(request):
         employee=request.user.employee_get
     )
     charts = employee_charts.charts or []
+    # Modern home prefs must not be mutated by legacy tile toggles.
+    if _charts_use_modern_prefs(charts):
+        return HttpResponse("")
     chart_id = request.GET.get("chart_id")
     if chart_id and chart_id in charts:
         charts.remove(chart_id)
@@ -7751,6 +7774,17 @@ def employee_chart_show(request):
     charts = check_chart_permission(request, CHARTS)
 
     if request.method == "POST":
+        # Refuse to overwrite modern dashboard Customize prefs with legacy string ids.
+        if _charts_use_modern_prefs(employee_charts.charts):
+            messages.warning(
+                request,
+                _(
+                    "Chart preferences are managed via Customize on the modern "
+                    "dashboard. Legacy Dashboard Charts was not applied."
+                ),
+            )
+            return HttpResponse("<script>window.location.reload();</script>")
+
         data = set(request.POST.keys())
         current_order = employee_charts.charts or []
 
@@ -7779,7 +7813,16 @@ def reorder_dashboard_charts(request):
     employee_charts, created = DashboardEmployeeCharts.objects.get_or_create(
         employee=request.user.employee_get
     )
-    charts = [(chart, chart.replace("_", " ")) for chart in employee_charts.charts]
+    if _charts_use_modern_prefs(employee_charts.charts):
+        messages.warning(
+            request,
+            _("Use Customize on the modern dashboard to reorder charts."),
+        )
+        return HttpResponse(headers={"HX-Refresh": "true"})
+
+    charts = [
+        (chart, chart.replace("_", " ")) for chart in (employee_charts.charts or [])
+    ]
 
     if request.method == "POST":
         chart_keys = list(request.POST.keys())

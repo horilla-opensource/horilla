@@ -819,7 +819,7 @@ def attendance_overview(request):
     from attendance.models import Attendance, AttendanceLateComeEarlyOut
     from base.models import Department
 
-    _, to_date = _parse_period(request)
+    _from_date, to_date = _parse_period(request)
     target_date = _latest_attendance_date(to_date)
 
     labels = []

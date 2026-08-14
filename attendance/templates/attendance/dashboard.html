@@ -863,19 +863,19 @@
                         <div class="am-chart-card__body"><div id="chart-dept-attendance"></div></div>
                     </div>
 
-                    <!-- Calendar Heatmap -->
+                    <!-- Daily attendance rate (colored bar; id kept for prefs) -->
                     <div
                         class="am-chart-card am-chart-card--wide"
                         data-chart-id="calendar_heatmap"
                         data-chart-section="attendance"
-                        data-chart-label="{% trans 'Attendance Calendar' %}"
+                        data-chart-label="{% trans 'Daily Attendance Rate' %}"
                         data-chart-wide="1"
                     >
                         <div class="am-chart-card__header">
                             <div>
-                                <div class="am-chart-card__title">{% trans "Attendance Calendar" %}</div>
+                                <div class="am-chart-card__title">{% trans "Daily Attendance Rate" %}</div>
                                 <div class="am-chart-card__subtitle" id="calendar-month">
-                                    {% trans "Daily attendance rate" %}
+                                    {% trans "Present rate by day" %}
                                 </div>
                             </div>
                         </div>
@@ -999,7 +999,7 @@
                         <div class="am-chart-card__header">
                             <div>
                                 <div class="am-chart-card__title">{% trans "Overtime by Department" %}</div>
-                                <div class="am-chart-card__subtitle" id="ot-month">{% trans "This month" %}</div>
+                                <div class="am-chart-card__subtitle"><span id="ot-month">{% trans "This month" %}</span> — {% trans "Approved vs other hours" %}</div>
                             </div>
                         </div>
                         <div class="am-chart-card__body"><div id="chart-overtime"></div></div>
@@ -1559,8 +1559,11 @@
                     document.getElementById('ot-month').textContent = data.month;
                     if (!data.departments.length) { document.querySelector("#chart-overtime").innerHTML = emptyHtml('{% trans "No overtime data" %}'); return; }
                     renderChart('overtime', document.querySelector("#chart-overtime"), {
-                        series: data.departments.map(d => d.total_hours),
-                        chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
+                        series: [
+                            { name: '{% trans "Approved" %}', data: data.departments.map(d => d.approved_hours) },
+                            { name: '{% trans "Other" %}', data: data.departments.map(d => Math.max(0, +(d.total_hours - d.approved_hours).toFixed(1))) },
+                        ],
+                        chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: true, animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {
                                 const dept = data.departments[config.dataPointIndex]?.department;
                                 if (!dept) return;
@@ -1572,18 +1575,14 @@
                                 });
                             }}
                         },
-                        labels: data.departments.map(d => d.department),
-                        colors: COLORS.slice(0, data.departments.length),
-                        plotOptions: { pie: { expandOnClick: true, donut: { size: '68%',
-                            labels: { show: true,
-                                name: { fontSize: '13px', fontWeight: 700, color: textColor },
-                                value: { fontSize: '20px', fontWeight: 800, color: textColor, formatter: v => parseFloat(v).toFixed(1) + 'h' },
-                                total: { show: true, label: '{% trans "Total Hrs" %}', color: subTextColor, fontSize: '11px', fontWeight: 600,
-                                    formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0).toFixed(1) + 'h' } } } } },
-                        stroke: { width: 3, colors: [cardBg] },
+                        colors: ['#22c55e', '#f59e0b'],
+                        plotOptions: { bar: { borderRadius: 5, borderRadiusApplication: 'end', horizontal: true, barHeight: '55%' } },
+                        xaxis: { ...XAXIS_STYLE, categories: data.departments.map(d => d.department), labels: { ...XAXIS_STYLE.labels, formatter: v => (parseFloat(v) || 0).toFixed(1) + 'h' } },
+                        yaxis: { labels: { style: { colors: textColor, fontSize: '11px', fontWeight: 500 } } },
+                        grid: GRID,
                         dataLabels: { enabled: false },
-                        legend: { ...LEGEND_STYLE },
-                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: (v, { seriesIndex: i }) => `${v.toFixed(1)} hrs (${data.departments[i].employees} emp)` } },
+                        legend: { ...LEGEND_STYLE, position: 'top', horizontalAlign: 'right' },
+                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: (v, { dataPointIndex: i }) => `${(parseFloat(v) || 0).toFixed(1)} hrs (${data.departments[i].employees} emp)` } },
                     });
                 }).catch(() => { document.querySelector("#chart-overtime").innerHTML = emptyHtml('{% trans "No overtime data" %}'); });
             }
@@ -1686,12 +1685,12 @@
             }
             loadClockinDist();
 
-            // ─── CALENDAR HEATMAP ───
+            // ─── DAILY ATTENDANCE RATE ───
             function loadCalendarHeatmap() {
             fetchP("{% url 'attendance-dashboard-calendar' %}")
                 .then(r => r.json())
                 .then(data => {
-                    document.getElementById('calendar-month').textContent = data.period_label || data.month || '{% trans "Daily attendance rate" %}';
+                    document.getElementById('calendar-month').textContent = data.period_label || data.month || '{% trans "Present rate by day" %}';
                     if (!data.days.length) { document.querySelector("#chart-calendar").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
                     const dense = data.days.length > 31;
                     const categories = data.days.map(d => d.label !== undefined ? d.label : d.dom);

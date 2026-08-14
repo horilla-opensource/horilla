@@ -181,14 +181,14 @@ def pipeline_aging(filters: ReportFilters) -> dict:
             {
                 "id": "age_buckets",
                 "type": "donut",
-                "title": _("Age buckets"),
+                "title": _("Age since application"),
                 "categories": list(buckets.keys()),
                 "series": [{"name": _("Candidates"), "data": list(buckets.values())}],
             },
             {
                 "id": "stage_avg",
                 "type": "bar",
-                "title": _("Avg days in stage"),
+                "title": _("Avg age since application by stage"),
                 "categories": [r["stage"] for r in stage_avg[:12]],
                 "series": [
                     {
@@ -212,7 +212,7 @@ def pipeline_aging(filters: ReportFilters) -> dict:
 
 
 def source_quality(filters: ReportFilters) -> dict:
-    """Hire conversion by candidate source (talent)."""
+    """Hire conversion by candidate source (talent) — mutually exclusive buckets."""
     from recruitment.models import Candidate
 
     qs = Candidate.objects.filter(
@@ -230,48 +230,56 @@ def source_quality(filters: ReportFilters) -> dict:
         "software": _("Inside Software"),
         "other": _("Other"),
     }
+
+    def _hired_count(subset):
+        hired_ids = set(subset.filter(hired=True).values_list("id", flat=True)) | set(
+            subset.filter(stage_id__stage_type="hired").values_list("id", flat=True)
+        )
+        return len(hired_ids)
+
     rows = []
-    for key, label in source_labels.items():
-        total = qs.filter(source=key).count()
-        hired = (
-            qs.filter(source=key).filter(hired=True).count()
-            + qs.filter(source=key, stage_id__stage_type="hired").distinct().count()
-        )
-        # Avoid double-count hired via both flags — use distinct id set
-        hired_ids = set(
-            qs.filter(source=key, hired=True).values_list("id", flat=True)
-        ) | set(
-            qs.filter(source=key, stage_id__stage_type="hired").values_list(
-                "id", flat=True
-            )
-        )
-        hired = len(hired_ids)
-        rate = round(hired / total * 100, 1) if total else 0
-        if total:
-            rows.append(
-                {
-                    "source": str(label),
-                    "candidates": total,
-                    "hired": hired,
-                    "accept_rate": f"{rate}%",
-                    "rate_num": rate,
-                }
-            )
-    referral_total = qs.filter(referral__isnull=False).count()
+    # Referral first (exclusive); remaining candidates bucketed by source CharField
+    referral_qs = qs.filter(referral__isnull=False)
+    referral_total = referral_qs.count()
     if referral_total:
-        hired_ids = set(
-            qs.filter(referral__isnull=False, hired=True).values_list("id", flat=True)
-        ) | set(
-            qs.filter(referral__isnull=False, stage_id__stage_type="hired").values_list(
-                "id", flat=True
-            )
-        )
-        hired = len(hired_ids)
+        hired = _hired_count(referral_qs)
         rate = round(hired / referral_total * 100, 1)
         rows.append(
             {
                 "source": str(_("Referral")),
                 "candidates": referral_total,
+                "hired": hired,
+                "accept_rate": f"{rate}%",
+                "rate_num": rate,
+            }
+        )
+
+    non_referral = qs.filter(referral__isnull=True)
+    for key, label in source_labels.items():
+        subset = non_referral.filter(source=key)
+        total = subset.count()
+        if not total:
+            continue
+        hired = _hired_count(subset)
+        rate = round(hired / total * 100, 1)
+        rows.append(
+            {
+                "source": str(label),
+                "candidates": total,
+                "hired": hired,
+                "accept_rate": f"{rate}%",
+                "rate_num": rate,
+            }
+        )
+    other_qs = non_referral.exclude(source__in=source_labels.keys())
+    other_total = other_qs.count()
+    if other_total:
+        hired = _hired_count(other_qs)
+        rate = round(hired / other_total * 100, 1)
+        rows.append(
+            {
+                "source": str(_("Unspecified / other")),
+                "candidates": other_total,
                 "hired": hired,
                 "accept_rate": f"{rate}%",
                 "rate_num": rate,
@@ -289,7 +297,11 @@ def source_quality(filters: ReportFilters) -> dict:
     return {
         "title": _("Source Quality"),
         "kpis": [
-            {"label": _("Sources"), "value": len(rows), "hint": ""},
+            {
+                "label": _("Sources"),
+                "value": len(rows),
+                "hint": _("Mutually exclusive"),
+            },
             {
                 "label": _("Best source"),
                 "value": best["source"],
@@ -298,7 +310,7 @@ def source_quality(filters: ReportFilters) -> dict:
             {
                 "label": _("Candidates"),
                 "value": sum(r["candidates"] for r in rows),
-                "hint": _("In period"),
+                "hint": _("In period (no double-count)"),
             },
             {
                 "label": _("Hired"),
@@ -347,38 +359,37 @@ def document_expiry_aging(filters: ReportFilters) -> dict:
             return "31–60"
         return "61–90"
 
-    if apps.is_installed("employee"):
-        for model_name in ("Document", "EmployeeDocument", "DocumentRequest"):
-            try:
-                Model = apps.get_model("employee", model_name)
-            except LookupError:
-                continue
-            date_fields = [
-                f.name
-                for f in Model._meta.fields
-                if f.name in ("expiry_date", "expire_date", "end_date", "valid_until")
-            ]
-            if not date_fields:
-                continue
-            field = date_fields[0]
-            qs = Model.objects.filter(
-                **{f"{field}__lte": horizon, f"{field}__isnull": False}
+    if apps.is_installed("horilla_documents"):
+        try:
+            Document = apps.get_model("horilla_documents", "Document")
+            qs = Document.objects.filter(
+                expiry_date__lte=horizon,
+                expiry_date__isnull=False,
             )
-            for obj in qs[:200]:
-                exp = getattr(obj, field, None)
+            qs = apply_org_filters(
+                qs,
+                filters,
+                prefix="employee_id__employee_work_info",
+                employee_prefix="employee_id",
+            )
+            for obj in qs.select_related("employee_id")[:200]:
+                exp = obj.expiry_date
                 if not exp:
                     continue
-                if isinstance(exp, date):
-                    b = _bucket(exp)
-                    buckets[b] = buckets.get(b, 0) + 1
-                    rows.append(
-                        {
-                            "source": f"employee.{model_name}",
-                            "title": str(obj),
-                            "expiry": exp.isoformat(),
-                            "bucket": b,
-                        }
-                    )
+                b = _bucket(exp)
+                buckets[b] = buckets.get(b, 0) + 1
+                emp = getattr(obj, "employee_id", None)
+                rows.append(
+                    {
+                        "source": "horilla_documents.Document",
+                        "title": str(obj),
+                        "employee": emp.get_full_name() if emp else "",
+                        "expiry": exp.isoformat(),
+                        "bucket": b,
+                    }
+                )
+        except Exception:
+            pass
 
     total = sum(buckets.values())
     if not total:
@@ -419,6 +430,7 @@ def document_expiry_aging(filters: ReportFilters) -> dict:
             "columns": [
                 {"key": "source", "label": _("Source")},
                 {"key": "title", "label": _("Item")},
+                {"key": "employee", "label": _("Employee")},
                 {"key": "expiry", "label": _("Expiry")},
                 {"key": "bucket", "label": _("Bucket")},
             ],
@@ -428,8 +440,10 @@ def document_expiry_aging(filters: ReportFilters) -> dict:
 
 
 def ot_concentration(filters: ReportFilters) -> dict:
-    """Share of OT concentrated in top employees (time)."""
+    """Share of OT concentrated in top employees / departments (time)."""
     from attendance.models import Attendance
+    from report.formulas import ot_concentration_share
+    from report.metrics._privacy import allow_named_ot_rows
 
     att_qs = Attendance.objects.filter(
         attendance_date__gte=filters.from_date,
@@ -461,28 +475,95 @@ def ot_concentration(filters: ReportFilters) -> dict:
         )
 
     top5 = by_emp[:5]
-    top5_secs = sum(r["total_seconds"] or 0 for r in top5)
     top10 = by_emp[:10]
-    top10_secs = sum(r["total_seconds"] or 0 for r in top10)
-    concentration = round(top5_secs / total * 100, 1)
-    concentration10 = round(top10_secs / total * 100, 1)
+    concentration = ot_concentration_share(
+        sum(r["total_seconds"] or 0 for r in top5), total
+    )
+    concentration10 = ot_concentration_share(
+        sum(r["total_seconds"] or 0 for r in top10), total
+    )
 
-    rows = []
-    for r in by_emp[:25]:
-        share = round((r["total_seconds"] or 0) / total * 100, 1)
-        first = r.get("employee_id__employee_first_name") or ""
-        last = r.get("employee_id__employee_last_name") or ""
-        rows.append(
+    include_names = allow_named_ot_rows(filters)
+
+    # Default: department aggregates (culture-safe)
+    by_dept = list(
+        att_qs.filter(employee_id__employee_work_info__department_id__isnull=False)
+        .values("employee_id__employee_work_info__department_id__department")
+        .annotate(total_seconds=Sum("overtime_second"))
+        .order_by("-total_seconds")[:20]
+    )
+    dept_rows = [
+        {
+            "department": r[
+                "employee_id__employee_work_info__department_id__department"
+            ]
+            or "",
+            "ot_hours": round((r["total_seconds"] or 0) / 3600, 1),
+            "share": f"{ot_concentration_share(r['total_seconds'] or 0, total)}%",
+        }
+        for r in by_dept
+    ]
+
+    charts = [
+        {
+            "id": "ot_dept",
+            "type": "bar",
+            "title": _("OT Hours by Department"),
+            "categories": [r["department"] for r in dept_rows[:12]],
+            "series": [
+                {"name": _("OT Hours"), "data": [r["ot_hours"] for r in dept_rows[:12]]}
+            ],
+        }
+    ]
+    table = {
+        "columns": [
+            {"key": "department", "label": _("Department")},
+            {"key": "ot_hours", "label": _("OT Hours")},
+            {"key": "share", "label": _("Share")},
+        ],
+        "rows": dept_rows,
+    }
+
+    if include_names:
+        named_rows = []
+        for r in by_emp[:25]:
+            share = ot_concentration_share(r["total_seconds"] or 0, total)
+            first = r.get("employee_id__employee_first_name") or ""
+            last = r.get("employee_id__employee_last_name") or ""
+            named_rows.append(
+                {
+                    "employee": f"{first} {last}".strip(),
+                    "department": r.get(
+                        "employee_id__employee_work_info__department_id__department"
+                    )
+                    or "",
+                    "ot_hours": round((r["total_seconds"] or 0) / 3600, 1),
+                    "share": f"{share}%",
+                }
+            )
+        charts.append(
             {
-                "employee": f"{first} {last}".strip(),
-                "department": r.get(
-                    "employee_id__employee_work_info__department_id__department"
-                )
-                or "",
-                "ot_hours": round((r["total_seconds"] or 0) / 3600, 1),
-                "share": f"{share}%",
+                "id": "ot_top",
+                "type": "bar",
+                "title": _("Top OT hours (named — confidential)"),
+                "categories": [r["employee"] for r in named_rows[:10]],
+                "series": [
+                    {
+                        "name": _("OT Hours"),
+                        "data": [r["ot_hours"] for r in named_rows[:10]],
+                    }
+                ],
             }
         )
+        table = {
+            "columns": [
+                {"key": "employee", "label": _("Employee")},
+                {"key": "department", "label": _("Department")},
+                {"key": "ot_hours", "label": _("OT Hours")},
+                {"key": "share", "label": _("Share")},
+            ],
+            "rows": named_rows,
+        }
 
     return {
         "title": _("OT Concentration"),
@@ -505,28 +586,10 @@ def ot_concentration(filters: ReportFilters) -> dict:
             {
                 "label": _("Employees with OT"),
                 "value": len(by_emp),
-                "hint": "",
+                "hint": _("Names hidden unless include_names + change_attendance"),
             },
         ],
-        "charts": [
-            {
-                "id": "ot_top",
-                "type": "bar",
-                "title": _("Top OT hours"),
-                "categories": [r["employee"] for r in rows[:10]],
-                "series": [
-                    {"name": _("OT Hours"), "data": [r["ot_hours"] for r in rows[:10]]}
-                ],
-            }
-        ],
-        "table": {
-            "columns": [
-                {"key": "employee", "label": _("Employee")},
-                {"key": "department", "label": _("Department")},
-                {"key": "ot_hours", "label": _("OT Hours")},
-                {"key": "share", "label": _("Share")},
-            ],
-            "rows": rows,
-        },
+        "charts": charts,
+        "table": table,
         "explorer_url_name": "attendance-report",
     }

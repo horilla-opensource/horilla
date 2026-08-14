@@ -31,6 +31,16 @@ urlpatterns = [
         name="standard-report-dashboard-pins",
     ),
     path(
+        "standard/suggested-pack/",
+        standard_reports.standard_report_suggested_pack,
+        name="standard-report-suggested-pack",
+    ),
+    path(
+        "standard/pin-recommended/",
+        standard_reports.standard_report_pin_recommended,
+        name="standard-report-pin-recommended",
+    ),
+    path(
         "subscriptions/",
         subscriptions_cbv.ReportSubscriptionsView.as_view(),
         name="report-subscriptions",

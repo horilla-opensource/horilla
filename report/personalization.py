@@ -16,6 +16,44 @@ from report.models import (
 )
 from report.registry import get_report
 
+# Opt-in Suggested Reports pack for dashboard Phase 4 handshake.
+# Do NOT auto-favorite these — UI must require explicit user opt-in.
+# Excluded until further hardening: absenteeism-rate, leave-utilization,
+# payslip-register, diversity-snapshot (DEI pack), named-OT variants.
+SUGGESTED_REPORT_SLUGS: tuple[str, ...] = (
+    "workforce-composition",
+    "tenure-longevity",
+    "span-of-control",
+    "turnover-attrition",
+    "joiners-leavers",
+    "headcount-bridge",
+    "exit-analysis",
+    "attendance-summary",
+    "unscheduled-absence",
+    "leave-liability",  # catalog: Open Leave Balance (Days)
+    "ot-concentration",  # department / KPI defaults; names gated
+    "recruitment-funnel",
+    "time-to-hire",
+    "offer-acceptance",
+    "pipeline-aging",
+    "quality-of-hire",
+    "document-expiry",
+    "document-expiry-aging",
+)
+
+# Priority order for the home "Pin recommended" action (subset of Suggested).
+# Cap still 6 favorites total — this only fills empty pin slots on click.
+DASHBOARD_PIN_PRIORITY_SLUGS: tuple[str, ...] = (
+    "turnover-attrition",
+    "time-to-hire",
+    "document-expiry",
+    "span-of-control",
+    "ot-concentration",
+    "leave-liability",
+)
+
+MAX_DASHBOARD_REPORT_PINS = 6
+
 
 def session_company_id(request) -> Optional[int]:
     selected = request.session.get("selected_company") if request else None

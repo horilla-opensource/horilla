@@ -218,8 +218,6 @@ def diversity_snapshot(filters: ReportFilters) -> dict:
         else:
             age_bands[_("55+")] += 1
 
-    marital = Counter(employees.values_list("marital_status", flat=True))
-
     # Leadership gender: employees who are reporting managers
     managers = employees.filter(
         id__in=employees.exclude(
@@ -227,27 +225,43 @@ def diversity_snapshot(filters: ReportFilters) -> dict:
         ).values_list("employee_work_info__reporting_manager_id", flat=True)
     )
     mgr_gender = Counter(managers.values_list("gender", flat=True))
+    mgr_total = managers.count() or 1
+    leadership_rows = [
+        {
+            "category": _("Leadership gender"),
+            "value": gender_labels.get(g, g or _("Unknown")),
+            "count": c,
+            "pct": round(c / mgr_total * 100, 1),
+        }
+        for g, c in mgr_gender.items()
+        if c
+    ]
 
+    # Equal-weight representation KPIs (avoid single "Female %" hero)
+    male_pct = next((g["pct"] for g in genders if g["key"] == "male"), 0)
     female_pct = next((g["pct"] for g in genders if g["key"] == "female"), 0)
+    other_pct = round(
+        sum(g["pct"] for g in genders if g["key"] not in ("male", "female")), 1
+    )
 
     return {
         "title": _("Diversity Snapshot"),
         "kpis": [
             {"label": _("Headcount"), "value": total, "hint": _("Active")},
             {
+                "label": _("Male %"),
+                "value": f"{male_pct}%",
+                "hint": _("Representation"),
+            },
+            {
                 "label": _("Female %"),
                 "value": f"{female_pct}%",
-                "hint": _("Of active workforce"),
+                "hint": _("Representation"),
             },
             {
-                "label": _("Managers"),
-                "value": managers.count(),
-                "hint": _("Reporting managers"),
-            },
-            {
-                "label": _("Age known"),
-                "value": total - age_bands[_("Unknown")],
-                "hint": _("With date of birth"),
+                "label": _("Other / unspecified %"),
+                "value": f"{other_pct}%",
+                "hint": _("Representation"),
             },
         ],
         "charts": [
@@ -295,30 +309,7 @@ def diversity_snapshot(filters: ReportFilters) -> dict:
                     for band, count in age_bands.items()
                     if count
                 ]
-                + [
-                    {
-                        "category": _("Marital status"),
-                        "value": status or _("Unknown"),
-                        "count": count,
-                        "pct": round(count / total * 100, 1),
-                    }
-                    for status, count in marital.items()
-                    if count
-                ]
-                + [
-                    {
-                        "category": _("Leadership gender"),
-                        "value": gender_labels.get(g, g or _("Unknown")),
-                        "count": c,
-                        "pct": (
-                            round(c / managers.count() * 100, 1)
-                            if managers.count()
-                            else 0
-                        ),
-                    }
-                    for g, c in mgr_gender.items()
-                    if c
-                ]
+                + leadership_rows
             ),
         },
         "explorer_url_name": "employee-report",
@@ -415,99 +406,116 @@ def tenure_longevity(filters: ReportFilters) -> dict:
 
 
 def turnover_attrition(filters: ReportFilters) -> dict:
-    from employee.models import Employee, EmployeeWorkInformation
+    """Turnover (all exits) using shared exit sources — not voluntary attrition."""
+    from employee.models import EmployeeWorkInformation
+    from report.formulas import turnover_rate as formula_turnover
+    from report.metrics._exits import exits_in_period, iter_exits
 
     months = []
     for month_start, month_end, label in iter_months(filters.to_date, 6):
+        end = min(month_end, filters.to_date)
         hires_qs = EmployeeWorkInformation.objects.filter(
             date_joining__gte=month_start,
-            date_joining__lte=month_end,
+            date_joining__lte=end,
         )
         hires_qs = apply_org_filters(
             hires_qs, filters, prefix="", employee_prefix="employee_id"
         )
         hires = hires_qs.count()
-
-        exits_qs = Employee.objects.filter(is_active=False).filter(
-            Q(employee_work_info__contract_end_date__gte=month_start)
-            & Q(employee_work_info__contract_end_date__lte=month_end)
-        )
-        exits_qs = apply_org_filters(
-            exits_qs,
-            filters,
-            prefix="employee_work_info",
-            employee_prefix="",
-            apply_employment_status=False,
-        )
-        exits = exits_qs.count()
+        exits = exits_in_period(filters, from_date=month_start, to_date=end)
         months.append(
             {"month": label, "hires": hires, "exits": exits, "net": hires - exits}
         )
 
-    active_qs = _employees(filters)
-    total_employees = active_qs.count()
-    total_exits = sum(m["exits"] for m in months)
-    turnover_rate = (
-        round(total_exits / total_employees * 100, 1) if total_employees else 0
-    )
-
-    # First-year turnover proxy: inactive with joining within 365 days of contract end
-    first_year = 0
     window_start = month_offset(filters.to_date, 5)
-    inactive = apply_org_filters(
-        Employee.objects.filter(is_active=False).select_related("employee_work_info"),
-        filters,
-        prefix="employee_work_info",
-        employee_prefix="",
-        apply_employment_status=False,
-    )
-    for emp in inactive.iterator():
-        wi = getattr(emp, "employee_work_info", None)
-        if not wi or not wi.date_joining or not wi.contract_end_date:
-            continue
-        if (wi.contract_end_date - wi.date_joining).days <= 365:
-            if window_start <= wi.contract_end_date <= filters.to_date:
-                first_year += 1
+    period_exits = iter_exits(filters, from_date=window_start, to_date=filters.to_date)
+    total_exits = len(period_exits)
+    total_hires = sum(m["hires"] for m in months)
 
-    by_dept = list(
-        apply_org_filters(
-            Employee.objects.filter(
-                is_active=False,
-                employee_work_info__contract_end_date__gte=filters.from_date,
-                employee_work_info__contract_end_date__lte=filters.to_date,
-            ),
-            filters,
-            prefix="employee_work_info",
-            employee_prefix="",
-            apply_employment_status=False,
+    # Average of month-end active HC over the 6 month windows
+    month_end_counts = []
+    for month_start, month_end, _label in iter_months(filters.to_date, 6):
+        end = min(month_end, filters.to_date)
+        # Active employees joined by month end (proxy closing HC)
+        hc = (
+            apply_org_filters(
+                EmployeeWorkInformation.objects.filter(date_joining__lte=end).filter(
+                    Q(employee_id__is_active=True)
+                    | Q(
+                        employee_id__is_active=False,
+                        contract_end_date__gt=end,
+                    )
+                ),
+                filters,
+                prefix="",
+                employee_prefix="employee_id",
+                apply_employment_status=False,
+            )
+            .values("employee_id")
+            .distinct()
+            .count()
         )
-        .values("employee_work_info__department_id__department")
-        .annotate(count=Count("id"))
-        .order_by("-count")
+        month_end_counts.append(hc)
+    avg_headcount = (
+        sum(month_end_counts) / len(month_end_counts) if month_end_counts else 0
     )
+    rate = formula_turnover(total_hires, total_exits, avg_headcount)
+
+    first_year = 0
+    for row in period_exits:
+        emp = row.get("employee")
+        wi = getattr(emp, "employee_work_info", None) if emp else None
+        if wi is None and emp is not None:
+            try:
+                wi = EmployeeWorkInformation.objects.filter(employee_id=emp).first()
+            except Exception:
+                wi = None
+        joining = getattr(wi, "date_joining", None) if wi else None
+        if joining and row["exit_date"] and (row["exit_date"] - joining).days <= 365:
+            first_year += 1
+
+    # Dept breakdown from exit list
+    from collections import Counter
+
+    dept_counter = Counter()
+    for row in period_exits:
+        emp = row.get("employee")
+        wi = getattr(emp, "employee_work_info", None) if emp else None
+        if wi is None and emp is not None:
+            try:
+                wi = EmployeeWorkInformation.objects.filter(employee_id=emp).first()
+            except Exception:
+                wi = None
+        dept = (
+            getattr(getattr(wi, "department_id", None), "department", None)
+            if wi
+            else None
+        )
+        dept_counter[dept or str(_("Unassigned"))] += 1
+    by_dept = [{"department": k, "count": v} for k, v in dept_counter.most_common()]
 
     return {
-        "title": _("Turnover & Attrition"),
+        "title": _("Turnover (All Exits)"),
         "kpis": [
             {
                 "label": _("Turnover rate (6m)"),
-                "value": f"{turnover_rate}%",
-                "hint": _("Exits / active headcount"),
+                "value": f"{rate}%",
+                "hint": _("Exits ÷ average month-end headcount"),
             },
             {
                 "label": _("Exits (6m)"),
                 "value": total_exits,
-                "hint": _("Contract end in window"),
+                "hint": _("Offboarding / resignation / inactive fallback"),
             },
             {
                 "label": _("Hires (6m)"),
-                "value": sum(m["hires"] for m in months),
+                "value": total_hires,
                 "hint": _("Joined in window"),
             },
             {
                 "label": _("First-year exits"),
                 "value": first_year,
-                "hint": _("Proxy: tenure ≤ 1 year at exit"),
+                "hint": _("Tenure ≤ 1 year at exit_date"),
             },
         ],
         "charts": [
@@ -532,11 +540,7 @@ def turnover_attrition(filters: ReportFilters) -> dict:
             "rows": months
             + [
                 {
-                    "month": _("Dept exit: %(dept)s")
-                    % {
-                        "dept": r["employee_work_info__department_id__department"]
-                        or _("Unassigned")
-                    },
+                    "month": _("Dept exit: %(dept)s") % {"dept": r["department"]},
                     "hires": "",
                     "exits": r["count"],
                     "net": "",
@@ -549,7 +553,8 @@ def turnover_attrition(filters: ReportFilters) -> dict:
 
 
 def joiners_leavers(filters: ReportFilters) -> dict:
-    from employee.models import Employee, EmployeeWorkInformation
+    from employee.models import EmployeeWorkInformation
+    from report.metrics._exits import iter_exits
 
     hires_qs = EmployeeWorkInformation.objects.filter(
         date_joining__gte=filters.from_date,
@@ -560,23 +565,16 @@ def joiners_leavers(filters: ReportFilters) -> dict:
     )
     hires = hires_qs.count()
 
-    exits_qs = Employee.objects.filter(is_active=False).filter(
-        Q(employee_work_info__contract_end_date__gte=filters.from_date)
-        & Q(employee_work_info__contract_end_date__lte=filters.to_date)
+    exit_rows = iter_exits(
+        filters, from_date=filters.from_date, to_date=filters.to_date
     )
-    exits_qs = apply_org_filters(
-        exits_qs,
-        filters,
-        prefix="employee_work_info",
-        employee_prefix="",
-        apply_employment_status=False,
-    )
-    exits = exits_qs.count()
+    exits = len(exit_rows)
 
     trend = []
     for month_start, month_end, label in iter_months(filters.to_date, 6):
+        end = min(month_end, filters.to_date)
         count = apply_org_filters(
-            EmployeeWorkInformation.objects.filter(date_joining__lte=month_end),
+            EmployeeWorkInformation.objects.filter(date_joining__lte=end),
             filters,
             prefix="",
             employee_prefix="employee_id",
@@ -595,6 +593,48 @@ def joiners_leavers(filters: ReportFilters) -> dict:
         )
     )
 
+    table_rows = [
+        {
+            "type": _("Joiner"),
+            "name": f"{r['employee_id__employee_first_name']} {r['employee_id__employee_last_name'] or ''}".strip(),
+            "department": r["department_id__department"] or "",
+            "position": r["job_position_id__job_position"] or "",
+            "date": r["date_joining"].isoformat() if r["date_joining"] else "",
+            "source": "joining",
+        }
+        for r in hire_rows
+    ]
+    for row in exit_rows[:50]:
+        emp = row.get("employee")
+        wi = getattr(emp, "employee_work_info", None) if emp else None
+        if wi is None and emp is not None:
+            try:
+                wi = EmployeeWorkInformation.objects.filter(employee_id=emp).first()
+            except Exception:
+                wi = None
+        first = getattr(emp, "employee_first_name", "") if emp else ""
+        last = getattr(emp, "employee_last_name", "") if emp else ""
+        dept = (
+            getattr(getattr(wi, "department_id", None), "department", "") if wi else ""
+        )
+        pos = (
+            getattr(getattr(wi, "job_position_id", None), "job_position", "")
+            if wi
+            else ""
+        )
+        table_rows.append(
+            {
+                "type": _("Leaver"),
+                "name": f"{first} {last or ''}".strip(),
+                "department": dept or "",
+                "position": pos or "",
+                "date": row["exit_date"].isoformat(),
+                "source": row["source"],
+            }
+        )
+
+    closing_hc = trend[-1]["count"] if trend else 0
+
     return {
         "title": _("Joiners & Leavers"),
         "kpis": [
@@ -606,9 +646,9 @@ def joiners_leavers(filters: ReportFilters) -> dict:
                 "hint": _("Joiners − leavers"),
             },
             {
-                "label": _("Headcount (latest)"),
-                "value": trend[-1]["count"] if trend else 0,
-                "hint": _("Active with joining ≤ month end"),
+                "label": _("Closing HC (proxy)"),
+                "value": closing_hc,
+                "hint": _("Joined on/before period end (active filter)"),
             },
         ],
         "charts": [
@@ -624,22 +664,351 @@ def joiners_leavers(filters: ReportFilters) -> dict:
         ],
         "table": {
             "columns": [
+                {"key": "type", "label": _("Type")},
                 {"key": "name", "label": _("Employee")},
                 {"key": "department", "label": _("Department")},
                 {"key": "position", "label": _("Position")},
-                {"key": "date_joining", "label": _("Joining Date")},
+                {"key": "date", "label": _("Date")},
+                {"key": "source", "label": _("Source")},
             ],
-            "rows": [
+            "rows": table_rows,
+        },
+        "explorer_url_name": "employee-report",
+    }
+
+
+def headcount_bridge(filters: ReportFilters) -> dict:
+    """Opening → hires → exits → closing headcount bridge for the selected period."""
+    from employee.models import EmployeeWorkInformation
+    from report.metrics._exits import iter_exits
+
+    opening = (
+        apply_org_filters(
+            EmployeeWorkInformation.objects.filter(
+                date_joining__lt=filters.from_date
+            ).filter(
+                Q(employee_id__is_active=True)
+                | Q(
+                    employee_id__is_active=False,
+                    contract_end_date__gte=filters.from_date,
+                )
+            ),
+            filters,
+            prefix="",
+            employee_prefix="employee_id",
+            apply_employment_status=False,
+        )
+        .values("employee_id")
+        .distinct()
+        .count()
+    )
+
+    hires_qs = EmployeeWorkInformation.objects.filter(
+        date_joining__gte=filters.from_date,
+        date_joining__lte=filters.to_date,
+    )
+    hires_qs = apply_org_filters(
+        hires_qs, filters, prefix="", employee_prefix="employee_id"
+    )
+    hires = hires_qs.count()
+    exit_rows = iter_exits(
+        filters, from_date=filters.from_date, to_date=filters.to_date
+    )
+    exits = len(exit_rows)
+    closing = max(0, opening + hires - exits)
+    # Cross-check with closing HC proxy (joined by period end, active filter)
+    closing_proxy = apply_org_filters(
+        EmployeeWorkInformation.objects.filter(date_joining__lte=filters.to_date),
+        filters,
+        prefix="",
+        employee_prefix="employee_id",
+    ).count()
+
+    by_source = Counter(r["source"] for r in exit_rows)
+    rows = [
+        {
+            "step": _("Opening headcount"),
+            "count": opening,
+            "note": _("Joined before period start"),
+        },
+        {"step": _("(+) Joiners"), "count": hires, "note": _("date_joining in period")},
+        {"step": _("(−) Leavers"), "count": exits, "note": _("Shared exit sources")},
+        {
+            "step": _("Closing (bridge)"),
+            "count": closing,
+            "note": _("Opening + joiners − leavers"),
+        },
+        {
+            "step": _("Closing (active proxy)"),
+            "count": closing_proxy,
+            "note": _("Joined on/before period end · active filter"),
+        },
+    ]
+    for source, count in by_source.most_common():
+        rows.append(
+            {
+                "step": _("Leaver source: %(s)s") % {"s": source},
+                "count": count,
+                "note": "",
+            }
+        )
+
+    return {
+        "title": _("Headcount Bridge"),
+        "kpis": [
+            {"label": _("Opening"), "value": opening, "hint": _("Before period")},
+            {"label": _("Joiners"), "value": hires, "hint": _("In period")},
+            {"label": _("Leavers"), "value": exits, "hint": _("In period")},
+            {
+                "label": _("Closing (bridge)"),
+                "value": closing,
+                "hint": _("Opening + joiners − leavers"),
+            },
+        ],
+        "charts": [
+            {
+                "id": "hc_bridge",
+                "type": "bar",
+                "title": _("Bridge steps"),
+                "categories": [r["step"] for r in rows[:4]],
+                "series": [
+                    {"name": _("Count"), "data": [r["count"] for r in rows[:4]]}
+                ],
+            }
+        ],
+        "table": {
+            "columns": [
+                {"key": "step", "label": _("Step")},
+                {"key": "count", "label": _("Count")},
+                {"key": "note", "label": _("Notes")},
+            ],
+            "rows": rows,
+        },
+        "explorer_url_name": "employee-report",
+    }
+
+
+def exit_analysis(filters: ReportFilters) -> dict:
+    """Exit mix by source / dept / tenure — no voluntary split without reason fields."""
+    from employee.models import EmployeeWorkInformation
+    from report.metrics._exits import iter_exits
+
+    exit_rows = iter_exits(
+        filters, from_date=filters.from_date, to_date=filters.to_date
+    )
+    if not exit_rows:
+        return empty_report(
+            _("Exit Analysis"),
+            filters,
+            _("No exits found in the selected period."),
+        )
+
+    by_source = Counter(r["source"] for r in exit_rows)
+    tenure_bands = Counter()
+    dept_counter = Counter()
+    table_rows = []
+
+    for row in exit_rows:
+        emp = row.get("employee")
+        wi = getattr(emp, "employee_work_info", None) if emp else None
+        if wi is None and emp is not None:
+            try:
+                wi = EmployeeWorkInformation.objects.filter(employee_id=emp).first()
+            except Exception:
+                wi = None
+        joining = getattr(wi, "date_joining", None) if wi else None
+        tenure_days = None
+        if joining and row.get("exit_date"):
+            tenure_days = (row["exit_date"] - joining).days
+            if tenure_days < 90:
+                tenure_bands[_("< 90 days")] += 1
+            elif tenure_days < 365:
+                tenure_bands[_("90 days – 1 year")] += 1
+            elif tenure_days < 365 * 3:
+                tenure_bands[_("1–3 years")] += 1
+            else:
+                tenure_bands[_("3+ years")] += 1
+        else:
+            tenure_bands[_("Unknown tenure")] += 1
+
+        dept = (
+            getattr(getattr(wi, "department_id", None), "department", None)
+            if wi
+            else None
+        )
+        dept_counter[dept or str(_("Unassigned"))] += 1
+        first = getattr(emp, "employee_first_name", "") if emp else ""
+        last = getattr(emp, "employee_last_name", "") if emp else ""
+        table_rows.append(
+            {
+                "name": f"{first} {last or ''}".strip(),
+                "exit_date": (
+                    row["exit_date"].isoformat() if row.get("exit_date") else ""
+                ),
+                "source": row["source"],
+                "department": dept or "",
+                "tenure_days": tenure_days if tenure_days is not None else "",
+            }
+        )
+
+    source_rows = [{"bucket": k, "count": v} for k, v in by_source.most_common()]
+    tenure_rows = [{"bucket": k, "count": v} for k, v in tenure_bands.most_common()]
+
+    return {
+        "title": _("Exit Analysis"),
+        "kpis": [
+            {"label": _("Exits"), "value": len(exit_rows), "hint": _("In period")},
+            {
+                "label": _("Exit sources"),
+                "value": len(by_source),
+                "hint": _("Offboarding / resignation / inactive fallback"),
+            },
+            {
+                "label": _("Top source"),
+                "value": source_rows[0]["bucket"] if source_rows else "—",
+                "hint": "",
+            },
+            {
+                "label": _("Departments"),
+                "value": len(dept_counter),
+                "hint": _("With exits"),
+            },
+        ],
+        "charts": [
+            {
+                "id": "exit_source",
+                "type": "donut",
+                "title": _("Exits by source"),
+                "categories": [r["bucket"] for r in source_rows],
+                "series": [
+                    {"name": _("Exits"), "data": [r["count"] for r in source_rows]}
+                ],
+            },
+            {
+                "id": "exit_tenure",
+                "type": "bar",
+                "title": _("Tenure at exit"),
+                "categories": [r["bucket"] for r in tenure_rows],
+                "series": [
+                    {"name": _("Exits"), "data": [r["count"] for r in tenure_rows]}
+                ],
+            },
+        ],
+        "table": {
+            "columns": [
+                {"key": "name", "label": _("Employee")},
+                {"key": "exit_date", "label": _("Exit date")},
+                {"key": "source", "label": _("Source")},
+                {"key": "department", "label": _("Department")},
+                {"key": "tenure_days", "label": _("Tenure (days)")},
+            ],
+            "rows": table_rows[:100],
+        },
+        "explorer_url_name": "employee-report",
+    }
+
+
+def new_hire_90_day_attrition(filters: ReportFilters) -> dict:
+    """Early attrition among period joiners (exit within 90 days of joining)."""
+    from employee.models import EmployeeWorkInformation
+    from report.formulas import early_attrition_rate
+    from report.metrics._exits import iter_exits
+
+    hires_qs = EmployeeWorkInformation.objects.filter(
+        date_joining__gte=filters.from_date,
+        date_joining__lte=filters.to_date,
+    )
+    hires_qs = apply_org_filters(
+        hires_qs, filters, prefix="", employee_prefix="employee_id"
+    )
+    hire_rows = list(
+        hires_qs.select_related("employee_id", "department_id").values(
+            "employee_id",
+            "date_joining",
+            "department_id__department",
+            "employee_id__employee_first_name",
+            "employee_id__employee_last_name",
+        )
+    )
+    cohort = len(hire_rows)
+    if not cohort:
+        return empty_report(
+            _("New-Hire 90-Day Attrition"),
+            filters,
+            _("No joiners in the selected period."),
+        )
+
+    # Look ahead so exits shortly after period end still count for late joiners
+    from datetime import timedelta
+
+    exit_horizon = filters.to_date + timedelta(days=90)
+    exits = iter_exits(filters, from_date=filters.from_date, to_date=exit_horizon)
+    exit_by_emp = {r["employee_id"]: r for r in exits}
+
+    early = []
+    for h in hire_rows:
+        emp_id = h["employee_id"]
+        joining = h["date_joining"]
+        if not joining or emp_id not in exit_by_emp:
+            continue
+        exit_row = exit_by_emp[emp_id]
+        if (exit_row["exit_date"] - joining).days <= 90:
+            early.append(
                 {
-                    "name": f"{r['employee_id__employee_first_name']} {r['employee_id__employee_last_name'] or ''}".strip(),
-                    "department": r["department_id__department"] or "",
-                    "position": r["job_position_id__job_position"] or "",
-                    "date_joining": (
-                        r["date_joining"].isoformat() if r["date_joining"] else ""
-                    ),
+                    "name": f"{h['employee_id__employee_first_name']} {h['employee_id__employee_last_name'] or ''}".strip(),
+                    "joined": joining.isoformat(),
+                    "exit_date": exit_row["exit_date"].isoformat(),
+                    "days": (exit_row["exit_date"] - joining).days,
+                    "source": exit_row["source"],
+                    "department": h["department_id__department"] or "",
                 }
-                for r in hire_rows
+            )
+
+    rate = early_attrition_rate(len(early), cohort)
+    return {
+        "title": _("New-Hire 90-Day Attrition"),
+        "kpis": [
+            {
+                "label": _("90-day attrition"),
+                "value": f"{rate}%",
+                "hint": _("Early exits ÷ period joiners"),
+            },
+            {"label": _("Cohort joiners"), "value": cohort, "hint": _("In period")},
+            {
+                "label": _("Early exits"),
+                "value": len(early),
+                "hint": _("Exit ≤ 90 days after joining"),
+            },
+            {
+                "label": _("Retained past 90d (proxy)"),
+                "value": cohort - len(early),
+                "hint": _("No recorded early exit"),
+            },
+        ],
+        "charts": [
+            {
+                "id": "early_attrition",
+                "type": "donut",
+                "title": _("Cohort outcomes"),
+                "categories": [_("Early exit"), _("No early exit")],
+                "series": [
+                    {
+                        "name": _("Joiners"),
+                        "data": [len(early), cohort - len(early)],
+                    }
+                ],
+            }
+        ],
+        "table": {
+            "columns": [
+                {"key": "name", "label": _("Employee")},
+                {"key": "joined", "label": _("Joined")},
+                {"key": "exit_date", "label": _("Exit date")},
+                {"key": "days", "label": _("Days to exit")},
+                {"key": "source", "label": _("Source")},
+                {"key": "department", "label": _("Department")},
             ],
+            "rows": early[:100],
         },
         "explorer_url_name": "employee-report",
     }

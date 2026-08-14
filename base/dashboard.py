@@ -287,10 +287,69 @@ def _is_manager(user):
         return False
 
 
+def _scoped_active_employee_ids(request):
+    """
+    Return subordinate employee PKs when the user lacks org-wide employee view.
+
+    ``None`` means company-scoped (HorillaCompanyManager) — no extra filter.
+    """
+    user = request.user
+    if user.is_superuser or user.has_perm("employee.view_employee"):
+        return None
+    try:
+        from base.methods import filtersubordinatesemployeemodel
+        from employee.models import Employee
+
+        qs = filtersubordinatesemployeemodel(
+            request,
+            Employee.objects.filter(is_active=True),
+            perm="employee.view_employee",
+        )
+        return list(qs.values_list("id", flat=True))
+    except Exception:
+        return []
+
+
+def _company_scope_context(request) -> dict:
+    """Active company label for KPI / header chrome."""
+    selected = request.session.get("selected_company")
+    if not selected or selected == "all":
+        return {
+            "dashboard_company_label": str(_("All companies")),
+            "dashboard_company_is_all": True,
+        }
+    try:
+        from base.models import Company
+
+        company = Company.objects.filter(id=int(selected)).only("company").first()
+        label = company.company if company else str(_("Company"))
+    except Exception:
+        label = str(_("Company"))
+    return {
+        "dashboard_company_label": label,
+        "dashboard_company_is_all": False,
+    }
+
+
 @login_required
 def main_dashboard_view(request):
-    """Render the modern dashboard page."""
+    """Render the modern analytics dashboard (manager/HR/leadership).
+
+    Pure employees are redirected to ESS unless ``?view=analytics`` is set
+    (explicit switch from ESS).
+    """
     from django.apps import apps
+    from django.shortcuts import redirect
+
+    from base.dashboard_roles import (
+        can_see_analytics_home,
+        resolve_home_role,
+        role_default_prefs,
+    )
+
+    home_role = resolve_home_role(request)
+    if not can_see_analytics_home(home_role) and request.GET.get("view") != "analytics":
+        return redirect("ess-dashboard")
 
     enabled_timerunner = True
     get_forecasted_at_work = None
@@ -315,8 +374,14 @@ def main_dashboard_view(request):
 
         emp = request.user.employee_get
         obj = DashboardEmployeeCharts.objects.filter(employee=emp).first()
-        if obj and obj.charts:
-            employee_chart_prefs = json.dumps(obj.charts)
+        if obj and obj.charts is not None:
+            normalized = _normalize_dashboard_chart_prefs(obj.charts)
+            # Persist migration when legacy string-list prefs are detected
+            if obj.charts and isinstance(obj.charts, list) and obj.charts != normalized:
+                if obj.charts and isinstance(obj.charts[0], str):
+                    obj.charts = normalized
+                    obj.save(update_fields=["charts"])
+            employee_chart_prefs = json.dumps(normalized)
     except Exception:
         pass
 
@@ -324,9 +389,30 @@ def main_dashboard_view(request):
         "enabled_timerunner": enabled_timerunner,
         "get_forecasted_at_work": get_forecasted_at_work,
         "employee_chart_prefs": employee_chart_prefs,
+        "home_role": home_role,
+        "role_default_prefs": json.dumps(role_default_prefs(home_role)),
+        "show_compliance_strip": home_role in ("hr", "leadership"),
     }
+    context.update(_company_scope_context(request))
     context.update(_get_setup_checklist_context(request))
     return render(request, "dashboard.html", context)
+
+
+def _normalize_dashboard_chart_prefs(charts):
+    """
+    Modern prefs are ``[{id, visible}, ...]``.
+    Legacy FAB prefs stored excluded chart id strings — incompatible with the
+    modern dashboard; treat those as empty (all charts visible by default).
+    """
+    if not charts or not isinstance(charts, list):
+        return []
+    if isinstance(charts[0], str):
+        return []
+    clean = []
+    for item in charts:
+        if isinstance(item, dict) and item.get("id"):
+            clean.append({"id": item["id"], "visible": item.get("visible", True)})
+    return clean
 
 
 @login_required
@@ -356,79 +442,80 @@ def dashboard_kpi_data(request):
     from_date, to_date = _parse_period(request)
     today = to_date
     first_of_month = from_date
+    scoped_ids = _scoped_active_employee_ids(request)
 
-    total_employees = Employee.objects.filter(is_active=True).count()
+    emp_qs = Employee.objects.filter(is_active=True)
+    if scoped_ids is not None:
+        emp_qs = emp_qs.filter(id__in=scoped_ids)
+    total_employees = emp_qs.count()
 
     new_joiners = 0
     try:
         from employee.models import EmployeeWorkInformation
 
-        new_joiners = EmployeeWorkInformation.objects.filter(
+        join_qs = EmployeeWorkInformation.objects.filter(
             date_joining__gte=first_of_month,
             date_joining__lte=today,
-        ).count()
+        )
+        if scoped_ids is not None:
+            join_qs = join_qs.filter(employee_id__in=scoped_ids)
+        new_joiners = join_qs.count()
+    except Exception:
+        pass
+
+    on_leave = 0
+    leave_employee_ids = []
+    try:
+        from leave.models import LeaveRequest
+
+        real_today = date.today()
+        leave_qs = LeaveRequest.objects.filter(
+            start_date__lte=real_today,
+            status="approved",
+        ).filter(
+            Q(end_date__gte=real_today)
+            | Q(end_date__isnull=True, start_date=real_today)
+        )
+        if scoped_ids is not None:
+            leave_qs = leave_qs.filter(employee_id__in=scoped_ids)
+        leave_employee_ids = list(
+            leave_qs.values_list("employee_id", flat=True).distinct()
+        )
+        on_leave = len(set(leave_employee_ids))
     except Exception:
         pass
 
     present_today = 0
     try:
         from attendance.models import Attendance
-        from leave.models import LeaveRequest
 
-        real_today = date.today()
-        leave_employee_ids = list(
-            LeaveRequest.objects.filter(
-                start_date__lte=real_today,
-                status="approved",
-            )
-            .filter(
-                Q(end_date__gte=real_today)
-                | Q(end_date__isnull=True, start_date=real_today)
-            )
-            .values_list("employee_id", flat=True)
-            .distinct()
+        present_qs = Attendance.objects.filter(attendance_date=today).exclude(
+            employee_id__in=leave_employee_ids
         )
-        present_today = (
-            Attendance.objects.filter(attendance_date=today)
-            .exclude(employee_id__in=leave_employee_ids)
-            .values("employee_id")
-            .distinct()
-            .count()
-        )
+        if scoped_ids is not None:
+            present_qs = present_qs.filter(employee_id__in=scoped_ids)
+        present_today = present_qs.values("employee_id").distinct().count()
     except Exception:
         pass
 
-    absent_today = max(0, total_employees - present_today)
+    # Expected = active employees not on approved leave (excludes leave from
+    # the denominator so "absent" is not inflated by people who should be out).
+    expected_today = max(0, total_employees - on_leave)
+    not_checked_in = max(0, expected_today - present_today)
+    # Keep absent_today as an alias for not_checked_in for API compatibility.
+    absent_today = not_checked_in
     attendance_rate = (
-        round((present_today / total_employees * 100), 1) if total_employees > 0 else 0
+        round((present_today / expected_today * 100), 1) if expected_today > 0 else 0
     )
-
-    on_leave = 0
-    try:
-        from leave.models import LeaveRequest
-
-        real_today = date.today()
-        on_leave = (
-            LeaveRequest.objects.filter(
-                start_date__lte=real_today,
-                status="approved",
-            )
-            .filter(
-                Q(end_date__gte=real_today)
-                | Q(end_date__isnull=True, start_date=real_today)
-            )
-            .values("employee_id")
-            .distinct()
-            .count()
-        )
-    except Exception:
-        pass
 
     pending_leaves = 0
     try:
         from leave.models import LeaveRequest
 
-        pending_leaves = LeaveRequest.objects.filter(status="requested").count()
+        pending_qs = LeaveRequest.objects.filter(status="requested")
+        if scoped_ids is not None:
+            pending_qs = pending_qs.filter(employee_id__in=scoped_ids)
+        pending_leaves = pending_qs.count()
     except Exception:
         pass
 
@@ -436,9 +523,15 @@ def dashboard_kpi_data(request):
     try:
         from recruitment.models import Recruitment
 
-        open_recruitments = Recruitment.objects.filter(
-            is_active=True, closed=False
-        ).count()
+        # Recruitments stay org-wide for users with recruitment view; managers
+        # without that perm see 0 (chart is also gated).
+        if (
+            request.user.has_perm("recruitment.view_recruitment")
+            or request.user.is_superuser
+        ):
+            open_recruitments = Recruitment.objects.filter(
+                is_active=True, closed=False
+            ).count()
     except Exception:
         pass
 
@@ -447,12 +540,15 @@ def dashboard_kpi_data(request):
             "total_employees": total_employees,
             "present_today": present_today,
             "absent_today": absent_today,
+            "expected_today": expected_today,
+            "not_checked_in": not_checked_in,
             "attendance_rate": attendance_rate,
             "on_leave": on_leave,
             "pending_leaves": pending_leaves,
             "new_joiners": new_joiners,
             "open_recruitments": open_recruitments,
             "date": today.isoformat(),
+            "is_team_scoped": scoped_ids is not None,
         }
     )
 
@@ -461,14 +557,20 @@ def dashboard_kpi_data(request):
 def dashboard_attendance_trend(request):
     """Weekly attendance trend.
 
-    Requires attendance.view_attendance permission or superuser.
+    Requires attendance view permission, superuser, or reporting-manager status
+    (managers without org-wide employee view see team-scoped rates).
     """
     user = request.user
-    if not (user.is_superuser or user.has_perm("attendance.view_attendance")):
+    if not (
+        user.is_superuser
+        or user.has_perm("attendance.view_attendance")
+        or _is_manager(user)
+    ):
         return JsonResponse({"no_permission": True})
 
     today = date.today()
     weeks = []
+    scoped_ids = _scoped_active_employee_ids(request)
 
     has_period = bool(request.GET.get("from_date") and request.GET.get("to_date"))
     if has_period:
@@ -481,7 +583,10 @@ def dashboard_attendance_trend(request):
         from attendance.models import Attendance
         from employee.models import Employee
 
-        total = Employee.objects.filter(is_active=True).count()
+        emp_qs = Employee.objects.filter(is_active=True)
+        if scoped_ids is not None:
+            emp_qs = emp_qs.filter(id__in=scoped_ids)
+        total = emp_qs.count()
 
         bucket_start = from_date - timedelta(days=from_date.weekday())
         last_monday = to_date - timedelta(days=to_date.weekday())
@@ -489,15 +594,13 @@ def dashboard_attendance_trend(request):
             week_end = min(bucket_start + timedelta(days=6), to_date)
             week_start_q = max(bucket_start, from_date)
 
-            present = (
-                Attendance.objects.filter(
-                    attendance_date__gte=week_start_q,
-                    attendance_date__lte=week_end,
-                )
-                .values("employee_id")
-                .distinct()
-                .count()
+            present_qs = Attendance.objects.filter(
+                attendance_date__gte=week_start_q,
+                attendance_date__lte=week_end,
             )
+            if scoped_ids is not None:
+                present_qs = present_qs.filter(employee_id__in=scoped_ids)
+            present = present_qs.values("employee_id").distinct().count()
             rate = round((present / total * 100), 1) if total > 0 else 0
 
             is_current = bucket_start <= today <= bucket_start + timedelta(days=6)
@@ -507,7 +610,7 @@ def dashboard_attendance_trend(request):
     except Exception:
         weeks = [{"week": f"W{i+1}", "rate": 0, "present": 0} for i in range(12)]
 
-    return JsonResponse({"weeks": weeks})
+    return JsonResponse({"weeks": weeks, "is_team_scoped": scoped_ids is not None})
 
 
 @login_required
@@ -876,11 +979,10 @@ def dashboard_birthdays_anniversaries(request):
 def dashboard_recruitment_pipeline(request):
     """Recruitment pipeline funnel — candidates aggregated by stage type.
 
-    Hidden for users without recruitment view permission.
+    Org-wide metric: requires recruitment view permission (not manager-only).
     """
     user = request.user
-    is_mgr = _is_manager(user)
-    if not (user.has_perm("recruitment.view_recruitment") or is_mgr):
+    if not (user.has_perm("recruitment.view_recruitment") or user.is_superuser):
         response = JsonResponse({"no_permission": True})
         response["Cache-Control"] = "no-store, no-cache, must-revalidate"
         return response
@@ -956,8 +1058,18 @@ def dashboard_recruitment_pipeline(request):
 
 @login_required
 def dashboard_payroll_summary(request):
-    """Payroll summary — selected period vs previous period."""
-    if not (request.user.is_superuser or request.user.has_perm("payroll.view_payslip")):
+    """Payroll summary — selected period vs previous period.
+
+    Restricted to payroll operators (staff/superuser or change_payslip), not
+    every user who can merely view a payslip — keeps compensation totals off
+    the general manager home.
+    """
+    user = request.user
+    is_payroll_operator = user.is_superuser or (
+        user.has_perm("payroll.view_payslip")
+        and (user.is_staff or user.has_perm("payroll.change_payslip"))
+    )
+    if not is_payroll_operator:
         return JsonResponse({"no_permission": True})
     from_date, to_date = _parse_period(request)
     today = to_date
@@ -1228,10 +1340,7 @@ def save_dashboard_prefs(request):
 
         data = json.loads(request.body)
         prefs = data.get("prefs", [])
-        # Store full prefs (order + visibility) so DB can fully restore state
-        clean_prefs = [
-            {"id": p["id"], "visible": p.get("visible", True)} for p in prefs
-        ]
+        clean_prefs = _normalize_dashboard_chart_prefs(prefs)
         emp = request.user.employee_get
         DashboardEmployeeCharts.objects.update_or_create(
             employee=emp, defaults={"charts": clean_prefs}
@@ -1249,7 +1358,7 @@ def load_dashboard_prefs(request):
 
         emp = request.user.employee_get
         obj = DashboardEmployeeCharts.objects.filter(employee=emp).first()
-        prefs = obj.charts if obj and obj.charts else []
+        prefs = _normalize_dashboard_chart_prefs(obj.charts if obj else [])
         return JsonResponse({"prefs": prefs})
     except Exception:
         return JsonResponse({"prefs": []})
@@ -1259,24 +1368,30 @@ def load_dashboard_prefs(request):
 def dashboard_turnover(request):
     """Employee turnover — new hires vs exits over the last 6 months ending at selected period.
 
-    Hidden for users without employee view permission (org-level metric).
+    Org-wide metric: requires employee view permission (not manager-only).
+    Exit counts prefer shared report exit helper when available.
     """
     user = request.user
-    is_mgr = _is_manager(user)
-    if not (user.has_perm("employee.view_employee") or is_mgr):
+    if not (user.has_perm("employee.view_employee") or user.is_superuser):
         return JsonResponse({"no_permission": True})
 
-    _, to_date = _parse_period(request)
+    _from_date, to_date = _parse_period(request)
     today = to_date
     months = []
+    report_url = ""
+    try:
+        report_url = reverse("standard-report-detail", args=["turnover-attrition"])
+    except Exception:
+        report_url = ""
 
     try:
-        from django.db.models import Count, Q
-
         from employee.models import Employee, EmployeeWorkInformation
+        from report.engine import ReportFilters
+        from report.metrics._exits import exits_in_period
+
+        filters = ReportFilters(from_date=today.replace(day=1), to_date=today)
 
         for i in range(5, -1, -1):
-            # Calculate month boundaries using calendar-correct month subtraction
             year = today.year
             month = today.month - i
             while month <= 0:
@@ -1292,27 +1407,11 @@ def dashboard_turnover(request):
                     month=month_start.month + 1
                 ) - timedelta(days=1)
 
-            # New hires (joined this month)
             hires = EmployeeWorkInformation.objects.filter(
                 date_joining__gte=month_start,
                 date_joining__lte=month_end,
             ).count()
-
-            # Exits (inactive employees whose last working date falls in this month)
-            exits = 0
-            try:
-                exits = (
-                    Employee.objects.filter(
-                        is_active=False,
-                    )
-                    .filter(
-                        Q(employee_work_info__contract_end_date__gte=month_start)
-                        & Q(employee_work_info__contract_end_date__lte=month_end)
-                    )
-                    .count()
-                )
-            except Exception:
-                pass
+            exits = exits_in_period(filters, from_date=month_start, to_date=month_end)
 
             months.append(
                 {
@@ -1323,7 +1422,6 @@ def dashboard_turnover(request):
                 }
             )
 
-        # Overall turnover rate
         total_employees = Employee.objects.filter(is_active=True).count()
         total_exits_6m = sum(m["exits"] for m in months)
         turnover_rate = (
@@ -1341,5 +1439,253 @@ def dashboard_turnover(request):
         {
             "months": months,
             "turnover_rate_6m": turnover_rate,
+            "report_url": report_url,
+            "subtitle": str(_("All exits — see Standard Report for detail")),
         }
     )
+
+
+@login_required
+def dashboard_compliance_strip(request):
+    """
+    Compact HR/Leadership compliance strip: contracts ending + document expiry.
+
+    Hidden for employees/managers without HR/Leadership home role.
+    """
+    from base.dashboard_roles import resolve_home_role
+
+    role = resolve_home_role(request)
+    if role not in ("hr", "leadership") and not request.user.is_superuser:
+        return JsonResponse({"no_permission": True})
+
+    today = date.today()
+    horizon = today + timedelta(days=60)
+    ending_soon_count = 0
+    expired_count = 0
+    docs_expiring_30 = 0
+    docs_overdue = 0
+    contracts_url = _safe_url("dashboard-contract-ending")
+    if contracts_url == "#":
+        contracts_url = _safe_url("contract-view")
+    docs_url = ""
+    try:
+        docs_url = reverse("standard-report-detail", args=["document-expiry"])
+    except Exception:
+        docs_url = ""
+
+    user = request.user
+    can_contracts = (
+        user.is_superuser
+        or user.has_perm("payroll.view_contract")
+        or user.has_perm("payroll.view_payslip")
+    )
+    can_docs = user.is_superuser or user.has_perm("employee.view_employee")
+
+    if can_contracts:
+        try:
+            from payroll.models.models import Contract
+
+            ending_soon_count = Contract.objects.filter(
+                contract_end_date__gte=today,
+                contract_end_date__lte=horizon,
+                contract_status="active",
+            ).count()
+            expired_count = Contract.objects.filter(
+                contract_end_date__gte=today - timedelta(days=60),
+                contract_end_date__lt=today,
+            ).count()
+        except Exception:
+            pass
+
+    if can_docs:
+        try:
+            from django.apps import apps
+
+            if apps.is_installed("horilla_documents"):
+                Document = apps.get_model("horilla_documents", "Document")
+                docs_overdue = Document.objects.filter(
+                    expiry_date__isnull=False,
+                    expiry_date__lt=today,
+                ).count()
+                docs_expiring_30 = Document.objects.filter(
+                    expiry_date__gte=today,
+                    expiry_date__lte=today + timedelta(days=30),
+                ).count()
+        except Exception:
+            pass
+
+    return JsonResponse(
+        {
+            "contracts": {
+                "ending_soon": ending_soon_count,
+                "expired": expired_count,
+                "url": contracts_url if can_contracts else "",
+                "visible": can_contracts,
+            },
+            "documents": {
+                "expiring_30": docs_expiring_30,
+                "overdue": docs_overdue,
+                "url": docs_url if can_docs else "",
+                "visible": can_docs,
+            },
+        }
+    )
+
+
+@login_required
+def dashboard_leave_coverage(request):
+    """Next-7-day leave coverage: headcount on approved leave per day + today by dept.
+
+    Managers without org-wide employee view see team-scoped counts.
+    """
+    today = date.today()
+    scoped_ids = _scoped_active_employee_ids(request)
+    days = []
+    by_department = []
+    active_total = 0
+
+    try:
+        from django.db.models import Count
+
+        from employee.models import Employee
+        from leave.models import LeaveRequest
+
+        emp_qs = Employee.objects.filter(is_active=True)
+        if scoped_ids is not None:
+            emp_qs = emp_qs.filter(id__in=scoped_ids)
+        active_total = emp_qs.count()
+        active_ids = set(emp_qs.values_list("id", flat=True))
+
+        for offset in range(7):
+            day = today + timedelta(days=offset)
+            leave_qs = LeaveRequest.objects.filter(
+                start_date__lte=day,
+                status="approved",
+            ).filter(Q(end_date__gte=day) | Q(end_date__isnull=True, start_date=day))
+            if scoped_ids is not None:
+                leave_qs = leave_qs.filter(employee_id__in=scoped_ids)
+            on_leave = leave_qs.values("employee_id").distinct().count()
+            coverage_pct = (
+                round(((active_total - on_leave) / active_total) * 100, 1)
+                if active_total > 0
+                else 100.0
+            )
+            days.append(
+                {
+                    "date": day.isoformat(),
+                    "label": day.strftime("%a %d"),
+                    "on_leave": on_leave,
+                    "available": max(0, active_total - on_leave),
+                    "coverage_pct": coverage_pct,
+                    "is_today": offset == 0,
+                }
+            )
+
+        # Today: on-leave headcount by department (top 8)
+        today_leave_ids = set(
+            LeaveRequest.objects.filter(
+                start_date__lte=today,
+                status="approved",
+            )
+            .filter(Q(end_date__gte=today) | Q(end_date__isnull=True, start_date=today))
+            .values_list("employee_id", flat=True)
+            .distinct()
+        )
+        if scoped_ids is not None:
+            today_leave_ids &= active_ids
+
+        if today_leave_ids:
+            dept_rows = (
+                Employee.objects.filter(id__in=today_leave_ids)
+                .values("employee_work_info__department_id__department")
+                .annotate(count=Count("id"))
+                .order_by("-count")[:8]
+            )
+            for row in dept_rows:
+                name = row["employee_work_info__department_id__department"] or str(
+                    _("Unassigned")
+                )
+                by_department.append({"department": name, "on_leave": row["count"]})
+    except Exception:
+        days = []
+        by_department = []
+
+    return JsonResponse(
+        {
+            "days": days,
+            "by_department": by_department,
+            "active_employees": active_total,
+            "is_team_scoped": scoped_ids is not None,
+        }
+    )
+
+
+# ---------------------------------------------------------------------------
+# Phase 5 — thin dashboard/api/* proxies for module chart JSON still used by
+# templates/dashboard.html (keeps modern home off raw module URL names).
+# ---------------------------------------------------------------------------
+
+
+def _call_module_json(view_callable, request):
+    """Invoke a module chart view; always return JsonResponse-compatible output."""
+    try:
+        return view_callable(request)
+    except Exception as exc:
+        return JsonResponse({"error": str(exc), "no_permission": True}, status=500)
+
+
+@login_required
+def dashboard_employee_status(request):
+    from employee.views import dashboard_employee
+
+    return _call_module_json(dashboard_employee, request)
+
+
+@login_required
+def dashboard_attendance_overview(request):
+    from attendance.views.dashboard import dashboard_attendance
+
+    return _call_module_json(dashboard_attendance, request)
+
+
+@login_required
+def dashboard_department_overtime(request):
+    from attendance.views.dashboard import department_overtime_chart
+
+    return _call_module_json(department_overtime_chart, request)
+
+
+@login_required
+def dashboard_leave_trends(request):
+    from leave.views import leave_over_period
+
+    return _call_module_json(leave_over_period, request)
+
+
+@login_required
+def dashboard_leave_by_department(request):
+    from leave.views import overall_leave
+
+    return _call_module_json(overall_leave, request)
+
+
+@login_required
+def dashboard_department_leave_days(request):
+    from leave.views import department_leave_chart
+
+    return _call_module_json(department_leave_chart, request)
+
+
+@login_required
+def dashboard_hiring_timeline(request):
+    from recruitment.views.dashboard import dashboard_hiring
+
+    return _call_module_json(dashboard_hiring, request)
+
+
+@login_required
+def dashboard_recruitment_by_stage(request):
+    """Stacked-by-recruitment pipeline chart (legacy recruitment-pipeline JSON)."""
+    from recruitment.views.dashboard import dashboard_pipeline
+
+    return _call_module_json(dashboard_pipeline, request)

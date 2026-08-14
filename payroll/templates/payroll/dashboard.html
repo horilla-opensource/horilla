@@ -205,7 +205,7 @@
 
                 <!-- Department Cost -->
                 <div class="pd-chart-card" data-chart-id="dept_cost" data-chart-label="{% trans 'Cost by Department' %}">
-                    <div class="pd-chart-card__header"><div><div class="pd-chart-card__title">{% trans "Cost by Department" %}</div><div class="pd-chart-card__subtitle" id="dept-month">{% trans "This month" %}</div></div></div>
+                    <div class="pd-chart-card__header"><div><div class="pd-chart-card__title">{% trans "Cost by Department" %}</div><div class="pd-chart-card__subtitle"><span id="dept-month">{% trans "This month" %}</span> — {% trans "Net pay by department" %}</div></div></div>
                     <div class="pd-chart-card__body"><div id="chart-dept-cost"></div></div>
                 </div>
 
@@ -526,8 +526,8 @@
             document.getElementById('dept-month').textContent = data.month;
             if (!data.departments.length) { document.querySelector("#chart-dept-cost").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
             renderChart('dept-cost', document.querySelector("#chart-dept-cost"), {
-                series: data.departments.map(d => d.net),
-                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                series: [{ name: '{% trans "Net" %}', data: data.departments.map(d => d.net) }],
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
                         const d = data.departments[config.dataPointIndex];
                         const base = "{% url 'view-payslip' %}";
@@ -538,13 +538,14 @@
                         }
                     }}
                 },
-                labels: data.departments.map(d => d.department),
-                colors: COLORS.slice(0, data.departments.length),
-                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '12px', fontWeight: 600, formatter: w => fmt(w.globals.seriesTotals.reduce((a,b)=>a+b,0)) } } } } },
-                stroke: { width: 2, colors: [cardBg] },
-                dataLabels: { enabled: false },
-                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
-                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { seriesIndex: i }) => `${fmt(v)} (${data.departments[i].count} payslips)` } },
+                colors: COLORS,
+                plotOptions: { bar: { borderRadius: 6, horizontal: true, barHeight: '55%', distributed: true } },
+                xaxis: { categories: data.departments.map(d => d.department), labels: { style: { colors: textColor }, formatter: v => fmt(v) } },
+                yaxis: { labels: { style: { colors: textColor, fontSize: '11px' } } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: true, formatter: v => fmt(v), style: { fontSize: '11px' } },
+                legend: { show: false },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { dataPointIndex: i }) => `${fmt(v)} (${data.departments[i].count} payslips)` } },
             });
         });
     }
