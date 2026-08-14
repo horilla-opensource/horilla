@@ -202,7 +202,7 @@ class RecruitmentCreationFormExtended(RecruitmentCreationForm):
             "start_date": _("Start Date"),
             "end_date": _("End Date"),
             "survey_templates": _("Survey Templates"),
-            "is_published": _("Is Published?"),
+            "is_published": _("Publish"),
             "vacancy": _("Vacancy"),
             "open_positions": _("Job Position"),
             "recruitment_managers": _("Managers"),
