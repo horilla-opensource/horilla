@@ -31,6 +31,7 @@ from base.methods import (
     generate_colors,
     generate_pdf,
     get_key_instances,
+    get_session_company,
     sortby,
 )
 from base.models import Company
@@ -451,14 +452,11 @@ def settings(request):
     """
     This method is used to render settings template
     """
-    instance = PayrollSettings.objects.first()
+    tracking_company = get_session_company(request)
+    instance, _created = PayrollSettings.objects.get_or_create(
+        company_id=tracking_company
+    )
     currency_form = PayrollSettingsForm(instance=instance)
-    selected_company_id = request.session.get("selected_company")
-
-    if selected_company_id == "all" or not selected_company_id:
-        companies = Company.objects.all()
-    else:
-        companies = Company.objects.filter(id=selected_company_id)
 
     if request.method == "POST":
 

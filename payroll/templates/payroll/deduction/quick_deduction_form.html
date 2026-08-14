@@ -1,0 +1,21 @@
+{% include "generic/horilla_form.html" %}
+<script>
+    (function () {
+        function toggleQuickDeductionFields($context) {
+            if ($context.find("#id_is_fixed").is(":checked")) {
+                $context.find("#id_based_on_parent_div, #id_rate_parent_div, #id_employer_rate_parent_div").hide();
+                $context.find("#id_amount_parent_div").show();
+            } else {
+                $context.find("#id_based_on_parent_div, #id_rate_parent_div, #id_employer_rate_parent_div").show();
+                $context.find("#id_amount_parent_div").hide();
+            }
+        }
+        var $form = $("form:has(#id_is_fixed)").last();
+        $form.find("#id_is_fixed")
+            .off("change.quickDeduction")
+            .on("change.quickDeduction", function () {
+                toggleQuickDeductionFields($form);
+            });
+        toggleQuickDeductionFields($form);
+    })();
+</script>

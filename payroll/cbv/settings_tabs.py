@@ -45,6 +45,10 @@ class PayrollSettingsTabView(HorillaTabView):
         super().__init__(**kwargs)
         self.tabs = [
             {
+                "title": _("Salary Structures"),
+                "url": f"{reverse('payroll-settings-salary-structure-tab')}",
+            },
+            {
                 "title": _("Allowances"),
                 "url": f"{reverse('payroll-settings-allowance-tab')}",
             },
@@ -73,6 +77,16 @@ class PayrollSettingsTabView(HorillaTabView):
                     self.request, view_classes[idx]
                 )
         return context
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
+class PayrollSettingsSalaryStructureTab(TemplateView):
+    """
+    salary structure tab content, embeds the nav + list
+    """
+
+    template_name = "cbv/payroll_settings/salary_structure_tab.html"
 
 
 @method_decorator(login_required, name="dispatch")

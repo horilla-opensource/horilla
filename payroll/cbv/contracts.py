@@ -69,6 +69,7 @@ class ContractsList(HorillaListView):
         (_("Wage Type"), "get_wage_type_display"),
         (_("Basic Salary"), "wage"),
         (_("Filing Status"), "filing_status"),
+        (_("Salary Structure"), "salary_structure_id"),
         (_("Status"), "status_col"),
     ]
 
@@ -275,6 +276,7 @@ class ContractsDetailView(HorillaDetailedView):
         (_("Shift"), "shift"),
         (_("Work Type"), "work_type"),
         (_("Filing Status"), "filing_status"),
+        (_("Salary Structure"), "salary_structure_id"),
         (_("Pay Frequency"), "get_pay_frequency_display"),
         (_("Status"), "get_status_display"),
         (_("Calculate Leave Amount"), "cal_leave_amount", True),

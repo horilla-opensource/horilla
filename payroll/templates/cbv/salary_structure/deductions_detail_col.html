@@ -1,0 +1,38 @@
+{% load i18n %}
+<span class="font-medium text-xs text-[#565E6C]">{% trans "Deductions" %}</span>
+{% if instance.deductions.all %}
+    <div class="overflow-hidden mt-2">
+        {% for deduction in instance.deductions.all %}
+            <div class="flex items-center justify-between gap-3 px-2 border rounded-lg border-dark-50 mb-2 {% cycle 'bg-white' 'bg-dark-50/20' %}">
+                <div>
+                    <div class="font-medium text-xs text-[#565E6C]">{{ deduction.title }}</div>
+                </div>
+                {% if perms.payroll.add_deduction or perms.payroll.change_salarystructure %}
+                    <div class="flex items-center justify-center gap-1">
+                        {% if perms.payroll.add_deduction and perms.payroll.change_salarystructure %}
+
+                        <a onclick="event.stopPropagation();" class="oh-btn oh-btn--light-bkg px-2" href="#" hx-get="{% url 'duplicate-structure-deduction' instance.id deduction.id %}"
+                                hx-target="#relatedObjectModalBody" data-toggle="oh-modal-toggle" data-target="#relatedObjectModal" title="{% trans 'Duplicate' %}">
+                            <ion-icon name="copy-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+                        </a>
+                        {% endif %}
+                        {% if perms.payroll.delete_deduction %}
+
+                        <a class="oh-btn oh-btn--danger-outline px-2" onclick="event.preventDefault();event.stopPropagation();"
+                                hx-post="{% url 'remove-structure-deduction' instance.id deduction.id %}"
+                                hx-confirm="{% trans 'Remove this deduction from the salary structure?' %}"
+                                hx-target="#genericModalBody" data-toggle="oh-modal-toggle" title="{% trans 'Remove' %}">
+                            <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline">
+                            </ion-icon>
+                        </a>
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <span class="text-xs font-semibold text-dark-200 mt-2 block">{% trans "No deductions added" %}</span>
+{% endif %}

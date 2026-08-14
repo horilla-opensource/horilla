@@ -1,0 +1,31 @@
+{% load i18n %}
+{% if perms.payroll.change_salarystructure or perms.payroll.delete_salarystructure %}
+    <div class="oh-sticky-table__right">
+        <div class="flex items-center justify-center gap-1">
+            {% if perms.payroll.change_salarystructure %}
+                <a onclick="event.stopPropagation();" class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
+                    href="#"
+                    hx-get="{% url 'update-salary-structure' instance.id %}"
+                    hx-target="#genericModalBody"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    title='{% trans "Update" %}'>
+                    <ion-icon name="create-outline" role="img" class="md hydrated"
+                    aria-label="{% trans 'create outline' %}"></ion-icon>
+                </a>
+            {% endif %}
+            {% if perms.payroll.delete_salarystructure %}
+                <a class="oh-btn oh-btn--danger oh-btn--sq-sm"
+                    onclick="event.preventDefault();event.stopPropagation();"
+                    hx-get="{% url 'generic-delete' %}?model=payroll.SalaryStructure&pk={{instance.id}}"
+                    hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle"
+                    data-target="#deleteConfirmation"
+                    title="{% trans 'Delete' %}">
+                    <ion-icon name="trash-outline" role="img" class="md hydrated"
+                        aria-label="{% trans 'trash outline' %}">
+                    </ion-icon>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
