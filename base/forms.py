@@ -46,7 +46,6 @@ from base.models import (
     Department,
     DriverViewed,
     DynamicEmailConfiguration,
-    DynamicPagination,
     EmployeeShift,
     EmployeeShiftDay,
     EmployeeShiftSchedule,
@@ -1312,7 +1311,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
         ).first()
 
         self.errors.pop("employee_id", None)
-        if self.instance.employee_id is None:
+        if self.data.getlist("employee_id"):
             raise ValidationError({"employee_id": _("This field is required")})
         super().clean()
         cleaned_data = super().clean()
@@ -1988,7 +1987,7 @@ class RotatingShiftAssignForm(ModelForm):
         ).first()
 
         self.errors.pop("employee_id", None)
-        if self.instance.employee_id is None:
+        if not self.data.getlist("employee_id"):
             raise ValidationError({"employee_id": _("This field is required")})
         super().clean()
         cleaned_data = super().clean()
@@ -2316,6 +2315,7 @@ class WorkTypeRequestForm(ModelForm):
     """
 
     cols = {"description": 12}
+    required_fields = ["requested_till"]
 
     class Meta:
         """
@@ -2893,17 +2893,6 @@ class MultipleApproveConditionForm(ModelForm):
         self.fields["multi_approval_manager"].choices = choices
 
 
-class DynamicPaginationForm(ModelForm):
-    """
-    Form for setting default pagination
-    """
-
-    class Meta:
-        model = DynamicPagination
-        fields = "__all__"
-        exclude = ("user_id",)
-
-
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
 
@@ -2985,8 +2974,25 @@ class AnnouncementForm(ModelForm):
             {"hx-on:click": "togglePublicComments()"}
         )
         if not self.instance.pk:
+            request = getattr(_thread_locals, "request", None)
+            selected_company = (
+                request.session.get("selected_company") if request else None
+            )
+            if not selected_company or selected_company == "all":
+                company = None
+            else:
+                company = Company.objects.filter(id=selected_company).first()
+            expire_setting = AnnouncementExpire.objects.filter(
+                company_id=company
+            ).first()
+            if not expire_setting and company is not None:
+                expire_setting = AnnouncementExpire.objects.filter(
+                    company_id=None
+                ).first()
             general_expire_date = (
-                AnnouncementExpire.objects.values_list("days", flat=True).first() or 30
+                expire_setting.days
+                if expire_setting and expire_setting.days is not None
+                else 30
             )
             self.fields["expire_date"].initial = date.today() + timedelta(
                 days=general_expire_date
@@ -3058,20 +3064,6 @@ class AnnouncementCommentForm(ModelForm):
 
         model = AnnouncementComment
         fields = ["comment"]
-
-
-class AnnouncementExpireForm(ModelForm):
-    """
-    Announcement Expire form
-    """
-
-    class Meta:
-        """
-        Meta class for additional options
-        """
-
-        model = AnnouncementExpire
-        fields = ("days",)
 
 
 class DriverForm(forms.ModelForm):
