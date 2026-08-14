@@ -28,7 +28,7 @@ PERIOD_PRESETS = {
 }
 
 # Wide sentinel window for ``all_time`` — metrics keep required date fields.
-ALL_TIME_FROM = date(1900, 1, 1)
+ALL_TIME_FROM = date(2010, 1, 1)
 
 
 @dataclass
