@@ -88,25 +88,21 @@ def _parse_json_body(request) -> dict:
         return {}
 
 
-# Per-domain icon + accent color for the catalog's category rail and report
-# rows. Icon names are Ionicons (already loaded app-wide); colors are picked
-# to stay distinct from each other and from the brand coral used elsewhere.
+# Per-domain icon for the catalog's category rail and report rows. Icons are
+# Ionicons (already loaded app-wide). Every domain shares the same neutral
+# tile color -- the rest of Horilla reserves color for hover/active/selected
+# states, not for a rainbow of category accents, so this matches that
+# convention instead of inventing a 5-color palette with no precedent
+# elsewhere in the app.
 DOMAIN_META = {
-    "workforce": {"icon": "people-outline", "color": "#E54F38", "soft": "#FDECE7"},
-    "time_leave": {"icon": "time-outline", "color": "#2563EB", "soft": "#EFF6FF"},
-    "payroll": {"icon": "cash-outline", "color": "#7C3AED", "soft": "#F5F3FF"},
-    "talent": {"icon": "briefcase-outline", "color": "#15803D", "soft": "#F0FDF4"},
-    "compliance": {
-        "icon": "shield-checkmark-outline",
-        "color": "#0D9488",
-        "soft": "#F0FDFA",
-    },
+    "workforce": {"icon": "people-outline"},
+    "time_leave": {"icon": "time-outline"},
+    "payroll": {"icon": "cash-outline"},
+    "talent": {"icon": "briefcase-outline"},
+    "compliance": {"icon": "shield-checkmark-outline"},
 }
-_DEFAULT_DOMAIN_META = {
-    "icon": "document-text-outline",
-    "color": "#475569",
-    "soft": "#F1F5F9",
-}
+_NEUTRAL_TILE = {"color": "#475569", "soft": "#F1F5F9"}
+_DEFAULT_DOMAIN_META = {"icon": "document-text-outline", **_NEUTRAL_TILE}
 
 
 @login_required
@@ -135,8 +131,8 @@ def standard_report_catalog(request):
                 "domain": domain,
                 "label": str(DOMAIN_LABELS.get(domain, domain)),
                 "icon": meta["icon"],
-                "color": meta["color"],
-                "soft": meta["soft"],
+                "color": _NEUTRAL_TILE["color"],
+                "soft": _NEUTRAL_TILE["soft"],
                 "reports": [
                     {
                         "slug": r.slug,
@@ -188,6 +184,20 @@ def standard_report_catalog(request):
         for v in saved_views_for_user(request)
     ]
 
+    can_view_audit = request.user.is_superuser or request.user.has_perm(
+        "employee.view_employee"
+    )
+    # Tab chip-badge counts (Browse/Audit/Subscriptions). Audit reuses
+    # ReportAuditListView's own base queryset (report/cbv/audit.py) rather
+    # than a fresh filter, so the count always matches what that tab
+    # actually lists; Subscriptions matches ReportSubscriptionsListView's
+    # owner-scoped, status-unfiltered queryset (report/cbv/subscriptions.py)
+    # for the same reason.
+    audit_count = ReportRunLog.objects.count() if can_view_audit else 0
+    subscription_count = (
+        ReportSubscription.objects.get_queryset().filter(owner=request.user).count()
+    )
+
     return render(
         request,
         "report/standard_catalog.html",
@@ -197,8 +207,9 @@ def standard_report_catalog(request):
             "recent": recent,
             "saved_views": saved_views,
             "report_count": sum(len(s["reports"]) for s in sections),
-            "can_view_audit": request.user.is_superuser
-            or request.user.has_perm("employee.view_employee"),
+            "can_view_audit": can_view_audit,
+            "audit_count": audit_count,
+            "subscription_count": subscription_count,
             "has_explorer_access": bool(explorer_domain_entries(request)),
         },
     )
