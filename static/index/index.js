@@ -811,6 +811,17 @@ function reloadMessage(e) {
     $("#reloadMessagesButton").click();
 }
 
+// Star-rating widgets (e.g. helpdesk ticket priority) submit their form on
+// the radio's own "change" event rather than a click handler on an ancestor
+// element. A click on the <label> that visually draws the star fires TWO
+// bubbling click events (one on the label itself, one the browser forwards
+// to its associated radio input as label-activation behavior), so an
+// ancestor onclick submits the form twice. "change" fires exactly once per
+// actual value change regardless of how many click events led to it.
+$(document).on("change", ".rating-radio", function () {
+    $(this).closest("form").find("button[type=submit]").click();
+});
+
 function htmxLoadIndicator(e) {
     var target = $(e).attr("hx-target");
     var table = $(target).find("table");

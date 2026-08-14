@@ -308,7 +308,7 @@ class Ticket(HorillaModel):
             <form hx-swap="none" hx-post="{reverse_lazy('update-priority', kwargs = {'ticket_id' : self.id})}" method="post">
                 <input type="hidden" name="csrfmiddlewaretoken" value="{csrf_token}">
                 <div class="d-flex">
-                    <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                    <div class="oh-rate" onclick="event.stopPropagation()">
                         {rating_inputs}
                     </div>
                     <button type="submit" hidden="true" onclick="event.stopPropagation()"></button>
