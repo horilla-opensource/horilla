@@ -321,19 +321,10 @@ class HorillaListView(ListView):
         context["export_fields"] = self.export_fields
         context["custom_empty_template"] = self.custom_empty_template
         context["records_count_in_tab"] = self.records_count_in_tab
-        referrer = self.request.GET.get("referrer", "")
         if not self.verbose_name:
             self.verbose_name = self.model.__class__
-        if referrer:
-            # Remove the protocol and domain part
-            referrer = "/" + "/".join(referrer.split("/")[3:])
-        context["stored_filters"] = (
-            models.SavedFilter.objects.filter(
-                saved_filter_path_query(self.request), created_by=self.request.user
-            )
-            | models.SavedFilter.objects.filter(
-                referrer=referrer, created_by=self.request.user
-            )
+        context["stored_filters"] = models.SavedFilter.objects.filter(
+            saved_filter_path_query(self.request), created_by=self.request.user
         ).distinct()
 
         # Set default pagination if not set
@@ -1872,17 +1863,8 @@ class HorillaCardView(ListView):
         self.request.session[self.ordered_ids_key] = ordered_ids
 
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaCardView] = context
-        referrer = self.request.GET.get("referrer", "")
-        if referrer:
-            # Remove the protocol and domain part
-            referrer = "/" + "/".join(referrer.split("/")[3:])
-        context["stored_filters"] = (
-            models.SavedFilter.objects.filter(
-                saved_filter_path_query(self.request), created_by=self.request.user
-            )
-            | models.SavedFilter.objects.filter(
-                referrer=referrer, created_by=self.request.user
-            )
+        context["stored_filters"] = models.SavedFilter.objects.filter(
+            saved_filter_path_query(self.request), created_by=self.request.user
         ).distinct()
 
         # Set default pagination if not set
