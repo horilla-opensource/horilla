@@ -192,11 +192,11 @@ function setStoredSelection(storeKey, ids) {
 // immediately undone by the very next selectSelected() call.
 var _hlvSelectionRestored = {};
 
-// Selection ids are written to the DOM in several places (inline template
-// onclick handlers, addToSelectedId, the checkbox .change() handler below) -
-// rather than hook every call site, watch the attribute itself so every path
-// stays mirrored into localStorage.
 $(document).ready(function () {
+    // Selection ids are written to the DOM in several places (inline template
+    // onclick handlers, addToSelectedId, the checkbox .change() handler below) -
+    // rather than hook every call site, watch the attribute itself so every path
+    // stays mirrored into localStorage.
     var selectionObserver = new MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
             var el = mutation.target;
@@ -209,6 +209,37 @@ $(document).ready(function () {
         attributes: true,
         attributeFilter: ["data-ids"],
         subtree: true,
+    });
+
+    // Clear modal target contents when closed to prevent duplicate DOM IDs
+    var modalObserver = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+            if (mutation.attributeName === "class") {
+                var el = mutation.target;
+                // If the modal was just closed (lost oh-modal--show class)
+                if (!$(el).hasClass("oh-modal--show")) {
+                    var clearableModals = [
+                        "objectCreateModal",
+                        "objectUpdateModal",
+                        "dynamicCreateModal",
+                        "objectDetailsModal",
+                        "objectDetailsModalW25",
+                        "genericModal"
+                    ];
+                    if (clearableModals.includes(el.id)) {
+                        setTimeout(function() {
+                            if (!$(el).hasClass("oh-modal--show")) {
+                                $(el).find(".oh-modal__dialog").empty();
+                            }
+                        }, 200); // 200ms delay to allow any close transitions to finish
+                    }
+                }
+            }
+        });
+    });
+
+    $(".oh-modal").each(function () {
+        modalObserver.observe(this, { attributes: true });
     });
 });
 
