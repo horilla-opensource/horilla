@@ -340,7 +340,6 @@ def is_check_in_enabled(request):
     """
     from attendance.models import AttendanceGeneralSetting
 
-    # from base.models import Company  # Assuming Company is the correct model for `selected_company`
     selected_company = request.session.get("selected_company")
     if not selected_company:
         return False  # Safeguard if session key is missing

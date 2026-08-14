@@ -2401,10 +2401,11 @@ class MultipleApprovalManagers(models.Model):
 
 class DynamicPagination(models.Model):
     """
-    model for storing pagination for employees
+    Per-user, per-company default for the number of records shown per
+    page across list views.
     """
 
-    user_id = models.OneToOneField(
+    user_id = models.ForeignKey(
         HorillaUser,
         on_delete=models.CASCADE,
         blank=True,
@@ -2412,8 +2413,9 @@ class DynamicPagination(models.Model):
         related_name="dynamic_pagination",
         verbose_name=_("User"),
     )
+    company_id = models.ForeignKey("base.Company", on_delete=models.CASCADE, null=True)
     pagination = models.IntegerField(default=50, validators=[MinValueValidator(1)])
-    objects = models.Manager()
+    objects = HorillaCompanyManager()
 
     def save(self, *args, **kwargs):
         request = getattr(_thread_locals, "request", None)
@@ -2421,8 +2423,11 @@ class DynamicPagination(models.Model):
         self.user_id = user
         super().save(*args, **kwargs)
 
+    def company_col(self):
+        return self.company_id.company if self.company_id else "All Company"
+
     def __str__(self):
-        return f"{self.user_id}|{self.pagination}"
+        return f"{self.user_id}|{self.company_id}|{self.pagination}"
 
 
 class Attachment(models.Model):
@@ -2438,11 +2443,21 @@ class Attachment(models.Model):
 
 class AnnouncementExpire(models.Model):
     """
-    This model for setting a expire days for announcement if no expire date for announcement
+    Per-company default for the number of days an announcement stays
+    active when no explicit expire date is set.
     """
 
     days = models.IntegerField(null=True, blank=True, default=30)
-    objects = models.Manager()
+    company_id = models.ForeignKey("base.Company", on_delete=models.CASCADE, null=True)
+    objects = HorillaCompanyManager()
+
+    def company_col(self):
+        return self.company_id.company if self.company_id else "All Company"
+
+    def __str__(self):
+        return (
+            f"Default expire days for {self.company_id or 'All Company'}: {self.days}"
+        )
 
 
 class Announcement(HorillaModel):

@@ -110,6 +110,7 @@ from base.methods import (
     filtersubordinatesemployeemodel,
     get_key_instances,
     get_pagination,
+    get_session_company,
 )
 from base.models import (
     AttendanceAllowedIP,
@@ -3057,7 +3058,7 @@ def enable_timerunner(request):
     When the company switcher is on "all", apply the change to every
     AttendanceGeneralSetting row (global + per-company).
     """
-    company = _get_session_company(request)
+    company = get_session_company(request)
     enabled = "time_runner" in request.GET.keys()
     if company is None:
         # "All companies" — keep every tenant row in sync so the navbar timer
@@ -3270,16 +3271,6 @@ def validation_condition_update(request, obj_id):
     )
 
 
-def _get_session_company(request):
-    """Return the Company instance for the session-selected company, or None."""
-    from base.models import Company
-
-    selected = request.session.get("selected_company")
-    if selected == "all" or not selected:
-        return None
-    return Company.objects.filter(id=selected).first()
-
-
 @login_required
 @permission_required("attendance.add_attendance")
 def allowed_ips(request):
@@ -3298,7 +3289,7 @@ def enable_ip_restriction(request):
     """
     This function is used to toggle IP restriction for the active company.
     """
-    company = _get_session_company(request)
+    company = get_session_company(request)
     obj, _created = AttendanceAllowedIP.objects.get_or_create(company_id=company)
     is_enabled = True if request.POST.get("is_enabled") == "on" else False
     obj.is_enabled = is_enabled
@@ -3316,17 +3307,14 @@ def attendance_rule_settings_view(request):
     """
     from base.models import BiometricAttendance
 
-    company = _get_session_company(request)
+    company = get_session_company(request)
 
     tracking = TrackLateComeEarlyOut.objects.filter(company_id=company).first()
 
-    if company is None:
-        attendance_general_settings = AttendanceGeneralSetting.objects.all()
-    else:
-        setting, _created = AttendanceGeneralSetting.objects.get_or_create(
-            company_id=company
-        )
-        attendance_general_settings = [setting]
+    setting, _created = AttendanceGeneralSetting.objects.get_or_create(
+        company_id=company
+    )
+    attendance_general_settings = [setting]
     show_company = len(attendance_general_settings) > 1
 
     biometric = BiometricAttendance.objects.filter(company_id=company).first()
@@ -3376,7 +3364,7 @@ def create_allowed_ips(request):
     """
     This function is used to create the allowed IPs for the active company.
     """
-    company = _get_session_company(request)
+    company = get_session_company(request)
     if request.method == "POST":
         form = AttendanceAllowedIPForm(request.POST)
         if form.is_valid():
@@ -3421,7 +3409,7 @@ def delete_allowed_ips(request):
     """
     This function is used to delete the allowed ips for the active company.
     """
-    company = _get_session_company(request)
+    company = get_session_company(request)
     try:
         ids = request.GET.getlist("id")
         obj = AttendanceAllowedIP.objects.filter(company_id=company).first()
@@ -3443,7 +3431,7 @@ def edit_allowed_ips(request):
     """
     This function is used to edit the allowed IPs for the active company.
     """
-    company = _get_session_company(request)
+    company = get_session_company(request)
     obj = AttendanceAllowedIP.objects.filter(company_id=company).first()
     if not obj:
         messages.error(request, _("No allowed IPs found."))
