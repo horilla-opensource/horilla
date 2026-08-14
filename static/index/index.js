@@ -1391,16 +1391,27 @@ $(document).on("htmx:afterSwap", function () {
     // reason) -- this handler fires on EVERY htmx swap anywhere on the page,
     // so a modal reopened more than once was hitting this repeatedly.
     $("[data-summernote]").each(function () {
-        if ($(this).next(".note-editor").length > 0) {
+        var $source = $(this);
+        if ($source.next(".note-editor").length > 0) {
             return;
         }
-        $(this).summernote({
+        // Summernote hides the field it is attached to. The browser cannot
+        // focus a hidden control to report a constraint violation, so a
+        // `required` one aborts the whole submit ("An invalid form control
+        // ... is not focusable") — no submit event, no request, and the Save
+        // button appears dead. Leave the required check to the server, which
+        // renders its error inline under the field.
+        this.removeAttribute("required");
+        $source.summernote({
             height: 300,
             codeviewFilter: false,
             codeviewIframeFilter: false,
             callbacks: {
                 onChange: function (contents) {
-                    $('[name="body"]').val(contents);
+                    // Write back to the edited field itself — targeting
+                    // [name="body"] pushed the text into an unrelated field
+                    // whenever the editor was attached to anything else.
+                    $source.val(contents);
                 },
             },
         });
@@ -1440,6 +1451,12 @@ function initializeSummernote(candId, searchWords) {
     if ($body.next(".note-editor").length > 0) {
         $body.summernote("destroy");
     }
+    // Same hidden-required trap as the [data-summernote] init above: the
+    // browser cannot report a violation on the hidden source field, so a
+    // `required` mail body silently blocks the whole form submit.
+    $body.each(function () {
+        this.removeAttribute("required");
+    });
     $body.summernote({
         hint: {
             mentions: mentions,
