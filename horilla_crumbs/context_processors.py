@@ -50,7 +50,26 @@ def _resolve_menu_section(path, menus):
             if path == redirect or path.startswith(redirect):
                 if best is None or len(redirect) > len(best[1]):
                     best = (str(menu.get("menu", "")), redirect)
-    return best
+    if best is not None:
+        return best
+
+    # No submenu redirect is a prefix of this path - typical for a detail
+    # page reached from a list view rather than the list view's own URL
+    # (e.g. project's "task-view/<id>" vs. its list page "project-view").
+    # Fall back to matching on the shared leading URL segment so the page
+    # still resolves to its app's own top-level menu label instead of
+    # falling through to the raw path segment, which produces a second,
+    # differently-cased duplicate of the same section in the breadcrumb.
+    path_root = path.strip("/").split("/")[0] if path.strip("/") else ""
+    if not path_root:
+        return None
+    for menu in menus or []:
+        for submenu in menu.get("submenu", []):
+            redirect = submenu.get("redirect") or ""
+            redirect_root = redirect.strip("/").split("/")[0] if redirect else ""
+            if redirect_root and redirect_root == path_root:
+                return (str(menu.get("menu", "")), redirect)
+    return None
 
 
 BREADCRUMB_URL_NAMES = {
