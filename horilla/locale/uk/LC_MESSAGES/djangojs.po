@@ -2,203 +2,203 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-12-18 13:57+0530\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2026-08-14 12:00+0300\n"
+"Last-Translator: SCG\n"
+"Language-Team: Ukrainian\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
 
 msgid "An unexpected error occurred. Please refresh the page."
-msgstr ""
+msgstr "Сталася неочікувана помилка. Оновіть сторінку."
 
 msgid "Do you really want to validate all the selected attendances?"
-msgstr ""
+msgstr "Ви справді хочете перевірити всі вибрані відвідування?"
 
 msgid "No rows are selected from Validate Attendances."
-msgstr ""
+msgstr "Не вибрано жодного рядка з «Перевірити відвідуваність»."
 
 msgid "Do you really want to approve OT for all the selected attendances?"
 msgstr ""
+"Ви справді хочете затвердити понаднормові для всіх вибраних відвідувань?"
 
 msgid "No rows are selected from OT Attendances."
-msgstr ""
+msgstr "Не вибрано жодного рядка з понаднормових відвідувань."
 
 msgid "Do you really want to reject all the selected attendance requests?"
-msgstr ""
+msgstr "Ви справді хочете відхилити всі вибрані заявки на відвідування?"
 
 msgid "Pending Attendance Update Request!"
-msgstr ""
+msgstr "Заявка на оновлення відвідування в очікуванні!"
 
 msgid ""
 "An attendance request exists for updating this attendance prior to "
 "validation."
-msgstr ""
+msgstr "Існує заявка на оновлення цього відвідування до його перевірки."
 
 msgid "View Request"
-msgstr ""
+msgstr "Переглянути заявку"
 
 msgid "Some selected requests have already been approved."
-msgstr ""
+msgstr "Деякі вибрані заявки вже затверджено."
 
 msgid "Some selected requests have already been rejected."
-msgstr ""
+msgstr "Деякі вибрані заявки вже відхилено."
 
 msgid "Do you wish to create a Leave Report?"
-msgstr ""
+msgstr "Бажаєте створити звіт по відпустках?"
 
 msgid "Do you want to reject the selected leave requests?"
-msgstr ""
+msgstr "Бажаєте відхилити вибрані заявки на відпустку?"
 
 msgid "Do you want to send the payslip by mail?"
-msgstr ""
+msgstr "Бажаєте надіслати розрахунковий листок поштою?"
 
 msgid "Name of Employees"
-msgstr ""
+msgstr "Імена співробітників"
 
 msgid "Amount"
-msgstr ""
+msgstr "Сума"
 
 msgid "Upload Completed!"
-msgstr ""
+msgstr "Завантаження завершено!"
 
 msgid "Imported Successfully!"
-msgstr ""
+msgstr "Успішно імпортовано!"
 
 msgid "Please upload a file with the .xlsx extension only."
-msgstr ""
+msgstr "Завантажуйте лише файли з розширенням .xlsx."
 
 msgid "visible"
-msgstr ""
+msgstr "visible"
 
 msgid "bgcolor"
-msgstr ""
+msgstr "bgcolor"
 
 msgid "bordercolor"
-msgstr ""
+msgstr "bordercolor"
 
 msgid "borderwidth"
-msgstr ""
+msgstr "borderwidth"
 
 msgid "thickness"
-msgstr ""
+msgstr "thickness"
 
 msgid "autorange"
-msgstr ""
+msgstr "autorange"
 
 msgid "range"
-msgstr ""
+msgstr "range"
 
 msgid "x"
-msgstr ""
+msgstr "x"
 
 msgid "y"
-msgstr ""
+msgstr "y"
 
 msgid "minor"
-msgstr ""
+msgstr "minor"
 
 msgid "label"
-msgstr ""
+msgstr "label"
 
 msgid "arrowlen"
-msgstr ""
+msgstr "arrowlen"
 
 msgid "source"
-msgstr ""
+msgstr "source"
 
 msgid "target"
-msgstr ""
+msgstr "target"
 
 msgid "value"
-msgstr ""
+msgstr "value"
 
 msgid "line.color"
-msgstr ""
+msgstr "line.color"
 
 msgid "line.width"
-msgstr ""
+msgstr "line.width"
 
 msgid "hoverinfo"
-msgstr ""
+msgstr "hoverinfo"
 
 msgid "hovertemplate"
-msgstr ""
+msgstr "hovertemplate"
 
 msgid "color"
-msgstr ""
+msgstr "color"
 
 msgid "hovercolor"
-msgstr ""
+msgstr "hovercolor"
 
 msgid "customdata"
-msgstr ""
+msgstr "customdata"
 
 msgid "punc"
-msgstr ""
+msgstr "punc"
 
 msgid "name"
-msgstr ""
+msgstr "name"
 
 msgid "keyword"
-msgstr ""
+msgstr "keyword"
 
 msgid "arrow"
-msgstr ""
+msgstr "arrow"
 
 msgid "operator"
-msgstr ""
+msgstr "operator"
 
 msgid "close"
-msgstr ""
+msgstr "close"
 
 msgid "Confirm"
-msgstr ""
+msgstr "Підтвердити"
 
 msgid "Close"
-msgstr ""
+msgstr "Закрити"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Скасувати"
 
 msgid "Selected"
-msgstr ""
+msgstr "Вибрано"
 
 msgid "Uploading..."
-msgstr ""
+msgstr "Завантаження..."
 
 msgid "No Records found"
-msgstr ""
+msgstr "Записів не знайдено"
 
 msgid "Do you want to download the excel file?"
-msgstr ""
+msgstr "Бажаєте завантажити файл Excel?"
 
 msgid "Do you want to download the template?"
-msgstr ""
+msgstr "Бажаєте завантажити шаблон?"
 
 msgid "No rows are selected from the records."
-msgstr ""
+msgstr "Не вибрано жодного рядка із записів."
 
 msgid "Do you really want to delete all the selected records?"
-msgstr ""
+msgstr "Ви справді хочете видалити всі вибрані записи?"
 
 msgid "Do you really want to archive all the selected records?"
-msgstr ""
+msgstr "Ви справді хочете заархівувати всі вибрані записи?"
 
 msgid "Do you really want to approve all the selected requests?"
-msgstr ""
+msgstr "Ви справді хочете затвердити всі вибрані заявки?"
 
 msgid "Do you really want to unarchive all the selected records?"
-msgstr ""
+msgstr "Ви справді хочете розархівувати всі вибрані записи?"
 
 msgid "Ok"
 msgstr "добре"
@@ -206,8 +206,10 @@ msgstr "добре"
 msgid "Total vacancy is %(vacancy)s."
 msgstr "Загальна кількість вакансій %(vacancy)s."
 
-msgid "Are you sure to change the candidate from %(from)s stage to %(to)s stage"
-msgstr "Ви впевнені, що змінюєте кандидата зі стадії %(from)s на стадію %(to)s"
+msgid ""
+"Are you sure to change the candidate from %(from)s stage to %(to)s stage"
+msgstr ""
+"Ви впевнені, що змінюєте кандидата зі стадії %(from)s на стадію %(to)s"
 
 msgid "Stage updated"
 msgstr "Етап оновлено"
@@ -215,8 +217,11 @@ msgstr "Етап оновлено"
 msgid "Confirm Stage Change"
 msgstr "Підтвердьте зміну етапу"
 
-msgid "The candidate is being moved from %(from)s to the %(to)s stage. Do you want to proceed?"
-msgstr "Кандидат переміщується з %(from)s на етап %(to)s. Ви бажаєте продовжити?"
+msgid ""
+"The candidate is being moved from %(from)s to the %(to)s stage. Do you want "
+"to proceed?"
+msgstr ""
+"Кандидат переміщується з %(from)s на етап %(to)s. Ви бажаєте продовжити?"
 
 msgid "Don't show this again in this session"
 msgstr "Не показувати це знову в цьому сеансі"
@@ -229,127 +234,186 @@ msgstr "Цей рух заборонено."
 
 msgid "Do you really want to delete all the selected attendances?"
 msgstr "Ви дійсно хочете видалити всі вибрані відвідування?"
+
 msgid "Do you really want to delete this employee?"
 msgstr "Ви справді хочете видалити цього співробітника?"
+
 msgid "No rows are selected for deleting attendances."
 msgstr "Не вибрано жодного рядка для видалення явок."
 
-
 msgid "Add Stage"
 msgstr "Додати етап"
+
 msgid "Add announcement"
 msgstr "Додати оголошення"
+
 msgid "Add candidate"
 msgstr "Додати кандидата"
+
 msgid "Add candidate to stage option"
 msgstr "Опція додавання кандидата до етапу"
+
 msgid "Add new recruitment"
 msgstr "Додати нову вакансію"
+
 msgid "Add new stage to recruitment"
 msgstr "Додати новий етап до найму"
+
 msgid "All your company and base configurations"
 msgstr "Усі налаштування компанії та базові конфігурації"
+
 msgid "App"
 msgstr "Додаток"
+
 msgid "Approve or Reject Options"
 msgstr "Опції схвалити або відхилити"
+
 msgid "Candidate"
 msgstr "Кандидат"
+
 msgid "Candidate change stage option"
 msgstr "Опція зміни етапу кандидата"
+
 msgid "Candidate management options"
 msgstr "Параметри керування кандидатами"
+
 msgid "Candidate rating option"
 msgstr "Опція оцінки кандидата"
+
 msgid "Candidate record"
 msgstr "Запис кандидата"
+
 msgid "Change Stage"
 msgstr "Змінити етап"
+
 msgid "Company"
 msgstr "Компанія"
+
 msgid "Create Quick Requests"
 msgstr "Створити швидкі запити"
+
 msgid "Create announcement from dashboard"
 msgstr "Створити оголошення з панелі"
+
 msgid "Dashboard"
 msgstr "Панель"
+
 msgid "Dashboard Actions"
 msgstr "Дії панелі"
+
 msgid "Dashboard Tiles"
 msgstr "Плитки панелі"
+
 msgid "Filter"
 msgstr "Фільтр"
+
 msgid "Filter Tag"
 msgstr "Мітка фільтра"
+
 msgid "Filter tag option"
 msgstr "Опція мітки фільтра"
+
 msgid "Horilla Dashboard Tiles"
 msgstr "Плитки панелі Horilla"
+
 msgid "Horilla Hr Apps. eg Dashboard"
 msgstr "Додатки Horilla HR, напр. Панель"
+
 msgid "Horilla dashboard section"
 msgstr "Розділ панелі Horilla"
+
 msgid "Language"
 msgstr "Мова"
+
 msgid "Mark Attendance"
 msgstr "Відмітити присутність"
+
 msgid "Multi-Company"
 msgstr "Кілька компаній"
+
 msgid "Multi-Company options"
 msgstr "Параметри кількох компаній"
+
 msgid "Multi-Language options"
 msgstr "Багатомовні параметри"
+
 msgid "New Recruitment"
 msgstr "Новий найм"
+
 msgid "Notification"
 msgstr "Сповіщення"
+
 msgid "Notifications section"
 msgstr "Розділ сповіщень"
+
 msgid "Options"
 msgstr "Параметри"
+
 msgid "Pipeline"
 msgstr "Воронка"
+
 msgid "Pipeline filter option"
 msgstr "Опція фільтра воронки"
+
 msgid "Profile"
 msgstr "Профіль"
+
 msgid "Profile and change password options"
 msgstr "Параметри профілю та зміни пароля"
+
 msgid "Quick Actions"
 msgstr "Швидкі дії"
+
 msgid "Quick Filters"
 msgstr "Швидкі фільтри"
+
 msgid "Rating"
 msgstr "Оцінка"
+
 msgid "Recruitment"
 msgstr "Найм"
+
 msgid "Recruitment pipeline management"
 msgstr "Керування воронкою найму"
+
 msgid "Recruitment stage"
 msgstr "Етап найму"
+
 msgid "Search"
 msgstr "Пошук"
+
 msgid "Search in candidate, recruitment and stage"
 msgstr "Пошук за кандидатом, наймом і етапом"
+
 msgid "Selected settings view"
 msgstr "Вибраний вигляд налаштувань"
+
 msgid "Settings"
 msgstr "Налаштування"
+
 msgid "Settings Options"
 msgstr "Параметри налаштувань"
+
 msgid "Settings View"
 msgstr "Вигляд налаштувань"
+
 msgid "Settings configurations"
 msgstr "Конфігурації налаштувань"
+
 msgid "Settings menu bar"
 msgstr "Панель меню налаштувань"
+
 msgid "Stage"
 msgstr "Етап"
+
 msgid "Toggle View"
 msgstr "Перемкнути вигляд"
+
 msgid "Toggle view type"
 msgstr "Перемкнути тип вигляду"
+
 msgid "Used to mark your attendance"
 msgstr "Використовується для відмітки присутності"
+
 msgid "Your current company access"
 msgstr "Ваш поточний доступ до компанії"
