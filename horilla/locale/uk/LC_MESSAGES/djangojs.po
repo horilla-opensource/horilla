@@ -417,3 +417,11 @@ msgstr "Використовується для відмітки присутн�
 
 msgid "Your current company access"
 msgstr "Ваш поточний доступ до компанії"
+
+#: static/index/country.js
+msgid "Select Country"
+msgstr "Виберіть країну"
+
+#: static/index/country.js
+msgid "Select State"
+msgstr "Виберіть область"

@@ -20962,6 +20962,20 @@ msgstr "Оновити щотижневі вихідні"
 msgid "Weekly Off Day"
 msgstr "Щотижневий вихідний"
 
+#: horilla_theme/templates/recruitment/open_recruitments.html
+msgctxt "job application"
+msgid "Apply"
+msgstr "Подати заявку"
+
+#: horilla_theme/templates/candidate/application_form.html
+msgctxt "person"
+msgid "Name"
+msgstr "Ім'я"
+
+#: horilla_theme/templates/recruitment/open_recruitments.html
+msgid "%(applied)s applied of %(capacity)s capacity"
+msgstr "Заявок: %(applied)s з %(capacity)s"
+
 #~ msgid "Current User"
 #~ msgstr "Поточний користувач"
 
