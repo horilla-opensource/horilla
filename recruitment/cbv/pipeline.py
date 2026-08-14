@@ -6,6 +6,7 @@ from typing import Any
 
 from django.contrib import messages
 from django.core.cache import cache as CACHE
+from django.db.models import Q
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.http import urlencode
@@ -22,6 +23,7 @@ from horilla_views.generic.cbv.views import (
     TemplateView,
     get_short_uuid,
 )
+from horilla_views.models import ActiveView
 from recruitment import filters, forms, models
 from recruitment.cbv_decorators import manager_can_enter
 from recruitment.templatetags.recruitmentfilters import (
@@ -61,11 +63,8 @@ class RecruitmentTabView(HorillaTabView):
         view_type = self.request.GET.get("view")
         if not view_type and self.request.user and self.request.user.is_authenticated:
             active_view = (
-                models.ActiveView.objects.filter(created_by=self.request.user)
-                .filter(
-                    models.Q(path=self.request.path)
-                    | models.Q(path=reverse("cbv-pipeline"))
-                )
+                ActiveView.objects.filter(created_by=self.request.user)
+                .filter(Q(path=self.request.path) | Q(path=reverse("cbv-pipeline")))
                 .first()
             )
             if active_view and active_view.type:
