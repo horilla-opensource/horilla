@@ -91,6 +91,7 @@ from payroll.models.models import (
     Payslip,
     Reimbursement,
     ReimbursementMultipleAttachment,
+    SalaryStructure,
 )
 from payroll.threadings.mail import MailSendThread
 
@@ -938,6 +939,42 @@ def delete_deduction(request, deduction_id, emp_id=None):
     return HttpResponseRedirect(default_redirect)
 
 
+@login_required
+@hx_request_required
+@permission_required("payroll.change_salarystructure")
+def remove_structure_allowance(request, structure_pk, pk):
+    """
+    Unlink an allowance from a salary structure (the allowance itself keeps
+    existing for whatever other structures/employees still use it).
+    """
+    structure = SalaryStructure.objects.filter(pk=structure_pk).first()
+    allowance = Allowance.objects.filter(pk=pk).first()
+    if structure and allowance:
+        structure.remove_allowance(allowance)
+        messages.success(request, _("Allowance removed from the salary structure"))
+    return redirect(
+        reverse("salary-structure-detail-view", kwargs={"pk": structure_pk})
+    )
+
+
+@login_required
+@hx_request_required
+@permission_required("payroll.change_salarystructure")
+def remove_structure_deduction(request, structure_pk, pk):
+    """
+    Unlink a deduction from a salary structure (the deduction itself keeps
+    existing for whatever other structures/employees still use it).
+    """
+    structure = SalaryStructure.objects.filter(pk=structure_pk).first()
+    deduction = Deduction.objects.filter(pk=pk).first()
+    if structure and deduction:
+        structure.remove_deduction(deduction)
+        messages.success(request, _("Deduction removed from the salary structure"))
+    return redirect(
+        reverse("salary-structure-detail-view", kwargs={"pk": structure_pk})
+    )
+
+
 def get_month_start_end(year):
     start_end_dates = []
     for month in range(1, 13):
@@ -990,7 +1027,9 @@ def generate_payslip(request):
 
             from attendance.views.summary import build_monthly_summary
 
-            att_rows, _, _ = build_monthly_summary(start_date, end_date, employees)
+            att_rows, _total_working, _summary_totals = build_monthly_summary(
+                start_date, end_date, employees
+            )
             att_summary = {row["employee"].pk: row for row in att_rows}
 
             for employee in employees:
