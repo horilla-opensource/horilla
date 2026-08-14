@@ -187,12 +187,16 @@ class GeneralSettings:
             "search_entries": [
                 {
                     "text": _("Default Expire Days"),
-                    "description": _("Auto-expiry days for announcements"),
+                    "description": _(
+                        "Auto-expiry days for announcements, configurable per company"
+                    ),
                     "anchor": "setting-default-expire-days",
                 },
                 {
                     "text": _("Default Records Per Page"),
-                    "description": _("Rows shown per page"),
+                    "description": _(
+                        "Your personal rows-per-page preference for the selected company"
+                    ),
                     "anchor": "setting-default-records-per-page",
                 },
                 {

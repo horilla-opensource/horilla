@@ -1342,17 +1342,29 @@ class AnnouncementListAPIView(APIView):
     pagination_class = AnnouncementPagination
 
     def get(self, request, *args, **kwargs):
-        # Default expire days
-        expire_days = (
-            AnnouncementExpire.objects.values_list("days", flat=True).first() or 30
+        # Update missing expire_date in bulk, using each announcement's
+        # company-specific "Default Expire Days" setting (falling back to
+        # the "All Companies" default, then 30, when unconfigured).
+        announcements_to_update = (
+            Announcement.objects.filter(expire_date__isnull=True)
+            .only("id", "created_at")
+            .prefetch_related("company_id")
         )
-
-        # Update missing expire_date in bulk
-        announcements_to_update = Announcement.objects.filter(
-            expire_date__isnull=True
-        ).only("id", "created_at")
+        expire_days_by_company = {}
         for ann in announcements_to_update:
-            ann.expire_date = ann.created_at + timedelta(days=expire_days)
+            companies = list(ann.company_id.all())
+            company = companies[0] if companies else None
+            cache_key = company.id if company else None
+            if cache_key not in expire_days_by_company:
+                setting = AnnouncementExpire.objects.filter(company_id=company).first()
+                if not setting and company is not None:
+                    setting = AnnouncementExpire.objects.filter(company_id=None).first()
+                expire_days_by_company[cache_key] = (
+                    setting.days if setting and setting.days is not None else 30
+                )
+            ann.expire_date = ann.created_at + timedelta(
+                days=expire_days_by_company[cache_key]
+            )
         if announcements_to_update:
             Announcement.objects.bulk_update(announcements_to_update, ["expire_date"])
 

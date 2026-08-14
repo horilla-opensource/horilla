@@ -14,8 +14,20 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext as _
 
-from base.models import Announcement, PenaltyAccounts
+from base.models import Announcement, AnnouncementExpire, Company, PenaltyAccounts
 from horilla.methods import get_horilla_model_class
+
+
+@receiver(post_save, sender=Company)
+def create_announcement_expire_setting(sender, instance, created, raw, **kwargs):
+    """
+    Signal receiver that automatically creates an AnnouncementExpire object
+    whenever a new Company is created. This does NOT skip creation during
+    loaddata, so the object will also be created when fixture data is loaded.
+    """
+    AnnouncementExpire.objects.get_or_create(company_id=None)
+    if created:
+        AnnouncementExpire.objects.get_or_create(company_id=instance)
 
 
 @receiver(post_save, sender=PenaltyAccounts)
