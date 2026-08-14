@@ -448,7 +448,7 @@
 
         /* ── Period picker (mirrors onboarding/recruitment) ── */
         .am-period-picker {
-            display: flex;
+            display: none !important; /* TEMP: hide period picker */
             align-items: center;
             gap: 6px;
             font-size: 12px;
@@ -782,7 +782,7 @@
                 </div>
             </div>
             <div class="am-header__actions" style="display: flex; align-items: center; gap: 8px">
-                <div class="am-period-picker">
+                <div class="am-period-picker" hidden>
                     <button class="am-period-preset" data-preset="this_month">{% trans "This Month" %}</button>
                     <button class="am-period-preset" data-preset="last_month">{% trans "Last Month" %}</button>
                     <button class="am-period-preset" data-preset="this_quarter">{% trans "Quarter" %}</button>

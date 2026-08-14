@@ -39,7 +39,7 @@
   .ess-header__actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
   /* Period picker — mirrors onboarding/recruitment style */
-  .ess-period-picker { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+  .ess-period-picker { display: none !important; /* TEMP: hide period picker */ align-items: center; gap: 6px; font-size: 12px; }
   .ess-period-picker input[type="date"] {
     padding: 5px 8px; border-radius: 6px;
     border: 1px solid rgba(128,128,128,0.2); font-size: 12px;
@@ -361,7 +361,7 @@
       <div class="ess-header__date" id="essHeaderDate"></div>
     </div>
     <div class="ess-header__actions">
-      <div class="ess-period-picker">
+      <div class="ess-period-picker" hidden>
         <button class="ess-period-preset" data-preset="this_month">{% trans "This Month" %}</button>
         <button class="ess-period-preset" data-preset="last_month">{% trans "Last Month" %}</button>
         <button class="ess-period-preset" data-preset="this_quarter">{% trans "Quarter" %}</button>

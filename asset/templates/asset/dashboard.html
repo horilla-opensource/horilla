@@ -545,7 +545,7 @@
 
         /* Period Picker */
         .as-period-picker {
-            display: flex;
+            display: none !important; /* TEMP: hide period picker */
             align-items: center;
             gap: 6px;
             font-size: 12px;
@@ -687,7 +687,7 @@
                 </div>
             </div>
             <div style="display: flex; gap: 8px">
-                <div class="as-period-picker">
+                <div class="as-period-picker" hidden>
                     <button class="as-period-preset" data-preset="this_month">{% trans "This Month" %}</button>
                     <button class="as-period-preset" data-preset="last_month">{% trans "Last Month" %}</button>
                     <button class="as-period-preset" data-preset="this_quarter">{% trans "Quarter" %}</button>

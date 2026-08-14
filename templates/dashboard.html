@@ -1142,7 +1142,7 @@
 
         /* Period Picker */
         .md-period-picker {
-            display: flex;
+            display: none !important; /* TEMP: hide period picker */
             align-items: center;
             gap: 6px;
             font-size: 12px;
@@ -1369,7 +1369,7 @@
                 </div>
             </div>
             <div class="md-header__actions">
-                <div class="md-period-picker">
+                <div class="md-period-picker" hidden>
                     <button class="md-period-preset" data-preset="this_month">{% trans "This Month" %}</button>
                     <button class="md-period-preset" data-preset="last_month">{% trans "Last Month" %}</button>
                     <button class="md-period-preset" data-preset="this_quarter">{% trans "Quarter" %}</button>

@@ -132,7 +132,7 @@
     @media (max-width: 640px) { .pd-customize-panel { width: 100%; right: -100%; } }
 
     /* Period Picker */
-    .pd-period-picker { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    .pd-period-picker { display: none !important; /* TEMP: hide period picker */ align-items: center; gap: 6px; font-size: 12px; }
     .pd-period-picker input[type="date"] { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.2); font-size: 12px; background: transparent; color: inherit; outline: none; transition: border-color 0.15s; }
     .pd-period-picker input[type="date"]:focus { border-color: var(--pd-indigo); }
     .pd-period-picker__sep { opacity: 0.4; font-size: 11px; }
@@ -165,7 +165,7 @@
             <div class="pd-refresh"><span class="pd-refresh__dot" id="pd-refresh-dot"></span><span id="pd-refresh-text">{% trans "Just now" %}</span><button class="pd-refresh__toggle" id="pd-refresh-toggle" title="{% trans 'Toggle auto-refresh' %}">⟳</button></div>
         </div>
         <div style="display:flex;gap:8px;">
-            <div class="pd-period-picker">
+            <div class="pd-period-picker" hidden>
                 <button class="pd-period-preset" data-preset="this_month">{% trans "This Month" %}</button>
                 <button class="pd-period-preset" data-preset="last_month">{% trans "Last Month" %}</button>
                 <button class="pd-period-preset" data-preset="this_quarter">{% trans "Quarter" %}</button>

@@ -97,7 +97,7 @@
     @media (max-width: 640px) { .on-customize-panel { width: 100%; right: -100%; } }
 
     /* Period Picker */
-    .on-period-picker { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    .on-period-picker { display: none !important; /* TEMP: hide period picker */ align-items: center; gap: 6px; font-size: 12px; }
     .on-period-picker input[type="date"] { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.2); font-size: 12px; background: transparent; color: inherit; outline: none; transition: border-color 0.15s; }
     .on-period-picker input[type="date"]:focus { border-color: var(--on-indigo); }
     .on-period-picker__sep { opacity: 0.4; font-size: 11px; }
@@ -136,7 +136,7 @@
             <div class="on-refresh"><span class="on-refresh__dot" id="on-refresh-dot"></span><span id="on-refresh-text">{% trans "Just now" %}</span><button class="on-refresh__toggle" id="on-refresh-toggle" title="{% trans 'Toggle auto-refresh' %}">⟳</button></div>
         </div>
         <div style="display:flex;gap:8px;">
-            <div class="on-period-picker">
+            <div class="on-period-picker" hidden>
                 <button class="on-period-preset" data-preset="this_month">{% trans "This Month" %}</button>
                 <button class="on-period-preset" data-preset="last_month">{% trans "Last Month" %}</button>
                 <button class="on-period-preset" data-preset="this_quarter">{% trans "Quarter" %}</button>
