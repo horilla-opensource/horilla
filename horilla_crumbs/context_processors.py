@@ -1,7 +1,9 @@
+import re
 import uuid
 from urllib.parse import urlparse
 
 from django.apps import apps
+from django.conf import settings
 from django.shortcuts import redirect
 from django.urls import Resolver404, path, resolve, reverse
 from django.utils.translation import gettext as _trans
@@ -10,6 +12,25 @@ from django.utils.translation import gettext_lazy as _
 from base.context_processors import white_labelling_company
 from employee.models import Employee
 from horilla.urls import urlpatterns
+
+# Final path segment that looks like a file, e.g. "logo.png", "app.min.js.map".
+_FILE_SEGMENT = re.compile(r"\.[A-Za-z0-9]{1,5}$")
+
+
+def is_asset_request(request):
+    """
+    True for static/media or file URLs — these are not navigable pages.
+
+    A missing asset 404s, and the 404 page still renders this processor, which
+    would otherwise push path segments like "static / images / ui / xx.png"
+    (or sourcemap probes such as "app.min.js.map") into the breadcrumb trail.
+    """
+    path_info = request.path
+    for prefix in (settings.STATIC_URL, settings.MEDIA_URL):
+        if prefix and path_info.startswith(prefix):
+            return True
+    last_segment = path_info.rstrip("/").rsplit("/", 1)[-1]
+    return bool(_FILE_SEGMENT.search(last_segment))
 
 
 def is_valid_uuid(uuid_string):
@@ -290,6 +311,19 @@ def breadcrumbs(request):
                 "clickable": True,
             }
         ]
+
+    # Drop asset entries an earlier release may have stored in the session.
+    cleaned = [
+        crumb
+        for crumb in request.session["breadcrumbs"]
+        if not _FILE_SEGMENT.search(crumb.get("name", ""))
+    ]
+    if len(cleaned) != len(request.session["breadcrumbs"]):
+        request.session["breadcrumbs"] = cleaned
+
+    # An asset request must never extend the trail (see is_asset_request).
+    if is_asset_request(request):
+        return {"breadcrumbs": request.session["breadcrumbs"]}
 
     try:
         breadcrumbs = request.session["breadcrumbs"]
