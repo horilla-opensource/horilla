@@ -218,6 +218,14 @@ class Contract(HorillaModel):
         blank=True,
         verbose_name=_("Filing Status"),
     )
+    salary_structure_id = models.ForeignKey(
+        "payroll.SalaryStructure",
+        on_delete=models.SET_NULL,
+        related_name="contracts",
+        null=True,
+        blank=True,
+        verbose_name=_("Salary Structure"),
+    )
     contract_status = models.CharField(
         choices=CONTRACT_STATUS_CHOICES,
         max_length=250,
@@ -396,6 +404,43 @@ class Contract(HorillaModel):
             return _("Yes")
         else:
             return _("No")
+
+    def set_salary_structure(self, new_structure):
+        """
+        Reassign this contract's salary structure, syncing the employee into
+        the new structure's allowances/deductions and out of the old
+        structure's, when this contract is active. Reassigning to a
+        different structure naturally replaces the old one, since a contract
+        can only point to one structure at a time.
+        """
+        old_structure = self.salary_structure_id
+        if old_structure == new_structure:
+            return
+        if self.contract_status == "active":
+            if old_structure:
+                for allowance in old_structure.allowances.all():
+                    still_targeted = (
+                        allowance.salary_structures.exclude(pk=old_structure.pk)
+                        .filter(contracts__employee_id=self.employee_id)
+                        .exists()
+                    )
+                    if not still_targeted:
+                        allowance.specific_employees.remove(self.employee_id)
+                for deduction in old_structure.deductions.all():
+                    still_targeted = (
+                        deduction.salary_structures.exclude(pk=old_structure.pk)
+                        .filter(contracts__employee_id=self.employee_id)
+                        .exists()
+                    )
+                    if not still_targeted:
+                        deduction.specific_employees.remove(self.employee_id)
+            if new_structure:
+                for allowance in new_structure.allowances.all():
+                    allowance.specific_employees.add(self.employee_id)
+                for deduction in new_structure.deductions.all():
+                    deduction.specific_employees.add(self.employee_id)
+        self.salary_structure_id = new_structure
+        self.save()
 
     def __str__(self) -> str:
         return f"{self.contract_name} -{self.contract_start_date} - {self.contract_end_date}"
@@ -852,48 +897,35 @@ class Allowance(HorillaModel):
         ("basic_pay", _("Basic Pay")),
     ]
     title = models.CharField(
-        max_length=255, null=False, blank=False, help_text=_("Title of the allowance")
+        max_length=255,
+        null=False,
+        blank=False,
     )
     one_time_date = models.DateField(
         null=True,
         blank=True,
-        help_text=_(
-            "The one-time allowance in which the allowance will apply to the payslips \
-            if the date between the payslip period"
-        ),
     )
     include_active_employees = models.BooleanField(
         default=False,
         verbose_name=_("Include All Employees"),
-        help_text=_("Target allowance to all active employees in the company"),
     )
     specific_employees = models.ManyToManyField(
         Employee,
         verbose_name=_("Employees Specific"),
         blank=True,
         related_name="allowance_specific",
-        help_text=_("Target allowance to the specific employees"),
     )
     exclude_employees = models.ManyToManyField(
         Employee,
         verbose_name=_("Exclude Employees"),
         related_name="allowance_excluded",
         blank=True,
-        help_text=_(
-            "To ignore the allowance to the employees when target them by all employees \
-            or through condition-based"
-        ),
     )
     is_taxable = models.BooleanField(
         default=True,
-        help_text=_("This field is used to calculate the taxable allowances"),
     )
     is_condition_based = models.BooleanField(
         default=False,
-        help_text=_(
-            "This field is used to target allowance \
-        to the specific employees when the condition satisfies with the employee's information"
-        ),
     )
     # If condition based
     field = models.CharField(
@@ -901,7 +933,6 @@ class Allowance(HorillaModel):
         choices=FIELD_CHOICE,
         null=True,
         blank=True,
-        help_text=_("The related field of the employees"),
     )
     condition = models.CharField(
         max_length=255, choices=CONDITION_CHOICE, null=True, blank=True
@@ -910,17 +941,15 @@ class Allowance(HorillaModel):
         max_length=255,
         null=True,
         blank=True,
-        help_text=_("The value must be like the data stored in the database"),
     )
 
     is_fixed = models.BooleanField(
-        default=True, help_text=_("To specify, the allowance is fixed or not")
+        default=True,
     )
     amount = models.FloatField(
         null=True,
         blank=True,
         validators=[min_zero],
-        help_text=_("Fixed amount for this allowance"),
     )
     # If is fixed is false
     based_on = models.CharField(
@@ -929,9 +958,6 @@ class Allowance(HorillaModel):
         choices=based_on_choice,
         null=True,
         blank=True,
-        help_text=_(
-            "If the allowance is not fixed then specifies how the allowance provided"
-        ),
     )
     rate = models.FloatField(
         null=True,
@@ -939,7 +965,6 @@ class Allowance(HorillaModel):
         validators=[
             rate_validator,
         ],
-        help_text=_("The percentage of based on"),
     )
     # If based on attendance
     per_attendance_fixed_amount = models.FloatField(
@@ -947,7 +972,6 @@ class Allowance(HorillaModel):
         blank=True,
         default=0.00,
         validators=[min_zero],
-        help_text=_("The attendance fixed amount for one validated attendance"),
     )
     # If based on children
     per_children_fixed_amount = models.FloatField(
@@ -955,7 +979,6 @@ class Allowance(HorillaModel):
         blank=True,
         default=0.00,
         validators=[min_zero],
-        help_text=_("The fixed amount per children"),
     )
     # If based on shift
     shift_id = models.ForeignKey(
@@ -970,17 +993,12 @@ class Allowance(HorillaModel):
         default=0.00,
         blank=True,
         validators=[min_zero],
-        help_text=_("The fixed amount for one validated attendance with that shift"),
     )
     amount_per_one_hr = models.FloatField(
         null=True,
         default=0.00,
         blank=True,
         validators=[min_zero],
-        help_text=_(
-            "The fixed amount for one hour overtime that are validated \
-            and approved the overtime attendance"
-        ),
     )
     work_type_id = models.ForeignKey(
         WorkType,
@@ -994,21 +1012,16 @@ class Allowance(HorillaModel):
         default=0.00,
         blank=True,
         validators=[min_zero],
-        help_text=_(
-            "The fixed amount for one validated attendance with that work type"
-        ),
     )
     # for apply only
     has_max_limit = models.BooleanField(
         default=False,
         verbose_name=_("Has max limit for allowance"),
-        help_text=_("Limit the allowance amount"),
     )
     maximum_amount = models.FloatField(
         null=True,
         blank=True,
         validators=[min_zero],
-        help_text=_("The maximum amount for the allowance"),
         verbose_name=_("Maximum Amount"),
     )
     maximum_unit = models.CharField(
@@ -1022,29 +1035,28 @@ class Allowance(HorillaModel):
             ),
             # ("monthly_working_days", "For working days on month"),
         ],
-        help_text=_("The maximum amount for ?"),
         verbose_name=_("Maximum Unit"),
     )
     if_choice = models.CharField(
         max_length=10,
         choices=if_condition_choice,
         default="basic_pay",
-        help_text=_("The pay head for the if condition"),
     )
     if_condition = models.CharField(
         max_length=10,
         choices=IF_CONDITION_CHOICE,
         default="gt",
-        help_text=_("Apply for those, if the pay-head conditions satisfy"),
     )
     if_amount = models.FloatField(
-        default=0.00, help_text=_("The amount of the pay-head")
+        default=0.00,
     )
     start_range = models.FloatField(
-        blank=True, null=True, help_text=_("The start amount of the pay-head range")
+        blank=True,
+        null=True,
     )
     end_range = models.FloatField(
-        blank=True, null=True, help_text=_("The end amount of the pay-head range")
+        blank=True,
+        null=True,
     )
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
@@ -1144,7 +1156,7 @@ class Allowance(HorillaModel):
         to get the update url for card action update
         """
 
-        url = reverse("update-allowance", kwargs={"allowance_id": self.pk})
+        url = reverse("update-allowance", kwargs={"pk": self.pk})
         return url
 
     def get_allowance_actions(self):
@@ -1414,25 +1426,19 @@ class Deduction(HorillaModel):
         ("max_amount", _("Provide max amount")),
     ]
 
-    title = models.CharField(max_length=255, help_text=_("Title of the deduction"))
+    title = models.CharField(max_length=255)
     one_time_date = models.DateField(
         null=True,
         blank=True,
-        help_text=_(
-            "The one-time deduction in which the deduction will apply to the payslips \
-            if the date between the payslip period"
-        ),
     )
     include_active_employees = models.BooleanField(
         default=False,
         verbose_name=_("Include All Employees"),
-        help_text=_("Target deduction to all active employees in the company"),
     )
     specific_employees = models.ManyToManyField(
         Employee,
         verbose_name=_("Employees Specific"),
         related_name="deduction_specific",
-        help_text=_("Target deduction to the specific employees"),
         blank=True,
     )
     exclude_employees = models.ManyToManyField(
@@ -1440,31 +1446,18 @@ class Deduction(HorillaModel):
         verbose_name=_("Exclude Employees"),
         related_name="deduction_exclude",
         blank=True,
-        help_text=_(
-            "To ignore the deduction to the employees when target them by all employees \
-            or through condition-based"
-        ),
     )
 
     is_tax = models.BooleanField(
         default=False,
-        help_text=_("To specify the deduction is tax or normal deduction"),
     )
 
     is_pretax = models.BooleanField(
         default=True,
-        help_text=_(
-            "To find taxable gross, \
-            taxable_gross = (basic_pay + taxable_deduction)-pre_tax_deductions "
-        ),
     )
 
     is_condition_based = models.BooleanField(
         default=False,
-        help_text=_(
-            "This field is used to target deduction \
-        to the specific employees when the condition satisfies with the employee's information"
-        ),
     )
     # If condition based then must fill field, value, and condition,
     field = models.CharField(
@@ -1472,7 +1465,6 @@ class Deduction(HorillaModel):
         choices=FIELD_CHOICE,
         null=True,
         blank=True,
-        help_text=_("The related field of the employees"),
     )
     condition = models.CharField(
         max_length=255, choices=CONDITION_CHOICE, null=True, blank=True
@@ -1481,7 +1473,6 @@ class Deduction(HorillaModel):
         max_length=255,
         null=True,
         blank=True,
-        help_text=_("The value must be like the data stored in the database"),
     )
     update_compensation = models.CharField(
         null=True,
@@ -1495,30 +1486,21 @@ class Deduction(HorillaModel):
             ("gross_pay", _("Gross Pay")),
             ("net_pay", _("Net Pay")),
         ],
-        help_text=_(
-            "Update compensation is used to update \
-                   pay-head before any other deduction calculation starts"
-        ),
     )
     is_fixed = models.BooleanField(
         default=True,
-        help_text=_("To specify, the deduction is fixed or not"),
     )
     # If fixed amount then fill amount
     amount = models.FloatField(
         null=True,
         blank=True,
         validators=[min_zero],
-        help_text=_("Fixed amount for this deduction"),
     )
     based_on = models.CharField(
         max_length=255,
         choices=based_on_choice,
         null=True,
         blank=True,
-        help_text=_(
-            "If the deduction is not fixed then specifies how the deduction provided"
-        ),
     )
     rate = models.FloatField(
         null=True,
@@ -1528,11 +1510,12 @@ class Deduction(HorillaModel):
             rate_validator,
         ],
         verbose_name=_("Employee rate"),
-        help_text=_("The percentage of based on"),
     )
 
     employer_rate = models.FloatField(
         default=0.00,
+        null=True,
+        blank=True,
         validators=[
             rate_validator,
         ],
@@ -1540,13 +1523,11 @@ class Deduction(HorillaModel):
     has_max_limit = models.BooleanField(
         default=False,
         verbose_name=_("Has max limit for deduction"),
-        help_text=_("Limit the deduction"),
     )
     maximum_amount = models.FloatField(
         null=True,
         blank=True,
         validators=[min_zero],
-        help_text=_("The maximum amount for the deduction"),
         verbose_name=_("Maximum Amount"),
     )
 
@@ -1558,30 +1539,21 @@ class Deduction(HorillaModel):
             ("month_working_days", _("For working days on month")),
             # ("monthly_working_days", "For working days on month"),
         ],
-        help_text=_("The maximum amount for ?"),
         verbose_name=_("Maximum Unit"),
     )
     if_choice = models.CharField(
         max_length=10,
         choices=if_condition_choice,
         default="basic_pay",
-        help_text=_("The pay head for the if condition"),
     )
     if_condition = models.CharField(
         max_length=10,
         choices=IF_CONDITION_CHOICE,
         default="gt",
-        help_text=_("Apply for those, if the pay-head conditions satisfy"),
     )
-    if_amount = models.FloatField(
-        default=0.00, help_text=_("The amount of the pay-head")
-    )
-    start_range = models.FloatField(
-        blank=True, null=True, help_text=_("The start amount of the pay-head range")
-    )
-    end_range = models.FloatField(
-        blank=True, null=True, help_text=_("The end amount of the pay-head range")
-    )
+    if_amount = models.FloatField(default=0.00)
+    start_range = models.FloatField(blank=True, null=True)
+    end_range = models.FloatField(blank=True, null=True)
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
@@ -1711,7 +1683,7 @@ class Deduction(HorillaModel):
         """
         This method to get update url
         """
-        url = reverse_lazy("update-deduction", kwargs={"deduction_id": self.pk})
+        url = reverse_lazy("update-deduction", kwargs={"pk": self.pk})
         return url
 
     def specific_employees_col(self):
@@ -1744,10 +1716,16 @@ class Deduction(HorillaModel):
         count = count.capitalize()
 
         return f"""
-        <div class="oh-timeoff-modal__stat">
-            <span class="oh-timeoff-modal__stat-title">{title}</span>
-            <span class="oh-timeoff-modal__stat-count">{count}</span>
-        </div>
+            <div class="col-span-1 md:col-span-6 mb-2 flex gap-5">
+                <span class="font-medium text-xs text-[#565E6C] w-32">
+                    {title}
+                </span>
+                <div class="text-xs font-semibold flex gap-5">
+                    : <span>
+                        {count}
+                    </span>
+                </div>
+            </div>
         """
 
     def get_one_time_deduction(self):
@@ -1852,6 +1830,7 @@ class Deduction(HorillaModel):
         else:
             self.based_on = None
             self.rate = None
+            self.employer_rate = 0
         self.clean_condition_based_on()
         if self.has_max_limit:
             if self.maximum_amount is None:
@@ -1890,6 +1869,192 @@ class Deduction(HorillaModel):
         if not self.id:
             stamp_company_on_create(self)
         super().save(*args, **kwargs)
+
+
+class SalaryStructure(HorillaModel):
+    """
+    Salary Structure model
+
+    A reusable, named set of allowances/deductions. Employees are linked to a
+    structure through their active Contract's ``salary_structure_id`` (see
+    ``Contract.set_salary_structure``), which keeps ``Allowance``/``Deduction``
+    ``specific_employees`` in sync. Payslip calculation continues to read
+    ``specific_employees`` directly and is unaffected by this model.
+    """
+
+    title = models.CharField(
+        max_length=255,
+    )
+    allowances = models.ManyToManyField(
+        Allowance,
+        blank=True,
+        related_name="salary_structures",
+        verbose_name=_("Allowances"),
+    )
+    deductions = models.ManyToManyField(
+        Deduction,
+        blank=True,
+        related_name="salary_structures",
+        verbose_name=_("Deductions"),
+    )
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
+    )
+    objects = HorillaCompanyManager()
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        unique_together = ["title", "company_id"]
+        verbose_name = _("Salary Structure")
+
+    def __str__(self) -> str:
+        return str(self.title)
+
+    def save(self, *args, **kwargs):
+        from base.auth_backends import stamp_company_on_create
+
+        if not self.id:
+            stamp_company_on_create(self)
+        super().save(*args, **kwargs)
+
+    def _active_contracts(self):
+        return self.contracts.filter(contract_status="active")
+
+    def add_allowance(self, allowance):
+        """
+        Attach an allowance to this structure and target every employee
+        currently assigned to this structure through an active contract.
+        """
+        self.allowances.add(allowance)
+        for contract in self._active_contracts():
+            allowance.specific_employees.add(contract.employee_id)
+
+    def remove_allowance(self, allowance):
+        """
+        Detach an allowance from this structure and stop targeting employees
+        assigned to this structure, unless another structure they're on also
+        includes the same allowance.
+        """
+        self.allowances.remove(allowance)
+        for contract in self._active_contracts():
+            still_targeted = (
+                allowance.salary_structures.exclude(pk=self.pk)
+                .filter(contracts__employee_id=contract.employee_id)
+                .exists()
+            )
+            if not still_targeted:
+                allowance.specific_employees.remove(contract.employee_id)
+
+    def add_deduction(self, deduction):
+        """
+        Attach a deduction to this structure and target every employee
+        currently assigned to this structure through an active contract.
+        """
+        self.deductions.add(deduction)
+        for contract in self._active_contracts():
+            deduction.specific_employees.add(contract.employee_id)
+
+    def remove_deduction(self, deduction):
+        """
+        Detach a deduction from this structure and stop targeting employees
+        assigned to this structure, unless another structure they're on also
+        includes the same deduction.
+        """
+        self.deductions.remove(deduction)
+        for contract in self._active_contracts():
+            still_targeted = (
+                deduction.salary_structures.exclude(pk=self.pk)
+                .filter(contracts__employee_id=contract.employee_id)
+                .exists()
+            )
+            if not still_targeted:
+                deduction.specific_employees.remove(contract.employee_id)
+
+    def get_allowances_col(self):
+        """
+        Allowances column
+        """
+        return ", ".join(str(allowance) for allowance in self.allowances.all())
+
+    def get_deductions_col(self):
+        """
+        Deductions column
+        """
+        return ", ".join(str(deduction) for deduction in self.deductions.all())
+
+    def get_employees_col(self):
+        """
+        Assigned employees column
+        """
+        return ", ".join(
+            str(contract.employee_id) for contract in self._active_contracts()
+        )
+
+    def get_update_url(self):
+        """
+        This method to get update url
+        """
+        return reverse_lazy("update-salary-structure", kwargs={"pk": self.pk})
+
+    def get_delete_url(self):
+        """
+        This method to get delete url
+        """
+        return reverse_lazy("generic-delete")
+
+    def get_salary_structure_actions(self):
+        """
+        This method to get salary structure actions
+        """
+        return render_template(
+            path="cbv/salary_structure/salary_structure_action.html",
+            context={"instance": self},
+        )
+
+    def salary_structure_detail(self):
+        """
+        detail view
+        """
+        return reverse("salary-structure-detail-view", kwargs={"pk": self.pk})
+
+    def get_employees_detail_col(self):
+        """
+        Employees column for the detail view, returned as a queryset so the
+        `linkify` filter can render each one as a link to its own detail view.
+        """
+        return Employee.objects.filter(
+            id__in=[contract.employee_id_id for contract in self._active_contracts()]
+        )
+
+    def get_allowances_detail_col(self):
+        """
+        Allowances column for the detail view
+        """
+        return render_template(
+            path="cbv/salary_structure/allowances_detail_col.html",
+            context={"instance": self},
+        )
+
+    def get_deductions_detail_col(self):
+        """
+        Deductions column for the detail view
+        """
+        return render_template(
+            path="cbv/salary_structure/deductions_detail_col.html",
+            context={"instance": self},
+        )
+
+    def salary_structure_detail_actions(self):
+        """
+        Footer actions for the detail view
+        """
+        return render_template(
+            path="cbv/salary_structure/detail_view_actions.html",
+            context={"instance": self},
+        )
 
 
 class Payslip(HorillaModel):

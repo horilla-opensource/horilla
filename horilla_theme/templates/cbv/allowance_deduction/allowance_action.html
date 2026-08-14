@@ -5,7 +5,9 @@
             class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             href="#"
             hx-get="{% url 'update-allowance' instance.id %}"
-            hx-target="#listContainer"
+            hx-target="#objectCreateModalTarget"
+            data-target="#objectCreateModal"
+            data-toggle="oh-modal-toggle"
             hx-swap="innerHTML"
             title="{% trans 'Edit' %}"
         >

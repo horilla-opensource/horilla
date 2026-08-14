@@ -38,6 +38,7 @@ from payroll.models.models import (
     PayslipAutoGenerate,
     Reimbursement,
     ReimbursementMultipleAttachment,
+    SalaryStructure,
 )
 from payroll.widgets import component_widgets as widget
 
@@ -49,8 +50,6 @@ class AllowanceForm(ModelForm):
     Form for Allowance model
     """
 
-    load = forms.CharField(widget=widget.AllowanceConditionalVisibility, required=False)
-    style = forms.CharField(required=False)
     verbose_name = _("Allowance")
 
     class Meta:
@@ -61,9 +60,6 @@ class AllowanceForm(ModelForm):
         model = payroll.models.models.Allowance
         fields = "__all__"
         exclude = ["is_active"]
-        widgets = {
-            "one_time_date": forms.DateTimeInput(attrs={"type": "date"}),
-        }
 
     def __init__(self, *args, **kwargs):
         if instance := kwargs.get("instance"):
@@ -77,55 +73,19 @@ class AllowanceForm(ModelForm):
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
 
-        self.fields["specific_employees"] = HorillaMultiSelectField(
-            queryset=Employee.objects.all(),
-            widget=HorillaMultiSelectWidget(
-                filter_route_name="employee-widget-filter",
-                filter_class=EmployeeFilter,
-                filter_instance_context_name="f",
-                filter_template_path="employee_filters.html",
-                instance=self.instance,
-            ),
-            label="Specific Employees",
-        )
-        self.fields["if_condition"].widget.attrs.update(
-            {
-                "onchange": "rangeToggle($(this))",
-            }
-        )
-        reload_queryset(self.fields)
-        self.fields["style"].widget = widget.StyleWidget(form=self)
+        if not self.instance.pk:
+            self.fields["one_time_date"].initial = None
 
     def as_p(self):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("common_form.html", context)
+        table_html = render_to_string("generic/form.html", context)
         return table_html
 
     def clean(self, *args, **kwargs):
         cleaned_data = super().clean(*args, **kwargs)
-
-        specific_employees = self.data.getlist("specific_employees")
-        include_all = self.data.get("include_active_employees")
-        condition_based = self.data.get("is_condition_based")
-
-        for field_name, field_instance in self.fields.items():
-            if isinstance(field_instance, HorillaMultiSelectField):
-                self.errors.pop(field_name, None)
-                if (
-                    not specific_employees
-                    and include_all is None
-                    and not condition_based
-                ):
-                    raise forms.ValidationError({field_name: "This field is required"})
-                cleaned_data = super().clean()
-                data = self.fields[field_name].queryset.filter(
-                    id__in=self.data.getlist(field_name)
-                )
-                cleaned_data[field_name] = data
-        cleaned_data = super().clean()
 
         if cleaned_data.get("if_condition") == "range":
             cleaned_data["if_amount"] = 0
@@ -155,11 +115,6 @@ class AllowanceForm(ModelForm):
             cleaned_data["end_range"] = None
 
     def save(self, commit: bool = ...) -> Any:
-        specific_employees = self.data.getlist("specific_employees")
-        include_all = self.data.get("include_active_employees")
-        condition_based = self.data.get("is_condition_based")
-        if not specific_employees and not include_all and not condition_based:
-            self.instance.include_active_employees = True
         super().save(commit)
         other_conditions = self.data.getlist("other_conditions")
         other_fields = self.data.getlist("other_fields")
@@ -189,8 +144,6 @@ class DeductionForm(ModelForm):
     Form for Deduction model
     """
 
-    load = forms.CharField(widget=widget.DeductionConditionalVisibility, required=False)
-    style = forms.CharField(required=False)
     verbose_name = _("Deduction")
 
     class Meta:
@@ -200,7 +153,12 @@ class DeductionForm(ModelForm):
 
         model = payroll.models.models.Deduction
         fields = "__all__"
-        exclude = ["is_active"]
+        exclude = [
+            "is_active",
+            "specific_employees",
+            "exclude_employees",
+            "include_active_employees",
+        ]
         widgets = {
             "one_time_date": forms.DateTimeInput(attrs={"type": "date"}),
         }
@@ -216,50 +174,9 @@ class DeductionForm(ModelForm):
                 }
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
-        self.fields["specific_employees"] = HorillaMultiSelectField(
-            queryset=Employee.objects.all(),
-            widget=HorillaMultiSelectWidget(
-                filter_route_name="employee-widget-filter",
-                filter_class=EmployeeFilter,
-                filter_instance_context_name="f",
-                filter_template_path="employee_filters.html",
-                instance=self.instance,
-            ),
-            label="Specific Employees",
-        )
-        self.fields["if_condition"].widget.attrs.update(
-            {
-                "onchange": "rangeToggle($(this))",
-            }
-        )
-        reload_queryset(self.fields)
-        self.fields["style"].widget = widget.StyleWidget(form=self)
-        for field_name, field in self.fields.items():
-            if isinstance(field.widget, forms.Select):
-                field.widget.option_template_name = default_select_option_template
 
     def clean(self, *args, **kwargs):
         cleaned_data = super().clean(*args, **kwargs)
-
-        specific_employees = self.data.getlist("specific_employees")
-        include_all = self.data.get("include_active_employees")
-        condition_based = self.data.get("is_condition_based")
-
-        for field_name, field_instance in self.fields.items():
-            if isinstance(field_instance, HorillaMultiSelectField):
-                self.errors.pop(field_name, None)
-                if (
-                    not specific_employees
-                    and include_all is None
-                    and not condition_based
-                ):
-                    raise forms.ValidationError({field_name: "This field is required"})
-                cleaned_data = super().clean()
-                data = self.fields[field_name].queryset.filter(
-                    id__in=self.data.getlist(field_name)
-                )
-                cleaned_data[field_name] = data
-        cleaned_data = super().clean()
 
         if cleaned_data.get("if_condition") == "range":
             cleaned_data["if_amount"] = 0
@@ -293,14 +210,6 @@ class DeductionForm(ModelForm):
             self.data.get("update_compensation") is not None
             and self.data.get("update_compensation") != ""
         ):
-            if (
-                self.data.getlist("specific_employees") is None
-                and len(self.data.getlist("specific_employees")) == 0
-            ):
-                raise forms.ValidationError(
-                    {"specific_employees": _("You need to choose the employee.")}
-                )
-
             if (
                 self.data.get("one_time_date") is None
                 and self.data.get("one_time_date") == ""
@@ -348,6 +257,163 @@ class DeductionForm(ModelForm):
         if commit:
             self.instance.other_conditions.add(*multiple_conditions)
         return multiple_conditions
+
+
+class SalaryStructureForm(ModelForm):
+    """
+    Form for SalaryStructure model
+    """
+
+    employees = HorillaMultiSelectField(
+        queryset=Employee.objects.all(),
+        required=False,
+        widget=HorillaMultiSelectWidget(
+            filter_route_name="employee-widget-filter",
+            filter_class=EmployeeFilter,
+            filter_instance_context_name="f",
+            filter_template_path="employee_filters.html",
+        ),
+        label=_("Employees"),
+    )
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = SalaryStructure
+        fields = ["title", "allowances", "deductions"]
+
+    def _employees_on_structure(self):
+        if not self.instance.pk:
+            return Employee.objects.none()
+        return Employee.objects.filter(
+            contract_set__salary_structure_id=self.instance,
+            contract_set__contract_status="active",
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["allowances"].queryset = self.fields["allowances"].queryset.exclude(
+            only_show_under_employee=True
+        )
+        self.fields["deductions"].queryset = self.fields["deductions"].queryset.exclude(
+            only_show_under_employee=True
+        )
+        if self.instance.pk:
+            self.initial["employees"] = self._employees_on_structure()
+
+    def clean(self):
+
+        cleaned_data = super().clean()
+        self.errors.pop("employees", None)
+        employees = Employee.objects.filter(pk__in=self.data.getlist("employees"))
+        cleaned_data["employees"] = employees
+        no_active_contract = [
+            employee
+            for employee in employees
+            if not employee.contract_set.filter(contract_status="active").exists()
+        ]
+        if no_active_contract:
+            names = ", ".join(str(employee) for employee in no_active_contract)
+            raise forms.ValidationError(
+                {
+                    "employees": _(
+                        "These employees have no active contract, so a salary "
+                        "structure can't be assigned to them: %(names)s"
+                    )
+                    % {"names": names}
+                }
+            )
+        return cleaned_data
+
+    def save(self, commit=True):
+
+        previous_allowances = (
+            set(self.instance.allowances.all()) if self.instance.pk else set()
+        )
+        previous_deductions = (
+            set(self.instance.deductions.all()) if self.instance.pk else set()
+        )
+        previous_employees = set(self._employees_on_structure())
+
+        instance = super().save(commit=False)
+        instance.save()
+
+        submitted_allowances = set(self.cleaned_data.get("allowances") or [])
+        submitted_deductions = set(self.cleaned_data.get("deductions") or [])
+        submitted_employees = set(self.cleaned_data.get("employees") or [])
+
+        for allowance in submitted_allowances - previous_allowances:
+            instance.add_allowance(allowance)
+        for allowance in previous_allowances - submitted_allowances:
+            instance.remove_allowance(allowance)
+
+        for deduction in submitted_deductions - previous_deductions:
+            instance.add_deduction(deduction)
+        for deduction in previous_deductions - submitted_deductions:
+            instance.remove_deduction(deduction)
+
+        for employee in submitted_employees - previous_employees:
+            contract = employee.contract_set.filter(contract_status="active").first()
+            if contract:
+                contract.set_salary_structure(instance)
+        for employee in previous_employees - submitted_employees:
+            contract = employee.contract_set.filter(
+                contract_status="active", salary_structure_id=instance
+            ).first()
+            if contract:
+                contract.set_salary_structure(None)
+
+        return instance
+
+
+class QuickAllowanceForm(ModelForm):
+    """
+    Minimal Allowance create form, used for the dynamic "create new allowance"
+    option inside the Salary Structure form.
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = Allowance
+        fields = ["title", "is_taxable", "is_fixed", "amount", "based_on", "rate"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["amount"].required = True
+        self.instance.include_active_employees = False
+
+
+class QuickDeductionForm(ModelForm):
+    """
+    Minimal Deduction create form, used for the dynamic "create new deduction"
+    option inside the Salary Structure form.
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = Deduction
+        fields = [
+            "title",
+            "is_pretax",
+            "is_fixed",
+            "amount",
+            "based_on",
+            "rate",
+            "employer_rate",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["amount"].required = True
+        self.instance.include_active_employees = False
 
 
 class PayslipForm(ModelForm):
@@ -498,7 +564,7 @@ class PayrollSettingsForm(ModelForm):
         """
 
         model = models.PayrollSettings
-        fields = "__all__"
+        fields = ["currency_symbol", "position"]
         widgets = {
             "position": forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
         }

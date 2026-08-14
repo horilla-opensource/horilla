@@ -5,7 +5,9 @@
     <a
         href="#"
         hx-get="{% url 'update-deduction' instance.id %}"
-        hx-target="#listContainer"
+        data-toggle="oh-modal-toggle"
+        data-target="#objectCreateModal"
+        hx-target="#objectCreateModalTarget"
         hx-swap="innerHTML"
         hx-on:click="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
         onclick="event.stopPropagation()"

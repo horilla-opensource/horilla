@@ -1,0 +1,141 @@
+{% load static i18n generic_template_filters %}
+
+{# ── Dynamic create modals (same as horilla_form.html) ── #}
+<div id="{{ view_id }}">
+    {% for field_tuple in dynamic_create_fields %}
+        <div class="oh-modal" id="dynamicModal{{ field_tuple.0 }}" role="dialog"
+             aria-labelledby="dynamicModal{{ field_tuple.0 }}" aria-hidden="true">
+            <div class="oh-modal__dialog" id="dynamicModal{{ field_tuple.0 }}Body"></div>
+        </div>
+    {% endfor %}
+</div>
+
+<form id="{{ view_id }}Form"
+      hx-post="{{ request.path }}?{{ request.GET.urlencode }}"
+      {% if request.META.HTTP_HX_TARGET %}hx-target="#{{ request.META.HTTP_HX_TARGET }}"{% endif %}
+      hx-swap="{% if hx_target == 'this' %}outerHTML{% else %}innerHTML{% endif %}"
+      hx-encoding="multipart/form-data"
+      {% if hx_confirm %}hx-confirm="{{ hx_confirm }}"{% endif %}
+      novalidate>
+
+    {# ── Custom allowance form body ── #}
+    {% include "payroll/allowance/allowance_form_body.html" %}
+
+</form>
+
+{# ── Dynamic field scripts (same as horilla_form.html) ── #}
+{% for field_tuple in dynamic_create_fields %}
+    <div>
+        <script class="dynamic_{{ field_tuple.0 }}_scripts">
+            {{ form.initial|get_item:field_tuple.0 }}
+            $("#{{ view_id }}Form [name='{{ field_tuple.0|escapejs }}']").val({{ form.initial|get_item:field_tuple.0|safe }}).change()
+        </script>
+        <form hidden id="modalButton{{ field_tuple.0 }}Form"
+              hx-get="/dynamic-path-{{ field_tuple.0 }}-{{ request.session.session_key }}?dynamic_field={{ field_tuple.0 }}"
+              hx-target="#dynamicModal{{ field_tuple.0 }}Body">
+            <input type="text" name="dynamic_initial" data-dynamic-field="{{ field_tuple.0 }}">
+            <input type="text" name="view_id" value="{{ view_id }}">
+            {% for field in field_tuple.2 %}
+                <input type="text" name="{{ field }}">
+            {% endfor %}
+            <button type="submit" id="modalButton{{ field_tuple.0 }}"
+                    onclick="$('#dynamicModal{{ field_tuple.0 }}').addClass('oh-modal--show');">
+                {{ field_tuple.0 }}
+            </button>
+        </form>
+        <form hidden id="reload-field{{ field_tuple.0 }}{{ view_id }}"
+              hx-get="{% url 'reload-field' %}?form_class_path={{ form_class_path }}&dynamic_field={{ field_tuple.0 }}"
+              hx-target="#dynamic_field_{{ field_tuple.0 }}">
+            <input type="text" name="dynamic_initial" data-dynamic-field="{{ field_tuple.0 }}">
+            <input type="text" name="view_id" value="{{ view_id }}">
+            <button class="reload-field" data-target="{{ field_tuple.0 }}">{{ field_tuple.0 }}</button>
+        </form>
+        <script class="dynamic_{{ field_tuple.0 }}_scripts">
+            $("#{{ view_id }}Form [name='{{ field_tuple.0|escapejs }}']").change(function (e) {
+                var values = $(this).val();
+                if (!values) values = "";
+                if (values == "dynamic_create") {
+                    $("#modalButton{{ field_tuple.0 }}").click();
+                    $(this).val("");
+                } else if (Array.isArray(values) && values.includes("dynamic_create")) {
+                    var index = values.indexOf("dynamic_create");
+                    values.splice(index, 1);
+                    $(this).val(values).change();
+                    $("#modalButton{{ field_tuple.0 }}").parent().find('input[name=dynamic_initial]').val(values);
+                    $("#reload-field{{ field_tuple.0 }}{{ view_id }}").find('input[name=dynamic_initial]').val(values);
+                    $("#modalButton{{ field_tuple.0 }}").click();
+                } else if (values) {
+                    $("#modalButton{{ field_tuple.0 }}").parent().find('input[name=dynamic_initial]').val(values);
+                    $("#reload-field{{ field_tuple.0 }}{{ view_id }}").find('input[name=dynamic_initial]').val(values);
+                }
+            });
+            $("#reload-field{{ field_tuple.0 }}{{ view_id }}").submit(function (e) {
+                e.preventDefault();
+                $(this).find("[name=dynamic_initial]").val();
+            });
+        </script>
+    </div>
+{% endfor %}
+
+{# ── Allowance widget JS + instance condition pre-population ── #}
+<script src="{% static 'build/js/allowanceWidget.js' %}"></script>
+<script>
+    {% if form.instance.pk %}
+        var $context = $("#{{ view_id }}Form");
+        {% for condition in form.instance.other_conditions.all %}
+            (function () {
+                var conditionSet = $(
+                    `<div class="condition-highlight row m-0 mb-2 condition-row">
+                        <div class="col-12 col-md-4">
+                            ${$context.find("[for=id_field]").clone().attr("class", "oh-label oh-label__info").prop("outerHTML")}
+                            ${$context.find("#id_field").clone()
+                                .attr("data-initial-value", "{{ condition.field }}")
+                                .attr("name", "other_fields")
+                                .removeAttr("id")
+                                .attr("class", "oh-select form-control")
+                                .prop("outerHTML")}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            ${$context.find("[for=id_condition]").clone().attr("class", "oh-label oh-label__info").prop("outerHTML")}
+                            ${$context.find("#id_condition").clone()
+                                .attr("data-initial-value", "{{ condition.condition }}")
+                                .attr("name", "other_conditions")
+                                .removeAttr("id")
+                                .attr("class", "oh-select form-control")
+                                .prop("outerHTML")}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                                ${$context.find("[for=id_value]").clone().attr("class", "oh-label oh-label__info").prop("outerHTML")}
+                                <button type="button" onclick="$(this).closest('.condition-row').remove()"
+                                    style="background:none;border:none;cursor:pointer;color:#dc3545;padding:0;line-height:1;">
+                                    <ion-icon name="trash-outline" style="font-size:16px;"></ion-icon>
+                                </button>
+                            </div>
+                            ${$context.find("#id_value").clone()
+                                .attr("data-initial-value", "{{ condition.value }}")
+                                .attr("name", "other_values")
+                                .attr("value", "{{ condition.value }}")
+                                .removeAttr("id")
+                                .attr("class", "oh-input form-control")
+                                .prop("outerHTML")}
+                        </div>
+                    </div>`
+                );
+                $context.find("#conditionContainer").prepend(conditionSet);
+                conditionSet.find("select").each(function () {
+                    if ($.fn.select2) {
+                        $(this).select2({ dropdownParent: conditionSet, width: "100%" });
+                    }
+                });
+            })();
+        {% endfor %}
+
+        function initialData() {
+            $.each($context.find("[name=other_fields],[name=other_conditions]"), function (i, el) {
+                $(el).val($(el).attr("data-initial-value")).change();
+            });
+        }
+        initialData();
+    {% endif %}
+</script>
