@@ -391,7 +391,6 @@ def main_dashboard_view(request):
         "employee_chart_prefs": employee_chart_prefs,
         "home_role": home_role,
         "role_default_prefs": json.dumps(role_default_prefs(home_role)),
-        "show_compliance_strip": home_role in ("hr", "leadership"),
     }
     context.update(_company_scope_context(request))
     context.update(_get_setup_checklist_context(request))
@@ -1441,93 +1440,6 @@ def dashboard_turnover(request):
             "turnover_rate_6m": turnover_rate,
             "report_url": report_url,
             "subtitle": str(_("All exits — see Standard Report for detail")),
-        }
-    )
-
-
-@login_required
-def dashboard_compliance_strip(request):
-    """
-    Compact HR/Leadership compliance strip: contracts ending + document expiry.
-
-    Hidden for employees/managers without HR/Leadership home role.
-    """
-    from base.dashboard_roles import resolve_home_role
-
-    role = resolve_home_role(request)
-    if role not in ("hr", "leadership") and not request.user.is_superuser:
-        return JsonResponse({"no_permission": True})
-
-    today = date.today()
-    horizon = today + timedelta(days=60)
-    ending_soon_count = 0
-    expired_count = 0
-    docs_expiring_30 = 0
-    docs_overdue = 0
-    contracts_url = _safe_url("dashboard-contract-ending")
-    if contracts_url == "#":
-        contracts_url = _safe_url("contract-view")
-    docs_url = ""
-    try:
-        docs_url = reverse("standard-report-detail", args=["document-expiry"])
-    except Exception:
-        docs_url = ""
-
-    user = request.user
-    can_contracts = (
-        user.is_superuser
-        or user.has_perm("payroll.view_contract")
-        or user.has_perm("payroll.view_payslip")
-    )
-    can_docs = user.is_superuser or user.has_perm("employee.view_employee")
-
-    if can_contracts:
-        try:
-            from payroll.models.models import Contract
-
-            ending_soon_count = Contract.objects.filter(
-                contract_end_date__gte=today,
-                contract_end_date__lte=horizon,
-                contract_status="active",
-            ).count()
-            expired_count = Contract.objects.filter(
-                contract_end_date__gte=today - timedelta(days=60),
-                contract_end_date__lt=today,
-            ).count()
-        except Exception:
-            pass
-
-    if can_docs:
-        try:
-            from django.apps import apps
-
-            if apps.is_installed("horilla_documents"):
-                Document = apps.get_model("horilla_documents", "Document")
-                docs_overdue = Document.objects.filter(
-                    expiry_date__isnull=False,
-                    expiry_date__lt=today,
-                ).count()
-                docs_expiring_30 = Document.objects.filter(
-                    expiry_date__gte=today,
-                    expiry_date__lte=today + timedelta(days=30),
-                ).count()
-        except Exception:
-            pass
-
-    return JsonResponse(
-        {
-            "contracts": {
-                "ending_soon": ending_soon_count,
-                "expired": expired_count,
-                "url": contracts_url if can_contracts else "",
-                "visible": can_contracts,
-            },
-            "documents": {
-                "expiring_30": docs_expiring_30,
-                "overdue": docs_overdue,
-                "url": docs_url if can_docs else "",
-                "visible": can_docs,
-            },
         }
     )
 

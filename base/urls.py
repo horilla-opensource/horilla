@@ -143,11 +143,6 @@ urlpatterns = [
         name="dashboard-turnover",
     ),
     path(
-        "dashboard/api/compliance-strip/",
-        dashboard_module.dashboard_compliance_strip,
-        name="dashboard-compliance-strip",
-    ),
-    path(
         "dashboard/api/employee-status/",
         dashboard_module.dashboard_employee_status,
         name="dashboard-employee-status",

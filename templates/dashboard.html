@@ -1289,60 +1289,6 @@
             background: rgba(255,255,255,.06);
             border-color: rgba(255,255,255,.1);
         }
-        .md-compliance-strip {
-            margin: 0 0 14px;
-            padding: 12px 14px;
-            border-radius: 12px;
-            border: 1px solid hsl(0,0%,90%);
-            background: hsl(0,0%,99%);
-        }
-        .dark .md-compliance-strip {
-            background: #1e1e1e;
-            border-color: rgba(255,255,255,.08);
-        }
-        .md-compliance-strip__head {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .md-compliance-strip__title {
-            margin: 0;
-            font-size: 14px;
-            font-weight: 650;
-        }
-        .md-compliance-strip__grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 10px;
-        }
-        @media (max-width: 900px) {
-            .md-compliance-strip__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        }
-        .md-compliance-tile {
-            display: block;
-            text-decoration: none;
-            color: inherit;
-            border: 1px solid hsl(0,0%,90%);
-            border-radius: 10px;
-            padding: 10px 12px;
-            background: #fff;
-        }
-        .dark .md-compliance-tile {
-            background: #242424;
-            border-color: rgba(255,255,255,.08);
-        }
-        .md-compliance-tile__label {
-            display: block;
-            font-size: 11px;
-            color: hsl(0,0%,45%);
-            margin-bottom: 4px;
-        }
-        .md-compliance-tile__value {
-            font-size: 20px;
-            font-weight: 700;
-            font-variant-numeric: tabular-nums;
-        }
 
         /* Recruitment stage funnel (HTML, not Apex) */
         .md-funnel {
@@ -1458,15 +1404,6 @@
         <!-- Setup checklist banner (shown to new accounts until all steps complete or dismissed) -->
         {% if show_setup_checklist %}
             {% include "base/setup_checklist_banner.html" %}
-        {% endif %}
-
-        {% if show_compliance_strip %}
-        <div class="md-compliance-strip" id="md-compliance-strip" hidden>
-            <div class="md-compliance-strip__head">
-                <h2 class="md-compliance-strip__title">{% trans "Compliance" %}</h2>
-            </div>
-            <div class="md-compliance-strip__grid" id="md-compliance-strip-body"></div>
-        </div>
         {% endif %}
 
         <!-- Pending approvals (above the fold) -->
@@ -1890,59 +1827,6 @@
 
     <script>
         (function() {
-            // Compliance strip (HR / leadership)
-            (function loadComplianceStrip() {
-                const complianceWrap = document.getElementById('md-compliance-strip');
-                const complianceBody = document.getElementById('md-compliance-strip-body');
-                if (!complianceWrap || !complianceBody) return;
-                fetch("{% url 'dashboard-compliance-strip' %}", {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                })
-                    .then(function (r) { return r.ok ? r.json() : null; })
-                    .then(function (data) {
-                        if (!data || data.no_permission) {
-                            complianceWrap.hidden = true;
-                            return;
-                        }
-                        const tiles = [];
-                        if (data.contracts && data.contracts.visible) {
-                            tiles.push({
-                                label: '{% trans "Contracts ending (60d)" %}',
-                                value: data.contracts.ending_soon,
-                                href: data.contracts.url || '#',
-                            });
-                            tiles.push({
-                                label: '{% trans "Contracts expired (60d)" %}',
-                                value: data.contracts.expired,
-                                href: data.contracts.url || '#',
-                            });
-                        }
-                        if (data.documents && data.documents.visible) {
-                            tiles.push({
-                                label: '{% trans "Docs expiring (30d)" %}',
-                                value: data.documents.expiring_30,
-                                href: data.documents.url || '#',
-                            });
-                            tiles.push({
-                                label: '{% trans "Docs overdue" %}',
-                                value: data.documents.overdue,
-                                href: data.documents.url || '#',
-                            });
-                        }
-                        if (!tiles.length) {
-                            complianceWrap.hidden = true;
-                            return;
-                        }
-                        complianceWrap.hidden = false;
-                        complianceBody.innerHTML = tiles.map(function (t) {
-                            return '<a class="md-compliance-tile" href="' + (t.href || '#') + '">' +
-                                '<span class="md-compliance-tile__label">' + t.label + '</span>' +
-                                '<span class="md-compliance-tile__value">' + t.value + '</span></a>';
-                        }).join('');
-                    })
-                    .catch(function () { /* silent */ });
-            })();
-
             const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
             const textColor = isDark ? '#cbd5e1' : '#334155';
             const subTextColor = isDark ? '#64748b' : '#94a3b8';

@@ -150,9 +150,9 @@ class ModernDashboardFetchInventoryTests(SimpleTestCase):
             "dashboard-department-leave-days",
             "dashboard-hiring-timeline",
             "dashboard-recruitment-by-stage",
-            "dashboard-compliance-strip",
         ):
             self.assertIn(required, text)
+        self.assertNotIn("dashboard-compliance-strip", text)
         # Home no longer surfaces report pin / suggested pack UI
         for removed in (
             "standard-report-suggested-pack",
@@ -160,5 +160,6 @@ class ModernDashboardFetchInventoryTests(SimpleTestCase):
             "standard-report-pin-recommended",
             "md-std-pins",
             "md-suggested",
+            "md-compliance-strip",
         ):
             self.assertNotIn(removed, text)
