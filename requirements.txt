@@ -11,7 +11,7 @@ charset-normalizer
 click
 cryptography==44.0.2
 cssselect2
-Django==5.2
+Django==6.1
 django-auditlog
 django-apscheduler
 django-cors-headers
