@@ -25,7 +25,7 @@ django-model-utils
 django-redis==5.4.0
 django-simple-history
 django-widget-tweaks
-djangorestframework==3.16.0
+djangorestframework==3.18.0
 djangorestframework-simplejwt==5.5.0
 drf-yasg
 et-xmlfile
