@@ -1,0 +1,9 @@
+<div>
+  <form hidden hx-get="{{request.path}}" hx-target="#id_managers_parent_div" hx-swap="outerHTML"
+    hx-select="#id_managers_parent_div">
+    <input type="text" name="dynamic_company">
+    <button id="getManagersButton" type="submit">
+    </button>
+  </form>
+  {% include 'generic/horilla_form.html' %}
+</div>

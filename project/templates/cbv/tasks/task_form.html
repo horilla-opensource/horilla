@@ -5,5 +5,17 @@
     <button id="getStageButton" type="submit">
     </button>
   </form>
+  <form hidden hx-get="{{request.path}}" hx-target="#id_task_managers_parent_div" hx-swap="outerHTML"
+    hx-select="#id_task_managers_parent_div">
+    <input type="text" name="dynamic_project">
+    <button id="getTaskManagersButton" type="submit">
+    </button>
+  </form>
+  <form hidden hx-get="{{request.path}}" hx-target="#id_task_members_parent_div" hx-swap="outerHTML"
+    hx-select="#id_task_members_parent_div">
+    <input type="text" name="dynamic_project">
+    <button id="getTaskMembersButton" type="submit">
+    </button>
+  </form>
   {% include 'generic/horilla_form.html' %}
 </div>

@@ -16,6 +16,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import get_subordinates
+from employee.models import Employee
 from horilla.http import HorillaRedirect
 from horilla.methods import handle_no_permission
 from horilla_views.cbv_methods import login_required
@@ -32,6 +33,7 @@ from project.cbv.project_stage import StageDynamicCreateForm
 from project.cbv.projects import DynamicProjectCreationFormView
 from project.filters import TaskAllFilter
 from project.forms import TaskAllForm
+from project.methods import employees_for_project
 from project.models import Project, ProjectStage, Task
 from project.templatetags.taskfilters import task_crud_perm
 
@@ -84,9 +86,7 @@ class TaskListView(HorillaListView):
             subordinate_ids = [subordinate.id for subordinate in subordinates]
             project = queryset.filter(
                 Q(project__managers=employee_id)
-                | Q(project__members=employee_id)
                 | Q(project__managers__in=subordinate_ids)
-                | Q(project__members__in=subordinate_ids)
             )
             queryset = (
                 queryset.filter(
@@ -342,6 +342,10 @@ class TaskCreateForm(HorillaFormView):
                 + [(stage.pk, stage) for stage in stages]
                 + [("dynamic_create", _("Dynamic Create"))]
             )
+            dynamic_project = Project.objects.filter(id=dynamic_project_id).first()
+            employees = employees_for_project(dynamic_project)
+            self.form.fields["task_managers"].queryset = employees
+            self.form.fields["task_members"].queryset = employees
 
         if task_id and not dynamic_project_id:
             task = self.form.instance
@@ -358,8 +362,15 @@ class TaskCreateForm(HorillaFormView):
                 project = stage.project
                 self.form.fields["stage"].initial = stage
                 self.form.fields["stage"].choices = [(stage.id, stage.title)]
+                self.form.fields["stage"].widget = forms.HiddenInput()
                 self.form.fields["project"].initial = project
                 self.form.fields["project"].choices = [(project.id, project.title)]
+                self.form.fields["project"].widget = forms.HiddenInput()
+                self.form.initial["project"] = project.pk
+                self.form.initial["stage"] = stage.pk
+                employees = employees_for_project(project)
+                self.form.fields["task_managers"].queryset = employees
+                self.form.fields["task_members"].queryset = employees
         elif project_id:
             project = Project.objects.get(id=project_id)
             self.form.fields["project"].initial = project
@@ -368,6 +379,9 @@ class TaskCreateForm(HorillaFormView):
             self.form.fields["stage"].choices = [
                 (stage.id, stage.title) for stage in stages
             ]
+            employees = employees_for_project(project)
+            self.form.fields["task_managers"].queryset = employees
+            self.form.fields["task_members"].queryset = employees
         elif self.form.instance.pk:
             self.form_class.verbose_name = _("Update Task")
             if self.request.GET.get("project_task"):
@@ -424,6 +438,9 @@ class DynamicTaskCreateFormView(TaskCreateForm):
                 self.form.fields["project"].initial = project
                 self.form.fields["project"].choices = [(project.id, project.title)]
                 self.form.fields["stage"].queryset = stages
+                employees = employees_for_project(project)
+                self.form.fields["task_managers"].queryset = employees
+                self.form.fields["task_members"].queryset = employees
                 # self.form.fields["project"].widget = forms.HiddenInput()
         return context
 
@@ -527,9 +544,7 @@ class TaskCardView(HorillaCardView):
             subordinate_ids = [subordinate.id for subordinate in subordinates]
             project = queryset.filter(
                 Q(project__managers=employee_id)
-                | Q(project__members=employee_id)
                 | Q(project__managers__in=subordinate_ids)
-                | Q(project__members__in=subordinate_ids)
             )
             queryset = (
                 queryset.filter(
