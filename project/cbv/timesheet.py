@@ -347,16 +347,12 @@ class TimeSheetFormView(HorillaFormView):
             ):
                 members = (
                     project.managers.all()
-                    | project.members.all()
                     | task.task_members.all()
                     | task.task_managers.all()
                 ).distinct()
             elif employee.first() in project.managers.all():
                 members = (
-                    employee
-                    | project.members.all()
-                    | task.task_members.all()
-                    | task.task_managers.all()
+                    employee | task.task_members.all() | task.task_managers.all()
                 ).distinct()
             elif employee.first() in task.task_managers.all():
                 members = (employee | task.task_members.all()).distinct()
@@ -375,7 +371,6 @@ class TimeSheetFormView(HorillaFormView):
             else:
                 projects = (
                     Project.objects.filter(managers=employee)
-                    | Project.objects.filter(members=employee)
                     | Project.objects.filter(
                         id__in=Task.objects.filter(task_managers=employee).values_list(
                             "project", flat=True

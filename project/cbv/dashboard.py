@@ -40,7 +40,7 @@ class ProjectsDueInMonth(HorillaListView):
             task_filter = queryset.filter(
                 Q(task__task_members=employee) | Q(task__task_manager=employee)
             )
-            project_filter = queryset.filter(Q(manager=employee) | Q(members=employee))
+            project_filter = queryset.filter(Q(manager=employee))
             queryset = task_filter | project_filter
             today = datetime.date.today()
             first_day = today.replace(day=1)
@@ -75,7 +75,6 @@ class ProjectDetailView(HorillaDetailedView):
 
     cols = {
         "get_managers": 12,
-        "get_members": 12,
         "description": 12,
     }
 
@@ -86,7 +85,12 @@ class ProjectDetailView(HorillaDetailedView):
         project = Project.objects.get(id=instance_id)
         if (
             employee in project.managers.all()
-            or employee in project.members.all()
+            or any(
+                employee in task.task_managers.all() for task in project.task_set.all()
+            )
+            or any(
+                employee in task.task_members.all() for task in project.task_set.all()
+            )
             or self.request.user.has_perm("project.view_project")
         ):
             self.actions = [
@@ -112,7 +116,6 @@ class ProjectDetailView(HorillaDetailedView):
         get_field = self.model()._meta.get_field
         return [
             (get_field("managers").verbose_name, "get_managers"),
-            (get_field("members").verbose_name, "get_members"),
             (get_field("status").verbose_name, "get_status_display"),
             (_("No of Tasks"), "task_count"),
             (get_field("start_date").verbose_name, "start_date"),

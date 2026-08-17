@@ -67,7 +67,6 @@
               </div>
             </div>
             <div class="oh-sticky-table__th">{% trans "Project Manager" %}</div>
-            <div class="oh-sticky-table__th">{% trans "Project Members" %}</div>
             <div class="oh-sticky-table__th">{% trans "Status" %}</div>
             <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
             <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
@@ -97,10 +96,6 @@
               </div>
 
             <div class="oh-sticky-table__td">{{project.manager}}</div>
-            <div class="oh-sticky-table__td">
-              {% for employee in project.members.all %} {{employee}}<br />
-              {% endfor %}
-            </div>
             <div class="oh-sticky-table__td">{{project.get_status_display}}</div>
             <div class="oh-sticky-table__td">{{project.start_date}}</div>
             <div class="oh-sticky-table__td">{% if project.end_date %}{{project.end_date}}{% endif %}</div>

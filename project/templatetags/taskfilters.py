@@ -42,13 +42,15 @@ def time_sheet_crud_perm(user, timesheet):
 @register.filter(name="is_project_manager_or_member")
 def is_project_manager_or_member(user, project):
     """
-    This method will return true, if the user is manger or member of the project
+    This method will return true, if the user is manager of the project
+    or a manager/member of any task under the project
     """
     employee = user.employee_get
 
     return (
         Project.objects.filter(id=project.id, managers=employee).exists()
-        or Project.objects.filter(id=project.id, members=employee).exists()
+        or Project.objects.filter(id=project.id, task__task_managers=employee).exists()
+        or Project.objects.filter(id=project.id, task__task_members=employee).exists()
     )
 
 

@@ -40,14 +40,6 @@ class ProjectSerializer(serializers.ModelSerializer):
         write_only=True,
         required=False,
     )
-    members = serializers.SerializerMethodField()
-    members_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(),
-        many=True,
-        source="members",
-        write_only=True,
-        required=False,
-    )
     company_id = serializers.SerializerMethodField()
     company_id_write = serializers.PrimaryKeyRelatedField(
         queryset=Company.objects.all(),
@@ -62,7 +54,6 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = "__all__"
         extra_kwargs = {
             "managers": {"read_only": True},
-            "members": {"read_only": True},
         }
 
     def get_managers(self, obj):
@@ -75,19 +66,6 @@ class ProjectSerializer(serializers.ModelSerializer):
                     "get_full_name": emp.get_full_name(),
                 }
                 for emp in obj.managers.all()
-            ]
-        return []
-
-    def get_members(self, obj):
-        if obj.members.exists():
-            return [
-                {
-                    "id": emp.id,
-                    "employee_first_name": emp.employee_first_name,
-                    "employee_last_name": emp.employee_last_name,
-                    "get_full_name": emp.get_full_name(),
-                }
-                for emp in obj.members.all()
             ]
         return []
 
