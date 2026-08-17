@@ -9,6 +9,7 @@ from contextvars import ContextVar
 
 from django.conf import settings
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import render
 from django.utils.datastructures import MultiValueDictKeyError
@@ -100,6 +101,13 @@ class MissingParameterMiddleware:
             if not settings.DEBUG:
                 messages.error(request, message)
                 return render(request, "went_wrong.html", status=400)
+
+        elif isinstance(exception, ObjectDoesNotExist):
+            logger.error(f"{exception.__class__.__name__}: {exception}")
+
+            if not settings.DEBUG:
+                messages.error(request, "The requested item could not be found.")
+                return render(request, "went_wrong.html", status=404)
 
         return None
 
