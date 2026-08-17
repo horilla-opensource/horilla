@@ -3,13 +3,16 @@
         <input
             type="checkbox"
             id="isAllowedClockOut"
-            data-id="{{instance.id}}"
-            data-update="clock_out"
+            name="isChecked"
             class="oh-switch__checkbox"
             {% if instance.allowed_clock_out %}
                 checked
             {% endif %}
-            onchange="updateAllowedClockInOrOut(this)"
+            hx-post="{% url 'update-gracetime-clock-in-clock-out' %}"
+            hx-trigger="change"
+            hx-vals='{"gracetimeId": "{{instance.id}}", "update": "clock_out"}'
+            hx-swap="none"
+            hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 200);"
         >
     {% else %}
         <input
