@@ -354,11 +354,12 @@ class TaskCreateForm(HorillaFormView):
 
         if stage_id:
             stage = ProjectStage.objects.filter(id=stage_id).first()
-            project = stage.project
-            self.form.fields["stage"].initial = stage
-            self.form.fields["stage"].choices = [(stage.id, stage.title)]
-            self.form.fields["project"].initial = project
-            self.form.fields["project"].choices = [(project.id, project.title)]
+            if stage:
+                project = stage.project
+                self.form.fields["stage"].initial = stage
+                self.form.fields["stage"].choices = [(stage.id, stage.title)]
+                self.form.fields["project"].initial = project
+                self.form.fields["project"].choices = [(project.id, project.title)]
         elif project_id:
             project = Project.objects.get(id=project_id)
             self.form.fields["project"].initial = project
