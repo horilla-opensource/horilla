@@ -407,7 +407,10 @@ class HorillaDeleteConfirmationView(View):
             return render(self.request, "no_perm.html")
         model = apps.get_model(app, MODEL_NAME)
 
-        delete_object = model.objects.get(pk=pk)
+        delete_object = model.objects.filter(pk=pk).first()
+        if not delete_object:
+            messages.error(self.request, _("Record not found."))
+            return HorillaFormView.HttpResponse()
         objs = [delete_object]
         using = router.db_for_write(delete_object._meta.model)
         collector = NestedObjects(using=using, origin=objs)
