@@ -88,6 +88,10 @@ BREADCRUMB_URL_NAMES = {
     "performance-settings-view": "Configuration",
     "user-group-view": "Roles and Permissions",
     "employee-permission-assign": "Roles and Permissions",
+    "standard": _("Standard Reports"),
+    "explorer": _("Explorer"),
+    "subscriptions": _("Subscriptions"),
+    "audit": _("Audit"),
 }
 
 sidebar_urls = [
@@ -230,6 +234,10 @@ sidebar_urls = [
     "asset-pivot",
     "pms-report",
     "pms-pivot",
+    "standard",
+    "explorer",
+    "subscriptions",
+    "audit",
     "linkedin-integration-setting",
     "ldap-settings",
     "gmeet-setting",
