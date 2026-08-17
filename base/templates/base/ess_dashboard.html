@@ -639,7 +639,7 @@
                   '{% url "user-request-view" %}?status=approved') +
           kpiCard('purple', iconGoals, '{% trans "Open Goals" %}',
                   d.open_objectives, '{% trans "active objectives" %}',
-                  '{% url "dashboard-view" %}');
+                  '{% url "objective-dashboard-view" %}?employee_id={{ employee.id }}&archive=false');
       })
       .catch(function () {});
   }
@@ -857,7 +857,7 @@
         }
         container.className = '';
         container.id = 'essGoalsContainer';
-        var goalsUrl = '{% url "dashboard-view" %}';
+        var goalsUrl = '{% url "objective-dashboard-view" %}?employee_id={{ employee.id }}&archive=false';
         container.innerHTML = d.objectives.map(function (obj) {
           return '<div class="ess-goal-row" onclick="window.location.href=\'' + goalsUrl + '\'">' +
             '<div class="ess-goal-row__header">' +

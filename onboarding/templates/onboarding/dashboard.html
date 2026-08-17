@@ -455,8 +455,10 @@
             renderChart('task-status', document.querySelector("#chart-on-tasks"), {
                 series: data.statuses.map(s => s.count),
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
-                    events: { dataPointSelection: () => {
-                        window.location.href = "{% url 'cbv-pipeline-onboarding' %}";
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const s = data.statuses[config.dataPointIndex];
+                        const base = "{% url 'cbv-pipeline-onboarding' %}";
+                        window.location.href = s && s.status ? base + "?task_status=" + encodeURIComponent(s.status) : base;
                     }}
                 },
                 labels: data.statuses.map(s => s.label),

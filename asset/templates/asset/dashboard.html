@@ -1008,7 +1008,7 @@
                     <div class="as-kpi-card__value">${fmt(data.total_value)}</div>
                     <div class="as-kpi-card__sub">{% trans "Purchase cost" %}</div>
                 </a>
-                <a href="{% url 'asset-category-view' %}" class="as-kpi-card">
+                <a href="{% url 'asset-renewal' %}" class="as-kpi-card">
                     <div class="as-kpi-card__icon as-kpi-card__icon--red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
                     <div class="as-kpi-card__label">{% trans "Expiring Soon" %}</div>
                     <div class="as-kpi-card__value">${data.expiring_soon}</div>

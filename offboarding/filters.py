@@ -118,6 +118,9 @@ class PipelineEmployeeFilter(HorillaFilterSet):
     offboarding_stage_id = django_filters.CharFilter(
         field_name="stage_id",
     )
+    stage_type = django_filters.CharFilter(
+        field_name="stage_id__type",
+    )
 
     class Meta:
         model = OffboardingEmployee
