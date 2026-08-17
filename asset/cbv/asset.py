@@ -34,6 +34,26 @@ class AssetListView(HorillaListView):
         "action": "style='width:130px !important;'",
     }
 
+    row_status_indications = [
+        (
+            "yellow--dot",
+            _("Available"),
+        ),
+        (
+            "blue--dot",
+            _("In Use"),
+        ),
+        (
+            "gray--dot",
+            _("Not Available"),
+        ),
+        (
+            "red--dot",
+            _("Expired"),
+        ),
+    ]
+    row_status_class = "{row_status_class}"
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         cat_id = kwargs.get("cat_id", "")
@@ -75,7 +95,7 @@ class AssetInformationView(HorillaDetailedView):
         "asset_tracking_id",
         "asset_purchase_date",
         "asset_purchase_cost",
-        "asset_status_col",
+        (_("Status"), "asset_status_col"),
         "asset_lot_number_id",
         "asset_category_id",
     ]
@@ -87,4 +107,9 @@ class AssetInformationView(HorillaDetailedView):
 
         context = super().get_context_data(**kwargs)
         context["title"] = context["asset"].asset_name_display()
+
+        body = list(self.body)
+        if self.instance.asset_status == "In use":
+            body.append((_("Assigned To"), "current_assignees"))
+        context["body"] = body
         return context

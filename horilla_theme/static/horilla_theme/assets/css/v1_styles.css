@@ -366,6 +366,11 @@ input[type="file"] {
   border-radius: 5px;
 }
 
+.row-status--yellowgreen {
+  border-left: 4px solid yellow !important;
+  border-radius: 5px;
+}
+
 .row-status--red {
   border-left: 4px solid red !important;
   border-radius: 5px;
@@ -389,6 +394,38 @@ input[type="file"] {
 .row-status--blue {
   border-left: 4px solid rgb(103, 171, 238) !important;
   border-radius: 5px;
+}
+
+.purple--dot {
+  background-color: rgba(128, 128, 128, 0.482);
+}
+
+.cyan--dot {
+  background-color: cyan;
+}
+
+.yellow--dot {
+  background-color: yellowgreen;
+}
+
+.red--dot {
+  background-color: red;
+}
+
+.black--dot {
+  background-color: black;
+}
+
+.gray--dot {
+  background-color: gray;
+}
+
+.orange--dot {
+  background-color: orange;
+}
+
+.blue--dot {
+  background-color: rgb(103, 171, 238);
 }
 
 .row {

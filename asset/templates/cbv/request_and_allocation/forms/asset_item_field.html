@@ -1,0 +1,15 @@
+{% load i18n %}
+{% if show_field %}
+    <div class="oh-label__info" for="id_asset_item_id">
+        <label class="oh-label required-star" for="id_asset_item_id">
+            {% trans "Asset Item" %}
+        </label>
+    </div>
+    <div id="dynamic_field_asset_item_id">
+        {{ form.asset_item_id }}
+        {{ form.asset_item_id.errors }}
+    </div>
+    <script>$("#id_asset_item_id_parent_div").show();</script>
+{% else %}
+    <script>$("#id_asset_item_id_parent_div").hide();</script>
+{% endif %}
