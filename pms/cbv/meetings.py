@@ -273,6 +273,9 @@ class MeetingResponseFormView(HorillaFormView):
     def form_valid(self, form: MeetingResponseForm) -> HttpResponse:
         meet_id = self.kwargs.get("id")
         meeting = Meetings.objects.filter(id=meet_id).first()
+        if not meeting:
+            messages.error(self.request, _("Meeting not found."))
+            return self.HttpResponse()
         if form.is_valid():
             message = _("Response added successfully")
             response = self.request.POST.get("response")
