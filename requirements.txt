@@ -76,6 +76,6 @@ xhtml2pdf
 XlsxWriter
 gunicorn==23.0.0
 psycopg2-binary==2.9.10
-whitenoise==6.9.0
+whitenoise==6.12.0
 django-storages
 coverage>=7.0
