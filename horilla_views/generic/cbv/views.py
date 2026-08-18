@@ -1772,6 +1772,10 @@ class HorillaCardView(ListView):
     card_status_indications: list = []
     custom_body_template: str = ""
     custom_empty_template: str = ""
+    # Set True on card views that don't support the grouped-accordion layout —
+    # a shared nav's "field" group-by param is then ignored, so the card
+    # always renders its normal flat layout regardless of Group By selection.
+    disable_group_by: bool = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -1857,7 +1861,7 @@ class HorillaCardView(ListView):
 
         ordered_ids = list(queryset.values_list("id", flat=True))
         ordered_ids = []
-        if not self._saved_filters.get("field"):
+        if self.disable_group_by or not self._saved_filters.get("field"):
             for instance in queryset:
                 ordered_ids.append(str(instance.pk))
         self.request.session[self.ordered_ids_key] = ordered_ids
@@ -1872,7 +1876,7 @@ class HorillaCardView(ListView):
             self.records_per_page = get_pagination(default=50)
 
         # Group-by accordion support: when a `field` filter is active, build groups
-        if self._saved_filters.get("field"):
+        if not self.disable_group_by and self._saved_filters.get("field"):
             field = self._saved_filters.get("field")
             try:
                 context["groups"] = group_by_queryset(

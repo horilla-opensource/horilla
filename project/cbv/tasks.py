@@ -188,6 +188,7 @@ class TasksNavBar(HorillaNavView):
         "stage",
         "status",
     ]
+    default_group_by = "project"
     filter_form_context_name = "form"
     filter_instance = TaskAllFilter()
     search_swap_target = "#listContainer"
@@ -485,6 +486,8 @@ class TaskCardView(HorillaCardView):
 
     model = Task
     filter_class = TaskAllFilter
+    disable_group_by = True
+    filter_keys_to_remove = ["field"]
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
