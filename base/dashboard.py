@@ -488,11 +488,9 @@ def dashboard_kpi_data(request):
     try:
         from attendance.models import Attendance
 
-        present_qs = Attendance.objects.filter(attendance_date=real_today).exclude(
-            employee_id__in=leave_employee_ids
-        )
-        if scoped_ids is not None:
-            present_qs = present_qs.filter(employee_id__in=scoped_ids)
+        present_qs = Attendance.objects.filter(
+            attendance_date=real_today, employee_id__in=emp_qs
+        ).exclude(employee_id__in=leave_employee_ids)
         present_today = present_qs.values("employee_id").distinct().count()
     except Exception:
         pass
