@@ -1,11 +1,15 @@
 """Create demo historical Ticket rows so the helpdesk monthly trend has data.
 
 No base helpdesk fixture exists -- the only Ticket rows ship in
-helpdesk_scenarios_data.json, and those are intentionally future-dated
-(near-term "upcoming" tickets for other widgets), left untouched here. This
-creates a separate, idempotent (via a title marker) set of historical
-tickets spread across the trailing 6 months, reusing existing TicketType and
-Employee rows rather than inventing new lookup data.
+helpdesk_scenarios_data.json. Those are re-anchored by
+`reanchor_helpdesk_scenarios` below, not left untouched: their static dates
+were authored one calendar year off, so the generic whole-file date shift
+(`_shift_fixture_dates`) landed them in the future roughly as often as not,
+which a ticket's `created_date`/`resolved_date` must never be.
+
+This module also creates a separate, idempotent (via a title marker) set of
+historical tickets spread across the trailing 6 months, reusing existing
+TicketType and Employee rows rather than inventing new lookup data.
 """
 
 from __future__ import annotations
@@ -83,3 +87,62 @@ def backfill_helpdesk_tickets(today: date | None = None) -> int:
         TRAILING_DAYS,
     )
     return processed
+
+
+SCENARIO_PK_FLOOR = 1001
+
+
+@transaction.atomic
+def reanchor_helpdesk_scenarios(today: date | None = None) -> int:
+    """Re-anchor helpdesk_scenarios_data.json's static tickets/comments to `today`.
+
+    The generic whole-file shift only guarantees the fixture's authored
+    center lands near `today` -- not that every date stays <= `today`,
+    which a real created/resolved timestamp must. Translates the whole
+    scenario cluster (tickets + comments) by a single delta so every
+    relative gap authored between them is preserved exactly; only the
+    latest creation-relevant date is pinned to `today - 1`. `deadline` is
+    legitimately forward-looking and shifts by the same delta rather than
+    being clamped.
+    """
+    if not apps.is_installed("helpdesk"):
+        return 0
+
+    today = today or date.today()
+
+    from helpdesk.models import Comment, Ticket
+
+    tickets = list(Ticket._base_manager.filter(pk__gte=SCENARIO_PK_FLOOR))
+    if not tickets:
+        return 0
+
+    creation_dates = [t.created_date for t in tickets if t.created_date] + [
+        t.resolved_date for t in tickets if t.resolved_date
+    ]
+    if not creation_dates:
+        return 0
+
+    shift = (today - timedelta(days=1)) - max(creation_dates)
+    if shift == timedelta(0):
+        return 0
+
+    for ticket in tickets:
+        Ticket._base_manager.filter(pk=ticket.pk).update(
+            created_date=ticket.created_date + shift if ticket.created_date else None,
+            resolved_date=(
+                ticket.resolved_date + shift if ticket.resolved_date else None
+            ),
+            deadline=ticket.deadline + shift if ticket.deadline else None,
+        )
+
+    comments = list(Comment._base_manager.filter(pk__gte=SCENARIO_PK_FLOOR))
+    for comment in comments:
+        Comment._base_manager.filter(pk=comment.pk).update(date=comment.date + shift)
+
+    logger.info(
+        "Helpdesk scenario re-anchor: shifted %s ticket(s) and %s comment(s) by %s day(s)",
+        len(tickets),
+        len(comments),
+        shift.days,
+    )
+    return len(tickets)
