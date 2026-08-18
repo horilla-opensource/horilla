@@ -468,10 +468,16 @@ def recruitment_stage_conversion(request):
             canceled=False,
         ).count()
 
-        prev_count = total
+        # Each stage_type is an independent category a candidate's current
+        # stage falls into (not a nested cohort that must first pass through
+        # every earlier stage_type), so "% of previous stage" can exceed
+        # 100% whenever a later, wider stage (e.g. "Applied") holds more
+        # candidates than an earlier, narrower one (e.g. "Initial"). Share of
+        # the total pool is the metric that's actually well-defined here and
+        # is naturally bounded to 0-100%.
         for st in stage_types:
             current = counts.get(st, 0)
-            rate = round((current / prev_count * 100), 1) if prev_count > 0 else 0
+            rate = round((current / total * 100), 1) if total > 0 else 0
             conversions.append(
                 {
                     "stage": str(stage_labels.get(st, st)),
@@ -480,8 +486,6 @@ def recruitment_stage_conversion(request):
                     "conversion_rate": rate,
                 }
             )
-            if current > 0:
-                prev_count = current
     except Exception:
         pass
 
