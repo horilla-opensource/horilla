@@ -249,3 +249,92 @@ def backfill_attendance_overtime(today: date | None = None) -> int:
         len(old_buckets),
     )
     return updated
+
+
+NEW_COVERAGE_ROW_COUNT = 26  # matches the ~27 rows/employee density elsewhere
+NEW_COVERAGE_CLOCK_IN = "09:00:00"
+NEW_COVERAGE_CLOCK_OUT = "18:00:00"
+NEW_COVERAGE_WORKED_HOUR = "09:00"
+NEW_COVERAGE_MINIMUM_HOUR = "08:00"
+
+
+@transaction.atomic
+def backfill_zero_coverage_attendance(today: date | None = None) -> int:
+    """
+    Create a modest, evenly-spaced set of Attendance rows for any active
+    employee who has none at all.
+
+    backfill_attendance_spread above only *redistributes* rows that already
+    exist -- an employee added after the original ~126-employee attendance
+    fixture was authored (most of the largest company's headcount) has
+    nothing to redistribute, so that company's attendance screens render
+    mostly empty for the majority of its own staff while looking fully
+    populated for smaller companies that fit inside the original range.
+    """
+    if not apps.is_installed("attendance"):
+        return 0
+
+    today = today or date.today()
+    window_start = today - timedelta(days=TRAILING_DAYS)
+
+    from attendance.models import Attendance
+    from base.models import EmployeeShiftDay
+    from employee.models import Employee, EmployeeWorkInformation
+
+    # Same workaround as backfill_attendance_spread: Attendance.save()'s own
+    # attendance_day lookup uses .get(day=...), which raises
+    # MultipleObjectsReturned if more than one EmployeeShiftDay row shares a
+    # weekday name -- resolve it here and pass it in explicitly instead.
+    seen_days: dict[str, int] = {}
+    for row in EmployeeShiftDay.objects.all().order_by("id"):
+        seen_days.setdefault(row.day, row.pk)
+
+    covered_ids = set(
+        Attendance._base_manager.values_list("employee_id", flat=True).distinct()
+    )
+    work_info_by_employee = {
+        wi["employee_id"]: wi
+        for wi in EmployeeWorkInformation._base_manager.values(
+            "employee_id", "shift_id", "work_type_id"
+        )
+    }
+    uncovered_ids = [
+        emp_id
+        for emp_id in Employee._base_manager.filter(is_active=True)
+        .order_by("id")
+        .values_list("id", flat=True)
+        if emp_id not in covered_ids and emp_id in work_info_by_employee
+    ]
+    if not uncovered_ids:
+        return 0
+
+    step = TRAILING_DAYS / max(NEW_COVERAGE_ROW_COUNT - 1, 1)
+    created = 0
+    for employee_id in uncovered_ids:
+        work_info = work_info_by_employee[employee_id]
+        for rank in range(NEW_COVERAGE_ROW_COUNT):
+            attendance_date = window_start + timedelta(days=int(rank * step))
+            shift_day_pk = seen_days.get(attendance_date.strftime("%A").lower())
+
+            Attendance._base_manager.create(
+                employee_id_id=employee_id,
+                attendance_date=attendance_date,
+                shift_id_id=work_info.get("shift_id"),
+                work_type_id_id=work_info.get("work_type_id"),
+                attendance_day_id=shift_day_pk,
+                attendance_clock_in_date=attendance_date,
+                attendance_clock_in=NEW_COVERAGE_CLOCK_IN,
+                attendance_clock_out_date=attendance_date,
+                attendance_clock_out=NEW_COVERAGE_CLOCK_OUT,
+                attendance_worked_hour=NEW_COVERAGE_WORKED_HOUR,
+                minimum_hour=NEW_COVERAGE_MINIMUM_HOUR,
+                attendance_validated=True,
+            )
+            created += 1
+
+    logger.info(
+        "Attendance backfill: created %s row(s) for %s previously-uncovered employee(s)",
+        created,
+        len(uncovered_ids),
+    )
+    return created

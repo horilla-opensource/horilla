@@ -169,3 +169,64 @@ def _pad_leave_requests(today: date) -> int:
 
     logger.info("Leave backfill: created %s padding leave request(s)", created)
     return created
+
+
+# The original fixture's ~126 employees all carry exactly these two leave
+# types, at these totals -- matched here for the previously-uncovered set.
+NEW_COVERAGE_LEAVE_TYPES = {2: 12.0, 3: 10.0}  # {leave_type_id: total_leave_days}
+
+
+@transaction.atomic
+def backfill_zero_coverage_available_leave(today: date | None = None) -> int:
+    """
+    Give any active employee with zero AvailableLeave rows the same
+    Casual/Sick leave types every other employee already has.
+
+    LeaveRequest.clean() hard-requires an AvailableLeave row before a leave
+    type can be requested at all -- an employee with none literally cannot
+    apply for leave in the demo, which is the case for most of the largest
+    company's staff (the fixture's leave data was authored against the same
+    ~126-employee universe attendance was).
+    """
+    if not apps.is_installed("leave"):
+        return 0
+
+    today = today or date.today()
+
+    from employee.models import Employee
+    from leave.models import AvailableLeave
+
+    covered_ids = set(
+        AvailableLeave._base_manager.values_list("employee_id", flat=True).distinct()
+    )
+    uncovered_ids = list(
+        Employee._base_manager.filter(is_active=True)
+        .exclude(pk__in=covered_ids)
+        .order_by("id")
+        .values_list("id", flat=True)
+    )
+    if not uncovered_ids:
+        return 0
+
+    reset_date = date(today.year, 1, 1)
+    created = 0
+    for employee_id in uncovered_ids:
+        for leave_type_id, total_days in NEW_COVERAGE_LEAVE_TYPES.items():
+            AvailableLeave._base_manager.get_or_create(
+                employee_id_id=employee_id,
+                leave_type_id_id=leave_type_id,
+                defaults={
+                    "available_days": total_days,
+                    "carryforward_days": 0.0,
+                    "total_leave_days": total_days,
+                    "assigned_date": today,
+                    "reset_date": reset_date,
+                },
+            )
+            created += 1
+
+    logger.info(
+        "Leave backfill: created AvailableLeave rows for %s previously-uncovered employee(s)",
+        len(uncovered_ids),
+    )
+    return created

@@ -11,6 +11,7 @@ shift. The PMS progress trend groups by `updated_at`, which is `auto_now=True`
 from __future__ import annotations
 
 import logging
+from collections import defaultdict
 from datetime import date, timedelta
 
 from django.apps import apps
@@ -131,3 +132,83 @@ def backfill_pms_objectives(today: date | None = None) -> int:
         TRAILING_DAYS,
     )
     return updated
+
+
+# Roughly one in seven employees per company gets an objective -- a
+# performance program realistically covers a meaningful slice of staff, not
+# literally everyone, but the *slice itself* should scale with headcount and
+# reach every company instead of concentrating in just one.
+NEW_COVERAGE_RATE = 0.15
+STATUS_CYCLE = ("Not Started", "On Track", "At Risk", "Closed")
+
+
+@transaction.atomic
+def backfill_pms_coverage(today: date | None = None) -> int:
+    """
+    Give a headcount-proportional, every-company slice of employees an
+    EmployeeObjective assignment, cycling through the existing Objective
+    catalog. PMS previously touched only 8 of 276 employees total, all in a
+    single company -- a second company had none at all.
+
+    Dates here are placeholders only: backfill_pms_objectives (called right
+    after this one in the seeder) re-spreads every EmployeeObjective's dates
+    across the trailing 6 months regardless of how the row was created, so
+    duplicating that date logic here isn't necessary.
+    """
+    if not apps.is_installed("pms"):
+        return 0
+
+    today = today or date.today()
+
+    from employee.models import Employee, EmployeeWorkInformation
+    from pms.models import EmployeeObjective, Objective
+
+    objective_ids = list(
+        Objective._base_manager.order_by("id").values_list("id", flat=True)
+    )
+    if not objective_ids:
+        return 0
+
+    covered_ids = set(
+        EmployeeObjective._base_manager.values_list("employee_id", flat=True).distinct()
+    )
+    company_by_employee = dict(
+        EmployeeWorkInformation._base_manager.values_list("employee_id", "company_id")
+    )
+    active_ids = (
+        Employee._base_manager.filter(is_active=True)
+        .order_by("id")
+        .values_list("id", flat=True)
+    )
+
+    candidates_by_company: dict[int, list[int]] = defaultdict(list)
+    for employee_id in active_ids:
+        if employee_id in covered_ids:
+            continue
+        company_id = company_by_employee.get(employee_id)
+        if company_id:
+            candidates_by_company[company_id].append(employee_id)
+
+    created = 0
+    for candidate_ids in candidates_by_company.values():
+        target = max(1, int(len(candidate_ids) * NEW_COVERAGE_RATE))
+        for employee_id in candidate_ids[:target]:
+            objective_id = objective_ids[created % len(objective_ids)]
+            EmployeeObjective._base_manager.get_or_create(
+                employee_id_id=employee_id,
+                objective_id_id=objective_id,
+                defaults={
+                    "start_date": today,
+                    "end_date": today,
+                    "status": STATUS_CYCLE[created % len(STATUS_CYCLE)],
+                    "progress_percentage": 0,
+                },
+            )
+            created += 1
+
+    logger.info(
+        "PMS backfill: created %s EmployeeObjective assignment(s) across %s compan(ies)",
+        created,
+        len(candidates_by_company),
+    )
+    return created
