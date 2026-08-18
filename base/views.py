@@ -347,11 +347,20 @@ def normalize_demo_payslips():
     boundaries, so the period, the dates embedded in ``pay_head_data`` and the batch
     label are recomputed from that tag instead. Returns the number of payslips
     updated.
+
+    Also runs the app's own ``expire_contract()`` scheduled task inline:
+    fixture loaddata bypasses both Contract.save() and the scheduler, so a
+    demo Contract shipped "active" with a now-past contract_end_date (after
+    the fixture date shift) would otherwise stay contradictorily "active"
+    until the real scheduler happens to run.
     """
     if not apps.is_installed("payroll"):
         return 0
 
     from payroll.models.models import Payslip
+    from payroll.scheduler import expire_contract
+
+    expire_contract()
 
     today = datetime.today().date()
     updated = 0
@@ -382,11 +391,18 @@ def normalize_demo_payslips():
                 f"{start.strftime('%b %d %Y')} - {end.strftime('%b %d %Y')}"
             )
 
+        status = payslip.status
+        # M-0 is the current, still-open month -- a payslip can't already be
+        # "paid" or "confirmed" for a period that hasn't closed yet.
+        if offset == 0 and status in ("paid", "confirmed"):
+            status = "review_ongoing"
+
         Payslip._base_manager.filter(pk=payslip.pk).update(
             start_date=start,
             end_date=end,
             pay_head_data=pay_head_data,
             group_name=f"Demo Payroll - {start.strftime('%b %Y')}",
+            status=status,
         )
         updated += 1
 
