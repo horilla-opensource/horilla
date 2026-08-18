@@ -440,6 +440,7 @@ def dashboard_kpi_data(request):
 
     from_date, to_date = _parse_period(request)
     today = to_date
+    real_today = date.today()
     first_of_month = from_date
     scoped_ids = _scoped_active_employee_ids(request)
 
@@ -467,7 +468,6 @@ def dashboard_kpi_data(request):
     try:
         from leave.models import LeaveRequest
 
-        real_today = date.today()
         leave_qs = LeaveRequest.objects.filter(
             start_date__lte=real_today,
             status="approved",
@@ -488,7 +488,7 @@ def dashboard_kpi_data(request):
     try:
         from attendance.models import Attendance
 
-        present_qs = Attendance.objects.filter(attendance_date=today).exclude(
+        present_qs = Attendance.objects.filter(attendance_date=real_today).exclude(
             employee_id__in=leave_employee_ids
         )
         if scoped_ids is not None:
