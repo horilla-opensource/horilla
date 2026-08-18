@@ -25,6 +25,13 @@ TRAILING_DAYS = 180
 PAD_TARGET = 30
 PAD_MARKER = "[Demo seed]"
 
+# Still-"requested" rows are unactioned: realistically someone submitted
+# them recently, for dates that may be imminent or still ahead -- not
+# months-old and unresolved, and not confined to the past the way an
+# already-actioned (approved/rejected/cancelled) request is.
+PENDING_WINDOW_DAYS = 21
+PENDING_LOOKAHEAD_DAYS = 14
+
 
 @transaction.atomic
 def backfill_leave_spread(today: date | None = None) -> int:
@@ -40,18 +47,53 @@ def backfill_leave_spread(today: date | None = None) -> int:
     _pad_leave_requests(today)
 
     rows = list(
-        LeaveRequest._base_manager.order_by("id").values("id", "start_date", "end_date")
+        LeaveRequest._base_manager.order_by("id").values(
+            "id", "start_date", "end_date", "status"
+        )
     )
+    if not rows:
+        return 0
+
+    # Ranking the whole pool together by id put every low-id pending row
+    # (the original fixture's first ~16 rows are *all* "requested") at the
+    # oldest end of the trailing window and made a future-dated request
+    # structurally impossible (the spread never exceeds `today`). Give
+    # pending rows their own short, today-straddling window instead;
+    # settled (already-actioned) rows keep the original past-only spread.
+    pending_rows = [r for r in rows if r["status"] == "requested"]
+    settled_rows = [r for r in rows if r["status"] != "requested"]
+
+    updated = _spread_rows(settled_rows, window_start, today)
+    updated += _spread_rows(
+        pending_rows,
+        today - timedelta(days=PENDING_WINDOW_DAYS),
+        today + timedelta(days=PENDING_LOOKAHEAD_DAYS),
+    )
+
+    logger.info(
+        "Leave backfill: spread %s row(s) over the trailing %s days",
+        updated,
+        TRAILING_DAYS,
+    )
+    return updated
+
+
+def _spread_rows(rows: list[dict], window_start: date, window_end: date) -> int:
+    """Evenly space `rows` (already ordered) across [window_start, window_end].
+
+    count-1, not count: N evenly-spaced points spanning [0, step*(N-1)]
+    anchors the first row at window_start and the last at exactly
+    window_end, instead of falling one step short of it (which, for a
+    small N, is enough to leave the most recent bucket empty).
+    """
+    from leave.models import LeaveRequest
+
     count = len(rows)
     if count == 0:
         return 0
 
-    # count-1, not count: N evenly-spaced points spanning [0, step*(N-1)]
-    # anchors the first row at window_start and the last at exactly today,
-    # instead of falling one step short of today (which, for a small N,
-    # is enough to leave the current month's bucket empty).
-    step = TRAILING_DAYS / max(count - 1, 1)
-    updated = 0
+    span_days = (window_end - window_start).days
+    step = span_days / max(count - 1, 1)
     for i, row in enumerate(rows):
         new_start = window_start + timedelta(days=int(i * step))
 
@@ -63,14 +105,8 @@ def backfill_leave_spread(today: date | None = None) -> int:
         LeaveRequest._base_manager.filter(pk=row["id"]).update(
             start_date=new_start, end_date=new_end
         )
-        updated += 1
 
-    logger.info(
-        "Leave backfill: spread %s row(s) over the trailing %s days",
-        updated,
-        TRAILING_DAYS,
-    )
-    return updated
+    return count
 
 
 def _pad_leave_requests(today: date) -> int:

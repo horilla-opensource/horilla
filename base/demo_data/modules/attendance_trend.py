@@ -20,6 +20,21 @@ logger = logging.getLogger(__name__)
 
 TRAILING_DAYS = 180
 
+MONTH_NAMES = [
+    "january",
+    "february",
+    "march",
+    "april",
+    "may",
+    "june",
+    "july",
+    "august",
+    "september",
+    "october",
+    "november",
+    "december",
+]
+
 
 @transaction.atomic
 def backfill_attendance_spread(today: date | None = None) -> int:
@@ -89,7 +104,10 @@ def backfill_attendance_spread(today: date | None = None) -> int:
                 else None
             )
             new_clock_out_date = (
-                row["attendance_clock_out_date"] + timedelta(days=delta_days)
+                min(
+                    row["attendance_clock_out_date"] + timedelta(days=delta_days),
+                    today,
+                )
                 if row["attendance_clock_out_date"]
                 else None
             )
@@ -163,5 +181,71 @@ def backfill_attendance_spread(today: date | None = None) -> int:
         updated,
         len(by_employee),
         TRAILING_DAYS,
+    )
+    return updated
+
+
+def _trailing_month_year_pairs(today: date, count: int) -> list[tuple[str, str]]:
+    """Return `count` (month_name, year) pairs for the `count` months ending
+    at today's month (inclusive), oldest first."""
+    pairs = []
+    year, month = today.year, today.month
+    for _ in range(count):
+        pairs.append((MONTH_NAMES[month - 1], str(year)))
+        month -= 1
+        if month == 0:
+            month = 12
+            year -= 1
+    return list(reversed(pairs))
+
+
+@transaction.atomic
+def backfill_attendance_overtime(today: date | None = None) -> int:
+    """
+    Remap AttendanceOverTime's (month, year) buckets into the same trailing
+    window backfill_attendance_spread just moved Attendance into.
+
+    Attendance.not_validated_hrs()/not_approved_ot_hrs() filter Attendance
+    by the exact (month, year) an AttendanceOverTime row names -- once the
+    spread above moves every Attendance row out of the fixture's original
+    months, those methods permanently return 0 for every OT row, and the
+    Hour Account / OT-approval screens render empty despite having rows.
+    Old bucket years are always the fixture's fixed authored year (never
+    the real current year), so mapping them onto the real trailing months
+    can't collide with an unprocessed old bucket mid-loop.
+    """
+    if not apps.is_installed("attendance"):
+        return 0
+
+    today = today or date.today()
+
+    from attendance.models import AttendanceOverTime
+
+    old_buckets = sorted(
+        AttendanceOverTime._base_manager.values_list("month", "year").distinct(),
+        key=lambda my: (int(my[1]), MONTH_NAMES.index(my[0])),
+    )
+    if not old_buckets:
+        return 0
+
+    new_buckets = _trailing_month_year_pairs(today, len(old_buckets))
+
+    updated = 0
+    for (old_month, old_year), (new_month, new_year) in zip(old_buckets, new_buckets):
+        if (old_month, old_year) == (new_month, new_year):
+            continue
+        rows = AttendanceOverTime._base_manager.filter(month=old_month, year=old_year)
+        count = rows.count()
+        rows.update(
+            month=new_month,
+            year=new_year,
+            month_sequence=MONTH_NAMES.index(new_month),
+        )
+        updated += count
+
+    logger.info(
+        "AttendanceOverTime backfill: remapped %s row(s) across %s month bucket(s)",
+        updated,
+        len(old_buckets),
     )
     return updated
