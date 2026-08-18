@@ -1930,14 +1930,20 @@ def load_faqs(request):
     faq_category_file = os.path.join(base_dir, "load_data", "faq_category.json")
     tags_file = os.path.join(base_dir, "load_data", "tags.json")
 
-    with open(faq_category_file, "r") as cats:
-        faq_category_raw = json.load(cats)
+    try:
+        with open(faq_category_file, "r") as cats:
+            faq_category_raw = json.load(cats)
 
-    with open(tags_file, "r") as t:
-        tags_raw = json.load(t)
+        with open(tags_file, "r") as t:
+            tags_raw = json.load(t)
 
-    with open(faq_file, "r") as faqs:
-        faq_raw = json.load(faqs)
+        with open(faq_file, "r") as faqs:
+            faq_raw = json.load(faqs)
+    except (OSError, json.JSONDecodeError):
+        messages.error(
+            request, _("Default FAQs could not be loaded. Please contact support.")
+        )
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
     category_lookup = {item["pk"]: item["fields"]["title"] for item in faq_category_raw}
 
