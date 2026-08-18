@@ -509,12 +509,17 @@ def dashboard_kpi_data(request):
 
     pending_leaves = 0
     try:
+        from base.methods import filtersubordinates
         from leave.models import LeaveRequest
 
+        # Match request-view's own scoping (leave.view_leaverequest) rather
+        # than the generic employee.view_employee scope used above — the two
+        # permissions aren't guaranteed to line up for a given user, and it's
+        # request-view this badge links to.
         pending_qs = LeaveRequest.objects.filter(status="requested")
-        if scoped_ids is not None:
-            pending_qs = pending_qs.filter(employee_id__in=scoped_ids)
-        pending_leaves = pending_qs.count()
+        pending_leaves = filtersubordinates(
+            request, pending_qs, "leave.view_leaverequest"
+        ).count()
     except Exception:
         pass
 
@@ -1166,18 +1171,17 @@ def dashboard_pending_approvals(request):
 
     # Leave requests
     try:
+        from base.methods import filtersubordinates
         from leave.models import LeaveRequest
 
         if can_approve:
-            if has_leave_perm:
-                leave_count = LeaveRequest.objects.filter(status="requested").count()
-            else:
-                from base.methods import filtersubordinates
-
-                qs = LeaveRequest.objects.filter(status="requested")
-                leave_count = filtersubordinates(
-                    request, qs, "leave.change_leaverequest"
-                ).count()
+            # Match the scoping the destination list (request-view) itself
+            # uses, so the count shown here always agrees with what clicking
+            # through actually displays.
+            qs = LeaveRequest.objects.filter(status="requested")
+            leave_count = filtersubordinates(
+                request, qs, "leave.view_leaverequest"
+            ).count()
         else:
             leave_count = (
                 LeaveRequest.objects.filter(
@@ -1193,23 +1197,19 @@ def dashboard_pending_approvals(request):
     # Attendance requests
     try:
         from attendance.models import Attendance
+        from base.methods import filtersubordinates
 
         if can_approve:
-            if has_attendance_perm:
-                att_count = Attendance.objects.filter(
-                    is_validate_request=True,
-                    is_validate_request_approved=False,
-                ).count()
-            else:
-                from base.methods import filtersubordinates
-
-                qs = Attendance.objects.filter(
-                    is_validate_request=True,
-                    is_validate_request_approved=False,
-                )
-                att_count = filtersubordinates(
-                    request, qs, "attendance.change_validateattendance"
-                ).count()
+            # Match ValidateAttendancesList's own scoping (attendance.view_attendance
+            # + active employees only) so this count agrees with the destination list.
+            qs = Attendance.objects.filter(
+                is_validate_request=True,
+                is_validate_request_approved=False,
+                employee_id__is_active=True,
+            )
+            att_count = filtersubordinates(
+                request, qs, "attendance.view_attendance"
+            ).count()
         else:
             att_count = (
                 Attendance.objects.filter(
@@ -1227,10 +1227,15 @@ def dashboard_pending_approvals(request):
     # Asset requests
     try:
         from asset.models import AssetRequest
+        from base.methods import filtersubordinates
 
-        if can_approve and has_asset_perm:
-            asset_count = AssetRequest.objects.filter(
-                asset_request_status="Requested",
+        if can_approve:
+            # Match AssetRequestList's own scoping (asset.view_assetrequest,
+            # keyed on requested_employee_id) so this count agrees with the
+            # destination list.
+            qs = AssetRequest.objects.filter(asset_request_status="Requested")
+            asset_count = filtersubordinates(
+                request, qs, "asset.view_assetrequest", field="requested_employee_id"
             ).count()
         else:
             asset_count = (
@@ -1247,21 +1252,22 @@ def dashboard_pending_approvals(request):
 
     # Shift requests
     try:
+        from base.methods import filtersubordinates
         from base.models import ShiftRequest
 
         if can_approve:
-            if has_shift_perm:
-                shift_count = ShiftRequest.objects.filter(
-                    approved=False,
-                    canceled=False,
-                ).count()
-            else:
-                from base.methods import filtersubordinates
-
-                qs = ShiftRequest.objects.filter(approved=False, canceled=False)
-                shift_count = filtersubordinates(
-                    request, qs, "base.change_shiftrequest"
-                ).count()
+            # Match ShiftRequestList's own scoping (base.view_shiftrequest,
+            # excludes reallocated requests, active employees only) so this
+            # count agrees with the destination list.
+            qs = ShiftRequest.objects.filter(
+                approved=False,
+                canceled=False,
+                reallocate_to__isnull=True,
+                employee_id__is_active=True,
+            )
+            shift_count = filtersubordinates(
+                request, qs, "base.view_shiftrequest"
+            ).count()
         else:
             shift_count = (
                 ShiftRequest.objects.filter(
@@ -1278,21 +1284,21 @@ def dashboard_pending_approvals(request):
 
     # Work type requests
     try:
+        from base.methods import filtersubordinates
         from base.models import WorkTypeRequest
 
         if can_approve:
-            if has_wt_perm:
-                wt_count = WorkTypeRequest.objects.filter(
-                    approved=False,
-                    canceled=False,
-                ).count()
-            else:
-                from base.methods import filtersubordinates
-
-                qs = WorkTypeRequest.objects.filter(approved=False, canceled=False)
-                wt_count = filtersubordinates(
-                    request, qs, "base.change_worktyperequest"
-                ).count()
+            # Match the work-type request list's own scoping
+            # (base.view_worktyperequest, active employees only) so this
+            # count agrees with the destination list.
+            qs = WorkTypeRequest.objects.filter(
+                approved=False,
+                canceled=False,
+                employee_id__is_active=True,
+            )
+            wt_count = filtersubordinates(
+                request, qs, "base.view_worktyperequest"
+            ).count()
         else:
             wt_count = (
                 WorkTypeRequest.objects.filter(
@@ -1309,10 +1315,17 @@ def dashboard_pending_approvals(request):
 
     # Reimbursement requests
     try:
+        from base.methods import filter_own_records
         from payroll.models.models import Reimbursement
 
-        if can_approve and has_reimb_perm:
-            reimb_count = Reimbursement.objects.filter(status="requested").count()
+        if can_approve:
+            # Match ReimbursementsListView's own scoping
+            # (payroll.view_reimbursement) so this count agrees with the
+            # destination list.
+            qs = Reimbursement.objects.filter(status="requested", type="reimbursement")
+            reimb_count = filter_own_records(
+                request, qs, "payroll.view_reimbursement"
+            ).count()
         else:
             reimb_count = (
                 Reimbursement.objects.filter(
