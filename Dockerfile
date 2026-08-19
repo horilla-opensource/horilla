@@ -52,6 +52,7 @@ RUN apt-get update \
         libffi8 \
         curl \
         netcat-openbsd \
+        gettext \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
@@ -65,6 +66,11 @@ WORKDIR /app
 
 # Copy application code
 COPY --chown=appuser:appuser . .
+
+# Compile gettext catalogs (.po -> .mo): nothing in the repo or the runtime
+# compiles them, so without this every non-English locale silently renders
+# English. Plain msgfmt, so no Django settings/DB are needed at build time.
+RUN find . -name '*.po' -execdir sh -c 'msgfmt "$1" -o "${1%.po}.mo"' _ {} \;
 
 # Copy entrypoint script
 COPY --chown=appuser:appuser docker/entrypoint.sh /entrypoint.sh
