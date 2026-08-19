@@ -110,6 +110,22 @@ class ObjectivesList(HorillaListView):
                 hx-push-url="{get_individual_url}"
                 """
 
+    # Mirrors ObjectivesNav.nested_group_by_fields below -- List and Nav
+    # are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split). "Managers" and
+    # "Assignees" are deliberately left out: they're ManyToManyFields, and
+    # the nested engine's `values(*fields).annotate(Count("pk"))`
+    # aggregate would fan out one row per related employee, double-
+    # counting objectives with more than one manager/assignee.
+    nested_group_by_fields = [
+        ("title", _("Title")),
+        ("duration_unit", _("Duration Unit")),
+        ("duration", _("Duration")),
+        ("is_template", _("Is Template")),
+        ("archive", _("Is Archived")),
+        ("company_id", _("Company")),
+    ]
+
 
 class MyObjectives(ObjectivesList):
     """
@@ -309,6 +325,16 @@ class ObjectivesNav(HorillaNavView):
     filter_form_context_name = "form"
     filter_body_template = "cbv/objectives/filter.html"
     search_swap_target = "#listContainer"
+
+    # Mirrors ObjectivesList.nested_group_by_fields
+    nested_group_by_fields = [
+        ("title", _("Title")),
+        ("duration_unit", _("Duration Unit")),
+        ("duration", _("Duration")),
+        ("is_template", _("Is Template")),
+        ("archive", _("Is Archived")),
+        ("company_id", _("Company")),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")

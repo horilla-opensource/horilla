@@ -175,6 +175,23 @@ class PayslipList(HorillaListView):
                 """
 
     row_status_class = "status-{status} sent_to_employee-{sent_to_employee}"
+    # Mirrors PayslipNav.nested_group_by_fields -- needed here too since
+    # this (List) and Nav are separate classes; see the same split in
+    # employee/cbv/employees.py's EmployeesList/EmployeeNav.
+    nested_group_by_fields = [
+        ("employee_id", _("Employee")),
+        ("group_name", _("Pay Slip Batch")),
+        ("start_date", _("Start date")),
+        ("end_date", _("End Date")),
+        ("basic_pay", _("Basic Pay")),
+        ("gross_pay", _("Gross Pay")),
+        ("net_pay", _("Net Pay")),
+        ("status", _("Status")),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        ("employee_id__employee_work_info__job_role_id", _("Job Role")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")
@@ -266,6 +283,27 @@ class PayslipNav(HorillaNavView):
     search_swap_target = "#listContainer"
 
     group_by_fields = [
+        ("employee_id", _("Employee")),
+        ("group_name", _("Pay Slip Batch")),
+        ("start_date", _("Start date")),
+        ("end_date", _("End Date")),
+        ("basic_pay", _("Basic Pay")),
+        ("gross_pay", _("Gross Pay")),
+        ("net_pay", _("Net Pay")),
+        ("status", _("Status")),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        ("employee_id__employee_work_info__job_role_id", _("Job Role")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
+    ]
+    # Mirrors PayslipList.nested_group_by_fields below -- List and Nav are
+    # separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split), so the inline
+    # "add/change field" dropdowns in the "Grouped by" breadcrumb
+    # (nested_group_by_table.html, rendered by the List view) need this
+    # here too, not just the currently-active fields it already had access
+    # to via nested_fields_active.
+    nested_group_by_fields = [
         ("employee_id", _("Employee")),
         ("group_name", _("Pay Slip Batch")),
         ("start_date", _("Start date")),

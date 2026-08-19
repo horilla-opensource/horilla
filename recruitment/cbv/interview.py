@@ -67,6 +67,18 @@ class InterviewNavView(HorillaNavView):
     filter_form_context_name = "form"
     search_swap_target = "#listContainer"
 
+    # Mirrors InterviewLIstView.nested_group_by_fields
+    nested_group_by_fields = [
+        ("candidate_id", _("Candidate")),
+        ("interview_date", _("Interview Date")),
+        ("interview_time", _("Interview Time")),
+        ("completed", _("Is Interview Completed")),
+        ("candidate_id__recruitment_id", _("Recruitment")),
+        ("candidate_id__job_position_id", _("Job Position")),
+        ("candidate_id__job_position_id__department_id", _("Department")),
+        ("candidate_id__stage_id", _("Stage")),
+    ]
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
@@ -133,6 +145,24 @@ class InterviewLIstView(HorillaListView):
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
                 """
+
+    # Mirrors InterviewNavView.nested_group_by_fields below -- List and
+    # Nav are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split). "Interviewer"
+    # (employee_id) is deliberately left out: it's a ManyToManyField, and
+    # the nested engine's `values(*fields).annotate(Count("pk"))`
+    # aggregate would fan out one row per interviewer, double-counting
+    # interviews with more than one interviewer assigned.
+    nested_group_by_fields = [
+        ("candidate_id", _("Candidate")),
+        ("interview_date", _("Interview Date")),
+        ("interview_time", _("Interview Time")),
+        ("completed", _("Is Interview Completed")),
+        ("candidate_id__recruitment_id", _("Recruitment")),
+        ("candidate_id__job_position_id", _("Job Position")),
+        ("candidate_id__job_position_id__department_id", _("Department")),
+        ("candidate_id__stage_id", _("Stage")),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")

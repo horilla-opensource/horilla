@@ -136,6 +136,21 @@ class ResignationListView(HorillaListView):
         (_("Status"), "get_status"),
     ]
 
+    # Mirrors ResinationLettersNav.nested_group_by_fields below -- List
+    # and Nav are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split).
+    nested_group_by_fields = [
+        ("employee_id", _("Employee")),
+        ("planned_to_leave_on", _("Planned to leave date")),
+        ("status", _("Status")),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
+    ]
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
@@ -199,6 +214,9 @@ class ResinationLettersNav(HorillaNavView):
             _("Reporting Manager"),
         ),
     ]
+
+    # Mirrors ResignationListView.nested_group_by_fields
+    nested_group_by_fields = group_by_fields
 
 
 @method_decorator(login_required, name="dispatch")

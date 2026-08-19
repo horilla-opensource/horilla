@@ -263,6 +263,22 @@ class ListCandidates(HorillaListView):
                 class="cursor-pointer"
                 """
 
+    # Mirrors CandidateNav.nested_group_by_fields below -- List and Nav
+    # are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split).
+    nested_group_by_fields = [
+        ("recruitment_id", _("Recruitment")),
+        ("job_position_id", _("Job Position")),
+        ("hired", _("Hired")),
+        ("country", _("Country")),
+        ("stage_id", _("Stage")),
+        ("joining_date", _("Date joining")),
+        ("probation_end", _("Probation End")),
+        ("offer_letter_status", _("Offer Letter Status")),
+        ("rejected_candidate__reject_reason_id", _("Reject reason")),
+        ("job_position_id__department_id", _("Department")),
+    ]
+
     def export_data(self, *args, **kwargs):
         """
         Export with survey answer and question
@@ -776,6 +792,26 @@ class CandidateNav(HorillaNavView):
         ("offer_letter_status", _("Offer Letter Status")),
         ("rejected_candidate__reject_reason_id", _("Reject reason")),
         ("skillzonecandidate_set", _("Talent pool")),
+    ]
+
+    # "Talent pool" (skillzonecandidate_set) is deliberately left out here:
+    # it's a reverse FK/to-many relation, and the nested engine's
+    # `values(*fields).annotate(Count("pk"))` aggregate would fan out one
+    # row per related SkillZoneCandidate, double-counting candidates in
+    # more than one talent pool. The classic single-field dropdown above
+    # doesn't hit this because it counts distinct candidate values per
+    # group, not a joined aggregate.
+    nested_group_by_fields = [
+        ("recruitment_id", _("Recruitment")),
+        ("job_position_id", _("Job Position")),
+        ("hired", _("Hired")),
+        ("country", _("Country")),
+        ("stage_id", _("Stage")),
+        ("joining_date", _("Date joining")),
+        ("probation_end", _("Probation End")),
+        ("offer_letter_status", _("Offer Letter Status")),
+        ("rejected_candidate__reject_reason_id", _("Reject reason")),
+        ("job_position_id__department_id", _("Department")),
     ]
 
 

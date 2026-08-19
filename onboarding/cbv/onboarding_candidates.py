@@ -167,6 +167,27 @@ class OnboardingCandidatesList(HorillaListView):
                 class="cursor-pointer"
                 """
 
+    # Mirrors OnboardingCandidatesNav.nested_group_by_fields below -- List
+    # and Nav are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split). "Talent Pool"
+    # (skillzonecandidate_set__skill_zone_id) is deliberately left out,
+    # same as the recruitment Candidates page: it's a reverse FK/to-many
+    # relation, and the nested engine's `values(*fields).annotate(Count
+    # ("pk"))` aggregate would fan out one row per related
+    # SkillZoneCandidate, double-counting candidates in more than one
+    # talent pool.
+    nested_group_by_fields = [
+        ("recruitment_id", _("Recruitment")),
+        ("job_position_id", _("Job position")),
+        ("country", _("Country")),
+        ("stage_id", _("Stage")),
+        ("joining_date", _("Joining Date")),
+        ("probation_end", _("Probation End")),
+        ("offer_letter_status", _("Offer Letter Status")),
+        ("rejected_candidate__reject_reason_id", _("Rejected Reason")),
+        ("job_position_id__department_id", _("Department")),
+    ]
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
@@ -200,6 +221,19 @@ class OnboardingCandidatesNav(HorillaNavView):
         ("offer_letter_status", _("Offer Letter Status")),
         ("rejected_candidate__reject_reason_id", _("Rejected Reason")),
         ("skillzonecandidate_set__skill_zone_id", _("Talent Pool")),
+    ]
+
+    # Mirrors OnboardingCandidatesList.nested_group_by_fields
+    nested_group_by_fields = [
+        ("recruitment_id", _("Recruitment")),
+        ("job_position_id", _("Job position")),
+        ("country", _("Country")),
+        ("stage_id", _("Stage")),
+        ("joining_date", _("Joining Date")),
+        ("probation_end", _("Probation End")),
+        ("offer_letter_status", _("Offer Letter Status")),
+        ("rejected_candidate__reject_reason_id", _("Rejected Reason")),
+        ("job_position_id__department_id", _("Department")),
     ]
 
     actions = [

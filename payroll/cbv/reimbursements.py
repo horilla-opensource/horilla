@@ -168,6 +168,26 @@ class ReimbursementsAndEncashmentsListView(HorillaListView):
                         style="width:200px !important;"
                         """,
     }
+    # Mirrors ReimbursementsNav.nested_group_by_fields below -- List and
+    # Nav are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split). Inherited by
+    # ReimbursementsListView/LeaveEncashmentsListView/
+    # BonusEncashmentsListView below, covering all 3 tabs.
+    nested_group_by_fields = [
+        ("employee_id", _("Employee")),
+        ("title", _("Title")),
+        ("amount", _("Amount")),
+        ("status", _("Status")),
+        ("created_at", _("Date")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        ("employee_id__employee_work_info__employee_type_id", _("Employment Type")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")
@@ -303,6 +323,23 @@ class ReimbursementsNav(HorillaNavView):
     filter_form_context_name = "form"
     filter_body_template = "cbv/reimbursements/filter.html"
     search_swap_target = "#listContainer"
+
+    # Mirrors ReimbursementsAndEncashmentsListView.nested_group_by_fields
+    nested_group_by_fields = [
+        ("employee_id", _("Employee")),
+        ("title", _("Title")),
+        ("amount", _("Amount")),
+        ("status", _("Status")),
+        ("created_at", _("Date")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        ("employee_id__employee_work_info__employee_type_id", _("Employment Type")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")

@@ -1,0 +1,21 @@
+{% load i18n %}
+{% widthratio options|length 1 28 as option_base %}
+{% widthratio actions|length 1 28 as action_base %}
+{% comment %}
+    Fixed per-column pixel widths, not percentages of the container. A
+    view with many columns (e.g. Employee's ~14) then has a natural total
+    width wider than the container, so the wrapping overflow-x-auto div
+    scrolls horizontally instead of squeezing every column down to fit --
+    matching how the single-level grouped table always behaved. A view
+    with few columns just leaves some empty space on the right rather
+    than stretching to fill it, which is the right tradeoff: the same
+    fixed width here is shared by the header and every leaf table's own
+    <colgroup>, so columns stay aligned across all of them regardless of
+    each leaf's own content.
+{% endcomment %}
+<colgroup>
+    {% if bulk_select_option %}<col style="width:36px">{% endif %}
+    {% for cell in columns %}<col style="width:130px">{% endfor %}
+    {% if options %}<col style="width:{{ option_base|add:24 }}px">{% elif option_method %}<col style="width:220px">{% endif %}
+    {% if actions %}<col style="width:{{ action_base|add:24 }}px">{% elif action_method %}<col style="width:220px">{% endif %}
+</colgroup>

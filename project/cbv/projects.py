@@ -59,6 +59,16 @@ class ProjectsNavView(HorillaNavView):
     template_name = "cbv/projects/project_nav.html"
     filter_body_template = "cbv/projects/filter.html"
 
+    # Mirrors ProjectsList.nested_group_by_fields
+    nested_group_by_fields = [
+        "title",
+        "status",
+        "is_active",
+        "start_date",
+        "end_date",
+        ("company_id", _("Company")),
+    ]
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("project-list-view")
@@ -274,6 +284,22 @@ class ProjectsList(HorillaListView):
     row_status_class = "status-{status}"
 
     row_attrs = """ {redirect} """
+
+    # Mirrors ProjectsNavView.nested_group_by_fields below -- List and
+    # Nav are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split). "Project Managers"
+    # (managers) is deliberately left out: it's a ManyToManyField, and
+    # the nested engine's `values(*fields).annotate(Count("pk"))`
+    # aggregate would fan out one row per related manager, double-
+    # counting projects with more than one manager assigned.
+    nested_group_by_fields = [
+        "title",
+        "status",
+        "is_active",
+        "start_date",
+        "end_date",
+        ("company_id", _("Company")),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")

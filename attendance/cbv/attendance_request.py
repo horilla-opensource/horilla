@@ -170,6 +170,27 @@ class AttendancesRequestListView(HorillaListView):
     ]
 
     row_status_class = "validated-{attendance_validated}"
+    # Mirrors AttendanceRequestNav.nested_group_by_fields -- needed here
+    # too since this (List) and Nav are separate classes; see the same
+    # split in employee/cbv/employees.py's EmployeesList/EmployeeNav.
+    nested_group_by_fields = [
+        ("employee_id", _("Employee")),
+        ("attendance_date", _("Attendance Date")),
+        ("attendance_clock_in_date", _("In Date")),
+        ("attendance_clock_out_date", _("Out Date")),
+        ("employee_id__country", _("Country")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
+        ("shift_id", _("Shift")),
+        ("work_type_id", _("Work Type")),
+        ("minimum_hour", _("Min Hour")),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        ("employee_id__employee_work_info__employee_type_id", _("Employement Type")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")
@@ -362,6 +383,31 @@ class AttendanceRequestNav(HorillaNavView):
     search_swap_target = "#listContainer"
 
     group_by_fields = [
+        ("employee_id", _("Employee")),
+        ("attendance_date", _("Attendance Date")),
+        ("attendance_clock_in_date", _("In Date")),
+        ("attendance_clock_out_date", _("Out Date")),
+        ("employee_id__country", _("Country")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
+        ("shift_id", _("Shift")),
+        ("work_type_id", _("Work Type")),
+        ("minimum_hour", _("Min Hour")),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        ("employee_id__employee_work_info__employee_type_id", _("Employement Type")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
+    ]
+    # Mirrors AttendancesRequestListView.nested_group_by_fields below --
+    # List and Nav are separate classes/templates (see
+    # employee/cbv/employees.py's EmployeesList/EmployeeNav for the same
+    # split), so the inline "add/change field" dropdowns in the "Grouped
+    # by" breadcrumb (nested_group_by_table.html, rendered by the List
+    # view) need this here too, not just the currently-active fields it
+    # already had access to via nested_fields_active.
+    nested_group_by_fields = [
         ("employee_id", _("Employee")),
         ("attendance_date", _("Attendance Date")),
         ("attendance_clock_in_date", _("In Date")),

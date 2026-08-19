@@ -1,0 +1,150 @@
+{% load static i18n generic_template_filters %}
+<thead class="sticky top-0 bg-[white] z-[1]">
+    <tr class="border-b border-[#ececec]">
+        {% if bulk_select_option %}
+            <th class="text-sm font-medium text-left p-1.5 w-[30px]">
+                <div class="flex items-center justify-center">
+                    <input
+                        type="checkbox"
+                        value=""
+                        class="bulk-list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
+                        title="{% trans 'Select All' %}"
+                        onchange="var isChecked = $(this).is(':checked');
+                            $(this)
+                                .closest('{{ select_all_scope|default:".fixed-table" }}')
+                                .find('.list-table-row')
+                                .prop('checked', isChecked)
+                                .trigger('change');
+                            reloadSelectedCount($('#count_{{view_id|safe}}'), '{{selected_instances_key_id}}');
+                            reloadSelectedCount($('.count_{{view_id|safe}}'), '{{selected_instances_key_id}}')"
+                    >
+                </div>
+            </th>
+        {% endif %}
+
+        {% for cell in columns %}
+            {% with cell_attr=header_attrs|get_item:cell.1 %}
+                <th
+                    class="text-sm font-medium text-left{% if not use_shared_colgroup %} min-w-[85px]{% endif %}"
+                    id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header"
+                    {{cell_attr|safe}}
+                    {% if cell.2 and not cell_attr and not use_shared_colgroup %}style="min-width:180px;"{% endif %}
+                >
+                    <div
+                        class="flex gap-1.5 px-1.5 py-1.5 items-center min-w-0{% if forloop.last and not options and not option_method and not actions and not action_method %} justify-between{% endif %}{% for sort_map in sortby_mapping %}{% if sort_map.0 == cell.0 %}cursor-pointer{% endif %}{% endfor %}"
+                        {% for sort_map in sortby_mapping %}
+                            {% if sort_map.0 == cell.0 %}
+                                hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{sortby_key}}={{sort_map.1}}&filter_applied=on"
+                                hx-target="#{{view_id}}"
+                                hx-swap="outerHTML"
+                                hx-on:click="htmxLoadIndicator(this);"
+                            {% endif %}
+                        {% endfor %}
+                        {{cell_attr|safe}}
+                        {% if cell.2 and not cell_attr and not use_shared_colgroup %}style="min-width:180px;"{% endif %}
+                    >
+                        <div class="flex gap-1.5 items-center min-w-0">
+                        {% for sort_map in sortby_mapping %}
+                            {% if sort_map.0 == cell.0 %}
+                                <span
+                                    class="text-xs flex items-center text-primary-600"
+                                >
+                                    {% if request.sort_order == "asc" and request.sort_key == sort_map.1 %}
+                                        <i class="fa-solid fa-arrow-down"></i>
+                                    {% elif request.sort_order == "desc" and request.sort_key == sort_map.1 %}
+                                        <i class="fa-solid fa-arrow-up"></i>
+                                    {% else %}
+                                        <i class="fa-solid fa-arrow-up"></i>
+                                        <i class="fa-solid fa-arrow-down"></i>
+                                    {% endif %}
+                                </span>
+                            {% endif %}
+                        {% endfor %}
+
+                        <span class="{% if use_shared_colgroup %}truncate{% else %}flex w-max{% endif %}">
+                            {{ cell.0|safe }}
+                        </span>
+                        </div>
+                        {% if show_toggle_form and forloop.last and not options and not option_method and not actions and not action_method %}
+                            <button
+                                type="button"
+                                class="oh-sticky-dropdown_btn is-column-config-trigger"
+                                data-gvid="{{gvid}}"
+                                onclick="event.stopPropagation()"
+                                @click="open = !open"
+                                :aria-expanded="open.toString()"
+                                aria-haspopup="true"
+                                title="{% trans 'Customize columns' %}"
+                                aria-label="{% trans 'Customize columns' %}"
+                            >
+                                <ion-icon
+                                    name="options-outline"
+                                    role="img"
+                                    class="md hydrated"
+                                    aria-hidden="true"
+                                ></ion-icon>
+                            </button>
+                        {% endif %}
+                    </div>
+                </th>
+            {% endwith %}
+        {% endfor %}
+        {% if options or option_method %}
+            <th class="option-col-header text-sm font-medium{% if not use_shared_colgroup %} min-w-[85px]{% endif %}" {{header_attrs.option|safe}}>
+                <div class="p-1.5 flex items-center{% if not actions and not action_method %} justify-between{% else %} justify-center{% endif %}" {{header_attrs.option|safe}}>
+                    <span class="flex-1 text-center">{% trans "Options" %}</span>
+                    {% if show_toggle_form and not actions and not action_method %}
+                        <button
+                            type="button"
+                            class="oh-sticky-dropdown_btn is-column-config-trigger"
+                            data-gvid="{{gvid}}"
+                            onclick="event.stopPropagation()"
+                            @click="open = !open"
+                            :aria-expanded="open.toString()"
+                            aria-haspopup="true"
+                            title="{% trans 'Customize columns' %}"
+                            aria-label="{% trans 'Customize columns' %}"
+                        >
+                            <ion-icon
+                                name="options-outline"
+                                role="img"
+                                class="md hydrated"
+                                aria-hidden="true"
+                            ></ion-icon>
+                        </button>
+                    {% endif %}
+                </div>
+            </th>
+        {% endif %}
+        {% if actions or action_method %}
+            <th
+                class="stickyright action-col-header text-sm font-medium{% if not use_shared_colgroup %} min-w-[85px]{% endif %}"
+                {{header_attrs.action|safe}}
+            >
+                <div class="p-1.5 flex items-center{% if show_toggle_form %} justify-between{% else %} justify-center{% endif %}" {{header_attrs.action|safe}}>
+                    <span class="flex-1 text-center">{% trans "Actions" %}</span>
+                    {% if show_toggle_form %}
+                        <button
+                            type="button"
+                            class="oh-sticky-dropdown_btn is-column-config-trigger"
+                            data-gvid="{{gvid}}"
+                            onclick="event.stopPropagation()"
+                            @click="open = !open"
+                            :aria-expanded="open.toString()"
+                            aria-haspopup="true"
+                            title="{% trans 'Customize columns' %}"
+                            aria-label="{% trans 'Customize columns' %}"
+                        >
+                            <ion-icon
+                                name="options-outline"
+                                role="img"
+                                class="md hydrated"
+                                aria-hidden="true"
+                            ></ion-icon>
+                        </button>
+                    {% endif %}
+                </div>
+            </th>
+        {% endif %}
+    </tr>
+</thead>

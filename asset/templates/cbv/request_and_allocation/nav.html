@@ -1,0 +1,85 @@
+{% load i18n %}
+{% include "generic/horilla_nav.html" %}
+<script>
+    (function () {
+        // This one Nav is shared across 3 tabs backed by two different
+        // models (AssetRequest for the "Asset Request" tab, AssetAssignment
+        // for "Asset" and "Asset Allocation"), so nested_group_by_fields
+        // mixes fields from both -- see RequestAndAllocationNav in
+        // asset/cbv/request_and_allocation.py. Picking a field that doesn't
+        // exist on the active tab's model silently falls back to a flat
+        // list (see the try/except around nested_group_by_queryset in
+        // HorillaListView.get_context_data), so this narrows the visible
+        // choices to only the ones that actually apply to whichever tab is
+        // currently active.
+        var ASSET_REQUEST_FIELDS = [
+            "requested_employee_id",
+            "asset_category_id",
+            "asset_request_date",
+            "asset_request_status",
+        ];
+        var ASSET_ALLOCATION_FIELDS = [
+            "assigned_to_employee_id",
+            "assigned_date",
+            "return_date",
+        ];
+
+        function fieldsForTabUrl(url) {
+            if (!url) {
+                return null;
+            }
+            if (url.indexOf("list-asset-request") !== -1) {
+                return ASSET_REQUEST_FIELDS;
+            }
+            // Both the "Asset" tab (list-asset/) and the "Asset Allocation"
+            // tab (list-asset-allocation/) are backed by AssetAssignment
+            // (AllocationList / AssetAllocationList), so they share the
+            // same valid fields.
+            if (url.indexOf("list-asset") !== -1) {
+                return ASSET_ALLOCATION_FIELDS;
+            }
+            return null;
+        }
+
+        function applyScopeToSelect($select, validFields) {
+            $select.find("option").each(function () {
+                var val = $(this).val();
+                if (!val) {
+                    return;
+                }
+                var visible = !validFields || validFields.indexOf(val) !== -1;
+                $(this).toggle(visible);
+            });
+            var current = $select.val();
+            if (current && validFields && validFields.indexOf(current) === -1) {
+                $select.val("");
+            }
+        }
+
+        function updateGroupByOptionsForTab(tabUrl) {
+            var validFields = fieldsForTabUrl(tabUrl);
+            $("#nestedGroupByLevels select[name='nested_fields']").each(function () {
+                applyScopeToSelect($(this), validFields);
+            });
+        }
+
+        $(document).on("oh:tab-switched", function (e) {
+            updateGroupByOptionsForTab(e.detail && e.detail.tabUrl);
+        });
+
+        // Nav and tabs load independently (separate hx-trigger="load"
+        // fetches) with no guaranteed order, so poll briefly for the
+        // active tab button rather than assuming it's already in the DOM.
+        var attempts = 0;
+        (function waitForActiveTab() {
+            var $active = $(".oh-tabs__tab--active");
+            if ($active.length) {
+                updateGroupByOptionsForTab($active.attr("data-tab-url"));
+                return;
+            }
+            if (attempts++ < 40) {
+                setTimeout(waitForActiveTab, 100);
+            }
+        })();
+    })();
+</script>
