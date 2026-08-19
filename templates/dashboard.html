@@ -1019,46 +1019,7 @@
             color: #fde68a;
         }
 
-        /* Approvals strip (above-the-fold) */
-        .md-approvals-strip {
-            margin-bottom: 16px;
-            padding: 14px 16px;
-            border: 1px solid rgba(128, 128, 128, 0.12);
-            border-radius: 12px;
-            background: hsl(0, 0%, 100%);
-        }
-        .dark .md-approvals-strip {
-            background: #111;
-            border-color: rgba(255,255,255,0.08);
-        }
-        .md-approvals-strip__head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-        .md-approvals-strip__title {
-            margin: 0;
-            font-size: 15px;
-            font-weight: 700;
-        }
-        .md-approvals-strip .md-pending-grid {
-            grid-template-columns: repeat(6, minmax(0, 1fr));
-            padding-top: 0;
-        }
-        @media (max-width: 1100px) {
-            .md-approvals-strip .md-pending-grid {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
-        }
-        @media (max-width: 640px) {
-            .md-approvals-strip .md-pending-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-
-        /* Pending approvals panel */
+        /* Pending approvals (sidebar) */
 
         .md-pending-grid {
             display: grid;
@@ -1414,16 +1375,6 @@
         {% if show_setup_checklist %}
             {% include "base/setup_checklist_banner.html" %}
         {% endif %}
-
-        <!-- Pending approvals (above the fold) -->
-        <div class="md-approvals-strip" id="md-approvals-strip" hidden>
-            <div class="md-approvals-strip__head">
-                <h2 class="md-approvals-strip__title">{% trans "Pending Approvals" %}</h2>
-            </div>
-            <div id="md-approvals-strip-body">
-                <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
-            </div>
-        </div>
 
         <div class="md-kpi-grid" id="md-kpi-grid">
             <div class="md-kpi-card md-kpi-card--skeleton"><div class="md-skeleton md-skeleton--icon"></div><div class="md-skeleton md-skeleton--label"></div><div class="md-skeleton md-skeleton--value"></div><div class="md-skeleton md-skeleton--sub"></div></div>
@@ -3022,32 +2973,16 @@
                 fetchP("{% url 'dashboard-pending-approvals' %}")
                 .then(r => r.json())
                 .then(data => {
-                    const p = data.pending;
-                    const isRestricted = data.is_restricted;
-                    const strip = document.getElementById('md-approvals-strip');
-                    const stripBody = document.getElementById('md-approvals-strip-body');
                     const sideEl = document.getElementById('md-pending-approvals');
-
-                    // Hide for users without approval permission
-                    if (isRestricted) {
-                        if (strip) strip.hidden = true;
+                    if (data.is_restricted) {
                         const panel = sideEl?.closest('.md-info-panel');
                         if (panel) panel.style.display = 'none';
                         return;
                     }
-
-                    const html = renderPendingCards(p);
-                    if (strip && stripBody) {
-                        strip.hidden = false;
-                        stripBody.innerHTML = html;
-                    }
-                    if (sideEl) sideEl.innerHTML = html;
+                    if (sideEl) sideEl.innerHTML = renderPendingCards(data.pending);
                 }).catch(() => {
-                    const msg = '<div class="md-info-panel__empty">{% trans "Unable to load" %}</div>';
-                    const stripBody = document.getElementById('md-approvals-strip-body');
-                    if (stripBody) stripBody.innerHTML = msg;
                     const sideEl = document.getElementById('md-pending-approvals');
-                    if (sideEl) sideEl.innerHTML = msg;
+                    if (sideEl) sideEl.innerHTML = '<div class="md-info-panel__empty">{% trans "Unable to load" %}</div>';
                 });
             }
             loadPendingApprovals();
