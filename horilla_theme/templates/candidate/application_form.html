@@ -84,7 +84,7 @@
                             <div class= "lg:h-[calc(100vh_-_160px)] overflow-hidden overflow-y-auto">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 ">
                                     <div>
-                                        <label class="required-star" for="name">{% trans "Name" %}</label>
+                                        <label class="required-star" for="name">{% trans "Name" context "person" %}</label>
                                         <div class="relative">
                                             <input type="text" id="name" name="name" placeholder="{% trans 'Enter your name' %}" required style="padding-left: 35px;" value="{{ form.name.value|default:'' }}">
                                             <span class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-[{{theme_obj.primary_700}}]">
@@ -279,6 +279,9 @@
     </div>
 
 
+    {# country.js localises its option labels via gettext(); this page is standalone
+       and does not extend index.html, so the catalog has to be pulled in here #}
+    <script src="{% url 'javascript-catalog' %}"></script>
     <script src="{% static '/index/country.js' %}"></script>
     <script>
         {% include 'select2.js' %}
