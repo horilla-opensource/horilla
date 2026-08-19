@@ -59,10 +59,8 @@
     <form
         id="languageSettingsForm"
         hx-post="{% url 'update-language-settings' %}"
-        hx-swap="outerHTML"
-        hx-select-oob="#mainHeader"
-        hx-target="#companyLanguageSettings"
-        hx-select="#companyLanguageSettings"
+        hx-swap="none"
+        hx-on-htmx-after-request="if (event.detail.successful) { companyLanguageSettings.markSaved(); } setTimeout(() => { reloadMessage(); }, 100);"
     >
         {% csrf_token %}
 

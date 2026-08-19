@@ -6036,7 +6036,9 @@ def _system_preferences_context(request):
     language_setting = CompanyLanguageSetting.objects.filter(
         company_id=language_company
     ).first()
-    enabled_languages = language_setting.enabled_languages if language_setting else []
+    enabled_languages = (
+        language_setting.enabled_languages if language_setting else ["en"]
+    )
     if language_company:
         language_employee_count = EmployeeWorkInformation.objects.filter(
             company_id=language_company, employee_id__is_active=True
@@ -6582,19 +6584,40 @@ def update_language_settings(request):
     """
     if request.method == "POST":
         selected_languages = request.POST.getlist("enabled_languages")
-        valid_codes = {code for code, _label in settings.LANGUAGES}
+        language_labels = dict(settings.LANGUAGES)
         selected_languages = [
-            code for code in selected_languages if code in valid_codes
+            code for code in selected_languages if code in language_labels
         ]
         company = get_session_company(request)
         instance, _created = CompanyLanguageSetting.objects.get_or_create(
             company_id=company
         )
+        previous_languages = set(instance.enabled_languages or [])
+        current_languages = set(selected_languages)
+        newly_enabled = [
+            language_labels[code]
+            for code in selected_languages
+            if code not in previous_languages
+        ]
+        newly_disabled = [
+            language_labels[code]
+            for code in instance.enabled_languages or []
+            if code not in current_languages
+        ]
         instance.enabled_languages = selected_languages
         instance.save()
-        messages.success(request, _("Language settings have been updated."))
-        return redirect(system_preferences_settings_view)
-    return HttpResponse(status=405)
+        if newly_enabled or newly_disabled:
+            parts = []
+            if newly_enabled:
+                parts.append(_("Enabled: %s") % ", ".join(newly_enabled))
+            if newly_disabled:
+                parts.append(_("Disabled: %s") % ", ".join(newly_disabled))
+            messages.success(request, ". ".join(parts) + ".")
+        else:
+            messages.success(request, _("Language settings have been updated."))
+    if request.META.get("HTTP_HX_REQUEST"):
+        return HttpResponse()
+    return HorillaRedirect(request)
 
 
 @login_required

@@ -429,8 +429,9 @@ def navbar_languages(request):
     """
     Exposes the list of languages available in the navbar language
     switcher for the user's current company. The switcher is only shown
-    once a company has explicitly enabled one or more languages; until
-    then it stays hidden rather than defaulting to every language.
+    when a company has explicitly enabled more than one language; with
+    zero or one language enabled, there is nothing to switch to, so it
+    stays hidden.
     """
     selected_company = request.session.get("selected_company")
     if not selected_company or selected_company == "all":
@@ -444,7 +445,7 @@ def navbar_languages(request):
         languages = [
             language for language in settings.LANGUAGES if language[0] in enabled_codes
         ]
-        if languages:
+        if len(languages) > 1:
             return {"navbar_languages": languages, "show_language_switcher": True}
 
     return {"navbar_languages": [], "show_language_switcher": False}

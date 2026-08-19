@@ -56,6 +56,24 @@ class ThreadLocalMiddleware:
         return response
 
 
+class DefaultLanguageMiddleware:
+    """
+    Runs before django.middleware.locale.LocaleMiddleware to stop it from
+    picking a language via the browser's Accept-Language header. Django's
+    set_language view (used by the navbar language switcher) only persists
+    an explicit choice in the LANGUAGE_COOKIE_NAME cookie, so that cookie
+    is the sole signal that should override settings.LANGUAGE_CODE.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if settings.LANGUAGE_COOKIE_NAME not in request.COOKIES:
+            request.META.pop("HTTP_ACCEPT_LANGUAGE", None)
+        return self.get_response(request)
+
+
 class MethodNotAllowedMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response

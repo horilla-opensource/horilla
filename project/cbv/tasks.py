@@ -20,8 +20,8 @@ from employee.models import Employee
 from horilla.http import HorillaRedirect
 from horilla.methods import handle_no_permission
 from horilla_views.cbv_methods import login_required
+from horilla_views.generic.cbv.kanban import HorillaKanbanView
 from horilla_views.generic.cbv.views import (
-    HorillaCardView,
     HorillaDetailedView,
     HorillaFormView,
     HorillaListView,
@@ -507,15 +507,17 @@ class TaskDetailView(HorillaDetailedView):
 
 
 @method_decorator(login_required, name="dispatch")
-class TaskCardView(HorillaCardView):
+class TaskCardView(HorillaKanbanView):
     """
-    card view of the page
+    kanban card view of the page, with tasks arranged into columns by status
     """
 
     model = Task
     filter_class = TaskAllFilter
     disable_group_by = True
     filter_keys_to_remove = ["field"]
+    group_key = "status"
+    show_kanban_confirmation = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -561,24 +563,24 @@ class TaskCardView(HorillaCardView):
         ]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        self.queryset = super().get_queryset()
         active = (
             True
             if self.request.GET.get("is_active", True)
             in ["unknown", "True", "true", True]
             else False
         )
-        queryset = queryset.filter(is_active=active)
+        self.queryset = self.queryset.filter(is_active=active)
         if not self.request.user.has_perm("project.view_task"):
             employee_id = self.request.user.employee_get
             subordinates = get_subordinates(self.request)
             subordinate_ids = [subordinate.id for subordinate in subordinates]
-            project = queryset.filter(
+            project = self.queryset.filter(
                 Q(project__managers=employee_id)
                 | Q(project__managers__in=subordinate_ids)
             )
-            queryset = (
-                queryset.filter(
+            self.queryset = (
+                self.queryset.filter(
                     Q(task_members=employee_id)
                     | Q(task_managers=employee_id)
                     | Q(task_members__in=subordinate_ids)
@@ -586,65 +588,23 @@ class TaskCardView(HorillaCardView):
                 )
                 | project
             )
-        return queryset.distinct()
+        self.queryset = self.queryset.distinct()
+        return self.queryset
 
     details = {
-        "image_src": "get_avatar",
+        "image_src": "{get_avatar}",
         "title": "{title}",
-        "subtitle": "{card_view_subtitle}",
+        "Project": "{if_project}",
+        "Stage": "{stage}",
+        "End Date": "{end_date}",
     }
 
-    card_attrs = """
+    kanban_attrs = """
         hx-get='{task_detail_view}?instance_ids={ordered_ids}'
         hx-target="#genericModalBody"
         data-target="#genericModal"
         data-toggle="oh-modal-toggle"
     """
-
-    card_status_indications = [
-        (
-            "todo--dot",
-            _("To Do"),
-            """
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=status]').val('to_do');
-                    $('#applyFilter').click();
-                "
-            """,
-        ),
-        (
-            "in-progress--dot",
-            _("In progress"),
-            """
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=status]').val('in_progress');
-                    $('#applyFilter').click();
-                "
-            """,
-        ),
-        (
-            "completed--dot",
-            _("Completed"),
-            """
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=status]').val('completed');
-                    $('#applyFilter').click();
-                "
-            """,
-        ),
-        (
-            "expired--dot",
-            _("Expired"),
-            """
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=status]').val('expired');
-                    $('#applyFilter').click();
-                "
-            """,
-        ),
-    ]
-
-    card_status_class = "status-{status}"
 
 
 @method_decorator(login_required, name="dispatch")
