@@ -14,6 +14,9 @@
         {% trans "Back" %}
     </button>
 </div>
+{% if template.description %}
+    <p class="mb-3" style="color:#565E6C">{{ template.description }}</p>
+{% endif %}
 <div class="bg-white p-3 rounded-md shadow-card">
     {{form}}
 </div>
