@@ -17,115 +17,114 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
 #: notifications/admin.py:13
 msgid "Mark selected notifications as unread"
-msgstr "Marcar notificações selecionadas como não lidas"
+msgstr ""
 
 #: notifications/apps.py:10 notifications/base/models.py:243
 msgid "Notifications"
-msgstr "Notificações"
+msgstr ""
 
 #: notifications/base/models.py:168
 msgid "level"
-msgstr "nível"
+msgstr ""
 
 #: notifications/base/models.py:175
 msgid "recipient"
-msgstr "destinatário"
+msgstr ""
 
 #: notifications/base/models.py:178
 msgid "unread"
-msgstr "não lida"
+msgstr ""
 
 #: notifications/base/models.py:184
 msgid "actor content type"
-msgstr "tipo de conteúdo do ator"
+msgstr ""
 
 #: notifications/base/models.py:186
 msgid "actor object id"
-msgstr "ID do objeto do ator"
+msgstr ""
 
 #: notifications/base/models.py:188
 msgid "actor"
-msgstr "ator"
+msgstr ""
 
 #: notifications/base/models.py:190
 msgid "verb"
-msgstr "verbo"
+msgstr ""
 
 #: notifications/base/models.py:191
 msgid "description"
-msgstr "descrição"
+msgstr ""
 
 #: notifications/base/models.py:197
 msgid "target content type"
-msgstr "tipo de conteúdo do destino"
+msgstr ""
 
 #: notifications/base/models.py:202
 msgid "target object id"
-msgstr "ID do objeto do destino"
+msgstr ""
 
 #: notifications/base/models.py:205
 msgid "target"
-msgstr "destino"
+msgstr ""
 
 #: notifications/base/models.py:211
 msgid "action object content type"
-msgstr "tipo de conteúdo do objeto de ação"
+msgstr ""
 
 #: notifications/base/models.py:216
 msgid "action object object id"
-msgstr "ID do objeto do objeto de ação"
+msgstr ""
 
 #: notifications/base/models.py:221
 msgid "action object"
-msgstr "objeto de ação"
+msgstr ""
 
 #: notifications/base/models.py:224
 msgid "timestamp"
-msgstr "data/hora"
+msgstr ""
 
 #: notifications/base/models.py:227
 msgid "public"
-msgstr "público"
+msgstr ""
 
 #: notifications/base/models.py:228
 msgid "deleted"
-msgstr "excluído"
+msgstr ""
 
 #: notifications/base/models.py:229
 msgid "emailed"
-msgstr "enviado por e-mail"
+msgstr ""
 
 #: notifications/base/models.py:231
 msgid "data"
-msgstr "dados"
+msgstr ""
 
 #: notifications/base/models.py:242
 msgid "Notification"
-msgstr "Notificação"
+msgstr ""
 
 #: notifications/base/models.py:257
 #, python-format
 msgid "%(actor)s %(verb)s %(action_object)s on %(target)s %(timesince)s ago"
-msgstr "%(actor)s %(verb)s %(action_object)s em %(target)s há %(timesince)s"
+msgstr ""
 
 #: notifications/base/models.py:261
 #, python-format
 msgid "%(actor)s %(verb)s %(target)s %(timesince)s ago"
-msgstr "%(actor)s %(verb)s %(target)s há %(timesince)s"
+msgstr ""
 
 #: notifications/base/models.py:263
 #, python-format
 msgid "%(actor)s %(verb)s %(action_object)s %(timesince)s ago"
-msgstr "%(actor)s %(verb)s %(action_object)s há %(timesince)s"
+msgstr ""
 
 #: notifications/base/models.py:264
 #, python-format
 msgid "%(actor)s %(verb)s %(timesince)s ago"
-msgstr "%(actor)s %(verb)s há %(timesince)s"
+msgstr ""
 
 #: notifications/tests/templates/test_live.html:9
 msgid "Make a notification"
-msgstr "Criar uma notificação"
+msgstr ""

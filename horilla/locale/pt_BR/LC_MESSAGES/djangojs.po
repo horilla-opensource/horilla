@@ -17,7 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
 msgid "An unexpected error occurred. Please refresh the page."
 msgstr "Ocorreu um erro inesperado. Atualize a página."
 
@@ -28,15 +27,13 @@ msgid "No rows are selected from Validate Attendances."
 msgstr "Nenhuma linha foi selecionada em Validar presenças."
 
 msgid "Do you really want to approve OT for all the selected attendances?"
-msgstr ""
-"Deseja realmente aprovar as horas extras de todas as presenças selecionadas?"
+msgstr "Deseja realmente aprovar as horas extras de todas as presenças selecionadas?"
 
 msgid "No rows are selected from OT Attendances."
 msgstr "Nenhuma linha foi selecionada em Presenças de horas extras."
 
 msgid "Do you really want to reject all the selected attendance requests?"
-msgstr ""
-"Deseja realmente rejeitar todas as solicitações de presença selecionadas?"
+msgstr "Deseja realmente rejeitar todas as solicitações de presença selecionadas?"
 
 msgid "Pending Attendance Update Request!"
 msgstr "Solicitação de atualização de presença pendente!"
@@ -44,9 +41,7 @@ msgstr "Solicitação de atualização de presença pendente!"
 msgid ""
 "An attendance request exists for updating this attendance prior to "
 "validation."
-msgstr ""
-"Existe uma solicitação de presença para atualizar esta presença antes da "
-"validação."
+msgstr "Existe uma solicitação de presença para atualizar esta presença antes da validação."
 
 msgid "View Request"
 msgstr "Ver solicitação"
@@ -82,88 +77,88 @@ msgid "Please upload a file with the .xlsx extension only."
 msgstr "Envie apenas um arquivo com a extensão .xlsx."
 
 msgid "visible"
-msgstr "visível"
+msgstr ""
 
 msgid "bgcolor"
-msgstr "cor de fundo"
+msgstr ""
 
 msgid "bordercolor"
-msgstr "cor da borda"
+msgstr ""
 
 msgid "borderwidth"
-msgstr "largura da borda"
+msgstr ""
 
 msgid "thickness"
-msgstr "espessura"
+msgstr ""
 
 msgid "autorange"
-msgstr "intervalo automático"
+msgstr ""
 
 msgid "range"
-msgstr "intervalo"
+msgstr ""
 
 msgid "x"
-msgstr "x"
+msgstr ""
 
 msgid "y"
-msgstr "y"
+msgstr ""
 
 msgid "minor"
-msgstr "secundário"
+msgstr ""
 
 msgid "label"
-msgstr "rótulo"
+msgstr ""
 
 msgid "arrowlen"
-msgstr "comprimento da seta"
+msgstr ""
 
 msgid "source"
-msgstr "origem"
+msgstr ""
 
 msgid "target"
-msgstr "destino"
+msgstr ""
 
 msgid "value"
-msgstr "valor"
+msgstr ""
 
 msgid "line.color"
-msgstr "cor da linha"
+msgstr ""
 
 msgid "line.width"
-msgstr "largura da linha"
+msgstr ""
 
 msgid "hoverinfo"
-msgstr "informações ao passar o mouse"
+msgstr ""
 
 msgid "hovertemplate"
-msgstr "modelo do texto ao passar o mouse"
+msgstr ""
 
 msgid "color"
-msgstr "cor"
+msgstr ""
 
 msgid "hovercolor"
-msgstr "cor ao passar o mouse"
+msgstr ""
 
 msgid "customdata"
-msgstr "dados personalizados"
+msgstr ""
 
 msgid "punc"
-msgstr "pontuação"
+msgstr ""
 
 msgid "name"
-msgstr "nome"
+msgstr ""
 
 msgid "keyword"
-msgstr "palavra-chave"
+msgstr ""
 
 msgid "arrow"
-msgstr "seta"
+msgstr ""
 
 msgid "operator"
-msgstr "operador"
+msgstr ""
 
 msgid "close"
-msgstr "fechar"
+msgstr ""
 
 msgid "Confirm"
 msgstr "Confirmar"
@@ -210,11 +205,8 @@ msgstr "OK"
 msgid "Total vacancy is %(vacancy)s."
 msgstr "A vaga total é %(vacancy)s."
 
-msgid ""
-"Are you sure to change the candidate from %(from)s stage to %(to)s stage"
-msgstr ""
-"Tem certeza de que deseja alterar o candidato do estágio %(from)s para o "
-"estágio %(to)s"
+msgid "Are you sure to change the candidate from %(from)s stage to %(to)s stage"
+msgstr "Tem certeza de que deseja alterar o candidato do estágio %(from)s para o estágio %(to)s"
 
 msgid "Stage updated"
 msgstr "Etapa atualizada"
@@ -222,12 +214,8 @@ msgstr "Etapa atualizada"
 msgid "Confirm Stage Change"
 msgstr "Confirmar mudança de estágio"
 
-msgid ""
-"The candidate is being moved from %(from)s to the %(to)s stage. Do you want "
-"to proceed?"
-msgstr ""
-"O candidato está sendo movido do estágio %(from)s para o estágio %(to)s. "
-"Você quer prosseguir?"
+msgid "The candidate is being moved from %(from)s to the %(to)s stage. Do you want to proceed?"
+msgstr "O candidato está sendo movido do estágio %(from)s para o estágio %(to)s. Você quer prosseguir?"
 
 msgid "Don't show this again in this session"
 msgstr "Não mostrar isso novamente nesta sessão"
@@ -239,187 +227,128 @@ msgid "This move is not allowed."
 msgstr "Este movimento não é permitido."
 
 msgid "Do you really want to delete all the selected attendances?"
-msgstr "Deseja realmente excluir todas as presenças selecionadas?"
-
+msgstr "Deseja realmente excluir todos os atendimentos selecionados?"
 msgid "Do you really want to delete this employee?"
 msgstr "Você realmente deseja excluir este funcionário?"
-
 msgid "No rows are selected for deleting attendances."
 msgstr "Nenhuma linha é selecionada para exclusão de presenças."
 
+
 msgid "Add Stage"
 msgstr "Adicionar etapa"
-
 msgid "Add announcement"
 msgstr "Adicionar anúncio"
-
 msgid "Add candidate"
 msgstr "Adicionar candidato"
-
 msgid "Add candidate to stage option"
 msgstr "Opção para adicionar candidato à etapa"
-
 msgid "Add new recruitment"
 msgstr "Adicionar novo recrutamento"
-
 msgid "Add new stage to recruitment"
 msgstr "Adicionar nova etapa ao recrutamento"
-
 msgid "All your company and base configurations"
 msgstr "Todas as configurações da empresa e básicas"
-
 msgid "App"
 msgstr "App"
-
 msgid "Approve or Reject Options"
 msgstr "Opções de aprovar ou rejeitar"
-
 msgid "Candidate"
 msgstr "Candidato"
-
 msgid "Candidate change stage option"
 msgstr "Opção de alterar etapa do candidato"
-
 msgid "Candidate management options"
 msgstr "Opções de gerenciamento de candidatos"
-
 msgid "Candidate rating option"
 msgstr "Opção de avaliação do candidato"
-
 msgid "Candidate record"
 msgstr "Registro do candidato"
-
 msgid "Change Stage"
 msgstr "Alterar etapa"
-
 msgid "Company"
 msgstr "Empresa"
-
 msgid "Create Quick Requests"
 msgstr "Criar solicitações rápidas"
-
 msgid "Create announcement from dashboard"
 msgstr "Criar anúncio pelo painel"
-
 msgid "Dashboard"
 msgstr "Painel"
-
 msgid "Dashboard Actions"
 msgstr "Ações do painel"
-
 msgid "Dashboard Tiles"
 msgstr "Cartões do painel"
-
 msgid "Filter"
 msgstr "Filtro"
-
 msgid "Filter Tag"
 msgstr "Tag de filtro"
-
 msgid "Filter tag option"
 msgstr "Opção de tag de filtro"
-
 msgid "Horilla Dashboard Tiles"
 msgstr "Cartões do painel Horilla"
-
 msgid "Horilla Hr Apps. eg Dashboard"
 msgstr "Apps Horilla RH, ex. Painel"
-
 msgid "Horilla dashboard section"
 msgstr "Seção do painel Horilla"
-
 msgid "Language"
 msgstr "Idioma"
-
 msgid "Mark Attendance"
 msgstr "Registrar presença"
-
 msgid "Multi-Company"
 msgstr "Multiempresa"
-
 msgid "Multi-Company options"
 msgstr "Opções multiempresa"
-
 msgid "Multi-Language options"
 msgstr "Opções multilíngues"
-
 msgid "New Recruitment"
 msgstr "Novo recrutamento"
-
 msgid "Notification"
 msgstr "Notificação"
-
 msgid "Notifications section"
 msgstr "Seção de notificações"
-
 msgid "Options"
 msgstr "Opções"
-
 msgid "Pipeline"
 msgstr "Pipeline"
-
 msgid "Pipeline filter option"
 msgstr "Opção de filtro da pipeline"
-
 msgid "Profile"
 msgstr "Perfil"
-
 msgid "Profile and change password options"
 msgstr "Opções de perfil e alteração de senha"
-
 msgid "Quick Actions"
 msgstr "Ações rápidas"
-
 msgid "Quick Filters"
 msgstr "Filtros rápidos"
-
 msgid "Rating"
 msgstr "Avaliação"
-
 msgid "Recruitment"
 msgstr "Recrutamento"
-
 msgid "Recruitment pipeline management"
 msgstr "Gerenciamento da pipeline de recrutamento"
-
 msgid "Recruitment stage"
 msgstr "Etapa de recrutamento"
-
 msgid "Search"
 msgstr "Pesquisar"
-
 msgid "Search in candidate, recruitment and stage"
 msgstr "Pesquisar em candidato, recrutamento e etapa"
-
 msgid "Selected settings view"
 msgstr "Visualização de configurações selecionada"
-
 msgid "Settings"
 msgstr "Configurações"
-
 msgid "Settings Options"
 msgstr "Opções de configurações"
-
 msgid "Settings View"
 msgstr "Visualização de configurações"
-
 msgid "Settings configurations"
 msgstr "Configurações dos ajustes"
-
 msgid "Settings menu bar"
 msgstr "Barra de menu de configurações"
-
 msgid "Stage"
 msgstr "Etapa"
-
 msgid "Toggle View"
 msgstr "Alternar visualização"
-
 msgid "Toggle view type"
 msgstr "Alternar tipo de visualização"
-
 msgid "Used to mark your attendance"
 msgstr "Usado para registrar sua presença"
-
 msgid "Your current company access"
 msgstr "Seu acesso atual à empresa"
