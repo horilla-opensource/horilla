@@ -8,7 +8,12 @@
     </button>
 </div>
 <div class="oh-modal__dialog-body" id="biometricEmployeesModalBody">
-    <form hx-post="{%url 'add-biometric-user' device_id%}" id="biometricEmployeesForm" class="oh-profile-section pt-0">
+    <form
+        hx-post="{%url 'add-biometric-user' device_id%}"
+        hx-target="#objectCreateModalTarget"
+        id="biometricEmployeesForm"
+        class="oh-profile-section pt-0"
+    >
         {% csrf_token %}
         <div class="col-sm-12 col-md-12 col-lg-12">
             <div class="oh-input-group">
