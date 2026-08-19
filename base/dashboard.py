@@ -1194,21 +1194,16 @@ def dashboard_pending_approvals(request):
     except Exception:
         pending["leave_requests"] = 0
 
-    # Attendance requests
+    # Attendance requests — same queryset as the Requested Attendances tab badge
     try:
+        from attendance.cbv.attendance_request import (
+            AttendanceRequestListTab,
+            _request_tab_badge_count,
+        )
         from attendance.models import Attendance
-        from base.methods import filtersubordinates
 
         if can_approve:
-            qs = Attendance.objects.filter(is_validate_request=True)
-            att_count = (
-                (
-                    filtersubordinates(request, qs, "attendance.view_attendance")
-                    | (qs.filter(employee_id=employee) if employee else qs.none())
-                )
-                .distinct()
-                .count()
-            )
+            att_count = _request_tab_badge_count(request, AttendanceRequestListTab)
         else:
             att_count = (
                 Attendance.objects.filter(
@@ -1300,7 +1295,8 @@ def dashboard_pending_approvals(request):
         from base.models import WorkTypeRequest
 
         if can_approve:
-            data = WorkTypeRequest.objects.filter(employee_id__is_active=True)
+            # WorkRequestListView does not drop inactive employees.
+            data = WorkTypeRequest.objects.all()
             wt_count = (
                 (
                     filtersubordinates(request, data, "base.view_worktyperequest")
