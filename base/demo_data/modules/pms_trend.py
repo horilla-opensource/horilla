@@ -126,12 +126,37 @@ def backfill_pms_objectives(today: date | None = None) -> int:
                 ),
             )
 
+    _reconcile_objective_status(today)
+
     logger.info(
         "PMS backfill: spread %s objective(s) over the trailing %s days",
         updated,
         TRAILING_DAYS,
     )
     return updated
+
+
+def _reconcile_objective_status(today: date) -> None:
+    """Closed work ended in the past; not-started work isn't already overdue."""
+    from pms.models import EmployeeObjective
+
+    for row in EmployeeObjective._base_manager.values(
+        "id", "status", "end_date", "progress_percentage"
+    ):
+        end = row["end_date"]
+        status = row["status"]
+        if not end:
+            continue
+        if status == "Closed" and end > today:
+            EmployeeObjective._base_manager.filter(pk=row["id"]).update(
+                end_date=today - timedelta(days=7),
+                progress_percentage=100,
+            )
+        elif status == "Not Started" and end < today:
+            EmployeeObjective._base_manager.filter(pk=row["id"]).update(
+                status="At Risk",
+                progress_percentage=max(row["progress_percentage"] or 0, 20),
+            )
 
 
 # Roughly one in seven employees per company gets an objective -- a

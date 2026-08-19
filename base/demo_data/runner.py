@@ -18,6 +18,7 @@ from base.demo_data.modules.attendance_trend import (
     backfill_attendance_overtime,
     backfill_attendance_spread,
     backfill_zero_coverage_attendance,
+    reconcile_attendance_with_leave,
 )
 from base.demo_data.modules.employee_features import backfill_employee_feature_coverage
 from base.demo_data.modules.employee_lifecycle import backfill_employee_lifecycle
@@ -50,6 +51,7 @@ from base.demo_data.modules.recruitment_expansion import (
     backfill_company_recruitment_pipelines,
 )
 from base.demo_data.modules.recruitment_features import backfill_rejected_candidates
+from base.demo_data.modules.request_windows import backfill_request_windows
 from base.demo_data.org import (
     differentiate_org_taxonomy_by_company,
     standardize_org_taxonomy,
@@ -121,9 +123,9 @@ def run_enterprise_demo_seeder(
     # right after, the same as every other objective.
     result["pms_coverage_backfill"] = backfill_pms_coverage(today)
     result["pms_backfill"] = backfill_pms_objectives(today)
+    result["helpdesk_company_lookups"] = backfill_company_helpdesk_lookups(today)
     result["helpdesk_backfill"] = backfill_helpdesk_tickets(today)
     result["helpdesk_scenarios_reanchor"] = reanchor_helpdesk_scenarios(today)
-    result["helpdesk_company_lookups"] = backfill_company_helpdesk_lookups(today)
 
     # Depends on Contract (fixtures, already loaded) and Attendance (just
     # backfilled above) for its per-employee day-count computation.
@@ -141,6 +143,8 @@ def run_enterprise_demo_seeder(
     # managers) that ship with zero demo rows connecting them to anything.
     result["payroll_feature_coverage"] = backfill_payroll_feature_coverage(today)
     result["employee_feature_coverage"] = backfill_employee_feature_coverage(today)
+    result["request_windows"] = backfill_request_windows(today)
+    result["attendance_leave_reconcile"] = reconcile_attendance_with_leave(today)
 
     # System ReportTemplate rows (Explorer's pre-built pivot layouts) aren't
     # part of any load_data/*.json fixture, so a --flush reload wipes them

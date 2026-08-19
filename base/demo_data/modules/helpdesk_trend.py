@@ -23,63 +23,75 @@ from django.db import transaction
 logger = logging.getLogger(__name__)
 
 TRAILING_DAYS = 180
-TICKET_COUNT = 16
+TICKETS_PER_COMPANY = 8
 TITLE_MARKER = "Demo Helpdesk Ticket"
 STATUS_CYCLE = ("resolved", "resolved", "in_progress", "new", "on_hold", "resolved")
 
 
 @transaction.atomic
 def backfill_helpdesk_tickets(today: date | None = None) -> int:
-    """Ensure TICKET_COUNT historical demo tickets exist, then keep them
-    spread across the trailing 6 months on every run."""
+    """Ensure a per-company set of historical demo tickets exists, then keep
+    them spread across the trailing 6 months on every run."""
     if not apps.is_installed("helpdesk"):
         return 0
 
     today = today or date.today()
     window_start = today - timedelta(days=TRAILING_DAYS)
 
-    from employee.models import Employee
+    from employee.models import Employee, EmployeeWorkInformation
     from helpdesk.models import Ticket, TicketType
 
-    ticket_type_ids = list(
-        TicketType._base_manager.order_by("id").values_list("id", flat=True)[:6]
+    types_by_company: dict[int, list[int]] = {}
+    for ticket_type_id, company_id in TicketType._base_manager.values_list(
+        "id", "company_id"
+    ):
+        if company_id:
+            types_by_company.setdefault(company_id, []).append(ticket_type_id)
+
+    employees_by_company: dict[int, list[int]] = {}
+    work_info = dict(
+        EmployeeWorkInformation._base_manager.filter(
+            employee_id__in=Employee._base_manager.filter(is_active=True)
+        ).values_list("employee_id", "company_id")
     )
-    employee_ids = list(
-        Employee._base_manager.filter(is_active=True)
-        .order_by("id")
-        .values_list("id", flat=True)[:20]
-    )
-    if not ticket_type_ids or not employee_ids:
-        return 0
+    for employee_id, company_id in work_info.items():
+        if company_id:
+            employees_by_company.setdefault(company_id, []).append(employee_id)
 
     processed = 0
-    for i in range(TICKET_COUNT):
-        title = f"{TITLE_MARKER} #{i}"
-        status = STATUS_CYCLE[i % len(STATUS_CYCLE)]
-        # TICKET_COUNT-1: the last ticket lands at exactly today instead of
-        # one step short of it, so the current month isn't left empty.
-        offset = int(i * TRAILING_DAYS / max(TICKET_COUNT - 1, 1))
-        created_date = window_start + timedelta(days=offset)
-        resolved_date = None
-        if status == "resolved":
-            resolved_date = min(created_date + timedelta(days=3), today)
+    for company_id, employee_ids in employees_by_company.items():
+        ticket_type_ids = types_by_company.get(company_id) or [
+            t for types in types_by_company.values() for t in types
+        ]
+        if not ticket_type_ids or not employee_ids:
+            continue
+        for i in range(TICKETS_PER_COMPANY):
+            title = f"{TITLE_MARKER} C{company_id} #{i}"
+            status = STATUS_CYCLE[i % len(STATUS_CYCLE)]
+            offset = int(i * TRAILING_DAYS / max(TICKETS_PER_COMPANY - 1, 1))
+            created_date = window_start + timedelta(days=offset)
+            if created_date > today:
+                created_date = today
+            resolved_date = None
+            if status == "resolved":
+                resolved_date = min(created_date + timedelta(days=3), today)
 
-        ticket, _ = Ticket._base_manager.get_or_create(
-            title=title,
-            defaults={
-                "employee_id_id": employee_ids[i % len(employee_ids)],
-                "ticket_type_id": ticket_type_ids[i % len(ticket_type_ids)],
-                "description": "Auto-generated demo ticket for trend backfill.",
-                "priority": "medium",
-                "assigning_type": "department",
-                "raised_on": "1",
-                "status": status,
-            },
-        )
-        Ticket._base_manager.filter(pk=ticket.pk).update(
-            created_date=created_date, resolved_date=resolved_date, status=status
-        )
-        processed += 1
+            ticket, _ = Ticket._base_manager.get_or_create(
+                title=title,
+                defaults={
+                    "employee_id_id": employee_ids[i % len(employee_ids)],
+                    "ticket_type_id": ticket_type_ids[i % len(ticket_type_ids)],
+                    "description": "Auto-generated demo ticket for trend backfill.",
+                    "priority": "medium",
+                    "assigning_type": "department",
+                    "raised_on": "1",
+                    "status": status,
+                },
+            )
+            Ticket._base_manager.filter(pk=ticket.pk).update(
+                created_date=created_date, resolved_date=resolved_date, status=status
+            )
+            processed += 1
 
     logger.info(
         "Helpdesk backfill: %s historical ticket(s) spread over the trailing %s days",

@@ -22,7 +22,7 @@ from django.db import transaction
 logger = logging.getLogger(__name__)
 
 TRAILING_DAYS = 180
-PAD_TARGET = 30
+PAD_TARGET = 80
 PAD_MARKER = "[Demo seed]"
 
 # Still-"requested" rows are unactioned: realistically someone submitted
@@ -69,6 +69,7 @@ def backfill_leave_spread(today: date | None = None) -> int:
         today - timedelta(days=PENDING_WINDOW_DAYS),
         today + timedelta(days=PENDING_LOOKAHEAD_DAYS),
     )
+    updated += _pin_current_and_upcoming_leave(today)
 
     logger.info(
         "Leave backfill: spread %s row(s) over the trailing %s days",
@@ -103,10 +104,63 @@ def _spread_rows(rows: list[dict], window_start: date, window_end: date) -> int:
             new_end = new_start + timedelta(days=max(span, 0))
 
         LeaveRequest._base_manager.filter(pk=row["id"]).update(
-            start_date=new_start, end_date=new_end
+            start_date=new_start,
+            end_date=new_end,
+            requested_date=new_start - timedelta(days=2),
         )
 
     return count
+
+
+def _pin_current_and_upcoming_leave(today: date) -> int:
+    """Guarantee each company has someone on leave today and a pending future request.
+
+    Uniform spreading can miss "today" entirely depending on row count, which
+    makes the on-leave KPI and upcoming-leave widgets look empty.
+    """
+    from employee.models import EmployeeWorkInformation
+    from leave.models import LeaveRequest
+
+    company_employees: dict[int, list[int]] = {}
+    for employee_id, company_id in EmployeeWorkInformation._base_manager.values_list(
+        "employee_id", "company_id"
+    ):
+        if company_id:
+            company_employees.setdefault(company_id, []).append(employee_id)
+
+    updated = 0
+    for company_id, employee_ids in company_employees.items():
+        approved = list(
+            LeaveRequest._base_manager.filter(
+                status="approved", employee_id__in=employee_ids
+            ).order_by("id")[:2]
+        )
+        for i, req in enumerate(approved):
+            start = today - timedelta(days=i)
+            LeaveRequest._base_manager.filter(pk=req.pk).update(
+                start_date=start,
+                end_date=start + timedelta(days=1),
+                requested_days=2.0,
+                requested_date=start - timedelta(days=3),
+            )
+            updated += 1
+
+        pending = list(
+            LeaveRequest._base_manager.filter(
+                status="requested", employee_id__in=employee_ids
+            ).order_by("-id")[:2]
+        )
+        for i, req in enumerate(pending):
+            start = today + timedelta(days=7 + i * 7)
+            LeaveRequest._base_manager.filter(pk=req.pk).update(
+                start_date=start,
+                end_date=start + timedelta(days=1),
+                requested_days=2.0,
+                requested_date=today - timedelta(days=1),
+            )
+            updated += 1
+
+    return updated
 
 
 def _pad_leave_requests(today: date) -> int:

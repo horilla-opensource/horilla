@@ -16,6 +16,8 @@ from datetime import date, timedelta
 from django.apps import apps
 from django.db import transaction
 
+from base.demo_data.dates import attendance_dates_for_employee
+
 logger = logging.getLogger(__name__)
 
 TRAILING_DAYS = 180
@@ -78,23 +80,13 @@ def backfill_attendance_spread(today: date | None = None) -> int:
         count = len(emp_rows)
         if count == 0:
             continue
-        # count-1, not count: with N points evenly spaced by TRAILING_DAYS/N,
-        # the last one always falls one step short of "today" -- for a
-        # low-density employee that gap can swallow the whole current month.
-        # Dividing by (count-1) instead anchors point 0 at window_start and
-        # the last point exactly at today.
-        step = TRAILING_DAYS / max(count - 1, 1)
-        last_assigned: date | None = None
+        target_dates = attendance_dates_for_employee(
+            employee_id, window_start, today, count
+        )
+        if not target_dates:
+            continue
         plan = []
-        for rank, row in enumerate(emp_rows):
-            candidate = window_start + timedelta(days=int(rank * step))
-            if last_assigned is not None and candidate <= last_assigned:
-                candidate = last_assigned + timedelta(days=1)
-            if candidate > today:
-                candidate = today
-            new_date = candidate
-            last_assigned = new_date
-
+        for row, new_date in zip(emp_rows, target_dates):
             old_date = row["attendance_date"]
             delta_days = (new_date - old_date).days
 
@@ -104,13 +96,23 @@ def backfill_attendance_spread(today: date | None = None) -> int:
                 else None
             )
             new_clock_out_date = (
-                min(
-                    row["attendance_clock_out_date"] + timedelta(days=delta_days),
-                    today,
-                )
+                row["attendance_clock_out_date"] + timedelta(days=delta_days)
                 if row["attendance_clock_out_date"]
                 else None
             )
+            # Clock-out is a fact that already happened. Overnight shifts may
+            # spill to the next calendar day, but never into the future, and
+            # never past tomorrow relative to the attendance day.
+            if new_clock_in_date and new_clock_in_date > today:
+                new_clock_in_date = today
+            if new_clock_out_date:
+                new_clock_out_date = min(
+                    new_clock_out_date,
+                    today,
+                    new_date + timedelta(days=1),
+                )
+                if new_date == today:
+                    new_clock_out_date = today
             new_shift_day_pk = seen_days.get(new_date.strftime("%A").lower())
 
             plan.append(
@@ -308,12 +310,12 @@ def backfill_zero_coverage_attendance(today: date | None = None) -> int:
     if not uncovered_ids:
         return 0
 
-    step = TRAILING_DAYS / max(NEW_COVERAGE_ROW_COUNT - 1, 1)
     created = 0
     for employee_id in uncovered_ids:
         work_info = work_info_by_employee[employee_id]
-        for rank in range(NEW_COVERAGE_ROW_COUNT):
-            attendance_date = window_start + timedelta(days=int(rank * step))
+        for attendance_date in attendance_dates_for_employee(
+            employee_id, window_start, today, NEW_COVERAGE_ROW_COUNT
+        ):
             shift_day_pk = seen_days.get(attendance_date.strftime("%A").lower())
 
             Attendance._base_manager.create(
@@ -338,3 +340,58 @@ def backfill_zero_coverage_attendance(today: date | None = None) -> int:
         len(uncovered_ids),
     )
     return created
+
+
+@transaction.atomic
+def reconcile_attendance_with_leave(today: date | None = None) -> int:
+    """Drop attendance on days an employee is already on approved leave.
+
+    Present-today / weekly charts otherwise double-count the same person as
+    both in office and on leave.
+    """
+    if not apps.is_installed("attendance") or not apps.is_installed("leave"):
+        return 0
+
+    from attendance.models import Attendance, WorkRecords
+    from leave.models import LeaveRequest
+
+    removed = 0
+    leaves = LeaveRequest._base_manager.filter(status="approved").values(
+        "id", "employee_id", "start_date", "end_date"
+    )
+    for leave in leaves:
+        start = leave["start_date"]
+        end = leave["end_date"] or start
+        qs = Attendance._base_manager.filter(
+            employee_id=leave["employee_id"],
+            attendance_date__gte=start,
+            attendance_date__lte=end,
+        )
+        att_ids = list(qs.values_list("id", flat=True))
+        if not att_ids:
+            continue
+        WorkRecords._base_manager.filter(attendance_id__in=att_ids).update(
+            is_attendance_record=False,
+            is_leave_record=True,
+            attendance_id=None,
+            work_record_type="ABS",
+            leave_request_id=leave["id"],
+        )
+        removed += qs.delete()[0]
+
+    # Historical facts never live in the future (overnight clamp is not enough
+    # if a leftover fixture row was never in the spread set).
+    cap = today or date.today()
+    future = Attendance._base_manager.filter(attendance_date__gt=cap)
+    future_ids = list(future.values_list("id", flat=True))
+    if future_ids:
+        WorkRecords._base_manager.filter(attendance_id__in=future_ids).delete()
+        removed += future.delete()[0]
+    Attendance._base_manager.filter(attendance_clock_out_date__gt=cap).update(
+        attendance_clock_out_date=cap
+    )
+
+    logger.info(
+        "Attendance/leave reconcile: removed %s conflicting attendance row(s)", removed
+    )
+    return removed
