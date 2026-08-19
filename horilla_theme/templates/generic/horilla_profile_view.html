@@ -368,7 +368,8 @@
                                 data-tab="{{tab.title}}"
                                 class="bg-white {% if forloop.counter == 1 and not active_target %} active {% endif %}"
                             >
-                                {{ tab.title }}
+                                {# label only — data-tab and tab.url stay untranslated for routing #}
+                                {% trans tab.title %}
                             </button>
                             <span
                                 hx-get="{{tab.url|format:instance}}"
