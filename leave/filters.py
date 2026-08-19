@@ -70,9 +70,7 @@ class AssignedLeaveFilter(FilterSet):
     # leave_type = filters.CharFilter(
     #     field_name="leave_type_id__name", lookup_expr="icontains"
     # )
-    search = filters.CharFilter(
-        field_name="employee_id__employee_first_name", lookup_expr="icontains"
-    )
+    search = filters.CharFilter(method=filter_by_name)
     employee_id = django_filters.ModelMultipleChoiceFilter(
         queryset=Employee.objects.all(),
         widget=forms.SelectMultiple(),
@@ -347,9 +345,7 @@ class LeaveAllocationRequestFilter(FilterSet):
     leave_type = filters.CharFilter(
         field_name="leave_type_id__name", lookup_expr="icontains"
     )
-    search = filters.CharFilter(
-        field_name="employee_id__employee_first_name", lookup_expr="icontains"
-    )
+    search = filters.CharFilter(method=filter_by_name)
     number_of_days_up_to = filters.NumberFilter(
         field_name="requested_days", lookup_expr="lte"
     )
