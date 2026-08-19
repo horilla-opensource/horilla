@@ -1872,6 +1872,8 @@ def edit_installment_amount(request):
         return HorillaRedirect(request, message=_("Loan not found."))
     deductions = loan.deduction_ids.all().order_by("one_time_date")
     deduction = deductions.filter(id=ded_id).first()
+    if not deduction:
+        return HorillaRedirect(request, message=_("Deduction not found."))
     deductions_before = deductions.filter(one_time_date__lt=deduction.one_time_date)
     deductions_after = deductions.filter(one_time_date__gt=deduction.one_time_date)
     total_sum = deductions_before.aggregate(Sum("amount"))["amount__sum"] or 0

@@ -95,6 +95,16 @@ urlpatterns = [
         asset.AssetInformationView.as_view(),
         name="asset-information",
     ),
+    path(
+        "asset-item-bulk-edit/<int:asset_id>/",
+        views.asset_item_bulk_edit,
+        name="asset-item-bulk-edit",
+    ),
+    path(
+        "get-asset-items-hx/",
+        views.get_asset_items_hx,
+        name="get-asset-items-hx",
+    ),
     path("asset-category-view/", views.asset_category_view, name="asset-category-view"),
     path(
         "asset-category-view-search-filter/",
@@ -234,7 +244,7 @@ urlpatterns = [
         name="asset-allocate-delete",
     ),
     path(
-        "asset-allocate-return/<int:asset_id>/",
+        "asset-allocate-return/<int:assignment_id>/",
         views.asset_allocate_return,
         name="asset-allocate-return",
     ),

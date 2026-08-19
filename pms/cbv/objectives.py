@@ -642,18 +642,22 @@ class CreateEmployeeKeyResultFormView(HorillaFormView):
 
     def dispatch(self, request, *args, **kwargs):
         emp_obj_id = kwargs.get("emp_obj_id")
+        pk = kwargs.get("pk")
 
         if emp_obj_id:
             self.emp_objective = EmployeeObjective.find(emp_obj_id)
+        elif pk:
+            key_result = EmployeeKeyResult.objects.filter(pk=pk).first()
+            self.emp_objective = (
+                key_result.employee_objective_id if key_result else None
+            )
         else:
-            pk = kwargs.get("pk")
-            if pk:
-                key_result = EmployeeKeyResult.objects.filter(pk=pk).first()
-                self.emp_objective = (
-                    key_result.employee_objective_id if key_result else None
-                )
-            else:
-                self.emp_objective = None
+            self.emp_objective = None
+
+        if (emp_obj_id or pk) and not self.emp_objective:
+            messages.error(request, _("Employee objective not found."))
+            return HorillaRedirect(request)
+
         if not self.has_key_result_permission():
             messages.info(request, _("You dont have permission"))
             return HorillaRedirect(request)
@@ -665,11 +669,16 @@ class CreateEmployeeKeyResultFormView(HorillaFormView):
         objective's managers can create/update an employee key result.
         """
 
-        return (
+        if (
             self.request.user.has_perm("pms.change_objective")
             or self.request.user.has_perm("pms.change_employeeobjective")
             or self.request.user.has_perm("pms.change_employeekeyresult")
-            or self.request.user.employee_get
+        ):
+            return True
+        if not self.emp_objective:
+            return False
+        return (
+            self.request.user.employee_get
             in self.emp_objective.objective_id.managers.all()
         )
 

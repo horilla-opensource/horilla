@@ -408,7 +408,7 @@
                     <div class="ob-kpi-card__value">${data.task_completion}%</div>
                     <div class="ob-kpi-card__sub">${data.completed_tasks}/${data.total_tasks} {% trans "tasks done" %}</div>
                 </a>
-                <a href="{% url 'employee-view' %}?is_active=False" class="ob-kpi-card">
+                <a href="{% url 'offboarding-pipeline' %}?stage_type=archived" class="ob-kpi-card">
                     <div class="ob-kpi-card__icon ob-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
                     <div class="ob-kpi-card__label">{% trans "Archived" %}</div>
                     <div class="ob-kpi-card__value">${data.archived}</div>
@@ -511,7 +511,7 @@
                 chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
                         const d = data.departments[config.dataPointIndex];
-                        const base = "{% url 'resignation-request-view' %}";
+                        const base = "{% url 'offboarding-pipeline' %}";
                         if (d && d.dept_id) {
                             window.location.href = base + "?employee_id__employee_work_info__department_id=" + d.dept_id;
                         } else {

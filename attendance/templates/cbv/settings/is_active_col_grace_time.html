@@ -5,12 +5,16 @@
             <input
                 type="checkbox"
                 id="isActive"
-                data-id="{{instance.id}}"
+                name="isChecked"
                 class="oh-switch__checkbox"
                 {% if instance.is_active %}
                     checked
                 {% endif %}
-                onchange="updateGracetimeIsActivate(this)"
+                hx-post="{% url 'update-isactive-gracetime' %}"
+                hx-trigger="change"
+                hx-vals='{"gracetimeId": "{{instance.id}}"}'
+                hx-swap="none"
+                hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 200);"
             >
         {% else %}
             <input

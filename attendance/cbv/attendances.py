@@ -622,6 +622,8 @@ class AttendanceDetailActivityList(AttendanceActivityListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         pk = Attendance.find(self.kwargs.get("pk"))
+        if not pk:
+            return queryset.none()
         queryset = queryset.filter(
             attendance_date=pk.attendance_date, employee_id=pk.employee_id
         )

@@ -8,7 +8,9 @@ shift relocates dates, it doesn't manufacture new ones). This moves a small,
 deterministic set of existing employees' dates into the window instead.
 
 Named demo personas used for role-assignment scenarios (base/demo_roles.py
-DEMO_ROLE_ASSIGNMENTS) are excluded so this never breaks that demo.
+DEMO_ROLE_ASSIGNMENTS) are excluded so this never breaks that demo. Employees
+the static offboarding fixture already marks as departed are excluded too,
+so this never "re-hires" someone the offboarding pipeline shows as archived.
 """
 
 from __future__ import annotations
@@ -65,6 +67,21 @@ def backfill_employee_lifecycle(today: date | None = None) -> dict:
     safe_qs = Employee._base_manager.exclude(email__in=_PROTECTED_EMAILS).exclude(
         employee_user_id__is_superuser=True
     )
+    # The static offboarding fixture already tells a complete departure
+    # story for a fixed set of employees (OffboardingEmployee/
+    # ResignationLetter). Picking one of them as a "new hire" here
+    # contradicts that story every run -- e.g. re-hiring someone the
+    # fixture shows sitting in an Archived offboarding stage.
+    if apps.is_installed("offboarding"):
+        from offboarding.models import OffboardingEmployee, ResignationLetter
+
+        offboarding_employee_ids = set(
+            OffboardingEmployee._base_manager.values_list("employee_id_id", flat=True)
+        ) | set(
+            ResignationLetter._base_manager.values_list("employee_id_id", flat=True)
+        )
+        if offboarding_employee_ids:
+            safe_qs = safe_qs.exclude(pk__in=offboarding_employee_ids)
     # The turnover/joining dashboards are company-scoped by session, and a
     # fresh demo login defaults to the first company. Picking candidates
     # from other companies first would spread hires/exits across companies

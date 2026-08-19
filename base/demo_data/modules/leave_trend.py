@@ -22,8 +22,15 @@ from django.db import transaction
 logger = logging.getLogger(__name__)
 
 TRAILING_DAYS = 180
-PAD_TARGET = 30
+PAD_TARGET = 80
 PAD_MARKER = "[Demo seed]"
+
+# Still-"requested" rows are unactioned: realistically someone submitted
+# them recently, for dates that may be imminent or still ahead -- not
+# months-old and unresolved, and not confined to the past the way an
+# already-actioned (approved/rejected/cancelled) request is.
+PENDING_WINDOW_DAYS = 21
+PENDING_LOOKAHEAD_DAYS = 14
 
 
 @transaction.atomic
@@ -40,18 +47,54 @@ def backfill_leave_spread(today: date | None = None) -> int:
     _pad_leave_requests(today)
 
     rows = list(
-        LeaveRequest._base_manager.order_by("id").values("id", "start_date", "end_date")
+        LeaveRequest._base_manager.order_by("id").values(
+            "id", "start_date", "end_date", "status"
+        )
     )
+    if not rows:
+        return 0
+
+    # Ranking the whole pool together by id put every low-id pending row
+    # (the original fixture's first ~16 rows are *all* "requested") at the
+    # oldest end of the trailing window and made a future-dated request
+    # structurally impossible (the spread never exceeds `today`). Give
+    # pending rows their own short, today-straddling window instead;
+    # settled (already-actioned) rows keep the original past-only spread.
+    pending_rows = [r for r in rows if r["status"] == "requested"]
+    settled_rows = [r for r in rows if r["status"] != "requested"]
+
+    updated = _spread_rows(settled_rows, window_start, today)
+    updated += _spread_rows(
+        pending_rows,
+        today - timedelta(days=PENDING_WINDOW_DAYS),
+        today + timedelta(days=PENDING_LOOKAHEAD_DAYS),
+    )
+    updated += _pin_current_and_upcoming_leave(today)
+
+    logger.info(
+        "Leave backfill: spread %s row(s) over the trailing %s days",
+        updated,
+        TRAILING_DAYS,
+    )
+    return updated
+
+
+def _spread_rows(rows: list[dict], window_start: date, window_end: date) -> int:
+    """Evenly space `rows` (already ordered) across [window_start, window_end].
+
+    count-1, not count: N evenly-spaced points spanning [0, step*(N-1)]
+    anchors the first row at window_start and the last at exactly
+    window_end, instead of falling one step short of it (which, for a
+    small N, is enough to leave the most recent bucket empty).
+    """
+    from leave.models import LeaveRequest
+
     count = len(rows)
     if count == 0:
         return 0
 
-    # count-1, not count: N evenly-spaced points spanning [0, step*(N-1)]
-    # anchors the first row at window_start and the last at exactly today,
-    # instead of falling one step short of today (which, for a small N,
-    # is enough to leave the current month's bucket empty).
-    step = TRAILING_DAYS / max(count - 1, 1)
-    updated = 0
+    span_days = (window_end - window_start).days
+    step = span_days / max(count - 1, 1)
     for i, row in enumerate(rows):
         new_start = window_start + timedelta(days=int(i * step))
 
@@ -61,15 +104,62 @@ def backfill_leave_spread(today: date | None = None) -> int:
             new_end = new_start + timedelta(days=max(span, 0))
 
         LeaveRequest._base_manager.filter(pk=row["id"]).update(
-            start_date=new_start, end_date=new_end
+            start_date=new_start,
+            end_date=new_end,
+            requested_date=new_start - timedelta(days=2),
         )
-        updated += 1
 
-    logger.info(
-        "Leave backfill: spread %s row(s) over the trailing %s days",
-        updated,
-        TRAILING_DAYS,
-    )
+    return count
+
+
+def _pin_current_and_upcoming_leave(today: date) -> int:
+    """Guarantee each company has someone on leave today and a pending future request.
+
+    Uniform spreading can miss "today" entirely depending on row count, which
+    makes the on-leave KPI and upcoming-leave widgets look empty.
+    """
+    from employee.models import EmployeeWorkInformation
+    from leave.models import LeaveRequest
+
+    company_employees: dict[int, list[int]] = {}
+    for employee_id, company_id in EmployeeWorkInformation._base_manager.values_list(
+        "employee_id", "company_id"
+    ):
+        if company_id:
+            company_employees.setdefault(company_id, []).append(employee_id)
+
+    updated = 0
+    for company_id, employee_ids in company_employees.items():
+        approved = list(
+            LeaveRequest._base_manager.filter(
+                status="approved", employee_id__in=employee_ids
+            ).order_by("id")[:2]
+        )
+        for i, req in enumerate(approved):
+            start = today - timedelta(days=i)
+            LeaveRequest._base_manager.filter(pk=req.pk).update(
+                start_date=start,
+                end_date=start + timedelta(days=1),
+                requested_days=2.0,
+                requested_date=start - timedelta(days=3),
+            )
+            updated += 1
+
+        pending = list(
+            LeaveRequest._base_manager.filter(
+                status="requested", employee_id__in=employee_ids
+            ).order_by("-id")[:2]
+        )
+        for i, req in enumerate(pending):
+            start = today + timedelta(days=7 + i * 7)
+            LeaveRequest._base_manager.filter(pk=req.pk).update(
+                start_date=start,
+                end_date=start + timedelta(days=1),
+                requested_days=2.0,
+                requested_date=today - timedelta(days=1),
+            )
+            updated += 1
+
     return updated
 
 
@@ -132,4 +222,65 @@ def _pad_leave_requests(today: date) -> int:
         created += 1
 
     logger.info("Leave backfill: created %s padding leave request(s)", created)
+    return created
+
+
+# The original fixture's ~126 employees all carry exactly these two leave
+# types, at these totals -- matched here for the previously-uncovered set.
+NEW_COVERAGE_LEAVE_TYPES = {2: 12.0, 3: 10.0}  # {leave_type_id: total_leave_days}
+
+
+@transaction.atomic
+def backfill_zero_coverage_available_leave(today: date | None = None) -> int:
+    """
+    Give any active employee with zero AvailableLeave rows the same
+    Casual/Sick leave types every other employee already has.
+
+    LeaveRequest.clean() hard-requires an AvailableLeave row before a leave
+    type can be requested at all -- an employee with none literally cannot
+    apply for leave in the demo, which is the case for most of the largest
+    company's staff (the fixture's leave data was authored against the same
+    ~126-employee universe attendance was).
+    """
+    if not apps.is_installed("leave"):
+        return 0
+
+    today = today or date.today()
+
+    from employee.models import Employee
+    from leave.models import AvailableLeave
+
+    covered_ids = set(
+        AvailableLeave._base_manager.values_list("employee_id", flat=True).distinct()
+    )
+    uncovered_ids = list(
+        Employee._base_manager.filter(is_active=True)
+        .exclude(pk__in=covered_ids)
+        .order_by("id")
+        .values_list("id", flat=True)
+    )
+    if not uncovered_ids:
+        return 0
+
+    reset_date = date(today.year, 1, 1)
+    created = 0
+    for employee_id in uncovered_ids:
+        for leave_type_id, total_days in NEW_COVERAGE_LEAVE_TYPES.items():
+            AvailableLeave._base_manager.get_or_create(
+                employee_id_id=employee_id,
+                leave_type_id_id=leave_type_id,
+                defaults={
+                    "available_days": total_days,
+                    "carryforward_days": 0.0,
+                    "total_leave_days": total_days,
+                    "assigned_date": today,
+                    "reset_date": reset_date,
+                },
+            )
+            created += 1
+
+    logger.info(
+        "Leave backfill: created AvailableLeave rows for %s previously-uncovered employee(s)",
+        len(uncovered_ids),
+    )
     return created

@@ -6,6 +6,11 @@ show even once employee_lifecycle backfills contract_end_date. This creates
 one resignation letter per employee that module marks as exited, dated
 consistently with that employee's own contract_end_date, so both charts tell
 the same story.
+
+A ResignationLetter alone never shows up on the Offboarding Pipeline itself,
+which is driven by OffboardingEmployee -- this also creates the matching
+pipeline card (in the Archived stage, since the letter is auto-approved),
+so the two views stay consistent with each other.
 """
 
 from __future__ import annotations
@@ -31,12 +36,19 @@ def backfill_offboarding_letters(
     today = today or date.today()
 
     from employee.models import EmployeeWorkInformation
-    from offboarding.models import ResignationLetter
+    from offboarding.models import (
+        OffboardingEmployee,
+        OffboardingStage,
+        ResignationLetter,
+    )
 
     contract_end_by_employee = dict(
         EmployeeWorkInformation._base_manager.filter(
             employee_id__in=employee_ids
         ).values_list("employee_id", "contract_end_date")
+    )
+    archived_stage = (
+        OffboardingStage._base_manager.filter(type="archived").order_by("id").first()
     )
 
     created_or_updated = 0
@@ -56,6 +68,17 @@ def backfill_offboarding_letters(
         ResignationLetter._base_manager.filter(pk=letter.pk).update(
             planned_to_leave_on=planned, status="approved"
         )
+
+        if archived_stage:
+            OffboardingEmployee._base_manager.get_or_create(
+                employee_id_id=employee_id,
+                defaults={
+                    "stage_id_id": archived_stage.pk,
+                    "notice_period_starts": planned,
+                    "notice_period_ends": planned,
+                },
+            )
+
         created_or_updated += 1
 
     logger.info(

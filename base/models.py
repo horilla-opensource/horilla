@@ -456,7 +456,7 @@ class RotatingWorkType(HorillaModel):
     RotatingWorkType model
     """
 
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True, verbose_name=_("Name"))
     work_type1 = models.ForeignKey(
         WorkType,
         on_delete=models.PROTECT,
@@ -525,7 +525,11 @@ class RotatingWorkType(HorillaModel):
         return "None"
 
     def clean(self):
-        if self.work_type1 == self.work_type2:
+        if (
+            self.work_type1_id
+            and self.work_type2_id
+            and self.work_type1_id == self.work_type2_id
+        ):
             raise ValidationError(_("Select different work type continuously"))
 
         additional_work_types = (
@@ -536,13 +540,15 @@ class RotatingWorkType(HorillaModel):
 
         if (
             additional_work_types
-            and str(self.work_type2.id) == additional_work_types[0]
+            and self.work_type2_id is not None
+            and str(self.work_type2_id) == additional_work_types[0]
         ):
             raise ValidationError(_("Select different work type continuously"))
 
         if (
             additional_work_types
-            and str(self.work_type1.id) == additional_work_types[-1]
+            and self.work_type1_id is not None
+            and str(self.work_type1_id) == additional_work_types[-1]
         ):
             raise ValidationError(_("Select different work type continuously"))
 

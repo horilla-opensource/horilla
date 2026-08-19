@@ -84,7 +84,7 @@
                             <div class= "lg:h-[calc(100vh_-_160px)] overflow-hidden overflow-y-auto">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 ">
                                     <div>
-                                        <label class="required-star" for="name">{% trans "Name" %}</label>
+                                        <label class="required-star" for="name">{% trans "Name" context "person" %}</label>
                                         <div class="relative">
                                             <input type="text" id="name" name="name" placeholder="{% trans 'Enter your name' %}" required style="padding-left: 35px;" value="{{ form.name.value|default:'' }}">
                                             <span class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-[{{theme_obj.primary_700}}]">
@@ -279,10 +279,26 @@
     </div>
 
 
-    {# This page is standalone (it does not extend index.html), so its dependencies
-       have to be listed here. The inline block below inlines the whole Select2
-       library and then uses $(...) throughout, so jQuery must load first. #}
+    {% comment %}
+      This page is standalone - it does not extend index.html - so every
+      dependency has to be listed here, and the order matters:
+
+        jQuery              the inline block below inlines the whole Select2
+                            library and then uses $(...) throughout, so without
+                            it that block dies on "jQuery is not defined" and
+                            the resume prefill, the required-label styling and
+                            the matching-resume autofill never run.
+        gettext catalog     country.js localises its option labels through
+                            gettext(), so the catalog has to precede it.
+        country.js          consumer of both of the above.
+
+      Written as a comment tag rather than {% templatetag openbrace %}# ... #{% templatetag closebrace %}
+      on purpose: that form is single-line only, so the multi-line notes both
+      sides of this merge had written were not comments at all - Django printed
+      them as visible text on the public application form.
+    {% endcomment %}
     <script src="{% static '/jquery/jquery.min.js' %}"></script>
+    <script src="{% url 'javascript-catalog' %}"></script>
     <script src="{% static '/index/country.js' %}"></script>
     <script>
         {% include 'select2.js' %}

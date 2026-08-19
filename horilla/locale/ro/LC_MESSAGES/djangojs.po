@@ -1,0 +1,200 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-18 13:57+0530\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2);\n"
+
+msgid "An unexpected error occurred. Please refresh the page."
+msgstr "A apărut o eroare neașteptată. Vă rugăm să reîncărcați pagina."
+
+msgid "Do you really want to validate all the selected attendances?"
+msgstr "Sigur doriți să validați toate prezențele selectate?"
+
+msgid "No rows are selected from Validate Attendances."
+msgstr "Nu este selectat niciun rând din Validare prezențe."
+
+msgid "Do you really want to approve OT for all the selected attendances?"
+msgstr "Sigur doriți să aprobați orele suplimentare pentru toate prezențele selectate?"
+
+msgid "No rows are selected from OT Attendances."
+msgstr "Nu este selectat niciun rând din Prezențe ore suplimentare."
+
+msgid "Do you really want to reject all the selected attendance requests?"
+msgstr "Sigur doriți să respingeți toate cererile de prezență selectate?"
+
+msgid "Pending Attendance Update Request!"
+msgstr "Cerere de actualizare a prezenței în așteptare!"
+
+msgid ""
+"An attendance request exists for updating this attendance prior to "
+"validation."
+msgstr "Există o cerere de prezență pentru actualizarea acestei prezențe înainte de validare."
+
+msgid "View Request"
+msgstr "Vezi cererea"
+
+msgid "Some selected requests have already been approved."
+msgstr "Unele cereri selectate au fost deja aprobate."
+
+msgid "Some selected requests have already been rejected."
+msgstr "Unele cereri selectate au fost deja respinse."
+
+msgid "Do you wish to create a Leave Report?"
+msgstr "Doriți să creați un raport de concediu?"
+
+msgid "Do you want to reject the selected leave requests?"
+msgstr "Doriți să respingeți cererile de concediu selectate?"
+
+msgid "Do you want to send the payslip by mail?"
+msgstr "Doriți să trimiteți fluturașul de salariu prin e-mail?"
+
+msgid "Name of Employees"
+msgstr "Numele angajaților"
+
+msgid "Amount"
+msgstr "Sumă"
+
+msgid "Upload Completed!"
+msgstr "Încărcare finalizată!"
+
+msgid "Imported Successfully!"
+msgstr "Import realizat cu succes!"
+
+msgid "Please upload a file with the .xlsx extension only."
+msgstr "Vă rugăm să încărcați doar un fișier cu extensia .xlsx."
+
+msgid "visible"
+msgstr "vizibil"
+
+msgid "bgcolor"
+msgstr "culoare fundal"
+
+msgid "bordercolor"
+msgstr "culoare bordură"
+
+msgid "borderwidth"
+msgstr "lățime bordură"
+
+msgid "thickness"
+msgstr "grosime"
+
+msgid "autorange"
+msgstr "interval automat"
+
+msgid "range"
+msgstr "interval"
+
+msgid "x"
+msgstr "x"
+
+msgid "y"
+msgstr "y"
+
+msgid "minor"
+msgstr "minor"
+
+msgid "label"
+msgstr "etichetă"
+
+msgid "arrowlen"
+msgstr "lungime săgeată"
+
+msgid "source"
+msgstr "sursă"
+
+msgid "target"
+msgstr "țintă"
+
+msgid "value"
+msgstr "valoare"
+
+msgid "line.color"
+msgstr "culoare linie"
+
+msgid "line.width"
+msgstr "lățime linie"
+
+msgid "hoverinfo"
+msgstr "informații la survolare"
+
+msgid "hovertemplate"
+msgstr "șablon la survolare"
+
+msgid "color"
+msgstr "culoare"
+
+msgid "hovercolor"
+msgstr "culoare la survolare"
+
+msgid "customdata"
+msgstr "date personalizate"
+
+msgid "punc"
+msgstr "punctuație"
+
+msgid "name"
+msgstr "nume"
+
+msgid "keyword"
+msgstr "cuvânt-cheie"
+
+msgid "arrow"
+msgstr "săgeată"
+
+msgid "operator"
+msgstr "operator"
+
+msgid "close"
+msgstr "închide"
+
+msgid "Confirm"
+msgstr "Confirmă"
+
+msgid "Close"
+msgstr "Închide"
+
+msgid "Cancel"
+msgstr "Anulează"
+
+msgid "Selected"
+msgstr "Selectat"
+
+msgid "Uploading..."
+msgstr "Se încarcă..."
+
+msgid "No Records found"
+msgstr "Nu au fost găsite înregistrări"
+
+msgid "Do you want to download the excel file?"
+msgstr "Doriți să descărcați fișierul Excel?"
+
+msgid "Do you want to download the template?"
+msgstr "Doriți să descărcați șablonul?"
+
+msgid "No rows are selected from the records."
+msgstr "Nu este selectat niciun rând din înregistrări."
+
+msgid "Do you really want to delete all the selected records?"
+msgstr "Sigur doriți să ștergeți toate înregistrările selectate?"
+
+msgid "Do you really want to archive all the selected records?"
+msgstr "Sigur doriți să arhivați toate înregistrările selectate?"
+
+msgid "Do you really want to approve all the selected requests?"
+msgstr "Sigur doriți să aprobați toate cererile selectate?"
+
+msgid "Do you really want to unarchive all the selected records?"
+msgstr "Sigur doriți să dezarhivați toate înregistrările selectate?"

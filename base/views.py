@@ -347,11 +347,20 @@ def normalize_demo_payslips():
     boundaries, so the period, the dates embedded in ``pay_head_data`` and the batch
     label are recomputed from that tag instead. Returns the number of payslips
     updated.
+
+    Also runs the app's own ``expire_contract()`` scheduled task inline:
+    fixture loaddata bypasses both Contract.save() and the scheduler, so a
+    demo Contract shipped "active" with a now-past contract_end_date (after
+    the fixture date shift) would otherwise stay contradictorily "active"
+    until the real scheduler happens to run.
     """
     if not apps.is_installed("payroll"):
         return 0
 
     from payroll.models.models import Payslip
+    from payroll.scheduler import expire_contract
+
+    expire_contract()
 
     today = datetime.today().date()
     updated = 0
@@ -382,11 +391,18 @@ def normalize_demo_payslips():
                 f"{start.strftime('%b %d %Y')} - {end.strftime('%b %d %Y')}"
             )
 
+        status = payslip.status
+        # M-0 is the current, still-open month -- a payslip can't already be
+        # "paid" or "confirmed" for a period that hasn't closed yet.
+        if offset == 0 and status in ("paid", "confirmed"):
+            status = "review_ongoing"
+
         Payslip._base_manager.filter(pk=payslip.pk).update(
             start_date=start,
             end_date=end,
             pay_head_data=pay_head_data,
             group_name=f"Demo Payroll - {start.strftime('%b %Y')}",
+            status=status,
         )
         updated += 1
 
@@ -2970,24 +2986,22 @@ def rotating_work_type_assign_archive(request, obj_id):
     """
     Archive or un-archive rotating work type assigns
     """
-    try:
-        rwork_type = get_object_or_404(RotatingWorkTypeAssign, id=obj_id)
-        employee_id = rwork_type.employee_id.id
-        employees_rwork_types = RotatingWorkTypeAssign.objects.filter(
-            is_active=True, employee_id=rwork_type.employee_id
-        )
-        rwork_type.is_active = not rwork_type.is_active
-        if rwork_type.is_active and employees_rwork_types:
-            messages.error(request, _("Already on record is active"))
-        else:
-            rwork_type.save()
-            message = _("un-archived") if rwork_type.is_active else _("archived")
-            messages.success(
-                request, _("Rotating work type assign is {}").format(message)
-            )
-        return rotating_work_type_assign_redirect(request, obj_id, employee_id)
-    except Http404:
+    rwork_type = RotatingWorkTypeAssign.find(obj_id)
+    if not rwork_type:
         messages.error(request, _("Rotating work type assign not found."))
+        return HorillaRedirect(request)
+
+    employee_id = rwork_type.employee_id.id
+    employees_rwork_types = RotatingWorkTypeAssign.objects.filter(
+        is_active=True, employee_id=rwork_type.employee_id
+    )
+    rwork_type.is_active = not rwork_type.is_active
+    if rwork_type.is_active and employees_rwork_types:
+        messages.error(request, _("Already on record is active"))
+    else:
+        rwork_type.save()
+        message = _("un-archived") if rwork_type.is_active else _("archived")
+        messages.success(request, _("Rotating work type assign is {}").format(message))
     return rotating_work_type_assign_redirect(request, obj_id, employee_id)
 
 
@@ -3081,13 +3095,15 @@ def rotating_work_type_assign_delete(request, obj_id):
     """
     This method is used to delete rotating work type
     """
+    rotating_work_type_assign_obj = RotatingWorkTypeAssign.find(obj_id)
+    if not rotating_work_type_assign_obj:
+        messages.error(request, _("Rotating work type assign not found."))
+        return HorillaRedirect(request)
+
+    employee_id = rotating_work_type_assign_obj.employee_id.id
     try:
-        rotating_work_type_assign_obj = RotatingWorkTypeAssign.objects.get(id=obj_id)
-        employee_id = rotating_work_type_assign_obj.employee_id.id
         rotating_work_type_assign_obj.delete()
         messages.success(request, _("Rotating work type assign deleted."))
-    except RotatingWorkTypeAssign.DoesNotExist:
-        messages.error(request, _("Rotating work type assign not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this rotating work type."))
 
@@ -3841,21 +3857,22 @@ def rotating_shift_assign_archive(request, obj_id):
     """
     This method is used to archive and unarchive rotating shift assign records
     """
-    try:
-        rshift = get_object_or_404(RotatingShiftAssign, id=obj_id)
-        employee_id = rshift.employee_id.id
-        employees_rshift_assigns = RotatingShiftAssign.objects.filter(
-            is_active=True, employee_id=rshift.employee_id
-        )
-        rshift.is_active = not rshift.is_active
-        if rshift.is_active and employees_rshift_assigns:
-            messages.error(request, _("Already on record is active"))
-        else:
-            rshift.save()
-            message = _("un-archived") if rshift.is_active else _("archived")
-            messages.success(request, _("Rotating shift assign is {}").format(message))
-    except Http404:
+    rshift = RotatingShiftAssign.find(obj_id)
+    if not rshift:
         messages.error(request, _("Rotating shift assign not found."))
+        return HorillaRedirect(request)
+
+    employee_id = rshift.employee_id.id
+    employees_rshift_assigns = RotatingShiftAssign.objects.filter(
+        is_active=True, employee_id=rshift.employee_id
+    )
+    rshift.is_active = not rshift.is_active
+    if rshift.is_active and employees_rshift_assigns:
+        messages.error(request, _("Already on record is active"))
+    else:
+        rshift.save()
+        message = _("un-archived") if rshift.is_active else _("archived")
+        messages.success(request, _("Rotating shift assign is {}").format(message))
 
     return rotating_shift_assign_redirect(request, obj_id, employee_id)
 
@@ -5692,8 +5709,12 @@ def shift_request_delete(request, id):
 
     """
 
+    shift_request = ShiftRequest.find(id)
+    if not shift_request:
+        messages.error(request, _("Shift request not found."))
+        return HorillaRedirect(request)
+
     try:
-        shift_request = ShiftRequest.find(id)
         user = shift_request.employee_id.employee_user_id
         messages.success(request, _("Shift request deleted"))
         shift_request.delete()
@@ -5709,8 +5730,6 @@ def shift_request_delete(request, id):
             icon="trash",
         )
 
-    except ShiftRequest.DoesNotExist:
-        messages.error(request, _("Shift request not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this shift request."))
 
@@ -7339,6 +7358,9 @@ def delete_shift_comment_file(request):
         )
 
     comment = ShiftRequestComment.find(comment_id)
+    if not comment:
+        return HorillaRedirect(request, message=_("Comment not found."))
+
     script = ""
 
     if (
@@ -7414,6 +7436,13 @@ def delete_work_type_comment_file(request):
         )
 
     comment = WorkTypeRequestComment.find(comment_id)
+    if not comment:
+        return HorillaRedirect(
+            request,
+            message=_("Comment not found."),
+            redirect_to="work-type-request-view",
+        )
+
     script = ""
 
     if (
@@ -7443,6 +7472,9 @@ def delete_shiftrequest_comment(request, comment_id):
     This method is used to delete shift request comments
     """
     comment = ShiftRequestComment.find(comment_id)
+    if not comment:
+        return HorillaRedirect(request, message=_("Comment not found."))
+
     request_id = comment.request_id.id
     script = ""
     if (
@@ -7582,8 +7614,11 @@ def delete_worktyperequest_comment(request, comment_id):
     """
     This method is used to delete Work type request comments
     """
-    script = ""
     comment = WorkTypeRequestComment.find(comment_id)
+    if not comment:
+        return HorillaRedirect(request, message=_("Comment not found."))
+
+    script = ""
     request_id = comment.request_id.id
     if (
         request.user.employee_get == comment.employee_id

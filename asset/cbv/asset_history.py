@@ -53,6 +53,7 @@ class AssetHistorylistView(HorillaListView):
 
     columns = [
         (_("Asset"), "asset_id__asset_name", "get_avatar"),
+        (_("Asset Item"), "asset_item_id"),
         (_("Employee"), "assigned_to_employee_id"),
         (_("Assigned Date"), "assigned_date"),
         (_("Returned Date"), "return_date"),
@@ -168,6 +169,7 @@ class AssetHistoryDetailView(HorillaDetailedView):
     }
     body = [
         (_("Allocated User"), "assigned_to_employee_id"),
+        (_("Asset Item"), "asset_item_id"),
         (_("Returned Status"), "return_status"),
         (_("Allocated Date"), "assigned_date"),
         (_("Returned Date"), "return_date"),

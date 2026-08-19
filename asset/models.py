@@ -7,7 +7,7 @@ within an Asset Management System.
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Count, F, Q
+from django.db.models import Q
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.html import format_html
@@ -183,25 +183,24 @@ class Asset(HorillaModel):
     def available_assets(cls):
         """Return assets that still have at least one unit available for assignment."""
         today = timezone.now().date()
-        return (
-            cls.objects.annotate(
-                active_assignments=Count(
-                    "assetassignment",
-                    filter=Q(assetassignment__return_date__isnull=True),
-                )
-            )
-            .filter(active_assignments__lt=F("quantity"))
-            .filter(Q(expiry_date__isnull=True) | Q(expiry_date__gte=today))
+        return cls.objects.filter(asset_status="Available").filter(
+            Q(expiry_date__isnull=True) | Q(expiry_date__gte=today)
         )
 
     @property
     def is_expired(self):
         return bool(self.expiry_date and self.expiry_date < timezone.now().date())
 
+    def current_assignees(self):
+        """Employees this asset is currently (actively) assigned to."""
+        return Employee.objects.filter(
+            allocated_employee__asset_id=self,
+            allocated_employee__return_date__isnull=True,
+        ).distinct()
+
     @property
     def available_count(self):
-        active = self.assetassignment_set.filter(return_date__isnull=True).count()
-        return max(0, self.quantity - active)
+        return self.asset_items.filter(status="Available").count()
 
     class Meta:
         ordering = ["-created_at"]
@@ -212,13 +211,6 @@ class Asset(HorillaModel):
         return f"{self.asset_name}-{self.asset_tracking_id}"
 
     def asset_name_display(self):
-        if self.is_expired:
-            return format_html(
-                "{} <span class='inline-block border-2 border-solid rounded font-bold"
-                " text-[0.8rem] px-2 py-1 text-[hsl(0,77%,56%)] border-[hsl(0,77%,56%)] ms-2'>{}</span>",
-                self.asset_name,
-                _("Expired"),
-            )
         return self.asset_name
 
     def action_column(self):
@@ -234,11 +226,25 @@ class Asset(HorillaModel):
         This method for get custom column for status.
         """
 
-        if self.asset_status == "Available":
+        if self.quantity > 1:
             label = self.get_asset_status_display()
-            label = f"{label}<span class='inline-block border-2 border-solid rounded font-bold text-[0.8rem] px-2 py-1 text-[hsl(8,77%,56%)] border-[hsl(8,77%,56%)] ms-5' title='{self.available_count} {self.get_asset_status_display()}'>{self.available_count}/{self.quantity}</span>"
+            label = f"{label}<span class='inline-block border-2 border-solid rounded font-bold text-[0.8rem] px-2 py-1 text-[hsl(8,77%,56%)] border-[hsl(8,77%,56%)] ms-5' title='{self.available_count} of {self.quantity} Available'>{self.available_count}/{self.quantity}</span>"
             return label
         return self.get_asset_status_display()
+
+    def row_status_class(self):
+        """
+        This method for get custom column for status.
+        """
+
+        status_class_map = {
+            "Available": "row-status--yellow",
+            "In use": "row-status--blue",
+            "Not-Available": "row-status--gray",
+        }
+        if self.is_expired:
+            return "row-status--red"
+        return status_class_map.get(self.asset_status, "")
 
     def detail_view_action(self):
         """
@@ -273,15 +279,65 @@ class Asset(HorillaModel):
         return url
 
     def save(self, *args, **kwargs):
-        if self.quantity < 1:
-            self.asset_status = "Not-Available"
-        elif self.asset_status == "Not-Available":
-            active = self.assetassignment_set.filter(return_date__isnull=True).count()
-            if active >= self.quantity:
-                self.asset_status = "In use"
-            else:
-                self.asset_status = "Available"
         super().save(*args, **kwargs)
+        self.sync_asset_items()
+        self.update_status_from_items()
+
+    def sync_asset_items(self):
+        """
+        Create placeholder AssetItems so the item count matches quantity.
+        Never removes items - decreasing quantity is a manual/guarded operation.
+        """
+        existing = self.asset_items.count()
+        if existing < self.quantity:
+            base_id = self.asset_tracking_id or f"AST{self.pk}"
+            new_items = [
+                AssetItem(
+                    asset_id=self,
+                    tracking_id=base_id if idx == 1 else f"{base_id}-{idx}",
+                )
+                for idx in range(existing + 1, self.quantity + 1)
+            ]
+            AssetItem.objects.bulk_create(new_items)
+
+        if self.quantity == 1:
+            # Single-unit assets have no separate item-editing UI, so the
+            # sole item's tracking ID just mirrors the parent's - editing
+            # the asset's own Tracking Id field is the only edit path.
+            sole_item = self.asset_items.first()
+            if sole_item and sole_item.tracking_id != self.asset_tracking_id:
+                AssetItem.objects.filter(pk=sole_item.pk).update(
+                    tracking_id=self.asset_tracking_id
+                )
+
+    def update_status_from_items(self):
+        """Recompute asset_status from the aggregate status of its AssetItems."""
+        if self.quantity < 1:
+            new_status = "Not-Available"
+        else:
+            statuses = set(self.asset_items.values_list("status", flat=True))
+            if not statuses:
+                return
+            if "Available" in statuses:
+                new_status = "Available"
+            elif "In use" in statuses:
+                new_status = "In use"
+            else:
+                new_status = "Not-Available"
+        if new_status != self.asset_status:
+            self.asset_status = new_status
+            Asset.objects.entire().filter(pk=self.pk).update(asset_status=new_status)
+
+    def asset_items_action(self):
+        """
+        This method for get custom column for viewing this asset's items.
+        """
+        if self.quantity <= 1:
+            return ""
+        return render_template(
+            path="cbv/asset/asset_items_action.html",
+            context={"instance": self},
+        )
 
     def clean(self):
         existing_asset = Asset.objects.filter(
@@ -298,6 +354,57 @@ class Asset(HorillaModel):
                 }
             )
         return super().clean()
+
+
+class AssetItem(HorillaModel):
+    """
+    Represents a single physical unit belonging to an Asset.
+    """
+
+    STATUS = [
+        ("Available", _("Available")),
+        ("In use", _("In Use")),
+        ("Damaged", _("Damaged")),
+        ("Lost", _("Lost")),
+    ]
+
+    asset_id = models.ForeignKey(
+        Asset,
+        on_delete=models.CASCADE,
+        related_name="asset_items",
+        verbose_name=_("Asset"),
+    )
+    tracking_id = models.CharField(
+        max_length=30, unique=True, verbose_name=_("Tracking Id")
+    )
+    status = models.CharField(
+        choices=STATUS,
+        default="Available",
+        max_length=20,
+        verbose_name=_("Status"),
+    )
+    objects = HorillaCompanyManager("asset_id__asset_category_id__company_id")
+
+    class Meta:
+        """
+        Meta class to add additional options
+        """
+
+        ordering = ["tracking_id"]
+        verbose_name = _("Asset Item")
+        verbose_name_plural = _("Asset Items")
+
+    def __str__(self):
+        return f"{self.tracking_id}"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.asset_id.update_status_from_items()
+
+    def delete(self, *args, **kwargs):
+        asset = self.asset_id
+        super().delete(*args, **kwargs)
+        asset.update_status_from_items()
 
 
 class AssetReport(HorillaModel):
@@ -374,6 +481,13 @@ class AssetAssignment(HorillaModel):
     ]
     asset_id = models.ForeignKey(
         Asset, on_delete=models.PROTECT, verbose_name=_("Asset")
+    )
+    asset_item_id = models.ForeignKey(
+        AssetItem,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        verbose_name=_("Asset Item"),
     )
     assigned_to_employee_id = models.ForeignKey(
         Employee,

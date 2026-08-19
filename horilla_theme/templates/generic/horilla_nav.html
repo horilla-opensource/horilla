@@ -116,7 +116,7 @@
                                                         >
                                                             <option value="">{% trans "Select" %}</option>
                                                             {% for field in group_by_fields %}
-                                                                <option value="{{field.0}}"{% if request.GET.field == field.0 %} selected{% endif %}>{{ field.1 }}</option>
+                                                                <option value="{{field.0}}"{% if request.GET.field == field.0 or not request.GET.field and default_group_by == field.0 %} selected{% endif %}>{{ field.1 }}</option>
                                                             {% endfor %}
                                                         </select>
                                                     </div>

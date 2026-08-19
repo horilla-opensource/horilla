@@ -107,7 +107,6 @@ def main():
         company_emps.append(emp)
 
     employees = company_emps[:TARGET_EMPLOYEE_GROUPS]
-    project.members.add(*employees)
     if task:
         # Task M2M names may vary; ignore if absent.
         for attr in ("task_members", "members"):

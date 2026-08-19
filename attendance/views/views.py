@@ -726,6 +726,7 @@ def attendance_overtime_delete(request, obj_id):
     """
     previous_data = request.GET.urlencode()
     hx_target = request.META.get("HTTP_HX_TARGET", None)
+    employee_id = None
     try:
         attendance = AttendanceOverTime.objects.get(id=obj_id)
         employee_id = attendance.employee_id.id
@@ -748,10 +749,12 @@ def attendance_overtime_delete(request, obj_id):
                 return redirect(
                     f"/attendance/attendance-overtime-search?{previous_data}"
                 )
-            else:
+            elif employee_id is not None:
                 return redirect(
                     f"/attendance/attendance-overtime-individual-tab/{employee_id}/?deleted=true"
                 )
+            else:
+                return HorillaRedirect(request)
         else:
             return HorillaRedirect(request)
     elif hx_target:
@@ -2168,6 +2171,8 @@ def assign_shift(request, grace_id):
             "attendance/grace_time/assign_shift.html",
             {"form": form, "grace_time": gracetime},
         )
+    messages.error(request, _("Grace time not found."))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -2223,7 +2228,7 @@ def delete_grace_time(request, grace_id):
         messages.success(request, _("Grace time deleted successfully."))
     except GraceTime.DoesNotExist:
         delete_error = True
-        messages.error(request, _("Grace Time Does not exists.."))
+        messages.error(request, _("Grace time does not exist."))
         return HorillaRedirect(request)
     except ProtectedError:
         delete_error = True
@@ -2253,29 +2258,24 @@ def update_isactive_gracetime(request):
     - isChecked: Boolean value representing the state of grace time,
     - gracetimeId: Id of GraceTime object
     """
-    isChecked = request.POST.get("isChecked")
+    isChecked = bool(request.POST.get("isChecked"))
     gracetimeId = request.POST.get("gracetimeId")
     if not gracetimeId:
-        return JsonResponse({"type": "error", "message": "GraceTime ID missing"})
+        messages.error(request, _("GraceTime ID missing"))
+        return HttpResponse("")
 
-    gracetime = GraceTime.objects.get(id=gracetimeId)
+    gracetime = GraceTime.objects.filter(id=gracetimeId).first()
     if not gracetime:
-        return JsonResponse({"type": "error", "message": "GraceTime not found"})
+        messages.error(request, _("GraceTime not found"))
+        return HttpResponse("")
 
-    if isChecked == "true":
-        gracetime.is_active = True
-        response = {
-            "type": "success",
-            "message": _("Gracetime activated successfully."),
-        }
+    gracetime.is_active = isChecked
+    if isChecked:
+        messages.success(request, _("Gracetime activated successfully."))
     else:
-        gracetime.is_active = False
-        response = {
-            "type": "success",
-            "message": _("Gracetime deactivated successfully."),
-        }
+        messages.success(request, _("Gracetime deactivated successfully."))
     gracetime.save()
-    return JsonResponse(response)
+    return HttpResponse("")
 
 
 @login_required
@@ -2290,47 +2290,37 @@ def update_gracetime_clock_in_clock_out(request):
     """
     gracetimeId = request.POST.get("gracetimeId")
     if not gracetimeId:
-        return JsonResponse({"type": "error", "message": "GraceTime ID missing"})
+        messages.error(request, _("GraceTime ID missing"))
+        return HttpResponse("")
 
-    isChecked = request.POST.get("isChecked")
+    isChecked = bool(request.POST.get("isChecked"))
     update = request.POST.get("update")
-    gracetime = GraceTime.objects.get(id=gracetimeId)
+    gracetime = GraceTime.objects.filter(id=gracetimeId).first()
     if not gracetime:
-        return JsonResponse({"type": "error", "message": "GraceTime not found"})
+        messages.error(request, _("GraceTime not found"))
+        return HttpResponse("")
 
     if update == "clock_in":
-        if isChecked == "true":
-            gracetime.allowed_clock_in = True
-            response = {
-                "type": "success",
-                "message": _("Gracetime applicable on clock-In successfully."),
-            }
+        gracetime.allowed_clock_in = isChecked
+        if isChecked:
+            messages.success(request, _("Gracetime added to clock-in successfully."))
         else:
-            gracetime.allowed_clock_in = False
-            response = {
-                "type": "success",
-                "message": _("Gracetime unapplicable on clock-In  successfully."),
-            }
+            messages.success(
+                request, _("Gracetime removed from clock-in successfully.")
+            )
     elif update == "clock_out":
-        if isChecked == "true":
-            gracetime.allowed_clock_out = True
-            response = {
-                "type": "success",
-                "message": _("Gracetime applicable on clock-out successfully."),
-            }
+        gracetime.allowed_clock_out = isChecked
+        if isChecked:
+            messages.success(request, _("Gracetime added to clock-out successfully."))
         else:
-            gracetime.allowed_clock_out = False
-            response = {
-                "type": "success",
-                "message": _("Gracetime unapplicable on clock-out successfully."),
-            }
+            messages.success(
+                request, _("Gracetime removed from clock-out successfully.")
+            )
     else:
-        response = {
-            "type": "error",
-            "message": _("Something went wrong ."),
-        }
+        messages.error(request, _("Something went wrong ."))
+        return HttpResponse("")
     gracetime.save()
-    return JsonResponse(response)
+    return HttpResponse("")
 
 
 @login_required
@@ -2341,6 +2331,9 @@ def create_attendancerequest_comment(request, attendance_id):
     """
     previous_data = request.GET.urlencode()
     attendance = Attendance.objects.filter(id=attendance_id).first()
+    if not attendance:
+        return HorillaRedirect(request, message=_("Attendance not found."))
+
     emp = request.user.employee_get
     form = AttendanceRequestCommentForm(
         initial={"employee_id": emp.id, "request_id": attendance_id}

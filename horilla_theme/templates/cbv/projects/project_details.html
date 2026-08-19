@@ -99,31 +99,6 @@
             </div>
         </div>
 
-        <div class="mb-2 flex gap-5 items-center col-span-6">
-            <span class="font-medium text-sm text-[#565E6C] w-20">{% trans "Members" %}</span>
-            <div class="text-sm font-semibold flex items-center gap-5">
-                :
-                <ul class="userlist flex flex-wrap gap-1">
-                    {% for member in project.members.all %}
-                        <li>
-                            <span>
-                                <a
-                                    href="{% url 'employee-view-individual' member.id %}"
-                                    title="{{member.get_full_name}}"
-                                >
-                                    <img
-                                        src="{{ member.get_avatar }}"
-                                        alt="{{ member }}"
-                                        class="w-6 h-6 rounded-full"
-                                    >
-                                </a>
-                            </span>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-
         <div class="mb-2 flex gap-5 items-center col-span-12">
             <span class="font-medium text-sm text-[#565E6C] w-20">{% trans "Description" %}</span>
             <p class="text-sm font-semibold flex items-center gap-5">

@@ -18,6 +18,7 @@ from django.core.paginator import Paginator
 from django.db.models import ProtectedError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -38,6 +39,7 @@ from asset.forms import (
     AssetBatchForm,
     AssetCategoryForm,
     AssetForm,
+    AssetItemFormSet,
     AssetReportForm,
     AssetRequestForm,
     AssetReturnForm,
@@ -261,6 +263,66 @@ def asset_information(request, asset_id):
         context["previous"] = previous_id
         context["next"] = next_id
     return render(request, "asset/asset_information.html", context)
+
+
+@login_required
+@hx_request_required
+@permission_required("asset.change_asset")
+def asset_item_bulk_edit(request, asset_id):
+    """
+    Bulk edit the tracking IDs of an asset's individual AssetItems.
+    Args:
+        request: the HTTP request object
+        asset_id (int): the ID of the Asset whose items are being edited
+    Returns:
+        The rendered bulk edit table. On a valid POST, tracking IDs are
+        saved and the table is re-rendered with the updated values.
+    """
+
+    asset = Asset.find(asset_id)
+    if not asset:
+        return HorillaRedirect(request, message=_("Asset not found"))
+
+    queryset = asset.asset_items.all()
+    formset = AssetItemFormSet(queryset=queryset)
+    if request.method == "POST":
+        formset = AssetItemFormSet(request.POST, queryset=queryset)
+        if formset.is_valid():
+            formset.save()
+            messages.success(request, _("Asset items updated"))
+            return HttpResponse(
+                """<script>$("#reloadMessagesButton").click();
+                document.getElementById("relatedObjectModal").classList.remove("oh-modal--show");</script>"""
+            )
+
+    context = {"asset": asset, "formset": formset}
+    return render(request, "asset/asset_item_bulk_edit.html", context)
+
+
+@login_required
+def get_asset_items_hx(request):
+    """
+    Returns the "Asset Item" field of the asset allocation form, populated
+    with the available AssetItems of the selected asset - only shown when
+    there's more than one available item to choose between.
+    """
+    asset_id = request.GET.get("asset_id")
+    asset_item_id = request.GET.get("asset_item_id")
+    form = AssetAllocationForm()
+    show_field = False
+    asset = Asset.objects.filter(id=asset_id).first() if asset_id else None
+    if asset:
+        available_items = asset.asset_items.filter(status="Available")
+        form.fields["asset_item_id"].queryset = available_items
+        show_field = available_items.count() > 1
+        if asset_item_id:
+            form.fields["asset_item_id"].initial = asset_item_id
+
+    html = render_to_string(
+        "cbv/request_and_allocation/forms/asset_item_field.html",
+        {"form": form, "show_field": show_field},
+    )
+    return HttpResponse(html)
 
 
 @login_required
@@ -904,39 +966,45 @@ def asset_allocate_return_request(request, asset_id):
 @login_required
 @hx_request_required
 @permission_required(perm="asset.change_assetassignment")
-def asset_allocate_return(request, asset_id):
+def asset_allocate_return(request, assignment_id):
     """
     View function to return asset.
     Args:
-    - asset_id: integer value representing the ID of the asset
+    - assignment_id: integer value representing the ID of the AssetAssignment
+      being returned
     Returns:
     - message of the return
     """
 
     asset_return_form = AssetReturnForm()
-    asset_allocation = AssetAssignment.objects.filter(
-        asset_id=asset_id, return_status__isnull=True
-    ).first()
+    asset_allocation = AssetAssignment.objects.filter(id=assignment_id).first()
+    if not asset_allocation:
+        messages.error(request, _("Asset assignment not found."))
+        return HorillaRedirect(request)
     if request.method == "POST":
         asset_return_form = AssetReturnForm(request.POST, request.FILES)
 
         if asset_return_form.is_valid():
-            asset = Asset.objects.filter(id=asset_id).first()
+            asset = asset_allocation.asset_id
             asset_return_status = asset_return_form.cleaned_data["return_status"]
             asset_return_date = asset_return_form.cleaned_data["return_date"]
             asset_return_condition = asset_return_form.cleaned_data["return_condition"]
             files = request.FILES.getlist("return_images")
             attachments = []
-            context = {"asset_return_form": asset_return_form, "asset_id": asset_id}
+            context = {
+                "asset_return_form": asset_return_form,
+                "assignment_id": assignment_id,
+            }
             if asset_return_status == "Healthy":
-                asset_allocation = AssetAssignment.objects.filter(
-                    asset_id=asset_id, return_status__isnull=True
-                ).first()
                 asset_allocation.return_date = asset_return_date
                 asset_allocation.return_status = asset_return_status
                 asset_allocation.return_condition = asset_return_condition
                 asset_allocation.return_request = False
                 asset_allocation.save()
+                if asset_allocation.asset_item_id_id:
+                    asset_item = asset_allocation.asset_item_id
+                    asset_item.status = "Available"
+                    asset_item.save()
                 if request.FILES:
                     for file in files:
                         attachment = ReturnImages()
@@ -954,9 +1022,6 @@ def asset_allocate_return(request, asset_id):
                 asset.save()
                 messages.success(request, _("Asset Returned Successfully..."))
                 return HorillaRedirect(request)
-            asset_allocation = AssetAssignment.objects.filter(
-                asset_id=asset_id, return_status__isnull=True
-            ).first()
             asset_allocation.return_date = asset_return_date
             asset_allocation.return_status = asset_return_status
             asset_allocation.return_condition = asset_return_condition
@@ -985,7 +1050,11 @@ def asset_allocate_return(request, asset_id):
             asset.save()
             messages.info(request, _("Asset Return Successful!."))
             return HorillaRedirect(request)
-    context = {"asset_return_form": asset_return_form, "asset_id": asset_id}
+    context = {
+        "asset_return_form": asset_return_form,
+        "assignment_id": assignment_id,
+        "asset_id": asset_allocation.asset_id_id,
+    }
     context["asset_alocation"] = asset_allocation
     return render(request, "asset/asset_return_form.html", context)
 

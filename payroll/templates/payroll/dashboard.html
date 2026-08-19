@@ -631,7 +631,7 @@
                     events: { dataPointSelection: (event, ctx, opts) => {
                         const title = data.components[opts.dataPointIndex] && data.components[opts.dataPointIndex].title;
                         const base = "{% url 'view-deduction' %}";
-                        window.location.href = title ? base + "?search=" + encodeURIComponent(title) : base;
+                        window.location.href = title ? base + "?title=" + encodeURIComponent(title) : base;
                     }}
                 },
                 colors: ['#ef4444'],

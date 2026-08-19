@@ -1279,6 +1279,9 @@ def change_employee_objective_status(request):
     """
     emp_obj = request.GET.get("empObjId")
     emp_objective = EmployeeObjective.objects.filter(id=emp_obj).first()
+    if not emp_objective:
+        messages.error(request, _("Employee objective not found."))
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
     if not (
         request.user.has_perm("pms.change_objective")
         or request.user.has_perm("pms.change_employeeobjective")

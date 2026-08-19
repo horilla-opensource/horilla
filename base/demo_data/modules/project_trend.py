@@ -1,11 +1,17 @@
 """Give the demo Project catalog real spread across a trailing 6 months.
 
-Only one real historical Project row ships in the fixtures (the other five,
-in project_scenarios_data.json, are intentionally future-dated pipeline
-data for other widgets and are left untouched). One point can't populate a
-6-month started/completed trend, so this creates a small, fixed set of
-additional projects -- idempotent via `title` (globally unique on the model)
--- and re-dates all of them fresh on every run.
+Only one real historical Project row ships in the fixtures. The other five,
+in project_scenarios_data.json, are re-anchored by
+`reanchor_project_scenarios` below rather than left untouched: their static
+dates were authored one calendar year off, so the generic whole-file date
+shift (`_shift_fixture_dates`) landed their Timesheet entries in the future
+roughly as often as not, which a logged timesheet -- a record of work
+already performed -- must never be.
+
+One point can't populate a 6-month started/completed trend, so this also
+creates a small, fixed set of additional projects -- idempotent via `title`
+(globally unique on the model) -- and re-dates all of them fresh on every
+run.
 """
 
 from __future__ import annotations
@@ -118,3 +124,62 @@ def backfill_project_trend(today: date | None = None) -> int:
         TRAILING_DAYS,
     )
     return updated
+
+
+SCENARIO_PK_FLOOR = 1001
+
+
+@transaction.atomic
+def reanchor_project_scenarios(today: date | None = None) -> int:
+    """Re-anchor project_scenarios_data.json's static rows to `today`.
+
+    The generic whole-file shift only guarantees the fixture's authored
+    center lands near `today` -- not that every date stays <= `today`,
+    which a logged TimeSheet entry (work already performed) must.
+    Translates the whole scenario cluster (projects + tasks + timesheets)
+    by a single delta so every relative gap authored between them is
+    preserved exactly -- a project/task date range that legitimately
+    extends into the future (an "in_progress"/"new" project's end_date)
+    shifts by the same delta and correctly keeps extending into the real
+    future; only the latest TimeSheet entry is pinned to `today - 1`.
+    """
+    if not apps.is_installed("project"):
+        return 0
+
+    today = today or date.today()
+
+    from project.models import Project, Task, TimeSheet
+
+    timesheets = list(TimeSheet._base_manager.filter(pk__gte=SCENARIO_PK_FLOOR))
+    if not timesheets:
+        return 0
+
+    shift = (today - timedelta(days=1)) - max(ts.date for ts in timesheets)
+    if shift == timedelta(0):
+        return 0
+
+    for ts in timesheets:
+        TimeSheet._base_manager.filter(pk=ts.pk).update(date=ts.date + shift)
+
+    tasks = list(Task._base_manager.filter(pk__gte=SCENARIO_PK_FLOOR))
+    for task in tasks:
+        Task._base_manager.filter(pk=task.pk).update(
+            start_date=task.start_date + shift if task.start_date else None,
+            end_date=task.end_date + shift if task.end_date else None,
+        )
+
+    projects = list(Project._base_manager.filter(pk__gte=SCENARIO_PK_FLOOR))
+    for project in projects:
+        Project._base_manager.filter(pk=project.pk).update(
+            start_date=project.start_date + shift if project.start_date else None,
+            end_date=project.end_date + shift if project.end_date else None,
+        )
+
+    logger.info(
+        "Project scenario re-anchor: shifted %s project(s), %s task(s), %s timesheet(s) by %s day(s)",
+        len(projects),
+        len(tasks),
+        len(timesheets),
+        shift.days,
+    )
+    return len(projects)

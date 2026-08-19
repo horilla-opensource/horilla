@@ -20,6 +20,7 @@ from django.core.cache import cache
 from django.db import connection
 from django.http import JsonResponse
 from django.urls import include, path, re_path
+from django.views.generic import RedirectView
 from django.views.i18n import JavaScriptCatalog
 
 import notifications.urls
@@ -63,7 +64,15 @@ def readiness_check(request):
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("accounts/", include("django.contrib.auth.urls")),
+    # django.contrib.auth.urls is here for the password_reset_* routes its forms
+    # and mails reverse. Its /accounts/login/ renders registration/login.html,
+    # which Horilla does not ship, so that one URL 500s — send it to the real
+    # login page instead. (The include was also listed twice.)
+    path(
+        "accounts/login/",
+        RedirectView.as_view(url=settings.LOGIN_URL, permanent=False),
+        name="accounts-login-redirect",
+    ),
     path("accounts/", include("django.contrib.auth.urls")),
     path("", include("base.urls")),
     path("", include("horilla_automations.urls")),

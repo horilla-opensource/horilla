@@ -1,0 +1,69 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+    <button
+        type="button"
+        class="oh-modal__close--custom"
+        data-dismiss="oh-modal"
+        aria-label="{% trans 'Close' %}"
+        onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+    >
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <span class="oh-modal__dialog-title ml-5">
+        <h5>{% trans "Asset Items" %} - {{ asset.asset_name }}</h5>
+    </span>
+</div>
+<div class="oh-modal__dialog-body">
+    {% if messages %}
+        <div class="oh-wrapper">
+            {% for message in messages %}
+                <div class="oh-alert-container">
+                    <div class="oh-alert oh-alert--animated {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <form
+        hx-post="{% url 'asset-item-bulk-edit' asset_id=asset.id %}"
+        hx-target="#relatedObjectModalBody"
+    >
+        {% csrf_token %}
+        {{ formset.management_form }}
+        <div class="w-full overflow-auto border border-gray-200 rounded-md h-[60vh]">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr>
+                        <th class="w-[70%] text-left px-3 py-2 border-b-2 border-r border-gray-200 text-xs font-semibold text-gray-700">
+                            {% trans "Tracking ID" %}
+                        </th>
+                        <th class="w-[30%] text-left px-4 py-2 border-b-2 border-gray-200 text-xs font-semibold text-gray-700">
+                            {% trans "Status" %}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for form in formset %}
+                        <tr>
+                            <td class="px-3 py-2 border-b border-r border-gray-100">
+                                {{ form.id }}
+                                {{ form.tracking_id }}
+                                {{ form.tracking_id.errors }}
+                            </td>
+                            <td class="px-4 py-2 border-b border-gray-100 text-sm text-gray-700">
+                                {{ form.status }}
+                                {{ form.status.errors }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="flex justify-end mt-4">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
+</div>

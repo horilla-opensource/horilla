@@ -199,11 +199,11 @@
                                         </div>
                                     </div>
                                     <div class="text-xs text-dark-200 font-medium">
-                                        {{ recruitment.candidate.all|length }}
-                                        {% trans "Applied" %}
-                                        {% trans "of" %}
-                                        {{ recruitment.vacancy }}
-                                        {% trans "Capacity" %}
+                                        {% comment %}
+                                        One phrase rather than three separate words, so a
+                                        translation can order and inflect it naturally.
+                                        {% endcomment %}
+                                        {% blocktrans with applied=recruitment.candidate.all|length capacity=recruitment.vacancy %}{{ applied }} applied of {{ capacity }} capacity{% endblocktrans %}
                                     </div>
                                 </div>
                             {% else %}
@@ -230,7 +230,8 @@
                                         target="_blank"
                                         class="w-20 justify-center px-4 py-2 bg-brand-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-brand-800 transition duration-300"
                                     >
-                                        {% trans "Apply" %}
+                                        {# context: this is "apply for a job", not "apply a filter" #}
+                                        {% trans "Apply" context "job application" %}
                                         <i class="fa-solid fa-arrow-right transform -rotate-45"></i>
                                     </a>
                                 </div>

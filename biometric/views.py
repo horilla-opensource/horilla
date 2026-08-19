@@ -1830,6 +1830,9 @@ def map_biometric_users(request, device_id):
     Maps an horilla employee to a biometric user on a specified biometric device.
     """
     device = BiometricDevices.find(device_id)
+    if not device:
+        return HorillaRedirect(request, message=_("Biometric device not found."))
+
     form = MapBioUsers(request.POST or None)
     template = "biometric_users/dahua/map_dahua_users.html"
 
@@ -1871,6 +1874,9 @@ def add_dahua_biometric_user(request, device_id):
     This view handles the process of adding an employee as a user to a Dahua biometric device.
     """
     device = BiometricDevices.find(device_id)
+    if not device:
+        return HorillaRedirect(request, message=_("Biometric device not found."))
+
     form = DahuaUserForm()
     if request.method == "POST":
         form = DahuaUserForm(request.POST)

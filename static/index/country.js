@@ -686,6 +686,13 @@ s_a[251] =
 s_a[252] =
     "Bulawayo|Harare|ManicalandMashonaland Central|Mashonaland East|Mashonaland West|Masvingo|Matabeleland North|Matabeleland South|Midlands";
 
+// Option labels below are user-facing. gettext() comes from Django's JS catalog,
+// which some standalone pages (e.g. the public application form) do not load —
+// fall back to English there instead of throwing a ReferenceError.
+function countryI18n(text) {
+    return typeof gettext === "function" ? gettext(text) : text;
+}
+
 function populateStates(countryElementId, stateElementId) {
     var countryEl = document.getElementById(countryElementId);
     var stateEl = document.getElementById(stateElementId);
@@ -695,7 +702,7 @@ function populateStates(countryElementId, stateElementId) {
     var selectedState = stateEl.getAttribute('data-selected') || '';
 
     stateEl.length = 0;
-    stateEl.options[0] = new Option("Select State", "");
+    stateEl.options[0] = new Option(countryI18n("Select State"), "");
     stateEl.selectedIndex = 0;
 
     if (s_a[selectedCountryIndex]) {
@@ -720,7 +727,7 @@ function populateCountries(countryElementId, stateElementId) {
 
     var selectedCountry = countryEl.getAttribute('data-selected') || '';
     countryEl.length = 0;
-    countryEl.options[0] = new Option("Select Country", "");
+    countryEl.options[0] = new Option(countryI18n("Select Country"), "");
 
     for (var i = 0; i < country_arr.length; i++) {
         let country = country_arr[i].replace(/'/g, '`');

@@ -55,12 +55,17 @@ def backfill_onboarding_pipeline(today: date | None = None) -> int:
         or final_stage
     )
 
+    # A candidate sitting in a cancelled-type stage was rejected -- force-
+    # hiring them (or granting onboarding progress to one the static
+    # fixture already marks hired=True while cancelled) would show a
+    # rejected candidate as mid- or fully-onboarded.
     Candidate._base_manager.filter(
         pk__in=EXTRA_HIRE_CANDIDATE_IDS, recruitment_id=RECRUITMENT_ID
-    ).update(hired=True)
+    ).exclude(stage_id__stage_type="cancelled").update(hired=True)
 
     hired_ids = list(
         Candidate._base_manager.filter(recruitment_id=RECRUITMENT_ID, hired=True)
+        .exclude(stage_id__stage_type="cancelled")
         .order_by("id")
         .values_list("id", flat=True)
     )

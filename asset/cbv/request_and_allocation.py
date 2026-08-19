@@ -587,6 +587,10 @@ class AssetAllocationFormView(HorillaFormView):
             message = _("Asset allocated Successfully")
             instance = form.save()
             asset = instance.asset_id
+            if instance.asset_item_id_id:
+                asset_item = instance.asset_item_id
+                asset_item.status = "In use"
+                asset_item.save()
             active_count = AssetAssignment.objects.filter(
                 asset_id=asset, return_date__isnull=True
             ).count()
@@ -626,6 +630,9 @@ class AssetApproveFormView(HorillaFormView):
         context = super().get_context_data(**kwargs)
         req_id = self.kwargs.get("req_id")
         asset_request = AssetRequest.objects.filter(id=req_id).first()
+        if not asset_request:
+            messages.error(self.request, _("Asset request not found."))
+            return context
         asset_category = asset_request.asset_category_id
         assets = Asset.available_assets().filter(asset_category_id=asset_category)
         self.form.fields["asset_id"].queryset = assets
@@ -651,9 +658,16 @@ class AssetApproveFormView(HorillaFormView):
         """
         req_id = self.kwargs.get("req_id")
         asset_request = AssetRequest.objects.filter(id=req_id).first()
+        if not asset_request:
+            messages.error(self.request, _("Asset request not found."))
+            return self.HttpResponse()
         if form.is_valid():
             instance = form.save()
             asset = instance.asset_id
+            if instance.asset_item_id_id:
+                asset_item = instance.asset_item_id
+                asset_item.status = "In use"
+                asset_item.save()
             active_count = AssetAssignment.objects.filter(
                 asset_id=asset, return_date__isnull=True
             ).count()

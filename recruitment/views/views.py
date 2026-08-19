@@ -1187,10 +1187,14 @@ def delete_individual_note_file(request, id):
 @manager_can_enter(perm="recruitment.add_stagenote")
 def candidate_can_view_note(request, id):
     note = StageNote.objects.filter(id=id)
-    note.update(candidate_can_view=not note.first().candidate_can_view)
+    note_obj = note.first()
+    if not note_obj:
+        return HorillaRedirect(request, message=_("Note not found."))
+
+    note.update(candidate_can_view=not note_obj.candidate_can_view)
 
     messages.success(request, _("Candidate view status updated"))
-    return redirect("view-note", cand_id=note.first().candidate_id.id)
+    return redirect("view-note", cand_id=note_obj.candidate_id.id)
 
 
 @login_required
@@ -1827,6 +1831,9 @@ def candidate_rating_tab(request, pk, **kwargs):
     """
 
     candidate_obj = Candidate.find(pk)
+    if not candidate_obj:
+        return HorillaRedirect(request, message=_("Candidate not found."))
+
     ratings = candidate_obj.candidate_rating.all().order_by("-id")
     ratings = paginator_qry(ratings, request.GET.get("page"))
     return render(
@@ -1847,6 +1854,9 @@ def candidate_interview_tab(request, pk, **kwargs):
     """
 
     candidate_obj = Candidate.find(pk)
+    if not candidate_obj:
+        return HorillaRedirect(request, message=_("Candidate not found."))
+
     interviews = candidate_obj.candidate_interview.all().order_by("-interview_date")
     interviews = paginator_qry(interviews, request.GET.get("page"))
     return render(
@@ -3183,6 +3193,9 @@ def get_mail_log(request, pk):
     """
 
     candidate_obj = Candidate.find(pk)
+    if not candidate_obj:
+        return HorillaRedirect(request, message=_("Candidate not found."))
+
     tracked_mails = EmailLog.objects.filter(to__icontains=candidate_obj.email).order_by(
         "-created_at"
     )

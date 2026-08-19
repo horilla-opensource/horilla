@@ -1,20 +1,55 @@
 {% load i18n %}{% load widget_tweaks %}
 {% load horillafilters %}
-<script>
-    function auditDynamicTag(optionElement) {
-        var val = optionElement.val();
-        $.ajax({
-            type: "post",
-            url: "/horilla-audit-log",
-            data: {
-                csrfmiddlewaretoken: getCookie("csrftoken"),
-                title: val,
-            },
-            success: function (response) {
-                optionElement.val(response.id);
-            },
-        });
+<style>
+    .oh-audit-log-bordered-form {
+        border: 1px solid #e6e6e6;
+        border-radius: 0.375rem;
+        padding: 1rem;
     }
+</style>
+<script>
+    (function () {
+        // Snapshot the ids already rendered from the queryset before the
+        // user picks anything, so we can tell an EXISTING tag apart from a
+        // freshly-typed one (select2's tags:true mode fires the same
+        // "select2:select" event, and the same data-ajax-name callback, for
+        // both cases). Without this, selecting an existing tag still routed
+        // through the "create tag" endpoint below with the tag's own numeric
+        // id as the title, silently swapping the valid selection for a
+        // brand new, garbage tag.
+        var existingTagIds = new Set(
+            $("#id_history_tags option").map(function () {
+                return $(this).val();
+            }).get()
+        );
+
+        window.auditDynamicTag = function (optionElement) {
+            var val = optionElement.val();
+            if (existingTagIds.has(val)) {
+                return;
+            }
+            // Disable Save until the new tag is actually created and its
+            // real id is written back onto the option - otherwise a fast
+            // submit races this request and posts the raw typed text
+            // instead of a valid tag id, which silently fails to save.
+            var saveBtn = $(".history-modal-button");
+            saveBtn.prop("disabled", true);
+            $.ajax({
+                type: "post",
+                url: "/horilla-audit-log",
+                data: {
+                    csrfmiddlewaretoken: getCookie("csrftoken"),
+                    title: val,
+                },
+                success: function (response) {
+                    optionElement.val(response.id);
+                },
+                complete: function () {
+                    saveBtn.prop("disabled", false);
+                },
+            });
+        };
+    })();
 </script>
 <div class="oh-modal" id="historyModal" role="dialog" aria-labelledby="historyModal" aria-hidden="true">
     <div class="oh-modal__dialog">
@@ -31,7 +66,7 @@
             </a>
         </div>
         <div class="oh-modal__dialog-body" id="historyModalBody">
-            <div class="row">
+            <div class="row oh-audit-log-bordered-form">
                 <div class="col-12">{{ form.non_field_errors }}</div>
                 {% for field in form.visible_fields %}
                     <div class="col-12 col-md-12" id="id_{{field.name}}_parent_div">
