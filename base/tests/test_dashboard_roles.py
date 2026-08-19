@@ -152,6 +152,20 @@ class ModernDashboardFetchInventoryTests(SimpleTestCase):
             "dashboard-recruitment-by-stage",
         ):
             self.assertIn(required, text)
+
+    def test_kpi_clickthroughs_use_destination_filters(self):
+        from pathlib import Path
+
+        text = Path("templates/dashboard.html").read_text(encoding="utf-8")
+        self.assertIn("status=approved&today_leave=true", text)
+        self.assertIn("attendance_date={% now 'Y-m-d' %}", text)
+        self.assertIn("is_active=True", text)
+        self.assertIn("closed=false", text)
+        self.assertIn("is_validate_request=true", text)
+        self.assertIn("asset_request_status=Requested", text)
+        self.assertIn("view-reimbursement' %}?status=requested", text)
+        self.assertNotIn("approval_status=pending", text)
+        self.assertNotIn("request-attendance-view' %}?approved=false", text)
         self.assertNotIn("dashboard-compliance-strip", text)
         # Home no longer surfaces report pin / suggested pack UI
         for removed in (
