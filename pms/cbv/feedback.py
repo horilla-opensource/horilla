@@ -165,6 +165,26 @@ class FeedbackListView(HorillaListView):
 
     row_status_class = "status-{status}"
 
+    # Mirrors FeedbacknavView.nested_group_by_fields below -- List and
+    # Nav are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split). "Colleague",
+    # "Subordinates", "Other Employees" and "Key Result" are deliberately
+    # left out: they're ManyToManyFields, and the nested engine's
+    # `values(*fields).annotate(Count("pk"))` aggregate would fan out one
+    # row per related employee/key-result, double-counting feedback with
+    # more than one assigned.
+    nested_group_by_fields = [
+        ("review_cycle", _("Title")),
+        ("employee_id", _("Employee")),
+        ("manager_id", _("Manager")),
+        ("question_template_id", _("Question Template")),
+        ("status", _("Status")),
+        ("archive", _("Archive")),
+        ("start_date", _("Start Date")),
+        ("end_date", _("End Date")),
+        ("cyclic_feedback", _("Is Cyclic Feedback")),
+    ]
+
 
 @method_decorator(login_required, name="dispatch")
 class FeedbackGenericTabView(HorillaTabView):
@@ -482,6 +502,19 @@ class FeedbacknavView(HorillaNavView):
     filter_instance = FeedbackFilter()
     filter_form_context_name = "feedback_filter_form"
     search_swap_target = "#listContainer"
+
+    # Mirrors FeedbackListView.nested_group_by_fields
+    nested_group_by_fields = [
+        ("review_cycle", _("Title")),
+        ("employee_id", _("Employee")),
+        ("manager_id", _("Manager")),
+        ("question_template_id", _("Question Template")),
+        ("status", _("Status")),
+        ("archive", _("Archive")),
+        ("start_date", _("Start Date")),
+        ("end_date", _("End Date")),
+        ("cyclic_feedback", _("Is Cyclic Feedback")),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")

@@ -74,6 +74,17 @@ class AssetHistorylistView(HorillaListView):
         data-toggle="oh-modal-toggle"
     """
 
+    # Mirrors AssetHistoryNavView.nested_group_by_fields below -- List
+    # and Nav are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split).
+    nested_group_by_fields = [
+        ("asset_id__asset_name", _("Asset")),
+        ("assigned_to_employee_id", _("Employee")),
+        ("assigned_date", _("Assigned Date")),
+        ("return_date", _("Returned Date")),
+        ("return_status", _("Return Status")),
+    ]
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required("asset.view_assetassignment"), name="dispatch")
@@ -111,6 +122,15 @@ class AssetHistoryNavView(HorillaNavView):
         ("assigned_to_employee_id", _("Employee")),
         ("assigned_date", _("Assigned Date")),
         ("return_date", _("Returned Date")),
+    ]
+
+    # Mirrors AssetHistorylistView.nested_group_by_fields
+    nested_group_by_fields = [
+        ("asset_id__asset_name", _("Asset")),
+        ("assigned_to_employee_id", _("Employee")),
+        ("assigned_date", _("Assigned Date")),
+        ("return_date", _("Returned Date")),
+        ("return_status", _("Return Status")),
     ]
 
 

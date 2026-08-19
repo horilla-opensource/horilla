@@ -120,6 +120,45 @@ function hlvSelectAllRecords(btn, viewSelector, storeKey) {
     }
 }
 
+/**
+ * Inverse of hlvSelectAllRecords: drop a specific set of ids (e.g. every
+ * record in one group) out of the shared selection, not the whole store.
+ * Selected ids can span pages/groups the DOM never rendered, so this can't
+ * rely solely on unchecking on-page checkboxes -- it patches data-ids
+ * directly first, then syncs whichever of those rows do happen to be
+ * on-page (via a real checkbox uncheck + change event, so highlightRow and
+ * every other change-bound handler still runs normally).
+ */
+function hlvUnselectRecords(btn, viewSelector, storeKey) {
+    storeKey = storeKey || "selectedInstances";
+    var idsToRemove = [];
+    try {
+        idsToRemove = JSON.parse($(btn).attr("data-select-ids") || "[]").map(String);
+    } catch (e) {
+        idsToRemove = [];
+    }
+    var removeSet = new Set(idsToRemove);
+
+    var $store = ensureSelectionStore(storeKey);
+    var ids = JSON.parse($store.attr("data-ids") || "[]")
+        .map(String)
+        .filter(function (id) { return !removeSet.has(id); });
+    $store.attr("data-ids", JSON.stringify(ids));
+    setStoredSelection(storeKey, ids);
+
+    var $scope = $(viewSelector).filter(".hlv-container");
+    if (!$scope.length) $scope = $(viewSelector).first();
+    $scope.find(".list-table-row").each(function () {
+        if (removeSet.has(String($(this).val())) && $(this).is(":checked")) {
+            $(this).prop("checked", false).trigger("change");
+        }
+    });
+
+    var viewId = (viewSelector || "").replace(/^#/, "");
+    reloadSelectedCount($(`#count_${viewId}`), storeKey);
+    reloadSelectedCount($(`.count_${viewId}`), storeKey);
+}
+
 // Used by the "Unselect"/"Unselect All Records" actions so the clear is
 // persisted synchronously - the MutationObserver mirror below is async
 // (fires on the next microtask), which left a window where hitting reload

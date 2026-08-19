@@ -1,0 +1,144 @@
+{% load static i18n generic_template_filters %}
+<div class="relative"{% if show_toggle_form %} x-data="{ open: false }"{% endif %}>
+<div class="max-h-[400px] overflow-hidden overflow-y-auto overflow-x-auto{% if use_shared_colgroup %} ngb-hscroll{% endif %}">
+    <table class="fixed-table w-full border-separate{% if use_shared_colgroup %} table-fixed{% endif %}" data-bulk-select-option = "{{bulk_select_option|yesno:'true,false'}}">
+        {% if use_shared_colgroup %}{% include "generic/_group_row_colgroup.html" %}{% endif %}
+        {% if show_header != False %}{% include "generic/_group_row_thead.html" %}{% endif %}
+        <tbody>
+            {% for instance in group.list %}
+                <tr
+                    data-instance-id="{{instance.id}}"
+                    {{row_attrs|format:instance|safe}}
+                >
+                    {% if bulk_select_option %}
+                        <td class="text-sm text-left px-1 py-1 text-[#666] rounded-lg h-[30px]">
+                            <div class="flex items-center justify-center">
+                                <input
+                                    type="checkbox"
+                                    class="list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
+                                    data-view-id="{{view_id|safe}}"
+                                    title="{% trans 'Select Row' %}"
+                                    value="{{instance.pk}}"
+                                    onclick="event.stopPropagation()"
+                                    onchange="var element = $(this);
+                                    highlightRow(element);
+
+                                    if (!element.is(':checked')) {
+                                        removeId(element);
+                                    }
+
+                                    reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+                                    reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}')"
+                                >
+                            </div>
+                        </td>
+                    {% endif %}
+
+                    {% for cell in columns %}
+                        {% with attribute=cell.1 index=forloop.counter %}
+                            <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px] max-w-0">
+                                {% if not cell.2 %}
+                                    {% with cell_value=instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id %}
+                                        <div class="truncate" title="{{ cell_value|striptags }}">
+                                            {{ cell_value|safe }}
+                                        </div>
+                                    {% endwith %}
+                                {% else %}
+                                    {% with avatar=instance|getattribute:cell.2 cell_value=instance|getattribute:attribute %}
+                                        <div class="oh-profile oh-profile--md w-full justify-normal">
+                                            <div class="oh-profile__avatar mr-1 relative" style="width:22px;height:22px;">
+                                                <img
+                                                    src="{{ avatar }}"
+                                                    alt=""
+                                                    class="oh-profile__image oh-table-img avatar-thumb"
+                                                    width="22"
+                                                >
+                                                {% if instance|has_attr:"check_online" %}
+                                                    <span
+                                                        class="absolute bottom-0 right-0 w-[7px] h-[7px] rounded-full border border-white"
+                                                        style="background-color: {% if instance.check_online %}#22c55e{% else %}#c7c4ba{% endif %};"
+                                                        title="{% if instance.check_online %}{% trans 'Online' %}{% else %}{% trans 'Offline' %}{% endif %}"
+                                                    ></span>
+                                                {% endif %}
+                                            </div>
+                                            <span class="truncate flex-1 min-w-0" title="{{ cell_value|striptags }}">{{ cell_value|safe }}</span>
+                                        </div>
+                                    {% endwith %}
+                                {% endif %}
+                            </td>
+                        {% endwith %}
+                    {% endfor %}
+
+                    {% if options or option_method %}
+                        <td
+                            class="option-col-cell text-sm text-center px-1 py-1 text-[#666] h-[30px]"
+                            onclick="event.stopPropagation()"
+                        >
+                            {% if not option_method %}
+                                <div class="flex justify-center gap-1">
+                                    {% for option in options %}
+                                        {% if option.accessibility|accessibility:instance %}
+                                            <a
+                                                href="#"
+                                                title="{{option.option|safe}}"
+                                                {{option.attrs|format:instance|safe}}
+                                            >
+                                                <ion-icon name="{{option.icon}}"></ion-icon>
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ instance|getattribute:option_method|safe }}
+                            {% endif %}
+                        </td>
+                    {% endif %}
+
+                    {% if actions or action_method %}
+                        <td
+                            class="stickyright action-col-cell text-sm text-center px-1 py-1 text-[#666] h-[30px]"
+                            onclick="event.stopPropagation()"
+                        >
+                            {% if not action_method %}
+                                <div class="flex justify-center gap-1">
+                                    {% for action in actions %}
+                                        {% if action.accessibility|accessibility:instance %}
+                                            <a
+                                                href="#"
+                                                title="{{action.action|safe}}"
+                                                {{action.attrs|format:instance|safe}}
+                                            >
+                                                <ion-icon name="{{action.icon}}"></ion-icon>
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ instance|getattribute:action_method|safe }}
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% if show_toggle_form %}
+    <div
+        class="oh-dropdown__menu oh-sticky-table_dropdown absolute right-[8px] top-[38px] z-20"
+        x-show="open"
+        x-cloak
+        hx-on::after-request="
+            if (window.__skipNextToggleReload) {
+                window.__skipNextToggleReload = false;
+            } else {
+                window.__hlvReopenDropdown = { path: '{{ request.path|escapejs }}', gvid: '{{ gvid|escapejs }}' };
+                $('#{{ view_id|safe }}').find('.reload-record').click();
+            }
+        "
+        @click.outside="open = false"
+    >
+    {{ toggle_form.as_list }}
+    </div>
+{% endif %}
+</div>

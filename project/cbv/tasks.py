@@ -176,6 +176,23 @@ class TaskListView(HorillaListView):
         data-toggle="oh-modal-toggle"
     """
 
+    # Mirrors TasksNavBar.nested_group_by_fields below -- List and Nav
+    # are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split). "Task Managers" and
+    # "Task Members" are deliberately left out: they're ManyToManyFields,
+    # and the nested engine's `values(*fields).annotate(Count("pk"))`
+    # aggregate would fan out one row per related employee, double-
+    # counting tasks with more than one manager/member assigned.
+    nested_group_by_fields = [
+        "title",
+        "project",
+        "stage",
+        "status",
+        "is_active",
+        "start_date",
+        "end_date",
+    ]
+
 
 @method_decorator(login_required, name="dispatch")
 class TasksNavBar(HorillaNavView):
@@ -189,6 +206,17 @@ class TasksNavBar(HorillaNavView):
         "status",
     ]
     default_group_by = "project"
+
+    # Mirrors TaskListView.nested_group_by_fields
+    nested_group_by_fields = [
+        "title",
+        "project",
+        "stage",
+        "status",
+        "is_active",
+        "start_date",
+        "end_date",
+    ]
     filter_form_context_name = "form"
     filter_instance = TaskAllFilter()
     search_swap_target = "#listContainer"

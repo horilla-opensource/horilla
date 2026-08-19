@@ -96,6 +96,24 @@ class AllocationList(HorillaListView):
         data-toggle="oh-modal-toggle"
     """
 
+    # Mirrors RequestAndAllocationNav.nested_group_by_fields below. This
+    # one Nav is shared across all 3 tabs (Asset, Asset Request, Asset
+    # Allocation) backed by two different models (AssetRequest here vs
+    # AssetAssignment for this List/AssetAllocationList) -- same mixed
+    # list already used by the classic group_by_fields above, which
+    # tolerates a field not existing on the currently active tab's model
+    # by falling back silently (see the try/except around both the
+    # classic and nested grouping branches in HorillaListView).
+    nested_group_by_fields = [
+        ("requested_employee_id", _("Asset Request / Employee")),
+        ("asset_category_id", _("Asset Request / Asset Category")),
+        ("asset_request_date", _("Asset Request / Request Date")),
+        ("asset_request_status", _("Asset Request / Status")),
+        ("assigned_to_employee_id", _("Asset Allocation / Employee")),
+        ("assigned_date", _("Asset Allocation / Assigned Date")),
+        ("return_date", _("Asset Allocation / Return Date")),
+    ]
+
 
 @method_decorator(login_required, name="dispatch")
 class AssetList(AllocationList):
@@ -228,6 +246,17 @@ class AssetRequestList(HorillaListView):
         data-target="#genericModal"
         data-toggle="oh-modal-toggle"
     """
+
+    # Mirrors AllocationList.nested_group_by_fields / RequestAndAllocationNav.nested_group_by_fields
+    nested_group_by_fields = [
+        ("requested_employee_id", _("Asset Request / Employee")),
+        ("asset_category_id", _("Asset Request / Asset Category")),
+        ("asset_request_date", _("Asset Request / Request Date")),
+        ("asset_request_status", _("Asset Request / Status")),
+        ("assigned_to_employee_id", _("Asset Allocation / Employee")),
+        ("assigned_date", _("Asset Allocation / Assigned Date")),
+        ("return_date", _("Asset Allocation / Return Date")),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")
@@ -373,6 +402,9 @@ class RequestAndAllocationNav(HorillaNavView):
     filter_form_context_name = "asset_allocation_filter_form"
     filter_body_template = "cbv/request_and_allocation/filter.html"
     search_swap_target = "#listContainer"
+    # Scopes the shared Group By dropdown's options to the active tab --
+    # see the script in this template for why.
+    template_name = "cbv/request_and_allocation/nav.html"
 
     def get_context_data(self, **kwargs):
         """
@@ -394,6 +426,9 @@ class RequestAndAllocationNav(HorillaNavView):
         ("assigned_date", _("Asset Allocation / Assigned Date")),
         ("return_date", _("Asset Allocation / Return Date")),
     ]
+
+    # Mirrors AllocationList/AssetRequestList.nested_group_by_fields
+    nested_group_by_fields = group_by_fields
 
 
 @method_decorator(login_required, name="dispatch")

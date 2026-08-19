@@ -84,6 +84,25 @@ class AssignedleaveList(HorillaListView):
     ]
 
     action_method = "assigned_leave_actions"
+    # Mirrors AssignedLeaveNavView.nested_group_by_fields -- needed here
+    # too since this (List) and Nav are separate classes; see the same
+    # split in employee/cbv/employees.py's EmployeesList/EmployeeNav.
+    nested_group_by_fields = [
+        ("employee_id", _("Employee")),
+        ("leave_type_id", _("Leave Type")),
+        ("available_days", _("Available Days")),
+        ("carryforward_days", _("Carryforward Days")),
+        ("total_leave_days", _("Total Leave Days")),
+        ("assigned_date", _("Assigned Date")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        ("employee_id__employee_work_info__employee_type_id", _("Employement Type")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
+    ]
 
     bulk_update_fields = [
         "leave_type_id",
@@ -228,6 +247,29 @@ class AssignedLeaveNavView(HorillaNavView):
     search_swap_target = "#listContainer"
 
     group_by_fields = [
+        ("employee_id", _("Employee")),
+        ("leave_type_id", _("Leave Type")),
+        ("available_days", _("Available Days")),
+        ("carryforward_days", _("Carryforward Days")),
+        ("total_leave_days", _("Total Leave Days")),
+        ("assigned_date", _("Assigned Date")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        ("employee_id__employee_work_info__employee_type_id", _("Employement Type")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
+    ]
+    # Mirrors AssignedleaveList.nested_group_by_fields below -- List and
+    # Nav are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split), so the inline
+    # "add/change field" dropdowns in the "Grouped by" breadcrumb
+    # (nested_group_by_table.html, rendered by the List view) need this
+    # here too, not just the currently-active fields it already had access
+    # to via nested_fields_active.
+    nested_group_by_fields = [
         ("employee_id", _("Employee")),
         ("leave_type_id", _("Leave Type")),
         ("available_days", _("Available Days")),
