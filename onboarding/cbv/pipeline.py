@@ -63,7 +63,7 @@ class PipelineNav(HorillaNavView):
     """
 
     search_url = reverse_lazy("cbv-pipeline-tab-onboarding")
-    nav_title = _("Pipeline")
+    nav_title = _("Onboarding Tasks")
     search_swap_target = "#pipelineContainer"
     apply_first_filter = False
     filter_body_template = "cbv/pipeline/onboarding/filters.html"
