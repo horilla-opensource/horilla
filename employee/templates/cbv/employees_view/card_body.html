@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n horillafilters %}
 <div class="flex gap-4 pt-1">
     {% if instance.get_avatar %}
     <div class="relative flex-shrink-0 w-11 h-11">
@@ -8,11 +8,13 @@
             class="w-11 h-11 rounded-full avatar-thumb object-cover"
             alt="{% trans 'Employee' %}"
         >
+        {% if request|is_check_in_enabled %}
         <span
             class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white"
             style="background-color: {% if instance.check_online %}#22c55e{% else %}#ef4444{% endif %};"
             title="{% if instance.check_online %}{% trans 'Online' %}{% else %}{% trans 'Offline' %}{% endif %}"
         ></span>
+        {% endif %}
     </div>
     {% endif %}
     <div class="min-w-0">
