@@ -1,5 +1,5 @@
 ﻿{% extends "index.html" %}
-{% load static i18n %}
+{% load static i18n horillafilters %}
 
 {% block content %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
@@ -400,6 +400,7 @@
           </div>
         </div>
 
+        {% if request|is_check_in_enabled %}
         <div class="ess-chart-card" data-section="attendance">
           <div class="ess-chart-card__header">
             <div>
@@ -411,6 +412,7 @@
             <div id="essWorkHoursChart"></div>
           </div>
         </div>
+        {% endif %}
       </div>
 
       <!-- Row 2: Attendance calendar -->
@@ -423,9 +425,11 @@
         </div>
         <div style="padding: 6px 14px 4px;">
           <div class="ess-calendar-legend">
+            {% if request|is_check_in_enabled %}
             <span><span class="ess-cal-dot" style="background:var(--ess-green)"></span>{% trans "Present" %}</span>
             <span><span class="ess-cal-dot" style="background:var(--ess-amber)"></span>{% trans "Late" %}</span>
             <span><span class="ess-cal-dot" style="background:var(--ess-red)"></span>{% trans "Absent" %}</span>
+            {% endif %}
             <span><span class="ess-cal-dot" style="background:var(--ess-indigo)"></span>{% trans "Leave" %}</span>
             <span><span class="ess-cal-dot" style="background:var(--ess-purple)"></span>{% trans "Holiday" %}</span>
           </div>
@@ -626,9 +630,11 @@
         var iconGoals   = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>';
         var iconPay     = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>';
         document.getElementById('essKpiGrid').innerHTML =
+          {% if request|is_check_in_enabled %}
           kpiCard('green',  iconPresent, '{% trans "Present This Month" %}',
                   d.present_this_month, d.late_this_month + ' {% trans "late" %}',
                   '{% url "view-my-attendance" %}') +
+          {% endif %}
           kpiCard('amber', iconLeave, '{% trans "Pending Leave" %}',
                   d.pending_leave_requests != null ? d.pending_leave_requests : 0,
                   '{% trans "awaiting approval" %}',
@@ -702,6 +708,7 @@
 
   // ── Work Hours Chart ──────────────────────────────────────────────────────────
   function loadWorkHours() {
+    if (!document.getElementById('essWorkHoursChart')) return;
     fetchP('/ess/api/work-hours-week/')
       .then(function (r) { return r.json(); })
       .then(function (d) {
@@ -774,7 +781,7 @@
           if (day.status === 'present' || day.status === 'late') {
             title = day.hours.toFixed(1) + ' {% trans "hrs" %}';
           }
-          if (day.status !== 'empty' && day.status !== 'future' && day.status !== 'weekend') {
+          if (day.status !== 'empty' && day.status !== 'future' && day.status !== 'weekend' && day.status !== 'workday') {
             onClick = ' onclick="window.location.href=\'{% url "view-my-attendance" %}?attendance_date=' + day.date + '\'" style="cursor:pointer"';
           }
           html += '<div class="ess-cal-day ess-cal-day--' + day.status + '"' +
@@ -785,10 +792,12 @@
 
         var s = d.summary;
         document.getElementById('essCalSummary').innerHTML =
+          {% if request|is_check_in_enabled %}
           calSummItem(s.present,  '#22c55e', '{% trans "Present" %}') +
           calSummItem(s.absent,   '#ef4444', '{% trans "Absent" %}')  +
-          calSummItem(s.leave,    '#E54F38', '{% trans "Leave" %}')   +
           calSummItem(s.late,     '#f59e0b', '{% trans "Late" %}')    +
+          {% endif %}
+          calSummItem(s.leave,    '#E54F38', '{% trans "Leave" %}')   +
           calSummItem(s.holiday,  '#a855f7', '{% trans "Holiday" %}');
       })
       .catch(function () {});
