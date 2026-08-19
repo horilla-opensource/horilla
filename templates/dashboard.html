@@ -2480,19 +2480,19 @@
                 .then(r => r.json())
                 .then(data => {
                     if (!data.genders.length) { document.querySelector("#chart-gender").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-                    const gc = { 'Male': '#3b82f6', 'Female': '#ec4899', 'Other': '#a855f7', 'Not Specified': '#94a3b8' };
-                    const genderKeys = { 'Male': 'male', 'Female': 'female', 'Other': 'other', 'Not Specified': '' };
+                    {# keyed on the raw gender value: the name the API sends is translated #}
+                    const gc = { 'male': '#3b82f6', 'female': '#ec4899', 'other': '#a855f7', '': '#94a3b8' };
                     renderChart('gender', document.querySelector("#chart-gender"), {
                         series: data.genders.map(g => g.count),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {
                                 if (!PERM.employee) return;
-                                const gender = data.genders[config.dataPointIndex].gender;
-                                window.location.href = "{% url 'employee-view' %}?gender=" + (genderKeys[gender] || gender.toLowerCase());
+                                const g = data.genders[config.dataPointIndex];
+                                window.location.href = "{% url 'employee-view' %}?gender=" + encodeURIComponent(g.key != null ? g.key : g.gender.toLowerCase());
                             }}
                         },
                         labels: data.genders.map(g => g.gender),
-                        colors: data.genders.map(g => gc[g.gender] || '#94a3b8'),
+                        colors: data.genders.map(g => gc[g.key != null ? g.key : ''] || '#94a3b8'),
                         plotOptions: { pie: { expandOnClick: true, donut: { size: '68%',
                             labels: { show: true,
                                 name: { fontSize: '13px', fontWeight: 700, color: textColor },
@@ -2550,19 +2550,20 @@
                 .then(r => r.json())
                 .then(data => {
                     if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-employee-status").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-                    const sc = { 'Active': '#22c55e', 'In-Active': '#ef4444', 'Inactive': '#ef4444' };
+                    {# keyed on the API's stable series keys, not on the translated labels #}
+                    const sc = { 'active': '#22c55e', 'inactive': '#ef4444' };
+                    const statusKeys = data.keys || ['active', 'inactive'];
                     renderChart('employee-status', document.querySelector("#chart-employee-status"), {
                         series: data.dataSet[0].data,
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {
                                 if (!PERM.employee) return;
-                                const label = data.labels[config.dataPointIndex] || '';
-                                const active = label.toLowerCase().includes('active') && !label.toLowerCase().includes('in-') && !label.toLowerCase().includes('inactive') ? 'true' : 'false';
+                                const active = statusKeys[config.dataPointIndex] === 'active' ? 'true' : 'false';
                                 window.location.href = "{% url 'employee-view' %}?is_active=" + active;
                             }}
                         },
                         labels: data.labels,
-                        colors: data.labels.map(l => sc[l] || '#E54F38'),
+                        colors: statusKeys.map(k => sc[k] || '#94a3b8'),
                         plotOptions: { pie: { expandOnClick: true, donut: { size: '68%',
                             labels: { show: true,
                                 name: { fontSize: '13px', fontWeight: 700, color: textColor },
