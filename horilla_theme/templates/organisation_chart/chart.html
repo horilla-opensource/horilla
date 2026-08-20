@@ -561,11 +561,35 @@
     	});
     }
 
+    // Auto-expand tree to specified depth on initial load
+    function autoExpandLevels(depth) {
+    	const tree = document.querySelector(".genealogy-tree");
+    	if (!tree) return;
+
+    	function expandToDepth(element, currentDepth, maxDepth) {
+    		if (currentDepth >= maxDepth) return;
+
+    		const childUls = Array.from(element.querySelectorAll(":scope > li > ul"));
+    		childUls.forEach(ul => {
+    			$(ul).addClass("active").show();
+    			const parentLi = ul.closest("li");
+    			const toggle = parentLi.querySelector(".expand-toggle");
+    			if (toggle) {
+    				$(toggle).addClass("upArrow");
+    			}
+    			expandToDepth(ul, currentDepth + 1, maxDepth);
+    		});
+    	}
+
+    	expandToDepth(tree, 0, depth);
+    }
+
     // Setup tree expand/collapse behavior
     function setupTreeBehavior() {
     	$(".genealogy-tree ul").hide();
     	$(".genealogy-tree > ul").show();
     	$(".genealogy-tree ul.active").show();
+    	autoExpandLevels(3);
 
     	$(".genealogy-tree li").each(function () {
     		if ($(this).children("ul").length) {
