@@ -272,40 +272,14 @@ def _shift_fixture_dates(file_path):
     """
     Return a date-shifted version of a JSON fixture as a string.
 
-    All dates between 2020-01-01 and 2030-12-31 are shifted so that the
-    fixture's anchor month (2025-07-01) maps to the first day of the current
-    month. Static dates outside that window (e.g. DOBs in the 1960s) are left
-    untouched. Returns None if no shift is needed (delta == 0).
+    All dates between 2020-01-01 and 2030-12-31 move so the fixture snapshot
+    day (FIXTURE_AS_OF) becomes today. DOBs outside that window are untouched.
+    Returns None if no shift is needed (delta == 0).
     """
-    import re
-
-    ANCHOR = datetime(2025, 7, 1).date()
-    today = datetime.today().date()
-    target = today.replace(day=1)
-    delta = (target - ANCHOR).days
-
-    if delta == 0:
-        return None
-
-    # Match date-only values and the date prefix of ISO datetimes
-    # (e.g. 2025-07-02T06:10:00Z). A trailing \b fails before "T".
-    DATE_RE = re.compile(r"(?<!\d)(\d{4}-\d{2}-\d{2})(?!\d)")
-    SHIFT_MIN = datetime(2020, 1, 1).date()
-    SHIFT_MAX = datetime(2030, 12, 31).date()
-
-    def _shift(match):
-        try:
-            d = datetime.strptime(match.group(1), "%Y-%m-%d").date()
-            if SHIFT_MIN <= d <= SHIFT_MAX:
-                return (d + timedelta(days=delta)).strftime("%Y-%m-%d")
-        except ValueError:
-            pass
-        return match.group(1)
+    from base.demo_data.dates import shift_fixture_dates_text
 
     with open(file_path, "r", encoding="utf-8") as f:
-        content = f.read()
-
-    return DATE_RE.sub(_shift, content)
+        return shift_fixture_dates_text(f.read())
 
 
 # Fixtures whose rows the trailing-6-month backfill (base/demo_data/modules/)

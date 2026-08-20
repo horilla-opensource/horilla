@@ -5,7 +5,10 @@ from datetime import date, timedelta
 from django.test import SimpleTestCase
 
 from base.demo_data.dates import (
+    FIXTURE_AS_OF,
     attendance_dates_for_employee,
+    previous_weekday,
+    shift_fixture_dates_text,
     should_be_present_today,
     spaced_dates,
     weekdays_inclusive,
@@ -48,11 +51,28 @@ class DemoDateWindowTests(SimpleTestCase):
         dates = attendance_dates_for_employee(absent_id, start, today, 26)
         self.assertNotIn(today, dates)
         self.assertLess(max(dates), today)
+        self.assertIn(previous_weekday(today), dates)
+        self.assertEqual(len(dates), 26)
+        self.assertEqual(len(set(dates)), 26)
 
     def test_present_employees_include_today_on_weekdays(self):
-        today = date(2026, 8, 19)
+        today = date(2026, 8, 20)  # Thursday
         start = today - timedelta(days=180)
         present_id = 1
         self.assertTrue(should_be_present_today(present_id, today))
         dates = attendance_dates_for_employee(present_id, start, today, 26)
         self.assertEqual(dates[-1], today)
+        self.assertIn(previous_weekday(today), dates)
+
+    def test_fixture_shift_maps_snapshot_day_to_load_day(self):
+        today = date(2026, 8, 20)
+        text = (
+            '{"attendance_date": "2025-08-01", "clock": "2025-07-31T18:00:00Z",'
+            ' "dob": "1968-04-12"}'
+        )
+        shifted = shift_fixture_dates_text(text, today)
+        self.assertIsNotNone(shifted)
+        self.assertIn('"2026-08-20"', shifted)
+        self.assertIn("2026-08-19T18:00:00Z", shifted)
+        self.assertIn("1968-04-12", shifted)
+        self.assertIsNone(shift_fixture_dates_text(text, FIXTURE_AS_OF))

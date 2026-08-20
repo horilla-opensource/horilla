@@ -2,9 +2,45 @@
 
 from __future__ import annotations
 
+import re
 from datetime import date, timedelta
 
 PRESENT_TODAY_RATE = 87  # employee_id % 100 < this → checked in today
+
+# Last attendance_date in load_data/attendance_data.json. Every fixture date
+# in 2020–2030 shifts so this day becomes the load day.
+FIXTURE_AS_OF = date(2025, 8, 1)
+_SHIFT_MIN = date(2020, 1, 1)
+_SHIFT_MAX = date(2030, 12, 31)
+_DATE_RE = re.compile(r"(?<!\d)(\d{4}-\d{2}-\d{2})(?!\d)")
+
+# Keep the last N weekdays in the attendance set so "yesterday" exists after
+# the 6-month spread (which would otherwise skip most recent days).
+RECENT_ATTENDANCE_WEEKDAYS = 10
+
+
+def shift_fixture_dates_text(content: str, today: date | None = None) -> str | None:
+    """Shift YYYY-MM-DD (and ISO datetime prefixes) so FIXTURE_AS_OF → today.
+
+    Dates outside 2020–2030 (DOBs, etc.) are left alone. Returns None when
+    today is the snapshot day (no rewrite needed).
+    """
+    today = today or date.today()
+    delta = (today - FIXTURE_AS_OF).days
+    if delta == 0:
+        return None
+
+    def _shift(match: re.Match[str]) -> str:
+        raw = match.group(1)
+        try:
+            d = date.fromisoformat(raw)
+        except ValueError:
+            return raw
+        if _SHIFT_MIN <= d <= _SHIFT_MAX:
+            return (d + timedelta(days=delta)).isoformat()
+        return raw
+
+    return _DATE_RE.sub(_shift, content)
 
 
 def weekdays_inclusive(start: date, end: date) -> list[date]:
@@ -73,21 +109,36 @@ def should_be_present_today(
     return employee_id % 100 < rate
 
 
+def _recent_weekdays(today: date, start: date, n: int) -> list[date]:
+    end = today if today.weekday() < 5 else previous_weekday(today)
+    pin: list[date] = []
+    day = end
+    while len(pin) < n and day >= start:
+        if day.weekday() < 5:
+            pin.append(day)
+        day -= timedelta(days=1)
+    pin.reverse()
+    return pin
+
+
 def attendance_dates_for_employee(
     employee_id: int,
     start: date,
     today: date,
     count: int,
 ) -> list[date]:
-    """Weekday attendance dates in the trailing window, not everyone on `today`."""
+    """Weekday attendance dates in the trailing window, not everyone on `today`.
+
+    The last few weekdays are always included (except `today` for the ~13%
+    who are off) so a load on Thursday still has Wednesday punches.
+    """
     dates = spaced_dates(start, today, count, weekdays_only=True)
     if not dates:
         return dates
-    if dates[-1] == today and not should_be_present_today(employee_id, today):
-        replacement = previous_weekday(today)
-        existing = set(dates[:-1])
-        while replacement in existing:
-            replacement = previous_weekday(replacement)
-        if replacement >= start:
-            dates[-1] = replacement
-    return dates
+    pin = _recent_weekdays(today, start, min(RECENT_ATTENDANCE_WEEKDAYS, count))
+    if not should_be_present_today(employee_id, today):
+        pin = [d for d in pin if d != today]
+    pin_set = set(pin)
+    head = [d for d in dates if d not in pin_set]
+    need = count - len(pin)
+    return (head[:need] if need > 0 else []) + pin
