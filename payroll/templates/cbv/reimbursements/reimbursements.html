@@ -30,7 +30,7 @@
 <meta name="csrf-token" content="{{ csrf_token }}">
 
 
-<div hx-get="{% url "reimbursement-nav" %}" hx-trigger="load">
+<div hx-get="{% url "reimbursement-nav" %}?{{ request.GET.urlencode }}" hx-trigger="load">
 </div>
 {% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
 

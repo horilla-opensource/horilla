@@ -1761,12 +1761,30 @@ class HorillaTabView(TemplateView):
             if active_tab:
                 context["active_target"] = active_tab.tab_target
 
+        # Explicit deep-link support: a caller (e.g. a dashboard "pending
+        # approvals" card) can force a specific tab open on first load via
+        # ?open_tab=<1-based index>, overriding whatever tab the user last
+        # had active. Without this there was no way to link directly into a
+        # non-default tab - every tab param below carries the filter, but
+        # the FIRST tab (or whatever was last active) was always the one
+        # actually shown.
+        # No tag name in the selector: the tab element is a <li> in one
+        # horilla_tabs.html and a <button> in the theme's override, and this
+        # needs to match whichever one actually renders.
+        open_tab = self.request.GET.get("open_tab")
+        if open_tab and open_tab.isdigit():
+            context["active_target"] = f'[data-target="#{self.view_id}{open_tab}"]'
+
         # Built from self.request.GET.copy() (a QueryDict), not a plain
         # dict -- a plain dict can only hold one value per key, so a
         # multi-valued param (e.g. nested_fields, when 2+ group-by levels
         # are active) silently collapsed to just its last value on every
         # tab reload, one dropped level at a time.
         extra_params = self.request.GET.copy()
+        # Only controls which tab opens above - not a real filter, so it
+        # shouldn't be forwarded onto tab URLs or show up as a "Filters:"
+        # chip on the destination list.
+        extra_params.pop("open_tab", None)
         extra_params["referrer"] = self.request.META.get("HTTP_REFERER", "")
 
         for tab in self.tabs:

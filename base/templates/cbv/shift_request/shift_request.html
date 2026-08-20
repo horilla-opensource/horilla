@@ -128,7 +128,7 @@
     }
 </style>
 
-<div hx-get="{% url 'shift-request-nav' %}" hx-trigger="load"></div>
+<div hx-get="{% url 'shift-request-nav' %}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
 {% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
 
 {% include "generic/components.html" %}

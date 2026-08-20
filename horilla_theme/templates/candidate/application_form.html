@@ -278,26 +278,12 @@
         </div>
     </div>
 
-
-    {% comment %}
-      This page is standalone - it does not extend index.html - so every
-      dependency has to be listed here, and the order matters:
-
-        jQuery              the inline block below inlines the whole Select2
-                            library and then uses $(...) throughout, so without
-                            it that block dies on "jQuery is not defined" and
-                            the resume prefill, the required-label styling and
-                            the matching-resume autofill never run.
-        gettext catalog     country.js localises its option labels through
-                            gettext(), so the catalog has to precede it.
-        country.js          consumer of both of the above.
-
-      Written as a comment tag rather than {% templatetag openbrace %}# ... #{% templatetag closebrace %}
-      on purpose: that form is single-line only, so the multi-line notes both
-      sides of this merge had written were not comments at all - Django printed
-      them as visible text on the public application form.
-    {% endcomment %}
+    {# This page is standalone (it does not extend index.html), so its dependencies
+       have to be listed here. The inline block below inlines the whole Select2
+       library and then uses $(...) throughout, so jQuery must load first. #}
     <script src="{% static '/jquery/jquery.min.js' %}"></script>
+    {# country.js localises its option labels via gettext(); this page is standalone
+       and does not extend index.html, so the catalog has to be pulled in here #}
     <script src="{% url 'javascript-catalog' %}"></script>
     <script src="{% static '/index/country.js' %}"></script>
     <script>

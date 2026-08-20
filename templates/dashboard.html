@@ -1023,9 +1023,23 @@
 
         .md-pending-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             padding-top: 8px;
             gap: 8px;
+        }
+        /* Standalone top-of-page placement, not the height-constrained
+           sidebar stack it used to share with Holidays/Birthdays - the
+           short one-row card grid doesn't need a scrollable max-height. */
+        #md-pending-approvals {
+            max-height: none;
+            overflow: visible;
+        }
+        /* .md-info-panel normally relies on .md-sidebar's own gap for
+           spacing between panels - this one stands alone at the top of
+           the page now, so it needs its own margin to match the 20px
+           rhythm the other top-level sections (e.g. .md-kpi-grid) use. */
+        .md-pending-approvals-panel {
+            margin-bottom: 20px;
         }
         .md-pending-card {
             display: block;
@@ -1375,6 +1389,15 @@
         {% if show_setup_checklist %}
             {% include "base/setup_checklist_banner.html" %}
         {% endif %}
+
+        <div class="md-info-panel md-pending-approvals-panel">
+            <div class="md-info-panel__header">
+                <div class="md-info-panel__title">{% trans "Pending Approvals" %}</div>
+            </div>
+            <div class="md-info-panel__body" id="md-pending-approvals">
+                <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
+            </div>
+        </div>
 
         <div class="md-kpi-grid" id="md-kpi-grid">
             <div class="md-kpi-card md-kpi-card--skeleton"><div class="md-skeleton md-skeleton--icon"></div><div class="md-skeleton md-skeleton--label"></div><div class="md-skeleton md-skeleton--value"></div><div class="md-skeleton md-skeleton--sub"></div></div>
@@ -1752,14 +1775,6 @@
                         <div class="md-info-panel__title">{% trans "Birthdays & Anniversaries" %}</div>
                     </div>
                     <div class="md-info-panel__body" id="md-birthdays">
-                        <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
-                    </div>
-                </div>
-                <div class="md-info-panel">
-                    <div class="md-info-panel__header">
-                        <div class="md-info-panel__title">{% trans "Pending Approvals" %}</div>
-                    </div>
-                    <div class="md-info-panel__body" id="md-pending-approvals">
                         <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
                     </div>
                 </div>
@@ -2943,27 +2958,27 @@
             function renderPendingCards(p) {
                 return `
                 <div class="md-pending-grid">
-                    <a href="{% url 'request-view' %}?status=requested&filter_applied=on" class="md-pending-card md-pending-card--amber">
+                    <a href="{% url 'request-view' %}?status=requested&filter_applied=1" class="md-pending-card md-pending-card--amber">
                         <div class="md-pending-card__count">${p.leave_requests}</div>
                         <div class="md-pending-card__label">{% trans "Leave" %}</div>
                     </a>
-                    <a href="{% url 'request-attendance-view' %}?filter_applied=on" class="md-pending-card md-pending-card--blue">
+                    <a href="{% url 'request-attendance-view' %}?open_tab=1&is_validate_request_approved=false&filter_applied=1" class="md-pending-card md-pending-card--blue">
                         <div class="md-pending-card__count">${p.attendance_requests}</div>
                         <div class="md-pending-card__label">{% trans "Attendance" %}</div>
                     </a>
-                    <a href="{% url 'asset-request-allocation-view' %}?asset_request_status=Requested&filter_applied=on" class="md-pending-card md-pending-card--green">
+                    <a href="{% url 'asset-request-allocation-view' %}?open_tab=2&asset_request_status=Requested&filter_applied=1" class="md-pending-card md-pending-card--green">
                         <div class="md-pending-card__count">${p.asset_requests}</div>
                         <div class="md-pending-card__label">{% trans "Assets" %}</div>
                     </a>
-                    <a href="{% url 'shift-request-view' %}?status=requested&filter_applied=on" class="md-pending-card" style="background:#f0fdfa;">
+                    <a href="{% url 'shift-request-view' %}?open_tab=1&status=requested&filter_applied=1" class="md-pending-card" style="background:#f0fdfa;">
                         <div class="md-pending-card__count" style="color:#0d9488;">${p.shift_requests}</div>
                         <div class="md-pending-card__label">{% trans "Shift" %}</div>
                     </a>
-                    <a href="{% url 'work-type-request-view' %}?status=requested&filter_applied=on" class="md-pending-card" style="background:#eef2ff;">
+                    <a href="{% url 'work-type-request-view' %}?status=requested&filter_applied=1" class="md-pending-card" style="background:#eef2ff;">
                         <div class="md-pending-card__count" style="color:#4f46e5;">${p.work_type_requests}</div>
                         <div class="md-pending-card__label">{% trans "Work Type" %}</div>
                     </a>
-                    <a href="{% url 'view-reimbursement' %}?status=requested&filter_applied=on" class="md-pending-card md-pending-card--purple">
+                    <a href="{% url 'view-reimbursement' %}?open_tab=1&status=requested&type=reimbursement&filter_applied=1" class="md-pending-card md-pending-card--purple">
                         <div class="md-pending-card__count">${p.reimbursements}</div>
                         <div class="md-pending-card__label">{% trans "Reimbursements" %}</div>
                     </a>

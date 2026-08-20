@@ -51,6 +51,24 @@ class RequestAndAllocationView(TemplateView):
 
     template_name = "cbv/request_and_allocation/request_and_allocation.html"
 
+    def get(self, request, *args, **kwargs):
+        # Deep-link support for e.g. the dashboard's "pending approvals"
+        # card: ?asset_request_status=Requested. The query string can't be
+        # relied on to survive down to the Asset Request tab's own list
+        # fetch - this page auto-submits an unrelated (Asset Allocation)
+        # filter form on load, which htmx rebuilds the request URL from,
+        # dropping any param that isn't one of that form's own fields.
+        # Stash it in the session instead, which AssetRequestList.get_queryset
+        # picks up as a fallback, immune to that. A plain (non-deep-link)
+        # visit to this page clears any stale value instead of letting it
+        # linger indefinitely.
+        status = request.GET.get("asset_request_status")
+        if status:
+            request.session["asset_request_deep_link_status"] = status
+        else:
+            request.session.pop("asset_request_deep_link_status", None)
+        return super().get(request, *args, **kwargs)
+
 
 @method_decorator(login_required, name="dispatch")
 class AllocationList(HorillaListView):
@@ -218,6 +236,25 @@ class AssetRequestList(HorillaListView):
             queryset=queryset,
             field="requested_employee_id",
         ) | queryset.filter(requested_employee_id=self.request.user.employee_get)
+
+        # Fallback for a deep link into this tab (see
+        # RequestAndAllocationView.get) - only applies when the current
+        # request didn't already specify its own status filter. Read (not
+        # popped) since HorillaListView calls get_queryset() more than once
+        # per request; RequestAndAllocationView.get clears it on the next
+        # plain visit instead, so it doesn't linger indefinitely.
+        if not self.request.GET.get("asset_request_status"):
+            deep_link_status = self.request.session.get(
+                "asset_request_deep_link_status"
+            )
+            if deep_link_status:
+                queryset = queryset.filter(asset_request_status=deep_link_status)
+                # Also reflect it in the "Filters:" chip row - otherwise the
+                # list is correctly filtered but looks unfiltered, since
+                # that display reads self._saved_filters, not this queryset.
+                saved_filters = self._saved_filters.copy()
+                saved_filters["asset_request_status"] = deep_link_status
+                self._saved_filters = saved_filters
         return queryset
 
     columns = [
@@ -396,6 +433,12 @@ class RequestAndAllocationNav(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("tab-asset-request-allocation")
+        # Forward deep-link params (e.g. open_tab / asset_request_status from
+        # the dashboard's "pending approvals" card) onto the tab view this
+        # nav auto-loads on page load - otherwise they never reach it, since
+        # this hardcoded search_url carries no query string of its own.
+        if self.request and self.request.GET:
+            self.search_url += f"?{self.request.GET.urlencode()}"
 
     nav_title = _("Asset")
     filter_instance = AssetAllocationFilter()
