@@ -161,14 +161,19 @@ class ModernDashboardFetchInventoryTests(SimpleTestCase):
         self.assertIn("attendance_date={% now 'Y-m-d' %}&filter_applied=on", text)
         self.assertIn("is_active=True&filter_applied=on", text)
         self.assertIn("closed=false&filter_applied=on", text)
-        self.assertIn("asset_request_status=Requested&filter_applied=on", text)
-        self.assertIn("view-reimbursement' %}?status=requested&filter_applied=on", text)
-        self.assertIn("shift-request-view' %}?status=requested&filter_applied=on", text)
+        self.assertIn("asset_request_status=Requested&filter_applied=1", text)
         self.assertIn(
-            "work-type-request-view' %}?status=requested&filter_applied=on", text
+            "view-reimbursement' %}?open_tab=1&status=requested&type=reimbursement&filter_applied=1",
+            text,
         )
-        self.assertIn("request-view' %}?status=requested&filter_applied=on", text)
-        self.assertIn("request-attendance-view' %}?filter_applied=on", text)
+        self.assertIn(
+            "shift-request-view' %}?open_tab=1&status=requested&filter_applied=1", text
+        )
+        self.assertIn(
+            "work-type-request-view' %}?status=requested&filter_applied=1", text
+        )
+        self.assertIn("request-view' %}?status=requested&filter_applied=1", text)
+        self.assertIn("request-attendance-view' %}?open_tab=1", text)
         self.assertNotIn("approval_status=pending", text)
         self.assertNotIn("request-attendance-view' %}?approved=false", text)
         self.assertNotIn("approved=false&canceled=false", text)
