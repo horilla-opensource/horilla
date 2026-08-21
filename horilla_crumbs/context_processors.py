@@ -52,6 +52,12 @@ def _resolve_menu_section(path, menus):
     return best
 
 
+def sync_session_ids(request, key, queryset):
+    ids = list(queryset.values_list("id", flat=True))
+    if request.session.get(key) != ids:
+        request.session[key] = ids
+
+
 BREADCRUMB_URL_NAMES = {
     "ess": "Employee",
     "offboarding": "Offboarding",
@@ -319,19 +325,9 @@ def breadcrumbs(request):
             if referer_path.rstrip("/") == dashboard_path.rstrip("/"):
                 section_override = {"name": _trans("Dashboard"), "url": dashboard_path}
 
-        if apps.is_installed("recruitment"):
-            from recruitment.models import Candidate
-
-            candidates = Candidate.objects.filter(is_active=True)
-
-        else:
-            candidates = None
-
-        employees = Employee.objects.all()
-
         if len(parts) > 1:
 
-            if "recruitment" in parts:
+            if "recruitment" in parts and apps.is_installed("recruitment"):
                 if "search-candidate" in parts:
                     pass
                 elif "candidate-view" in parts:
@@ -339,10 +335,13 @@ def breadcrumbs(request):
                 elif "get-mail-log-rec" in parts:
                     pass
                 else:
-                    # Store the candidates in the session
-                    request.session["filtered_candidates"] = [
-                        candidate.id for candidate in candidates
-                    ]
+                    from recruitment.models import Candidate
+
+                    sync_session_ids(
+                        request,
+                        "filtered_candidates",
+                        Candidate.objects.filter(is_active=True),
+                    )
 
             if "employee-filter-view" in parts:
                 pass
@@ -353,10 +352,7 @@ def breadcrumbs(request):
             elif parts[0] == "employee" and parts[-1].isdigit():
                 pass
             else:
-                # Store the employees in the session
-                request.session["filtered_employees"] = [
-                    employee.id for employee in employees
-                ]
+                sync_session_ids(request, "filtered_employees", Employee.objects.all())
 
         if len(parts) == 0:
             request.session["breadcrumbs"].clear()
