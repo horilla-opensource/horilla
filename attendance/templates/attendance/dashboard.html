@@ -70,7 +70,7 @@
         /* ── KPI ── */
         .am-kpi-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             margin-bottom: 20px;
             gap: 14px;
         }
@@ -1409,19 +1409,19 @@
                 .then(r => r.json())
                 .then(data => {
                     document.getElementById('am-kpi-grid').innerHTML = `
-                <a href="{% url 'attendance-view' %}" class="am-kpi-card">
+                <a href="{% url 'attendance-view' %}?open_tab=1&attendance_date=${data.date}&filter_applied=on" class="am-kpi-card">
                     <div class="am-kpi-card__icon am-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></div>
                     <div class="am-kpi-card__label">{% trans "Present Today" %}</div>
                     <div class="am-kpi-card__value">${data.present_today}</div>
                     <div class="am-kpi-card__sub"><span class="am-badge ${data.attendance_rate >= 80 ? 'am-badge--green' : 'am-badge--amber'}">${data.attendance_rate}% {% trans "rate" %}</span></div>
                 </a>
-                <a href="{% url 'attendance-view' %}" class="am-kpi-card">
+                <a href="{% url 'attendance-view' %}?open_tab=1&attendance_date=${data.date}&filter_applied=on" class="am-kpi-card">
                     <div class="am-kpi-card__icon am-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
                     <div class="am-kpi-card__label">{% trans "On Time" %}</div>
                     <div class="am-kpi-card__value">${data.on_time}</div>
                     <div class="am-kpi-card__sub">{% trans "of" %} ${data.total_employees} {% trans "employees" %}</div>
                 </a>
-                <a href="{% url 'late-come-early-out-view' %}" class="am-kpi-card">
+                <a href="{% url 'late-come-early-out-view' %}?type=late_come&attendance_date=${data.date}&attendance_id__attendance_validated=false&filter_applied=on" class="am-kpi-card">
                     <div class="am-kpi-card__icon am-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
                     <div class="am-kpi-card__label">{% trans "Late Arrival" %}</div>
                     <div class="am-kpi-card__value">${data.late_come}</div>
@@ -1429,13 +1429,17 @@
                                 ? '<span class="am-badge am-badge--red">' + data.early_out + ' {% trans "early departure" %}</span>'
                                 : '<span style="opacity:0.5">{% trans "No early outs" %}</span>'}</div>
                 </a>
-                <a href="{% url 'attendance-view' %}?attendance_validated=unknown" class="am-kpi-card">
+                <a href="{% url 'attendance-view' %}?open_tab=1&attendance_validated=false&filter_applied=on" class="am-kpi-card">
                     <div class="am-kpi-card__icon am-kpi-card__icon--red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg></div>
                     <div class="am-kpi-card__label">{% trans "Pending" %}</div>
                     <div class="am-kpi-card__value">${data.pending_validation}</div>
-                    <div class="am-kpi-card__sub">${data.pending_overtime > 0
-                                ? '<span class="am-badge am-badge--amber">' + data.pending_overtime + ' {% trans "OT pending" %}</span>'
-                                : '{% trans "To validate" %}'}</div>
+                    <div class="am-kpi-card__sub">{% trans "To validate" %}</div>
+                </a>
+                <a href="{% url 'attendance-view' %}?open_tab=2&attendance_overtime_approve=false&attendance_validated=true&filter_applied=on" class="am-kpi-card">
+                    <div class="am-kpi-card__icon am-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                    <div class="am-kpi-card__label">{% trans "OT Pending" %}</div>
+                    <div class="am-kpi-card__value">${data.pending_overtime}</div>
+                    <div class="am-kpi-card__sub">{% trans "awaiting approval" %}</div>
                 </a>`;
                 }).catch(() => { document.getElementById('am-kpi-grid').innerHTML = emptyHtml('{% trans "Unable to load KPIs" %}'); });
             }
