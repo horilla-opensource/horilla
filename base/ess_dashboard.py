@@ -177,6 +177,12 @@ def ess_kpi_data(request):
             "open_objectives": open_objectives,
             "latest_net_pay": latest_net_pay,
             "latest_payslip_period": latest_payslip_period,
+            # Echoed back so the "Present This Month" card's click-through
+            # can filter to the exact same range the count above was
+            # computed from, instead of the destination page showing the
+            # employee's entire unfiltered attendance history.
+            "period_from_date": from_date.isoformat(),
+            "period_to_date": range_end.isoformat(),
         }
     )
 

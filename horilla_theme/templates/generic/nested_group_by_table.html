@@ -226,7 +226,7 @@
     }
 </style>
 
-<div id="{{view_id|safe}}" class="hlv-container relative" data-list-path="{{request.path}}" data-selected-instances-key="{{selected_instances_key_id}}">
+<div id="{{view_id|safe}}" class="hlv-container relative" data-list-path="{{request.path}}" data-selected-instances-key="{{selected_instances_key_id}}"{% if show_toggle_form %} x-data="{ open: false }"{% endif %}>
     <div
         class="oh-modal"
         id="bulkUpdateModal{{view_id|safe}}"
@@ -432,21 +432,43 @@
                 ><ion-icon name="contract-outline" style="font-size:13px;"></ion-icon>{% trans "Collapse All" %}</button>
             </div>
         </div>
-        <div class="overflow-x-auto ngb-hscroll">
-            <table class="fixed-table w-full border-separate table-fixed" data-bulk-select-option="{{bulk_select_option|yesno:'true,false'}}">
-                {% include "generic/_group_row_colgroup.html" %}
+        <div class="relative">
+            <div class="overflow-x-auto ngb-hscroll">
+                <table class="fixed-table w-full border-separate table-fixed" data-bulk-select-option="{{bulk_select_option|yesno:'true,false'}}">
+                    {% include "generic/_group_row_colgroup.html" %}
+                    {% comment %}
+                        select_all_scope: this shared header's own <table> only
+                        ever has a <thead> -- every leaf group's rows live in
+                        SEPARATE tables further down the tree (one per leaf,
+                        header suppressed there via show_header=False). The
+                        partial's default scope, .closest('.fixed-table'), would
+                        resolve to THIS empty table and find zero row checkboxes
+                        to select. Scoping to the whole view container instead
+                        reaches every leaf table's rows.
+                    {% endcomment %}
+                    {% include "generic/_group_row_thead.html" with gvid=view_id use_shared_colgroup=True select_all_scope="#"|add:view_id %}
+                </table>
+            </div>
+            {% if show_toggle_form %}
                 {% comment %}
-                    select_all_scope: this shared header's own <table> only
-                    ever has a <thead> -- every leaf group's rows live in
-                    SEPARATE tables further down the tree (one per leaf,
-                    header suppressed there via show_header=False). The
-                    partial's default scope, .closest('.fixed-table'), would
-                    resolve to THIS empty table and find zero row checkboxes
-                    to select. Scoping to the whole view container instead
-                    reaches every leaf table's rows.
+                    _group_row_thead.html's "Customize columns" trigger reads
+                    the nearest ancestor's Alpine `open` -- this shared header
+                    has no leaf-level x-data wrapper of its own (that only
+                    exists per-leaf, in _group_row_table.html), so without
+                    this panel+scope the button rendered nothing to toggle.
+                    Positioned relative to THIS tight wrapper rather than the
+                    outer hlv-container so it lands right under the icon
+                    instead of the page-level relative ancestor.
                 {% endcomment %}
-                {% include "generic/_group_row_thead.html" with gvid=view_id use_shared_colgroup=True select_all_scope="#"|add:view_id %}
-            </table>
+                <div
+                    class="oh-dropdown__menu oh-sticky-table_dropdown absolute right-[8px] top-[38px] z-20"
+                    x-show="open"
+                    x-cloak
+                    @click.outside="open = false"
+                >
+                {{ toggle_form.as_list }}
+                </div>
+            {% endif %}
         </div>
     </div>
     <script>

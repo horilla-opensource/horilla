@@ -75,7 +75,7 @@
         }
     </style>
 
-<div hx-get="{% url "my-leave-request-nav" %}" hx-trigger="load">
+<div hx-get="{% url "my-leave-request-nav" %}?{{request.GET.urlencode}}" hx-trigger="load">
 </div>
 <div>
     {% include "leave/user_leave/user_leave.html" %}
