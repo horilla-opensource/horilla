@@ -606,11 +606,10 @@ def dashboard_attendance_trend(request):
             present_qs = Attendance.objects.filter(
                 attendance_date__gte=week_start_q,
                 attendance_date__lte=week_end,
+                employee_id__in=emp_qs,
             )
-            if scoped_ids is not None:
-                present_qs = present_qs.filter(employee_id__in=scoped_ids)
             present = present_qs.values("employee_id").distinct().count()
-            rate = round((present / total * 100), 1) if total > 0 else 0
+            rate = min(100.0, round((present / total * 100), 1)) if total > 0 else 0
 
             is_current = bucket_start <= today <= bucket_start + timedelta(days=6)
             label = bucket_start.strftime("%b %d") + (" (now)" if is_current else "")

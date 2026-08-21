@@ -2440,16 +2440,15 @@
                     }
                     renderChart('attendance-trend', document.querySelector("#chart-attendance-trend"), {
                         series: [{ name: '{% trans "Attendance Rate" %}', data: data.weeks.map(w => w.rate) }],
-                        chart: { type: 'area', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
-                            dropShadow: { enabled: true, top: 4, blur: 10, opacity: 0.12, color: '#E54F38' } },
+                        chart: { type: 'area', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM },
                         colors: ['#E54F38'],
                         fill: { type: 'gradient', gradient: { type: 'vertical', shadeIntensity: 1, opacityFrom: 0.45, opacityTo: 0.02, stops: [0, 90, 100],
                             colorStops: [{ offset: 0, color: '#E54F38', opacity: 0.4 }, { offset: 100, color: '#a855f7', opacity: 0.02 }] } },
-                        stroke: { curve: 'smooth', width: 3 },
+                        stroke: { curve: 'straight', width: 3 },
                         markers: { size: 5, colors: ['#E54F38'], strokeColors: cardBg, strokeWidth: 2, hover: { size: 7 } },
                         dataLabels: { enabled: false },
                         xaxis: { ...XAXIS_STYLE, categories: data.weeks.map(w => w.week) },
-                        yaxis: { ...YAXIS_STYLE, min: 0, max: 100, labels: { ...YAXIS_STYLE.labels, formatter: v => v + '%' } },
+                        yaxis: { ...YAXIS_STYLE, min: 0, max: 100, tickAmount: 5, forceNiceScale: false, labels: { ...YAXIS_STYLE.labels, formatter: v => v + '%' } },
                         grid: GRID,
                         tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + '% {% trans "attendance" %}' } },
                     });
