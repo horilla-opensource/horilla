@@ -99,13 +99,26 @@
                         whole node keeps header and body (and its own open
                         state, via node.dynamic_name already being in
                         request.GET on this exact request) in sync.
+
+                        &view_id={{view_id}} on every hx-get below: view_id
+                        defaults to a fresh random uuid every request unless
+                        a page's List view sets a fixed one (HorillaListView.
+                        __init__) -- without this param, hx-select here would
+                        look for THIS render's #{{view_id}}-node-... inside a
+                        follow-up response that used a brand-new view_id, find
+                        no match, and swap in nothing. That silently deleted
+                        whichever node you clicked "next" on -- since every
+                        row after it shifts up to fill the gap, it read as
+                        "the group I was looking at just disappeared."
+                        Passing view_id back tells that same __init__ to
+                        reuse it instead of generating a new one.
                     {% endcomment %}
                     <div class="hlv-pagination inline-flex items-center h-8 gap-0.5 bg-white border border-[#e6e6e6] rounded-md px-1 flex-shrink-0">
                         <button
                             type="button"
                             class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if node.list.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
                             {% if node.list.has_previous %}
-                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{node.dynamic_name}}=1"
+                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{node.dynamic_name}}=1&view_id={{view_id}}"
                             hx-select="#{{view_id}}-node-{{group_path}}"
                             hx-target="#{{view_id}}-node-{{group_path}}"
                             hx-swap="outerHTML"
@@ -117,7 +130,7 @@
                             type="button"
                             class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if node.list.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
                             {% if node.list.has_previous %}
-                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{node.dynamic_name}}={{node.list.previous_page_number}}"
+                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{node.dynamic_name}}={{node.list.previous_page_number}}&view_id={{view_id}}"
                             hx-select="#{{view_id}}-node-{{group_path}}"
                             hx-target="#{{view_id}}-node-{{group_path}}"
                             hx-swap="outerHTML"
@@ -134,7 +147,7 @@
                                 value="{{ node.list.number }}"
                                 title="{% trans 'Enter a page number and press Enter' %}"
                                 class="w-9 h-6 m-0 py-0 px-1 text-center text-xs leading-6 border border-[#e6e6e6] rounded outline-none focus:border-primary-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                                hx-get="{{search_url}}?{{saved_filters.urlencode}}"
+                                hx-get="{{search_url}}?{{saved_filters.urlencode}}&view_id={{view_id}}"
                                 hx-select="#{{view_id}}-node-{{group_path}}"
                                 hx-target="#{{view_id}}-node-{{group_path}}"
                                 hx-swap="outerHTML"
@@ -147,7 +160,7 @@
                             type="button"
                             class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if node.list.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
                             {% if node.list.has_next %}
-                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{node.dynamic_name}}={{node.list.next_page_number}}"
+                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{node.dynamic_name}}={{node.list.next_page_number}}&view_id={{view_id}}"
                             hx-select="#{{view_id}}-node-{{group_path}}"
                             hx-target="#{{view_id}}-node-{{group_path}}"
                             hx-swap="outerHTML"
@@ -159,7 +172,7 @@
                             type="button"
                             class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if node.list.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
                             {% if node.list.has_next %}
-                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{node.dynamic_name}}={{ node.list.paginator.num_pages }}"
+                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{node.dynamic_name}}={{ node.list.paginator.num_pages }}&view_id={{view_id}}"
                             hx-select="#{{view_id}}-node-{{group_path}}"
                             hx-target="#{{view_id}}-node-{{group_path}}"
                             hx-swap="outerHTML"

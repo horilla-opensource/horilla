@@ -214,7 +214,19 @@ class HorillaListView(ListView):
 
     def __init__(self, **kwargs: Any) -> None:
         if not self.view_id:
-            self.view_id = get_short_uuid(4)
+            # Nested group by's leaf-level pagination (nested_group_by_node.html)
+            # scopes its swap with hx-select="#{{view_id}}-node-...", matched
+            # against the FRESH server response to a follow-up request -- if
+            # that response regenerates a new random view_id (the default
+            # below), the id it's looking for no longer exists there, so
+            # nothing matches and the targeted node's own row silently
+            # disappears instead of advancing to its next page. Carrying the
+            # ORIGINAL render's view_id forward as a GET param (added to
+            # those same hx-get urls) keeps ids stable across that follow-up
+            # request instead.
+            request = getattr(_thread_locals, "request", None)
+            incoming_view_id = request.GET.get("view_id") if request else None
+            self.view_id = incoming_view_id or get_short_uuid(4)
         super().__init__(**kwargs)
 
         self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
