@@ -5,7 +5,7 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         :root {
-            --md-indigo: #E54F38;
+            --md-indigo: #e54f38;
             --md-green: #22c55e;
             --md-amber: #f59e0b;
             --md-red: #ef4444;
@@ -292,6 +292,7 @@
 
         /* Section accent top-border strip */
         .md-chart-card::before {
+            z-index: 1;
             position: absolute;
             top: 0;
             right: 0;
@@ -300,10 +301,9 @@
             border-radius: 16px 16px 0 0;
             content: '';
             pointer-events: none;
-            z-index: 1;
         }
         .md-chart-card[data-chart-section='overview']::before {
-            background: linear-gradient(90deg, #E54F38, #a855f7);
+            background: linear-gradient(90deg, #e54f38, #a855f7);
         }
         .md-chart-card[data-chart-section='attendance']::before {
             background: linear-gradient(90deg, #22c55e, #06b6d4);
@@ -312,7 +312,7 @@
             background: linear-gradient(90deg, #f59e0b, #ef4444);
         }
         .md-chart-card[data-chart-section='leave']::before {
-            background: linear-gradient(90deg, #3b82f6, #E54F38);
+            background: linear-gradient(90deg, #3b82f6, #e54f38);
         }
 
         .md-chart-card--wide {
@@ -418,9 +418,15 @@
         }
         /* Stagger each card's shimmer slightly so they animate block by
            block left-to-right rather than all in perfect unison. */
-        .md-kpi-card--skeleton:nth-child(2) .md-skeleton { animation-delay: 0.12s; }
-        .md-kpi-card--skeleton:nth-child(3) .md-skeleton { animation-delay: 0.24s; }
-        .md-kpi-card--skeleton:nth-child(4) .md-skeleton { animation-delay: 0.36s; }
+        .md-kpi-card--skeleton:nth-child(2) .md-skeleton {
+            animation-delay: 0.12s;
+        }
+        .md-kpi-card--skeleton:nth-child(3) .md-skeleton {
+            animation-delay: 0.24s;
+        }
+        .md-kpi-card--skeleton:nth-child(4) .md-skeleton {
+            animation-delay: 0.36s;
+        }
 
         .md-empty {
             display: flex;
@@ -1023,23 +1029,9 @@
 
         .md-pending-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            grid-template-columns: 1fr 1fr;
             padding-top: 8px;
             gap: 8px;
-        }
-        /* Standalone top-of-page placement, not the height-constrained
-           sidebar stack it used to share with Holidays/Birthdays - the
-           short one-row card grid doesn't need a scrollable max-height. */
-        #md-pending-approvals {
-            max-height: none;
-            overflow: visible;
-        }
-        /* .md-info-panel normally relies on .md-sidebar's own gap for
-           spacing between panels - this one stands alone at the top of
-           the page now, so it needs its own margin to match the 20px
-           rhythm the other top-level sections (e.g. .md-kpi-grid) use. */
-        .md-pending-approvals-panel {
-            margin-bottom: 20px;
         }
         .md-pending-card {
             display: block;
@@ -1258,34 +1250,34 @@
         .md-company-chip {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
             margin-top: 6px;
-            font-size: 12px;
-            font-weight: 500;
-            color: hsl(0,0%,40%);
-            background: hsl(0,0%,96%);
-            border: 1px solid hsl(0,0%,90%);
-            border-radius: 999px;
             padding: 3px 10px;
+            gap: 6px;
+            border: 1px solid hsl(0, 0%, 90%);
+            border-radius: 999px;
+            background: hsl(0, 0%, 96%);
+            color: hsl(0, 0%, 40%);
+            font-weight: 500;
+            font-size: 12px;
         }
         .dark .md-company-chip {
+            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.06);
             color: #cbd5e1;
-            background: rgba(255,255,255,.06);
-            border-color: rgba(255,255,255,.1);
         }
 
         /* Recruitment stage funnel (HTML, not Apex) */
         .md-funnel {
             display: flex;
             flex-direction: column;
-            gap: 0;
             padding: 8px 0 4px;
+            gap: 0;
         }
         .md-funnel-step {
             display: flex;
             align-items: center;
-            gap: 10px;
             padding: 3px 4px;
+            gap: 10px;
             border-radius: 6px;
             cursor: pointer;
         }
@@ -1294,9 +1286,9 @@
         }
         .md-funnel-step__label {
             min-width: 88px;
-            font-size: 12px;
-            font-weight: 600;
             color: inherit;
+            font-weight: 600;
+            font-size: 12px;
         }
         .md-funnel-step__bar {
             display: flex;
@@ -1307,8 +1299,8 @@
             padding: 0 10px;
             border-radius: 6px;
             color: #fff;
-            font-size: 12px;
             font-weight: 700;
+            font-size: 12px;
             transition: opacity 0.15s;
         }
         .md-funnel-step:hover .md-funnel-step__bar {
@@ -1316,15 +1308,15 @@
         }
         .md-funnel-step__share {
             min-width: 44px;
-            font-size: 11px;
             font-weight: 700;
+            font-size: 11px;
             opacity: 0.7;
         }
         .md-funnel-meta {
             margin-top: 10px;
             font-size: 11px;
-            opacity: 0.55;
             text-align: right;
+            opacity: 0.55;
         }
     </style>
 
@@ -1335,10 +1327,15 @@
                 <h1>{% trans "Dashboard" %}</h1>
                 <div class="md-header__date" id="md-date"></div>
                 {% if dashboard_company_label %}
-                <div class="md-company-chip" id="md-company-chip" title="{% if dashboard_company_is_all %}{% trans 'KPIs span all companies you can access' %}{% else %}{% trans 'Active company scope' %}{% endif %}">
-                    <span>{% if dashboard_company_is_all %}{% trans "Scope" %}{% else %}{% trans "Company" %}{% endif %}:</span>
-                    <strong>{{ dashboard_company_label }}</strong>
-                </div>
+                    <div
+                        class="md-company-chip"
+                        id="md-company-chip"
+                        title="{% if dashboard_company_is_all %}{% trans 'KPIs span all companies you can access' %}{% else %}{% trans 'Active company scope' %}{% endif %}"
+                    >
+                        <span
+                        >{% if dashboard_company_is_all %}{% trans "Scope" %}{% else %}{% trans "Company" %}{% endif %}:</span>
+                        <strong>{{ dashboard_company_label }}</strong>
+                    </div>
                 {% endif %}
                 <div class="md-refresh">
                     <span class="md-refresh__dot" id="md-refresh-dot"></span><span
@@ -1390,20 +1387,31 @@
             {% include "base/setup_checklist_banner.html" %}
         {% endif %}
 
-        <div class="md-info-panel md-pending-approvals-panel">
-            <div class="md-info-panel__header">
-                <div class="md-info-panel__title">{% trans "Pending Approvals" %}</div>
-            </div>
-            <div class="md-info-panel__body" id="md-pending-approvals">
-                <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
-            </div>
-        </div>
-
         <div class="md-kpi-grid" id="md-kpi-grid">
-            <div class="md-kpi-card md-kpi-card--skeleton"><div class="md-skeleton md-skeleton--icon"></div><div class="md-skeleton md-skeleton--label"></div><div class="md-skeleton md-skeleton--value"></div><div class="md-skeleton md-skeleton--sub"></div></div>
-            <div class="md-kpi-card md-kpi-card--skeleton"><div class="md-skeleton md-skeleton--icon"></div><div class="md-skeleton md-skeleton--label"></div><div class="md-skeleton md-skeleton--value"></div><div class="md-skeleton md-skeleton--sub"></div></div>
-            <div class="md-kpi-card md-kpi-card--skeleton"><div class="md-skeleton md-skeleton--icon"></div><div class="md-skeleton md-skeleton--label"></div><div class="md-skeleton md-skeleton--value"></div><div class="md-skeleton md-skeleton--sub"></div></div>
-            <div class="md-kpi-card md-kpi-card--skeleton"><div class="md-skeleton md-skeleton--icon"></div><div class="md-skeleton md-skeleton--label"></div><div class="md-skeleton md-skeleton--value"></div><div class="md-skeleton md-skeleton--sub"></div></div>
+            <div class="md-kpi-card md-kpi-card--skeleton">
+                <div class="md-skeleton md-skeleton--icon"></div>
+                <div class="md-skeleton md-skeleton--label"></div>
+                <div class="md-skeleton md-skeleton--value"></div>
+                <div class="md-skeleton md-skeleton--sub"></div>
+            </div>
+            <div class="md-kpi-card md-kpi-card--skeleton">
+                <div class="md-skeleton md-skeleton--icon"></div>
+                <div class="md-skeleton md-skeleton--label"></div>
+                <div class="md-skeleton md-skeleton--value"></div>
+                <div class="md-skeleton md-skeleton--sub"></div>
+            </div>
+            <div class="md-kpi-card md-kpi-card--skeleton">
+                <div class="md-skeleton md-skeleton--icon"></div>
+                <div class="md-skeleton md-skeleton--label"></div>
+                <div class="md-skeleton md-skeleton--value"></div>
+                <div class="md-skeleton md-skeleton--sub"></div>
+            </div>
+            <div class="md-kpi-card md-kpi-card--skeleton">
+                <div class="md-skeleton md-skeleton--icon"></div>
+                <div class="md-skeleton md-skeleton--label"></div>
+                <div class="md-skeleton md-skeleton--value"></div>
+                <div class="md-skeleton md-skeleton--sub"></div>
+            </div>
         </div>
 
         <!-- Main layout -->
@@ -1435,14 +1443,17 @@
                             data-chart-id="leave_trends"
                             data-chart-section="overview"
                             data-chart-label="{% trans 'Leave Trends' %}"
-                        data-chart-default="hidden"
-                    >
+                            data-chart-default="hidden"
+                        >
                             <div class="md-chart-card__header">
                                 <div>
                                     <div class="md-chart-card__title">{% trans "Leave Trends" %}</div>
                                     <div class="md-chart-card__subtitle">{% trans "Daily leaves — current week" %}</div>
                                 </div>
-                                <a class="md-link" href="{% url 'leave-dashboard' %}">{% trans "Open Leave dashboard" %}</a>
+                                <a
+                                    class="md-link"
+                                    href="{% url 'leave-dashboard' %}"
+                                >{% trans "Open Leave dashboard" %}</a>
                             </div>
                             <div class="md-chart-card__body"><div id="chart-leave-trend"></div></div>
                         </div>
@@ -1461,7 +1472,10 @@
                                 <div class="md-chart-card__title">{% trans "Employee Status" %}</div>
                                 <div class="md-chart-card__subtitle">{% trans "Active vs Inactive" %}</div>
                             </div>
-                            <a class="md-link" href="{% url 'employee-dashboard' %}">{% trans "Open Employee dashboard" %}</a>
+                            <a
+                                class="md-link"
+                                href="{% url 'employee-dashboard' %}"
+                            >{% trans "Open Employee dashboard" %}</a>
                         </div>
                         <div class="md-chart-card__body"><div id="chart-employee-status"></div></div>
                     </div>
@@ -1490,8 +1504,8 @@
                             data-chart-id="leave_breakdown"
                             data-chart-section="overview"
                             data-chart-label="{% trans 'Leave Breakdown' %}"
-                        data-chart-default="hidden"
-                    >
+                            data-chart-default="hidden"
+                        >
                             <div class="md-chart-card__header">
                                 <div>
                                     <div class="md-chart-card__title">{% trans "Leave Breakdown" %}</div>
@@ -1532,7 +1546,9 @@
                             <div class="md-chart-card__header">
                                 <div>
                                     <div class="md-chart-card__title">{% trans "Department Overtime" %}</div>
-                                    <div class="md-chart-card__subtitle">{% trans "Overtime hours by department" %}</div>
+                                    <div class="md-chart-card__subtitle">
+                                        {% trans "Overtime hours by department" %}
+                                    </div>
                                 </div>
                             </div>
                             <div class="md-chart-card__body"><div id="chart-overtime"></div></div>
@@ -1569,12 +1585,13 @@
                         <div class="md-chart-card__header">
                             <div>
                                 <div class="md-chart-card__title">{% trans "Leave Coverage" %}</div>
-                                <div class="md-chart-card__subtitle">{% trans "Next 7 days — who is out vs available" %}</div>
+                                <div class="md-chart-card__subtitle">
+                                    {% trans "Next 7 days — who is out vs available" %}
+                                </div>
                             </div>
                         </div>
                         <div class="md-chart-card__body"><div id="chart-leave-coverage"></div></div>
                     </div>
-
 
                     {% if perms.recruitment.view_recruitment or request.user.is_superuser %}
                         <!-- Recruitment Pipeline -->
@@ -1775,6 +1792,14 @@
                         <div class="md-info-panel__title">{% trans "Birthdays & Anniversaries" %}</div>
                     </div>
                     <div class="md-info-panel__body" id="md-birthdays">
+                        <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
+                    </div>
+                </div>
+                <div class="md-info-panel">
+                    <div class="md-info-panel__header">
+                        <div class="md-info-panel__title">{% trans "Pending Approvals" %}</div>
+                    </div>
+                    <div class="md-info-panel__body" id="md-pending-approvals">
                         <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
                     </div>
                 </div>
