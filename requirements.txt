@@ -70,6 +70,7 @@ pytz
 
 # Internationalization & NLP
 arabic-reshaper
+click
 phonenumbers==9.0.37
 pycountry==24.6.1
 python-bidi
