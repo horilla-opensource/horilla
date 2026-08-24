@@ -45,6 +45,9 @@ def backfill_attendance_spread(today: date | None = None) -> int:
     dates across the trailing ~6 months ending today. Weekends are not
     skipped -- this is spread for chart purposes, not a work-calendar
     simulation. Returns the number of rows updated.
+
+    On re-load: if attendance data exists, advance all dates by the delta
+    between the max existing date and today, so stale demo data stays current.
     """
     if not apps.is_installed("attendance"):
         return 0
@@ -54,6 +57,35 @@ def backfill_attendance_spread(today: date | None = None) -> int:
 
     from attendance.models import Attendance, WorkRecords
     from base.models import EmployeeShiftDay
+
+    # Check if attendance data already exists and if it's stale (from an earlier date)
+    existing_max_date = (
+        Attendance._base_manager.order_by("-attendance_date")
+        .values_list("attendance_date", flat=True)
+        .first()
+    )
+    if existing_max_date and existing_max_date < today:
+        # Data exists but is from an earlier date; advance all records to today
+        delta_days = (today - existing_max_date).days
+        from django.db.models import F
+
+        # Update all attendance records with the date delta
+        update_count = Attendance._base_manager.all().update(
+            attendance_date=F("attendance_date") + timedelta(days=delta_days),
+            attendance_clock_in_date=F("attendance_clock_in_date")
+            + timedelta(days=delta_days),
+            attendance_clock_out_date=F("attendance_clock_out_date")
+            + timedelta(days=delta_days),
+        )
+
+        logger.info(
+            "Advanced %d stale attendance records by %d days (was up to %s, now up to %s)",
+            update_count,
+            delta_days,
+            existing_max_date,
+            today,
+        )
+        return update_count
 
     # Keep only the first row seen per weekday name -- Attendance.save()'s
     # own lookup uses .get(day=...), i.e. it assumes one canonical row per
