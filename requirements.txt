@@ -79,7 +79,7 @@ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1
 
 # Misc
 bleach==6.2.0
-gunicorn==23.0.0
+gunicorn==26.1.0
 packaging
 
 # Testing
