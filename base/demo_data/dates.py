@@ -56,6 +56,21 @@ def weekdays_inclusive(start: date, end: date) -> list[date]:
     return out
 
 
+def holiday_on_year(d: date, year: int) -> date:
+    """Keep month/day, move to `year`. Feb 29 → Feb 28 on non-leap years."""
+    try:
+        return d.replace(year=year)
+    except ValueError:
+        return date(year, d.month, 28)
+
+
+def clamp_date(d: date | None, today: date) -> date | None:
+    """A-class helper: historical dates never after `today`."""
+    if d is None:
+        return None
+    return d if d <= today else today
+
+
 def previous_weekday(day: date) -> date:
     day -= timedelta(days=1)
     while day.weekday() >= 5:

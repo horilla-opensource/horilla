@@ -427,3 +427,61 @@ def reconcile_attendance_with_leave(today: date | None = None) -> int:
         "Attendance/leave reconcile: removed %s conflicting attendance row(s)", removed
     )
     return removed
+
+
+ACTIVITY_TARGET = 40
+
+
+@transaction.atomic
+def backfill_attendance_activities(today: date | None = None) -> int:
+    """Copy recent punches onto AttendanceActivity so the activity list isn't empty.
+
+    Fixture ships ~8 activity rows that the date-shift leaves misaligned.
+    """
+    if not apps.is_installed("attendance"):
+        return 0
+
+    today = today or date.today()
+    from attendance.models import Attendance, AttendanceActivity
+
+    existing = AttendanceActivity._base_manager.count()
+    need = ACTIVITY_TARGET - existing
+    if need <= 0:
+        return 0
+
+    created = 0
+    atts = (
+        Attendance._base_manager.filter(
+            attendance_date__lte=today, attendance_clock_in__isnull=False
+        )
+        .order_by("-attendance_date")
+        .values(
+            "employee_id",
+            "attendance_date",
+            "attendance_day_id",
+            "attendance_clock_in_date",
+            "attendance_clock_in",
+            "attendance_clock_out_date",
+            "attendance_clock_out",
+        )[: need * 2]
+    )
+    for att in atts:
+        if created >= need:
+            break
+        _, was_created = AttendanceActivity._base_manager.get_or_create(
+            employee_id_id=att["employee_id"],
+            attendance_date=att["attendance_date"],
+            clock_in=att["attendance_clock_in"],
+            defaults={
+                "shift_day_id": att["attendance_day_id"],
+                "clock_in_date": att["attendance_clock_in_date"]
+                or att["attendance_date"],
+                "clock_out_date": att["attendance_clock_out_date"],
+                "clock_out": att["attendance_clock_out"],
+            },
+        )
+        if was_created:
+            created += 1
+
+    logger.info("Attendance activity backfill: created %s row(s)", created)
+    return created

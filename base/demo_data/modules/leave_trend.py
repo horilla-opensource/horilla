@@ -70,6 +70,7 @@ def backfill_leave_spread(today: date | None = None) -> int:
         today + timedelta(days=PENDING_LOOKAHEAD_DAYS),
     )
     updated += _pin_current_and_upcoming_leave(today)
+    updated += _ensure_leave_status_mix()
 
     logger.info(
         "Leave backfill: spread %s row(s) over the trailing %s days",
@@ -223,6 +224,22 @@ def _pad_leave_requests(today: date) -> int:
 
     logger.info("Leave backfill: created %s padding leave request(s)", created)
     return created
+
+
+def _ensure_leave_status_mix() -> int:
+    """Guarantee cancelled rows exist even when padding was already at target."""
+    from leave.models import LeaveRequest
+
+    if LeaveRequest._base_manager.filter(status="cancelled").exists():
+        return 0
+    ids = list(
+        LeaveRequest._base_manager.filter(status="rejected")
+        .order_by("id")
+        .values_list("id", flat=True)[:3]
+    )
+    if not ids:
+        return 0
+    return LeaveRequest._base_manager.filter(pk__in=ids).update(status="cancelled")
 
 
 # The original fixture's ~126 employees all carry exactly these two leave

@@ -295,6 +295,7 @@ _RELOAD_RESET_MODELS = {
     "attendance_data.json": (
         ("attendance", "AttendanceLateComeEarlyOut"),
         ("attendance", "WorkRecords"),
+        ("attendance", "AttendanceActivity"),
         ("attendance", "Attendance"),
     ),
 }
@@ -389,33 +390,9 @@ def load_demo_database(request):
             if request.POST.get("load_data_password") == settings.DB_INIT_PASSWORD:
                 import tempfile
 
-                data_files = [
-                    "user_data.json",
-                    "employee_info_data.json",
-                    "base_data.json",
-                    "work_info_data.json",
-                ]
-                optional_apps = [
-                    ("attendance", "attendance_data.json"),
-                    ("leave", "leave_data.json"),
-                    ("asset", "asset_data.json"),
-                    ("recruitment", "recruitment_data.json"),
-                    ("onboarding", "onboarding_data.json"),
-                    ("offboarding", "offboarding_data.json"),
-                    ("pms", "pms_data.json"),
-                    ("pms", "pms_scenarios_data.json"),
-                    ("payroll", "payroll_scenarios_data.json"),
-                    ("payroll", "payroll_data.json"),
-                    ("payroll", "payroll_loanaccount_data.json"),
-                    ("project", "project_data.json"),
-                    ("project", "project_scenarios_data.json"),
-                    ("helpdesk", "helpdesk_scenarios_data.json"),
-                ]
+                from base.demo_data.fixtures import demo_fixture_files
 
-                # Add data files for installed apps
-                data_files += [
-                    file for app, file in optional_apps if apps.is_installed(app)
-                ]
+                data_files = demo_fixture_files()
 
                 # Load all data files, shifting dates relative to today
                 from pathlib import Path as _Path

@@ -15,11 +15,13 @@ from base.demo_data.modules.announcements import refresh_announcements
 from base.demo_data.modules.asset_expansion import backfill_company_asset_pools
 from base.demo_data.modules.asset_features import backfill_asset_reports
 from base.demo_data.modules.attendance_trend import (
+    backfill_attendance_activities,
     backfill_attendance_overtime,
     backfill_attendance_spread,
     backfill_zero_coverage_attendance,
     reconcile_attendance_with_leave,
 )
+from base.demo_data.modules.date_clamp import clamp_demo_dates
 from base.demo_data.modules.employee_features import backfill_employee_feature_coverage
 from base.demo_data.modules.employee_lifecycle import backfill_employee_lifecycle
 from base.demo_data.modules.helpdesk_expansion import backfill_company_helpdesk_lookups
@@ -145,6 +147,7 @@ def run_enterprise_demo_seeder(
     result["employee_feature_coverage"] = backfill_employee_feature_coverage(today)
     result["request_windows"] = backfill_request_windows(today)
     result["attendance_leave_reconcile"] = reconcile_attendance_with_leave(today)
+    result["attendance_activities"] = backfill_attendance_activities(today)
 
     # System ReportTemplate rows (Explorer's pre-built pivot layouts) aren't
     # part of any load_data/*.json fixture, so a --flush reload wipes them
@@ -156,6 +159,8 @@ def run_enterprise_demo_seeder(
 
         created, updated = seed_standard_report_templates()
         result["report_templates"] = {"created": created, "updated": updated}
+
+    result["date_clamp"] = clamp_demo_dates(today)
 
     logger.info("Enterprise demo seeder finished: %s", result)
     return result

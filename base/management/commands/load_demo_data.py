@@ -2,12 +2,12 @@ import os
 import tempfile
 from pathlib import Path
 
-from django.apps import apps
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
 from base.demo_data import run_enterprise_demo_seeder
+from base.demo_data.fixtures import demo_fixture_files
 from base.demo_data.media import copy_demo_media
 from base.demo_roles import assign_demo_user_groups
 from base.views import (
@@ -62,29 +62,7 @@ class Command(BaseCommand):
                 )
             )
 
-        data_files = [
-            "user_data.json",
-            "employee_info_data.json",
-            "base_data.json",
-            "work_info_data.json",
-        ]
-        optional_apps = [
-            ("attendance", "attendance_data.json"),
-            ("leave", "leave_data.json"),
-            ("asset", "asset_data.json"),
-            ("recruitment", "recruitment_data.json"),
-            ("onboarding", "onboarding_data.json"),
-            ("offboarding", "offboarding_data.json"),
-            ("pms", "pms_data.json"),
-            ("pms", "pms_scenarios_data.json"),
-            ("payroll", "payroll_scenarios_data.json"),
-            ("payroll", "payroll_data.json"),
-            ("payroll", "payroll_loanaccount_data.json"),
-            ("project", "project_data.json"),
-            ("project", "project_scenarios_data.json"),
-            ("helpdesk", "helpdesk_scenarios_data.json"),
-        ]
-        data_files += [f for app, f in optional_apps if apps.is_installed(app)]
+        data_files = demo_fixture_files()
 
         loaded = 0
         errors = 0

@@ -31,6 +31,7 @@ def backfill_request_windows(today: date | None = None) -> dict[str, int]:
         "timesheets_clamped": 0,
         "tickets_clamped": 0,
         "assets_expiry": 0,
+        "attendance_validations": 0,
     }
 
     result["shift_requests"] = _shift_requests(today)
@@ -42,6 +43,7 @@ def backfill_request_windows(today: date | None = None) -> dict[str, int]:
     result["timesheets_clamped"] = _clamp_timesheets(today)
     result["tickets_clamped"] = _clamp_tickets(today)
     result["assets_expiry"] = _fix_asset_expiry(today)
+    result["attendance_validations"] = _pending_attendance_validations(today)
 
     logger.info("Request windows backfill: %s", result)
     return result
@@ -239,3 +241,26 @@ def _fix_asset_expiry(today: date) -> int:
         Asset._base_manager.filter(pk=asset.pk).update(expiry_date=expiry)
         updated += 1
     return updated
+
+
+def _pending_attendance_validations(today: date) -> int:
+    """A handful of past punches waiting for validation — never future dates."""
+    if not apps.is_installed("attendance"):
+        return 0
+    from attendance.models import Attendance
+
+    ids = list(
+        Attendance._base_manager.filter(
+            attendance_date__lt=today,
+            is_validate_request=False,
+        )
+        .order_by("-attendance_date")
+        .values_list("id", flat=True)[:8]
+    )
+    if not ids:
+        return 0
+    return Attendance._base_manager.filter(pk__in=ids).update(
+        is_validate_request=True,
+        is_validate_request_approved=False,
+        attendance_validated=False,
+    )

@@ -1,18 +1,22 @@
-"""Demo date-window helpers — no DB."""
+"""Demo date-window helpers and date-policy clamp."""
 
 from datetime import date, timedelta
 
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
 
 from base.demo_data.dates import (
     FIXTURE_AS_OF,
     attendance_dates_for_employee,
+    clamp_date,
+    holiday_on_year,
     previous_weekday,
     shift_fixture_dates_text,
     should_be_present_today,
     spaced_dates,
     weekdays_inclusive,
 )
+from base.models import EmployeeShift
+from horilla.testkit import make_company, make_employee
 
 
 class DemoDateWindowTests(SimpleTestCase):
@@ -76,3 +80,115 @@ class DemoDateWindowTests(SimpleTestCase):
         self.assertIn("2026-08-19T18:00:00Z", shifted)
         self.assertIn("1968-04-12", shifted)
         self.assertIsNone(shift_fixture_dates_text(text, FIXTURE_AS_OF))
+
+    def test_holiday_on_year_keeps_month_day(self):
+        self.assertEqual(holiday_on_year(date(2025, 12, 25), 2026), date(2026, 12, 25))
+        self.assertEqual(holiday_on_year(date(2024, 2, 29), 2025), date(2025, 2, 28))
+
+    def test_clamp_date_never_after_today(self):
+        today = date(2026, 8, 20)
+        self.assertEqual(clamp_date(date(2026, 8, 19), today), date(2026, 8, 19))
+        self.assertEqual(clamp_date(date(2026, 9, 1), today), today)
+        self.assertIsNone(clamp_date(None, today))
+
+    def test_attendance_window_spans_six_months(self):
+        today = date(2026, 8, 20)
+        start = today - timedelta(days=180)
+        dates = attendance_dates_for_employee(1, start, today, 26)
+        self.assertGreaterEqual((max(dates) - min(dates)).days, 150)
+        self.assertLessEqual(max(dates), today)
+        self.assertGreaterEqual(min(dates), start)
+
+    def test_leave_windows_cover_six_months_and_near_future(self):
+        from base.demo_data.modules.leave_trend import (
+            PENDING_LOOKAHEAD_DAYS,
+            TRAILING_DAYS,
+        )
+
+        self.assertEqual(TRAILING_DAYS, 180)
+        self.assertGreater(PENDING_LOOKAHEAD_DAYS, 0)
+
+    def test_inventory_covers_every_sidebar_app(self):
+        from django.conf import settings
+
+        from base.demo_data.inventory import SIDEBAR_DEMO_MODELS
+
+        listed = {app for app, _ in SIDEBAR_DEMO_MODELS}
+        for app in settings.SIDEBARS:
+            self.assertIn(app, listed)
+
+    def test_side_fixtures_are_on_the_load_list(self):
+        from base.demo_data.fixtures import demo_fixture_files
+
+        files = demo_fixture_files()
+        self.assertIn("tags.json", files)
+        self.assertIn("mail_templates.json", files)
+        self.assertIn("mail_automations.json", files)
+        self.assertNotIn("faq.json", files)
+
+
+class DemoDatePolicyDBTests(TestCase):
+    """Clamp / request-window behaviour with injected `today`."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.today = date.today()
+        cls.company = make_company("Demo Clamp Co")
+        cls.employee = make_employee(company=cls.company, email="clamp@test.horilla")
+        cls.shift = EmployeeShift.objects.create(employee_shift="Clamp Day")
+
+    def test_a_class_activity_dates_not_after_today(self):
+        from datetime import time
+
+        from attendance.models import AttendanceActivity
+        from base.demo_data.modules.date_clamp import clamp_demo_dates
+
+        future = self.today + timedelta(days=12)
+        act = AttendanceActivity._base_manager.create(
+            employee_id=self.employee,
+            attendance_date=self.today,
+            clock_in_date=self.today,
+            clock_in=time(9, 0),
+        )
+        AttendanceActivity._base_manager.filter(pk=act.pk).update(
+            attendance_date=future, clock_in_date=future
+        )
+        clamp_demo_dates(self.today)
+        act.refresh_from_db()
+        self.assertLessEqual(act.attendance_date, self.today)
+        self.assertLessEqual(act.clock_in_date, self.today)
+
+    def test_pending_shift_request_till_is_in_the_future(self):
+        from base.demo_data.modules.request_windows import backfill_request_windows
+        from base.models import ShiftRequest
+
+        req = ShiftRequest._base_manager.create(
+            employee_id=self.employee,
+            shift_id=self.shift,
+            requested_date=self.today - timedelta(days=40),
+            requested_till=self.today - timedelta(days=10),
+            approved=False,
+            canceled=False,
+        )
+        backfill_request_windows(self.today)
+        req.refresh_from_db()
+        self.assertGreater(req.requested_till, self.today)
+
+    def test_holidays_reanchor_to_current_year(self):
+        from base.demo_data.modules.date_clamp import clamp_demo_dates
+        from base.models import Holidays
+
+        holiday = Holidays._base_manager.create(
+            name="Clamp Christmas",
+            start_date=date(2025, 12, 25),
+            end_date=date(2025, 12, 26),
+        )
+        clamp_demo_dates(self.today)
+        holiday.refresh_from_db()
+        self.assertEqual(holiday.start_date.year, self.today.year)
+        self.assertEqual(holiday.start_date.month, 12)
+        self.assertEqual(holiday.start_date.day, 25)
+        self.assertEqual((holiday.end_date - holiday.start_date).days, 1)
+        self.assertTrue(
+            Holidays._base_manager.filter(start_date__year=self.today.year).exists()
+        )
