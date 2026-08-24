@@ -13,6 +13,8 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.translation import gettext as _
 
+from base.templatetags.horillafilters import is_check_in_enabled
+
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
 
@@ -300,6 +302,7 @@ def ess_attendance_calendar(request):
         return JsonResponse({"error": "no employee"}, status=403)
 
     from_date, to_date = _parse_period(request)
+    check_in_enabled = is_check_in_enabled(request)
 
     attendance_map = {}
     late_dates = set()
@@ -386,9 +389,13 @@ def ess_attendance_calendar(request):
             if status == "late":
                 summary["late"] += 1
             summary["present"] += 1
-        elif cur <= date.today():
+        elif cur <= date.today() and check_in_enabled:
             status = "absent"
             summary["absent"] += 1
+        elif cur <= date.today():
+            # No check-in/check-out means no evidence either way, so the day is
+            # left blank rather than accused of being an absence.
+            status = "workday"
         else:
             status = "future"
 
