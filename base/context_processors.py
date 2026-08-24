@@ -8,6 +8,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.urls import path
+from django.utils.functional import SimpleLazyObject
 from django.utils.translation import gettext_lazy as _
 
 from base.models import (
@@ -305,55 +306,75 @@ def intial_notice_period(request):
     return {"get_initial_notice_period": initial}
 
 
+def check_candidate_recruitment_setting(request):
+    """
+    This method is used to resolve the RecruitmentGeneralSetting for the current request
+    """
+    if hasattr(request, "_recruitment_general_setting_cache"):
+        return request._recruitment_general_setting_cache
+
+    RecruitmentGeneralSetting = get_horilla_model_class(
+        app_label="recruitment", model="recruitmentgeneralsetting"
+    )
+    candidate_id = request.session.get("candidate_id")
+    setting = None
+    # Anonymous candidate sessions never carry selected_company, so resolve via
+    # the candidate's own company instead of the company_id IS NULL fallback.
+    if not request.user.is_authenticated and candidate_id:
+        Candidate = get_horilla_model_class(app_label="recruitment", model="candidate")
+        candidate = Candidate.objects.filter(pk=candidate_id).first()
+        company_id = getattr(
+            getattr(candidate, "recruitment_id", None), "company_id_id", None
+        )
+        if company_id:
+            setting = RecruitmentGeneralSetting.objects.filter(
+                company_id_id=company_id
+            ).first()
+        if not setting:
+            setting = RecruitmentGeneralSetting.objects.filter(
+                company_id__isnull=True
+            ).first()
+    else:
+        selected_company = request.session.get("selected_company")
+        if selected_company and selected_company != "all":
+            setting = RecruitmentGeneralSetting.objects.filter(
+                company_id_id=selected_company
+            ).first()
+        else:
+            setting = RecruitmentGeneralSetting.objects.filter(
+                company_id__isnull=True
+            ).first()
+
+    request._recruitment_general_setting_cache = setting
+    return setting
+
+
 def check_candidate_self_tracking(request):
     """
     This method is used to get the candidate self tracking is enabled or not
     """
 
-    candidate_self_tracking = False
-    selected_company = request.session.get("selected_company")
-    if apps.is_installed("recruitment"):
-        RecruitmentGeneralSetting = get_horilla_model_class(
-            app_label="recruitment", model="recruitmentgeneralsetting"
-        )
-        if selected_company and selected_company != "all":
-            first = RecruitmentGeneralSetting.objects.filter(
-                company_id_id=selected_company
-            ).first()
-        else:
-            first = RecruitmentGeneralSetting.objects.filter(
-                company_id__isnull=True
-            ).first()
-    else:
-        first = None
-    if first:
-        candidate_self_tracking = first.candidate_self_tracking
-    return {"check_candidate_self_tracking": candidate_self_tracking}
+    def _resolve():
+        if not apps.is_installed("recruitment"):
+            return False
+        first = check_candidate_recruitment_setting(request)
+        return bool(first and first.candidate_self_tracking)
+
+    return {"check_candidate_self_tracking": SimpleLazyObject(_resolve)}
 
 
 def check_candidate_self_tracking_rating(request):
     """
     This method is used to check enabled/disabled of rating option
     """
-    rating_option = False
-    selected_company = request.session.get("selected_company")
-    if apps.is_installed("recruitment"):
-        RecruitmentGeneralSetting = get_horilla_model_class(
-            app_label="recruitment", model="recruitmentgeneralsetting"
-        )
-        if selected_company and selected_company != "all":
-            first = RecruitmentGeneralSetting.objects.filter(
-                company_id_id=selected_company
-            ).first()
-        else:
-            first = RecruitmentGeneralSetting.objects.filter(
-                company_id__isnull=True
-            ).first()
-    else:
-        first = None
-    if first:
-        rating_option = first.show_overall_rating
-    return {"check_candidate_self_tracking_rating": rating_option}
+
+    def _resolve():
+        if not apps.is_installed("recruitment"):
+            return False
+        first = check_candidate_recruitment_setting(request)
+        return bool(first and first.show_overall_rating)
+
+    return {"check_candidate_self_tracking_rating": SimpleLazyObject(_resolve)}
 
 
 def get_initial_prefix(request):
