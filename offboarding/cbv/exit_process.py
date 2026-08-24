@@ -702,7 +702,6 @@ class OffboardingKanbanRequiredTaskCheck(View):
     """
 
     def get(self, request, *args, **kwargs):
-        print("/////////////////////////////////")
         employee_pk = request.GET.get("objectId")
         target_stage_id = request.GET.get("groupId")
         offboarding_employee = OffboardingEmployee.objects.filter(

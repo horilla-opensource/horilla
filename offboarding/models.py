@@ -248,7 +248,6 @@ class OffboardingEmployee(HorillaModel):
         Required offboarding tasks assigned to this employee in ``stage``
         (defaults to the employee's current stage) that are not yet completed.
         """
-        print(self)
         stage = stage or self.stage_id
         completed_task_ids = EmployeeTask.objects.filter(
             employee_id=self,
