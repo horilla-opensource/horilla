@@ -12,6 +12,7 @@ from uuid import uuid4
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.core import serializers
+from django.core.cache import cache as CACHE
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import ProtectedError
@@ -409,6 +410,11 @@ def application_form(request):
             request.session["candidate"] = serializers.serialize(
                 "json", [candidate_obj]
             )
+            if resume_obj:
+                resume_obj.is_candidate = True
+                resume_obj.save()
+                CACHE.delete(f"matching_resumes_{resume_obj.recruitment_id_id}")
+
             has_direct_survey = RecruitmentSurvey.objects.filter(
                 recruitment_ids=recruitment_id
             ).exists()
@@ -418,10 +424,6 @@ def application_form(request):
             if has_direct_survey or has_template_survey:
                 return redirect(candidate_survey)
             candidate_obj.save()
-
-            if resume_obj:
-                resume_obj.is_candidate = True
-                resume_obj.save()
 
             return render(request, "candidate/success.html")
         for field_name, field_errors in form.errors.items():

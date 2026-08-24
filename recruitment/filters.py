@@ -130,6 +130,16 @@ class CandidateFilter(HorillaFilterSet):
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+    created_at_from = django_filters.DateFilter(
+        field_name="created_at",
+        lookup_expr="date__gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    created_at_till = django_filters.DateFilter(
+        field_name="created_at",
+        lookup_expr="date__lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
     onboarding_end_date_from = django_filters.DateFilter(
         field_name="onboarding_stage__onboarding_end_date",
         lookup_expr="gte",

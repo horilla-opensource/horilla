@@ -6,6 +6,7 @@ from typing import Any
 
 from django import forms
 from django.contrib import messages
+from django.core.cache import cache as CACHE
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -325,6 +326,7 @@ class RecruitmentForm(HorillaFormView):
                     self.request, recruitment, recruitment.linkedin_account_id
                 )
             message = _("Recruitment Created Successfully")
+        CACHE.delete(f"matching_resumes_{recruitment.pk}")
         messages.success(self.request, message)
         if self.request.GET.get("pipeline") == "true" or (
             self.request.resolver_match

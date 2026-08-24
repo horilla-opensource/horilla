@@ -79,6 +79,7 @@ def recruitment_kpi_data(request):
         if rec.vacancy is not None:
             total_vacancy += rec.vacancy
 
+    from_date, to_date = _parse_period(request)
     candidates = _candidates_in_period(request)
     total_candidates = candidates.count()
 
@@ -92,6 +93,7 @@ def recruitment_kpi_data(request):
         conversion_rate = round((total_hired / total_candidates) * 100, 1)
 
     acceptance_rate = 0
+    accepted = 0
     try:
         accepted = candidates.filter(offer_letter_status="accepted").count()
         if total_hired > 0:
@@ -113,7 +115,13 @@ def recruitment_kpi_data(request):
             "total_candidates": total_candidates,
             "conversion_rate": conversion_rate,
             "acceptance_rate": acceptance_rate,
+            "accepted_count": accepted,
             "onboarding_count": onboarding_count,
+            # Echoed back so the "Hired"/"Acceptance Rate" cards' click-
+            # throughs can filter to the exact same period the counts
+            # above were computed from, instead of showing all-time data.
+            "period_from_date": from_date.isoformat(),
+            "period_to_date": to_date.isoformat(),
         }
     )
 
