@@ -30,7 +30,7 @@ XlsxWriter
 # PDF handling
 pdfkit
 PyMuPDF
-reportlab==4.0.9
+reportlab==5.0.1
 xhtml2pdf
 
 # Web scraping & HTML
