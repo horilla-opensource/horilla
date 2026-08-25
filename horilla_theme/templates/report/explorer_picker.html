@@ -1,0 +1,90 @@
+{% extends "index.html" %}
+{% load static i18n %}
+
+{% block content %}
+<style>
+    .sr-ia-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .sr-ia-header .oh-btn { flex-shrink: 0; }
+    .sr-ia-hint {
+        margin: 0;
+        max-width: 640px;
+        font-size: 14px;
+        color: hsl(0, 0%, 45%);
+        line-height: 1.5;
+    }
+    .dark .sr-ia-hint { color: hsl(0, 0%, 68%); }
+
+    .sr-catalog-card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        color: inherit;
+        text-decoration: none !important;
+        transition: box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .sr-catalog-card:hover,
+    .sr-catalog-card:focus-visible {
+        color: inherit;
+        text-decoration: none;
+        border-color: var(--primary-500, #F7C8C1);
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
+    }
+    .sr-catalog-card h4 {
+        margin: 0 0 8px;
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.35;
+    }
+    .sr-catalog-card p {
+        margin: 0;
+        flex: 1;
+        font-size: 14px;
+        line-height: 1.45;
+        color: hsl(0, 0%, 42%);
+    }
+    .dark .sr-catalog-card p { color: hsl(0, 0%, 68%); }
+    .sr-catalog-card__go {
+        margin-top: 14px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--primary-600, #E54F38);
+    }
+</style>
+
+<div class="oh-wrapper">
+    <div class="sr-ia-header">
+        <p class="sr-ia-hint">
+            {% trans "Ad-hoc pivots per module. Use Standard Reports for curated KPIs, charts, and export." %}
+        </p>
+        <a class="oh-btn oh-btn--secondary-outline oh-btn--shadow" href="{% url 'standard-report-catalog' %}">
+            {% trans "Standard Reports" %}
+        </a>
+    </div>
+
+    {% if entries %}
+    <div class="row">
+        {% for entry in entries %}
+        <div class="col-12 col-sm-12 col-md-6 col-lg-4 mb-3">
+            <a class="oh-card sr-catalog-card" href="{{ entry.url }}">
+                <h4>{{ entry.name }}</h4>
+                <p>{{ entry.description }}</p>
+                <span class="sr-catalog-card__go">{% trans "Open explorer" %} &rarr;</span>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="oh-empty">
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="">
+        <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+        <p class="oh-empty__subtitle">{% trans "No explorer modules are available for your permissions." %}</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

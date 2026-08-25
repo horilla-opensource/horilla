@@ -4,7 +4,9 @@
     <a
         href="#"
         hx-get="{% url 'update-allowance' instance.id %}"
-        hx-target="#listContainer"
+        data-toggle="oh-modal-toggle"
+        data-target="#objectCreateModal"
+        hx-target="#objectCreateModalTarget"
         hx-swap="innerHTML"
         onclick="event.stopPropagation()"
         hx-on:click="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"

@@ -14,6 +14,8 @@
     <!-- End of Edit Button -->
 {% endif %}
 
+{{ instance.asset_items_action|safe }}
+
 {% if perms.asset.delete_assetlot %}
     <!-- Start of Delete Form -->
     <form

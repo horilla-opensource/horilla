@@ -128,6 +128,8 @@ def get_diff(instance):
     """
     remove_duplicate_history(instance)
     history = instance.history_set.all()
+    if hasattr(instance.history_set.model, "history_tags"):
+        history = history.prefetch_related("history_tags")
     history_list = list(history)
     # Pair consecutive versions: [newer, older]
     pairs = [
@@ -190,6 +192,11 @@ def get_diff(instance):
                 "updated_by": updated_by,
                 "change_reason": getattr(newer, "history_title", None)
                 or getattr(newer, "history_change_reason", None),
+                "history_tags": (
+                    list(newer.history_tags.all())
+                    if hasattr(newer, "history_tags")
+                    else []
+                ),
             }
         )
     if instance._meta.model_name == "employeeworkinformation":

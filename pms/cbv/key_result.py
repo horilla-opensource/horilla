@@ -84,6 +84,16 @@ class KeyResultNavView(HorillaNavView):
     filter_form_context_name = "form"
     search_swap_target = "#listContainer"
 
+    # Mirrors KeyResultsListView.nested_group_by_fields
+    nested_group_by_fields = [
+        ("title", _("Key Results")),
+        ("progress_type", _("Progress Type")),
+        ("target_value", _("Target Value")),
+        ("duration", _("Duration")),
+        ("archive", _("Is Archived")),
+        ("company_id", _("Company")),
+    ]
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(manager_can_enter(perm="pms.view_keyresult"), name="dispatch")
@@ -123,6 +133,18 @@ class KeyResultsListView(HorillaListView):
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
                 """
+
+    # Mirrors KeyResultNavView.nested_group_by_fields below -- List and
+    # Nav are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split).
+    nested_group_by_fields = [
+        ("title", _("Key Results")),
+        ("progress_type", _("Progress Type")),
+        ("target_value", _("Target Value")),
+        ("duration", _("Duration")),
+        ("archive", _("Is Archived")),
+        ("company_id", _("Company")),
+    ]
 
     def get_queryset(self):
         queryset = super().get_queryset()

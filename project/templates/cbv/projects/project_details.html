@@ -68,23 +68,6 @@
           </span>
         </li>
         <li class="helpdesk__card-item">
-          <span class="helpdesk__card-label">{% trans "Members:" %}</span>
-          <span class="helpdesk__card-value" name="" id="">
-            <div class="d-flex justify-content-between custom-scroll">
-              <div class="avatars" id="avatarsContainer">
-                {% for menber in project.members.all %}
-                <a
-                  href="{% url 'employee-view-individual' menber.id %}"
-                  class="avatars__item"
-                  title="{{menber}}"
-                  ><img class="avatar" src="{{menber.get_avatar}}" alt=""
-                /></a>
-                {% endfor %}
-              </div>
-            </div>
-          </span>
-        </li>
-        <li class="helpdesk__card-item">
           <span class="helpdesk__card-label">{% trans "Start date:" %}</span>
           <span class="helpdesk__card-value" name="" id=""
             >{{project.start_date}}

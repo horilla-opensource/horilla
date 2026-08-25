@@ -193,22 +193,28 @@ def stage_delete(request, stage_id):
             messages.error(request, _("Stage not found."))
             return HorillaRedirect(request)
 
-        stage_managers = stage_obj.stage_managers.all()
-        for manager in stage_managers:
-            all_this_manger = manager.stage_set.all()
-            if len(all_this_manger) == 1:
-                view_recruitment = Permission.objects.get(codename="view_recruitment")
-                manager.employee_user_id.user_permissions.remove(view_recruitment.id)
-            initial_stage_manager = all_this_manger.filter(stage_type="initial")
-            if len(initial_stage_manager) == 1:
-                add_candidate = Permission.objects.get(
-                    codename="recruitment.add_candidate"
-                )
-                change_candidate = Permission.objects.get(codename="change_candidate")
-                manager.employee_user_id.user_permissions.remove(add_candidate.id)
-                manager.employee_user_id.user_permissions.remove(change_candidate.id)
-            stage_obj.stage_managers.remove(manager)
         try:
+            stage_managers = stage_obj.stage_managers.all()
+            for manager in stage_managers:
+                all_this_manger = manager.stage_set.all()
+                if len(all_this_manger) == 1:
+                    view_recruitment = Permission.objects.get(
+                        codename="view_recruitment"
+                    )
+                    manager.employee_user_id.user_permissions.remove(
+                        view_recruitment.id
+                    )
+                initial_stage_manager = all_this_manger.filter(stage_type="initial")
+                if len(initial_stage_manager) == 1:
+                    add_candidate = Permission.objects.get(codename="add_candidate")
+                    change_candidate = Permission.objects.get(
+                        codename="change_candidate"
+                    )
+                    manager.employee_user_id.user_permissions.remove(add_candidate.id)
+                    manager.employee_user_id.user_permissions.remove(
+                        change_candidate.id
+                    )
+                stage_obj.stage_managers.remove(manager)
             stage_obj.delete()
             messages.success(request, _("Stage deleted successfully."))
         except ProtectedError as e:
@@ -224,6 +230,15 @@ def stage_delete(request, stage_id):
                     )
                 ),
             )
+        except Permission.DoesNotExist:
+            messages.error(
+                request,
+                _(
+                    "The required permission was not found. Please contact an administrator."
+                ),
+            )
+        except Exception as e:
+            messages.error(request, _("An error occurred while deleting the stage."))
     except (Stage.DoesNotExist, OverflowError):
         messages.error(request, _("Stage Does not exists.."))
     hx_request = request.META.get("HTTP_HX_REQUEST")
@@ -236,9 +251,7 @@ def stage_delete(request, stage_id):
                 "$('#reloadMessagesButton').click();"
                 "</script>"
             )
-        return HttpResponse(
-            "<script>" "$('#reloadMessagesButton').click();" "</script>"
-        )
+        return HorillaRedirect(request)
     return HorillaRedirect(request)
 
 

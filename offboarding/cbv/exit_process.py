@@ -10,6 +10,7 @@ from urllib.parse import urlencode, urlparse
 from django import forms
 from django.apps import apps
 from django.contrib import messages
+from django.db.models import Count
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -370,9 +371,15 @@ class OffboardingPipelineNav(HorillaNavView):
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
-        context["employee_filter"] = PipelineEmployeeFilter()
-        context["pipeline_filter"] = PipelineFilter()
-        context["stage_filter"] = PipelineStageFilter()
+        # Bound to self.request.GET: this form's own hx-trigger="load"
+        # auto-submits it on every load (see horilla_nav.html), serializing
+        # its current field values as the query string. Left unbound, every
+        # field (including "Stage > Status") always renders blank, so that
+        # auto-submit silently wipes out any filter (e.g. ?type=archived)
+        # that arrived via a deep link before the page ever settles.
+        context["employee_filter"] = PipelineEmployeeFilter(self.request.GET)
+        context["pipeline_filter"] = PipelineFilter(self.request.GET)
+        context["stage_filter"] = PipelineStageFilter(self.request.GET)
 
         return context
 
@@ -494,6 +501,7 @@ class OffboardingPipelineStage(Pipeline):
     filter_class = PipelineEmployeeFilter
     grouper = "stage_id"
     selected_instances_key_name = "OffboardingEmployeeRecords"
+    template_name = "cbv/exit_process/stages.html"
     allowed_fields = [
         {
             "field": "stage_id",
@@ -542,6 +550,9 @@ class OffboardingPipelineStage(Pipeline):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        queryset = queryset.annotate(
+            employee_count=Count("offboardingemployee", distinct=True)
+        )
         self.queryset = queryset.order_by("sequence")
         return self.queryset
 
@@ -697,7 +708,6 @@ class OffboardingKanbanRequiredTaskCheck(View):
     """
 
     def get(self, request, *args, **kwargs):
-        print("/////////////////////////////////")
         employee_pk = request.GET.get("objectId")
         target_stage_id = request.GET.get("groupId")
         offboarding_employee = OffboardingEmployee.objects.filter(
@@ -772,7 +782,7 @@ class OffboardingEmployeeList(HorillaListView):
 
     def get(self, request, *args, **kwargs):
         self.selected_instances_key_id = (
-            f"OffboardingEmployeeRecords{self.request.GET['offboarding_stage_id']}"
+            f"OffboardingEmployeeRecords{self.request.GET.get('offboarding_stage_id')}"
         )
         return super().get(request, *args, **kwargs)
 

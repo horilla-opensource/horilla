@@ -60,7 +60,7 @@
         /* KPI Grid */
         .rd-kpi-grid {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             margin-bottom: 20px;
             gap: 14px;
         }
@@ -79,6 +79,11 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             color: inherit;
             text-decoration: none;
+        }
+        .rd-kpi-card--static:hover {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
         }
         .dark .rd-kpi-card {
             border-color: rgba(255, 255, 255, 0.08);
@@ -714,7 +719,7 @@
 
         /* Period Picker */
         .rd-period-picker {
-            display: flex;
+            display: none !important; /* TEMP: hide period picker */
             align-items: center;
             gap: 6px;
             font-size: 12px;
@@ -861,7 +866,7 @@
                 </div>
             </div>
             <div style="display: flex; gap: 8px">
-                <div class="rd-period-picker">
+                <div class="rd-period-picker" hidden>
                     <button class="rd-period-preset" data-preset="this_month">{% trans "This Month" %}</button>
                     <button class="rd-period-preset" data-preset="last_month">{% trans "Last Month" %}</button>
                     <button class="rd-period-preset" data-preset="this_quarter">{% trans "Quarter" %}</button>
@@ -898,7 +903,7 @@
                         <div class="rd-chart-card__header">
                             <div>
                                 <div class="rd-chart-card__title">{% trans "Stage Conversion Funnel" %}</div>
-                                <div class="rd-chart-card__subtitle">{% trans "Drop-off rate between stages" %}</div>
+                                <div class="rd-chart-card__subtitle">{% trans "Share of total candidates per stage" %}</div>
                             </div>
                         </div>
                         <div class="rd-chart-card__body"><div id="chart-conversion-funnel"></div></div>
@@ -1273,24 +1278,24 @@
                     <div class="rd-kpi-card__value">${data.ongoing_recruitments}</div>
                     <div class="rd-kpi-card__sub">{% trans "Active recruitments" %}</div>
                 </a>
-                <a href="{% url 'candidate-view' %}?hired=true" class="rd-kpi-card">
+                <a href="{% url 'candidate-view' %}?hired=true&created_at_from=${data.period_from_date}&created_at_till=${data.period_to_date}&filter_applied=1" class="rd-kpi-card">
                     <div class="rd-kpi-card__icon rd-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></div>
                     <div class="rd-kpi-card__label">{% trans "Hired" %}</div>
                     <div class="rd-kpi-card__value">${data.total_hired}</div>
                     <div class="rd-kpi-card__sub">{% trans "of" %} ${data.total_candidates} {% trans "candidates" %}</div>
                 </a>
-                <a href="{% url 'candidate-view' %}" class="rd-kpi-card">
+                <div class="rd-kpi-card rd-kpi-card--static" title="{% trans "Conversion Rate" %} = {% trans "Hired" %} (${data.total_hired}) / {% trans "Total Candidates" %} (${data.total_candidates}) × 100 = ${data.conversion_rate}%">
                     <div class="rd-kpi-card__icon rd-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
                     <div class="rd-kpi-card__label">{% trans "Conversion Rate" %}</div>
                     <div class="rd-kpi-card__value">${data.conversion_rate}%</div>
                     <div class="rd-kpi-card__sub">{% trans "Hired / Total" %}</div>
-                </a>
-                <a href="{% url 'candidate-view' %}?offer_letter_status=accepted" class="rd-kpi-card">
+                </div>
+                <div class="rd-kpi-card rd-kpi-card--static" title="{% trans "Acceptance Rate" %} = {% trans "Accepted Offers" %} (${data.accepted_count}) / {% trans "Hired" %} (${data.total_hired}) × 100 = ${data.acceptance_rate}%">
                     <div class="rd-kpi-card__icon rd-kpi-card__icon--purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="m9 18 2 2 4-4"/></svg></div>
                     <div class="rd-kpi-card__label">{% trans "Acceptance Rate" %}</div>
                     <div class="rd-kpi-card__value">${data.acceptance_rate}%</div>
                     <div class="rd-kpi-card__sub">{% trans "Offer accepted" %}</div>
-                </a>`;
+                </div>`;
                 });
             }
             loadKpiCards();

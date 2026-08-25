@@ -19,7 +19,6 @@ class ProjectFilter(HorillaFilterSet):
         fields = [
             "title",
             "managers",
-            "members",
             "status",
             "is_active",
         ]

@@ -7,7 +7,7 @@
       "created_by": 1,
       "modified_by": 1,
       "title": "Recruitment Drive",
-      "description": "<p><b><u><span style=\"font-size: 18px;\">Position: Django Developer &amp; ODOO dev</span></u></b></p><p><b>Job Description:</b></p><p>We are seeking a skilled Django Developers and ODOO developers to join our dynamic team. The ideal candidate will have a strong background in web development with a focus on the Django framework. You will be responsible for designing, building, and maintaining high-performance web applications that are scalable and secure.</p><p><b>Key Responsibilities:</b></p><p>Develop and maintain web applications using Django.</p><p>Write clean, maintainable, and efficient code.</p><p>Design and implement robust APIs.</p><p>Collaborate with front-end developers to integrate user-facing elements.</p><p>Optimize applications for maximum speed and scalability.</p><p>Participate in code reviews to maintain code quality and share knowledge.</p><p>Stay updated with the latest industry trends and technologies.</p><p><b>Requirements:</b></p><p>Proven experience as a Django Developer.</p><p>Proficient in Python and Django framework.</p><p>Familiarity with front-end technologies (JavaScript, HTML5, CSS3).</p><p>Experience with relational databases (PostgreSQL, MySQL).</p><p>Knowledge of version control systems (Git).</p><p>Understanding of RESTful APIs and web services.</p><p>Strong problem-solving skills and attention to detail.</p><p>Excellent communication and teamwork skills.</p><p>BachelorÆs degree in Computer Science, Engineering, or a related field.</p><p><b>Preferred Qualifications:</b></p><p>Experience with cloud platforms (AWS, Azure, GCP).</p><p>Knowledge of containerization and orchestration (Docker, Kubernetes).</p><p>Familiarity with Agile development methodologies.</p>",
+      "description": "<p><b><u><span style=\"font-size: 18px;\">Position: Django Developer &amp; ODOO dev</span></u></b></p><p><b>Job Description:</b></p><p>We are seeking a skilled Django Developers and ODOO developers to join our dynamic team. The ideal candidate will have a strong background in web development with a focus on the Django framework. You will be responsible for designing, building, and maintaining high-performance web applications that are scalable and secure.</p><p><b>Key Responsibilities:</b></p><p>Develop and maintain web applications using Django.</p><p>Write clean, maintainable, and efficient code.</p><p>Design and implement robust APIs.</p><p>Collaborate with front-end developers to integrate user-facing elements.</p><p>Optimize applications for maximum speed and scalability.</p><p>Participate in code reviews to maintain code quality and share knowledge.</p><p>Stay updated with the latest industry trends and technologies.</p><p><b>Requirements:</b></p><p>Proven experience as a Django Developer.</p><p>Proficient in Python and Django framework.</p><p>Familiarity with front-end technologies (JavaScript, HTML5, CSS3).</p><p>Experience with relational databases (PostgreSQL, MySQL).</p><p>Knowledge of version control systems (Git).</p><p>Understanding of RESTful APIs and web services.</p><p>Strong problem-solving skills and attention to detail.</p><p>Excellent communication and teamwork skills.</p><p>Bachelor\u00c6s degree in Computer Science, Engineering, or a related field.</p><p><b>Preferred Qualifications:</b></p><p>Experience with cloud platforms (AWS, Azure, GCP).</p><p>Knowledge of containerization and orchestration (Docker, Kubernetes).</p><p>Familiarity with Agile development methodologies.</p>",
       "is_event_based": false,
       "closed": false,
       "is_published": true,
@@ -91,6 +91,40 @@
       ],
       "survey_templates": [],
       "skills": []
+    }
+  },
+  {
+    "model": "recruitment.stage",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-22T09:15:30.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "recruitment_id": 1,
+      "stage": "Applied",
+      "stage_type": "applied",
+      "sequence": 0,
+      "stage_managers": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "recruitment.stage",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-22T09:50:40.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "recruitment_id": 2,
+      "stage": "Applied",
+      "stage_type": "applied",
+      "sequence": 0,
+      "stage_managers": [
+        37
+      ]
     }
   },
   {
@@ -190,7 +224,7 @@
       "gender": "male",
       "source": null,
       "start_onboard": false,
-      "hired": false,
+      "hired": true,
       "canceled": false,
       "joining_date": null,
       "sequence": 0,
@@ -380,7 +414,7 @@
       "gender": "male",
       "source": null,
       "start_onboard": false,
-      "hired": false,
+      "hired": true,
       "canceled": false,
       "joining_date": null,
       "sequence": 0,
@@ -417,10 +451,10 @@
       "zip": null,
       "gender": "female",
       "source": null,
-      "start_onboard": true,
-      "hired": true,
+      "start_onboard": false,
+      "hired": false,
       "canceled": false,
-      "joining_date": "2025-07-15",
+      "joining_date": null,
       "sequence": 0,
       "probation_end": null,
       "offer_letter_status": "not_sent",
@@ -532,9 +566,9 @@
       "gender": "male",
       "source": null,
       "start_onboard": false,
-      "hired": true,
+      "hired": false,
       "canceled": false,
-      "joining_date": "2025-07-17",
+      "joining_date": null,
       "sequence": 1,
       "probation_end": null,
       "offer_letter_status": "not_sent",
@@ -1230,6 +1264,149 @@
         2
       ],
       "job_position_ids": []
+    }
+  },
+  {
+    "model": "recruitment.recruitmentsurveyanswer",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-16T09:00:00.000Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "candidate_id": 1,
+      "recruitment_id": 1,
+      "job_position_id": 1,
+      "answer_json": "{\"What is Python, and what are its key features?\": [\"A high-level, interpreted language known for readability, dynamic typing, and a large standard library.\"], \"Have you worked with an ORM framework before?\": [\"yes\"], \"How many years of professional software development experience do you have?\": [\"4\"]}"
+    }
+  },
+  {
+    "model": "recruitment.recruitmentsurveyanswer",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-17T09:00:00.000Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "candidate_id": 7,
+      "recruitment_id": 1,
+      "job_position_id": 1,
+      "answer_json": "{\"What is the difference between a list and a tuple?\": [\"Lists are mutable and tuples are immutable; tuples are generally faster and hashable.\"], \"Which application modules have you worked on the most?\": [\"Human Resources\"], \"Estimate your proficiency with Python (0-100%).\": [\"85\"]}"
+    }
+  },
+  {
+    "model": "recruitment.stagenote",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "candidate_id": 1,
+      "description": "Strong technical interview -- moving to the final stage for offer discussion.",
+      "stage_id": 5,
+      "stage_files": [],
+      "updated_by": 1,
+      "candidate_can_view": false
+    }
+  },
+  {
+    "model": "recruitment.stagenote",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "candidate_id": 7,
+      "description": "Reference checks completed, all positive. Scheduling the next round.",
+      "stage_id": 4,
+      "stage_files": [],
+      "updated_by": 1,
+      "candidate_can_view": false
+    }
+  },
+  {
+    "model": "recruitment.stagenote",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "candidate_id": 8,
+      "description": "Portfolio review went well; technical assessment scheduled for next week.",
+      "stage_id": 5,
+      "stage_files": [],
+      "updated_by": 1,
+      "candidate_can_view": false
+    }
+  },
+  {
+    "model": "recruitment.candidatedocumentrequest",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-10T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Government ID Proof",
+      "candidate_id": [
+        1,
+        7,
+        8
+      ],
+      "format": "pdf",
+      "max_size": 5,
+      "description": "Upload a valid government-issued ID for verification."
+    }
+  },
+  {
+    "model": "recruitment.candidatedocument",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Government ID Proof",
+      "candidate_id": 1,
+      "document_request_id": 1,
+      "document": null,
+      "status": "requested",
+      "reject_reason": ""
+    }
+  },
+  {
+    "model": "recruitment.candidatedocument",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Government ID Proof",
+      "candidate_id": 7,
+      "document_request_id": 1,
+      "document": null,
+      "status": "approved",
+      "reject_reason": ""
+    }
+  },
+  {
+    "model": "recruitment.candidatedocument",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Government ID Proof",
+      "candidate_id": 8,
+      "document_request_id": 1,
+      "document": null,
+      "status": "requested",
+      "reject_reason": ""
     }
   }
 ]

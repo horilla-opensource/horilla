@@ -6,7 +6,7 @@
             role="button"
             data-toggle="oh-modal-toggle"
             data-target="#objectCreateModal"
-            hx-get="{% url 'asset-allocate-return'  asset_id=instance.asset_id.id %}"
+            hx-get="{% url 'asset-allocate-return'  assignment_id=instance.id %}"
             hx-target="#objectCreateModalTarget"
         >
             <ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}

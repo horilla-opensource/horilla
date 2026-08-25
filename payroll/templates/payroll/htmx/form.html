@@ -63,7 +63,9 @@
           }
 
           if (
-            $("#id_based_on").val() == "overtime" &&
+            ["overtime", "week_off_overtime", "holiday_overtime"].includes(
+              $("#id_based_on").val()
+            ) &&
             !$("#id_is_fixed").is(":checked")
           ) {
             $("#id_amount_per_one_hr, [for='id_amount_per_one_hr']").show();
@@ -117,7 +119,7 @@
             $("#id_maximum_amount, [for=id_maximum_amount]").hide();
             $("#id_maximum_unit,[for=id_maximum_unit]").hide();
           }
-          var opt = ["attendance", "shift_id", "overtime", "work_type_id"];
+          var opt = ["attendance", "shift_id", "overtime", "week_off_overtime", "holiday_overtime", "work_type_id"];
           if (!$("#id_is_fixed").is(":checked") && opt.includes($("#id_based_on").val())) {
             $("#id_maximum_unit,[for=id_maximum_unit]").hide();
           }

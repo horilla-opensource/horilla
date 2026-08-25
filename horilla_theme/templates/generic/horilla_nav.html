@@ -1,4 +1,112 @@
 {% load static i18n %}
+<style>
+    /* .dropdown-content is only ever revealed via :hover/:focus-within
+       (see global.css) -- it's shown/hidden with opacity+visibility, not
+       display, so an override has to flip the SAME properties or it's a
+       no-op. .force-open is an additive path so something OUTSIDE this
+       dropdown (the nested group-by "Grouped by" header's reconfigure
+       action) can open it programmatically without touching that shared
+       hover behavior. */
+    #filterDropdownWrapper.force-open .dropdown-content {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: translateY(0) !important;
+    }
+</style>
+<script>
+    // Grouping can be configured from two independent places: this Filter
+    // dropdown's own Group By section, and (once a grouping is active)
+    // the "Grouped by" breadcrumb's inline controls in
+    // nested_group_by_table.html -- both submit name="nested_fields" to
+    // the SAME form. Without this, a submission from either one would
+    // ALSO carry the other's currently-selected values along, since a
+    // form collects every matching field regardless of which container
+    // it's in. A disabled field is excluded from submission entirely, so
+    // disabling whichever container the user is NOT currently acting in
+    // keeps exactly one source of truth per submit. Defined here (nav
+    // always renders) rather than in nested_group_by_table.html (only
+    // renders once grouping is already active) so it's always callable
+    // from either side regardless of which one loaded first.
+    function ngbDisableOtherGroupBySource(exceptContainerId) {
+        // Only needs to hold for the instant $('#applyFilter').click()
+        // synchronously serializes the form's fields -- htmx builds that
+        // request body synchronously within the click handling, before any
+        // network activity starts. Re-enabling on the next tick (rather
+        // than leaving it disabled) matters because #nestedGroupByLevels
+        // (the Filter dropdown) is never swapped/re-rendered by the list's
+        // own submissions, so a lasting disabled state here would never
+        // get reversed and the Filter dropdown's Group By would stay
+        // stuck unusable after the first breadcrumb interaction.
+        var otherId = exceptContainerId === "nestedGroupByLevels" ? "ngbBreadcrumbLevels" : "nestedGroupByLevels";
+        // The breadcrumb side now submits its value via a hidden <input>
+        // (custom dropdown) rather than a native <select>, so both tag
+        // names need matching here.
+        var $other = $("#" + otherId + " [name='nested_fields']");
+        $other.prop("disabled", true);
+        setTimeout(function () {
+            $other.prop("disabled", false);
+        }, 0);
+    }
+    // This Nav loads once (hx-trigger="load") and is never re-fetched by the
+    // list's own swaps, so #nestedGroupByLevels (the Filter dropdown's copy)
+    // keeps showing whatever grouping was active at THAT load -- while
+    // #ngbBreadcrumbLevels (nested_group_by_table.html, rendered by the list
+    // and re-swapped on every grouping change) is the live source of truth.
+    // Re-synced here on every list swap rather than only when the dropdown
+    // opens, since a hover-based trigger wouldn't fire for keyboard/touch
+    // access and would leave a stale dropdown briefly visible either way.
+    function ngbSyncFilterDropdownFromBreadcrumb() {
+        var $container = $("#nestedGroupByLevels");
+        var $breadcrumbFields = $("#ngbBreadcrumbLevels [name='nested_fields']");
+        if (!$container.length || !$breadcrumbFields.length) {
+            return;
+        }
+        var values = $breadcrumbFields.map(function () { return $(this).val(); }).get();
+        var maxLevels = parseInt($container.attr("data-max-levels"), 10) || values.length;
+        values = values.slice(0, maxLevels);
+        var $rows = $container.find(".nested-group-by-row");
+        while ($rows.length < values.length) {
+            var $clone = $rows.first().clone();
+            $clone.find("select").val("");
+            $container.append($clone);
+            $rows = $container.find(".nested-group-by-row");
+        }
+        while ($rows.length > Math.max(values.length, 1)) {
+            $rows.last().remove();
+            $rows = $container.find(".nested-group-by-row");
+        }
+        $rows.each(function (i) {
+            $(this).find("select").val(values[i] || "");
+        });
+        // Defined further down, inside the same conditional block that
+        // #nestedGroupByLevels itself is rendered in -- guaranteed to
+        // already exist by the time this callback actually runs, since it
+        // only fires on a later htmx swap, well after this page's initial
+        // script tags (including that block's) have all executed.
+        ngbRenumber();
+        ngbUpdatePreview();
+        ngbUpdateDisabledOptions();
+    }
+    $(document).on("htmx:afterSwap", function (e) {
+        if ($(e.target).find("#ngbBreadcrumbLevels").length) {
+            ngbSyncFilterDropdownFromBreadcrumb();
+        }
+    });
+    $(document).on("click", function (e) {
+        // .ngb-reconfigure-trigger lives outside #filterDropdownWrapper (in
+        // the nested group-by toolbar) but is a legitimate way to OPEN it --
+        // without this check, the click that adds force-open also bubbles
+        // to this same document handler, which immediately strips it back
+        // off again in the very same event.
+        var $target = $(e.target);
+        if (
+            !$target.closest("#filterDropdownWrapper").length &&
+            !$target.closest(".ngb-reconfigure-trigger").length
+        ) {
+            $("#filterDropdownWrapper").removeClass("force-open");
+        }
+    });
+</script>
 <div class="flex flex-wrap justify-between items-center mb-3">
     <h3 class="text-lg font-semibold">{{ nav_title }}</h3>
     <div class="flex flex-wrap gap-1">
@@ -74,7 +182,7 @@
                 </div>
 
                 {% if filter_body_template %}
-                    <div class="relative dropdown-wrapper">
+                    <div class="relative dropdown-wrapper" id="filterDropdownWrapper">
                         <span
                             class="px-5 py-2 h-full bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 cursor-pointer"
                         >
@@ -87,10 +195,10 @@
                             {% trans "Filter" %}
                         </span>
 
-                        <div class="oh-filter-dropdown dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[400px] p-3 right-0">
+                        <div class="oh-filter-dropdown dropdown-content absolute z-30 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[400px] p-3 right-0">
                             <div class="accordion-wrapper space-y-2">
                                 {% include filter_body_template %}
-                                {% if group_by_fields %}
+                                {% if group_by_fields and not nested_group_by_fields %}
                                     <div class="oh-accordion">
                                         <div class="oh-accordion-header">
                                             {% trans 'Group By' %}
@@ -116,7 +224,7 @@
                                                         >
                                                             <option value="">{% trans "Select" %}</option>
                                                             {% for field in group_by_fields %}
-                                                                <option value="{{field.0}}"{% if request.GET.field == field.0 %} selected{% endif %}>{{ field.1 }}</option>
+                                                                <option value="{{field.0}}"{% if request.GET.field == field.0 or not request.GET.field and default_group_by == field.0 %} selected{% endif %}>{{ field.1 }}</option>
                                                             {% endfor %}
                                                         </select>
                                                     </div>
@@ -124,6 +232,138 @@
                                             </div>
                                         </div>
                                     </div>
+                                {% endif %}
+
+                                {% if nested_group_by_fields %}
+                                    {% comment %}
+                                        One unified Group By section, 1+ levels instead of the
+                                        old single-select "classic" Group By plus a separate
+                                        always-≥2-levels "Nested Group By" -- each row is
+                                        numbered (order here is submission order, i.e. the
+                                        actual grouping hierarchy), removable down to a single
+                                        level, and a preview line shows the resulting hierarchy
+                                        before Apply.
+                                    {% endcomment %}
+                                    <div class="oh-accordion">
+                                        <div class="oh-accordion-header">
+                                            {% trans 'Group By' %}
+                                        </div>
+                                        <div class="oh-accordion-body">
+                                            <div id="nestedGroupByLevels" class="space-y-1.5" data-max-levels="{{nested_group_by_fields|length}}">
+                                                {% for value in nested_fields_selected %}
+                                                    <div class="flex items-center gap-1.5 nested-group-by-row">
+                                                        <span class="ngb-level-badge shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-md bg-primary-100 text-primary-700 text-[11px] font-semibold"></span>
+                                                        {% comment %}
+                                                            Deliberately NOT .oh-select: that class gets
+                                                            auto-select2-ified on document-ready and again on
+                                                            every htmx:afterSettle (see htmxSelect2.js). Adding
+                                                            a level clones this whole row via jQuery .clone(),
+                                                            which duplicates Select2's generated widget/IDs
+                                                            alongside the real <select> -- the clone ends up
+                                                            with a broken, disconnected dropdown. A short,
+                                                            plain-option list doesn't need Select2's search/
+                                                            styling anyway, so it just stays a native <select>.
+                                                        {% endcomment %}
+                                                        <select
+                                                            onchange="ngbUpdatePreview(); ngbUpdateDisabledOptions(); ngbDisableOtherGroupBySource('nestedGroupByLevels'); $(this).closest('form').find('#applyFilter').click();"
+                                                            class="ngb-field-select oh-input w-100 border border-[#DEDBD4] rounded-md px-2 py-1.5 text-sm"
+                                                            name="nested_fields"
+                                                            {% comment %}
+                                                                .oh-input carries a global margin-bottom (form-group
+                                                                spacing) -- flexbox includes that margin when
+                                                                centering this row (align-items: center centers the
+                                                                MARGIN box), so the select's own visible border box
+                                                                sat noticeably above its true center relative to the
+                                                                level badge/remove button, which have no such
+                                                                margin. Inline style wins regardless of stylesheet
+                                                                load order.
+                                                            {% endcomment %}
+                                                            style="margin-bottom: 0;"
+                                                        >
+                                                            <option value="">{% trans "Select" %}</option>
+                                                            {% for field in nested_group_by_fields %}
+                                                                <option value="{{field.0}}"{% if field.0 == value %} selected{% endif %}>{{ field.1 }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <button
+                                                            type="button"
+                                                            class="shrink-0 inline-flex items-center justify-center w-5 h-5 text-sm leading-none text-red-500 hover:text-red-600"
+                                                            onclick="ngbRemoveLevel(this)"
+                                                            title="{% trans 'Remove level' %}"
+                                                        >&times;</button>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                            <button
+                                                type="button"
+                                                class="text-xs text-primary-600 hover:underline mt-2"
+                                                onclick="ngbAddLevel(this)"
+                                            >+ {% trans "Add level" %}</button>
+                                            <div id="nestedGroupByPreview" class="text-xs text-[#9C9A92] mt-2 pt-2 border-t border-[#EAE8E3]"></div>
+                                        </div>
+                                    </div>
+                                    <script>
+                                        function ngbRenumber() {
+                                            var $rows = $('#nestedGroupByLevels .nested-group-by-row');
+                                            $rows.each(function (i) {
+                                                $(this).find('.ngb-level-badge').text(i + 1);
+                                            });
+                                        }
+                                        function ngbUpdatePreview() {
+                                            var labels = [];
+                                            $('#nestedGroupByLevels select').each(function () {
+                                                if ($(this).val()) labels.push($(this).find('option:selected').text());
+                                            });
+                                            var $preview = $('#nestedGroupByPreview');
+                                            if (labels.length > 1) {
+                                                $preview.text('{% trans "Preview" %}: ' + labels.join(' › '));
+                                            } else {
+                                                $preview.text('');
+                                            }
+                                        }
+                                        // A field already picked for one level makes no sense to pick
+                                        // again for another -- grey it out (not remove it) in every
+                                        // OTHER row's option list, while leaving it selectable in
+                                        // whichever row currently holds it.
+                                        function ngbUpdateDisabledOptions() {
+                                            var chosen = $('#nestedGroupByLevels select').map(function () {
+                                                return $(this).val();
+                                            }).get().filter(Boolean);
+                                            $('#nestedGroupByLevels select').each(function () {
+                                                var own = $(this).val();
+                                                $(this).find('option').each(function () {
+                                                    if (!$(this).val()) return;
+                                                    $(this).prop('disabled', $(this).val() !== own && chosen.indexOf($(this).val()) !== -1);
+                                                });
+                                            });
+                                        }
+                                        function ngbAddLevel(btn) {
+                                            var $container = $('#nestedGroupByLevels');
+                                            var maxLevels = parseInt($container.attr('data-max-levels'), 10) || 10;
+                                            if ($container.find('.nested-group-by-row').length >= maxLevels) return;
+                                            var $row = $container.find('.nested-group-by-row').first().clone();
+                                            $row.find('select').val('');
+                                            $container.append($row);
+                                            ngbRenumber();
+                                            ngbUpdatePreview();
+                                            ngbUpdateDisabledOptions();
+                                        }
+                                        function ngbRemoveLevel(btn) {
+                                            var $container = $('#nestedGroupByLevels');
+                                            if ($container.find('.nested-group-by-row').length <= 1) return;
+                                            $(btn).closest('.nested-group-by-row').remove();
+                                            ngbRenumber();
+                                            ngbUpdatePreview();
+                                            ngbUpdateDisabledOptions();
+                                            ngbDisableOtherGroupBySource('nestedGroupByLevels');
+                                            $(btn).closest('form').find('#applyFilter').click();
+                                        }
+                                        $(function () {
+                                            ngbRenumber();
+                                            ngbUpdatePreview();
+                                            ngbUpdateDisabledOptions();
+                                        });
+                                    </script>
                                 {% endif %}
 
                                 <div class="flex justify-end">
@@ -164,7 +404,7 @@
                     {% trans "Actions" %}
                 </button>
 
-                <div class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0">
+                <div class="dropdown-content absolute z-30 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0">
                     <ul class="text-sm">
                         {% for action in actions %}
                             <li>
@@ -223,6 +463,36 @@
                     if (!formFieldNames[key]) kept.push(key + "=" + encodeURIComponent(value));
                 });
                 event.detail.path = basePath + (kept.length ? "?" + kept.join("&") : "");
+            }
+            // ngbDisableOtherGroupBySource() only runs for the group-by
+            // widgets' own triggers (a level's onchange, add/move/remove
+            // level) -- any OTHER submission through this same form (an
+            // unrelated filter field, plain search, etc.) never calls it,
+            // so both the Filter dropdown's nested_fields inputs AND the
+            // "Grouped by" breadcrumb's copy (nested_group_by_table.html)
+            // stay enabled and both get serialized, doubling every level.
+            // Every value in that combined list is guaranteed genuine or a
+            // duplicate of one -- a level can never legitimately reuse a
+            // field another level already has (see
+            // ngbUpdateDisabledOptions/the breadcrumb's own equivalent) --
+            // so de-duplicating by value here, independent of which
+            // trigger fired, is always correct.
+            var nestedFields = event.detail.parameters
+                ? event.detail.parameters["nested_fields"]
+                : null;
+            if (nestedFields) {
+                var asArray = Array.isArray(nestedFields) ? nestedFields : [nestedFields];
+                var seen = {};
+                var deduped = [];
+                asArray.forEach(function (value) {
+                    if (!Object.prototype.hasOwnProperty.call(seen, value)) {
+                        seen[value] = true;
+                        deduped.push(value);
+                    }
+                });
+                if (deduped.length !== asArray.length) {
+                    event.detail.parameters["nested_fields"] = deduped;
+                }
             }
         });
 

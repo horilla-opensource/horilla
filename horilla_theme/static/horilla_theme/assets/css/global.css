@@ -1,3 +1,8 @@
+/* Hide Alpine-bound elements until Alpine has initialized, preventing a flash of the unhidden state (e.g. dropdown menus briefly showing on page load) */
+[x-cloak] {
+  display: none !important;
+}
+
 /* CUSTOM DROPDOWN */
 .dropdown-content {
   opacity: 0;
@@ -1426,4 +1431,220 @@ input[type="checkbox"].custom-checkbox:hover {
   color: #e54f38;
   border-color: #f0c4bc;
   background: #fff5f3;
+}
+
+/* ====================================
+*        Sticky Table
+* Theme pages (extends "index.html" -> horilla_theme's override) don't
+* load static/build/css/style.min.css, where the base .oh-sticky-table
+* component normally lives — ported here so report/standard_report.html's
+* KPI/drilldown tables render with the same sticky-header/sticky-first-
+* column behavior used elsewhere in the app.
+* ================================== */
+.oh-table_sticky--wrapper {
+  position: relative;
+}
+
+.oh-sticky-table {
+  max-height: 75vh;
+  overflow: auto;
+  margin: auto;
+  max-width: 100%;
+  border: 1px solid hsl(213, 22%, 93%);
+  position: relative;
+}
+
+.oh-sticky-table--no-highlight .oh-sticky-table__tr:hover {
+  background-color: transparent;
+}
+
+.oh-sticky-table--no-overflow {
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+.oh-sticky-table__table {
+  display: table;
+  position: relative;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.oh-sticky-table__tr {
+  display: table-row;
+}
+.oh-sticky-table__tr:hover {
+  background-color: hsl(0, 0%, 96%);
+  cursor: pointer;
+}
+
+.oh-sticky-table__td,
+.oh-sticky-table__th,
+.oh-sticky-table__sd {
+  display: table-cell;
+  padding: 8px 10px;
+  border-bottom: 0.2px solid hsl(213, 22%, 93%);
+  border-right: 0.2px solid #fff;
+  vertical-align: middle;
+  width: 160px;
+  word-break: break-word;
+}
+
+.oh-sticky-table__sd {
+  background-color: hsl(0, 0%, 100%);
+  z-index: 10 !important;
+  width: 240px;
+}
+
+.oh-sticky-table__th:first-child {
+  z-index: 11 !important;
+}
+
+.oh-sticky-table__th {
+  z-index: 10;
+  background-color: hsl(0, 0%, 100%);
+  padding: 0.5rem 1rem !important;
+}
+
+.oh-sticky-table__thead {
+  display: table-header-group;
+  font-weight: bold;
+  z-index: 1;
+}
+
+.oh-sticky-table__tbody {
+  display: table-row-group;
+  height: 60px;
+}
+
+.oh-sticky-table__th,
+.oh-sticky-table__sd {
+  position: sticky;
+  background: hsl(0, 0%, 100%);
+  color: hsl(0, 0%, 11%);
+}
+
+.oh-sticky-table__th {
+  top: 0;
+  border-bottom: 2px solid hsl(213, 22%, 93%);
+}
+
+.oh-sticky-table__sd {
+  left: 0;
+  border-right: 1px solid hsl(213, 22%, 93%);
+}
+@media (max-width: 575.98px) {
+  .oh-sticky-table__sd {
+    position: relative;
+  }
+}
+
+.oh-sticky-table__sd,
+.oh-sticky-table__td,
+.oh-sticky-table__th {
+  padding: 0.6rem;
+}
+
+.oh-sticky-table--fit .oh-sticky-table__sd,
+.oh-sticky-table--fit .oh-sticky-table__td,
+.oh-sticky-table--fit .oh-sticky-table__th {
+  padding: 0.6rem;
+  width: fit-content;
+}
+
+.oh-sticky-table__thead div.oh-sticky-table__th:first-child,
+.oh-sticky-table__tfoot div.oh-sticky-table__th:first-child {
+  left: 0;
+  z-index: 1;
+  border-right: 1px solid hsl(213, 22%, 93%);
+}
+@media (max-width: 575.98px) {
+  .oh-sticky-table__thead div.oh-sticky-table__th:first-child,
+  .oh-sticky-table__tfoot div.oh-sticky-table__th:first-child {
+    position: relative;
+  }
+}
+
+.oh-sticky-table__sr {
+  position: sticky;
+  right: 0;
+  background-color: hsl(0, 0%, 100%);
+  z-index: 9 !important;
+  padding: 1rem;
+  border-bottom: 1px solid hsl(213, 22%, 93%);
+  border-left: 1px solid hsl(213, 22%, 93%);
+  display: table-cell;
+}
+
+.oh-sticky-table__th--sticky {
+  right: 0;
+  position: sticky;
+  border-left: 1px solid hsl(213, 22%, 93%);
+}
+
+.oh-sticky-table__th--right {
+  right: 0;
+  border-left: 1px solid hsl(213, 22%, 93%);
+}
+
+.oh-sticky-table__button-container {
+  display: flex;
+  align-items: center;
+}
+
+.oh-sticky-table__button-container > * {
+  flex-shrink: 0;
+}
+
+.dark .oh-sticky-table {
+  border-color: hsl(0, 0%, 25%);
+}
+
+.dark .oh-sticky-table__th,
+.dark .oh-sticky-table__sd,
+.dark .oh-sticky-table__sr {
+  background: #242424;
+  color: hsl(0, 0%, 92%);
+  border-color: hsl(0, 0%, 25%);
+}
+
+.dark .oh-sticky-table__td {
+  border-color: hsl(0, 0%, 25%);
+}
+
+.dark .oh-sticky-table__tr:hover {
+  background-color: hsl(0, 0%, 18%);
+}
+
+/* Wide variant of the base .oh-modal__dialog (max-width: 700px, defined in
+   v1_styles.css) — used by report/standard_report.html's drilldown modal,
+   which needs room for a multi-column sticky table. */
+.oh-modal__dialog--wide {
+  max-width: min(1100px, 95vw);
+}
+
+/* .oh-card-dashboard's __header/__counts have their own spacing but the
+   __body wrapper between them (report/standard_report.html's KPI cards)
+   has never had a rule of its own. */
+.oh-card-dashboard__body {
+  margin-top: 6px;
+}
+
+/* Bare .oh-card (distinct from .oh-card-dashboard / .oh-card__*, which
+   already have real rules) is used by report/explorer_picker.html and
+   report/standard_report.html but was never actually defined anywhere the
+   theme loads — those cards were rendering with zero border/shadow/padding.
+   Tokens match the theme's own real card component
+   (horilla_theme/templates/generic/horilla_card.html) for visual
+   consistency with the Standard Reports catalog grid fixed earlier. */
+.oh-card {
+  background-color: hsl(0, 0%, 100%);
+  border: 1px solid #ebebeb;
+  border-radius: 6px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+}
+.dark .oh-card {
+  background-color: #242424;
+  border-color: hsl(0, 0%, 25%);
 }

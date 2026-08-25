@@ -25,6 +25,12 @@ function clearFilterFromTag(element) {
 		form.attr("hx-get", baseUrl);
 	}
 
+	// field_id can match several elements at once (e.g. "nested_fields" with
+	// multiple active grouping levels) -- .change() fires once per matched
+	// element, and each one's own onchange handler self-submits via
+	// formButton, so disable it here too so only the real click below runs
+	// (see clearAllFilter's own comment for why this matters).
+	$(formButton).prop("disabled", true);
 	$(`[name=${field_id}]`).val("");
 	$(`[name=${field_id}]`).change();
 	// Update all elements with the same ID to have null values
@@ -36,6 +42,7 @@ function clearFilterFromTag(element) {
 		spanElement.attr("title", "---------");
 		spanElement.text("---------");
 	}
+	$(formButton).prop("disabled", false);
 	$(formButton).click();
 }
 
@@ -44,6 +51,19 @@ function clearAllFilter(element) {
 	let form = $(formButton).closest('form');
 	let search_url = form.attr("hx-get") || "";
 	form.attr("hx-get", search_url.split('?')[0]);
+
+	// Some fields (e.g. the nested group-by level selects) have their own
+	// onchange handler that immediately clicks formButton to self-submit.
+	// With several same-named fields active (multiple grouping levels),
+	// each one's change below fires its OWN premature submit mid-loop,
+	// before the rest of the fields have been cleared -- those requests
+	// race the real, fully-cleared submit at the end of this function, and
+	// whichever response lands last wins, which can leave stale filters
+	// showing even though every field was in fact reset. Disabling the
+	// button makes those premature clicks (and any others triggered by a
+	// field's change handler) no-ops -- disabled form controls don't fire
+	// click events, per the DOM spec -- so only the real submit below runs.
+	$(formButton).prop("disabled", true);
 
 	// Reset every field's value, not just strip a query string — the active
 	// filter (e.g. a "group by" field) is saved server-side and reapplied
@@ -58,6 +78,7 @@ function clearAllFilter(element) {
 		$(this).text("---------");
 	});
 
+	$(formButton).prop("disabled", false);
 	$(formButton).click();
 	localStorage.removeItem("savedFilters");
 }

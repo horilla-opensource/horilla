@@ -32,19 +32,6 @@
                     {{ prefix_form.badge_id_prefix.errors|join:", " }}
                 </div>
             {% endif %}
-            {% if request.session.selected_company == "all" or not request.session.selected_company %}
-                <select name="company_id" id="id_company_id">
-                    {% for company in companies %}
-                        <option value="{{ company.id }}" {% if company.id == selected_company_id %}selected{% endif %}>
-                            {{ company.company }}
-                        </option>
-                    {% endfor %}
-                </select>
-            {% else %}
-                {% for company in companies %}
-                    <input type="hidden" name="company_id" value="{{ company.id }}">
-                {% endfor %}
-            {% endif %}
             <button class="btn" type="submit">{% trans "Save" %}</button>
         </div>
     </form>

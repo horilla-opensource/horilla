@@ -163,7 +163,7 @@
       "requested_date": "2025-07-16",
       "description": "Request to allcoate some additional available leaves for this leave type",
       "attachment": "",
-      "status": "requested",
+      "status": "approved",
       "reject_reason": ""
     }
   },
@@ -181,8 +181,8 @@
       "requested_date": "2025-07-16",
       "description": "Kindly request to allocate this leave type",
       "attachment": "",
-      "status": "requested",
-      "reject_reason": ""
+      "status": "rejected",
+      "reject_reason": "Balance already sufficient for the remaining year."
     }
   },
   {
@@ -267,6 +267,46 @@
       "exclued_leave_types": [
         3
       ]
+    }
+  },
+  {
+    "model": "leave.restrictleave",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-07-16T08:08:20.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Regional Compliance Week",
+      "start_date": "2025-07-21",
+      "end_date": "2025-07-25",
+      "department": 1,
+      "include_all": true,
+      "description": "Company-wide compliance review week.",
+      "company_id": 2,
+      "job_position": [],
+      "spesific_leave_types": [],
+      "exclued_leave_types": []
+    }
+  },
+  {
+    "model": "leave.restrictleave",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-07-16T08:08:45.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Regional Support Peak Days",
+      "start_date": "2025-07-22",
+      "end_date": "2025-07-24",
+      "department": 1,
+      "include_all": true,
+      "description": "Regional support coverage peak period.",
+      "company_id": 3,
+      "job_position": [],
+      "spesific_leave_types": [],
+      "exclued_leave_types": []
     }
   },
   {
@@ -488,9 +528,9 @@
       "is_active": true,
       "employee_id": 22,
       "leave_type_id": 2,
-      "available_days": 1.0,
+      "available_days": 2.0,
       "carryforward_days": 0.0,
-      "total_leave_days": 1.0,
+      "total_leave_days": 25.0,
       "assigned_date": "2025-07-22",
       "reset_date": "2025-07-01",
       "expired_date": null
@@ -632,9 +672,9 @@
       "is_active": true,
       "employee_id": 11,
       "leave_type_id": 2,
-      "available_days": 1.0,
+      "available_days": 10.0,
       "carryforward_days": 0.0,
-      "total_leave_days": 1.0,
+      "total_leave_days": 12.0,
       "assigned_date": "2025-07-22",
       "reset_date": "2025-07-01",
       "expired_date": null
@@ -1136,9 +1176,9 @@
       "is_active": true,
       "employee_id": 27,
       "leave_type_id": 2,
-      "available_days": 1.0,
+      "available_days": 2.0,
       "carryforward_days": 0.0,
-      "total_leave_days": 1.0,
+      "total_leave_days": 25.0,
       "assigned_date": "2025-07-22",
       "reset_date": "2025-07-01",
       "expired_date": null
@@ -1856,9 +1896,9 @@
       "is_active": true,
       "employee_id": 20,
       "leave_type_id": 2,
-      "available_days": 1.0,
+      "available_days": 9.0,
       "carryforward_days": 0.0,
-      "total_leave_days": 1.0,
+      "total_leave_days": 12.0,
       "assigned_date": "2025-07-22",
       "reset_date": "2025-07-01",
       "expired_date": null
@@ -1892,9 +1932,9 @@
       "is_active": true,
       "employee_id": 25,
       "leave_type_id": 2,
-      "available_days": 1.0,
+      "available_days": 9.0,
       "carryforward_days": 0.0,
-      "total_leave_days": 1.0,
+      "total_leave_days": 12.0,
       "assigned_date": "2025-07-22",
       "reset_date": "2025-07-01",
       "expired_date": null
@@ -2720,9 +2760,9 @@
       "is_active": true,
       "employee_id": 35,
       "leave_type_id": 2,
-      "available_days": 1.0,
+      "available_days": 2.0,
       "carryforward_days": 0.0,
-      "total_leave_days": 1.0,
+      "total_leave_days": 25.0,
       "assigned_date": "2025-07-22",
       "reset_date": "2025-07-01",
       "expired_date": null
@@ -3170,9 +3210,9 @@
       "is_active": true,
       "employee_id": 81,
       "leave_type_id": 2,
-      "available_days": 11.7,
+      "available_days": 2.0,
       "carryforward_days": 0.0,
-      "total_leave_days": 12.0,
+      "total_leave_days": 25.0,
       "assigned_date": "2025-07-01",
       "reset_date": "2025-07-01",
       "expired_date": null
@@ -3332,9 +3372,9 @@
       "is_active": true,
       "employee_id": 85,
       "leave_type_id": 3,
-      "available_days": 9.0,
+      "available_days": 2.0,
       "carryforward_days": 0.0,
-      "total_leave_days": 10.0,
+      "total_leave_days": 25.0,
       "assigned_date": "2025-07-01",
       "reset_date": "2025-07-01",
       "expired_date": null
@@ -3404,9 +3444,9 @@
       "is_active": true,
       "employee_id": 87,
       "leave_type_id": 3,
-      "available_days": 6.8,
+      "available_days": 2.0,
       "carryforward_days": 0.0,
-      "total_leave_days": 10.0,
+      "total_leave_days": 25.0,
       "assigned_date": "2025-07-01",
       "reset_date": "2025-07-01",
       "expired_date": null
@@ -3512,9 +3552,9 @@
       "is_active": true,
       "employee_id": 90,
       "leave_type_id": 3,
-      "available_days": 7.4,
+      "available_days": 2.0,
       "carryforward_days": 0.0,
-      "total_leave_days": 10.0,
+      "total_leave_days": 25.0,
       "assigned_date": "2025-07-01",
       "reset_date": "2025-07-01",
       "expired_date": null
@@ -3548,9 +3588,9 @@
       "is_active": true,
       "employee_id": 91,
       "leave_type_id": 3,
-      "available_days": 9.8,
+      "available_days": 2.0,
       "carryforward_days": 0.0,
-      "total_leave_days": 10.0,
+      "total_leave_days": 25.0,
       "assigned_date": "2025-07-01",
       "reset_date": "2025-07-01",
       "expired_date": null
@@ -3584,9 +3624,9 @@
       "is_active": true,
       "employee_id": 92,
       "leave_type_id": 3,
-      "available_days": 9.7,
+      "available_days": 2.0,
       "carryforward_days": 0.0,
-      "total_leave_days": 10.0,
+      "total_leave_days": 25.0,
       "assigned_date": "2025-07-01",
       "reset_date": "2025-07-01",
       "expired_date": null
@@ -5385,7 +5425,7 @@
       "attachment": "",
       "status": "approved",
       "requested_date": "2025-06-25",
-      "approved_available_days": 23.0,
+      "approved_available_days": 3.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
       "created_by": 1
@@ -5410,7 +5450,7 @@
       "attachment": "",
       "status": "approved",
       "requested_date": "2025-06-25",
-      "approved_available_days": 23.0,
+      "approved_available_days": 3.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
       "created_by": 1
@@ -5435,7 +5475,7 @@
       "attachment": "",
       "status": "approved",
       "requested_date": "2025-06-25",
-      "approved_available_days": 23.0,
+      "approved_available_days": 3.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
       "created_by": 1
@@ -6039,6 +6079,109 @@
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
       "created_by": 1
+    }
+  },
+  {
+    "model": "leave.compensatoryleaverequest",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-18T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "leave_type_id": 1,
+      "employee_id": 2,
+      "attendance_id": [
+        31,
+        32
+      ],
+      "requested_days": 1.0,
+      "requested_date": "2025-07-18",
+      "description": "Worked through the weekend to cover an urgent client deployment.",
+      "status": "approved",
+      "reject_reason": ""
+    }
+  },
+  {
+    "model": "leave.compensatoryleaverequest",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-20T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "leave_type_id": 1,
+      "employee_id": 20,
+      "attendance_id": [
+        561
+      ],
+      "requested_days": 0.5,
+      "requested_date": "2025-07-20",
+      "description": "Half-day of overtime to close the month-end reconciliation.",
+      "status": "approved",
+      "reject_reason": ""
+    }
+  },
+  {
+    "model": "leave.compensatoryleaverequest",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-07-24T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "leave_type_id": 1,
+      "employee_id": 11,
+      "attendance_id": [
+        294,
+        295
+      ],
+      "requested_days": 1.0,
+      "requested_date": "2025-07-24",
+      "description": "Covered an extra shift during the regional support outage.",
+      "status": "requested",
+      "reject_reason": ""
+    }
+  },
+  {
+    "model": "leave.compensatoryleaverequest",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-07-26T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "leave_type_id": 1,
+      "employee_id": 5,
+      "attendance_id": [
+        124
+      ],
+      "requested_days": 0.5,
+      "requested_date": "2025-07-26",
+      "description": "Additional hours logged during the product launch week.",
+      "status": "rejected",
+      "reject_reason": "Overtime was already compensated through the bonus payout."
+    }
+  },
+  {
+    "model": "leave.compensatoryleaverequest",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-07-28T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "leave_type_id": 1,
+      "employee_id": 9,
+      "attendance_id": [
+        237,
+        238
+      ],
+      "requested_days": 1.0,
+      "requested_date": "2025-07-28",
+      "description": "Weekend on-call coverage for the payroll close.",
+      "status": "requested",
+      "reject_reason": ""
     }
   }
 ]

@@ -45,8 +45,17 @@ esac
 # Run migrations
 python manage.py migrate --noinput
 
-# Collect static files
-python manage.py collectstatic --noinput
+# Collect static files.
+#
+# --clear is deliberate: STATIC_ROOT is a named volume that outlives the image,
+# and plain collectstatic leaves anything it considers unmodified in place. With
+# CompressedStaticFilesStorage that includes the pre-compressed .gz/.br
+# siblings, so after an upgrade WhiteNoise happily served a previous release's
+# global.js.gz to every browser (which all send Accept-Encoding: gzip) while
+# curl, getting the identity encoding, saw the current file — JS functions
+# "not defined" and half-rendered pages that looked fine to any check that
+# bypassed static serving. Wiping first keeps what we serve equal to the image.
+python manage.py collectstatic --noinput --clear
 
 echo "Starting server..."
 exec "$@"

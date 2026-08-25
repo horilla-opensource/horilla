@@ -110,6 +110,7 @@ from base.methods import (
     filtersubordinatesemployeemodel,
     get_key_instances,
     get_pagination,
+    get_session_company,
 )
 from base.models import (
     AttendanceAllowedIP,
@@ -725,6 +726,7 @@ def attendance_overtime_delete(request, obj_id):
     """
     previous_data = request.GET.urlencode()
     hx_target = request.META.get("HTTP_HX_TARGET", None)
+    employee_id = None
     try:
         attendance = AttendanceOverTime.objects.get(id=obj_id)
         employee_id = attendance.employee_id.id
@@ -747,10 +749,12 @@ def attendance_overtime_delete(request, obj_id):
                 return redirect(
                     f"/attendance/attendance-overtime-search?{previous_data}"
                 )
-            else:
+            elif employee_id is not None:
                 return redirect(
                     f"/attendance/attendance-overtime-individual-tab/{employee_id}/?deleted=true"
                 )
+            else:
+                return HorillaRedirect(request)
         else:
             return HorillaRedirect(request)
     elif hx_target:
@@ -2167,6 +2171,8 @@ def assign_shift(request, grace_id):
             "attendance/grace_time/assign_shift.html",
             {"form": form, "grace_time": gracetime},
         )
+    messages.error(request, _("Grace time not found."))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -2222,7 +2228,7 @@ def delete_grace_time(request, grace_id):
         messages.success(request, _("Grace time deleted successfully."))
     except GraceTime.DoesNotExist:
         delete_error = True
-        messages.error(request, _("Grace Time Does not exists.."))
+        messages.error(request, _("Grace time does not exist."))
         return HorillaRedirect(request)
     except ProtectedError:
         delete_error = True
@@ -2252,29 +2258,24 @@ def update_isactive_gracetime(request):
     - isChecked: Boolean value representing the state of grace time,
     - gracetimeId: Id of GraceTime object
     """
-    isChecked = request.POST.get("isChecked")
+    isChecked = bool(request.POST.get("isChecked"))
     gracetimeId = request.POST.get("gracetimeId")
     if not gracetimeId:
-        return JsonResponse({"type": "error", "message": "GraceTime ID missing"})
+        messages.error(request, _("GraceTime ID missing"))
+        return HttpResponse("")
 
-    gracetime = GraceTime.objects.get(id=gracetimeId)
+    gracetime = GraceTime.objects.filter(id=gracetimeId).first()
     if not gracetime:
-        return JsonResponse({"type": "error", "message": "GraceTime not found"})
+        messages.error(request, _("GraceTime not found"))
+        return HttpResponse("")
 
-    if isChecked == "true":
-        gracetime.is_active = True
-        response = {
-            "type": "success",
-            "message": _("Gracetime activated successfully."),
-        }
+    gracetime.is_active = isChecked
+    if isChecked:
+        messages.success(request, _("Gracetime activated successfully."))
     else:
-        gracetime.is_active = False
-        response = {
-            "type": "success",
-            "message": _("Gracetime deactivated successfully."),
-        }
+        messages.success(request, _("Gracetime deactivated successfully."))
     gracetime.save()
-    return JsonResponse(response)
+    return HttpResponse("")
 
 
 @login_required
@@ -2289,47 +2290,37 @@ def update_gracetime_clock_in_clock_out(request):
     """
     gracetimeId = request.POST.get("gracetimeId")
     if not gracetimeId:
-        return JsonResponse({"type": "error", "message": "GraceTime ID missing"})
+        messages.error(request, _("GraceTime ID missing"))
+        return HttpResponse("")
 
-    isChecked = request.POST.get("isChecked")
+    isChecked = bool(request.POST.get("isChecked"))
     update = request.POST.get("update")
-    gracetime = GraceTime.objects.get(id=gracetimeId)
+    gracetime = GraceTime.objects.filter(id=gracetimeId).first()
     if not gracetime:
-        return JsonResponse({"type": "error", "message": "GraceTime not found"})
+        messages.error(request, _("GraceTime not found"))
+        return HttpResponse("")
 
     if update == "clock_in":
-        if isChecked == "true":
-            gracetime.allowed_clock_in = True
-            response = {
-                "type": "success",
-                "message": _("Gracetime applicable on clock-In successfully."),
-            }
+        gracetime.allowed_clock_in = isChecked
+        if isChecked:
+            messages.success(request, _("Gracetime added to clock-in successfully."))
         else:
-            gracetime.allowed_clock_in = False
-            response = {
-                "type": "success",
-                "message": _("Gracetime unapplicable on clock-In  successfully."),
-            }
+            messages.success(
+                request, _("Gracetime removed from clock-in successfully.")
+            )
     elif update == "clock_out":
-        if isChecked == "true":
-            gracetime.allowed_clock_out = True
-            response = {
-                "type": "success",
-                "message": _("Gracetime applicable on clock-out successfully."),
-            }
+        gracetime.allowed_clock_out = isChecked
+        if isChecked:
+            messages.success(request, _("Gracetime added to clock-out successfully."))
         else:
-            gracetime.allowed_clock_out = False
-            response = {
-                "type": "success",
-                "message": _("Gracetime unapplicable on clock-out successfully."),
-            }
+            messages.success(
+                request, _("Gracetime removed from clock-out successfully.")
+            )
     else:
-        response = {
-            "type": "error",
-            "message": _("Something went wrong ."),
-        }
+        messages.error(request, _("Something went wrong ."))
+        return HttpResponse("")
     gracetime.save()
-    return JsonResponse(response)
+    return HttpResponse("")
 
 
 @login_required
@@ -2340,6 +2331,9 @@ def create_attendancerequest_comment(request, attendance_id):
     """
     previous_data = request.GET.urlencode()
     attendance = Attendance.objects.filter(id=attendance_id).first()
+    if not attendance:
+        return HorillaRedirect(request, message=_("Attendance not found."))
+
     emp = request.user.employee_get
     form = AttendanceRequestCommentForm(
         initial={"employee_id": emp.id, "request_id": attendance_id}
@@ -3057,7 +3051,7 @@ def enable_timerunner(request):
     When the company switcher is on "all", apply the change to every
     AttendanceGeneralSetting row (global + per-company).
     """
-    company = _get_session_company(request)
+    company = get_session_company(request)
     enabled = "time_runner" in request.GET.keys()
     if company is None:
         # "All companies" — keep every tenant row in sync so the navbar timer
@@ -3270,16 +3264,6 @@ def validation_condition_update(request, obj_id):
     )
 
 
-def _get_session_company(request):
-    """Return the Company instance for the session-selected company, or None."""
-    from base.models import Company
-
-    selected = request.session.get("selected_company")
-    if selected == "all" or not selected:
-        return None
-    return Company.objects.filter(id=selected).first()
-
-
 @login_required
 @permission_required("attendance.add_attendance")
 def allowed_ips(request):
@@ -3298,7 +3282,7 @@ def enable_ip_restriction(request):
     """
     This function is used to toggle IP restriction for the active company.
     """
-    company = _get_session_company(request)
+    company = get_session_company(request)
     obj, _created = AttendanceAllowedIP.objects.get_or_create(company_id=company)
     is_enabled = True if request.POST.get("is_enabled") == "on" else False
     obj.is_enabled = is_enabled
@@ -3316,17 +3300,14 @@ def attendance_rule_settings_view(request):
     """
     from base.models import BiometricAttendance
 
-    company = _get_session_company(request)
+    company = get_session_company(request)
 
     tracking = TrackLateComeEarlyOut.objects.filter(company_id=company).first()
 
-    if company is None:
-        attendance_general_settings = AttendanceGeneralSetting.objects.all()
-    else:
-        setting, _created = AttendanceGeneralSetting.objects.get_or_create(
-            company_id=company
-        )
-        attendance_general_settings = [setting]
+    setting, _created = AttendanceGeneralSetting.objects.get_or_create(
+        company_id=company
+    )
+    attendance_general_settings = [setting]
     show_company = len(attendance_general_settings) > 1
 
     biometric = BiometricAttendance.objects.filter(company_id=company).first()
@@ -3376,7 +3357,7 @@ def create_allowed_ips(request):
     """
     This function is used to create the allowed IPs for the active company.
     """
-    company = _get_session_company(request)
+    company = get_session_company(request)
     if request.method == "POST":
         form = AttendanceAllowedIPForm(request.POST)
         if form.is_valid():
@@ -3421,7 +3402,7 @@ def delete_allowed_ips(request):
     """
     This function is used to delete the allowed ips for the active company.
     """
-    company = _get_session_company(request)
+    company = get_session_company(request)
     try:
         ids = request.GET.getlist("id")
         obj = AttendanceAllowedIP.objects.filter(company_id=company).first()
@@ -3443,7 +3424,7 @@ def edit_allowed_ips(request):
     """
     This function is used to edit the allowed IPs for the active company.
     """
-    company = _get_session_company(request)
+    company = get_session_company(request)
     obj = AttendanceAllowedIP.objects.filter(company_id=company).first()
     if not obj:
         messages.error(request, _("No allowed IPs found."))

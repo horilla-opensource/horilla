@@ -93,7 +93,7 @@
 													<form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
 														{% csrf_token %}
 														<div class="d-flex">
-															<div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+															<div class="oh-rate" onclick="event.stopPropagation()">
 																{% for i in "321" %}
 																	<input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '1' == i %} checked {% endif %}/>
 																	<label for="star{{i}}{{ticket.id}}"
@@ -108,7 +108,7 @@
 													<form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
 														{% csrf_token %}
 														<div class="d-flex">
-															<div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+															<div class="oh-rate" onclick="event.stopPropagation()">
 																{% for i in "321" %}
 																	<input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '2' == i %} checked {% endif %}/>
 																	<label for="star{{i}}{{ticket.id}}"
@@ -123,7 +123,7 @@
 													<form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
 														{% csrf_token %}
 														<div class="d-flex">
-															<div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+															<div class="oh-rate" onclick="event.stopPropagation()">
 																{% for i in "321" %}
 																	<input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '3' == i %} checked {% endif %}/>
 																	<label for="star{{i}}{{ticket.id}}"
@@ -420,7 +420,7 @@
 														<form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
 															{% csrf_token %}
 															<div class="d-flex">
-																<div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+																<div class="oh-rate" onclick="event.stopPropagation()">
 																	{% for i in "321" %}
 																		<input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '1' == i %} checked {% endif %}/>
 																		<label for="star{{i}}{{ticket.id}}"
@@ -435,7 +435,7 @@
 														<form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
 															{% csrf_token %}
 															<div class="d-flex">
-																<div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+																<div class="oh-rate" onclick="event.stopPropagation()">
 																	{% for i in "321" %}
 																		<input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '2' == i %} checked {% endif %}/>
 																		<label for="star{{i}}{{ticket.id}}"
@@ -450,7 +450,7 @@
 														<form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
 															{% csrf_token %}
 															<div class="d-flex">
-																<div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+																<div class="oh-rate" onclick="event.stopPropagation()">
 																	{% for i in "321" %}
 																		<input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '3' == i %} checked=True {% endif %}/>
 																		<label for="star{{i}}{{ticket.id}}"
@@ -804,7 +804,7 @@
 													<form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
 														{% csrf_token %}
 														<div class="d-flex">
-															<div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+															<div class="oh-rate" onclick="event.stopPropagation()">
 																{% for i in "321" %}
 																	<input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '1' == i %} checked {% endif %}/>
 																	<label for="star{{i}}{{ticket.id}}"
@@ -819,7 +819,7 @@
 													<form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
 														{% csrf_token %}
 														<div class="d-flex">
-															<div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+															<div class="oh-rate" onclick="event.stopPropagation()">
 																{% for i in "321" %}
 																	<input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '2' == i %} checked {% endif %}/>
 																	<label for="star{{i}}{{ticket.id}}"
@@ -834,7 +834,7 @@
 													<form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
 														{% csrf_token %}
 														<div class="d-flex">
-															<div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+															<div class="oh-rate" onclick="event.stopPropagation()">
 																{% for i in "321" %}
 																	<input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if '3' == i %} checked {% endif %}/>
 																	<label for="star{{i}}{{ticket.id}}"

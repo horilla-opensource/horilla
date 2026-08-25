@@ -13,6 +13,8 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.translation import gettext as _
 
+from base.templatetags.horillafilters import is_check_in_enabled
+
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
 
@@ -53,10 +55,14 @@ def ess_dashboard(request):
 
         messages.error(request, _("Your account is not linked to an employee record."))
         return HorillaRedirect(request)
+
     return render(
         request,
         "base/ess_dashboard.html",
-        {"employee": employee, "today": date.today()},
+        {
+            "employee": employee,
+            "today": date.today(),
+        },
     )
 
 
@@ -80,13 +86,27 @@ def ess_kpi_data(request):
     # Don't count attendance in future days of the selected month
     range_end = min(to_date, date.today())
 
-    # Leave balances
+    # Leave balances (available for balance chart — not a hero KPI)
     total_available = 0.0
     try:
         balances = AvailableLeave.objects.filter(employee_id=employee)
         total_available = sum(
             float(b.available_days) + float(b.carryforward_days) for b in balances
         )
+    except Exception:
+        pass
+
+    pending_leave_requests = 0
+    upcoming_leave_count = 0
+    try:
+        pending_leave_requests = LeaveRequest.objects.filter(
+            employee_id=employee, status="requested"
+        ).count()
+        upcoming_leave_count = LeaveRequest.objects.filter(
+            employee_id=employee,
+            status="approved",
+            start_date__gte=date.today(),
+        ).count()
     except Exception:
         pass
 
@@ -152,6 +172,8 @@ def ess_kpi_data(request):
     return JsonResponse(
         {
             "total_available_leave": round(total_available, 1),
+            "pending_leave_requests": pending_leave_requests,
+            "upcoming_leave_count": upcoming_leave_count,
             "present_this_month": present_count,
             "late_this_month": late_count,
             "open_objectives": open_objectives,
@@ -274,6 +296,7 @@ def ess_attendance_calendar(request):
         return JsonResponse({"error": "no employee"}, status=403)
 
     from_date, to_date = _parse_period(request)
+    check_in_enabled = is_check_in_enabled(request)
 
     attendance_map = {}
     late_dates = set()
@@ -360,9 +383,13 @@ def ess_attendance_calendar(request):
             if status == "late":
                 summary["late"] += 1
             summary["present"] += 1
-        elif cur <= date.today():
+        elif cur <= date.today() and check_in_enabled:
             status = "absent"
             summary["absent"] += 1
+        elif cur <= date.today():
+            # No check-in/check-out means no evidence either way, so the day is
+            # left blank rather than accused of being an absence.
+            status = "workday"
         else:
             status = "future"
 

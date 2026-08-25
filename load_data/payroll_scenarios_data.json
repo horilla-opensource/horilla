@@ -4,7 +4,7 @@
     "pk": 1001,
     "fields": {
       "notice_period": 45,
-      "company_id": 1
+      "company_id": null
     }
   },
   {
@@ -746,6 +746,48 @@
       "status": "rejected",
       "approved_by": 1,
       "description": "Rejected because the request exceeded the redeemable balance.",
+      "allowance_id": null,
+      "other_attachments": []
+    }
+  },
+  {
+    "model": "payroll.reimbursement",
+    "pk": 1007,
+    "fields": {
+      "title": "Casual Leave Encashment Request",
+      "type": "leave_encashment",
+      "employee_id": 20,
+      "allowance_on": "2025-07-08",
+      "attachment": null,
+      "leave_type_id": 2,
+      "ad_to_encash": 0.5,
+      "cfd_to_encash": 0.0,
+      "bonus_to_encash": 0,
+      "amount": 750.0,
+      "status": "requested",
+      "approved_by": null,
+      "description": "Encash half of an unused casual-leave day.",
+      "allowance_id": null,
+      "other_attachments": []
+    }
+  },
+  {
+    "model": "payroll.reimbursement",
+    "pk": 1008,
+    "fields": {
+      "title": "Approved Casual Leave Encashment",
+      "type": "leave_encashment",
+      "employee_id": 24,
+      "allowance_on": "2025-07-11",
+      "attachment": null,
+      "leave_type_id": 2,
+      "ad_to_encash": 1.0,
+      "cfd_to_encash": 0.0,
+      "bonus_to_encash": 0,
+      "amount": 1500.0,
+      "status": "approved",
+      "approved_by": 1,
+      "description": "Approved encashment of a full unused casual-leave day.",
       "allowance_id": null,
       "other_attachments": []
     }

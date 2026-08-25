@@ -5,7 +5,9 @@
             class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             href="#"
             hx-get="{% url 'update-deduction' instance.id %}"
-            hx-target="#listContainer"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-target="#objectCreateModalTarget"
             hx-swap="innerHTML"
             title="{% trans 'Edit' %}"
         >

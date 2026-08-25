@@ -541,7 +541,7 @@
                 <div class="em-kpi-card__value" id="kpi-new">—</div>
                 <div class="em-kpi-card__sub">{% trans "Joined this month" %}</div>
             </a>
-            <a href="{% url 'request-view' %}?status=approved" class="em-kpi-card">
+            <a href="{% url 'request-view' %}?status=approved&today_leave=true" class="em-kpi-card">
                 <div class="em-kpi-card__icon em-kpi-card__icon--blue">
                     <svg
                         width="20"

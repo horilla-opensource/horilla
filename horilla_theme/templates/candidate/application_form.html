@@ -1,6 +1,7 @@
 {% comment %} {% extends 'candidate/application_form_component.html' %}  {% endcomment %}
 {% block content %}
-{% load static %} {% load i18n horillafilters %} {{form.load}}
+{% load static %} {% load i18n horillafilters %}
+
 {% get_company as theme_obj %}
 <head>
     <meta charset="UTF-8" />
@@ -27,6 +28,7 @@
         sizes="16x16"
         href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}"
     />
+    <link href="{% static 'cdn/select2/css/select2.min.css' %}" rel="stylesheet">
     <link
         rel="stylesheet"
         href="/static/horilla_theme/assets/css/global.css"
@@ -42,10 +44,16 @@
         }
         .oh-select-2 {
             padding-left: 30px !important;
+            height: 35px;
+          }
+        .select2-container .select2-selection__rendered {
+            padding-left: 35px !important;
           }
     </style>
 </head>
 
+<script src="{% static '/jquery/ajax.js' %}"></script>
+<script src="{% static '/jquery/jquery.min.js' %}"></script>
 <body class="bg-secondary-50 font-[Inter,_sans-serif]">
     <!-- Main Content -->
         <div class="bg-[{{theme_obj.primary_50}}]">
@@ -58,6 +66,14 @@
                                 <div class="sticky">
                                     <iframe style="width: 100%;height:90vh" height="100" src="{{ resume.file.url }}" frameborder="0"></iframe>
                                 </div>
+                                <input
+                                    type="hidden"
+                                    id="matching_resume"
+                                    data-value="{{ resume.file.url }}"
+                                    data-id="{{ resume.id }}"
+                                    name="initial_resume"
+                                    value="{{ resume.file.url }}"
+                                >
                             {% else %}
                                 <div class="font-semibold text-xl border-b-2 border-black">
                                     <h3> {% trans "Job Description" %} </h3>
@@ -84,7 +100,7 @@
                             <div class= "lg:h-[calc(100vh_-_160px)] overflow-hidden overflow-y-auto">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 ">
                                     <div>
-                                        <label class="required-star" for="name">{% trans "Name" %}</label>
+                                        <label class="required-star" for="name">{% trans "Name" context "person" %}</label>
                                         <div class="relative">
                                             <input type="text" id="name" name="name" placeholder="{% trans 'Enter your name' %}" required style="padding-left: 35px;" value="{{ form.name.value|default:'' }}">
                                             <span class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-[{{theme_obj.primary_700}}]">
@@ -122,9 +138,9 @@
                                             />
                                         <label for="recuitment" >{% trans "Choose Job Position" %}</label>
                                         <div class="relative">
-                                            <select name="job_position_id" class="oh-select oh-select2 w-100" style="height: 35px">
+                                            <select name="job_position_id" class="oh-select-2 w-100" >
                                                  {% for job in recruitment.open_positions.all %}
-                                                    <option value="{{job.id}}">&nbsp;&nbsp;&nbsp;&nbsp;{{job.job_position}}</option>
+                                                    <option value="{{job.id}}">{{job.job_position}}</option>
                                                 {% endfor %}
                                             </select>
                                             <span class="absolute left-2 top-3 text-sm text-[{{theme_obj.primary_700}}] pointer-events-none">
@@ -183,10 +199,9 @@
                                                     <p class="text-xs text-[#9e9e9e]">{% trans "JPG, PNG up to 5MB" %}</p>
                                                 </div>
                                                 <input id="profileImageUpload" type="file" name="profile"
-                                                    class="hidden" accept=".jpg, .jpeg, .png"
-                                                    {% if not recruitment.optional_profile_image %}required{% endif %}/>
+                                                    class="hidden" accept=".jpg, .jpeg, .png"/>
                                             </label>
-                                            {{form.profile.errors}}
+                                            <div id="profile-errors">{{form.profile.errors}}</div>
 
                                             <!-- Preview image -->
                                             <div id="imagePreview" class="mt-4 hidden">
@@ -202,19 +217,26 @@
                                                 class="bg-white flex flex-col items-center justify-center w-full h-[6rem] border-2 border-dashed border-[#d5d5d5] rounded-lg cursor-pointer hover:border-gray-400 transition">
                                                 <div class="flex flex-col items-center justify-center">
                                                     <i class="fa-solid fa-file-pdf text-xl mb-2 text-gray-500"></i>
-                                                    <p class="text-sm font-semibold text-gray-700">{% trans "Upload PDF" %}</p>
+                                                    <p class="text-sm font-semibold text-gray-700">{% if form.resume.value %}{% trans "Replace PDF" %}{% else %}{% trans "Upload PDF" %}{% endif %}</p>
                                                     <p class="text-xs text-[#9e9e9e]">{% trans "Up to 5MB" %}</p>
                                                 </div>
                                                 <input id="resumeUpload" name="resume" type="file" accept="application/pdf"
-                                                    class="hidden" {% if not recruitment.optional_resume %}required{% endif %}/>
+                                                    class="hidden"/>
                                             </label>
-                                            {{form.resume.errors}}
+                                            <div id="resume-errors">{{form.resume.errors}}</div>
 
                                             <!-- PDF file name preview -->
+                                            {% if resume %}
+                                                <div id="pdfPreview" class="mt-4 text-sm text-gray-600">
+                                                    <i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>
+                                                    <span id="pdfFileName">{{ resume.file.name }}</span>
+                                                </div>
+                                            {% else %}
                                             <div id="pdfPreview" class="mt-4 text-sm text-gray-600 hidden">
                                                 <i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>
                                                 <span id="pdfFileName"></span>
                                             </div>
+                                            {% endif %}
                                         </div>
 
                                     </div>
@@ -245,7 +267,7 @@
                                     <div>
                                         <label class="required-star" for="city">{% trans "City" %}</label>
                                         <div class="relative">
-                                            <input type="text" id="city" required name="city" placeholder="{% trans 'e.g. Kerala' %}" style="padding-left: 35px;" value="{{ form.city.value|default:'' }}">
+                                            <input type="text" id="city" required name="city" placeholder="{% trans 'e.g. New York' %}" style="padding-left: 35px;" value="{{ form.city.value|default:'' }}">
                                             {{form.city.errors}}
                                             <span
                                             class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-[{{theme_obj.primary_700}}]"><i
@@ -255,7 +277,7 @@
                                     <div>
                                         <label class="required-star" for="zip">{% trans "Zip Code" %}</label>
                                         <div class="relative">
-                                            <input type="text" id="zip" required name="zip" placeholder="{% trans 'e.g. 611 293' %}" style="padding-left: 35px;" value="{{ form.zip.value|default:'' }}">
+                                            <input type="text" id="zip" required name="zip" placeholder="{% trans 'e.g. 12345' %}" style="padding-left: 35px;" value="{{ form.zip.value|default:'' }}">
                                             {{form.zip.errors}}
                                             <span
                                             class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-[{{theme_obj.primary_700}}]"><i
@@ -265,7 +287,7 @@
                                 </div>
                             </div>
                             <div class="flex justify-end">
-                                <button type="submit" onclick="validateForm(event)"
+                                <button type="submit"
                                   class="px-4 py-2 bg-[{{theme_obj.primary_600}}] text-white rounded-md text-sm flex items-center gap-2 hover:bg-[{{theme_obj.primary_800}}] transition duration-300">
                                   <i class="fa-solid fa-check"></i>
                                   {% trans "Submit Application" %}
@@ -278,7 +300,13 @@
         </div>
     </div>
 
-
+    {# This page is standalone (it does not extend index.html), so its dependencies
+       have to be listed here. The inline block below inlines the whole Select2
+       library and then uses $(...) throughout, so jQuery must load first. #}
+    <script src="{% static '/jquery/jquery.min.js' %}"></script>
+    {# country.js localises its option labels via gettext(); this page is standalone
+       and does not extend index.html, so the catalog has to be pulled in here #}
+    <script src="{% url 'javascript-catalog' %}"></script>
     <script src="{% static '/index/country.js' %}"></script>
     <script>
         {% include 'select2.js' %}
@@ -293,18 +321,6 @@
               $(this).html('<strong>' + text + '</strong>');
             }
         });
-        function validateForm(event) {
-          var fileInput = document.getElementById("photo");
-          var errorList = document.getElementById("error-list");
-          {% if not perms.recruitment.add_candidate %}
-            if (!fileInput.value) {
-              errorList.scrollIntoView({ behavior: "smooth", block: "center" });
-              errorList.style.display = "block"; // Show error message
-            } else {
-              errorList.style.display = "none"; // Hide error message
-            }
-          {% endif %}
-        }
         $(document).ready(function(){
           function getCookie(name) {
             let cookieValue = null;
@@ -326,9 +342,6 @@
             if ($(selector).val() === "" ){
               $(selector).val(value);
               $(selector).change();
-
-              $("[name=country]").parent().find("span").remove()
-              $("[name=country]").select2()
             }
           }
 
@@ -345,6 +358,7 @@
                 "file":file
               },
               success: function(response) {
+                console.log(response.address)
                 var full_name = response.full_name;
                 var address = response.address;
                 var country = response.country;
@@ -353,6 +367,7 @@
                 var dob = response.dob;
                 var email = response.email_id;
                 var zip = response.zip;
+                var portfolio = response.portfolio;
 
                 setIfEmpty("[name='name']", full_name);
                 setIfEmpty("[name='email']", email);
@@ -361,6 +376,7 @@
                 setIfEmpty("[name='country']", country);
                 setIfEmpty("[name='state']", state);
                 setIfEmpty("[name='zip']", zip);
+                setIfEmpty("[name='portfolio']", portfolio);
                 $("[name='dob']").val(dob);
 
               },
@@ -396,6 +412,7 @@
                 var dob = response.dob;
                 var email = response.email_id;
                 var zip = response.zip;
+                var portfolio = response.portfolio;
 
                 setIfEmpty("[name='name']", full_name);
                 setIfEmpty("[name='email']", email);
@@ -404,6 +421,7 @@
                 setIfEmpty("[name='country']", country);
                 setIfEmpty("[name='state']", state);
                 setIfEmpty("[name='zip']", zip);
+                setIfEmpty("[name='portfolio']", portfolio);
                 $("[name='dob']").val(dob);
 
               },
@@ -412,6 +430,10 @@
               }
             });
           })
+
+            setTimeout(function () {
+                $(".oh-select").select2();
+            }, 100);
         })
       </script>
 

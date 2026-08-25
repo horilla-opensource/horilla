@@ -36,6 +36,22 @@
         <div class="col-span-12 lg:col-span-3 border-r border-dark-50 pe-4">
             <div class="bg-white rounded-md shadow-card p-3">
                 <div class="h-[calc(100vh_-_160px)] overflow-hidden overflow-y-auto p-3 flex flex-col">
+                    <div class="flex justify-end pb-0">
+                        <div class="flex gap-1 cursor-pointer">
+                            <a
+                                href="{% url 'ticket-detail' prev_id %}"
+                                class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+                            >
+                                <i class="fa-solid fa-angle-left"></i>
+                            </a>
+                            <a
+                                href="{% url 'ticket-detail' next_id %}"
+                                class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+                            >
+                                <i class="fa-solid fa-angle-right"></i>
+                            </a>
+                        </div>
+                    </div>
                     <div class="flex items-center justify-between p-3">
                         <h3 class="text-lg font-semibold">{{ ticket.title|title }}</h3>
                         <div class="relative">
@@ -95,7 +111,7 @@
                                     <div class="d-flex">
                                         <div
                                             class="oh-rate"
-                                            onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()"
+                                            onclick="event.stopPropagation()"
                                         >
                                             {% for i in "321" %}
                                                 <input
@@ -336,22 +352,6 @@
                                     {% endwith %}
                                 {% endfor %}
                             {% endif %}
-                        </div>
-                    </div>
-                    <div class="mt-auto">
-                        <div class="flex gap-1 justify-end cursor-pointer mb-4">
-                            <a
-                                href="{% url 'ticket-detail' prev_id %}"
-                                class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
-                            >
-                                <i class="fa-solid fa-angle-left"></i>
-                            </a>
-                            <a
-                                href="{% url 'ticket-detail' next_id %}"
-                                class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
-                            >
-                                <i class="fa-solid fa-angle-right"></i>
-                            </a>
                         </div>
                     </div>
                 </div>

@@ -39,6 +39,10 @@
 </div>
 
 <script>
+    /* Everything in this block is unused - the grace-time checkboxes (clock-in,
+       clock-out, is-active) call the server directly via hx-post/hx-vals now
+       instead of these jQuery AJAX handlers. Kept here for reference.
+
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -63,6 +67,10 @@
          $.ajax({
           type: "POST",
           url: "{% url 'update-gracetime-clock-in-clock-out' %}",
+          headers: {
+            'HX-Request': 'true',
+            'X-CSRFToken': getCookie('csrftoken')
+          },
           data: { 'isChecked': isChecked, 'gracetimeId':gracetimeId,'update':update,'csrfmiddlewaretoken': getCookie('csrftoken') },
           dataType: "json",
           success: function (response) {
@@ -100,4 +108,5 @@
           }
         });
     }
+    */
 </script>

@@ -14,7 +14,7 @@
         }
     </style>
 
-    <div hx-get="{% url 'nav-asset-request-allocation' %}" hx-trigger="load"></div>
+    <div hx-get="{% url 'nav-asset-request-allocation' %}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
 
     {% include "generic/components.html" %}
 

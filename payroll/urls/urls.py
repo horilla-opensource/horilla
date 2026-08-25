@@ -213,6 +213,11 @@ urlpatterns = [
         name="payroll-settings-tab-view",
     ),
     path(
+        "payroll-settings-salary-structure-tab/",
+        settings_tabs.PayrollSettingsSalaryStructureTab.as_view(),
+        name="payroll-settings-salary-structure-tab",
+    ),
+    path(
         "payroll-settings-allowance-tab/",
         settings_tabs.PayrollSettingsAllowanceTab.as_view(),
         name="payroll-settings-allowance-tab",

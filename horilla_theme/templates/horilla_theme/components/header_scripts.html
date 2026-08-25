@@ -416,6 +416,19 @@
             });
         }
 
+        // Public hook for controls that toggle accordions in bulk (e.g. an
+        // "Expand All" / "Collapse All" button) without going through the
+        // per-header click listener below -- those need to persist the new
+        // state explicitly, or the next unrelated htmx settle anywhere on
+        // the page (polling widgets, notification badges, ...) will call
+        // restoreAllKnown() and silently re-open whatever was last stored.
+        window.hlvPersistOpenGroups = function (container) {
+            var path = listPathFrom(container);
+            if (path) {
+                writeStored(path, openIndicesIn(container));
+            }
+        };
+
         // Capture before the request so nested pagination / filter reloads
         // keep whichever groups were expanded.
         document.addEventListener("htmx:beforeRequest", function (evt) {

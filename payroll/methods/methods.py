@@ -193,9 +193,20 @@ def hourly_computation(employee, wage, start_date, end_date):
     """
     Hourly salary computation for period.
 
+    Regular hours  = at_work_second - overtime_second on scheduled working days.
+    Overtime is split into three sources for display purposes:
+      - ot_regular:  worked beyond minimum_hour on a normal working day
+      - ot_week_off: all hours worked on a week-off day (entirely overtime)
+      - ot_holiday:  all hours worked on a holiday (entirely overtime)
+    Actual overtime PAY is computed separately by the configurable
+    "Regular Overtime" / "Week Off Overtime" / "Holiday Overtime" Allowance
+    types (see payroll/methods/payslip_calc.py), not here — these seconds
+    are worked hours regardless of approval, used to show the breakdown on
+    the payslip and to surface pending-approval hours.
+
     Args:
         employee (obj): Employee instance
-        wage (float): wage of the employee
+        wage (float): wage of the employee (per hour)
         start_date (obj): start of the pay period
         end_date (obj): end date of the period
     """
@@ -203,25 +214,57 @@ def hourly_computation(employee, wage, start_date, end_date):
         return {
             "basic_pay": 0,
             "loss_of_pay": 0,
+            "regular_seconds": 0,
+            "ot_seconds": 0,
+            "ot_regular_seconds": 0,
+            "ot_week_off_seconds": 0,
+            "ot_holiday_seconds": 0,
         }
+    from attendance.models import AttendanceConflictResolution
+
     attendance_data = get_attendance(employee, start_date, end_date)
     attendances_on_period = attendance_data["attendances_on_period"]
-    total_worked_hour_in_second = 0
-    for attendance in attendances_on_period:
-        total_worked_hour_in_second = total_worked_hour_in_second + (
-            attendance.at_work_second - attendance.overtime_second
-        )
 
-    # to find wage per second
-    # wage_per_second = wage_per_hour / total_seconds_in_hour
-    wage_in_second = wage / 3600
-    basic_pay = float(f"{(wage_in_second * total_worked_hour_in_second):.2f}")
+    working_day_dates = set(
+        get_working_days(start_date, end_date, employee)["working_days_on"]
+    )
+    holiday_dates = set(get_holiday_dates(start_date, end_date, employee))
+    # A holiday/week-off day HR has regularized away from that
+    # classification (Full Present/Half Day) is treated as a normal
+    # working day here too, matching build_monthly_summary's same rule.
+    regularized_dates = set(
+        AttendanceConflictResolution.objects.filter(
+            employee_id=employee,
+            date__range=(start_date, end_date),
+            resolution__in=("full_present", "half_present"),
+        ).values_list("date", flat=True)
+    )
+
+    regular_seconds = 0
+    ot_regular_seconds = ot_week_off_seconds = ot_holiday_seconds = 0
+    for attendance in attendances_on_period:
+        att_date = attendance.attendance_date
+        if att_date in working_day_dates or att_date in regularized_dates:
+            regular_seconds += attendance.at_work_second - attendance.overtime_second
+            ot_regular_seconds += attendance.overtime_second
+        elif att_date in holiday_dates:
+            ot_holiday_seconds += attendance.at_work_second
+        else:
+            ot_week_off_seconds += attendance.at_work_second
+
+    ot_seconds = ot_regular_seconds + ot_week_off_seconds + ot_holiday_seconds
+    basic_pay = float(f"{(wage / 3600 * regular_seconds):.2f}")
 
     return {
         "basic_pay": basic_pay,
         "loss_of_pay": 0,
         "paid_days": len(attendances_on_period),
         "unpaid_days": 0,
+        "regular_seconds": regular_seconds,
+        "ot_regular_seconds": ot_regular_seconds,
+        "ot_week_off_seconds": ot_week_off_seconds,
+        "ot_holiday_seconds": ot_holiday_seconds,
+        "ot_seconds": ot_seconds,
     }
 
 
@@ -367,6 +410,43 @@ def get_daily_salary(wage, wage_date) -> dict:
     return {
         "day_wage": day_wage,
     }
+
+
+def compute_custom_leave_deduction(leave_data, contract, daily_computed_salary):
+    """
+    Compute custom-payment-type leave deduction amount and per-type breakdown.
+
+    Args:
+        leave_data            : dict returned by get_leaves()
+        contract              : active Contract instance
+        daily_computed_salary : wage / working_days_in_month
+
+    Returns:
+        (custom_leave_deduction, custom_leave_breakdown)
+    """
+    custom_leave_deduction = 0.0
+    for _leave_date, pct in leave_data.get("custom_leave_dates", []):
+        deductible_fraction = 1.0 - (pct / 100.0)
+        if contract.calculate_daily_leave_amount:
+            custom_leave_deduction += daily_computed_salary * deductible_fraction
+        else:
+            custom_leave_deduction += (
+                contract.deduction_for_one_leave_amount * deductible_fraction
+            )
+
+    custom_leave_breakdown = leave_data.get("custom_leave_breakdown", [])
+    for entry in custom_leave_breakdown:
+        deductible_fraction = 1.0 - (entry["percentage"] / 100.0)
+        per_day_basis = (
+            daily_computed_salary
+            if contract.calculate_daily_leave_amount
+            else contract.deduction_for_one_leave_amount
+        )
+        entry["deduction_amount"] = round(
+            per_day_basis * deductible_fraction * entry["days"], 2
+        )
+
+    return custom_leave_deduction, custom_leave_breakdown
 
 
 def months_between_range(wage, start_date, end_date):
@@ -553,31 +633,10 @@ def monthly_computation(employee, wage, start_date, end_date, *args, **kwargs):
         fixed_penalty = contract.deduction_for_one_leave_amount
         loss_of_pay = unpaid_leaves * fixed_penalty
 
-    # Partial deduction for custom payment_type leaves (tracked separately for payslip display)
-    custom_leave_dates = leave_data.get("custom_leave_dates", [])
-    custom_leave_deduction = 0.0
-    for _leave_date, pct in custom_leave_dates:
-        deductible_fraction = 1.0 - (pct / 100.0)
-        if contract.calculate_daily_leave_amount:
-            custom_leave_deduction += daily_computed_salary * deductible_fraction
-        else:
-            custom_leave_deduction += (
-                contract.deduction_for_one_leave_amount * deductible_fraction
-            )
+    custom_leave_deduction, custom_leave_breakdown = compute_custom_leave_deduction(
+        leave_data, contract, daily_computed_salary
+    )
     loss_of_pay += custom_leave_deduction
-
-    # Per leave type deduction amount, for payslip display
-    custom_leave_breakdown = leave_data.get("custom_leave_breakdown", [])
-    for entry in custom_leave_breakdown:
-        deductible_fraction = 1.0 - (entry["percentage"] / 100.0)
-        per_day_basis = (
-            daily_computed_salary
-            if contract.calculate_daily_leave_amount
-            else contract.deduction_for_one_leave_amount
-        )
-        entry["deduction_amount"] = round(
-            per_day_basis * deductible_fraction * entry["days"], 2
-        )
 
     if contract.deduct_leave_from_basic_pay:
         basic_pay = basic_pay - loss_of_pay
@@ -594,7 +653,9 @@ def monthly_computation(employee, wage, start_date, end_date, *args, **kwargs):
     }
 
 
-def compute_salary_on_period(employee, start_date, end_date, wage=None):
+def compute_salary_on_period(
+    employee, start_date, end_date, wage=None, month_summary=None
+):
     """
     This method is used to compute salary on the start to end date period
 
@@ -602,6 +663,10 @@ def compute_salary_on_period(employee, start_date, end_date, wage=None):
         employee (obj): Employee instance
         start_date (obj): start date of the period
         end_date (obj): end date of the period
+        month_summary (dict): per-employee attendance summary row from
+            build_monthly_summary(). When not supplied, day counts fall
+            back to the classic months_between_range/get_working_days/
+            get_leaves-based computation.
     """
     contract = Contract.objects.filter(
         employee_id=employee, contract_status="active"
@@ -609,20 +674,161 @@ def compute_salary_on_period(employee, start_date, end_date, wage=None):
     if contract is None:
         return contract
 
+    month_summary = month_summary or {}
     wage = contract.wage if wage is None else wage
     wage_type = contract.wage_type
     data = None
     if wage_type == "hourly":
         data = hourly_computation(employee, wage, start_date, end_date)
-        month_data = months_between_range(wage, start_date, end_date)
-        data["month_data"] = month_data
+        regular_seconds = data["regular_seconds"]
+        ot_seconds = data["ot_seconds"]
+        ot_regular_seconds = data["ot_regular_seconds"]
+        ot_week_off_seconds = data["ot_week_off_seconds"]
+        ot_holiday_seconds = data["ot_holiday_seconds"]
+        data["month_data"] = months_between_range(wage, start_date, end_date)
         data.setdefault("custom_leave_deduction", 0.0)
+        data.setdefault("custom_leave_breakdown", [])
+        data.update(month_summary)
+        # restore after update so month_summary can't overwrite them
+        data["regular_seconds"] = regular_seconds
+        data["ot_seconds"] = ot_seconds
+        data["ot_regular_seconds"] = ot_regular_seconds
+        data["ot_week_off_seconds"] = ot_week_off_seconds
+        data["ot_holiday_seconds"] = ot_holiday_seconds
+        if month_summary:
+            # attendance summary supplied — day counts come from it
+            data["paid_days"] = (
+                month_summary.get("present", 0)
+                + month_summary.get("paid_leave", 0)
+                + month_summary.get("week_off", 0)
+                + month_summary.get("holiday", 0)
+            )
+            data["unpaid_days"] = month_summary.get(
+                "unpaid_leave", 0
+            ) + month_summary.get("absent", 0)
+        # else: keep hourly_computation's own paid_days/unpaid_days (based on attendance count)
+        # basic_pay uses only regular shift hours; week-off/holiday hours go to OT
+        data["basic_pay"] = float(f"{(wage / 3600 * regular_seconds):.2f}")
     elif wage_type == "daily":
-        data = daily_computation(employee, wage, start_date, end_date)
-        month_data = months_between_range(wage, start_date, end_date)
-        data["month_data"] = month_data
+        if month_summary:
+            # For daily wage, `wage` is the per-day rate; use attendance summary for day counts
+            total_days = (
+                month_summary.get("present", 0)
+                + month_summary.get("paid_leave", 0)
+                + month_summary.get("unpaid_leave", 0)
+                + month_summary.get("absent", 0)
+                + month_summary.get("week_off", 0)
+                + month_summary.get("holiday", 0)
+            )
+            unpaid_days = month_summary.get("unpaid_leave", 0) + month_summary.get(
+                "absent", 0
+            )
+            if month_summary.get("unresolved_conflicts", 0):
+                unpaid_days = total_days
+            paid_days = float(total_days - unpaid_days)
+            loss_of_pay = unpaid_days * wage
+
+            leave_data = get_leaves(employee, start_date, end_date)
+            custom_leave_deduction, custom_leave_breakdown = (
+                compute_custom_leave_deduction(leave_data, contract, wage)
+            )
+            loss_of_pay += custom_leave_deduction
+
+            basic_pay = paid_days * wage
+            if contract.deduct_leave_from_basic_pay:
+                basic_pay = basic_pay - loss_of_pay
+
+            data = {
+                "basic_pay": basic_pay,
+                "loss_of_pay": loss_of_pay,
+                "custom_leave_deduction": custom_leave_deduction,
+                "custom_leave_breakdown": custom_leave_breakdown,
+                "month_data": months_between_range(wage, start_date, end_date),
+                "unpaid_days": unpaid_days,
+                "paid_days": paid_days,
+                "partial_pay_days": leave_data.get("partial_pay_days", 0),
+                "present": month_summary.get("present", 0),
+                "paid_leave": month_summary.get("paid_leave", 0),
+                "unpaid_leave": month_summary.get("unpaid_leave", 0),
+                "absent": month_summary.get("absent", 0),
+                "week_off": month_summary.get("week_off", 0),
+                "holiday": month_summary.get("holiday", 0),
+                "total_working": month_summary.get("total_working", 0),
+                "contract": contract,
+            }
+        else:
+            # No attendance summary supplied — fall back to working-days-based computation
+            data = daily_computation(employee, wage, start_date, end_date)
+            data["month_data"] = months_between_range(wage, start_date, end_date)
+            data.setdefault("present", 0)
+            data.setdefault("paid_leave", 0)
+            data.setdefault("unpaid_leave", 0)
+            data.setdefault("absent", 0)
+            data.setdefault("week_off", 0)
+            data.setdefault("holiday", 0)
+            data.setdefault("total_working", 0)
+            data["contract"] = contract
     else:
-        data = monthly_computation(employee, wage, start_date, end_date)
+        if month_summary:
+            total_days = (
+                month_summary.get("week_off", 0)
+                + month_summary.get("holiday", 0)
+                + month_summary.get("absent", 0)
+                + month_summary.get("present", 0)
+                + month_summary.get("paid_leave", 0)
+                + month_summary.get("unpaid_leave", 0)
+            )
+            unpaid_days = month_summary.get("unpaid_leave", 0) + month_summary.get(
+                "absent", 0
+            )
+            if month_summary.get("unresolved_conflicts", 0):
+                unpaid_days = total_days
+            per_day_amount = wage / total_days if total_days and wage else 0.0
+            loss_of_pay = unpaid_days * per_day_amount
+
+            leave_data = get_leaves(employee, start_date, end_date)
+            daily_computed_salary = get_daily_salary(wage=wage, wage_date=start_date)[
+                "day_wage"
+            ]
+            custom_leave_deduction, custom_leave_breakdown = (
+                compute_custom_leave_deduction(
+                    leave_data, contract, daily_computed_salary
+                )
+            )
+            loss_of_pay += custom_leave_deduction
+
+            basic_pay = wage
+            if contract.deduct_leave_from_basic_pay:
+                basic_pay = wage - loss_of_pay
+
+            data = {
+                "basic_pay": basic_pay,
+                "loss_of_pay": loss_of_pay,
+                "custom_leave_deduction": custom_leave_deduction,
+                "custom_leave_breakdown": custom_leave_breakdown,
+                "month_data": months_between_range(wage, start_date, end_date),
+                "unpaid_days": unpaid_days,
+                "paid_days": float(total_days - unpaid_days),
+                "partial_pay_days": leave_data.get("partial_pay_days", 0),
+                "present": month_summary.get("present", 0),
+                "paid_leave": month_summary.get("paid_leave", 0),
+                "unpaid_leave": month_summary.get("unpaid_leave", 0),
+                "absent": month_summary.get("absent", 0),
+                "week_off": month_summary.get("week_off", 0),
+                "holiday": month_summary.get("holiday", 0),
+                "total_working": month_summary.get("total_working", 0),
+                "contract": contract,
+            }
+        else:
+            # No attendance summary supplied — fall back to months_between_range-based computation
+            data = monthly_computation(employee, wage, start_date, end_date)
+            data.setdefault("present", 0)
+            data.setdefault("paid_leave", 0)
+            data.setdefault("unpaid_leave", 0)
+            data.setdefault("absent", 0)
+            data.setdefault("week_off", 0)
+            data.setdefault("holiday", 0)
+            data.setdefault("total_working", 0)
     data["contract_wage"] = wage
     data["contract"] = contract
     return data

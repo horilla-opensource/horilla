@@ -58,62 +58,7 @@
                 </div>
             </div>
             <div class="col-span-0 lg:col-span-1"></div>
-            <div class="col-span-12 lg:col-span-8">
-                <div class="border border-[#ebebeb] rounded-md overflow-hidden">
-                    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">
-                        {% trans "Points History" %}
-                    </h5>
-                    <div class="p-4">
-                        <ul class="list-checked text-sm mb-2 h-[350px] overflow-hidden overflow-y-auto">
-                            {% for activity in activity_list %}
-                                {% if activity.type == 'Bonus point created' %}
-                                    <li>
-                                        <div class="flex justify-between">
-                                            <span>
-                                                {% trans "Bonus account Created" %}
-                                            </span>
-                                            <span
-                                                class="text-primary-600 dateformat_changer"
-                                            >{{ activity.date|date:"d N. Y" }}</span>
-                                        </div>
-                                    </li>
-                                {% elif activity.type == "requested" %}
-                                    <li>
-                                        <div class="flex justify-between">
-                                            <span>
-                                                {% trans "Redeem request created for" %}
-                                                <strong>{{ activity.points }} </strong> {% trans "points" %}
-                                            </span>
-                                            <span
-                                                class="text-primary-600 dateformat_changer"
-                                            >{{ activity.date|date:"d N. Y" }}</span>
-                                        </div>
-                                    </li>
-                                {% else %}
-                                    <li>
-                                        <div class="flex justify-between">
-                                            <span>
-                                                {% if activity.reason == 'bonus points has been redeemed.' %}
-                                                    <strong>{{ activity.points|abs_value }}</strong>
-                                                    {{ activity.reason|truncatechars:40 }}
-                                                {% else %}
-                                                    <strong>{{ activity.user }}</strong> {% trans "Added " %}
-                                                    <strong>{{ activity.points }} </strong>
-                                                    {% trans "bonus points for " %}
-                                                    {{ activity.reason|truncatechars:40 }}
-                                                {% endif %}
-                                            </span>
-                                            <span
-                                                class="text-primary-600 dateformat_changer"
-                                            >{{ activity.date|date:"d N. Y" }}</span>
-                                        </div>
-                                    </li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            {% include "tabs/bonus_points_history.html" %}
         </div>
     </div>
 </div>

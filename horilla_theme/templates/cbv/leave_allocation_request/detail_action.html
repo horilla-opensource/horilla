@@ -1,46 +1,52 @@
-{% load i18n static %}
+{% load i18n %}
 
-<button
-    class="
-        oh-btn oh-btn--light-bkg oh-btn--secondary
-        w-24 px-4 py-2 rounded-md
-        text-xs flex items-center justify-center gap-2
-        transition duration-300
-        {% if not instance.status == 'requested' %}opacity-60 cursor-not-allowed{% endif %}
-    "
-    title="{% trans 'Edit' %}"
+<div class="flex items-center gap-2 flex-wrap">
     {% if instance.status == 'requested' %}
-        data-toggle="oh-modal-toggle"
-        data-target="#genericModal"
-        hx-get="{% url 'leave-allocation-request-update' instance.id %}"
-        hx-target="#genericModalBody"
+        <button
+            class="oh-btn oh-btn--light-bkg w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Edit' %}"
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            hx-get="{% url 'leave-allocation-request-update' instance.id %}"
+            hx-target="#genericModalBody"
+        >
+            <ion-icon name="create-outline"></ion-icon>
+            {% trans "Edit" %}
+        </button>
     {% else %}
-        disabled
+        <button
+            class="oh-btn oh-btn--light-bkg w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Edit' %}"
+            disabled
+        >
+            <ion-icon name="create-outline"></ion-icon>
+            {% trans "Edit" %}
+        </button>
     {% endif %}
->
-    <ion-icon name="create-outline"></ion-icon>
-    {% trans "Edit" %}
-</button>
 
-<button
-    class="
-        w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2
-        hover:bg-danger-dark transition duration-300
-        {% if not instance.status == 'requested' %}opacity-60 cursor-not-allowed{% endif %}
-    "
-    title="{% trans 'Delete' %}"
     {% if instance.status == 'requested' %}
-        id="delete-link"
-        hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
-        hx-post="{% url 'leave-allocation-request-delete' instance.id %}?instances_ids={{ request.GET.instance_ids }}"
-        hx-target="#genericModalBody"
+        <button
+            class="oh-btn oh-btn--danger w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Delete' %}"
+            id="delete-link"
+            hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
+            hx-post="{% url 'leave-allocation-request-delete' instance.id %}?instances_ids={{ request.GET.instance_ids }}"
+            hx-target="#genericModalBody"
+        >
+            <ion-icon name="trash-outline"></ion-icon>
+            {% trans "Delete" %}
+        </button>
     {% else %}
-        disabled
+        <button
+            class="oh-btn oh-btn--light-bkg w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Delete' %}"
+            disabled
+        >
+            <ion-icon name="trash-outline"></ion-icon>
+            {% trans "Delete" %}
+        </button>
     {% endif %}
->
-    <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" width="16" class="mt-[-1px] filter brightness-0 invert">
-    {% trans "Delete" %}
-</button>
+</div>
 
 {% if request.GET.deleted %}
     <script>

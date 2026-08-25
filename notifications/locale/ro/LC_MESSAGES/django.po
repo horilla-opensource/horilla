@@ -1,0 +1,103 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-10 12:21+0530\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
+"2:1));\n"
+msgid "Mark selected notifications as unread"
+msgstr "Marchează notificările selectate ca necitite"
+
+msgid "Notifications"
+msgstr "Notificări"
+
+msgid "level"
+msgstr "nivel"
+
+msgid "recipient"
+msgstr "destinatar"
+
+msgid "unread"
+msgstr "necitit"
+
+msgid "actor content type"
+msgstr "tip de conținut actor"
+
+msgid "actor object id"
+msgstr "id obiect actor"
+
+msgid "actor"
+msgstr "actor"
+
+msgid "verb"
+msgstr "verb"
+
+msgid "description"
+msgstr "descriere"
+
+msgid "target content type"
+msgstr "tip de conținut țintă"
+
+msgid "target object id"
+msgstr "id obiect țintă"
+
+msgid "target"
+msgstr "țintă"
+
+msgid "action object content type"
+msgstr "tip de conținut obiect acțiune"
+
+msgid "action object object id"
+msgstr "id obiect obiect acțiune"
+
+msgid "action object"
+msgstr "obiect acțiune"
+
+msgid "timestamp"
+msgstr "marcaj de timp"
+
+msgid "public"
+msgstr "public"
+
+msgid "deleted"
+msgstr "șters"
+
+msgid "emailed"
+msgstr "trimis prin e-mail"
+
+msgid "data"
+msgstr "date"
+
+msgid "Notification"
+msgstr "Notificare"
+
+#, python-format
+msgid "%(actor)s %(verb)s %(action_object)s on %(target)s %(timesince)s ago"
+msgstr "%(actor)s %(verb)s %(action_object)s la %(target)s acum %(timesince)s"
+
+#, python-format
+msgid "%(actor)s %(verb)s %(target)s %(timesince)s ago"
+msgstr "%(actor)s %(verb)s %(target)s acum %(timesince)s"
+
+#, python-format
+msgid "%(actor)s %(verb)s %(action_object)s %(timesince)s ago"
+msgstr "%(actor)s %(verb)s %(action_object)s acum %(timesince)s"
+
+#, python-format
+msgid "%(actor)s %(verb)s %(timesince)s ago"
+msgstr "%(actor)s %(verb)s acum %(timesince)s"
+
+msgid "Make a notification"
+msgstr "Creează o notificare"

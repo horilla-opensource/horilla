@@ -7,6 +7,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.signals import user_login_failed
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Max, Q
 from django.db.models.signals import m2m_changed, post_delete, post_migrate, post_save
 from django.dispatch import receiver
@@ -14,8 +15,20 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext as _
 
-from base.models import Announcement, PenaltyAccounts
+from base.models import Announcement, AnnouncementExpire, Company, PenaltyAccounts
 from horilla.methods import get_horilla_model_class
+
+
+@receiver(post_save, sender=Company)
+def create_announcement_expire_setting(sender, instance, created, raw, **kwargs):
+    """
+    Signal receiver that automatically creates an AnnouncementExpire object
+    whenever a new Company is created. This does NOT skip creation during
+    loaddata, so the object will also be created when fixture data is loaded.
+    """
+    AnnouncementExpire.objects.get_or_create(company_id=None)
+    if created:
+        AnnouncementExpire.objects.get_or_create(company_id=instance)
 
 
 @receiver(post_save, sender=PenaltyAccounts)
@@ -77,8 +90,23 @@ def delete_deduction_cutleave_from_penalty(sender, instance, **kwargs):
     if apps.is_installed("payroll"):
         Deduction = get_horilla_model_class(app_label="payroll", model="deduction")
 
-        if instance.late_early_id:
-            title = f"{instance.late_early_id.get_type_display()} penalty"
+        # A CASCADE delete of the related AttendanceLateComeEarlyOut (e.g.
+        # reset_backfilled_rows_before_reload) deletes this PenaltyAccounts
+        # row as part of the same operation, before this signal fires --
+        # the FK id column is still set, but fetching the related row
+        # raises DoesNotExist instead of returning None like a plain
+        # missing FK would. Resolve it once, tolerating that case, instead
+        # of querying it fresh (and risking the same crash) at each of the
+        # two call sites below.
+        late_early = None
+        if instance.late_early_id_id:
+            try:
+                late_early = instance.late_early_id
+            except ObjectDoesNotExist:
+                late_early = None
+
+        if late_early:
+            title = f"{late_early.get_type_display()} penalty"
         elif instance.leave_request_id:
             title = f"Leave penalty {instance.leave_request_id.end_date}"
         else:
@@ -92,9 +120,9 @@ def delete_deduction_cutleave_from_penalty(sender, instance, **kwargs):
         )
 
         # If you have a date or other unique field, add it to the filter
-        if instance.late_early_id:
+        if late_early:
             deductions = deductions.filter(
-                one_time_date=instance.late_early_id.attendance_id.attendance_date
+                one_time_date=late_early.attendance_id.attendance_date
             )
         elif instance.leave_request_id:
             deductions = deductions.filter(

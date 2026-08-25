@@ -68,17 +68,24 @@ def generate_colors(num_colors):
     return colors
 
 
+def employees_for_project(project):
+    """
+    Employees eligible to be selected as managers/members for the given
+    project. Restricted to the project's own company; projects without a
+    company assignment (legacy data) are left unrestricted.
+    """
+    if not project:
+        return Employee.objects.none()
+    if project.company_id:
+        return Employee.objects.filter(
+            employee_work_info__company_id=project.company_id
+        )
+    return Employee.objects.all()
+
+
 def any_project_manager(user):
     employee = user.employee_get
     if employee.project_managers.all().exists():
-        return True
-    else:
-        return False
-
-
-def any_project_member(user):
-    employee = user.employee_get
-    if employee.project_members.all().exists():
         return True
     else:
         return False
@@ -110,7 +117,6 @@ def is_projectmanager_or_member_or_perms(function, perm):
         if (
             user.has_perm(perm)
             or any_project_manager(user)
-            or any_project_member(user)
             or any_task_manager(user)
             or any_task_member(user)
         ):
@@ -192,7 +198,6 @@ def get_all_project_members_and_managers():
         all_ids.update(
             manager.id for manager in project.managers.all()
         )  # Add manager ID
-        all_ids.update(member.id for member in project.members.all())  # Add member IDs
 
     for task in all_tasks:
         all_ids.update(

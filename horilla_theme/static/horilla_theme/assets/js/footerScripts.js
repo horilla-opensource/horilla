@@ -599,6 +599,101 @@ function toggleAccordion(btn) {
     }
 }
 
+// The "Customize columns" popover (.oh-column-config, opened via
+// .is-column-config-trigger) is positioned with a fixed `top` offset below
+// its trigger and a CSS max-height based only on total viewport height --
+// it has no idea how much space is actually left below the trigger, so on
+// a short viewport (or a trigger sitting low on the page) its lower portion
+// renders past the viewport edge instead of flipping up or shrinking to fit.
+function positionColumnConfigPopover(trigger) {
+    var popover = trigger.closest(".relative")?.querySelector(".oh-sticky-table_dropdown");
+    if (!popover) {
+        return;
+    }
+
+    var margin = 12;
+    var minHeight = 150;
+    var triggerRect = trigger.getBoundingClientRect();
+    var viewportHeight = window.innerHeight;
+    var viewportWidth = window.innerWidth;
+    var spaceBelow = viewportHeight - triggerRect.bottom - margin;
+    var spaceAbove = triggerRect.top - margin;
+    var popoverWidth = popover.offsetWidth || 280;
+
+    // Measure the popover's own natural content height (unclamped) before
+    // deciding anything -- a previous open may have left an inline
+    // max-height from clamping, which would make scrollHeight measure the
+    // clamped box instead of the real content.
+    var previousMaxHeight = popover.style.maxHeight;
+    popover.style.maxHeight = "none";
+    var desiredHeight = Math.min(420, popover.scrollHeight);
+    popover.style.maxHeight = previousMaxHeight;
+
+    popover.style.position = "fixed";
+    popover.style.right = "auto";
+    popover.style.left =
+        Math.max(
+            margin,
+            Math.min(triggerRect.right - popoverWidth, viewportWidth - popoverWidth - margin)
+        ) + "px";
+
+    // Prefer whichever side can show the popover at its full natural
+    // height. Only when NEITHER side has enough room do we fall back to
+    // the side with more space and clamp to it (the column list's own
+    // overflow-y: auto then keeps the rest reachable by scrolling).
+    var openUpward =
+        spaceBelow < desiredHeight && (spaceAbove >= desiredHeight || spaceAbove > spaceBelow);
+
+    if (openUpward) {
+        popover.style.top = "auto";
+        popover.style.bottom = viewportHeight - triggerRect.top + 8 + "px";
+        popover.style.maxHeight = Math.max(minHeight, Math.min(desiredHeight, spaceAbove)) + "px";
+    } else {
+        popover.style.bottom = "auto";
+        popover.style.top = triggerRect.bottom + 8 + "px";
+        popover.style.maxHeight = Math.max(minHeight, Math.min(desiredHeight, spaceBelow)) + "px";
+    }
+}
+
+// Delegated + capture phase: the trigger button's own onclick calls
+// event.stopPropagation(), which would otherwise stop a bubble-phase
+// document listener from ever seeing this click; capture fires before that.
+// Alpine's own x-show toggle (bound on the same button, runs after this
+// capture-phase code) isn't guaranteed to have flushed the popover's
+// display style by the next animation frame, so rather than guess at
+// Alpine's update timing, a MutationObserver reacts to the style attribute
+// actually changing and positions the popover exactly when it becomes
+// visible -- and keeps doing so for every subsequent open/close on the
+// same popover (e.g. after a window resize between opens).
+document.addEventListener(
+    "click",
+    function (event) {
+        var trigger = event.target.closest(".is-column-config-trigger");
+        if (!trigger) {
+            return;
+        }
+        var popover = trigger.closest(".relative")?.querySelector(".oh-sticky-table_dropdown");
+        if (!popover || popover.dataset.columnConfigObserved) {
+            return;
+        }
+        popover.dataset.columnConfigObserved = "true";
+        // positionColumnConfigPopover writes to this same element's style
+        // attribute, which the observer also watches -- disconnect before
+        // writing and reconnect after, or every self-triggered write would
+        // queue another callback (an infinite loop that hangs the page).
+        var observer = new MutationObserver(function () {
+            if (getComputedStyle(popover).display === "none") {
+                return;
+            }
+            observer.disconnect();
+            positionColumnConfigPopover(trigger);
+            observer.observe(popover, { attributes: true, attributeFilter: ["style", "class"] });
+        });
+        observer.observe(popover, { attributes: true, attributeFilter: ["style", "class"] });
+    },
+    true
+);
+
 // Re-measure an accordion panel once its async content has actually
 // landed, so the open transition smoothly grows to the real content
 // height instead of a stale/guessed one.

@@ -58,8 +58,14 @@ class ShiftRequestFilter(HorillaFilterSet):
     )
     search = CharFilter(method=filter_by_name)
 
-    requested = django_filters.BooleanFilter(
-        method="filter_requested", label="Requested?"
+    status = django_filters.ChoiceFilter(
+        method="filter_status",
+        label=__("Status"),
+        choices=[
+            ("requested", __("Requested")),
+            ("approved", __("Approved")),
+            ("canceled", __("Canceled")),
+        ],
     )
 
     class Meta:
@@ -76,8 +82,6 @@ class ShiftRequestFilter(HorillaFilterSet):
             "previous_shift_id",
             "shift_id",
             "requested_till",
-            "approved",
-            "canceled",
             "employee_id__employee_first_name",
             "employee_id__employee_last_name",
             "employee_id__is_active",
@@ -97,12 +101,16 @@ class ShiftRequestFilter(HorillaFilterSet):
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
-    def filter_requested(self, queryset, name, value):
+    def filter_status(self, queryset, name, value):
         """
-        Filters the queryset to return entries where 'approved' is False and 'canceled' is False.
+        Filters the queryset by combined status: requested, approved or canceled.
         """
-        if value:
+        if value == "requested":
             return queryset.filter(approved=False, canceled=False)
+        if value == "approved":
+            return queryset.filter(approved=True, canceled=False)
+        if value == "canceled":
+            return queryset.filter(canceled=True)
         return queryset
 
 
@@ -124,8 +132,14 @@ class WorkTypeRequestFilter(HorillaFilterSet):
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
-    requested = django_filters.BooleanFilter(
-        method="filter_by_requested", label="Requested"
+    status = django_filters.ChoiceFilter(
+        method="filter_status",
+        label=__("Status"),
+        choices=[
+            ("requested", __("Requested")),
+            ("approved", __("Approved")),
+            ("canceled", __("Canceled")),
+        ],
     )
     search = CharFilter(method=filter_by_name)
 
@@ -141,9 +155,7 @@ class WorkTypeRequestFilter(HorillaFilterSet):
             "employee_id",
             "requested_date",
             "previous_work_type_id",
-            "approved",
             "work_type_id",
-            "canceled",
             "employee_id__employee_first_name",
             "employee_id__employee_last_name",
             "employee_id__is_active",
@@ -163,12 +175,16 @@ class WorkTypeRequestFilter(HorillaFilterSet):
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
-    def filter_by_requested(self, queryset, name, value):
+    def filter_status(self, queryset, name, value):
         """
-        Filters the queryset to return entries where 'approved' is False and 'canceled' is False.
+        Filters the queryset by combined status: requested, approved or canceled.
         """
-        if value:
+        if value == "requested":
             return queryset.filter(approved=False, canceled=False)
+        if value == "approved":
+            return queryset.filter(approved=True, canceled=False)
+        if value == "canceled":
+            return queryset.filter(canceled=True)
         return queryset
 
 

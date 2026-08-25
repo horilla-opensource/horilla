@@ -160,7 +160,9 @@ def view_candidate_self_tracking(request, instance, *args, **kwargs):
         or is_stagemanager(request)
         or is_recruitmentmanager(request)
     ):
-        return True
+        if check_candidate_self_tracking(request, instance, user_perm=None):
+            return True
+    return False
 
 
 def request_document(request, instance, *args, **kwargs):

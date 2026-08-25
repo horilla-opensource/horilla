@@ -1,207 +1,27 @@
 {% load i18n static %}
 <div class="col-span-12 lang-settings" id="companyLanguageSettings">
     <style>
-        #companyLanguageSettings {
-            --lang-primary: #e54f38;
-            --lang-primary-soft: #fef6f5;
-            --lang-border: #e6e6e6;
+        #companyLanguageSettings .lang-select-wrap .select2-container {
+            width: 100% !important;
         }
-        #companyLanguageSettings .lang-header-desc {
-            max-width: 640px;
-        }
-        #companyLanguageSettings .lang-toolbar {
+        #companyLanguageSettings .lang-select-wrap .select2-selection--multiple {
+            min-height: 42px !important;
+            overflow-y: auto;
             display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            margin: 16px 0;
-            gap: 10px;
+            align-items: flex-start;
         }
-        #companyLanguageSettings .lang-search-wrap {
-            position: relative;
-            flex: 1 1 220px;
-            max-width: 320px;
-        }
-        #companyLanguageSettings .lang-search-wrap ion-icon {
-            position: absolute;
-            top: 50%;
-            left: 10px;
-            transform: translateY(-50%);
-            color: #9ca3af;
-            font-size: 15px;
-            pointer-events: none;
-        }
-        #companyLanguageSettings .lang-search-input {
+        #companyLanguageSettings .lang-select-wrap select {
+            min-height: 42px;
             width: 100%;
-            padding: 7px 10px 7px 32px;
-            border: 1px solid var(--lang-border);
-            border-radius: 6px;
-            font-size: 12.5px;
-            transition: border-color 0.2s;
-        }
-        #companyLanguageSettings .lang-search-input:focus-visible {
-            border-color: var(--lang-primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(229, 79, 56, 0.12);
-        }
-        #companyLanguageSettings .lang-count-badge {
-            padding: 4px 10px;
-            border-radius: 999px;
-            background: var(--lang-primary-soft);
-            color: var(--lang-primary);
-            font-weight: 600;
-            font-size: 11.5px;
-            white-space: nowrap;
-        }
-        #companyLanguageSettings .lang-bulk-actions {
-            display: flex;
-            flex-wrap: wrap;
-            margin-left: auto;
-            gap: 8px;
-        }
-        #companyLanguageSettings .lang-btn-outline {
-            padding: 6px 12px;
-            border: 1px solid var(--lang-border);
-            border-radius: 6px;
-            background: #fff;
-            color: #374151;
-            font-weight: 600;
-            font-size: 11.5px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        #companyLanguageSettings .lang-btn-outline:hover {
-            border-color: var(--lang-primary);
-            color: var(--lang-primary);
-        }
-        #companyLanguageSettings .lang-btn-outline:focus-visible {
-            border-color: var(--lang-primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(229, 79, 56, 0.18);
-        }
-        #companyLanguageSettings .lang-grid {
-            display: grid;
-            grid-template-columns: repeat(1, minmax(0, 1fr));
-            gap: 12px;
-        }
-        @media (min-width: 640px) {
-            #companyLanguageSettings .lang-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-        @media (min-width: 1024px) {
-            #companyLanguageSettings .lang-grid {
-                grid-template-columns: repeat(4, minmax(0, 1fr));
-            }
-        }
-        #companyLanguageSettings .lang-card {
-            display: flex;
-            position: relative;
-            align-items: center;
-            padding: 10px 12px;
-            gap: 10px;
-            border: 1.5px solid var(--lang-border);
-            border-radius: 10px;
-            background: #fff;
-            cursor: pointer;
-            transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
-        }
-        #companyLanguageSettings .lang-card:hover {
-            border-color: #d1d5db;
-        }
-        #companyLanguageSettings .lang-card.is-enabled {
-            border-color: var(--lang-primary);
-            background: var(--lang-primary-soft);
-        }
-        #companyLanguageSettings .lang-card:has(.lang-toggle-input:focus-visible) {
-            border-color: var(--lang-primary);
-            box-shadow: 0 0 0 3px rgba(229, 79, 56, 0.22);
-        }
-        #companyLanguageSettings .lang-card-flag {
-            flex-shrink: 0;
-            width: 28px;
-            height: 28px;
-            object-fit: cover;
-            border: 1px solid var(--lang-border);
-            border-radius: 50%;
-            background: #f3f4f6;
-        }
-        #companyLanguageSettings .lang-card-text {
-            flex: 1;
-            min-width: 0;
-        }
-        #companyLanguageSettings .lang-card-native {
-            color: #1f2937;
-            font-weight: 600;
-            font-size: 13px;
-            line-height: 1.25;
-        }
-        #companyLanguageSettings .lang-card-english {
-            margin-top: 1px;
-            color: #9ca3af;
-            font-size: 11px;
-            line-height: 1.2;
-        }
-        #companyLanguageSettings .lang-toggle-input {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            margin: -1px;
-            padding: 0;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            border: 0;
-            white-space: nowrap;
-        }
-        #companyLanguageSettings .lang-toggle-visual {
-            position: relative;
-            flex-shrink: 0;
-            width: 34px;
-            height: 20px;
-            border-radius: 999px;
-            background: #d1d5db;
-            transition: background-color 0.2s;
-        }
-        #companyLanguageSettings .lang-toggle-visual::after {
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #fff;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-            content: '';
-            transition: transform 0.2s;
-        }
-        #companyLanguageSettings .lang-toggle-input:checked + .lang-toggle-visual {
-            background: var(--lang-primary);
-        }
-        #companyLanguageSettings .lang-toggle-input:checked + .lang-toggle-visual::after {
-            transform: translateX(14px);
-        }
-        #companyLanguageSettings .lang-empty-state, #companyLanguageSettings .lang-no-results {
-            display: none;
-            padding: 32px 16px;
-            border: 1px dashed var(--lang-border);
-            border-radius: 10px;
-            color: #6b7280;
-            font-size: 12.5px;
-            text-align: center;
-        }
-        #companyLanguageSettings .lang-empty-state.is-visible, #companyLanguageSettings .lang-no-results.is-visible {
-            display: block;
         }
         #companyLanguageSettings .lang-footer {
             display: flex;
-            position: sticky;
-            bottom: 0;
             flex-wrap: wrap;
             align-items: center;
             margin-top: 18px;
             padding: 12px 4px 4px;
             gap: 12px;
-            border-top: 1px solid var(--lang-border);
-            background: #fff;
+            border-top: 1px solid #e6e6e6;
         }
         #companyLanguageSettings .lang-unsaved-flag {
             display: none;
@@ -223,7 +43,7 @@
         }
         #companyLanguageSettings .lang-btn-cancel {
             padding: 6px 16px;
-            border: 1px solid var(--lang-border);
+            border: 1px solid #e6e6e6;
             border-radius: 6px;
             background: #fff;
             color: #374151;
@@ -234,576 +54,41 @@
         #companyLanguageSettings .lang-btn-cancel:hover {
             border-color: #9ca3af;
         }
-
-        /* Company context card */
-        #companyLanguageSettings .lang-context-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            margin-top: 14px;
-            gap: 14px;
-        }
-        @media (min-width: 900px) {
-            #companyLanguageSettings .lang-context-grid {
-                grid-template-columns: 1.6fr 1fr;
-            }
-        }
-        #companyLanguageSettings .lang-context-main {
-            padding: 14px;
-            border: 1px solid var(--lang-border);
-            border-radius: 10px;
-            background: #fff;
-        }
-        #companyLanguageSettings .lang-context-eyebrow {
-            color: #9ca3af;
-            font-weight: 700;
-            font-size: 11.5px;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-        }
-        #companyLanguageSettings .lang-context-title {
-            margin-top: 2px;
-            color: #1f2937;
-            font-weight: 600;
-            font-size: 13.5px;
-        }
-        #companyLanguageSettings .lang-context-sub {
-            margin-top: 2px;
-            color: #6b7280;
-            font-size: 12px;
-        }
-
-        #companyLanguageSettings .lang-workspace {
-            position: relative;
-            margin-top: 12px;
-        }
-        #companyLanguageSettings .lang-workspace-trigger {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            padding: 10px 12px;
-            gap: 10px;
-            border: 1.5px solid var(--lang-border);
-            border-radius: 10px;
-            background: #fafafa;
-            text-align: left;
-            cursor: pointer;
-            transition: border-color 0.2s;
-        }
-        #companyLanguageSettings .lang-workspace-trigger:hover,
-        #companyLanguageSettings .lang-workspace-trigger[aria-expanded='true'] {
-            border-color: var(--lang-primary);
-            background: var(--lang-primary-soft);
-        }
-        #companyLanguageSettings .lang-workspace-trigger:focus-visible {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(229, 79, 56, 0.2);
-        }
-        #companyLanguageSettings .lang-workspace-icon {
-            flex-shrink: 0;
-            width: 32px;
-            height: 32px;
-            object-fit: cover;
-            border: 1px solid var(--lang-border);
-            border-radius: 50%;
-            background: #f3f4f6;
-        }
-        #companyLanguageSettings .lang-workspace-icon-sm {
-            width: 22px;
-            height: 22px;
-            object-fit: cover;
-            border: 1px solid var(--lang-border);
-            border-radius: 50%;
-            background: #f3f4f6;
-            vertical-align: middle;
-        }
-        #companyLanguageSettings .lang-summary-company-icon {
-            flex-shrink: 0;
-            width: 22px;
-            height: 22px;
-            object-fit: cover;
-            border: 1px solid var(--lang-border);
-            border-radius: 50%;
-            background: #f3f4f6;
-        }
-        #companyLanguageSettings .lang-workspace-info {
-            flex: 1;
-            min-width: 0;
-        }
-        #companyLanguageSettings .lang-workspace-name {
-            display: block;
-            color: #1f2937;
-            font-weight: 700;
-            font-size: 13.5px;
-        }
-        #companyLanguageSettings .lang-workspace-meta {
-            display: block;
-            margin-top: 1px;
-            color: #6b7280;
-            font-size: 11.5px;
-        }
-        #companyLanguageSettings .lang-workspace-chevron {
-            flex-shrink: 0;
-            color: #9ca3af;
-            font-size: 16px;
-            transition: transform 0.2s;
-        }
-        #companyLanguageSettings .lang-workspace-trigger[aria-expanded='true'] .lang-workspace-chevron {
-            transform: rotate(180deg);
-        }
-
-        #companyLanguageSettings .lang-workspace-menu {
-            z-index: 20;
-            position: absolute;
-            top: calc(100% + 6px);
-            right: 0;
-            left: 0;
-            max-height: 280px;
-            padding: 6px;
-            overflow-y: auto;
-            border: 1px solid var(--lang-border);
-            border-radius: 10px;
-            background: #fff;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-        }
-        #companyLanguageSettings .lang-workspace-menu[hidden] {
-            display: none;
-        }
-        #companyLanguageSettings .lang-workspace-option {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            padding: 8px 10px;
-            gap: 10px;
-            border: none;
-            border-radius: 8px;
-            background: transparent;
-            text-align: left;
-            cursor: pointer;
-        }
-        #companyLanguageSettings .lang-workspace-option:hover {
-            background: #f9fafb;
-        }
-        #companyLanguageSettings .lang-workspace-option:focus-visible {
-            outline: none;
-            box-shadow: inset 0 0 0 2px var(--lang-primary);
-        }
-        #companyLanguageSettings .lang-workspace-option.is-selected {
-            background: var(--lang-primary-soft);
-        }
-        #companyLanguageSettings .lang-workspace-option-icon {
-            flex-shrink: 0;
-            width: 26px;
-            height: 26px;
-            object-fit: cover;
-            border: 1px solid var(--lang-border);
-            border-radius: 50%;
-            background: #f3f4f6;
-        }
-        #companyLanguageSettings .lang-workspace-option-text {
-            flex: 1;
-            min-width: 0;
-        }
-        #companyLanguageSettings .lang-workspace-option-name {
-            display: block;
-            color: #1f2937;
-            font-weight: 600;
-            font-size: 12.5px;
-        }
-        #companyLanguageSettings .lang-workspace-option-meta {
-            display: block;
-            color: #9ca3af;
-            font-size: 11px;
-        }
-        #companyLanguageSettings .lang-workspace-check {
-            flex-shrink: 0;
-            color: var(--lang-primary);
-            font-size: 16px;
-        }
-
-        #companyLanguageSettings .lang-loading-overlay {
-            display: none;
-            align-items: center;
-            margin-top: 10px;
-            gap: 8px;
-            color: #6b7280;
-            font-size: 12px;
-        }
-        #companyLanguageSettings .lang-loading-overlay.htmx-request {
-            display: flex;
-        }
-        #companyLanguageSettings .lang-loading-spinner {
-            width: 14px;
-            height: 14px;
-            border: 2px solid var(--lang-border);
-            border-radius: 50%;
-            border-top-color: var(--lang-primary);
-            animation: lang-spin 0.7s linear infinite;
-        }
-        @keyframes lang-spin {
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        #companyLanguageSettings .lang-info-banner {
-            display: flex;
-            align-items: flex-start;
-            margin-top: 12px;
-            padding: 10px 12px;
-            gap: 8px;
-            border-radius: 8px;
-            background: #eff6ff;
-            color: #1e40af;
-            font-size: 12px;
-            line-height: 1.45;
-        }
-        #companyLanguageSettings .lang-info-banner ion-icon {
-            flex-shrink: 0;
-            margin-top: 1px;
-            font-size: 16px;
-        }
-
-        #companyLanguageSettings .lang-summary-card {
-            height: 100%;
-            padding: 14px;
-            border: 1px solid var(--lang-border);
-            border-radius: 10px;
-            background: #fafafa;
-        }
-        #companyLanguageSettings .lang-summary-title {
-            color: #9ca3af;
-            font-weight: 700;
-            font-size: 11.5px;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-        }
-        #companyLanguageSettings .lang-summary-company {
-            display: flex;
-            align-items: center;
-            margin-top: 8px;
-            gap: 8px;
-            color: #1f2937;
-            font-weight: 700;
-            font-size: 13.5px;
-        }
-        #companyLanguageSettings .lang-summary-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            margin-top: 12px;
-            gap: 10px 8px;
-        }
-        #companyLanguageSettings .lang-summary-stats dt {
-            color: #9ca3af;
-            font-size: 11px;
-        }
-        #companyLanguageSettings .lang-summary-stats dd {
-            margin: 1px 0 0;
-            color: #1f2937;
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        #companyLanguageSettings .lang-managing-row {
-            display: flex;
-            align-items: center;
-            margin-top: 20px;
-            padding-bottom: 6px;
-            gap: 8px;
-            border-bottom: 1px solid var(--lang-border);
-        }
-        #companyLanguageSettings .lang-managing-label {
-            color: #9ca3af;
-            font-weight: 700;
-            font-size: 11.5px;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-        }
-        #companyLanguageSettings .lang-managing-company {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #1f2937;
-            font-weight: 700;
-            font-size: 13px;
-        }
     </style>
-
-    {% trans "All Companies (Default)" as lang_all_companies_label %}
-    {% with company_name=language_company.company|default:lang_all_companies_label all_company_icon="https://ui-avatars.com/api/?name=All+Company&background=0D8ABC&color=fff" %}
-        <div class="lang-header-desc">
-            <h3 class="text-sm font-semibold text-[#333]">{% trans "Company Settings" %}</h3>
-            <p class="text-xs text-gray-500 mt-1">
-                {% trans "These language settings only apply to the selected company." %}
-            </p>
-        </div>
-
-        <div class="lang-context-grid">
-            <div class="lang-context-main">
-                <div class="lang-context-eyebrow">{% trans "Selected Company" %}</div>
-
-                {% if language_company_count > 1 %}
-                    <div class="lang-workspace" id="languageWorkspaceSwitcher">
-                        <button
-                            type="button"
-                            class="lang-workspace-trigger"
-                            id="languageWorkspaceTrigger"
-                            aria-haspopup="listbox"
-                            aria-expanded="false"
-                            aria-controls="languageWorkspaceMenu"
-                            hx-on:click="event.stopPropagation(); companyLanguageSettings.toggleWorkspaceMenu()"
-                        >
-                            <img
-                                class="lang-workspace-icon"
-                                src="{% if language_company %}{{ language_company.icon.url }}{% else %}{{ all_company_icon }}{% endif %}"
-                                alt=""
-                                aria-hidden="true"
-                            >
-                            <span class="lang-workspace-info">
-                                <span class="lang-workspace-name">{{ company_name }}</span>
-                                <span class="lang-workspace-meta">
-                                    {{ language_employee_count }} {% trans "Employees" %} ·
-                                    {{ enabled_languages|length }} {% trans "Languages Enabled" %}
-                                </span>
-                            </span>
-                            <ion-icon
-                                name="chevron-down-outline"
-                                class="lang-workspace-chevron"
-                                aria-hidden="true"
-                            ></ion-icon>
-                        </button>
-                        <div class="lang-workspace-menu" id="languageWorkspaceMenu" role="listbox" hidden>
-                            <button
-                                type="button"
-                                class="lang-workspace-option {% if not language_company %}is-selected{% endif %}"
-                                role="option"
-                                aria-selected="{% if not language_company %}true{% else %}false{% endif %}"
-                                hx-get="{% url 'update-selected-company' %}?company_id=all&next={{ request.path }}"
-                                hx-indicator="#languageLoadingOverlay"
-                            >
-                                <img class="lang-workspace-option-icon" src="{{ all_company_icon }}" alt="">
-                                <span class="lang-workspace-option-text">
-                                    <span class="lang-workspace-option-name">{{ lang_all_companies_label }}</span>
-                                    <span class="lang-workspace-option-meta">{% trans "Default configuration" %}</span>
-                                </span>
-                                {% if not language_company %}<ion-icon
-                                        name="checkmark-circle"
-                                        class="lang-workspace-check"
-                                    ></ion-icon>{% endif %}
-                            </button>
-                            {% for opt in language_company_options %}
-                                <button
-                                    type="button"
-                                    class="lang-workspace-option {% if opt.selected %}is-selected{% endif %}"
-                                    role="option"
-                                    aria-selected="{% if opt.selected %}true{% else %}false{% endif %}"
-                                    hx-get="{% url 'update-selected-company' %}?company_id={{ opt.id }}&next={{ request.path }}"
-                                    hx-indicator="#languageLoadingOverlay"
-                                >
-                                    <img class="lang-workspace-option-icon" src="{{ opt.icon }}" alt="">
-                                    <span class="lang-workspace-option-text">
-                                        <span class="lang-workspace-option-name">{{ opt.name }}</span>
-                                        <span class="lang-workspace-option-meta">
-                                            {{ opt.employee_count }} {% trans "Employees" %} · {{ opt.enabled_count }}
-                                            {% trans "Languages Enabled" %}
-                                        </span>
-                                    </span>
-                                    {% if opt.selected %}<ion-icon
-                                            name="checkmark-circle"
-                                            class="lang-workspace-check"
-                                        ></ion-icon>{% endif %}
-                                </button>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <div class="lang-loading-overlay" id="languageLoadingOverlay">
-                        <span class="lang-loading-spinner"></span> {% trans "Loading language settings…" %}
-                    </div>
-                {% else %}
-                    <div class="lang-workspace">
-                        <div class="lang-workspace-trigger" style="cursor: default">
-                            <img
-                                class="lang-workspace-icon"
-                                src="{% if language_company %}{{ language_company.icon.url }}{% else %}{{ all_company_icon }}{% endif %}"
-                                alt=""
-                                aria-hidden="true"
-                            >
-                            <span class="lang-workspace-info">
-                                <span
-                                    class="lang-context-eyebrow"
-                                    style="font-size: 10.5px"
-                                >{% trans "Company" %}</span>
-                                <span class="lang-workspace-name">{{ company_name }}</span>
-                            </span>
-                        </div>
-                    </div>
-                    <p class="lang-context-sub">
-                        {% trans "Since only one company exists, these settings will automatically apply to it." %}
-                    </p>
-                {% endif %}
-
-                <div class="lang-info-banner">
-                    <ion-icon name="information-circle-outline"></ion-icon>
-                    <p class="mb-0">
-                        {% if language_company %}
-                            {% blocktrans %}Employees belonging to "{{ company_name }}" will only see the languages
-                                enabled below in their language switcher.{% endblocktrans %}
-                        {% else %}
-                            {% trans "You're editing the default language configuration, used by any company that hasn't set its own languages." %}
-                        {% endif %}
-                        {% if language_company_count > 1 %}
-                            {% trans "Changing to another company loads that company's own language configuration." %}
-                        {% endif %}
-                    </p>
-                </div>
-            </div>
-
-            <div class="lang-summary-card">
-                <div class="lang-summary-title">{% trans "Current Company" %}</div>
-                <div class="lang-summary-company">
-                    <img
-                        class="lang-summary-company-icon"
-                        src="{% if language_company %}{{ language_company.icon.url }}{% else %}{{ all_company_icon }}{% endif %}"
-                        alt=""
-                        aria-hidden="true"
-                    >
-                    {{ company_name }}
-                </div>
-                <dl class="lang-summary-stats">
-                    <div>
-                        <dt>{% trans "Employees" %}</dt>
-                        <dd>{{ language_employee_count }}</dd>
-                    </div>
-                    <div>
-                        <dt>{% trans "Languages Enabled" %}</dt>
-                        <dd id="languageSummaryEnabledCount">{{ enabled_languages|length }}</dd>
-                    </div>
-                    <div>
-                        <dt>{% trans "Languages Available" %}</dt>
-                        <dd>{{ language_total_available }}</dd>
-                    </div>
-                    <div>
-                        <dt>{% trans "Configured On" %}</dt>
-                        <dd>
-                            {% if language_configured_on %}{{ language_configured_on|date:"M j, Y" }}{% else %}{% trans "Not yet" %}{% endif %}
-                        </dd>
-                    </div>
-                </dl>
-            </div>
-        </div>
-
-        <div class="lang-managing-row">
-            <span class="lang-managing-label">{% trans "Managing Languages For" %}</span>
-            <span class="lang-managing-company">
-                <img
-                    class="lang-workspace-icon-sm"
-                    src="{% if language_company %}{{ language_company.icon.url }}{% else %}{{ all_company_icon }}{% endif %}"
-                    alt=""
-                    aria-hidden="true"
-                >
-                {{ company_name }}
-            </span>
-        </div>
-    {% endwith %}
 
     <form
         id="languageSettingsForm"
         hx-post="{% url 'update-language-settings' %}"
-        hx-swap="outerHTML"
-        hx-select-oob="#mainHeader"
-        hx-target="#companyLanguageSettings"
-        hx-select="#companyLanguageSettings"
+        hx-swap="none"
+        hx-on-htmx-after-request="if (event.detail.successful) { companyLanguageSettings.markSaved(); } setTimeout(() => { reloadMessage(); }, 100);"
     >
         {% csrf_token %}
 
-        <div class="lang-toolbar">
-            <div class="lang-search-wrap">
-                <ion-icon name="search-outline"></ion-icon>
-                <input
-                    type="text"
-                    id="languageSearchInput"
-                    class="lang-search-input"
-                    placeholder="{% trans 'Search languages…' %}"
-                    aria-label="{% trans 'Search languages' %}"
-                    autocomplete="off"
-                    hx-on:input="companyLanguageSettings.filter(this.value)"
-                >
-            </div>
-            <span class="lang-count-badge" id="languageCountBadge" role="status" aria-live="polite">
-                {{ enabled_languages|length }} {% trans "Selected" %}
-            </span>
-            <div class="lang-bulk-actions">
-                <button
-                    type="button"
-                    class="lang-btn-outline"
-                    id="languageEnableAllBtn"
-                    hx-on:click="companyLanguageSettings.enableAll()"
-                >
-                    {% trans "Enable All" %}
-                </button>
-                <button
-                    type="button"
-                    class="lang-btn-outline"
-                    id="languageDisableAllBtn"
-                    hx-on:click="companyLanguageSettings.disableAll()"
-                >
-                    {% trans "Disable All" %}
-                </button>
-                <button
-                    type="button"
-                    class="lang-btn-outline"
-                    id="languageResetBtn"
-                    hx-on:click="companyLanguageSettings.reset()"
-                >
-                    {% trans "Reset" %}
-                </button>
-            </div>
+        <div class="flex space-x-2 pb-1">
+            <label>{% trans "Enabled Languages" %}</label>
+            <span
+                class="oh-info mr-2"
+                title="{% trans 'Choose which languages employees of this company can switch to. Leave empty to allow every language.' %}"
+            ></span>
         </div>
-
-        <div
-            class="lang-empty-state"
-            id="languageEmptyState"
-            role="status"
-        >
-            <strong>{% trans "No languages have been enabled." %}</strong><br>
-            {% trans "Employees will not be able to switch languages." %}
-        </div>
-
-        <div class="lang-grid" id="languageCardGrid" role="group" aria-label="{% trans 'Available languages' %}">
-            {% for code, label in languages %}
-                <label
-                    class="lang-card"
-                    data-lang-card
-                    data-search="{{ label|lower }} {{ code|lower }}"
-                >
-                    <img
-                        class="lang-card-flag"
-                        src="{% static 'images/ui/'|add:code|add:'.png' %}"
-                        onerror="this.style.visibility='hidden'"
-                        alt=""
-                    >
-                    <span class="lang-card-text">
-                        <span class="lang-card-native">{{ label }}</span>
-                        <span class="lang-card-english" data-lang-code="{{ code }}"></span>
-                    </span>
-                    <input
-                        type="checkbox"
-                        class="lang-toggle-input"
-                        name="enabled_languages"
-                        value="{{ code }}"
-                        aria-label="{% blocktrans %}Enable {{ label }}{% endblocktrans %}"
-                        {% if code in enabled_languages %}
-                            checked
-                        {% endif %}
-                        hx-on:change="companyLanguageSettings.sync(this)"
-                    >
-                    <span class="lang-toggle-visual" aria-hidden="true"></span>
-                </label>
-            {% endfor %}
-        </div>
-
-        <p class="lang-no-results" id="languageNoResults">
-            {% trans "No languages match your search." %}
+        <p class="text-xs text-gray-500 mt-1 pb-2">
+            {% trans "Selected languages will appear in the language switcher for employees of this company. Leave empty to enable every language." %}
         </p>
+
+        <div class="lang-select-wrap">
+            <select
+                name="enabled_languages"
+                id="languageMultiSelect"
+                class="oh-select oh-select-2"
+                multiple
+                data-placeholder="{% trans 'Select languages…' %}"
+                style="width:100%;"
+            >
+                {% for code, label in languages %}
+                    <option value="{{ code }}" {% if code in enabled_languages %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
         <div class="lang-footer">
             <span class="lang-unsaved-flag" id="languageUnsavedFlag">{% trans "Unsaved changes" %}</span>
@@ -823,133 +108,61 @@
 
     <script>
         (function () {
-            var ENGLISH_NAMES = {
-                "en": "English", "de": "German", "es": "Spanish", "fr": "French",
-                "ar": "Arabic", "pt-br": "Portuguese (Brazil)", "zh-hans": "Chinese (Simplified)",
-                "zh-hant": "Chinese (Traditional)", "it": "Italian", "tr": "Turkish", "uk": "Ukrainian"
-            };
-
             var root = document.getElementById("companyLanguageSettings");
             if (!root) return;
 
-            var grid = root.querySelector("#languageCardGrid");
-            var cards = Array.prototype.slice.call(grid.querySelectorAll("[data-lang-card]"));
-            var countBadge = root.querySelector("#languageCountBadge");
-            var emptyState = root.querySelector("#languageEmptyState");
-            var noResults = root.querySelector("#languageNoResults");
+            var select = root.querySelector("#languageMultiSelect");
             var unsavedFlag = root.querySelector("#languageUnsavedFlag");
+            var initialValues = currentValues();
 
-            cards.forEach(function (card) {
-                var span = card.querySelector("[data-lang-code]");
-                var code = span.getAttribute("data-lang-code");
-                span.textContent = ENGLISH_NAMES[code] || "";
-            });
-
-            var initialState = cards.map(function (card) {
-                return card.querySelector(".lang-toggle-input").checked;
-            });
-
-            function visibleCards() {
-                return cards.filter(function (card) { return card.style.display !== "none"; });
+            function currentValues() {
+                return Array.prototype.map.call(select.selectedOptions, function (option) {
+                    return option.value;
+                });
             }
 
-            function refreshCounts() {
-                var enabledCount = cards.filter(function (card) {
-                    return card.querySelector(".lang-toggle-input").checked;
-                }).length;
-                countBadge.textContent = enabledCount + " {% trans 'Selected' %}";
-                emptyState.classList.toggle("is-visible", enabledCount === 0);
-
-                var dirty = cards.some(function (card, i) {
-                    return card.querySelector(".lang-toggle-input").checked !== initialState[i];
+            function refreshUnsaved() {
+                var current = currentValues();
+                var dirty = current.length !== initialValues.length || current.some(function (value) {
+                    return initialValues.indexOf(value) === -1;
                 });
                 unsavedFlag.classList.toggle("is-visible", dirty);
             }
 
-            function toggleCard(card, checked) {
-                var input = card.querySelector(".lang-toggle-input");
-                input.checked = checked;
-                card.classList.toggle("is-enabled", checked);
-            }
-
-            // paint initial enabled state (interactions now wired via hx-on in the markup)
-            cards.forEach(function (card) {
-                card.classList.toggle("is-enabled", card.querySelector(".lang-toggle-input").checked);
-            });
-
-            function setAllVisible(checked) {
-                visibleCards().forEach(function (card) { toggleCard(card, checked); });
-                refreshCounts();
+            function initSelect() {
+                if (typeof $ === "undefined" || typeof $.fn.select2 !== "function") return;
+                var $select = $(select);
+                if ($select.hasClass("select2-hidden-accessible")) {
+                    $select.select2("destroy");
+                }
+                $select.select2({
+                    width: "100%",
+                    placeholder: "{% trans 'Select languages…' %}",
+                    closeOnSelect: false,
+                });
+                $select.on("change", refreshUnsaved);
             }
 
             function resetToInitial() {
-                cards.forEach(function (card, i) { toggleCard(card, initialState[i]); });
-                refreshCounts();
-            }
-
-            function filterCards(value) {
-                var query = (value || "").trim().toLowerCase();
-                var anyVisible = false;
-                cards.forEach(function (card) {
-                    var matches = !query || card.getAttribute("data-search").indexOf(query) > -1;
-                    card.style.display = matches ? "" : "none";
-                    if (matches) anyVisible = true;
+                Array.prototype.forEach.call(select.options, function (option) {
+                    option.selected = initialValues.indexOf(option.value) > -1;
                 });
-                noResults.classList.toggle("is-visible", !anyVisible);
+                if (window.jQuery) {
+                    $(select).trigger("change");
+                }
+                refreshUnsaved();
             }
 
-            var workspaceTrigger = root.querySelector("#languageWorkspaceTrigger");
-            var workspaceMenu = root.querySelector("#languageWorkspaceMenu");
-
-            function closeWorkspaceMenu() {
-                if (!workspaceMenu) return;
-                workspaceMenu.hidden = true;
-                workspaceTrigger.setAttribute("aria-expanded", "false");
-            }
-            function openWorkspaceMenu() {
-                if (!workspaceMenu) return;
-                workspaceMenu.hidden = false;
-                workspaceTrigger.setAttribute("aria-expanded", "true");
-            }
-            function toggleWorkspaceMenu() {
-                if (!workspaceMenu) return;
-                if (workspaceMenu.hidden) { openWorkspaceMenu(); } else { closeWorkspaceMenu(); }
-            }
-
-            if (workspaceTrigger && workspaceMenu) {
-                document.addEventListener("click", function (e) {
-                    if (!workspaceMenu.hidden && !workspaceMenu.contains(e.target) && e.target !== workspaceTrigger) {
-                        closeWorkspaceMenu();
-                    }
-                });
-                document.addEventListener("keydown", function (e) {
-                    if (e.key === "Escape" && !workspaceMenu.hidden) {
-                        closeWorkspaceMenu();
-                        workspaceTrigger.focus();
-                    }
-                });
-            }
+            initSelect();
+            setTimeout(initSelect, 50);
 
             window.companyLanguageSettings = {
-                enableAll: function () { setAllVisible(true); },
-                disableAll: function () { setAllVisible(false); },
                 reset: resetToInitial,
-                filter: filterCards,
-                toggleWorkspaceMenu: toggleWorkspaceMenu,
-                sync: function (input) {
-                    var card = input.closest("[data-lang-card]");
-                    card.classList.toggle("is-enabled", input.checked);
-                    refreshCounts();
-                },
                 markSaved: function () {
-                    initialState = cards.map(function (card) {
-                        return card.querySelector(".lang-toggle-input").checked;
-                    });
-                    refreshCounts();
-                }
+                    initialValues = currentValues();
+                    refreshUnsaved();
+                },
             };
-
-            refreshCounts();
         })();
     </script>
 </div>

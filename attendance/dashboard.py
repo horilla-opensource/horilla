@@ -63,13 +63,28 @@ def attendance_kpi_data(request):
     from employee.models import Employee
 
     from_date, to_date = _parse_period(request)
-    today = to_date
     first_of_month = from_date
     total_employees = Employee.objects.filter(is_active=True).count()
 
+    # "Present Today" is a real-time indicator, not scoped to whatever
+    # report period is selected above (to_date defaults to end-of-month,
+    # a future date) - use the actual current date, like the main HR
+    # dashboard's equivalent KPI does. Deliberately NOT routed through
+    # _latest_attendance_date(): that fallback would silently substitute an
+    # older date with data, so the card's own label ("Present Today") and
+    # the date actually being filtered/linked to would disagree - a 0 for
+    # today is a more honest result than a non-zero count for some other day.
+    today = date.today()
+
+    # This card (and "On Time" below) link through to the "Attendance To
+    # Validate" tab, which only ever shows attendance_validated=False rows
+    # - so the count needs the same scope, or it'll show a number here that
+    # doesn't match a single row on the page it links to.
     present_today = (
         Attendance.objects.filter(
             attendance_date=today,
+            attendance_validated=False,
+            employee_id__is_active=True,
         )
         .values("employee_id")
         .distinct()
@@ -84,6 +99,8 @@ def attendance_kpi_data(request):
         AttendanceLateComeEarlyOut.objects.filter(
             type="late_come",
             attendance_id__attendance_date=today,
+            attendance_id__attendance_validated=False,
+            employee_id__is_active=True,
         )
         .values("employee_id")
         .distinct()
@@ -94,6 +111,8 @@ def attendance_kpi_data(request):
         AttendanceLateComeEarlyOut.objects.filter(
             type="early_out",
             attendance_id__attendance_date=today,
+            attendance_id__attendance_validated=False,
+            employee_id__is_active=True,
         )
         .values("employee_id")
         .distinct()
@@ -102,18 +121,24 @@ def attendance_kpi_data(request):
 
     on_time = max(0, present_today - late_come)
 
-    # Pending validation
+    # Pending validation - scoped the same way as the "Attendance To
+    # Validate" tab it links to (employee_id__is_active=True), otherwise
+    # this count includes inactive employees' records the destination list
+    # never shows.
     pending_validation = Attendance.objects.filter(
         attendance_validated=False,
+        employee_id__is_active=True,
     ).count()
 
-    # Pending overtime approval
+    # Pending overtime approval - same reasoning, matches the "OT
+    # Attendances" tab's own active-employee scoping.
     pending_overtime = 0
     try:
         pending_overtime = Attendance.objects.filter(
             attendance_overtime_approve=False,
             attendance_validated=True,
             overtime_second__gt=0,
+            employee_id__is_active=True,
         ).count()
     except Exception:
         pass
@@ -819,7 +844,7 @@ def attendance_overview(request):
     from attendance.models import Attendance, AttendanceLateComeEarlyOut
     from base.models import Department
 
-    _, to_date = _parse_period(request)
+    _from_date, to_date = _parse_period(request)
     target_date = _latest_attendance_date(to_date)
 
     labels = []

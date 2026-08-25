@@ -1,0 +1,232 @@
+{% load static i18n generic_template_filters %}
+<div
+    id="{{view_id}}-node-{{group_path}}"
+    class="oh-accordion {% if level == 0 %}bg-white border border-[#EAE8E3] rounded-lg overflow-hidden{% if not forloop.first %} mt-1.5{% endif %}{% else %}{% if not forloop.first %}border-t-2 border-[#DEDBD4]{% endif %}{% endif %} {% if node.dynamic_name in request.GET or forloop.first %}oh-accordion--show{% endif %}"
+>
+    <div
+        class="oh-accordion-header no-after w-full flex justify-between items-center cursor-pointer transition-colors flex-wrap gap-2 {% if level == 0 %}px-3.5 py-2{% endif %}"
+        {% if level > 0 %}
+        style="padding-left: {{ level|add:1|mul:22 }}px; padding-right: 14px; padding-top: 5px; padding-bottom: 5px;"
+        {% endif %}
+        data-path="{{request.path}}"
+        data-group="{{group_path}}"
+    >
+        <div class="flex items-center {% if level == 0 %}gap-2.5{% else %}gap-1.5{% endif %}">
+            {% if level > 0 %}
+                <ion-icon name="return-down-forward-outline" style="font-size:13px; color:#C7C4BA; flex-shrink:0;"></ion-icon>
+            {% endif %}
+            <span class="inline-flex items-center {% if level > 0 %}gap-1.5 bg-[#F6F5F1] rounded-md pl-1 pr-2 py-0.5{% else %}gap-2.5{% endif %}">
+                <span
+                    class="inline-flex items-center justify-center rounded-full font-semibold {% if level == 0 %}min-w-[22px] h-[22px] px-1.5 text-[11px] bg-primary-600 text-white{% else %}min-w-[18px] h-[18px] px-1 text-[10px] bg-white text-[#6F6D66] border border-[#DEDBD4]{% endif %}"
+                    title="{{node.count}} {% trans 'Records' %}"
+                >{{ node.count }}</span>
+                <span class="{% if level == 0 %}text-[13.5px] font-semibold text-[#26251F]{% else %}text-[12.5px] font-semibold text-[#26251F]{% endif %}">
+                    {{ node.grouper|capfirst }}
+                </span>
+            </span>
+            {% if node.children %}
+                {% with next_level=level|add:1 %}
+                    {% with next_field=nested_fields_active|index:next_level %}
+                        <span class="inline-flex items-center bg-white/70 border border-black/10 text-[#6F6D66] rounded-full px-2 py-0.5 text-[11px] font-medium whitespace-nowrap">
+                            {{ node.children|length }} {{ next_field.1|default:_("sub-group")|lower }}{{ node.children|length|pluralize }}
+                        </span>
+                    {% endwith %}
+                {% endwith %}
+            {% endif %}
+        </div>
+        <div class="flex items-center gap-3">
+            {% if level == 0 %}
+                {% with level0_field=nested_fields_active|index:0 %}
+                    {% comment %}
+                        Ported from group_by_table.html's per-group "Assign
+                        Leave" button (that template gates it on
+                        saved_filters.field == "leave_type_id", the classic
+                        single-field param -- this view now defaults to the
+                        nested engine instead, so the equivalent check here
+                        is "leave_type_id is this tree's top level field").
+                        Only meaningful at level 0: node.grouper is the real
+                        LeaveType instance there, but gets stringified
+                        (_strip_redundant_context) at every level below.
+                    {% endcomment %}
+                    {% if view_id == "assignedleavedelete" and level0_field.0 == "leave_type_id" and perms.leave.add_availableleave and not node.grouper.is_compensatory_leave %}
+                        <a
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModal"
+                            hx-get="{% url 'assign-one' node.grouper.id %}"
+                            hx-target="#genericModalBody"
+                            onclick="event.stopPropagation()"
+                            class="oh-btn oh-btn--secondary oh-btn--small"
+                            title="{% trans 'Assign Leave' %}"
+                        >
+                            <ion-icon name="person-add-outline" class="me-1"></ion-icon>{% trans "Assign Leave" %}
+                        </a>
+                    {% endif %}
+                {% endwith %}
+            {% endif %}
+            {% comment %}
+                The field-name tag now shows at every level, not just level
+                0 -- with 3+ levels active, a mid-tree row otherwise carries
+                no label at all telling you which of the picked fields it
+                actually represents. Leaf rows (no children) additionally
+                get a small list icon: everything else in the tree opens
+                into more groups, only a leaf opens into the actual data
+                table, and that distinction wasn't visible anywhere before.
+            {% endcomment %}
+            {% if not node.children and node.list and node.list.paginator.num_pages > 1 %}
+                <div class="flex items-center gap-1.5" onclick="event.stopPropagation()">
+                    {% comment %}
+                        Same .hlv-pagination widget as the top-level groupers'
+                        pager (nested_group_by_table.html) and the flat list
+                        (quick_actions.html) -- first/prev/page-input/next/last,
+                        not just a bare pair of chevrons.
+
+                        hx-select scopes the swap to just this node's own
+                        element (header + body together, not the whole
+                        nested tree) -- the old whole-tree swap made sibling
+                        accordions elsewhere flash on every pagination
+                        click, since the fresh server HTML briefly shows
+                        its server-default open/closed state before the
+                        sessionStorage restore script catches up.
+
+                        Deliberately targets the OUTER #...-node-... wrapper
+                        (header + body), not just the inner #...-leaf-...
+                        table: these buttons live in the header, while the
+                        rows live in the body below -- targeting only the
+                        body meant the buttons themselves never got fresh
+                        has_previous/has_next/page_number values after a
+                        swap, so Previous stayed permanently disabled and
+                        Next kept requesting the same page. Swapping the
+                        whole node keeps header and body (and its own open
+                        state, via node.dynamic_name already being in
+                        request.GET on this exact request) in sync.
+
+                        &view_id={{view_id}} on every hx-get below: view_id
+                        defaults to a fresh random uuid every request unless
+                        a page's List view sets a fixed one (HorillaListView.
+                        __init__) -- without this param, hx-select here would
+                        look for THIS render's #{{view_id}}-node-... inside a
+                        follow-up response that used a brand-new view_id, find
+                        no match, and swap in nothing. That silently deleted
+                        whichever node you clicked "next" on -- since every
+                        row after it shifts up to fill the gap, it read as
+                        "the group I was looking at just disappeared."
+                        Passing view_id back tells that same __init__ to
+                        reuse it instead of generating a new one.
+                    {% endcomment %}
+                    <div class="hlv-pagination inline-flex items-center h-8 gap-0.5 bg-white border border-[#e6e6e6] rounded-md px-1 flex-shrink-0">
+                        <button
+                            type="button"
+                            class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if node.list.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                            {% if node.list.has_previous %}
+                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{node.dynamic_name}}=1&view_id={{view_id}}"
+                            hx-select="#{{view_id}}-node-{{group_path}}"
+                            hx-target="#{{view_id}}-node-{{group_path}}"
+                            hx-swap="outerHTML"
+                            hx-on:click="htmxLoadIndicator(this);"
+                            {% endif %}
+                            title="{% trans 'First page' %}"
+                        ><i class="fa-solid fa-angles-left"></i></button>
+                        <button
+                            type="button"
+                            class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if node.list.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                            {% if node.list.has_previous %}
+                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{node.dynamic_name}}={{node.list.previous_page_number}}&view_id={{view_id}}"
+                            hx-select="#{{view_id}}-node-{{group_path}}"
+                            hx-target="#{{view_id}}-node-{{group_path}}"
+                            hx-swap="outerHTML"
+                            hx-on:click="htmxLoadIndicator(this);"
+                            {% endif %}
+                            title="{% trans 'Previous page' %}"
+                        ><i class="fa-solid fa-angle-left"></i></button>
+                        <div class="flex items-center gap-1 px-1 h-7 text-xs text-[#666] leading-none">
+                            <input
+                                type="number"
+                                name="{{node.dynamic_name}}"
+                                min="1"
+                                max="{{ node.list.paginator.num_pages }}"
+                                value="{{ node.list.number }}"
+                                title="{% trans 'Enter a page number and press Enter' %}"
+                                class="w-9 h-6 m-0 py-0 px-1 text-center text-xs leading-6 border border-[#e6e6e6] rounded outline-none focus:border-primary-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                hx-get="{{search_url}}?{{saved_filters.urlencode}}&view_id={{view_id}}"
+                                hx-select="#{{view_id}}-node-{{group_path}}"
+                                hx-target="#{{view_id}}-node-{{group_path}}"
+                                hx-swap="outerHTML"
+                                hx-trigger="keyup[keyCode==13] changed, blur changed"
+                                onclick="this.select()"
+                            >
+                            <span class="inline-flex items-center h-6 leading-none whitespace-nowrap">/ {{ node.list.paginator.num_pages }}</span>
+                        </div>
+                        <button
+                            type="button"
+                            class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if node.list.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                            {% if node.list.has_next %}
+                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{node.dynamic_name}}={{node.list.next_page_number}}&view_id={{view_id}}"
+                            hx-select="#{{view_id}}-node-{{group_path}}"
+                            hx-target="#{{view_id}}-node-{{group_path}}"
+                            hx-swap="outerHTML"
+                            hx-on:click="htmxLoadIndicator(this);"
+                            {% endif %}
+                            title="{% trans 'Next page' %}"
+                        ><i class="fa-solid fa-angle-right"></i></button>
+                        <button
+                            type="button"
+                            class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if node.list.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                            {% if node.list.has_next %}
+                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{node.dynamic_name}}={{ node.list.paginator.num_pages }}&view_id={{view_id}}"
+                            hx-select="#{{view_id}}-node-{{group_path}}"
+                            hx-target="#{{view_id}}-node-{{group_path}}"
+                            hx-swap="outerHTML"
+                            hx-on:click="htmxLoadIndicator(this);"
+                            {% endif %}
+                            title="{% trans 'Last page' %}"
+                        ><i class="fa-solid fa-angles-right"></i></button>
+                    </div>
+                </div>
+            {% endif %}
+            {% with field_label=nested_fields_active|index:level %}
+                {% if field_label %}
+                    <span
+                        class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide {% if level == 0 %}text-primary-600{% else %}text-[#9C9A92]{% endif %}"
+                    >
+                        {% if not node.children %}
+                            <ion-icon name="list-outline" style="font-size:11px;" title="{% trans 'Shows a table of records' %}"></ion-icon>
+                        {% endif %}
+                        {{ field_label.1 }}
+                    </span>
+                {% endif %}
+            {% endwith %}
+            <span class="{% if level == 0 %}w-6 h-6{% else %}w-[18px] h-[18px]{% endif %} flex items-center justify-center rounded-full hover:bg-[#F3F2EE] transition-colors shrink-0">
+                <ion-icon name="chevron-down-outline" class="icon {% if level == 0 %}text-sm{% else %}text-xs{% endif %} text-[#9C9A92]"></ion-icon>
+            </span>
+        </div>
+    </div>
+
+    <div class="oh-accordion-body transition-all duration-300">
+        {% if node.children %}
+            {% for child in node.children %}
+                {% include "generic/nested_group_by_node.html" with node=child level=level|add:1 group_path=group_path|child_group_path:forloop.counter %}
+            {% endfor %}
+        {% else %}
+            {% comment %}
+                No per-group select/bulk-action toolbar here — with the
+                header (and its own Select All checkbox) shared across the
+                whole view, a floating Select/Filter/Online-Offline bar
+                repeated at every leaf group was redundant clutter.
+            {% endcomment %}
+            {% comment %}
+                Data rows are never indented — they align to the shared header
+                at full width, matching it column-for-column. Only the group
+                labels above (department/job position names) are indented to
+                show hierarchy; indenting the actual table would misalign it
+                against the one shared header rendered once at the top.
+                ngb-leaf-table gets a border-top only (no margin/radius,
+                which would shift columns out of that same alignment) so the
+                data table reads as a clear hand-off from the tinted header
+                tree above it.
+            {% endcomment %}
+            <div class="ngb-leaf-table" id="{{view_id}}-leaf-{{group_path}}">
+                {% include "generic/_group_row_table.html" with group=node gvid=group_path show_header=False use_shared_colgroup=True %}
+            </div>
+        {% endif %}
+    </div>
+</div>

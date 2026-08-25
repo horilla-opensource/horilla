@@ -36,7 +36,7 @@
 
     }
 </style>
-<div hx-get="{% url 'work-nav-view' %}" hx-trigger="load"></div>
+<div hx-get="{% url 'work-nav-view' %}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
 
 {% include "generic/components.html" %}
 <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>

@@ -263,8 +263,13 @@ def change_project_status(request, project_id):
                     request,
                     _(f"{project} status updated to {project.get_status_display()}."),
                 )
-                # Notify all project managers and members
-                employees = (project.managers.all() | project.members.all()).distinct()
+                # Notify all project managers and task managers/members
+                employees = project.managers.all()
+                for task in project.task_set.all():
+                    employees = (
+                        employees | task.task_managers.all() | task.task_members.all()
+                    )
+                employees = employees.distinct()
                 for employee in employees:
                     try:
                         notify.send(
@@ -359,7 +364,6 @@ def project_import(request):
         columns=[
             "Title",
             "Manager Badge id",
-            "Member Badge id",
             "Status",
             "Start Date",
             "End Date",
@@ -381,7 +385,6 @@ def project_import(request):
                 # getting datas from imported file
                 title = project["Title"]
                 manager_badge_id = convert_nan("Manager Badge id", project)
-                member_badge_id = convert_nan("Member Badge id", project)
                 status = project["Status"]
                 start_date = project["Start Date"]
                 end_date = project["End Date"]
@@ -413,22 +416,6 @@ def project_import(request):
                     #         f"{manager_badge_id} - This badge not exist"
                     #     )
                     #     is_save = False
-
-                # getting employee using badge id, for member
-                if member_badge_id:
-                    ids = member_badge_id.split(",")
-                    error_ids = []
-                    employees = []
-                    for id in ids:
-                        if Employee.objects.filter(badge_id=id).exists():
-                            employee = Employee.objects.filter(badge_id=id).first()
-                            employees.append(employee)
-                        else:
-                            error_ids.append(id)
-                            is_save = False
-                    if error_ids:
-                        ids = ",".join(map(str, error_ids))
-                        project["Member error"] = f"{ids} - This id not exists"
 
                 if status:
                     if status not in [stat for stat, _ in Project.PROJECT_STATUS]:
@@ -496,9 +483,6 @@ def project_import(request):
                     for manager in managers:
                         project_obj.managers.add(manager)
                     project_obj.save()
-                    for member in employees:
-                        project_obj.members.add(member)
-                    project_obj.save()
                 else:
                     error_lists.append(project)
 
@@ -539,7 +523,6 @@ def project_bulk_export(request):
     headers = [
         "Title",
         "Managers",
-        "Members",
         "Status",
         "Start Date",
         "End Date",
@@ -551,7 +534,6 @@ def project_bulk_export(request):
         data = {
             "Title": f"{project.title}",
             "Managers": f"{',' .join([manager.employee_first_name + ' ' + manager.employee_last_name for manager in project.managers.all()]) if project.managers.exists() else ''}",
-            "Members": f"{',' .join([member.employee_first_name + ' ' + member.employee_last_name for member in project.members.all()]) if project.members.exists() else ''}",
             "Status": f"{project.status}",
             "Start Date": f'{project.start_date.strftime("%Y-%m-%d")}',
             "End Date": f'{project.end_date.strftime("%Y-%m-%d") if project.end_date else ""}',
@@ -980,26 +962,49 @@ def task_filter(request, project_id):
 
 
 @login_required
-def task_stage_change(request):
+def task_stage_change(request, task_id):
     """
     This method is used to change the current stage of a task
     """
-    task_id = request.POST.get("task")
-    stage_id = request.POST.get("stage")
-    if not task_id or not stage_id:
-        messages.error(request, _("Missing required parameters"))
-        return JsonResponse({"error": "Missing required parameters"}, status=400)
+    stage_id = request.GET.get("stage")
+    task = Task.find(task_id)
+    if not task:
+        return HorillaRedirect(request, message=_("Task not found"))
+
     stage = ProjectStage.objects.filter(id=stage_id).first()
     if not stage:
         messages.error(request, _("Stage not found"))
-        return JsonResponse({"error": "Stage not found"}, status=404)
-    Task.objects.filter(id=task_id).update(stage=stage)
-    return JsonResponse(
-        {
-            "type": "success",
-            "message": _("Task stage updated"),
-        }
-    )
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+
+    if task.end_date and task.end_date < datetime.date.today():
+        messages.warning(request, _("Cannot update stage. Task has already expired."))
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+
+    project = task.project
+    if not (
+        request.user.has_perm("project.change_task")
+        or request.user.has_perm("project.change_project")
+        or request.user.employee_get in task.task_managers.all()
+        or request.user.employee_get in task.task_members.all()
+        or request.user.employee_get in project.managers.all()
+    ):
+        messages.info(request, _("You dont have permission."))
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+
+    task.stage = stage
+    task.save()
+    messages.success(request, _("Task stage has been updated successfully"))
+
+    stages = ProjectStage.objects.filter(project=project).order_by("sequence")
+    tasks = Task.objects.filter(project=project)
+    context = {
+        "tasks": tasks.distinct(),
+        "stages": stages,
+        "project_id": project.id,
+        "reopen_stage_id": stage.id,
+    }
+    html = render_to_string("task/new/task_list_view.html", context, request)
+    return HttpResponse(html)
 
 
 @login_required
@@ -1093,7 +1098,6 @@ def drag_and_drop_task(request):
         or request.user.employee_get in task.task_managers.all()
         or request.user.employee_get in task.task_members.all()
         or request.user.employee_get in project.managers.all()
-        or request.user.employee_get in project.members.all()
     ):
         if previous_stage_id != updated_stage_id:
             task.stage = ProjectStage.objects.get(id=updated_stage_id)
@@ -1470,7 +1474,14 @@ def drag_and_drop_stage(request):
     if (
         request.user.has_perm("project.change_project")
         or request.user.employee_get in project.managers.all()
-        or request.user.employee_get in project.members.all()
+        or any(
+            request.user.employee_get in task.task_managers.all()
+            for task in project.task_set.all()
+        )
+        or any(
+            request.user.employee_get in task.task_members.all()
+            for task in project.task_set.all()
+        )
     ):
         for key, val in sequence.items():
             if val != ProjectStage.objects.get(id=key).sequence:
@@ -1556,10 +1567,7 @@ def get_members(request):
             employee = Employee.objects.filter(id=request.user.employee_get.id)
             if employee.first() in project.managers.all():
                 members = (
-                    employee
-                    | project.members.all()
-                    | task.task_managers.all()
-                    | task.task_members.all()
+                    employee | task.task_managers.all() | task.task_members.all()
                 ).distinct()
             elif employee.first() in task.task_managers.all():
                 members = (employee | task.task_members.all()).distinct()
@@ -1592,10 +1600,8 @@ def get_tasks_in_timesheet(request):
         employee = request.user.employee_get
         all_tasks = Task.objects.filter(project=project)
         # ie the employee is a project manager return all tasks
-        if (
-            employee in project.managers.all()
-            or employee in project.members.all()
-            or request.user.has_perm("project.add_timesheet")
+        if employee in project.managers.all() or request.user.has_perm(
+            "project.add_timesheet"
         ):
             tasks = all_tasks
         # if the employee is a task manager and task member
@@ -1613,6 +1619,8 @@ def get_tasks_in_timesheet(request):
         # if the employee ids a member of task under the project
         elif Task.objects.filter(project=project_id, task_members=employee).exists():
             tasks = Task.objects.filter(project=project_id, task_members=employee)
+        else:
+            tasks = Task.objects.none()
         form.fields["task_id"].queryset = tasks
         form.fields["task_id"].choices = list(form.fields["task_id"].choices)
         if employee in project.managers.all() or request.user.is_superuser:

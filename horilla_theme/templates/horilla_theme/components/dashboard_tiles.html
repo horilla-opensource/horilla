@@ -1,3 +1,9 @@
+{% comment %}
+LEGACY — horilla_theme dashboard tiles used by older home layouts.
+Modern analytics home is templates/dashboard.html via base.dashboard.main_dashboard_view
+(`/dashboard/`) and does NOT include this file. Prefer Customize on the modern home;
+do not dual-write modern DashboardEmployeeCharts prefs from these toggles.
+{% endcomment %}
 {% load static i18n horillafilters basefilters accessibility_filters i18n %}
 
 {% for chart in charts %}

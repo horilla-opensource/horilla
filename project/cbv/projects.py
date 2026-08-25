@@ -14,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
 from base.methods import has_export_access
+from base.models import Company
 from employee.models import Employee
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
@@ -26,7 +27,7 @@ from horilla_views.generic.cbv.views import (
 from project.cbv.cbv_decorators import is_projectmanager_or_member_or_perms
 from project.filters import ProjectFilter
 from project.forms import ProjectForm
-from project.methods import any_project_manager, any_project_member
+from project.methods import any_project_manager
 from project.models import Project
 
 
@@ -57,6 +58,16 @@ class ProjectsNavView(HorillaNavView):
     group_by_fields = ["status", "is_active"]
     template_name = "cbv/projects/project_nav.html"
     filter_body_template = "cbv/projects/filter.html"
+
+    # Mirrors ProjectsList.nested_group_by_fields
+    nested_group_by_fields = [
+        "title",
+        "status",
+        "is_active",
+        "start_date",
+        "end_date",
+        ("company_id", _("Company")),
+    ]
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -171,7 +182,7 @@ class ProjectsList(HorillaListView):
             task_filter = queryset.filter(
                 Q(task__task_members=employee) | Q(task__task_managers=employee)
             )
-            project_filter = queryset.filter(Q(managers=employee) | Q(members=employee))
+            project_filter = queryset.filter(Q(managers=employee))
             queryset = task_filter | project_filter
         return queryset.distinct()
 
@@ -191,7 +202,6 @@ class ProjectsList(HorillaListView):
         return [
             (get_field("title").verbose_name, "title"),
             (get_field("managers").verbose_name, "get_managers"),
-            (get_field("members").verbose_name, "get_members"),
             (get_field("status").verbose_name, "get_status_display"),
             (get_field("start_date").verbose_name, "start_date"),
             (get_field("end_date").verbose_name, "end_date"),
@@ -251,7 +261,7 @@ class ProjectsList(HorillaListView):
         ),
         (
             "cancelled--dot",
-            _("Completed"),
+            _("Cancelled"),
             """
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('cancelled');
@@ -275,6 +285,22 @@ class ProjectsList(HorillaListView):
 
     row_attrs = """ {redirect} """
 
+    # Mirrors ProjectsNavView.nested_group_by_fields below -- List and
+    # Nav are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split). "Project Managers"
+    # (managers) is deliberately left out: it's a ManyToManyField, and
+    # the nested engine's `values(*fields).annotate(Count("pk"))`
+    # aggregate would fan out one row per related manager, double-
+    # counting projects with more than one manager assigned.
+    nested_group_by_fields = [
+        "title",
+        "status",
+        "is_active",
+        "start_date",
+        "end_date",
+        ("company_id", _("Company")),
+    ]
+
 
 @method_decorator(login_required, name="dispatch")
 # @method_decorator(permission_required("project.add_project"), name="dispatch")
@@ -285,6 +311,7 @@ class ProjectFormView(HorillaFormView):
 
     model = Project
     form_class = ProjectForm
+    template_name = "cbv/projects/project_form.html"
     new_display_title = _("Create") + " " + model._meta.verbose_name
 
     def __init__(self, **kwargs):
@@ -299,6 +326,16 @@ class ProjectFormView(HorillaFormView):
         if self.form.instance.pk:
             self.form_class.verbose_name = (
                 _("Update") + " " + self.model._meta.verbose_name
+            )
+
+        dynamic_company_id = self.request.GET.get("dynamic_company")
+        if dynamic_company_id and not self.form.instance.pk:
+            company = Company.objects.filter(id=dynamic_company_id).first()
+            self.form.fields["company_id"].initial = company
+            self.form.fields["managers"].queryset = (
+                Employee.objects.filter(employee_work_info__company_id=company)
+                if company
+                else Employee.objects.none()
             )
         return context
 
@@ -352,7 +389,7 @@ class ProjectCardView(HorillaCardView):
             task_filter = queryset.filter(
                 Q(task__task_members=employee) | Q(task__task_managers=employee)
             )
-            project_filter = queryset.filter(Q(managers=employee) | Q(members=employee))
+            project_filter = queryset.filter(Q(managers=employee))
             queryset = task_filter | project_filter
         return queryset.distinct()
 
@@ -366,7 +403,6 @@ class ProjectCardView(HorillaCardView):
             self.request.user.has_perm("project.change_project")
             or self.request.user.has_perm("project.delete_project")
             or any_project_manager(self.request.user)
-            or any_project_member(self.request.user)
         ):
             self.actions = [
                 {
@@ -459,7 +495,7 @@ class ProjectCardView(HorillaCardView):
         ),
         (
             "cancelled--dot",
-            _("Completed"),
+            _("Cancelled"),
             """
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('cancelled');
@@ -516,10 +552,7 @@ class ProjectsTabView(ListView):
     def get_queryset(self):
         pk = self.kwargs.get("pk")
         queryset = Project.objects.filter(
-            Q(managers=pk)
-            | Q(members=pk)
-            | Q(task__task_members=pk)
-            | Q(task__task_managers=pk)
+            Q(managers=pk) | Q(task__task_members=pk) | Q(task__task_managers=pk)
         )
         return queryset.distinct()
 

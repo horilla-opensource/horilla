@@ -132,7 +132,7 @@
     @media (max-width: 640px) { .pd-customize-panel { width: 100%; right: -100%; } }
 
     /* Period Picker */
-    .pd-period-picker { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    .pd-period-picker { display: none !important; /* TEMP: hide period picker */ align-items: center; gap: 6px; font-size: 12px; }
     .pd-period-picker input[type="date"] { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.2); font-size: 12px; background: transparent; color: inherit; outline: none; transition: border-color 0.15s; }
     .pd-period-picker input[type="date"]:focus { border-color: var(--pd-indigo); }
     .pd-period-picker__sep { opacity: 0.4; font-size: 11px; }
@@ -165,7 +165,7 @@
             <div class="pd-refresh"><span class="pd-refresh__dot" id="pd-refresh-dot"></span><span id="pd-refresh-text">{% trans "Just now" %}</span><button class="pd-refresh__toggle" id="pd-refresh-toggle" title="{% trans 'Toggle auto-refresh' %}">⟳</button></div>
         </div>
         <div style="display:flex;gap:8px;">
-            <div class="pd-period-picker">
+            <div class="pd-period-picker" hidden>
                 <button class="pd-period-preset" data-preset="this_month">{% trans "This Month" %}</button>
                 <button class="pd-period-preset" data-preset="last_month">{% trans "Last Month" %}</button>
                 <button class="pd-period-preset" data-preset="this_quarter">{% trans "Quarter" %}</button>
@@ -205,7 +205,7 @@
 
                 <!-- Department Cost -->
                 <div class="pd-chart-card" data-chart-id="dept_cost" data-chart-label="{% trans 'Cost by Department' %}">
-                    <div class="pd-chart-card__header"><div><div class="pd-chart-card__title">{% trans "Cost by Department" %}</div><div class="pd-chart-card__subtitle" id="dept-month">{% trans "This month" %}</div></div></div>
+                    <div class="pd-chart-card__header"><div><div class="pd-chart-card__title">{% trans "Cost by Department" %}</div><div class="pd-chart-card__subtitle"><span id="dept-month">{% trans "This month" %}</span> — {% trans "Net pay by department" %}</div></div></div>
                     <div class="pd-chart-card__body"><div id="chart-dept-cost"></div></div>
                 </div>
 
@@ -462,7 +462,7 @@
                     <div class="pd-kpi-card__value">${data.active_loans}</div>
                     <div class="pd-kpi-card__sub">${data.loan_amount > 0 ? fmt(data.loan_amount) + ' {% trans "total" %}' : '{% trans "No active loans" %}'}</div>
                 </a>
-                <a href="{% url 'view-reimbursement' %}" class="pd-kpi-card">
+                <a href="{% url 'view-reimbursement' %}?open_tab=1&status=requested&type=reimbursement&filter_applied=1" class="pd-kpi-card">
                     <div class="pd-kpi-card__icon pd-kpi-card__icon--purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
                     <div class="pd-kpi-card__label">{% trans "Reimbursements" %}</div>
                     <div class="pd-kpi-card__value">${data.pending_reimbursements}</div>
@@ -526,8 +526,8 @@
             document.getElementById('dept-month').textContent = data.month;
             if (!data.departments.length) { document.querySelector("#chart-dept-cost").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
             renderChart('dept-cost', document.querySelector("#chart-dept-cost"), {
-                series: data.departments.map(d => d.net),
-                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                series: [{ name: '{% trans "Net" %}', data: data.departments.map(d => d.net) }],
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
                         const d = data.departments[config.dataPointIndex];
                         const base = "{% url 'view-payslip' %}";
@@ -538,13 +538,14 @@
                         }
                     }}
                 },
-                labels: data.departments.map(d => d.department),
-                colors: COLORS.slice(0, data.departments.length),
-                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '12px', fontWeight: 600, formatter: w => fmt(w.globals.seriesTotals.reduce((a,b)=>a+b,0)) } } } } },
-                stroke: { width: 2, colors: [cardBg] },
-                dataLabels: { enabled: false },
-                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
-                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { seriesIndex: i }) => `${fmt(v)} (${data.departments[i].count} payslips)` } },
+                colors: COLORS,
+                plotOptions: { bar: { borderRadius: 6, horizontal: true, barHeight: '55%', distributed: true } },
+                xaxis: { categories: data.departments.map(d => d.department), labels: { style: { colors: textColor }, formatter: v => fmt(v) } },
+                yaxis: { labels: { style: { colors: textColor, fontSize: '11px' } } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: true, formatter: v => fmt(v), style: { fontSize: '11px' } },
+                legend: { show: false },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { dataPointIndex: i }) => `${fmt(v)} (${data.departments[i].count} payslips)` } },
             });
         });
     }
@@ -630,7 +631,7 @@
                     events: { dataPointSelection: (event, ctx, opts) => {
                         const title = data.components[opts.dataPointIndex] && data.components[opts.dataPointIndex].title;
                         const base = "{% url 'view-deduction' %}";
-                        window.location.href = title ? base + "?search=" + encodeURIComponent(title) : base;
+                        window.location.href = title ? base + "?title=" + encodeURIComponent(title) : base;
                     }}
                 },
                 colors: ['#ef4444'],

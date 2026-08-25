@@ -19,6 +19,7 @@ if apps.is_installed("attendance"):
         parse_multi_value,
         resolve_relative_date_range,
     )
+    from report.pivot_limits import pivot_json_with_meta
 
     def convert_time_to_decimal_w(time_str):
         try:
@@ -479,7 +480,7 @@ if apps.is_installed("attendance"):
             }
             for item in data
         ]
-        return JsonResponse(data_list, safe=False)
+        return pivot_json_with_meta(data_list)
 
     # Helper function to format time
     def format_time(time_value):

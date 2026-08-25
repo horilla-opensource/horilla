@@ -6,8 +6,10 @@
 
     #enlargeImageContainer {
         display: none;
-        z-index: 1000;
-        position: absolute;
+        position: fixed;
+        z-index: 9999;
+        top: 20%;
+        right: 7%;
         width: 300px;
         height: 400px;
     }
@@ -20,19 +22,19 @@
     }
 </style>
 
-<div>
+<div class="max-h-[400px] overflow-y-auto">
     <table class="fixed-table w-full border-separate">
         <thead class="sticky top-0 bg-[white] z-[1]">
             <tr class="border-b border-[#ececec]">
-                <th class="text-sm font-medium text-left min-w-[150px]">
+                <th class="text-sm font-medium text-left min-w-[150px] px-3 py-1">
                     {% trans "Resume" %}
                 </th>
-                <th class="text-sm font-medium text-left min-w-[100px]">
+                <th class="text-sm font-medium text-left min-w-[100px] px-3 py-1">
                     {% trans "Score" %}
                 </th>
                 {% if perms.recruitment.change_recruitment or perms.recruitment.delete_recruitment or perms.recruitment.add_recruitment %}
-                    <th class="text-sm font-medium text-left min-w-[150px]">
-                        {% trans "Resume" %}
+                    <th class="text-sm font-medium text-left min-w-[150px] px-3 py-1">
+                        {% trans "Action" %}
                     </th>
                 {% endif %}
             </tr>
@@ -81,6 +83,8 @@
     </table>
 </div>
 
+<div id="enlargeImageContainer" style="width:400px; height:500px;" class="enlargeImageContainer"></div>
+
 <script>
     function enlargeImage(src, element) {
            var enlargeImageContainer = $("#enlargeImageContainer");
@@ -92,20 +96,7 @@
            });
 
            enlargeImageContainer.append(enlargedImage);
-
-           // Calculate the position of the hovered element
-           var elementOffset = $(element).offset();
-           var elementWidth = $(element).outerWidth();
-
-           var topPosition = elementOffset.top - 30;
-           var leftPosition = elementWidth + 10;
-
-           // Position the enlarge image container dynamically
-           enlargeImageContainer.css({
-               top: topPosition + 'px',
-               left: leftPosition + 'px',
-               display: 'block',
-           });
+           enlargeImageContainer.css("display", "block");
        }
 
        function hideEnlargeImage() {

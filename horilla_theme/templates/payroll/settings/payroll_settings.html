@@ -38,30 +38,6 @@
                 </p>
                 {{ currency_form.position }}
             </div>
-            {% if request.session.selected_company == "all" or not request.session.selected_company %}
-                <div class="w-full">
-                    <label>{% trans "Company" %}</label>
-                    <p class="text-xs text-gray-500 mt-1">
-                        {% trans "Company these currency settings apply to." %}
-                    </p>
-                    <select name="company_id" id="id_company_id" class="oh-select oh-select-2 w-100">
-                        {% for company in companies %}
-                            <option
-                                value="{{ company.id }}"
-                                {% if company.id == selected_company_id %}
-                                    selected
-                                {% endif %}
-                            >
-                                {{ company.company }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            {% else %}
-                {% for company in companies %}
-                    <input type="hidden" name="company_id" value="{{ company.id }}">
-                {% endfor %}
-            {% endif %}
             <button class="h-[36px] btn self-end" type="submit">
                 {% trans 'Save' %}
             </button>

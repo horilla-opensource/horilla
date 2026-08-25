@@ -63,12 +63,6 @@ class Project(HorillaModel):
         related_name="project_managers",
         verbose_name=_("Project Managers"),
     )
-    members = models.ManyToManyField(
-        Employee,
-        blank=True,
-        related_name="project_members",
-        verbose_name=_("Project Members"),
-    )
     status = models.CharField(
         choices=PROJECT_STATUS, max_length=250, default="new", verbose_name=_("Status")
     )
@@ -107,17 +101,6 @@ class Project(HorillaModel):
             )
             return employee_names_string
 
-    def get_members(self):
-        """
-        members column
-        """
-        employees = self.members.all()
-        if employees:
-            employee_names_string = ", ".join(
-                [str(employee.get_full_name()) for employee in employees]
-            )
-            return employee_names_string
-
     def get_avatar(self):
         """
         Method will retun the api to the avatar or path to the profile image
@@ -146,7 +129,6 @@ class Project(HorillaModel):
 
         if (
             employee in self.managers.all()
-            or employee in self.members.all()
             or any(employee in task.task_managers.all() for task in self.task_set.all())
             or any(employee in task.task_members.all() for task in self.task_set.all())
             or request.user.has_perm("project.view_project")
@@ -247,7 +229,12 @@ class Project(HorillaModel):
         is_new, request = self.pk is None, getattr(
             horilla_middlewares._thread_locals, "request", None
         )
-        if is_new and (cid := request.session.get("selected_company")) and cid != "all":
+        if (
+            is_new
+            and request is not None
+            and (cid := request.session.get("selected_company"))
+            and cid != "all"
+        ):
             self.company_id = Company.find(cid)
         super().save(*args, **kwargs)
         if is_new:
@@ -610,13 +597,20 @@ class TimeSheet(HorillaModel):
                     not employee in task.task_managers.all()
                     and not employee in task.task_members.all()
                     and not employee in task.project.managers.all()
-                    and not employee in task.project.members.all()
                 ):
                     raise ValidationError(_("Employee not included in this task"))
             elif self.project_id:
+                project = self.project_id
                 if (
-                    not employee in self.project_id.managers.all()
-                    and not employee in self.project_id.members.all()
+                    not employee in project.managers.all()
+                    and not any(
+                        employee in task.task_managers.all()
+                        for task in project.task_set.all()
+                    )
+                    and not any(
+                        employee in task.task_members.all()
+                        for task in project.task_set.all()
+                    )
                 ):
                     raise ValidationError(_("Employee not included in this project"))
             if self.date > datetime.datetime.today().date():

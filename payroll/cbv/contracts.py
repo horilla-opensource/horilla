@@ -69,6 +69,7 @@ class ContractsList(HorillaListView):
         (_("Wage Type"), "get_wage_type_display"),
         (_("Basic Salary"), "wage"),
         (_("Filing Status"), "filing_status"),
+        (_("Salary Structure"), "salary_structure_id"),
         (_("Status"), "status_col"),
     ]
 
@@ -144,6 +145,24 @@ class ContractsList(HorillaListView):
                 data-toggle="oh-modal-toggle"
                 """
 
+    # Mirrors ContractsNav.nested_group_by_fields below -- List and Nav
+    # are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split).
+    nested_group_by_fields = [
+        ("employee_id", _("Employee")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("contract_status", _("Status")),
+        ("employee_id__employee_work_info__shift_id", _("Shift")),
+        ("employee_id__employee_work_info__work_type_id", _("Work Type")),
+        ("employee_id__employee_work_info__job_role_id", _("Job Role")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
+        ("employee_id__employee_work_info__company_id", _("Company")),
+    ]
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required(perm="payroll.view_contract"), name="dispatch")
@@ -211,6 +230,9 @@ class ContractsNav(HorillaNavView):
         ("employee_id__employee_work_info__company_id", _("Company")),
     ]
 
+    # Mirrors ContractsList.nested_group_by_fields above
+    nested_group_by_fields = group_by_fields
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(hx_request_required, name="dispatch")
@@ -275,6 +297,7 @@ class ContractsDetailView(HorillaDetailedView):
         (_("Shift"), "shift"),
         (_("Work Type"), "work_type"),
         (_("Filing Status"), "filing_status"),
+        (_("Salary Structure"), "salary_structure_id"),
         (_("Pay Frequency"), "get_pay_frequency_display"),
         (_("Status"), "get_status_display"),
         (_("Calculate Leave Amount"), "cal_leave_amount", True),

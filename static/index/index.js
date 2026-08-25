@@ -120,6 +120,45 @@ function hlvSelectAllRecords(btn, viewSelector, storeKey) {
     }
 }
 
+/**
+ * Inverse of hlvSelectAllRecords: drop a specific set of ids (e.g. every
+ * record in one group) out of the shared selection, not the whole store.
+ * Selected ids can span pages/groups the DOM never rendered, so this can't
+ * rely solely on unchecking on-page checkboxes -- it patches data-ids
+ * directly first, then syncs whichever of those rows do happen to be
+ * on-page (via a real checkbox uncheck + change event, so highlightRow and
+ * every other change-bound handler still runs normally).
+ */
+function hlvUnselectRecords(btn, viewSelector, storeKey) {
+    storeKey = storeKey || "selectedInstances";
+    var idsToRemove = [];
+    try {
+        idsToRemove = JSON.parse($(btn).attr("data-select-ids") || "[]").map(String);
+    } catch (e) {
+        idsToRemove = [];
+    }
+    var removeSet = new Set(idsToRemove);
+
+    var $store = ensureSelectionStore(storeKey);
+    var ids = JSON.parse($store.attr("data-ids") || "[]")
+        .map(String)
+        .filter(function (id) { return !removeSet.has(id); });
+    $store.attr("data-ids", JSON.stringify(ids));
+    setStoredSelection(storeKey, ids);
+
+    var $scope = $(viewSelector).filter(".hlv-container");
+    if (!$scope.length) $scope = $(viewSelector).first();
+    $scope.find(".list-table-row").each(function () {
+        if (removeSet.has(String($(this).val())) && $(this).is(":checked")) {
+            $(this).prop("checked", false).trigger("change");
+        }
+    });
+
+    var viewId = (viewSelector || "").replace(/^#/, "");
+    reloadSelectedCount($(`#count_${viewId}`), storeKey);
+    reloadSelectedCount($(`.count_${viewId}`), storeKey);
+}
+
 // Used by the "Unselect"/"Unselect All Records" actions so the clear is
 // persisted synchronously - the MutationObserver mirror below is async
 // (fires on the next microtask), which left a window where hitting reload
@@ -192,11 +231,11 @@ function setStoredSelection(storeKey, ids) {
 // immediately undone by the very next selectSelected() call.
 var _hlvSelectionRestored = {};
 
-// Selection ids are written to the DOM in several places (inline template
-// onclick handlers, addToSelectedId, the checkbox .change() handler below) -
-// rather than hook every call site, watch the attribute itself so every path
-// stays mirrored into localStorage.
 $(document).ready(function () {
+    // Selection ids are written to the DOM in several places (inline template
+    // onclick handlers, addToSelectedId, the checkbox .change() handler below) -
+    // rather than hook every call site, watch the attribute itself so every path
+    // stays mirrored into localStorage.
     var selectionObserver = new MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
             var el = mutation.target;
@@ -209,6 +248,37 @@ $(document).ready(function () {
         attributes: true,
         attributeFilter: ["data-ids"],
         subtree: true,
+    });
+
+    // Clear modal target contents when closed to prevent duplicate DOM IDs
+    var modalObserver = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+            if (mutation.attributeName === "class") {
+                var el = mutation.target;
+                // If the modal was just closed (lost oh-modal--show class)
+                if (!$(el).hasClass("oh-modal--show")) {
+                    var clearableModals = [
+                        "objectCreateModal",
+                        "objectUpdateModal",
+                        "dynamicCreateModal",
+                        "objectDetailsModal",
+                        "objectDetailsModalW25",
+                        "genericModal"
+                    ];
+                    if (clearableModals.includes(el.id)) {
+                        setTimeout(function() {
+                            if (!$(el).hasClass("oh-modal--show")) {
+                                $(el).find(".oh-modal__dialog").empty();
+                            }
+                        }, 200); // 200ms delay to allow any close transitions to finish
+                    }
+                }
+            }
+        });
+    });
+
+    $(".oh-modal").each(function () {
+        modalObserver.observe(this, { attributes: true });
     });
 });
 
@@ -780,6 +850,17 @@ function reloadMessage(e) {
     $("#reloadMessagesButton").click();
 }
 
+// Star-rating widgets (e.g. helpdesk ticket priority) submit their form on
+// the radio's own "change" event rather than a click handler on an ancestor
+// element. A click on the <label> that visually draws the star fires TWO
+// bubbling click events (one on the label itself, one the browser forwards
+// to its associated radio input as label-activation behavior), so an
+// ancestor onclick submits the form twice. "change" fires exactly once per
+// actual value change regardless of how many click events led to it.
+$(document).on("change", ".rating-radio", function () {
+    $(this).closest("form").find("button[type=submit]").click();
+});
+
 function htmxLoadIndicator(e) {
     var target = $(e).attr("hx-target");
     var table = $(target).find("table");
@@ -1349,16 +1430,27 @@ $(document).on("htmx:afterSwap", function () {
     // reason) -- this handler fires on EVERY htmx swap anywhere on the page,
     // so a modal reopened more than once was hitting this repeatedly.
     $("[data-summernote]").each(function () {
-        if ($(this).next(".note-editor").length > 0) {
+        var $source = $(this);
+        if ($source.next(".note-editor").length > 0) {
             return;
         }
-        $(this).summernote({
+        // Summernote hides the field it is attached to. The browser cannot
+        // focus a hidden control to report a constraint violation, so a
+        // `required` one aborts the whole submit ("An invalid form control
+        // ... is not focusable") — no submit event, no request, and the Save
+        // button appears dead. Leave the required check to the server, which
+        // renders its error inline under the field.
+        this.removeAttribute("required");
+        $source.summernote({
             height: 300,
             codeviewFilter: false,
             codeviewIframeFilter: false,
             callbacks: {
                 onChange: function (contents) {
-                    $('[name="body"]').val(contents);
+                    // Write back to the edited field itself — targeting
+                    // [name="body"] pushed the text into an unrelated field
+                    // whenever the editor was attached to anything else.
+                    $source.val(contents);
                 },
             },
         });
@@ -1398,6 +1490,12 @@ function initializeSummernote(candId, searchWords) {
     if ($body.next(".note-editor").length > 0) {
         $body.summernote("destroy");
     }
+    // Same hidden-required trap as the [data-summernote] init above: the
+    // browser cannot report a violation on the hidden source field, so a
+    // `required` mail body silently blocks the whole form submit.
+    $body.each(function () {
+        this.removeAttribute("required");
+    });
     $body.summernote({
         hint: {
             mentions: mentions,

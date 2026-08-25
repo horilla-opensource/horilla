@@ -212,14 +212,16 @@
                     </div>
                 </div>
             {% endif %}
-            {% for indication in row_status_indications %}
-                <button
-                    class="px-4 py-2 bg-[white] border border-[#e6e6e6] rounded-md text-xs flex gap-2 items-center flex-shrink-0 whitespace-nowrap"
-                    {{ indication.2|safe }}
-                >
-                    <span class="h-3 w-3 rounded-full flex {{ indication.0 }}"></span>{{ indication.1 }}
-                </button>
-            {% endfor %}
+            {% if not hide_row_status_indications %}
+                {% for indication in row_status_indications %}
+                    <button
+                        class="px-4 py-2 bg-[white] border border-[#e6e6e6] rounded-md text-xs flex gap-2 items-center flex-shrink-0 whitespace-nowrap"
+                        {{ indication.2|safe }}
+                    >
+                        <span class="h-3 w-3 rounded-full flex {{ indication.0 }}"></span>{{ indication.1 }}
+                    </button>
+                {% endfor %}
+            {% endif %}
         </div>
     {% endif %}
     </div>

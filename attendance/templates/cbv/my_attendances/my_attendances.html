@@ -33,7 +33,7 @@
         }
     </style>
 
-    <div hx-get="{% url 'my-attendance-nav' %}" hx-trigger="load"></div>
+    <div hx-get="{% url 'my-attendance-nav' %}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
 
     {% include "generic/components.html" %}
 

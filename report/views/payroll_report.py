@@ -19,6 +19,7 @@ if apps.is_installed("payroll"):
         parse_multi_value,
         resolve_relative_date_range,
     )
+    from report.pivot_limits import pivot_json_with_meta
 
     # Maps the field ids used by the dynamic Filters modal to the ORM path
     # `payroll_pivot` filters on, scoped per `model` type ("payslip" /
@@ -663,4 +664,4 @@ if apps.is_installed("payroll"):
         else:
             data_list = []
 
-        return JsonResponse(data_list, safe=False)
+        return pivot_json_with_meta(data_list)

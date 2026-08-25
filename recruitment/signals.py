@@ -14,6 +14,14 @@ def create_initial_stage(sender, instance, created, **kwargs):
     """
     This is post save method, used to create initial stage for the recruitment
     """
+    # raw=True during fixture loading (loaddata): a fixture provides its own
+    # Stage rows with explicit pks, and those load *after* this signal would
+    # fire (Recruitment rows come first in the file). Auto-creating stages
+    # here would grab the lowest pks first, which the fixture's own
+    # explicit-pk Stage rows then silently overwrite by pk on save -- e.g. a
+    # different recruitment's stage getting reassigned to this one.
+    if kwargs.get("raw"):
+        return
     if created:
         applied_stage = Stage()
         applied_stage.sequence = 0

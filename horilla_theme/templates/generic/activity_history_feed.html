@@ -105,7 +105,7 @@
                             <li
                                 class="relative pr-1"
                                 data-history-entry
-                                data-search-text="{{ history.actor_name }} {{ history.action_phrase }} {{ history.reason }} {% for change in history.changes %}{{ change.field_label|default:change.field }} {{ change.old_value }} {{ change.new_value }} {% endfor %}"
+                                data-search-text="{{ history.actor_name }} {{ history.action_phrase }} {{ history.reason }} {% for change in history.changes %}{{ change.field_label|default:change.field }} {{ change.old_value }} {{ change.new_value }} {% endfor %}{% for tag in history.history_tags %}{{ tag.title }} {% endfor %}"
                             >
                                 <span
                                     class="eah-dot absolute -left-5 top-3.5 w-2.5 h-2.5 rounded-full bg-primary-600"
@@ -134,6 +134,15 @@
                                                 <p class="text-xs text-dark-100 italic mt-1 mb-0">
                                                     “{{ history.reason }}”
                                                 </p>
+                                            {% endif %}
+                                            {% if history.history_tags %}
+                                                <div class="flex flex-wrap gap-1 mt-1.5">
+                                                    {% for tag in history.history_tags %}
+                                                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-primary-100 text-primary-600">
+                                                            {{ tag.title }}
+                                                        </span>
+                                                    {% endfor %}
+                                                </div>
                                             {% endif %}
                                         </div>
                                     </div>

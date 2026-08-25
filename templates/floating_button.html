@@ -110,6 +110,7 @@
 </style>
 
 <div class="inner-fabs">
+    {% if request.resolver_match.url_name != "dashboard" and request.resolver_match.url_name != "ess-dashboard" %}
     <div id="fab9" class="fab round" data-tooltip="{% trans 'Dashboard Charts' %}">
         <a
             class="text-light"
@@ -121,6 +122,7 @@
             <i class="material-icons mt-2">leaderboard</i>
         </a>
     </div>
+    {% endif %}
     {% if "helpdesk"|app_installed %}
         <div id="fab8" class="fab round" data-tooltip="{% trans 'Create Ticket' %}">
             <a

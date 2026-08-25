@@ -25,7 +25,7 @@
 
     <div id="candidateMainContainer">
         <div id="onboardingCandidatesNavBar">
-            <div hx-get='{% url "onboarding-candidates-nav" %}' hx-trigger="load"></div>
+            <div hx-get='{% url "onboarding-candidates-nav" %}?{{ request.GET.urlencode }}' hx-trigger="load"></div>
         </div>
 
         {% include "generic/components.html" %}

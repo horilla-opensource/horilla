@@ -1,12 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 
 from horilla.http import HorillaRedirect
-from project.methods import (
-    any_project_manager,
-    any_project_member,
-    any_task_manager,
-    any_task_member,
-)
+from project.methods import any_project_manager, any_task_manager, any_task_member
 
 from .models import Project, ProjectStage, Task
 
@@ -27,7 +22,6 @@ def is_projectmanager_or_member_or_perms(function, perm):
         if (
             user.has_perm(perm)
             or any_project_manager(user)
-            or any_project_member(user)
             or any_task_manager(user)
             or any_task_member(user)
         ):
@@ -55,7 +49,6 @@ def project_update_permission(function=None, *args, **kwargs):
         if (
             request.user.has_perm("project.change_project")
             or employee in project.managers.all()
-            or employee in project.members.all()
             or any(
                 employee in task.task_managers.all() for task in project.task_set.all()
             )
@@ -113,7 +106,14 @@ def project_stage_update_permission(function=None, *args, **kwargs):
             request.user.has_perm("project.change_project")
             or request.user.has_perm("project.change_task")
             or request.user.employee_get in project.managers.all()
-            or request.user.employee_get in project.members.all()
+            or any(
+                request.user.employee_get in task.task_managers.all()
+                for task in project.task_set.all()
+            )
+            or any(
+                request.user.employee_get in task.task_members.all()
+                for task in project.task_set.all()
+            )
         ):
             return function(request, *args, stage_id=stage_id, **kwargs)
         return HorillaRedirect(request, message=_("You don't have permission."))
@@ -164,7 +164,6 @@ def task_update_permission(function=None, *args, **kwargs):
             or request.user.employee_get in task.task_managers.all()
             or request.user.employee_get in task.task_members.all()
             or request.user.employee_get in project.managers.all()
-            or request.user.employee_get in project.members.all()
         ):
             return function(request, *args, task_id=task_id, **kwargs)
 

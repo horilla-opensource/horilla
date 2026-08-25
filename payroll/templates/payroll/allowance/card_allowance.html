@@ -46,7 +46,7 @@
                   {% if allowance.based_on == "work_type_id" %}
                       <span class="oh-timeoff-modal__stat-title">{{allowance.work_type_per_attendance_amount|currency_symbol_position}} {% trans "Amount Per" %} {{allowance.work_type_id}}</span>
                   {% endif %}
-                  {% if allowance.based_on == "overtime" %}
+                  {% if allowance.based_on == "overtime" or allowance.based_on == "week_off_overtime" or allowance.based_on == "holiday_overtime" %}
                       <span class="oh-timeoff-modal__stat-title">{{allowance.amount_per_one_hr|currency_symbol_position}} {% trans "Amount Per One Hour" %}</span>
                   {% endif %}
             {% endif %}

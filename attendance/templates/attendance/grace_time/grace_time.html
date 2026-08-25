@@ -1,5 +1,6 @@
 {% extends "index.html" %}
-{% load i18n %}
+{% load i18n horillafilters %}
+{% get_company as theme_obj %}
 
 {% block content %}
     <style>
@@ -16,10 +17,17 @@
             transition-property: all;
         }
 
-        .oh-tabs__tab--active {
-            border: 1px solid #e54f38;
-            background-color: #fcedeb;
-            color: #e54f38;
+        .oh-tabs__tab:hover {
+            border-color: {{ theme_obj.primary_500|default:"#F7C8C1" }};
+            background-color: {{ theme_obj.primary_100|default:"#FFF5F1" }};
+            color: {{ theme_obj.primary_600|default:"#E54F38" }};
+        }
+
+        .oh-tabs__tab--active,
+        .oh-tabs__tab--active:hover {
+            border: 1px solid {{ theme_obj.primary_600|default:"#E54F38" }};
+            background-color: {{ theme_obj.primary_300|default:"#FCEDEB" }};
+            color: {{ theme_obj.primary_600|default:"#E54F38" }};
         }
     </style>
 

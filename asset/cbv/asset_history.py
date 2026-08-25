@@ -53,6 +53,7 @@ class AssetHistorylistView(HorillaListView):
 
     columns = [
         (_("Asset"), "asset_id__asset_name", "get_avatar"),
+        (_("Asset Item"), "asset_item_id"),
         (_("Employee"), "assigned_to_employee_id"),
         (_("Assigned Date"), "assigned_date"),
         (_("Returned Date"), "return_date"),
@@ -72,6 +73,17 @@ class AssetHistorylistView(HorillaListView):
         data-target="#genericModal"
         data-toggle="oh-modal-toggle"
     """
+
+    # Mirrors AssetHistoryNavView.nested_group_by_fields below -- List
+    # and Nav are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split).
+    nested_group_by_fields = [
+        ("asset_id__asset_name", _("Asset")),
+        ("assigned_to_employee_id", _("Employee")),
+        ("assigned_date", _("Assigned Date")),
+        ("return_date", _("Returned Date")),
+        ("return_status", _("Return Status")),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")
@@ -110,6 +122,15 @@ class AssetHistoryNavView(HorillaNavView):
         ("assigned_to_employee_id", _("Employee")),
         ("assigned_date", _("Assigned Date")),
         ("return_date", _("Returned Date")),
+    ]
+
+    # Mirrors AssetHistorylistView.nested_group_by_fields
+    nested_group_by_fields = [
+        ("asset_id__asset_name", _("Asset")),
+        ("assigned_to_employee_id", _("Employee")),
+        ("assigned_date", _("Assigned Date")),
+        ("return_date", _("Returned Date")),
+        ("return_status", _("Return Status")),
     ]
 
 
@@ -168,6 +189,7 @@ class AssetHistoryDetailView(HorillaDetailedView):
     }
     body = [
         (_("Allocated User"), "assigned_to_employee_id"),
+        (_("Asset Item"), "asset_item_id"),
         (_("Returned Status"), "return_status"),
         (_("Allocated Date"), "assigned_date"),
         (_("Returned Date"), "return_date"),

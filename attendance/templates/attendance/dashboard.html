@@ -70,7 +70,7 @@
         /* ── KPI ── */
         .am-kpi-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             margin-bottom: 20px;
             gap: 14px;
         }
@@ -448,7 +448,7 @@
 
         /* ── Period picker (mirrors onboarding/recruitment) ── */
         .am-period-picker {
-            display: flex;
+            display: none !important; /* TEMP: hide period picker */
             align-items: center;
             gap: 6px;
             font-size: 12px;
@@ -782,7 +782,7 @@
                 </div>
             </div>
             <div class="am-header__actions" style="display: flex; align-items: center; gap: 8px">
-                <div class="am-period-picker">
+                <div class="am-period-picker" hidden>
                     <button class="am-period-preset" data-preset="this_month">{% trans "This Month" %}</button>
                     <button class="am-period-preset" data-preset="last_month">{% trans "Last Month" %}</button>
                     <button class="am-period-preset" data-preset="this_quarter">{% trans "Quarter" %}</button>
@@ -863,19 +863,19 @@
                         <div class="am-chart-card__body"><div id="chart-dept-attendance"></div></div>
                     </div>
 
-                    <!-- Calendar Heatmap -->
+                    <!-- Daily attendance rate (colored bar; id kept for prefs) -->
                     <div
                         class="am-chart-card am-chart-card--wide"
                         data-chart-id="calendar_heatmap"
                         data-chart-section="attendance"
-                        data-chart-label="{% trans 'Attendance Calendar' %}"
+                        data-chart-label="{% trans 'Daily Attendance Rate' %}"
                         data-chart-wide="1"
                     >
                         <div class="am-chart-card__header">
                             <div>
-                                <div class="am-chart-card__title">{% trans "Attendance Calendar" %}</div>
+                                <div class="am-chart-card__title">{% trans "Daily Attendance Rate" %}</div>
                                 <div class="am-chart-card__subtitle" id="calendar-month">
-                                    {% trans "Daily attendance rate" %}
+                                    {% trans "Present rate by day" %}
                                 </div>
                             </div>
                         </div>
@@ -999,7 +999,7 @@
                         <div class="am-chart-card__header">
                             <div>
                                 <div class="am-chart-card__title">{% trans "Overtime by Department" %}</div>
-                                <div class="am-chart-card__subtitle" id="ot-month">{% trans "This month" %}</div>
+                                <div class="am-chart-card__subtitle"><span id="ot-month">{% trans "This month" %}</span> — {% trans "Approved vs other hours" %}</div>
                             </div>
                         </div>
                         <div class="am-chart-card__body"><div id="chart-overtime"></div></div>
@@ -1409,19 +1409,19 @@
                 .then(r => r.json())
                 .then(data => {
                     document.getElementById('am-kpi-grid').innerHTML = `
-                <a href="{% url 'attendance-view' %}" class="am-kpi-card">
+                <a href="{% url 'attendance-view' %}?open_tab=1&attendance_date=${data.date}&filter_applied=on" class="am-kpi-card">
                     <div class="am-kpi-card__icon am-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></div>
                     <div class="am-kpi-card__label">{% trans "Present Today" %}</div>
                     <div class="am-kpi-card__value">${data.present_today}</div>
                     <div class="am-kpi-card__sub"><span class="am-badge ${data.attendance_rate >= 80 ? 'am-badge--green' : 'am-badge--amber'}">${data.attendance_rate}% {% trans "rate" %}</span></div>
                 </a>
-                <a href="{% url 'attendance-view' %}" class="am-kpi-card">
+                <a href="{% url 'attendance-view' %}?open_tab=1&attendance_date=${data.date}&filter_applied=on" class="am-kpi-card">
                     <div class="am-kpi-card__icon am-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
                     <div class="am-kpi-card__label">{% trans "On Time" %}</div>
                     <div class="am-kpi-card__value">${data.on_time}</div>
                     <div class="am-kpi-card__sub">{% trans "of" %} ${data.total_employees} {% trans "employees" %}</div>
                 </a>
-                <a href="{% url 'late-come-early-out-view' %}" class="am-kpi-card">
+                <a href="{% url 'late-come-early-out-view' %}?type=late_come&attendance_date=${data.date}&attendance_id__attendance_validated=false&filter_applied=on" class="am-kpi-card">
                     <div class="am-kpi-card__icon am-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
                     <div class="am-kpi-card__label">{% trans "Late Arrival" %}</div>
                     <div class="am-kpi-card__value">${data.late_come}</div>
@@ -1429,13 +1429,17 @@
                                 ? '<span class="am-badge am-badge--red">' + data.early_out + ' {% trans "early departure" %}</span>'
                                 : '<span style="opacity:0.5">{% trans "No early outs" %}</span>'}</div>
                 </a>
-                <a href="{% url 'attendance-view' %}?attendance_validated=unknown" class="am-kpi-card">
+                <a href="{% url 'attendance-view' %}?open_tab=1&attendance_validated=false&filter_applied=on" class="am-kpi-card">
                     <div class="am-kpi-card__icon am-kpi-card__icon--red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg></div>
                     <div class="am-kpi-card__label">{% trans "Pending" %}</div>
                     <div class="am-kpi-card__value">${data.pending_validation}</div>
-                    <div class="am-kpi-card__sub">${data.pending_overtime > 0
-                                ? '<span class="am-badge am-badge--amber">' + data.pending_overtime + ' {% trans "OT pending" %}</span>'
-                                : '{% trans "To validate" %}'}</div>
+                    <div class="am-kpi-card__sub">{% trans "To validate" %}</div>
+                </a>
+                <a href="{% url 'attendance-view' %}?open_tab=2&attendance_overtime_approve=false&attendance_validated=true&filter_applied=on" class="am-kpi-card">
+                    <div class="am-kpi-card__icon am-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                    <div class="am-kpi-card__label">{% trans "OT Pending" %}</div>
+                    <div class="am-kpi-card__value">${data.pending_overtime}</div>
+                    <div class="am-kpi-card__sub">{% trans "awaiting approval" %}</div>
                 </a>`;
                 }).catch(() => { document.getElementById('am-kpi-grid').innerHTML = emptyHtml('{% trans "Unable to load KPIs" %}'); });
             }
@@ -1559,8 +1563,11 @@
                     document.getElementById('ot-month').textContent = data.month;
                     if (!data.departments.length) { document.querySelector("#chart-overtime").innerHTML = emptyHtml('{% trans "No overtime data" %}'); return; }
                     renderChart('overtime', document.querySelector("#chart-overtime"), {
-                        series: data.departments.map(d => d.total_hours),
-                        chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
+                        series: [
+                            { name: '{% trans "Approved" %}', data: data.departments.map(d => d.approved_hours) },
+                            { name: '{% trans "Other" %}', data: data.departments.map(d => Math.max(0, +(d.total_hours - d.approved_hours).toFixed(1))) },
+                        ],
+                        chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: true, animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {
                                 const dept = data.departments[config.dataPointIndex]?.department;
                                 if (!dept) return;
@@ -1572,18 +1579,14 @@
                                 });
                             }}
                         },
-                        labels: data.departments.map(d => d.department),
-                        colors: COLORS.slice(0, data.departments.length),
-                        plotOptions: { pie: { expandOnClick: true, donut: { size: '68%',
-                            labels: { show: true,
-                                name: { fontSize: '13px', fontWeight: 700, color: textColor },
-                                value: { fontSize: '20px', fontWeight: 800, color: textColor, formatter: v => parseFloat(v).toFixed(1) + 'h' },
-                                total: { show: true, label: '{% trans "Total Hrs" %}', color: subTextColor, fontSize: '11px', fontWeight: 600,
-                                    formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0).toFixed(1) + 'h' } } } } },
-                        stroke: { width: 3, colors: [cardBg] },
+                        colors: ['#22c55e', '#f59e0b'],
+                        plotOptions: { bar: { borderRadius: 5, borderRadiusApplication: 'end', horizontal: true, barHeight: '55%' } },
+                        xaxis: { ...XAXIS_STYLE, categories: data.departments.map(d => d.department), labels: { ...XAXIS_STYLE.labels, formatter: v => (parseFloat(v) || 0).toFixed(1) + 'h' } },
+                        yaxis: { labels: { style: { colors: textColor, fontSize: '11px', fontWeight: 500 } } },
+                        grid: GRID,
                         dataLabels: { enabled: false },
-                        legend: { ...LEGEND_STYLE },
-                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: (v, { seriesIndex: i }) => `${v.toFixed(1)} hrs (${data.departments[i].employees} emp)` } },
+                        legend: { ...LEGEND_STYLE, position: 'top', horizontalAlign: 'right' },
+                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: (v, { dataPointIndex: i }) => `${(parseFloat(v) || 0).toFixed(1)} hrs (${data.departments[i].employees} emp)` } },
                     });
                 }).catch(() => { document.querySelector("#chart-overtime").innerHTML = emptyHtml('{% trans "No overtime data" %}'); });
             }
@@ -1686,12 +1689,12 @@
             }
             loadClockinDist();
 
-            // ─── CALENDAR HEATMAP ───
+            // ─── DAILY ATTENDANCE RATE ───
             function loadCalendarHeatmap() {
             fetchP("{% url 'attendance-dashboard-calendar' %}")
                 .then(r => r.json())
                 .then(data => {
-                    document.getElementById('calendar-month').textContent = data.period_label || data.month || '{% trans "Daily attendance rate" %}';
+                    document.getElementById('calendar-month').textContent = data.period_label || data.month || '{% trans "Present rate by day" %}';
                     if (!data.days.length) { document.querySelector("#chart-calendar").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
                     const dense = data.days.length > 31;
                     const categories = data.days.map(d => d.label !== undefined ? d.label : d.dom);

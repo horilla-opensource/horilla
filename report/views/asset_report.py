@@ -16,6 +16,7 @@ if apps.is_installed("asset"):
         parse_multi_value,
         resolve_relative_date_range,
     )
+    from report.pivot_limits import pivot_json_with_meta
 
     # Maps the field ids used by the dynamic Filters modal to the ORM path
     # `asset_pivot` filters on. "asset_user" is handled separately since it
@@ -367,4 +368,4 @@ if apps.is_installed("asset"):
             }
             for item in data
         ]
-        return JsonResponse(data_list, safe=False)
+        return pivot_json_with_meta(data_list)

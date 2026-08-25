@@ -26,6 +26,7 @@ from payroll.models.models import (
     Payslip,
     PayslipAutoGenerate,
     Reimbursement,
+    SalaryStructure,
 )
 from payroll.models.tax_models import TaxBracket
 
@@ -212,6 +213,22 @@ class DeductionFilter(HorillaFilterSet):
             )
         queryset = queryset | og_queryset.filter(title__icontains=value)
         return queryset.distinct()
+
+
+class SalaryStructureFilter(HorillaFilterSet):
+    """
+    Filter set class for SalaryStructure model.
+    """
+
+    search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
+
+    class Meta:
+        """
+        Meta class to add additional options
+        """
+
+        model = SalaryStructure
+        fields = ["title"]
 
 
 class PayslipFilter(HorillaFilterSet):

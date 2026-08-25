@@ -234,10 +234,13 @@ def faq_view(request, obj_id, **kwargs):
     if not faq_category:
         messages.info(request, _("No FAQ found for the given category."))
         return redirect(faq_category_view)
+    previous_data = request.GET.urlencode()
+    faqs = paginator_qry(faqs, request.GET.get("page"))
     context = {
         "faqs": faqs,
         "f": FAQFilter(request.GET),
         "cat_id": obj_id,
+        "pd": previous_data,
         "create_tag_f": TagsForm(),
     }
 
@@ -338,12 +341,14 @@ def faq_search(request):
     if category:
         data_dict.pop("category")
 
+    faqs = paginator_qry(faqs, request.GET.get("page"))
     context = {
         "faqs": faqs,
         "f": FAQFilter(request.GET),
         "pd": previous_data,
         "filter_dict": data_dict,
         "query": query,
+        "cat_id": id,
     }
     return render(request, "helpdesk/faq/faq_list.html", context)
 
@@ -367,10 +372,12 @@ def faq_filter(request, id):
     faqs = faqs.filter(category=id)
     data_dict = parse_qs(previous_data)
     get_key_instances(FAQ, data_dict)
+    faqs = paginator_qry(faqs, request.GET.get("page"))
     context = {
         "faqs": faqs,
         "f": FAQFilter(request.GET),
         "pd": previous_data,
+        "cat_id": id,
         "filter_dict": data_dict,
     }
     return render(request, "helpdesk/faq/faq_list.html", context)
@@ -1923,14 +1930,20 @@ def load_faqs(request):
     faq_category_file = os.path.join(base_dir, "load_data", "faq_category.json")
     tags_file = os.path.join(base_dir, "load_data", "tags.json")
 
-    with open(faq_category_file, "r") as cats:
-        faq_category_raw = json.load(cats)
+    try:
+        with open(faq_category_file, "r") as cats:
+            faq_category_raw = json.load(cats)
 
-    with open(tags_file, "r") as t:
-        tags_raw = json.load(t)
+        with open(tags_file, "r") as t:
+            tags_raw = json.load(t)
 
-    with open(faq_file, "r") as faqs:
-        faq_raw = json.load(faqs)
+        with open(faq_file, "r") as faqs:
+            faq_raw = json.load(faqs)
+    except (OSError, json.JSONDecodeError):
+        messages.error(
+            request, _("Default FAQs could not be loaded. Please contact support.")
+        )
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
     category_lookup = {item["pk"]: item["fields"]["title"] for item in faq_category_raw}
 

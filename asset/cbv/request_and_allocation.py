@@ -51,6 +51,24 @@ class RequestAndAllocationView(TemplateView):
 
     template_name = "cbv/request_and_allocation/request_and_allocation.html"
 
+    def get(self, request, *args, **kwargs):
+        # Deep-link support for e.g. the dashboard's "pending approvals"
+        # card: ?asset_request_status=Requested. The query string can't be
+        # relied on to survive down to the Asset Request tab's own list
+        # fetch - this page auto-submits an unrelated (Asset Allocation)
+        # filter form on load, which htmx rebuilds the request URL from,
+        # dropping any param that isn't one of that form's own fields.
+        # Stash it in the session instead, which AssetRequestList.get_queryset
+        # picks up as a fallback, immune to that. A plain (non-deep-link)
+        # visit to this page clears any stale value instead of letting it
+        # linger indefinitely.
+        status = request.GET.get("asset_request_status")
+        if status:
+            request.session["asset_request_deep_link_status"] = status
+        else:
+            request.session.pop("asset_request_deep_link_status", None)
+        return super().get(request, *args, **kwargs)
+
 
 @method_decorator(login_required, name="dispatch")
 class AllocationList(HorillaListView):
@@ -95,6 +113,24 @@ class AllocationList(HorillaListView):
         data-target="#genericModal"
         data-toggle="oh-modal-toggle"
     """
+
+    # Mirrors RequestAndAllocationNav.nested_group_by_fields below. This
+    # one Nav is shared across all 3 tabs (Asset, Asset Request, Asset
+    # Allocation) backed by two different models (AssetRequest here vs
+    # AssetAssignment for this List/AssetAllocationList) -- same mixed
+    # list already used by the classic group_by_fields above, which
+    # tolerates a field not existing on the currently active tab's model
+    # by falling back silently (see the try/except around both the
+    # classic and nested grouping branches in HorillaListView).
+    nested_group_by_fields = [
+        ("requested_employee_id", _("Asset Request / Employee")),
+        ("asset_category_id", _("Asset Request / Asset Category")),
+        ("asset_request_date", _("Asset Request / Request Date")),
+        ("asset_request_status", _("Asset Request / Status")),
+        ("assigned_to_employee_id", _("Asset Allocation / Employee")),
+        ("assigned_date", _("Asset Allocation / Assigned Date")),
+        ("return_date", _("Asset Allocation / Return Date")),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")
@@ -200,6 +236,25 @@ class AssetRequestList(HorillaListView):
             queryset=queryset,
             field="requested_employee_id",
         ) | queryset.filter(requested_employee_id=self.request.user.employee_get)
+
+        # Fallback for a deep link into this tab (see
+        # RequestAndAllocationView.get) - only applies when the current
+        # request didn't already specify its own status filter. Read (not
+        # popped) since HorillaListView calls get_queryset() more than once
+        # per request; RequestAndAllocationView.get clears it on the next
+        # plain visit instead, so it doesn't linger indefinitely.
+        if not self.request.GET.get("asset_request_status"):
+            deep_link_status = self.request.session.get(
+                "asset_request_deep_link_status"
+            )
+            if deep_link_status:
+                queryset = queryset.filter(asset_request_status=deep_link_status)
+                # Also reflect it in the "Filters:" chip row - otherwise the
+                # list is correctly filtered but looks unfiltered, since
+                # that display reads self._saved_filters, not this queryset.
+                saved_filters = self._saved_filters.copy()
+                saved_filters["asset_request_status"] = deep_link_status
+                self._saved_filters = saved_filters
         return queryset
 
     columns = [
@@ -228,6 +283,17 @@ class AssetRequestList(HorillaListView):
         data-target="#genericModal"
         data-toggle="oh-modal-toggle"
     """
+
+    # Mirrors AllocationList.nested_group_by_fields / RequestAndAllocationNav.nested_group_by_fields
+    nested_group_by_fields = [
+        ("requested_employee_id", _("Asset Request / Employee")),
+        ("asset_category_id", _("Asset Request / Asset Category")),
+        ("asset_request_date", _("Asset Request / Request Date")),
+        ("asset_request_status", _("Asset Request / Status")),
+        ("assigned_to_employee_id", _("Asset Allocation / Employee")),
+        ("assigned_date", _("Asset Allocation / Assigned Date")),
+        ("return_date", _("Asset Allocation / Return Date")),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")
@@ -367,12 +433,21 @@ class RequestAndAllocationNav(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("tab-asset-request-allocation")
+        # Forward deep-link params (e.g. open_tab / asset_request_status from
+        # the dashboard's "pending approvals" card) onto the tab view this
+        # nav auto-loads on page load - otherwise they never reach it, since
+        # this hardcoded search_url carries no query string of its own.
+        if self.request and self.request.GET:
+            self.search_url += f"?{self.request.GET.urlencode()}"
 
     nav_title = _("Asset")
     filter_instance = AssetAllocationFilter()
     filter_form_context_name = "asset_allocation_filter_form"
     filter_body_template = "cbv/request_and_allocation/filter.html"
     search_swap_target = "#listContainer"
+    # Scopes the shared Group By dropdown's options to the active tab --
+    # see the script in this template for why.
+    template_name = "cbv/request_and_allocation/nav.html"
 
     def get_context_data(self, **kwargs):
         """
@@ -394,6 +469,9 @@ class RequestAndAllocationNav(HorillaNavView):
         ("assigned_date", _("Asset Allocation / Assigned Date")),
         ("return_date", _("Asset Allocation / Return Date")),
     ]
+
+    # Mirrors AllocationList/AssetRequestList.nested_group_by_fields
+    nested_group_by_fields = group_by_fields
 
 
 @method_decorator(login_required, name="dispatch")
@@ -587,6 +665,10 @@ class AssetAllocationFormView(HorillaFormView):
             message = _("Asset allocated Successfully")
             instance = form.save()
             asset = instance.asset_id
+            if instance.asset_item_id_id:
+                asset_item = instance.asset_item_id
+                asset_item.status = "In use"
+                asset_item.save()
             active_count = AssetAssignment.objects.filter(
                 asset_id=asset, return_date__isnull=True
             ).count()
@@ -626,6 +708,9 @@ class AssetApproveFormView(HorillaFormView):
         context = super().get_context_data(**kwargs)
         req_id = self.kwargs.get("req_id")
         asset_request = AssetRequest.objects.filter(id=req_id).first()
+        if not asset_request:
+            messages.error(self.request, _("Asset request not found."))
+            return context
         asset_category = asset_request.asset_category_id
         assets = Asset.available_assets().filter(asset_category_id=asset_category)
         self.form.fields["asset_id"].queryset = assets
@@ -651,9 +736,16 @@ class AssetApproveFormView(HorillaFormView):
         """
         req_id = self.kwargs.get("req_id")
         asset_request = AssetRequest.objects.filter(id=req_id).first()
+        if not asset_request:
+            messages.error(self.request, _("Asset request not found."))
+            return self.HttpResponse()
         if form.is_valid():
             instance = form.save()
             asset = instance.asset_id
+            if instance.asset_item_id_id:
+                asset_item = instance.asset_item_id
+                asset_item.status = "In use"
+                asset_item.save()
             active_count = AssetAssignment.objects.filter(
                 asset_id=asset, return_date__isnull=True
             ).count()

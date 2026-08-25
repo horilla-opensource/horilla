@@ -17,6 +17,7 @@ from .models import (
     AssetAssignment,
     AssetCategory,
     AssetDocuments,
+    AssetItem,
     AssetLot,
     AssetReport,
     AssetRequest,
@@ -26,6 +27,7 @@ from .models import (
 
 
 admin.site.register(Asset)
+admin.site.register(AssetItem)
 admin.site.register(AssetRequest)
 admin.site.register(AssetCategory)
 admin.site.register(AssetAssignment)

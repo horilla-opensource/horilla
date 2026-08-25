@@ -887,8 +887,7 @@ class EmployeeGeneralSettingPrefixForm(forms.ModelForm):
     class Meta:
 
         model = EmployeeGeneralSetting
-        exclude = ["objects"]
+        fields = ["badge_id_prefix"]
         widgets = {
             "badge_id_prefix": forms.TextInput(attrs={"class": "oh-input w-100"}),
-            "company_id": forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
         }

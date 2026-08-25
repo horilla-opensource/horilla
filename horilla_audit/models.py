@@ -135,9 +135,16 @@ def post_create_horilla_audit_log(sender, instance, *_args, **kwargs):
     """
     try:
         history_instance = kwargs["history_instance"]
-        history_instance.history_tags.set(
-            HistoricalRecords.thread.request.POST.getlist("history_tags")
-        )
+        from horilla_audit.models import AuditTag as _AuditTag
+
+        tag_ids = []
+        for raw_value in HistoricalRecords.thread.request.POST.getlist("history_tags"):
+            if raw_value.isdigit() and _AuditTag.objects.filter(pk=raw_value).exists():
+                tag_ids.append(int(raw_value))
+            elif raw_value:
+                tag, _created = _AuditTag.objects.get_or_create(title=raw_value)
+                tag_ids.append(tag.pk)
+        history_instance.history_tags.set(tag_ids)
         if isinstance(history_instance, HorillaAuditLog):
             history_instance.history_title = "Demo Title"
             remove_duplicate_history(instance)

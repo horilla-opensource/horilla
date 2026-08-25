@@ -176,7 +176,6 @@
                                                         {% endfor %}
                                                     </div>
                                                     <div class="oh-sticky-table__td">{{ task.end_date }}</div>
-                                                    <div class="oh-sticky-table__td">{{ task.get_status_display }}</div>
                                                     <div
                                                         class="oh-sticky-table__td oh-table-config__td"
                                                         onclick="event.stopPropagation()"
@@ -198,6 +197,31 @@
                                                                     {% endif %}
                                                                 >
                                                                     {{ option.1 }}
+                                                                </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    <div
+                                                        class="oh-sticky-table__td oh-table-config__td"
+                                                        onclick="event.stopPropagation()"
+                                                    >
+                                                        <select
+                                                            class="oh-table__editable-input w-100 mt-2 mr-2"
+                                                            hx-get="{% url 'task-stage-change' task.id %}?view=list"
+                                                            hx-trigger="change"
+                                                            hx-swap="afterend"
+                                                            tabindex="-1"
+                                                            aria-hidden="true"
+                                                            name="stage"
+                                                        >
+                                                            {% for project_stage in stages %}
+                                                                <option
+                                                                    value="{{project_stage.id}}"
+                                                                    {% if project_stage.id == task.stage_id %}
+                                                                        selected
+                                                                    {% endif %}
+                                                                >
+                                                                    {{ project_stage.title }}
                                                                 </option>
                                                             {% endfor %}
                                                         </select>

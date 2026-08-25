@@ -53,6 +53,7 @@ from base.methods import (
     filtersubordinatesemployeemodel,
     get_key_instances,
     get_pagination,
+    get_session_company,
     has_export_access,
     sortby,
 )
@@ -3216,6 +3217,10 @@ def dashboard_employee_gender(request):
             },
         ],
         "labels": labels,
+        # Stable, untranslated series keys. Consumers used to derive slice
+        # colours and the drill-down filter from the label text, which only
+        # works while the UI is English.
+        "keys": ["active", "inactive"],
     }
     return JsonResponse(response)
 
@@ -3506,30 +3511,21 @@ def delete_employee_note_file(request, note_file_id):
     return HttpResponse()
 
 
-@login_required
-@hx_request_required
-@owner_can_enter("employee.view_bonuspoint", Employee)
-def bonus_points_tab(request, pk):
+def _bonus_points_context(employee_obj, page_number):
     """
-    This function is used to view Bonus Points tab of an employee in employee individual
-    & profile view.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-    emp_id (int): The id of the employee.
-
-    Returns: return bonus_points template
-
+    Builds the {"points", "activity_list"} context shared by the Bonus Points
+    tab's full render and its paginated "Points History" partial.
     """
-    employee_obj = Employee.objects.get(id=pk)
     try:
-        points = BonusPoint.objects.get(employee_id=pk)
+        points = BonusPoint.objects.get(employee_id=employee_obj.id)
         if apps.is_installed("payroll"):
             Reimbursement = get_horilla_model_class(
                 app_label="payroll", model="reimbursement"
             )
             requested_bonus_points = Reimbursement.objects.filter(
-                employee_id=pk, type="bonus_encashment", status="requested"
+                employee_id=employee_obj.id,
+                type="bonus_encashment",
+                status="requested",
             )
         else:
             requested_bonus_points = QuerySet().none()
@@ -3562,20 +3558,67 @@ def bonus_points_tab(request, pk):
                 }
             )
         activity_list = sorted(activity_list, key=lambda x: x["date"], reverse=True)
-        context = {
-            "employee": employee_obj,
+        return {
             "points": points,
-            "activity_list": activity_list,
+            "activity_list": paginator_qry(activity_list, page_number),
         }
     except ObjectDoesNotExist:
-        context = {
-            "employee": employee_obj,
+        return {
             "points": None,
-            "activity_list": [],
+            "activity_list": paginator_qry([], page_number),
         }
+
+
+@login_required
+@hx_request_required
+@owner_can_enter("employee.view_bonuspoint", Employee)
+def bonus_points_tab(request, pk):
+    """
+    This function is used to view Bonus Points tab of an employee in employee individual
+    & profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return bonus_points template
+
+    """
+    employee_obj = Employee.objects.get(id=pk)
+    context = {
+        "employee": employee_obj,
+        **_bonus_points_context(employee_obj, request.GET.get("page")),
+    }
     return render(
         request,
         "tabs/bonus_points.html",
+        context,
+    )
+
+
+@login_required
+@hx_request_required
+@owner_can_enter("employee.view_bonuspoint", Employee)
+def bonus_points_history_tab(request, pk):
+    """
+    Returns just the "Points History" card of the Bonus Points tab, used by
+    its pagination controls so only that card is swapped, not the whole tab.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    pk (int): The id of the employee.
+
+    Returns: return bonus_points_history template
+
+    """
+    employee_obj = Employee.objects.get(id=pk)
+    context = {
+        "employee": employee_obj,
+        **_bonus_points_context(employee_obj, request.GET.get("page")),
+    }
+    return render(
+        request,
+        "tabs/bonus_points_history.html",
         context,
     )
 
@@ -3864,9 +3907,10 @@ def initial_prefix(request):
     """
     This method is used to set the initial prefix using a form.
     """
-    instance = EmployeeGeneralSetting.objects.first()  # Get the first instance or None
-    if not instance:
-        instance = EmployeeGeneralSetting()  # Create a new instance if none exists
+    tracking_company = get_session_company(request)
+    instance, _created = EmployeeGeneralSetting.objects.get_or_create(
+        company_id=tracking_company
+    )
 
     if request.method == "POST":
         form = EmployeeGeneralSettingPrefixForm(request.POST, instance=instance)

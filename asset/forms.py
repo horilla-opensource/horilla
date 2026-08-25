@@ -11,6 +11,7 @@ from datetime import date
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from asset.models import (
@@ -18,6 +19,7 @@ from asset.models import (
     AssetAssignment,
     AssetCategory,
     AssetDocuments,
+    AssetItem,
     AssetLot,
     AssetReport,
     AssetRequest,
@@ -131,6 +133,40 @@ class AssetForm(ModelForm):
                 raise ValidationError(
                     {"asset_tracking_id": "Already asset with this tracking id exists."}
                 )
+
+
+class AssetItemForm(forms.ModelForm):
+    """
+    Row form for the asset item bulk-edit table - tracking ID plus a
+    manually-settable status (e.g. Damaged -> Available once repaired).
+    """
+
+    class Meta:
+        model = AssetItem
+        fields = ["tracking_id", "status"]
+        widgets = {
+            "tracking_id": forms.TextInput(attrs={"class": "oh-input w-100"}),
+            "status": forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        current_status = self.instance.status if self.instance.pk else None
+        # "In use" only ever comes from an actual assignment - never hand-set here.
+        self.fields["status"].choices = [
+            choice
+            for choice in AssetItem.STATUS
+            if choice[0] != "In use" or choice[0] == current_status
+        ]
+        if current_status == "In use":
+            self.fields["status"].disabled = True
+
+
+AssetItemFormSet = forms.modelformset_factory(
+    AssetItem,
+    form=AssetItemForm,
+    extra=0,
+)
 
 
 class DocumentForm(forms.ModelForm):
@@ -325,6 +361,7 @@ class AssetAllocationForm(ModelForm):
     cols = {
         "assigned_to_employee_id": 12,
         "asset_id": 12,
+        "asset_item_id": 12,
         "assigned_by_employee_id": 12,
     }
 
@@ -340,6 +377,52 @@ class AssetAllocationForm(ModelForm):
             label=_("Assign Condition Images")
         )
         self.fields["assign_images"].required = True
+
+        asset = None
+        submitted_asset_id = self.data.get("asset_id") if self.data else None
+        if submitted_asset_id:
+            asset = Asset.objects.filter(pk=submitted_asset_id).first()
+        elif self.instance.pk:
+            asset = self.instance.asset_id
+        if asset:
+            self.fields["asset_item_id"].queryset = asset.asset_items.filter(
+                Q(status="Available") | Q(pk=self.instance.asset_item_id_id)
+            )
+        else:
+            self.fields["asset_item_id"].queryset = AssetItem.objects.none()
+        self.fields["asset_id"].widget.attrs.update(
+            {
+                "hx-target": "#id_asset_item_id_parent_div",
+                "hx-include": "#id_asset_item_id",
+                "hx-trigger": "change,load",
+                "hx-swap": "innerHTML",
+                "hx-get": "/asset/get-asset-items-hx/",
+            }
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        asset = cleaned_data.get("asset_id")
+        asset_item = cleaned_data.get("asset_item_id")
+        if asset:
+            if not asset_item:
+                available_items = asset.asset_items.filter(status="Available")
+                if available_items.count() == 1:
+                    asset_item = available_items.first()
+                    cleaned_data["asset_item_id"] = asset_item
+                elif available_items.count() > 1:
+                    raise ValidationError(
+                        {"asset_item_id": _("Please select an asset item to assign.")}
+                    )
+            elif asset_item.asset_id_id != asset.id:
+                raise ValidationError(
+                    {
+                        "asset_item_id": _(
+                            "The selected item does not belong to the chosen asset."
+                        )
+                    }
+                )
+        return cleaned_data
 
     class Meta:
         """
@@ -364,6 +447,7 @@ class AssetAllocationForm(ModelForm):
         ]
         widgets = {
             "asset_id": forms.Select(attrs={"class": "oh-select oh-select-2 "}),
+            "asset_item_id": forms.Select(attrs={"class": "oh-select oh-select-2 "}),
             "assigned_to_employee_id": forms.Select(
                 attrs={"class": "oh-select oh-select-2 "}
             ),
@@ -373,9 +457,6 @@ class AssetAllocationForm(ModelForm):
                 },
             ),
         }
-
-        # def clean(self):
-        #     cleaned_data = super.clean()
 
 
 class AssetReturnForm(ModelForm):

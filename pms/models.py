@@ -949,7 +949,19 @@ class QuestionTemplate(HorillaModel):
 
     def get_detail_url(self):
         """
-        Detail view url
+        Detail view url - the full page with question-management actions,
+        used by the Question Template list view's own row click.
+        """
+        url = reverse_lazy(
+            "question-template-detailed-view", kwargs={"template_id": self.pk}
+        )
+        return url
+
+    def get_related_url(self):
+        """
+        Read-only related-object link url - used when this template is
+        referenced from elsewhere (e.g. a Meeting's detail view), see
+        `pms/apps.py`'s registration with `related_link_registry`.
         """
         url = reverse_lazy(
             "question-template-related-view", kwargs={"template_id": self.pk}

@@ -98,6 +98,23 @@ class MeetingsList(HorillaListView):
                 data-toggle="oh-modal-toggle"
                 """
 
+    # Mirrors MeetingsNav.nested_group_by_fields below -- List and Nav
+    # are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split). "Employee",
+    # "Manager" and "Answerable Employees" are deliberately left out:
+    # they're ManyToManyFields, and the nested engine's
+    # `values(*fields).annotate(Count("pk"))` aggregate would fan out one
+    # row per related employee, double-counting meetings with more than
+    # one assigned. That also rules out the filter's
+    # employee_id__employee_work_info__* paths (Department, Job Position,
+    # etc.), since those traverse the same M2M.
+    nested_group_by_fields = [
+        ("title", _("Title")),
+        ("date", _("Date")),
+        ("question_template", _("Question Template")),
+        ("company_id", _("Company")),
+    ]
+
 
 @method_decorator(login_required, name="dispatch")
 class MeetingsNav(HorillaNavView):
@@ -121,6 +138,14 @@ class MeetingsNav(HorillaNavView):
     filter_body_template = "cbv/meetings/filter.html"
     filter_form_context_name = "filter_form"
     search_swap_target = "#listContainer"
+
+    # Mirrors MeetingsList.nested_group_by_fields
+    nested_group_by_fields = [
+        ("title", _("Title")),
+        ("date", _("Date")),
+        ("question_template", _("Question Template")),
+        ("company_id", _("Company")),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")
@@ -273,6 +298,9 @@ class MeetingResponseFormView(HorillaFormView):
     def form_valid(self, form: MeetingResponseForm) -> HttpResponse:
         meet_id = self.kwargs.get("id")
         meeting = Meetings.objects.filter(id=meet_id).first()
+        if not meeting:
+            messages.error(self.request, _("Meeting not found."))
+            return self.HttpResponse()
         if form.is_valid():
             message = _("Response added successfully")
             response = self.request.POST.get("response")

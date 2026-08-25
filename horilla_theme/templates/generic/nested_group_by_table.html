@@ -1,0 +1,643 @@
+{% load static i18n generic_template_filters %}
+
+<style>
+    #{{ view_id|safe }} .stickyleft-second {
+        left: 30px;
+    }
+    #{{ view_id|safe }} table.fixed-table input[type="checkbox"] {
+        margin-top: 0;
+    }
+    /* Nested accordions must only reveal their OWN direct body when shown —
+       the base .oh-accordion--show .oh-accordion-body rule (used by the
+       flat single-level group-by view) is a descendant selector, so with
+       genuine DOM nesting it would force every nested child's body open
+       too as soon as an ancestor opens. Scope a corrected, child-combinator
+       rule to this nested container only — it must not affect the base
+       rule used elsewhere (filter dropdowns, the single-field group-by view). */
+    #{{ view_id|safe }} .oh-nested-accordion .oh-accordion-body {
+        display: none;
+    }
+    #{{ view_id|safe }} .oh-nested-accordion .oh-accordion.oh-accordion--show > .oh-accordion-body {
+        display: block;
+    }
+    /* .oh-accordion-header carries a global, unscoped default everywhere
+       in the app (v1_styles.css: pink background, orange text, its own
+       decorative chevron) — fine for the single small "Group By" accordion
+       in the filter dropdown, but not for a header repeated at every node
+       of a tree. `color` gets overridden for free since our own <span>
+       declares it directly (inheritance always loses to a direct
+       declaration), but `background` doesn't inherit, so nothing here
+       overrode it without this — and !important sidesteps having to
+       reason about load order between this stylesheet and Tailwind's
+       runtime-injected utility classes.
+
+       Three tiers need to read apart at a glance: department header (level
+       0), job-position header (level > 0), and the actual data rows. Two
+       near-white tints of the same hue (the previous approach) don't
+       separate enough — using a different HUE per level (warm accent for
+       department, neutral stone for job position) means telling them apart
+       doesn't depend on noticing a subtle brightness difference. Data rows
+       stay plain white so the table itself — the reason anyone opened this
+       view — is the one thing that isn't tinted. */
+    #{{ view_id|safe }} .oh-nested-accordion .oh-accordion-header {
+        border-radius: 0 !important;
+    }
+    #{{ view_id|safe }} .oh-nested-accordion .oh-accordion-header::after {
+        display: none !important;
+    }
+    #{{ view_id|safe }} .oh-nested-accordion > .oh-accordion > .oh-accordion-header {
+        background: #FCEEEA !important;
+    }
+    #{{ view_id|safe }} .oh-nested-accordion > .oh-accordion > .oh-accordion-header:hover {
+        background: #FAE2DB !important;
+    }
+    #{{ view_id|safe }} .oh-nested-accordion > .oh-accordion.oh-accordion--show > .oh-accordion-header {
+        border-bottom: 2px solid #F0C9BC;
+    }
+    #{{ view_id|safe }} .oh-nested-accordion .oh-accordion-body .oh-accordion-header {
+        background: #F1EFEA !important;
+    }
+    #{{ view_id|safe }} .oh-nested-accordion .oh-accordion-body .oh-accordion-header:hover {
+        background: #E9E6DE !important;
+    }
+    #{{ view_id|safe }} .oh-nested-accordion .oh-accordion-body .oh-accordion.oh-accordion--show > .oh-accordion-header {
+        border-bottom: 1px solid #DEDBD4;
+    }
+    /* The data-row table itself needs to read as "the table", not a
+       continuation of the tinted header tree above it -- a plain top
+       border (no margin/radius: those would shift it out of column
+       alignment with the one shared header rendered at the very top of
+       the view) marks a clear hand-off from chrome to data. */
+    #{{ view_id|safe }} .oh-nested-accordion .ngb-leaf-table {
+        background: #fff;
+        border-top: 2px solid #EAE8E3;
+    }
+    /* The app has a global, unscoped ::-webkit-scrollbar rule (thumb
+       #acacac, track #eee) meant for normal single-scrollbar pages — with
+       a horizontally-scrolling header plus one per leaf group, that reads
+       as a wall of gray bars. Scoped to just this view's scroll
+       containers: invisible at rest, a faint thumb on hover only, no
+       visible track at all. */
+    #{{ view_id|safe }} .ngb-hscroll::-webkit-scrollbar {
+        height: 5px;
+    }
+    #{{ view_id|safe }} .ngb-hscroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    #{{ view_id|safe }} .ngb-hscroll::-webkit-scrollbar-thumb {
+        background: transparent;
+    }
+    #{{ view_id|safe }} .ngb-hscroll:hover::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+    }
+    /* The app has an .is-loading shimmer defined in style.min.css, but that
+       file is never actually <link>ed on this page (checked: 27 stylesheets
+       load here, style.min.css isn't one of them) -- htmxLoadIndicator()
+       has been adding a class with zero matching CSS this whole time, on
+       every list in the app, not just this one. So this is fully
+       self-contained rather than "layered on top of" anything: a frosted
+       glass-tinted base fill (::before) plus a brighter blurred streak
+       that sweeps across it (::after), scoped to this view's leaf tables. */
+    #{{ view_id|safe }} .ngb-leaf-table table.is-loading td,
+    #{{ view_id|safe }} .ngb-leaf-table table.is-loading th {
+        position: relative;
+        overflow: hidden;
+    }
+    #{{ view_id|safe }} .ngb-leaf-table table.is-loading td::before,
+    #{{ view_id|safe }} .ngb-leaf-table table.is-loading th::before {
+        content: "";
+        position: absolute;
+        inset: 3px;
+        /* Only needs to sit above this cell's own (emptied) content -- a
+           four-digit z-index here doesn't stay contained to the cell, it
+           competes globally with page chrome like the nav's filter
+           dropdown (z-30) and was winning, bleeding the skeleton through
+           on top of it. */
+        z-index: 1;
+        border-radius: 5px;
+        background: rgba(120, 130, 150, 0.14);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    #{{ view_id|safe }} .ngb-leaf-table table.is-loading td::after,
+    #{{ view_id|safe }} .ngb-leaf-table table.is-loading th::after {
+        content: "";
+        position: absolute;
+        inset: 3px;
+        z-index: 2;
+        border-radius: 5px;
+        background: linear-gradient(
+            115deg,
+            transparent 30%,
+            rgba(255, 255, 255, 0.55) 47%,
+            rgba(255, 255, 255, 0.9) 50%,
+            rgba(255, 255, 255, 0.55) 53%,
+            transparent 70%
+        );
+        transform: translateX(-120%);
+        animation: ngbGlassSweep 1.6s ease-in-out infinite;
+        pointer-events: none;
+    }
+    @keyframes ngbGlassSweep {
+        100% {
+            transform: translateX(120%);
+        }
+    }
+    #{{ view_id|safe }} thead th {
+        color: #45443E;
+        font-weight: 600 !important;
+        font-size: 11px !important;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+    #{{ view_id|safe }} thead th ion-icon {
+        font-size: 11px !important;
+    }
+    /* First level's row never needs a leading separator -- :first-child
+       adapts automatically as rows get added/removed inline, so there's
+       no JS bookkeeping needed to keep this right after a remove/add. */
+    #{{ view_id|safe }} .ngb-crumb-row:first-child .ngb-crumb-sep {
+        display: none;
+    }
+    #{{ view_id|safe }} .ngb-crumb-select-trigger {
+        /* Bare <button> used as the pill's field-picker trigger (replacing
+           a native <select>, which always renders the OS's own unstyled
+           dropdown list -- see .ngb-crumb-dropdown below for the styled
+           replacement). Buttons carry the same kind of intrinsic
+           padding/line-height as .ngb-crumb-remove below, so height/
+           line-height are pinned explicitly rather than left to the
+           browser, for the same reason: matching the Expand All button's
+           26px pill height precisely. 20px (> the 12.8px font-size) leaves
+           room for descenders on letters like the "p" in "Department"/
+           "Position" that a tighter box would clip. */
+        height: 20px;
+        line-height: 20px;
+        padding: 0;
+        margin: 0;
+    }
+    #{{ view_id|safe }} .ngb-crumb-remove {
+        /* Same intrinsic-sizing issue as the trigger above, but for a bare
+           <button>: its own default padding/line-height made it 24px tall
+           around a 12px icon, which alone accounted for the whole 8px gap
+           between this pill's height and the Expand All button's. */
+        line-height: 1;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+    }
+    #{{ view_id|safe }} .ngb-crumb-dropdown {
+        /* Click-toggled (not the app's usual hover-based .dropdown-content)
+           since these pills sit tightly packed in a row -- hover would
+           make an adjacent pill's list pop open just from the cursor
+           passing over it on the way elsewhere. .force-open is added/
+           removed entirely in JS (ngbCrumbToggleDropdown/document click-
+           outside handler), so this is a plain display toggle, no
+           opacity/transform transition needed. */
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        margin-top: 4px;
+        z-index: 30;
+        min-width: 150px;
+    }
+    #{{ view_id|safe }} .ngb-crumb-select-wrap.force-open .ngb-crumb-dropdown {
+        display: block;
+    }
+    #{{ view_id|safe }} .ngb-crumb-option:disabled {
+        /* Already used by a sibling pill -- shown but not pickable, same
+           convention as the disabled <option> this replaces. */
+        color: #C7C4BA;
+        cursor: not-allowed;
+    }
+    #{{ view_id|safe }} .ngb-crumb-option:not(:disabled):hover {
+        background: #F7F6F3;
+        color: #DB6D62;
+    }
+    #{{ view_id|safe }} #ngbToolbarPanel.ngb-dropdown-open {
+        /* This panel clips overflow so the table's rounded top corners
+           don't bleed a square edge underneath -- but that same clipping
+           would cut off the dropdown list opening below a pill, since the
+           panel's own height barely exceeds the toolbar row. Lifted only
+           while a dropdown is actually open (tracked in JS), not removed
+           outright, so the corner-masking behavior is otherwise unchanged. */
+        overflow: visible;
+    }
+</style>
+
+<div id="{{view_id|safe}}" class="hlv-container relative" data-list-path="{{request.path}}" data-selected-instances-key="{{selected_instances_key_id}}"{% if show_toggle_form %} x-data="{ open: false }"{% endif %}>
+    <div
+        class="oh-modal"
+        id="bulkUpdateModal{{view_id|safe}}"
+        role="dialog"
+        aria-labelledby="bulkUpdateModal{{view_id|safe}}"
+        aria-hidden="true"
+    >
+        <div
+            class="oh-modal__dialog"
+            id="bulkUpdateModalBody{{view_id|safe}}"
+        ></div>
+    </div>
+    {% include "generic/export_fields_modal.html" %}
+    <script>
+        if (!$(".HTV").length) {
+        	$("#reloadMessagesButton").click();
+        }
+    </script>
+
+    <button
+        class="reload-record"
+        id="{{view_id|safe}}Reload"
+        hidden
+        hx-get="{{request.path}}?{{request.GET.urlencode}}"
+        hx-target="#{{view_id|safe}}"
+        hx-swap="outerHTML"
+        hx-on:click="htmxLoadIndicator(this);"
+    >
+    </button>
+
+    {% if show_filter_tags %}
+        {% include "generic/filter_tags.html" %}
+    {% endif %}
+
+    {% include "generic/quick_actions.html" %}
+
+    {% comment %}
+        Everything above (filter tags, the Unselect/Select/Update toolbar)
+        stays on the plain page background, matching how the flat list
+        (horilla_list_table.html) and every other Horilla list toolbar is
+        laid out -- only the actual grouped-tree content below sits inside
+        its own white card, instead of the whole thing (toolbar included)
+        being nested inside one shared white box.
+    {% endcomment %}
+    <div class="bg-white p-4 rounded-md shadow-card relative">
+    {% comment %}
+        top-[75px], not top-0: #mainHeader (the breadcrumb/icon bar) is
+        position:fixed, top:0, z-index:40, 75px tall -- position:sticky
+        elsewhere on the page has to stick below it, not at the literal
+        viewport top, or it renders directly underneath that opaque bar
+        and never becomes visible no matter how far the page scrolls.
+
+        The "Grouped by" chips + Expand/Collapse row now live inside this
+        same bordered panel as the column header (separated by one border,
+        not floating above it as a separate element) so the two read as
+        one toolbar block sitting on top of the tinted group tree below.
+    {% endcomment %}
+    <div id="ngbToolbarPanel" class="bg-white rounded-t-md border border-b-0 border-[#EAE8E3] overflow-hidden sticky top-[75px] z-10">
+        <div class="flex justify-between items-center flex-wrap gap-2 px-3 py-2 border-b border-[#EAE8E3]">
+            <div
+                class="flex items-center gap-1.5 flex-wrap"
+                id="ngbBreadcrumbLevels"
+                data-max-levels="{{nested_group_by_fields|length}}"
+            >
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-[#6F6D66] mr-0.5">
+                    <ion-icon name="git-branch-outline" style="font-size:13px;"></ion-icon>
+                    {% trans "Grouped by" %}
+                </span>
+                {% for f in nested_fields_active %}
+                    <div class="ngb-crumb-row inline-flex items-center gap-1.5">
+                        <ion-icon name="chevron-forward-outline" class="ngb-crumb-sep text-[#C7C4BA]" style="font-size:11px;"></ion-icon>
+                        <div class="inline-flex items-center gap-1 bg-white border border-[#DEDBD4] rounded-md px-2 py-0.5">
+                            <span class="ngb-crumb-badge inline-flex items-center justify-center w-[16px] h-[16px] rounded-full bg-primary-100 text-primary-600 text-[9px] font-bold shrink-0">{{ forloop.counter }}</span>
+                            <span class="ngb-crumb-select-wrap relative inline-flex items-center">
+                                <input type="hidden" class="ngb-crumb-hidden-input" name="nested_fields" form="filterForm" value="{{f.0}}">
+                                <button
+                                    type="button"
+                                    class="ngb-crumb-select-trigger inline-flex items-center gap-1 bg-transparent border-none text-xs font-medium text-[#4B4A45] cursor-pointer"
+                                    onclick="ngbCrumbToggleDropdown(this);"
+                                >
+                                    <span class="ngb-crumb-select-label">{{ f.1 }}</span>
+                                    <ion-icon name="chevron-down-outline" class="pointer-events-none text-[#6F6D66]" style="font-size:11px;"></ion-icon>
+                                </button>
+                                <div class="ngb-crumb-dropdown bg-white border border-[#EAE8E3] rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)]">
+                                    <ul class="text-xs py-1">
+                                        {% for field in nested_group_by_fields %}
+                                            <li>
+                                                <button
+                                                    type="button"
+                                                    class="ngb-crumb-option w-full text-left px-3 py-1.5 whitespace-nowrap transition-colors{% if field.0 == f.0 %} text-primary-600 font-semibold{% endif %}"
+                                                    data-value="{{field.0}}"
+                                                    onclick="ngbCrumbSelectOption(this);"
+                                                >{{ field.1 }}</button>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </span>
+                            <button
+                                type="button"
+                                class="ngb-crumb-remove text-[#9C9A92] hover:text-red-500 shrink-0"
+                                title="{% trans 'Remove level' %}"
+                                onclick="ngbCrumbRemove(this);"
+                            ><ion-icon name="close-outline" style="font-size:12px;"></ion-icon></button>
+                        </div>
+                    </div>
+                {% endfor %}
+                <button
+                    type="button"
+                    class="inline-flex items-center gap-1 text-xs font-medium text-primary-600 hover:underline shrink-0"
+                    onclick="ngbCrumbAddLevel(this);"
+                >+ {% trans "Add level" %}</button>
+            </div>
+            <div class="flex items-center gap-1.5">
+                {% if nested_groups.has_previous or nested_groups.has_next %}
+                    {% comment %}
+                        Top-level groupers' own pager -- grouped with
+                        Expand/Collapse All in this same right-side cluster
+                        (rather than floating alone in the middle of the
+                        toolbar row) so it reads as one set of view controls.
+                        Matches the same .hlv-pagination widget used
+                        everywhere else (each leaf group, the flat list).
+                    {% endcomment %}
+                    <div class="hlv-pagination inline-flex items-center h-8 gap-0.5 bg-white border border-[#e6e6e6] rounded-md px-1 flex-shrink-0">
+                        <button
+                            type="button"
+                            class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if nested_groups.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                            {% if nested_groups.has_previous %}
+                            hx-target="#{{view_id}}"
+                            hx-swap="outerHTML"
+                            hx-get="{{search_url}}?{{pd|default:saved_filters.urlencode}}&page=1"
+                            hx-on:click="htmxLoadIndicator(this);"
+                            {% endif %}
+                            title="{% trans 'First page' %}"
+                        ><i class="fa-solid fa-angles-left"></i></button>
+                        <button
+                            type="button"
+                            class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if nested_groups.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                            {% if nested_groups.has_previous %}
+                            hx-target="#{{view_id}}"
+                            hx-swap="outerHTML"
+                            hx-get="{{search_url}}?{{pd|default:saved_filters.urlencode}}&page={{ nested_groups.previous_page_number }}"
+                            hx-on:click="htmxLoadIndicator(this);"
+                            {% endif %}
+                            title="{% trans 'Previous page' %}"
+                        ><i class="fa-solid fa-angle-left"></i></button>
+                        <div class="flex items-center gap-1 px-1 h-7 text-xs text-[#666] leading-none">
+                            <input
+                                type="number"
+                                name="page"
+                                min="1"
+                                max="{{ nested_groups.paginator.num_pages }}"
+                                value="{{ nested_groups.number }}"
+                                title="{% trans 'Enter a page number and press Enter' %}"
+                                class="w-9 h-6 m-0 py-0 px-1 text-center text-xs leading-6 border border-[#e6e6e6] rounded outline-none focus:border-primary-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                hx-target="#{{view_id}}"
+                                hx-swap="outerHTML"
+                                hx-get="{{search_url}}?{{pd|default:saved_filters.urlencode}}"
+                                hx-trigger="keyup[keyCode==13] changed, blur changed"
+                                onclick="this.select()"
+                            >
+                            <span class="inline-flex items-center h-6 leading-none whitespace-nowrap">/ {{ nested_groups.paginator.num_pages }}</span>
+                        </div>
+                        <button
+                            type="button"
+                            class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if nested_groups.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                            {% if nested_groups.has_next %}
+                            hx-target="#{{view_id}}"
+                            hx-swap="outerHTML"
+                            hx-get="{{search_url}}?{{pd|default:saved_filters.urlencode}}&page={{ nested_groups.next_page_number }}"
+                            hx-on:click="htmxLoadIndicator(this);"
+                            {% endif %}
+                            title="{% trans 'Next page' %}"
+                        ><i class="fa-solid fa-angle-right"></i></button>
+                        <button
+                            type="button"
+                            class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if nested_groups.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                            {% if nested_groups.has_next %}
+                            hx-target="#{{view_id}}"
+                            hx-swap="outerHTML"
+                            hx-get="{{search_url}}?{{pd|default:saved_filters.urlencode}}&page={{ nested_groups.paginator.num_pages }}"
+                            hx-on:click="htmxLoadIndicator(this);"
+                            {% endif %}
+                            title="{% trans 'Last page' %}"
+                        ><i class="fa-solid fa-angles-right"></i></button>
+                    </div>
+                {% endif %}
+                <button
+                    type="button"
+                    class="inline-flex items-center gap-1 text-xs font-medium text-[#4B4A45] border border-[#DEDBD4] rounded-md px-2.5 py-1 hover:bg-[#F7F6F3] transition-colors"
+                    onclick="var c=$(this).closest('.hlv-container');
+                             c.find('.oh-nested-accordion .oh-accordion').addClass('oh-accordion--show');
+                             c.find('.oh-nested-accordion .oh-accordion-header ion-icon.icon').attr('name','chevron-up-outline');
+                             if (window.hlvPersistOpenGroups) { window.hlvPersistOpenGroups(c.find('.oh-nested-accordion')[0]); }"
+                ><ion-icon name="chevron-expand-outline" style="font-size:13px;"></ion-icon>{% trans "Expand All" %}</button>
+                <button
+                    type="button"
+                    class="inline-flex items-center gap-1 text-xs font-medium text-[#4B4A45] border border-[#DEDBD4] rounded-md px-2.5 py-1 hover:bg-[#F7F6F3] transition-colors"
+                    onclick="var c=$(this).closest('.hlv-container');
+                             c.find('.oh-nested-accordion .oh-accordion').removeClass('oh-accordion--show');
+                             c.find('.oh-nested-accordion .oh-accordion-header ion-icon.icon').attr('name','chevron-down-outline');
+                             if (window.hlvPersistOpenGroups) { window.hlvPersistOpenGroups(c.find('.oh-nested-accordion')[0]); }"
+                ><ion-icon name="contract-outline" style="font-size:13px;"></ion-icon>{% trans "Collapse All" %}</button>
+            </div>
+        </div>
+        <div class="relative">
+            <div class="overflow-x-auto ngb-hscroll">
+                <table class="fixed-table w-full border-separate table-fixed" data-bulk-select-option="{{bulk_select_option|yesno:'true,false'}}">
+                    {% include "generic/_group_row_colgroup.html" %}
+                    {% comment %}
+                        select_all_scope: this shared header's own <table> only
+                        ever has a <thead> -- every leaf group's rows live in
+                        SEPARATE tables further down the tree (one per leaf,
+                        header suppressed there via show_header=False). The
+                        partial's default scope, .closest('.fixed-table'), would
+                        resolve to THIS empty table and find zero row checkboxes
+                        to select. Scoping to the whole view container instead
+                        reaches every leaf table's rows.
+                    {% endcomment %}
+                    {% include "generic/_group_row_thead.html" with gvid=view_id use_shared_colgroup=True select_all_scope="#"|add:view_id %}
+                </table>
+            </div>
+            {% if show_toggle_form %}
+                {% comment %}
+                    _group_row_thead.html's "Customize columns" trigger reads
+                    the nearest ancestor's Alpine `open` -- this shared header
+                    has no leaf-level x-data wrapper of its own (that only
+                    exists per-leaf, in _group_row_table.html), so without
+                    this panel+scope the button rendered nothing to toggle.
+                    Positioned relative to THIS tight wrapper rather than the
+                    outer hlv-container so it lands right under the icon
+                    instead of the page-level relative ancestor.
+                {% endcomment %}
+                <div
+                    class="oh-dropdown__menu oh-sticky-table_dropdown absolute right-[8px] top-[38px] z-20"
+                    x-show="open"
+                    x-cloak
+                    @click.outside="open = false"
+                >
+                {{ toggle_form.as_list }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        // Inline "Grouped by" breadcrumb editing -- add/change/remove a
+        // grouping level directly where it's shown, instead of only
+        // through the separate Filter dropdown's Group By section (which
+        // still exists too, e.g. as the entry point for starting a first
+        // grouping from the flat, ungrouped list).
+        function ngbCrumbRenumber() {
+            $('#ngbBreadcrumbLevels .ngb-crumb-row').each(function (i) {
+                $(this).find('.ngb-crumb-badge').text(i + 1);
+            });
+        }
+        // The field picker is a click-toggled custom list rather than a
+        // native <select>, so its own open/close state (and the toolbar
+        // panel's temporary overflow:visible, needed so the list isn't
+        // clipped by that panel's rounded-corner masking -- see
+        // #ngbToolbarPanel.ngb-dropdown-open above) has to be managed here
+        // instead of coming for free from the browser.
+        function ngbCrumbCloseAllDropdowns() {
+            $('#ngbBreadcrumbLevels .ngb-crumb-select-wrap').removeClass('force-open');
+            $('#ngbToolbarPanel').removeClass('ngb-dropdown-open');
+        }
+        function ngbCrumbToggleDropdown(btn) {
+            var $wrap = $(btn).closest('.ngb-crumb-select-wrap');
+            var wasOpen = $wrap.hasClass('force-open');
+            ngbCrumbCloseAllDropdowns();
+            if (!wasOpen) {
+                $wrap.addClass('force-open');
+                $('#ngbToolbarPanel').addClass('ngb-dropdown-open');
+            }
+        }
+        $(document).on('click', function (e) {
+            if (!$(e.target).closest('.ngb-crumb-select-wrap').length) {
+                ngbCrumbCloseAllDropdowns();
+            }
+        });
+        function ngbCrumbSelectOption(btn) {
+            if ($(btn).prop('disabled')) return;
+            var $wrap = $(btn).closest('.ngb-crumb-select-wrap');
+            $wrap.find('.ngb-crumb-hidden-input').val($(btn).attr('data-value'));
+            $wrap.find('.ngb-crumb-select-label').text($(btn).text().trim());
+            $wrap.find('.ngb-crumb-option').removeClass('text-primary-600 font-semibold');
+            $(btn).addClass('text-primary-600 font-semibold');
+            ngbCrumbCloseAllDropdowns();
+            ngbCrumbUpdateDisabled();
+            ngbDisableOtherGroupBySource('ngbBreadcrumbLevels');
+            $('#applyFilter').click();
+        }
+        function ngbCrumbUpdateDisabled() {
+            var chosen = $('#ngbBreadcrumbLevels .ngb-crumb-hidden-input').map(function () {
+                return $(this).val();
+            }).get().filter(Boolean);
+            $('#ngbBreadcrumbLevels .ngb-crumb-select-wrap').each(function () {
+                var own = $(this).find('.ngb-crumb-hidden-input').val();
+                $(this).find('.ngb-crumb-option').each(function () {
+                    var val = $(this).attr('data-value');
+                    $(this).prop('disabled', val !== own && chosen.indexOf(val) !== -1);
+                });
+            });
+        }
+        function ngbCrumbAddLevel(btn) {
+            var $container = $('#ngbBreadcrumbLevels');
+            var maxLevels = parseInt($container.attr('data-max-levels'), 10) || 10;
+            if ($container.find('.ngb-crumb-row').length >= maxLevels) return;
+            var $row = $container.find('.ngb-crumb-row').first().clone();
+            $row.removeClass('force-open');
+            $row.find('.ngb-crumb-select-wrap').removeClass('force-open');
+            $row.find('.ngb-crumb-hidden-input').val('');
+            $row.find('.ngb-crumb-select-label').text('{% trans "Select field" %}');
+            $row.find('.ngb-crumb-option').prop('disabled', false).removeClass('text-primary-600 font-semibold');
+            $(btn).before($row);
+            ngbCrumbRenumber();
+            ngbCrumbUpdateDisabled();
+        }
+        function ngbCrumbRemove(btn) {
+            var $container = $('#ngbBreadcrumbLevels');
+            if ($container.find('.ngb-crumb-row').length <= 1) return;
+            $(btn).closest('.ngb-crumb-row').remove();
+            ngbCrumbRenumber();
+            ngbCrumbUpdateDisabled();
+            ngbDisableOtherGroupBySource('ngbBreadcrumbLevels');
+            $('#applyFilter').click();
+        }
+        $(function () {
+            ngbCrumbUpdateDisabled();
+        });
+    </script>
+    <div class="oh-nested-accordion accordion-wrapper bg-[#F7F6F3] p-1.5 rounded-b-xl space-y-1.5">
+        {% for node in nested_groups %}
+            {% include "generic/nested_group_by_node.html" with node=node level=0 group_path=forloop.counter|stringformat:"s" %}
+        {% empty %}
+            {% if custom_empty_template %}
+                {% include custom_empty_template %}
+            {% else %}
+                <div class="oh-wrapper h-full" align="center">
+                    <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
+                        <div class="flex flex-col items-center justify-center h-full">
+                            <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
+                            {% if filter_dict %}
+                                <p class="text-[#666] mb-5">{% trans "No filtered records found at the moment" %}</p>
+                            {% else %}
+                                <p class="text-[#666] mb-5">{% trans "No records available at the moment" %}</p>
+                            {% endif %}
+                            {% include "generic/import_block.html" %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        selectSelected('#{{view_id|safe}}', '{{selected_instances_key_id}}');
+
+        // The shared header and every leaf group's table each scroll
+        // independently (they're separate elements, not one <table>), so
+        // without this the header drifts out of alignment with whichever
+        // leaf table the user actually scrolled. scroll events don't
+        // bubble, so this has to bind directly to each element rather than
+        // delegate from a stable ancestor -- re-bound on every render since
+        // htmx replaces this whole container (outerHTML) on every swap.
+        $('#{{view_id|safe}} .ngb-hscroll').off('scroll.ngbSync').on('scroll.ngbSync', function () {
+            var left = this.scrollLeft;
+            $('#{{view_id|safe}} .ngb-hscroll').not(this).scrollLeft(left);
+        });
+
+        $('#{{view_id|safe}} table.fixed-table').each(function () {
+            var $table = $(this);
+            var $optCells = $table.find('td.option-col-cell');
+            if ($optCells.length && !$optCells.find('a, button').length) {
+                $table.find('th.option-col-header, td.option-col-cell').hide();
+            }
+            var $actCells = $table.find('td.action-col-cell');
+            if ($actCells.length && !$actCells.find('a, button').length) {
+                $table.find('th.action-col-header, td.action-col-cell').hide();
+            }
+        });
+    });
+</script>
+<script>
+    // Same rationale as the flat single-level group-by view: after an
+    // outerHTML swap the view_id is regenerated, so match the reopened
+    // toggle-columns dropdown by data-list-path instead.
+    $(document).off("htmx:afterSettle.hlvReopenNestedList").on(
+        "htmx:afterSettle.hlvReopenNestedList",
+        function (e) {
+            var pending = window.__hlvReopenDropdown;
+            if (!pending || !e.target.querySelectorAll) return;
+            var match = null;
+            var $candidates = $(e.target).is("[data-list-path]")
+                ? $(e.target)
+                : $(e.target).find("[data-list-path]");
+            $candidates.each(function () {
+                if (this.getAttribute("data-list-path") === pending.path) {
+                    match = this;
+                    return false;
+                }
+            });
+            if (match) {
+                window.__hlvReopenDropdown = null;
+                var $btn = $(match).find('.oh-sticky-dropdown_btn[data-gvid="' + pending.gvid + '"]');
+                $btn.closest(".oh-accordion").addClass("oh-accordion--show");
+                $btn.click();
+            }
+        }
+    );
+</script>

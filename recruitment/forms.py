@@ -396,6 +396,14 @@ class StageCreationForm(BaseModelForm):
             ids = self.data.getlist("stage_managers")
             if ids:
                 self.errors.pop("stage_managers", None)
+        if self.cleaned_data.get("recruitment_id") and self.cleaned_data.get("stage"):
+            if Stage.objects.filter(
+                recruitment_id=self.cleaned_data.get("recruitment_id"),
+                stage=self.cleaned_data.get("stage"),
+            ).exists():
+                raise forms.ValidationError(
+                    {"stage": _("This stage already exists for the recruitment.")}
+                )
         super().clean()
 
 

@@ -14,8 +14,9 @@ from payroll.cbv import (
     loan_advance_salary,
     payslip,
     reimbursements,
+    salary_structure,
 )
-from payroll.models.models import Allowance, Deduction
+from payroll.models.models import Deduction
 from payroll.views import component_views
 
 urlpatterns = [
@@ -32,11 +33,11 @@ urlpatterns = [
         payslip.PayslipBulkExport.as_view(),
         name="payslip-bulk-export-data",
     ),
-    path(
-        "payroll-create-form-view/",
-        payslip.PayrollCreateFormView.as_view(),
-        name="payroll-create-form-view",
-    ),
+    # path(
+    #     "payroll-create-form-view/",
+    #     payslip.PayrollCreateFormView.as_view(),
+    #     name="payroll-create-form-view",
+    # ),
     path(
         "deduction-tab-list/<int:pk>/",
         allowance_deduction.DeductionTab.as_view(),
@@ -129,7 +130,54 @@ urlpatterns = [
         name="allowances-deductions-tab",
     ),
     path(
-        "create-allowance/", component_views.create_allowance, name="create-allowance"
+        "salary-structure-list-view/",
+        salary_structure.SalaryStructureListView.as_view(),
+        name="salary-structure-list-view",
+    ),
+    path(
+        "salary-structure-nav-view/",
+        salary_structure.SalaryStructureNavView.as_view(),
+        name="salary-structure-nav-view",
+    ),
+    path(
+        "create-salary-structure/",
+        salary_structure.SalaryStructureFormView.as_view(),
+        name="create-salary-structure",
+    ),
+    path(
+        "update-salary-structure/<int:pk>/",
+        salary_structure.SalaryStructureFormView.as_view(),
+        name="update-salary-structure",
+    ),
+    path(
+        "duplicate-salary-structure/<int:pk>/",
+        salary_structure.SalaryStructureFormDuplicate.as_view(),
+        name="duplicate-salary-structure",
+    ),
+    path(
+        "salary-structure-detail-view/<int:pk>/",
+        salary_structure.SalaryStructureDetailView.as_view(),
+        name="salary-structure-detail-view",
+    ),
+    path(
+        "duplicate-structure-allowance/<int:structure_pk>/<int:pk>/",
+        salary_structure.AllowanceDuplicateInStructureView.as_view(),
+        name="duplicate-structure-allowance",
+    ),
+    path(
+        "duplicate-structure-deduction/<int:structure_pk>/<int:pk>/",
+        salary_structure.DeductionDuplicateInStructureView.as_view(),
+        name="duplicate-structure-deduction",
+    ),
+    path(
+        "remove-structure-allowance/<int:structure_pk>/<int:pk>/",
+        component_views.remove_structure_allowance,
+        name="remove-structure-allowance",
+    ),
+    path(
+        "remove-structure-deduction/<int:structure_pk>/<int:pk>/",
+        component_views.remove_structure_deduction,
+        name="remove-structure-deduction",
     ),
     # path("view-allowance/", component_views.view_allowance, name="view-allowance"),
     path(
@@ -141,10 +189,14 @@ urlpatterns = [
         "filter-allowance/", component_views.filter_allowance, name="filter-allowance"
     ),
     path(
-        "update-allowance/<int:allowance_id>/",
-        component_views.update_allowance,
+        "create-allowance/",
+        allowances.AllowanceFormView.as_view(),
+        name="create-allowance",
+    ),
+    path(
+        "update-allowance/<int:pk>/",
+        allowances.AllowanceFormView.as_view(),
         name="update-allowance",
-        kwargs={"model": Allowance},
     ),
     path(
         "delete-allowance/<int:allowance_id>/",
@@ -162,7 +214,9 @@ urlpatterns = [
         name="delete-employee-allowance",
     ),
     path(
-        "create-deduction/", component_views.create_deduction, name="create-deduction"
+        "create-deduction/",
+        deduction.DeductionFormView.as_view(),
+        name="create-deduction",
     ),
     # path("view-deduction/", component_views.view_deduction, name="view-deduction"),
     path(
@@ -190,8 +244,8 @@ urlpatterns = [
         "filter-deduction/", component_views.filter_deduction, name="filter-deduction"
     ),
     path(
-        "update-deduction/<int:deduction_id>/",
-        component_views.update_deduction,
+        "update-deduction/<int:pk>/",
+        deduction.DeductionFormView.as_view(),
         name="update-deduction",
         kwargs={"model": Deduction},
     ),
@@ -229,6 +283,11 @@ urlpatterns = [
         "view-individual-payslip/<int:employee_id>/<str:start_date>/<str:end_date>/",
         component_views.view_individual_payslip,
         name="view-individual-payslip",
+    ),
+    path(
+        "payslip-pending-attendance-action/",
+        component_views.payslip_pending_attendance_action,
+        name="payslip-pending-attendance-action",
     ),
     # path("view-payslip/", component_views.view_payslip, name="view-payslip"),
     path(

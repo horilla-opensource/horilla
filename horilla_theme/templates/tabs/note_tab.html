@@ -1,5 +1,6 @@
 {% load static %}{% load i18n %}
-{% load basefilters %}
+{% load basefilters horillafilters %}
+{% get_company as theme_obj %}
 {% if messages %}
     <script>
         reloadMessage();
@@ -87,6 +88,12 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+    /* "Add Files" icon button on each note row — follow the selected
+       company theme on hover instead of the legacy neutral gray. */
+    #note_target .oh-btn--light-bkg:not(.oh-btn--danger):hover {
+        background-color: {{ theme_obj.primary_100|default:"#fce4e1" }} !important;
+        color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
     }
 </style>
 
@@ -234,12 +241,12 @@
                                     hx-target="#note_target"
                                 >
                                     {% csrf_token %}
-                                    <label for="addFile_{{note.id}}" title='{% trans "Add Files" %}'>
-                                        <ion-icon
-                                            name="add-outline"
-                                            style="font-size: 12px; border: 1px solid #818791; border-radius: 5px"
-                                            class="text-gray-700"
-                                        ></ion-icon>
+                                    <label
+                                        for="addFile_{{note.id}}"
+                                        title='{% trans "Add Files" %}'
+                                        class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
+                                    >
+                                        <ion-icon name="add-outline"></ion-icon>
                                     </label>
                                     <input
                                         type="file"
@@ -268,10 +275,10 @@
                                 {% csrf_token %}
                                 <button
                                     type="submit"
-                                    class="cursor-pointer bg-transparent border-0 p-0"
+                                    class="oh-btn oh-btn--light-bkg oh-btn--danger oh-btn--sq-sm"
                                     title="{% trans 'Delete' %}"
                                 >
-                                    <ion-icon name="trash-outline" class="text-danger"></ion-icon>
+                                    <ion-icon name="trash-outline"></ion-icon>
                                 </button>
                             </form>
                         {% endif %}

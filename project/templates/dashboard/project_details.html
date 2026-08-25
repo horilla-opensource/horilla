@@ -19,11 +19,6 @@
             <span class="oh-timeoff-modal__stat-title">{% trans "Manager" %}</span>
             <span class="oh-timeoff-modal__stat-count">{{ project.manager }}</span>
         </div>
-        <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
-            <span class="oh-timeoff-modal__stat-title">{% trans "Members" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{% for member in project.members.all %}{{ member }},
-                {% endfor %}</span>
-        </div>
     </div>
     <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
         <div class="oh-timeoff-modal__stat">
@@ -57,7 +52,7 @@
     </div>
     <div class="oh-modal__button-container text-center" style="width: 50%; margin: 0 auto">
         {% comment %} <div class="oh-btn-group"> {% endcomment %}
-        <a href="{%url 'task-view' project.id %}" class="oh-btn oh-btn--info">
+        <a href="{%url 'task-view' project.id %}" class="oh-btn oh-btn--primary">
             <ion-icon
                 name="create-outline"
                 role="img"

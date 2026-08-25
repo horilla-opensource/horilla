@@ -6,6 +6,7 @@ This module is used to map url pattens with django views or methods
 
 import csv
 import json
+import logging
 import mimetypes
 import os
 import threading
@@ -69,7 +70,6 @@ from base.filters import (
     WorkTypeRequestReGroup,
 )
 from base.forms import (
-    AnnouncementExpireForm,
     AssignPermission,
     AssignUserGroup,
     AuditTagForm,
@@ -81,7 +81,6 @@ from base.forms import (
     DriverForm,
     DynamicMailConfForm,
     DynamicMailTestForm,
-    DynamicPaginationForm,
     EmployeeShiftForm,
     EmployeeShiftScheduleForm,
     EmployeeShiftScheduleUpdateForm,
@@ -126,6 +125,7 @@ from base.methods import (
     generate_colors,
     generate_otp,
     get_key_instances,
+    get_session_company,
     is_reportingmanager,
     paginator_qry,
     sortby,
@@ -223,6 +223,8 @@ CHARTS = [
     ("feedback_status", _("Feedback Status")),
 ]
 
+logger = logging.getLogger(__name__)
+
 
 def custom404(request):
     """
@@ -273,43 +275,45 @@ def _shift_fixture_dates(file_path):
     """
     Return a date-shifted version of a JSON fixture as a string.
 
-    All dates between 2020-01-01 and 2030-12-31 are shifted so that the
-    fixture's anchor month (2025-07-01) maps to the first day of the current
-    month. Static dates outside that window (e.g. DOBs in the 1960s) are left
-    untouched. Returns None if no shift is needed (delta == 0).
+    All dates between 2020-01-01 and 2030-12-31 move so the fixture snapshot
+    day (FIXTURE_AS_OF) becomes today. DOBs outside that window are untouched.
+    Returns None if no shift is needed (delta == 0).
     """
-    import re
-
-    ANCHOR = datetime(2025, 7, 1).date()
-    today = datetime.today().date()
-    target = today.replace(day=1)
-    delta = (target - ANCHOR).days
-
-    if delta == 0:
-        return None
-
-    # Match date-only values and the date prefix of ISO datetimes
-    # (e.g. 2025-07-02T06:10:00Z). A trailing \b fails before "T".
-    DATE_RE = re.compile(r"(?<!\d)(\d{4}-\d{2}-\d{2})(?!\d)")
-    SHIFT_MIN = datetime(2020, 1, 1).date()
-    SHIFT_MAX = datetime(2030, 12, 31).date()
-
-    def _shift(match):
-        try:
-            d = datetime.strptime(match.group(1), "%Y-%m-%d").date()
-            if SHIFT_MIN <= d <= SHIFT_MAX:
-                return (d + timedelta(days=delta)).strftime("%Y-%m-%d")
-        except ValueError:
-            pass
-        return match.group(1)
+    from base.demo_data.dates import shift_fixture_dates_text
 
     with open(file_path, "r", encoding="utf-8") as f:
-        content = f.read()
+        return shift_fixture_dates_text(f.read())
 
-    return DATE_RE.sub(_shift, content)
+
+# Fixtures whose rows the trailing-6-month backfill (base/demo_data/modules/)
+# redates after loading. On a non-flushed re-run, loaddata tries to restore
+# each row's *original* fixture date over that already-redated state, which
+# can collide with whatever other row the backfill moved onto that exact
+# date (e.g. Attendance's per-employee unique_together). Clearing first
+# makes the reload safe; on a --flush run the tables are already empty, so
+# this is a no-op.
+_RELOAD_RESET_MODELS = {
+    # Order matters: models that PROTECT their FK to Attendance must be
+    # cleared before Attendance itself, or the delete is refused.
+    "attendance_data.json": (
+        ("attendance", "AttendanceLateComeEarlyOut"),
+        ("attendance", "WorkRecords"),
+        ("attendance", "AttendanceActivity"),
+        ("attendance", "Attendance"),
+    ),
+}
+
+
+def reset_backfilled_rows_before_reload(fname: str) -> None:
+    """Delete existing rows for models the demo backfill redates, so
+    re-loading `fname` without --flush doesn't collide with that state."""
+    for app_label, model_name in _RELOAD_RESET_MODELS.get(fname, ()):
+        model = apps.get_model(app_label, model_name)
+        model._base_manager.all().delete()
 
 
 DEMO_PAYROLL_GROUP_PREFIX = "Demo Payroll M-"
+DEMO_PAYROLL_RENAMED_PREFIX = "Demo Payroll - "
 
 
 def normalize_demo_payslips():
@@ -322,24 +326,50 @@ def normalize_demo_payslips():
     boundaries, so the period, the dates embedded in ``pay_head_data`` and the batch
     label are recomputed from that tag instead. Returns the number of payslips
     updated.
+
+    A row's group_name is renamed to ``Demo Payroll - <Mon Year>`` below for a
+    human-readable label -- but that also matches the seeder's own
+    "already covered" check in payroll_trend.py, so this must keep
+    recognizing renamed rows on every future call too (re-deriving the
+    offset from start_date instead of the now-gone "M-<n>" tag), or a
+    dynamically-created (non-fixture) backfilled payslip would only ever
+    get re-anchored once and then drift stale forever.
+
+    Also runs the app's own ``expire_contract()`` scheduled task inline:
+    fixture loaddata bypasses both Contract.save() and the scheduler, so a
+    demo Contract shipped "active" with a now-past contract_end_date (after
+    the fixture date shift) would otherwise stay contradictorily "active"
+    until the real scheduler happens to run.
     """
     if not apps.is_installed("payroll"):
         return 0
 
     from payroll.models.models import Payslip
+    from payroll.scheduler import expire_contract
+
+    expire_contract()
 
     today = datetime.today().date()
     updated = 0
 
     # _base_manager skips the company scoping that would hide other companies' rows.
     payslips = Payslip._base_manager.filter(
-        group_name__startswith=DEMO_PAYROLL_GROUP_PREFIX
+        Q(group_name__startswith=DEMO_PAYROLL_GROUP_PREFIX)
+        | Q(group_name__startswith=DEMO_PAYROLL_RENAMED_PREFIX)
     )
     for payslip in payslips:
-        try:
-            offset = int(payslip.group_name.rsplit("M-", 1)[1])
-        except (IndexError, ValueError):
-            continue
+        if payslip.group_name.startswith(DEMO_PAYROLL_GROUP_PREFIX):
+            try:
+                offset = int(payslip.group_name.rsplit("M-", 1)[1])
+            except (IndexError, ValueError):
+                continue
+        else:
+            # Already renamed on a prior run -- the "M-<n>" tag is gone, so
+            # re-derive the same offset from how far start_date's month
+            # already sits from today's.
+            offset = (today.year - payslip.start_date.year) * 12 + (
+                today.month - payslip.start_date.month
+            )
 
         year, month = today.year, today.month - offset
         while month < 1:
@@ -357,11 +387,18 @@ def normalize_demo_payslips():
                 f"{start.strftime('%b %d %Y')} - {end.strftime('%b %d %Y')}"
             )
 
+        status = payslip.status
+        # M-0 is the current, still-open month -- a payslip can't already be
+        # "paid" or "confirmed" for a period that hasn't closed yet.
+        if offset == 0 and status in ("paid", "confirmed"):
+            status = "review_ongoing"
+
         Payslip._base_manager.filter(pk=payslip.pk).update(
             start_date=start,
             end_date=end,
             pay_head_data=pay_head_data,
-            group_name=f"Demo Payroll - {start.strftime('%b %Y')}",
+            group_name=f"{DEMO_PAYROLL_RENAMED_PREFIX}{start.strftime('%b %Y')}",
+            status=status,
         )
         updated += 1
 
@@ -374,33 +411,9 @@ def load_demo_database(request):
             if request.POST.get("load_data_password") == settings.DB_INIT_PASSWORD:
                 import tempfile
 
-                data_files = [
-                    "user_data.json",
-                    "employee_info_data.json",
-                    "base_data.json",
-                    "work_info_data.json",
-                ]
-                optional_apps = [
-                    ("attendance", "attendance_data.json"),
-                    ("leave", "leave_data.json"),
-                    ("asset", "asset_data.json"),
-                    ("recruitment", "recruitment_data.json"),
-                    ("onboarding", "onboarding_data.json"),
-                    ("offboarding", "offboarding_data.json"),
-                    ("pms", "pms_data.json"),
-                    ("pms", "pms_scenarios_data.json"),
-                    ("payroll", "payroll_scenarios_data.json"),
-                    ("payroll", "payroll_data.json"),
-                    ("payroll", "payroll_loanaccount_data.json"),
-                    ("project", "project_data.json"),
-                    ("project", "project_scenarios_data.json"),
-                    ("helpdesk", "helpdesk_scenarios_data.json"),
-                ]
+                from base.demo_data.fixtures import demo_fixture_files
 
-                # Add data files for installed apps
-                data_files += [
-                    file for app, file in optional_apps if apps.is_installed(app)
-                ]
+                data_files = demo_fixture_files()
 
                 # Load all data files, shifting dates relative to today
                 from pathlib import Path as _Path
@@ -417,6 +430,7 @@ def load_demo_database(request):
                     file_path = path.join(settings.BASE_DIR, "load_data", file)
                     tmp = None
                     try:
+                        reset_backfilled_rows_before_reload(file)
                         shifted = _shift_fixture_dates(file_path)
                         if shifted is not None:
                             suffix = path.splitext(file)[1]
@@ -448,6 +462,13 @@ def load_demo_database(request):
                         scrub_side_files=True,
                     )
                 except Exception as e:
+                    # The seeder is one long sequence of ~25 steps -- an
+                    # exception here could come from any of them, and every
+                    # step after the failing one silently never runs. Log
+                    # the full traceback so whoever reloads the demo can
+                    # actually find which step broke, instead of only ever
+                    # seeing this generic toast.
+                    logger.exception("Enterprise demo seeder failed partway through")
                     messages.warning(
                         request,
                         _("Enterprise demo seeder could not finish: %(error)s")
@@ -1133,9 +1154,13 @@ class Workinfo:
 @login_required
 def home(request):
     """
-    This method is used to render index page — redirects to the modern dashboard.
+    Role-aware home: employees → ESS; managers/HR/leadership → analytics dashboard.
     """
-    return redirect("dashboard")
+    from base.dashboard_roles import can_see_analytics_home, resolve_home_role
+
+    if can_see_analytics_home(resolve_home_role(request)):
+        return redirect("dashboard")
+    return redirect("ess-dashboard")
 
 
 @login_required
@@ -2940,24 +2965,22 @@ def rotating_work_type_assign_archive(request, obj_id):
     """
     Archive or un-archive rotating work type assigns
     """
-    try:
-        rwork_type = get_object_or_404(RotatingWorkTypeAssign, id=obj_id)
-        employee_id = rwork_type.employee_id.id
-        employees_rwork_types = RotatingWorkTypeAssign.objects.filter(
-            is_active=True, employee_id=rwork_type.employee_id
-        )
-        rwork_type.is_active = not rwork_type.is_active
-        if rwork_type.is_active and employees_rwork_types:
-            messages.error(request, _("Already on record is active"))
-        else:
-            rwork_type.save()
-            message = _("un-archived") if rwork_type.is_active else _("archived")
-            messages.success(
-                request, _("Rotating work type assign is {}").format(message)
-            )
-        return rotating_work_type_assign_redirect(request, obj_id, employee_id)
-    except Http404:
+    rwork_type = RotatingWorkTypeAssign.find(obj_id)
+    if not rwork_type:
         messages.error(request, _("Rotating work type assign not found."))
+        return HorillaRedirect(request)
+
+    employee_id = rwork_type.employee_id.id
+    employees_rwork_types = RotatingWorkTypeAssign.objects.filter(
+        is_active=True, employee_id=rwork_type.employee_id
+    )
+    rwork_type.is_active = not rwork_type.is_active
+    if rwork_type.is_active and employees_rwork_types:
+        messages.error(request, _("Already on record is active"))
+    else:
+        rwork_type.save()
+        message = _("un-archived") if rwork_type.is_active else _("archived")
+        messages.success(request, _("Rotating work type assign is {}").format(message))
     return rotating_work_type_assign_redirect(request, obj_id, employee_id)
 
 
@@ -3051,13 +3074,15 @@ def rotating_work_type_assign_delete(request, obj_id):
     """
     This method is used to delete rotating work type
     """
+    rotating_work_type_assign_obj = RotatingWorkTypeAssign.find(obj_id)
+    if not rotating_work_type_assign_obj:
+        messages.error(request, _("Rotating work type assign not found."))
+        return HorillaRedirect(request)
+
+    employee_id = rotating_work_type_assign_obj.employee_id.id
     try:
-        rotating_work_type_assign_obj = RotatingWorkTypeAssign.objects.get(id=obj_id)
-        employee_id = rotating_work_type_assign_obj.employee_id.id
         rotating_work_type_assign_obj.delete()
         messages.success(request, _("Rotating work type assign deleted."))
-    except RotatingWorkTypeAssign.DoesNotExist:
-        messages.error(request, _("Rotating work type assign not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this rotating work type."))
 
@@ -3811,21 +3836,22 @@ def rotating_shift_assign_archive(request, obj_id):
     """
     This method is used to archive and unarchive rotating shift assign records
     """
-    try:
-        rshift = get_object_or_404(RotatingShiftAssign, id=obj_id)
-        employee_id = rshift.employee_id.id
-        employees_rshift_assigns = RotatingShiftAssign.objects.filter(
-            is_active=True, employee_id=rshift.employee_id
-        )
-        rshift.is_active = not rshift.is_active
-        if rshift.is_active and employees_rshift_assigns:
-            messages.error(request, _("Already on record is active"))
-        else:
-            rshift.save()
-            message = _("un-archived") if rshift.is_active else _("archived")
-            messages.success(request, _("Rotating shift assign is {}").format(message))
-    except Http404:
+    rshift = RotatingShiftAssign.find(obj_id)
+    if not rshift:
         messages.error(request, _("Rotating shift assign not found."))
+        return HorillaRedirect(request)
+
+    employee_id = rshift.employee_id.id
+    employees_rshift_assigns = RotatingShiftAssign.objects.filter(
+        is_active=True, employee_id=rshift.employee_id
+    )
+    rshift.is_active = not rshift.is_active
+    if rshift.is_active and employees_rshift_assigns:
+        messages.error(request, _("Already on record is active"))
+    else:
+        rshift.save()
+        message = _("un-archived") if rshift.is_active else _("archived")
+        messages.success(request, _("Rotating shift assign is {}").format(message))
 
     return rotating_shift_assign_redirect(request, obj_id, employee_id)
 
@@ -5662,8 +5688,12 @@ def shift_request_delete(request, id):
 
     """
 
+    shift_request = ShiftRequest.find(id)
+    if not shift_request:
+        messages.error(request, _("Shift request not found."))
+        return HorillaRedirect(request)
+
     try:
-        shift_request = ShiftRequest.find(id)
         user = shift_request.employee_id.employee_user_id
         messages.success(request, _("Shift request deleted"))
         shift_request.delete()
@@ -5679,8 +5709,6 @@ def shift_request_delete(request, id):
             icon="trash",
         )
 
-    except ShiftRequest.DoesNotExist:
-        messages.error(request, _("Shift request not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this shift request."))
 
@@ -5906,13 +5934,17 @@ def _system_preferences_context(request):
     """
     Build template context shared by the System Preferences settings page.
     """
+    tracking_company = get_session_company(request)
+
     if apps.is_installed("payroll"):
         PayrollSettings = get_horilla_model_class(
             app_label="payroll", model="payrollsettings"
         )
         from payroll.forms.component_forms import PayrollSettingsForm
 
-        currency_instance = PayrollSettings.objects.first()
+        currency_instance, _created = PayrollSettings.objects.get_or_create(
+            company_id=tracking_company
+        )
         currency_form = PayrollSettingsForm(instance=currency_instance)
     else:
         currency_form = None
@@ -5924,10 +5956,17 @@ def _system_preferences_context(request):
     else:
         companies = Company.objects.filter(id=selected_company_id)
 
-    prefix_instance = EmployeeGeneralSetting.objects.first()
+    prefix_instance, _created = EmployeeGeneralSetting.objects.get_or_create(
+        company_id=tracking_company
+    )
     prefix_form = EmployeeGeneralSettingPrefixForm(instance=prefix_instance)
-    instance = AnnouncementExpire.objects.first()
-    form = AnnouncementExpireForm(instance=instance)
+
+    expire_instance, _created = AnnouncementExpire.objects.get_or_create(
+        company_id=tracking_company
+    )
+    announcement_expire_settings = [expire_instance]
+    show_expire_company = len(announcement_expire_settings) > 1
+
     enabled_block_unblock = (
         AccountBlockUnblock.objects.exists()
         and AccountBlockUnblock.objects.first().is_enabled
@@ -5936,12 +5975,11 @@ def _system_preferences_context(request):
         ProfileEditFeature.objects.exists()
         and ProfileEditFeature.objects.first().is_enabled
     )
-    tracking_company = _selected_company(request)
     history_tracking_instance = HistoryTrackingFields.for_settings_ui(tracking_company)
     history_fields_form_initial = {
         "tracking_fields": history_tracking_instance.tracked_field_names()
     }
-    export_access_company = _selected_company(request)
+    export_access_company = get_session_company(request)
     export_access_instance = DefaultExportPermission.objects.filter(
         company_id=export_access_company
     ).first()
@@ -5967,17 +6005,19 @@ def _system_preferences_context(request):
     # Default: all companies selected for assignment.
     tracking_assigned_company_ids = [c.id for c in tracking_assign_companies]
 
-    if DynamicPagination.objects.filter(user_id=request.user).exists():
-        pagination = DynamicPagination.objects.filter(user_id=request.user).first()
-        pagination_form = DynamicPaginationForm(instance=pagination)
-    else:
-        pagination_form = DynamicPaginationForm()
+    pagination_instance, _created = DynamicPagination.objects.get_or_create(
+        user_id=request.user, company_id=tracking_company
+    )
+    pagination_settings = [pagination_instance]
+    show_pagination_company = len(pagination_settings) > 1
 
     language_company = tracking_company
     language_setting = CompanyLanguageSetting.objects.filter(
         company_id=language_company
     ).first()
-    enabled_languages = language_setting.enabled_languages if language_setting else []
+    enabled_languages = (
+        language_setting.enabled_languages if language_setting else ["en"]
+    )
     if language_company:
         language_employee_count = EmployeeWorkInformation.objects.filter(
             company_id=language_company, employee_id__is_active=True
@@ -6017,9 +6057,11 @@ def _system_preferences_context(request):
     ]
 
     return {
-        "form": form,
+        "announcement_expire_settings": announcement_expire_settings,
+        "show_expire_company": show_expire_company,
         "currency_form": currency_form,
-        "pagination_form": pagination_form,
+        "pagination_settings": pagination_settings,
+        "show_pagination_company": show_pagination_company,
         "history_fields_form": history_fields_form,
         "history_tracking_instance": history_tracking_instance,
         "tracking_company": tracking_company,
@@ -6032,7 +6074,6 @@ def _system_preferences_context(request):
         "prefix_form": prefix_form,
         "companies": companies,
         "selected_company_id": selected_company_id,
-        "announcement_expire_instance": instance,
         "current_company": companies.first(),
         "languages": settings.LANGUAGES,
         "enabled_languages": enabled_languages,
@@ -6052,17 +6093,24 @@ def system_preferences_settings_view(request):
     formatting/localization, and data access controls under a single header.
     """
     context = _system_preferences_context(request)
-    instance = context["announcement_expire_instance"]
-
-    if request.method == "POST":
-        form = AnnouncementExpireForm(request.POST, instance=instance)
-        if form.is_valid():
-            form.save()
-            messages.success(request, _("Settings updated."))
-            return HorillaRedirect(request)
-        context["form"] = form
-
     return render(request, "base/settings/system_preferences.html", context)
+
+
+@login_required
+@hx_request_required
+@permission_required("base.change_announcementexpire")
+def update_announcement_expire_days(request):
+    """
+    Updates the "Default Expire Days" setting for one company row (or the
+    "All Companies" row) on the System Preferences page.
+    """
+    if request.method == "POST":
+        setting_id = request.POST.get("setting_id")
+        days = request.POST.get("days")
+        updated = AnnouncementExpire.objects.filter(id=setting_id).update(days=days)
+        if updated:
+            messages.success(request, _("Default expire days updated."))
+    return HttpResponse("")
 
 
 @login_required
@@ -6339,7 +6387,7 @@ def history_field_settings(request):
     When All Companies is selected, the fields form can also post
     ``assign_companies`` so the same settings are applied to those companies.
     """
-    company = _selected_company(request)
+    company = get_session_company(request)
 
     if request.method == "POST":
         updating_fields = request.POST.get("update_tracking_fields") == "1"
@@ -6463,13 +6511,6 @@ def enable_profile_edit_feature(request):
     return HttpResponse(status=405)
 
 
-def _selected_company(request):
-    selected_company = request.session.get("selected_company")
-    if not selected_company or selected_company == "all":
-        return None
-    return Company.objects.filter(id=selected_company).first()
-
-
 @login_required
 @permission_required("base.view_defaultexportpermission")
 def default_export_access_settings_view(request):
@@ -6478,7 +6519,7 @@ def default_export_access_settings_view(request):
     all users of that company can export data, or export access is
     restricted to users holding the per-module export permission.
     """
-    company = _selected_company(request)
+    company = get_session_company(request)
     instance = DefaultExportPermission.objects.filter(company_id=company).first()
     enabled_export_access = instance is None or instance.is_enabled
     return render(
@@ -6493,7 +6534,7 @@ def default_export_access_settings_view(request):
 def enable_default_export_access(request):
     if request.method == "POST":
         enabled = request.POST.get("enable_export_access") == "on"
-        company = _selected_company(request)
+        company = get_session_company(request)
         instance, _created = DefaultExportPermission.objects.get_or_create(
             company_id=company
         )
@@ -6522,19 +6563,40 @@ def update_language_settings(request):
     """
     if request.method == "POST":
         selected_languages = request.POST.getlist("enabled_languages")
-        valid_codes = {code for code, _label in settings.LANGUAGES}
+        language_labels = dict(settings.LANGUAGES)
         selected_languages = [
-            code for code in selected_languages if code in valid_codes
+            code for code in selected_languages if code in language_labels
         ]
-        company = _selected_company(request)
+        company = get_session_company(request)
         instance, _created = CompanyLanguageSetting.objects.get_or_create(
             company_id=company
         )
+        previous_languages = set(instance.enabled_languages or [])
+        current_languages = set(selected_languages)
+        newly_enabled = [
+            language_labels[code]
+            for code in selected_languages
+            if code not in previous_languages
+        ]
+        newly_disabled = [
+            language_labels[code]
+            for code in instance.enabled_languages or []
+            if code not in current_languages
+        ]
         instance.enabled_languages = selected_languages
         instance.save()
-        messages.success(request, _("Language settings have been updated."))
-        return redirect(system_preferences_settings_view)
-    return HttpResponse(status=405)
+        if newly_enabled or newly_disabled:
+            parts = []
+            if newly_enabled:
+                parts.append(_("Enabled: %s") % ", ".join(newly_enabled))
+            if newly_disabled:
+                parts.append(_("Disabled: %s") % ", ".join(newly_disabled))
+            messages.success(request, ". ".join(parts) + ".")
+        else:
+            messages.success(request, _("Language settings have been updated."))
+    if request.META.get("HTTP_HX_REQUEST"):
+        return HttpResponse()
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -7298,6 +7360,9 @@ def delete_shift_comment_file(request):
         )
 
     comment = ShiftRequestComment.find(comment_id)
+    if not comment:
+        return HorillaRedirect(request, message=_("Comment not found."))
+
     script = ""
 
     if (
@@ -7373,6 +7438,13 @@ def delete_work_type_comment_file(request):
         )
 
     comment = WorkTypeRequestComment.find(comment_id)
+    if not comment:
+        return HorillaRedirect(
+            request,
+            message=_("Comment not found."),
+            redirect_to="work-type-request-view",
+        )
+
     script = ""
 
     if (
@@ -7402,6 +7474,9 @@ def delete_shiftrequest_comment(request, comment_id):
     This method is used to delete shift request comments
     """
     comment = ShiftRequestComment.find(comment_id)
+    if not comment:
+        return HorillaRedirect(request, message=_("Comment not found."))
+
     request_id = comment.request_id.id
     script = ""
     if (
@@ -7541,8 +7616,11 @@ def delete_worktyperequest_comment(request, comment_id):
     """
     This method is used to delete Work type request comments
     """
-    script = ""
     comment = WorkTypeRequestComment.find(comment_id)
+    if not comment:
+        return HorillaRedirect(request, message=_("Comment not found."))
+
+    script = ""
     request_id = comment.request_id.id
     if (
         request.user.employee_get == comment.employee_id
@@ -7559,23 +7637,19 @@ def delete_worktyperequest_comment(request, comment_id):
 
 @login_required
 def pagination_settings_view(request):
-    if DynamicPagination.objects.filter(user_id=request.user).exists():
-        pagination = DynamicPagination.objects.filter(user_id=request.user).first()
-        pagination_form = DynamicPaginationForm(instance=pagination)
-        if request.method == "POST":
-            pagination_form = DynamicPaginationForm(request.POST, instance=pagination)
-            if pagination_form.is_valid():
-                pagination_form.save()
-                messages.success(request, _("Default pagination updated."))
-    else:
-        pagination_form = DynamicPaginationForm()
-        if request.method == "POST":
-            pagination_form = DynamicPaginationForm(
-                request.POST,
-            )
-            if pagination_form.is_valid():
-                pagination_form.save()
-                messages.success(request, _("Default pagination updated."))
+    """
+    Updates one of the current user's Default Records Per Page rows (one
+    row per company, plus the "All Companies" row) on the System
+    Preferences page.
+    """
+    if request.method == "POST":
+        setting_id = request.POST.get("setting_id")
+        pagination = request.POST.get("pagination")
+        updated = DynamicPagination.objects.filter(
+            id=setting_id, user_id=request.user
+        ).update(pagination=pagination)
+        if updated:
+            messages.success(request, _("Default pagination updated."))
     if request.META.get("HTTP_HX_REQUEST"):
         return HttpResponse()
     return HorillaRedirect(request)
@@ -7693,6 +7767,16 @@ def driver_viewed_status(request):
     return HttpResponse("")
 
 
+def _charts_use_modern_prefs(charts) -> bool:
+    """True when DashboardEmployeeCharts.charts is modern ``[{id, visible}, ...]``."""
+    return bool(
+        charts
+        and isinstance(charts, list)
+        and isinstance(charts[0], dict)
+        and charts[0].get("id")
+    )
+
+
 @login_required
 @hx_request_required
 def dashboard_components_toggle(request):
@@ -7703,6 +7787,9 @@ def dashboard_components_toggle(request):
         employee=request.user.employee_get
     )
     charts = employee_charts.charts or []
+    # Modern home prefs must not be mutated by legacy tile toggles.
+    if _charts_use_modern_prefs(charts):
+        return HttpResponse("")
     chart_id = request.GET.get("chart_id")
     if chart_id and chart_id in charts:
         charts.remove(chart_id)
@@ -7724,6 +7811,17 @@ def employee_chart_show(request):
     charts = check_chart_permission(request, CHARTS)
 
     if request.method == "POST":
+        # Refuse to overwrite modern dashboard Customize prefs with legacy string ids.
+        if _charts_use_modern_prefs(employee_charts.charts):
+            messages.warning(
+                request,
+                _(
+                    "Chart preferences are managed via Customize on the modern "
+                    "dashboard. Legacy Dashboard Charts was not applied."
+                ),
+            )
+            return HttpResponse("<script>window.location.reload();</script>")
+
         data = set(request.POST.keys())
         current_order = employee_charts.charts or []
 
@@ -7752,7 +7850,16 @@ def reorder_dashboard_charts(request):
     employee_charts, created = DashboardEmployeeCharts.objects.get_or_create(
         employee=request.user.employee_get
     )
-    charts = [(chart, chart.replace("_", " ")) for chart in employee_charts.charts]
+    if _charts_use_modern_prefs(employee_charts.charts):
+        messages.warning(
+            request,
+            _("Use Customize on the modern dashboard to reorder charts."),
+        )
+        return HttpResponse(headers={"HX-Refresh": "true"})
+
+    charts = [
+        (chart, chart.replace("_", " ")) for chart in (employee_charts.charts or [])
+    ]
 
     if request.method == "POST":
         chart_keys = list(request.POST.keys())

@@ -31,6 +31,7 @@ from base.methods import (
     generate_colors,
     generate_pdf,
     get_key_instances,
+    get_session_company,
     sortby,
 )
 from base.models import Company
@@ -451,14 +452,11 @@ def settings(request):
     """
     This method is used to render settings template
     """
-    instance = PayrollSettings.objects.first()
+    tracking_company = get_session_company(request)
+    instance, _created = PayrollSettings.objects.get_or_create(
+        company_id=tracking_company
+    )
     currency_form = PayrollSettingsForm(instance=instance)
-    selected_company_id = request.session.get("selected_company")
-
-    if selected_company_id == "all" or not selected_company_id:
-        companies = Company.objects.all()
-    else:
-        companies = Company.objects.filter(id=selected_company_id)
 
     if request.method == "POST":
 
@@ -1899,8 +1897,15 @@ def initial_notice_period(request):
         return HorillaRedirect(request, message=_("required parameter is missing"))
 
     notice_period = eval_validate(request.GET["notice_period"])
-    settings = PayrollGeneralSetting.objects.first()
-    settings = settings if settings else PayrollGeneralSetting()
+    selected_company = request.session.get("selected_company")
+    if selected_company and selected_company != "all":
+        settings = PayrollGeneralSetting.objects.filter(
+            company_id=selected_company
+        ).first()
+        settings = settings or PayrollGeneralSetting(company_id_id=selected_company)
+    else:
+        settings = PayrollGeneralSetting.objects.first()
+        settings = settings or PayrollGeneralSetting()
     settings.notice_period = max(notice_period, 0)
     settings.save()
     messages.success(

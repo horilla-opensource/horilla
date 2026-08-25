@@ -17,7 +17,7 @@ from django.contrib import messages
 from django.core.cache import cache as CACHE
 from django.core.exceptions import FieldDoesNotExist
 from django.db import transaction
-from django.db.models import CharField, F
+from django.db.models import Case, CharField, F, When
 from django.db.models.functions import Cast
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse, QueryDict
 from django.shortcuts import render
@@ -42,6 +42,7 @@ from horilla.group_by import group_by_queryset
 from horilla.horilla_middlewares import _thread_locals, get_selected_company
 from horilla.http.response import HorillaRedirect
 from horilla.models import HorillaModel
+from horilla.nested_group_by import nested_group_by_queryset
 from horilla.signals import post_generic_import, pre_generic_import
 from horilla_views import models
 from horilla_views.cbv_methods import (  # update_initial_cache,
@@ -144,6 +145,12 @@ class HorillaListView(ListView):
     fk_o2o_field_in_base_model: list = []
     individual_update: bool = False
     o2o_related_name_mapping: dict = {}
+    # Mirrors HorillaNavView.nested_group_by_fields -- List and Nav are
+    # separate classes/templates rendered for the same page, so the list
+    # needs its own copy to populate the "add/change field" dropdowns
+    # inline in the "Grouped by" breadcrumb (nested_group_by_table.html),
+    # not just the currently-*active* fields it already had access to.
+    nested_group_by_fields: list = []
 
     custom_empty_template: str = ""
 
@@ -207,7 +214,19 @@ class HorillaListView(ListView):
 
     def __init__(self, **kwargs: Any) -> None:
         if not self.view_id:
-            self.view_id = get_short_uuid(4)
+            # Nested group by's leaf-level pagination (nested_group_by_node.html)
+            # scopes its swap with hx-select="#{{view_id}}-node-...", matched
+            # against the FRESH server response to a follow-up request -- if
+            # that response regenerates a new random view_id (the default
+            # below), the id it's looking for no longer exists there, so
+            # nothing matches and the targeted node's own row silently
+            # disappears instead of advancing to its next page. Carrying the
+            # ORIGINAL render's view_id forward as a GET param (added to
+            # those same hx-get urls) keeps ids stable across that follow-up
+            # request instead.
+            request = getattr(_thread_locals, "request", None)
+            incoming_view_id = request.GET.get("view_id") if request else None
+            self.view_id = incoming_view_id or get_short_uuid(4)
         super().__init__(**kwargs)
 
         self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
@@ -321,19 +340,10 @@ class HorillaListView(ListView):
         context["export_fields"] = self.export_fields
         context["custom_empty_template"] = self.custom_empty_template
         context["records_count_in_tab"] = self.records_count_in_tab
-        referrer = self.request.GET.get("referrer", "")
         if not self.verbose_name:
             self.verbose_name = self.model.__class__
-        if referrer:
-            # Remove the protocol and domain part
-            referrer = "/" + "/".join(referrer.split("/")[3:])
-        context["stored_filters"] = (
-            models.SavedFilter.objects.filter(
-                saved_filter_path_query(self.request), created_by=self.request.user
-            )
-            | models.SavedFilter.objects.filter(
-                referrer=referrer, created_by=self.request.user
-            )
+        context["stored_filters"] = models.SavedFilter.objects.filter(
+            saved_filter_path_query(self.request), created_by=self.request.user
         ).distinct()
 
         # Set default pagination if not set
@@ -454,7 +464,11 @@ class HorillaListView(ListView):
             }
             data_dict = get_key_instances(self.model, data_dict)
             remove_keys = set(
-                ["filter_applied", "nav_url", "referrer"] + self.filter_keys_to_remove
+                # nested_fields gets its own "Nested group by: X > Y" line
+                # instead of the generic filter-tag rendering, which joins
+                # multi-value fields with no separator.
+                ["filter_applied", "nav_url", "referrer", "nested_fields"]
+                + self.filter_keys_to_remove
             )
 
             keys_to_remove = [key for key in data_dict if key in remove_keys]
@@ -497,8 +511,53 @@ class HorillaListView(ListView):
         if self.request.session.get(session_key) != ordered_ids:
             self.request.session[session_key] = ordered_ids
 
-        if request and self._saved_filters.get("field"):
-            field = self._saved_filters.get("field")
+        nested_fields = [f for f in self._saved_filters.getlist("nested_fields") if f]
+        group_field = self._saved_filters.get("field")
+        if isinstance(queryset, list) and (nested_fields or group_field):
+            # sortby() always hands back a plain, already-sorted list (even
+            # for a real DB column, not just a computed/method sort) --
+            # Python's sorted() can't return a queryset. Both the nested and
+            # classic group-by engines need a real QuerySet, since they run
+            # their own .values()/.filter()/.annotate() calls, so rebuild
+            # one here that preserves this exact row order via a Case/When
+            # rank instead of silently losing the requested sort (or
+            # crashing on `queryset.model` and falling back to the flat
+            # list, which is what happened before this rebuild existed).
+            pk_order = [obj.pk for obj in queryset]
+            if pk_order:
+                preserve_order = Case(
+                    *[When(pk=pk, then=pos) for pos, pk in enumerate(pk_order)]
+                )
+                queryset = self.model.objects.filter(pk__in=pk_order).order_by(
+                    preserve_order
+                )
+            else:
+                queryset = self.model.objects.none()
+
+        if request and len(nested_fields) >= 1:
+            self.template_name = "generic/nested_group_by_table.html"
+            # Skip flat list COUNT/pagination — the nested engine paginates
+            # top-level groupers itself.
+            context["queryset"] = queryset[:1]
+            try:
+                context["nested_groups"] = nested_group_by_queryset(
+                    queryset,
+                    nested_fields,
+                    self._saved_filters.get("page"),
+                    "page",
+                    records_per_page=10,
+                )
+                context["nested_fields_active"] = HorillaNavView._resolve_field_labels(
+                    nested_fields, self.model, self.model()._meta.get_field
+                )
+                context["nested_group_by_fields"] = self.nested_group_by_fields
+            except Exception:
+                self.template_name = "generic/horilla_list_table.html"
+                context["queryset"] = paginator_qry(
+                    queryset, self._saved_filters.get("page"), self.records_per_page
+                )
+        elif request and group_field:
+            field = group_field
             self.template_name = "generic/group_by_table.html"
             # Skip flat list COUNT/pagination — group_by paginates groupers itself.
             # Keep a tiny queryset so bulk-select chrome (`queryset|length`) still works.
@@ -1714,19 +1773,39 @@ class HorillaTabView(TemplateView):
             if active_tab:
                 context["active_target"] = active_tab.tab_target
 
-        extra_params = {}
+        # Explicit deep-link support: a caller (e.g. a dashboard "pending
+        # approvals" card) can force a specific tab open on first load via
+        # ?open_tab=<1-based index>, overriding whatever tab the user last
+        # had active. Without this there was no way to link directly into a
+        # non-default tab - every tab param below carries the filter, but
+        # the FIRST tab (or whatever was last active) was always the one
+        # actually shown.
+        # No tag name in the selector: the tab element is a <li> in one
+        # horilla_tabs.html and a <button> in the theme's override, and this
+        # needs to match whichever one actually renders.
+        open_tab = self.request.GET.get("open_tab")
+        if open_tab and open_tab.isdigit():
+            context["active_target"] = f'[data-target="#{self.view_id}{open_tab}"]'
 
-        for key, val in self.request.GET.items():
-            extra_params[key] = val
-
+        # Built from self.request.GET.copy() (a QueryDict), not a plain
+        # dict -- a plain dict can only hold one value per key, so a
+        # multi-valued param (e.g. nested_fields, when 2+ group-by levels
+        # are active) silently collapsed to just its last value on every
+        # tab reload, one dropped level at a time.
+        extra_params = self.request.GET.copy()
+        # Only controls which tab opens above - not a real filter, so it
+        # shouldn't be forwarded onto tab URLs or show up as a "Filters:"
+        # chip on the destination list.
+        extra_params.pop("open_tab", None)
         extra_params["referrer"] = self.request.META.get("HTTP_REFERER", "")
 
         for tab in self.tabs:
             parsed = urlparse(tab.get("url", ""))
-            combined_query = dict(parse_qsl(parsed.query))
-            combined_query.update(extra_params)
+            combined_query = QueryDict(parsed.query, mutable=True)
+            for key in extra_params:
+                combined_query.setlist(key, extra_params.getlist(key))
 
-            tab["url"] = urlunparse(parsed._replace(query=urlencode(combined_query)))
+            tab["url"] = urlunparse(parsed._replace(query=combined_query.urlencode()))
 
         context["tabs"] = self.tabs
         context["view_id"] = self.view_id
@@ -1781,6 +1860,10 @@ class HorillaCardView(ListView):
     card_status_indications: list = []
     custom_body_template: str = ""
     custom_empty_template: str = ""
+    # Set True on card views that don't support the grouped-accordion layout —
+    # a shared nav's "field" group-by param is then ignored, so the card
+    # always renders its normal flat layout regardless of Group By selection.
+    disable_group_by: bool = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -1853,7 +1936,11 @@ class HorillaCardView(ListView):
             }
             data_dict = get_key_instances(self.model, data_dict)
             remove_keys = set(
-                ["filter_applied", "nav_url", "referrer"] + self.filter_keys_to_remove
+                # nested_fields gets its own "Nested group by: X > Y" line
+                # instead of the generic filter-tag rendering, which joins
+                # multi-value fields with no separator.
+                ["filter_applied", "nav_url", "referrer", "nested_fields"]
+                + self.filter_keys_to_remove
             )
 
             keys_to_remove = [key for key in data_dict if key in remove_keys]
@@ -1866,32 +1953,41 @@ class HorillaCardView(ListView):
 
         ordered_ids = list(queryset.values_list("id", flat=True))
         ordered_ids = []
-        if not self._saved_filters.get("field"):
+        if self.disable_group_by or not self._saved_filters.get("field"):
             for instance in queryset:
                 ordered_ids.append(str(instance.pk))
         self.request.session[self.ordered_ids_key] = ordered_ids
 
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaCardView] = context
-        referrer = self.request.GET.get("referrer", "")
-        if referrer:
-            # Remove the protocol and domain part
-            referrer = "/" + "/".join(referrer.split("/")[3:])
-        context["stored_filters"] = (
-            models.SavedFilter.objects.filter(
-                saved_filter_path_query(self.request), created_by=self.request.user
-            )
-            | models.SavedFilter.objects.filter(
-                referrer=referrer, created_by=self.request.user
-            )
+        context["stored_filters"] = models.SavedFilter.objects.filter(
+            saved_filter_path_query(self.request), created_by=self.request.user
         ).distinct()
 
         # Set default pagination if not set
         if not self.records_per_page:
             self.records_per_page = get_pagination(default=50)
 
-        context["queryset"] = paginator_qry(
-            queryset, self.request.GET.get("page"), self.records_per_page
-        )
+        # Group-by accordion support: when a `field` filter is active, build groups
+        if not self.disable_group_by and self._saved_filters.get("field"):
+            field = self._saved_filters.get("field")
+            try:
+                context["groups"] = group_by_queryset(
+                    queryset,
+                    field,
+                    self._saved_filters.get("page"),
+                    "page",
+                    records_per_page=self.records_per_page,
+                )
+                context["queryset"] = queryset[:0]  # empty — groups has the data
+                context["saved_filters"] = self._saved_filters
+            except Exception:
+                context["queryset"] = paginator_qry(
+                    queryset, self.request.GET.get("page"), self.records_per_page
+                )
+        else:
+            context["queryset"] = paginator_qry(
+                queryset, self.request.GET.get("page"), self.records_per_page
+            )
         return context
 
     @classmethod
@@ -2286,6 +2382,7 @@ class HorillaNavView(TemplateView):
     search_in: list = []
     actions: list = []
     group_by_fields: list = []
+    nested_group_by_fields: list = []
     filter_form_context_name: str = ""
     filter_instance: FilterSet = None
     filter_instance_context_name: str = ""
@@ -2322,14 +2419,26 @@ class HorillaNavView(TemplateView):
         except:
             pass
 
-        if not self.group_by_fields:
-            return
-
         get_field = model_instance._meta.get_field
+        if self.group_by_fields:
+            self.group_by_fields = self._resolve_field_labels(
+                self.group_by_fields, model_class_ref, get_field
+            )
+        if self.nested_group_by_fields:
+            self.nested_group_by_fields = self._resolve_field_labels(
+                self.nested_group_by_fields, model_class_ref, get_field
+            )
+
+    @staticmethod
+    def _resolve_field_labels(fields, model_class_ref, get_field) -> list:
+        """
+        Convert a list of plain field names into (field, verbose_name)
+        tuples. Shared by group_by_fields and nested_group_by_fields.
+        """
         updated_fields = []
         append = updated_fields.append
 
-        for field in self.group_by_fields:
+        for field in fields:
             if isinstance(field, str):
                 try:
                     verbose_name = get_field(field).verbose_name
@@ -2347,11 +2456,28 @@ class HorillaNavView(TemplateView):
                             continue
                         except Exception as e:
                             pass
+                    # Generic fallback for models without that helper: walk
+                    # each dotted segment's related_model directly to reach
+                    # the final field, same resolution horilla/group_by.py
+                    # uses to find a grouper's related model.
+                    if "__" in field:
+                        try:
+                            current_model = model_class_ref
+                            field_obj = None
+                            segments = field.split("__")
+                            for i, segment in enumerate(segments):
+                                field_obj = current_model._meta.get_field(segment)
+                                if i < len(segments) - 1:
+                                    current_model = field_obj.related_model
+                            append((field, field_obj.verbose_name))
+                            continue
+                        except Exception:
+                            pass
                     append(field)
             else:
                 append(field)
 
-        self.group_by_fields = updated_fields
+        return updated_fields
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -2360,6 +2486,13 @@ class HorillaNavView(TemplateView):
         context["search_swap_target"] = self.search_swap_target
         context["search_input_attrs"] = self.search_input_attrs
         context["group_by_fields"] = self.group_by_fields
+        context["nested_group_by_fields"] = self.nested_group_by_fields
+        nested_selected = (
+            self.request.GET.getlist("nested_fields") if self.request else []
+        )
+        if not nested_selected:
+            nested_selected = [""]
+        context["nested_fields_selected"] = nested_selected
         context["actions"] = self.actions
         context["filter_body_template"] = self.filter_body_template
         context["create_attrs"] = self.create_attrs

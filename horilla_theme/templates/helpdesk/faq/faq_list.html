@@ -7,6 +7,74 @@
         filter: brightness(90%);
     }
 </style>
+{% if faqs.paginator.num_pages > 1 %}
+    <!-- pagination start -->
+    <div class="flex justify-end w-full mb-2">
+        <div class="hlv-pagination inline-flex items-center h-8 gap-0.5 bg-white border border-[#e6e6e6] rounded-md px-1 flex-shrink-0">
+            <button
+                type="button"
+                class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if faqs.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                {% if faqs.has_previous %}
+                hx-get="{% url 'faq-filter' cat_id %}?{{pd}}&page=1"
+                hx-target="#faqList"
+                hx-on:click="htmxLoadIndicator(this);"
+                {% endif %}
+            >
+                <i class="fa-solid fa-angles-left"></i>
+            </button>
+            <button
+                type="button"
+                class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if faqs.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                {% if faqs.has_previous %}
+                hx-get="{% url 'faq-filter' cat_id %}?{{pd}}&page={{ faqs.previous_page_number }}"
+                hx-target="#faqList"
+                hx-on:click="htmxLoadIndicator(this);"
+                {% endif %}
+            >
+                <i class="fa-solid fa-angle-left"></i>
+            </button>
+            <div class="flex items-center gap-1 px-1 h-7 text-xs text-[#666] leading-none">
+                <input
+                    type="number"
+                    name="page"
+                    min="1"
+                    max="{{ faqs.paginator.num_pages }}"
+                    value="{{ faqs.number }}"
+                    title="{% trans 'Enter a page number and press Enter' %}"
+                    class="w-9 h-6 m-0 py-0 px-1 text-center text-xs leading-6 border border-[#e6e6e6] rounded outline-none focus:border-primary-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    hx-target="#faqList"
+                    hx-get="{% url 'faq-filter' cat_id %}?{{pd}}"
+                    hx-trigger="keyup[keyCode==13] changed, blur changed"
+                    onclick="this.select()"
+                >
+                <span class="inline-flex items-center h-6 leading-none whitespace-nowrap">/ {{ faqs.paginator.num_pages }}</span>
+            </div>
+            <button
+                type="button"
+                class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if faqs.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                {% if faqs.has_next %}
+                hx-get="{% url 'faq-filter' cat_id %}?{{pd}}&page={{ faqs.next_page_number }}"
+                hx-target="#faqList"
+                hx-on:click="htmxLoadIndicator(this);"
+                {% endif %}
+            >
+                <i class="fa-solid fa-angle-right"></i>
+            </button>
+            <button
+                type="button"
+                class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if faqs.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                {% if faqs.has_next %}
+                hx-get="{% url 'faq-filter' cat_id %}?{{pd}}&page={{ faqs.paginator.num_pages }}"
+                hx-target="#faqList"
+                hx-on:click="htmxLoadIndicator(this);"
+                {% endif %}
+            >
+                <i class="fa-solid fa-angles-right"></i>
+            </button>
+        </div>
+    </div>
+    <!-- end of pagination -->
+{% endif %}
 {% for faq in faqs %}
     <div
         class="accordion-item border border-primary-300 rounded-md"
@@ -51,7 +119,12 @@
                 </ul>
             </div>
 
-            <div>
+            <div class="flex items-center gap-4">
+                <ion-icon
+                    :name="open ? 'chevron-up-outline' : 'chevron-down-outline'"
+                    class="oh-tabs__movable-fold-icon text-lg"
+                ></ion-icon>
+
                 <!-- Dropdown -->
                 <div class="relative inline-block" x-data="{ menu:false }" @click.stop>
                     <a class="cursor-pointer" @click="menu = !menu">
@@ -61,6 +134,7 @@
                     <!-- Dropdown menu -->
                     <div
                         x-show="menu"
+                        x-cloak
                         x-transition
                         @click.away="menu = false"
                         class="absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 z-50"
@@ -72,7 +146,7 @@
                                     hx-target="#objectCreateModalTarget"
                                     data-toggle="oh-modal-toggle"
                                     data-target="#objectCreateModal"
-                                    class="w-full text-dark-600 flex justify-start text-left px-3 py-1 hover:text-primary-600 transition duration-300"
+                                    class="block w-full text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300 cursor-pointer"
                                 >
                                     {% trans "Edit" %}
                                 </a>
@@ -91,7 +165,7 @@
 
                                     <a
                                         href="#"
-                                        class="w-full text-danger flex justify-start text-left px-3 py-1 hover:text-danger-dark transition duration-300"
+                                        class="block w-full text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300 cursor-pointer"
                                         @click.prevent="submitDeleteFaq({{ faq.id }}); menu=false"
                                     >{% trans 'Delete' %}</a>
                                 </form>
@@ -99,8 +173,6 @@
                         </ul>
                     </div>
                 </div>
-
-                <span class="icon text-xl font-bold ps-3">+</span>
             </div>
         </button>
 

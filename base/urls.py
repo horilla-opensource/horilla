@@ -108,6 +108,11 @@ urlpatterns = [
         name="dashboard-todays-leave",
     ),
     path(
+        "dashboard/api/leave-coverage/",
+        dashboard_module.dashboard_leave_coverage,
+        name="dashboard-leave-coverage",
+    ),
+    path(
         "dashboard/api/upcoming-holidays/",
         dashboard_module.dashboard_upcoming_holidays,
         name="dashboard-upcoming-holidays",
@@ -136,6 +141,46 @@ urlpatterns = [
         "dashboard/api/turnover/",
         dashboard_module.dashboard_turnover,
         name="dashboard-turnover",
+    ),
+    path(
+        "dashboard/api/employee-status/",
+        dashboard_module.dashboard_employee_status,
+        name="dashboard-employee-status",
+    ),
+    path(
+        "dashboard/api/attendance-overview/",
+        dashboard_module.dashboard_attendance_overview,
+        name="dashboard-attendance-overview",
+    ),
+    path(
+        "dashboard/api/department-overtime/",
+        dashboard_module.dashboard_department_overtime,
+        name="dashboard-department-overtime",
+    ),
+    path(
+        "dashboard/api/leave-trends/",
+        dashboard_module.dashboard_leave_trends,
+        name="dashboard-leave-trends",
+    ),
+    path(
+        "dashboard/api/leave-by-department/",
+        dashboard_module.dashboard_leave_by_department,
+        name="dashboard-leave-by-department",
+    ),
+    path(
+        "dashboard/api/department-leave-days/",
+        dashboard_module.dashboard_department_leave_days,
+        name="dashboard-department-leave-days",
+    ),
+    path(
+        "dashboard/api/hiring-timeline/",
+        dashboard_module.dashboard_hiring_timeline,
+        name="dashboard-hiring-timeline",
+    ),
+    path(
+        "dashboard/api/recruitment-by-stage/",
+        dashboard_module.dashboard_recruitment_by_stage,
+        name="dashboard-recruitment-by-stage",
     ),
     path(
         "dashboard/save-prefs/",
@@ -1305,6 +1350,11 @@ urlpatterns = [
         "settings/system-preferences-view/",
         views.system_preferences_settings_view,
         name="system-preferences-view",
+    ),
+    path(
+        "settings/update-announcement-expire-days/",
+        views.update_announcement_expire_days,
+        name="update-announcement-expire-days",
     ),
     path(
         "settings/encashment-settings-view/",

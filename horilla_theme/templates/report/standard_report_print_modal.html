@@ -1,0 +1,159 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+    <h2 class="oh-modal__dialog-title" id="standardReportPrintLabel">
+        {% blocktrans with name=report_name %}Print {{ name }}{% endblocktrans %}
+    </h2>
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body pt-2" id="standardReportPrintModalBody">
+    {% if can_export %}
+    <form
+        action="{{ export_url }}"
+        method="get"
+        onsubmit="event.stopPropagation();
+            $(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+        id="standardReportPrintForm"
+    >
+        <div class="oh-dropdown__filter-body">
+            <div class="oh-accordion">
+                <div
+                    class="oh-accordion-header"
+                    onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
+                >
+                    {% trans "Period" %}
+                </div>
+                <div class="oh-accordion-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <div class="oh-input-group">
+                                <label class="oh-label" for="sr-print-period">{% trans "Period" %}</label>
+                                <select class="oh-select w-100" name="period_preset" id="sr-print-period">
+                                    {% for p in filter_options.period_presets %}
+                                    <option value="{{ p.id }}" {% if p.id == default_period %}selected{% endif %}>{{ p.label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 sr-print-custom-dates" id="sr-print-from-wrap" hidden>
+                            <div class="oh-input-group">
+                                <label class="oh-label" for="sr-print-from">{% trans "From" %}</label>
+                                <input class="oh-input w-100" type="date" name="from_date" id="sr-print-from">
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 sr-print-custom-dates" id="sr-print-to-wrap" hidden>
+                            <div class="oh-input-group">
+                                <label class="oh-label" for="sr-print-to">{% trans "To" %}</label>
+                                <input class="oh-input w-100" type="date" name="to_date" id="sr-print-to">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if filter_schema.primary or filter_schema.advanced %}
+            <div class="oh-accordion">
+                <div
+                    class="oh-accordion-header"
+                    onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
+                >
+                    {% trans "Filters" %}
+                </div>
+                <div class="oh-accordion-body">
+                    <div class="row">
+                        {% for field in filter_schema.primary %}
+                        <div class="col-sm-12 col-md-6 col-lg-6">
+                            <div class="oh-input-group">
+                                <label class="oh-label" for="sr-print-{{ field.id }}">{{ field.label }}</label>
+                                <select class="oh-select w-100" name="{{ field.id }}" id="sr-print-{{ field.id }}">
+                                    {% if field.empty_label %}<option value="">{{ field.empty_label }}</option>{% endif %}
+                                    {% for choice in field.choices %}
+                                    <option
+                                        value="{{ choice.id }}"
+                                        {% if field.id == "employment_status" and choice.id == default_employment_status %}selected{% endif %}
+                                    >{{ choice.label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% for field in filter_schema.advanced %}
+                        <div class="col-sm-12 col-md-6 col-lg-6">
+                            <div class="oh-input-group">
+                                <label class="oh-label" for="sr-print-{{ field.id }}">{{ field.label }}</label>
+                                <select class="oh-select w-100" name="{{ field.id }}" id="sr-print-{{ field.id }}">
+                                    {% if field.empty_label %}<option value="">{{ field.empty_label }}</option>{% endif %}
+                                    {% for choice in field.choices %}
+                                    <option value="{{ choice.id }}">{{ choice.label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        {# "text-muted small" are Bootstrap utilities this Tailwind-based theme #}
+        {# never loads — they were silently no-ops, leaving this note render as  #}
+        {# full-size, full-black body text next to the branded modal chrome.    #}
+        <p class="text-xs text-gray-500 mt-3 mb-0">
+            {% blocktrans with limit=pdf_row_limit %}PDF shows the first {{ limit }} rows. Use Excel for a fuller extract.{% endblocktrans %}
+        </p>
+
+        {# "Open full report" hidden for now — detail page design isn't finalized yet. #}
+        <div class="oh-modal__dialog-footer pt-3 flex-wrap gap-2">
+            <button type="submit" name="format" value="xlsx" class="oh-btn oh-btn--secondary oh-btn--small">
+                <ion-icon name="download-outline"></ion-icon>
+                {% trans "Print Excel" %}
+            </button>
+            <button type="submit" name="format" value="pdf" class="oh-btn oh-btn--secondary oh-btn--small">
+                <ion-icon name="download-outline"></ion-icon>
+                {% trans "Print PDF" %}
+            </button>
+        </div>
+    </form>
+    {% else %}
+    <div class="p-3">
+        <p class="text-sm text-gray-500 mb-0">
+            {% trans "You can view this report but do not have export permission." %}
+        </p>
+    </div>
+    {% endif %}
+</div>
+<script>
+(function () {
+    function toggleCustomDates() {
+        var preset = document.getElementById("sr-print-period");
+        var show = preset && preset.value === "custom";
+        document.querySelectorAll(".sr-print-custom-dates").forEach(function (el) {
+            el.hidden = !show;
+        });
+    }
+    var period = document.getElementById("sr-print-period");
+    if (period) {
+        period.addEventListener("change", toggleCustomDates);
+        toggleCustomDates();
+    }
+
+    var $modal = $("#genericModal");
+    var $selects = $modal.find("#standardReportPrintForm select.oh-select");
+    if ($selects.length && $.fn.select2) {
+        $selects.each(function () {
+            var $el = $(this);
+            if ($el.hasClass("select2-hidden-accessible")) {
+                try { $el.select2("destroy"); } catch (e) {}
+            }
+            $el.select2({
+                width: "100%",
+                dropdownParent: $modal.find(".oh-modal__dialog").first().length
+                    ? $modal.find(".oh-modal__dialog").first()
+                    : $modal,
+            });
+        });
+    }
+})();
+</script>

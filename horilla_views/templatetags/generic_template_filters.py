@@ -264,10 +264,22 @@ def id_list_json(queryset):
     JSON-encode the pks of every row in queryset, not just the current page.
     Used to make a group's "Select" bulk-action select every matching record
     instead of only the rows rendered on the current pagination page.
+
+    A group's `.paginator.object_list` isn't always a real queryset -- both
+    the single-field and nested group-by engines build it via
+    `_page_from_list`, paginating an already-fetched plain Python list of
+    model instances instead. `.values_list()` doesn't exist on a list, so
+    try that first and fall back to reading `.pk` off each instance
+    directly, instead of silently returning "[]" for every grouped view.
     """
     try:
         return mark_safe(json.dumps(list(queryset.values_list("pk", flat=True))))
-    except (AttributeError, TypeError):
+    except AttributeError:
+        try:
+            return mark_safe(json.dumps([obj.pk for obj in queryset]))
+        except (AttributeError, TypeError):
+            return "[]"
+    except TypeError:
         return "[]"
 
 
@@ -285,6 +297,62 @@ def is_image_file(filename):
     Django template filter to check if a given filename is an image file.
     """
     return filename.lower().endswith((".png", ".jpg", ".jpeg", ".svg"))
+
+
+@register.filter(name="index")
+def index(sequence, i):
+    """
+    sequence[i] with a runtime index — Django's dot-notation list access
+    only works with a literal index in the template source (`.0`, `.1`),
+    not a variable, since the segment after the dot is always resolved as
+    a literal token, never substituted with that variable's value.
+    """
+    try:
+        i = int(i)
+    except (TypeError, ValueError):
+        return None
+    try:
+        return sequence[i]
+    except (IndexError, TypeError, KeyError):
+        return None
+
+
+@register.filter(name="has_attr")
+def has_attr(instance, attr_name):
+    """
+    Whether `instance` exposes `attr_name` at all — used to gate optional,
+    model-specific UI (e.g. an online/offline dot that only Employee
+    supports) inside shared generic row templates without breaking other
+    models that don't have it.
+    """
+    return hasattr(instance, attr_name)
+
+
+@register.filter(name="child_group_path")
+def child_group_path(parent_path, counter):
+    """
+    Build "<parent_path>-<counter>" for a nested group-by node's data-group
+    attribute. NOT the same as `parent_path|add:"-"|add:counter`: Django's
+    `add` filter tries int(value) + int(arg) first, and on a string parent
+    path like "6-" that ValueErrors, falls back to value + arg, which then
+    TypeErrors on str + int (counter is a real int from forloop.counter) —
+    caught and silently swallowed into "". Every nested node below the top
+    level ended up with data-group="" this whole time, which collapses
+    every child's open/closed state into one shared (wrong) key.
+    """
+    return f"{parent_path}-{counter}"
+
+
+@register.filter(name="mul")
+def mul(value, arg):
+    """
+    Multiply value by arg. Used for per-level indentation in nested group-by
+    (level * indent-px), where the number of levels is dynamic.
+    """
+    try:
+        return int(value) * int(arg)
+    except (TypeError, ValueError):
+        return 0
 
 
 @register.filter(name="elided_page_range")

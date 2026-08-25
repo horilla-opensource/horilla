@@ -1175,16 +1175,44 @@ def generate_pdf(template_path, context, path=True, title=None, html=True):
     return response
 
 
+def get_session_company(request):
+    """
+    Resolve the session-selected company to a `Company` instance.
+
+    Returns `None` when "All Companies" is selected (or no company has
+    been selected yet) - the shared meaning of "no specific company" used
+    across the per-company settings pages (Default Expire Days, Default
+    Records Per Page, Enable Check In/Check Out, IP Restriction, ...).
+    """
+    selected_company = request.session.get("selected_company") if request else None
+    if not selected_company or selected_company == "all":
+        return None
+    return Company.objects.filter(id=selected_company).first()
+
+
 def get_pagination(default=20):
+    """
+    Resolve the records-per-page count to use: the current user's
+    DynamicPagination preference for the currently selected company,
+    falling back to their "All Companies" preference, then the
+    caller-supplied `default`.
+    """
     from horilla.horilla_middlewares import _thread_locals
 
     request = getattr(_thread_locals, "request", None)
     user = request.user
-    page = DynamicPagination.objects.filter(user_id=user).first()
-    count = default
-    if page:
-        count = page.pagination
-    return count
+
+    company = get_session_company(request)
+
+    setting = DynamicPagination.objects.filter(user_id=user, company_id=company).first()
+    if not setting and company is not None:
+        setting = DynamicPagination.objects.filter(
+            user_id=user, company_id=None
+        ).first()
+    if setting:
+        return setting.pagination
+
+    return default
 
 
 def paginator_qry(queryset, page_number):

@@ -155,7 +155,6 @@ def build_monthly_summary(from_date, to_date, employee_qs):
         "overtime_second",
         "minimum_hour",
         "attendance_date",
-        "attendance_overtime_approve",
     )
 
     att_dates_map = defaultdict(set)  # {emp_pk: set(dates)} — conflict detection
@@ -168,10 +167,6 @@ def build_monthly_summary(from_date, to_date, employee_qs):
     # "00:00" on days with no shift schedule (holiday/company leave) — so
     # unscheduled days are entirely overtime.
     att_date_ot_secs_map = defaultdict(dict)
-    # {emp_pk: {date: bool}} — whether overtime on that date is approved;
-    # used to stop flagging holiday/week-off attendance as a conflict once
-    # its overtime has been approved (nothing left to action).
-    att_date_ot_approved_map = defaultdict(dict)
     for _r in att_records:
         _pk = _r["employee_id_id"]
         _date = _r["attendance_date"]
@@ -191,7 +186,6 @@ def build_monthly_summary(from_date, to_date, employee_qs):
         att_date_value_map[_pk][_date] = _val
         att_date_secs_map[_pk][_date] = _worked
         att_date_ot_secs_map[_pk][_date] = _r["overtime_second"] or 0
-        att_date_ot_approved_map[_pk][_date] = bool(_r["attendance_overtime_approve"])
 
     # -- 2b. Batch-load shift schedules for hours computation -----------------
     from base.models import EmployeeShiftSchedule
@@ -439,17 +433,11 @@ def build_monthly_summary(from_date, to_date, employee_qs):
                 absent += 1.0  # working day with no activity
 
         # Conflict detection (uses raw data, not overrides). Attendance on a
-        # holiday/week-off only counts as a conflict while its overtime is
-        # still unapproved — once approved there's nothing left to action.
+        # holiday/week-off is normal overtime work, not a data discrepancy —
+        # only attendance overlapping approved leave counts as a conflict.
         att_dates = att_dates_map.get(emp.pk, set())
         emp_leave_dates = leave_dates_per_emp.get(emp.pk, set())
-        emp_ot_approved = att_date_ot_approved_map.get(emp.pk, {})
-        unapproved_off_days = {
-            d
-            for d in att_dates & (holiday_dates_set | _emp_off)
-            if not emp_ot_approved.get(d, False)
-        }
-        conflict_date_set = (att_dates & emp_leave_dates) | unapproved_off_days
+        conflict_date_set = att_dates & emp_leave_dates
         conflict_days = len(conflict_date_set)
 
         emp_resolved_dates = resolutions_by_emp.get(emp.pk, set())
@@ -485,9 +473,14 @@ def build_monthly_summary(from_date, to_date, employee_qs):
         _emp_ot_secs = att_date_ot_secs_map.get(emp.pk, {})
         ot_regular_seconds = ot_week_off_seconds = ot_holiday_seconds = 0
         for _d, _wsec in _att_secs.items():
-            if _d in holiday_dates_set:
+            # HR has explicitly regularized this day away from its holiday/
+            # week-off classification (Full Present / Half Day) — treat the
+            # hours like a normal working day (regular + capped OT) instead
+            # of counting them entirely as holiday/week-off overtime.
+            _regularized = _resolutions.get(_d) in ("full_present", "half_present")
+            if _d in holiday_dates_set and not _regularized:
                 ot_holiday_seconds += _wsec
-            elif _d in _emp_off:
+            elif _d in _emp_off and not _regularized:
                 ot_week_off_seconds += _wsec
             else:
                 ot_regular_seconds += _emp_ot_secs.get(_d, 0)
@@ -734,13 +727,29 @@ def attendance_monthly_summary_export(request):
     if from_date > to_date:
         from_date, to_date = to_date, from_date
 
-    employee_filter = EmployeeFilter(request.GET)
-    employee_qs = filtersubordinatesemployeemodel(
-        request, employee_filter.qs, "attendance.view_attendance"
-    )
-    emp_id = request.GET.get("employee_id")
-    if emp_id:
-        employee_qs = employee_qs.filter(pk=emp_id)
+    # Rows checked via the table's own selection checkboxes take priority
+    # over the filter bar entirely — picking specific rows is a more
+    # deliberate, specific choice than whatever broader filters happen to
+    # be set, matching "export only what I selected" rather than "export
+    # what I selected, further narrowed by filters I may have forgotten
+    # were still applied". filtersubordinatesemployeemodel() still applies
+    # so a manager can't export a subordinate outside their scope by
+    # crafting the request manually.
+    selected_ids = request.GET.getlist("employee_ids")
+    if selected_ids:
+        employee_qs = filtersubordinatesemployeemodel(
+            request,
+            Employee.objects.filter(pk__in=selected_ids),
+            "attendance.view_attendance",
+        )
+    else:
+        employee_filter = EmployeeFilter(request.GET)
+        employee_qs = filtersubordinatesemployeemodel(
+            request, employee_filter.qs, "attendance.view_attendance"
+        )
+        emp_id = request.GET.get("employee_id")
+        if emp_id:
+            employee_qs = employee_qs.filter(pk=emp_id)
 
     rows, total_working, _extra = build_monthly_summary(from_date, to_date, employee_qs)
 
@@ -1375,26 +1384,6 @@ def _build_calendar_context(emp, from_date, to_date):
         )
         week_off_dates = {d for d in raw_cl if from_date <= d <= to_date}
 
-    # -- Worked / Regular / Overtime totals for this employee over the range -
-    # Overtime splits into three sources: worked beyond minimum_hour on a
-    # normal working day (ot_regular), any attendance on a week-off day
-    # (entirely OT), and any attendance on a holiday (entirely OT).
-    cal_worked_seconds = 0
-    cal_ot_regular_seconds = cal_ot_week_off_seconds = cal_ot_holiday_seconds = 0
-    for _d, _r in att_map.items():
-        _wsec = _r["at_work_second"] or 0
-        cal_worked_seconds += _wsec
-        if _d in holiday_map:
-            cal_ot_holiday_seconds += _wsec
-        elif _d in week_off_dates:
-            cal_ot_week_off_seconds += _wsec
-        else:
-            cal_ot_regular_seconds += _r["overtime_second"] or 0
-    cal_overtime_seconds = (
-        cal_ot_regular_seconds + cal_ot_week_off_seconds + cal_ot_holiday_seconds
-    )
-    cal_regular_seconds = cal_worked_seconds - cal_overtime_seconds
-
     # -- Existing resolutions {date: "attendance"|"leave"} -------------------
     resolutions_map = {
         r.date: r.resolution
@@ -1403,6 +1392,29 @@ def _build_calendar_context(emp, from_date, to_date):
             date__range=(from_date, to_date),
         )
     }
+
+    # -- Worked / Regular / Overtime totals for this employee over the range -
+    # Overtime splits into three sources: worked beyond minimum_hour on a
+    # normal working day (ot_regular), any attendance on a week-off day
+    # (entirely OT), and any attendance on a holiday (entirely OT). A day
+    # HR has regularized away from holiday/week-off (Full Present/Half Day)
+    # is treated as a normal working day instead.
+    cal_worked_seconds = 0
+    cal_ot_regular_seconds = cal_ot_week_off_seconds = cal_ot_holiday_seconds = 0
+    for _d, _r in att_map.items():
+        _wsec = _r["at_work_second"] or 0
+        cal_worked_seconds += _wsec
+        _regularized = resolutions_map.get(_d) in ("full_present", "half_present")
+        if _d in holiday_map and not _regularized:
+            cal_ot_holiday_seconds += _wsec
+        elif _d in week_off_dates and not _regularized:
+            cal_ot_week_off_seconds += _wsec
+        else:
+            cal_ot_regular_seconds += _r["overtime_second"] or 0
+    cal_overtime_seconds = (
+        cal_ot_regular_seconds + cal_ot_week_off_seconds + cal_ot_holiday_seconds
+    )
+    cal_regular_seconds = cal_worked_seconds - cal_overtime_seconds
 
     # -- Shift schedule for this employee (for regularized-day hours) ---------
     from base.models import EmployeeShiftSchedule as _ESS
@@ -1471,7 +1483,6 @@ def _build_calendar_context(emp, from_date, to_date):
             )
             clock_in = r["attendance_clock_in"]
             clock_out = r["attendance_clock_out"]
-            ot_approved = bool(r.get("attendance_overtime_approve"))
 
             if min_secs > 0:
                 effective_min = max(0, min_secs - grace_secs)
@@ -1508,11 +1519,13 @@ def _build_calendar_context(emp, from_date, to_date):
                 raw_conflict = "week_off_ot"  # attendance on week-off → WO OT
 
             if raw_conflict in ("holiday_ot", "week_off_ot"):
-                # Count in the holiday/week_off bucket; HO/WO badge shows attendance.
-                # Once the overtime is approved there's nothing left to action,
-                # so it stops being flagged as a conflict.
+                # Attendance on a holiday/week-off is normal overtime work,
+                # not a data discrepancy — counts in the holiday/week_off
+                # bucket, shows its HO/WO badge, but never rings as a
+                # conflict (mirrors build_monthly_summary's conflict-count
+                # rule, which only flags attendance overlapping leave).
                 base_status = "holiday" if raw_conflict == "holiday_ot" else "week_off"
-                return base_status, detail, raw_conflict, None, not ot_approved
+                return base_status, detail, raw_conflict, None, False
 
             if raw_conflict:  # paid_leave or unpaid_leave
                 if resolution == "leave":
@@ -1747,6 +1760,7 @@ def attendance_monthly_summary_conflict_resolve(request):
             "unpaid_leave",
             "holiday",
             "week_off",
+            "approve_ot",
             "attendance",
             "leave",  # legacy kept for existing records
         }
@@ -1756,11 +1770,24 @@ def attendance_monthly_summary_conflict_resolve(request):
                 date=date,
                 defaults={"resolution": resolution, "conflict_type": conflict_type},
             )
+            if resolution == "approve_ot":
+                # Holiday/week-off work isn't counted as a conflict (it's
+                # normal overtime, not a data discrepancy), but HR may still
+                # want to formally approve the hours for downstream use
+                # (payroll, Hour Account) — set the real flag directly
+                # rather than just recording an override local to this page.
+                Attendance.objects.filter(employee_id=emp, attendance_date=date).update(
+                    attendance_overtime_approve=True
+                )
         elif resolution == "clear":
             _obj = AttendanceConflictResolution.objects.filter(
                 employee_id=emp, date=date
             ).first()
             if _obj:
+                if _obj.resolution == "approve_ot":
+                    Attendance.objects.filter(
+                        employee_id=emp, attendance_date=date
+                    ).update(attendance_overtime_approve=False)
                 _obj.delete()
 
         # Re-render the full calendar so counts and dots update immediately
@@ -1778,9 +1805,11 @@ def attendance_monthly_summary_conflict_resolve(request):
             "at_work_second",
             "minimum_hour",
             "overtime_second",
+            "attendance_overtime_approve",
         )
         .first()
     )
+    att_ot_approved = bool(att_row and att_row.get("attendance_overtime_approve"))
 
     _grace = 0
     _dg = _GT.objects.filter(is_default=True, is_active=True).first()
@@ -1898,6 +1927,7 @@ def attendance_monthly_summary_conflict_resolve(request):
         "weekend": _("Weekend"),
         "absent": _("Absent"),
         "partial_hours": _("Partial Hours"),
+        "approve_ot": _("Overtime Approved"),
         "attendance": _("Attendance"),
         "leave": _("Leave / Holiday"),
     }
@@ -1917,6 +1947,7 @@ def attendance_monthly_summary_conflict_resolve(request):
         "week_off": ("#ede9fe", "#4c1d95"),
         "weekend": ("#f1f5f9", "#64748b"),
         "partial_hours": ("#ecfeff", "#0e7490"),
+        "approve_ot": ("#ffedd5", "#92400e"),
         "attendance": ("#f1f5f9", "#475569"),
         "leave": ("#f1f5f9", "#475569"),
     }
@@ -1998,7 +2029,17 @@ def attendance_monthly_summary_conflict_resolve(request):
         _ss(_cond.overtime_cutoff) if _cond and _cond.overtime_cutoff else 0
     )
     _effective_min = _shift_min_secs if _shift_min_secs > 0 else 28800  # 8h default
-    _is_ot_day = conflict_type in ("holiday_ot", "week_off_ot", "holiday", "week_off")
+    # A holiday/week-off day that HR has regularized (Full Present/Half Day)
+    # is no longer treated as 100% overtime — it gets the normal
+    # regular/OT split, same as build_monthly_summary and the calendar totals.
+    _regularized_day = existing is not None and existing.resolution in (
+        "full_present",
+        "half_present",
+    )
+    _is_ot_day = (
+        conflict_type in ("holiday_ot", "week_off_ot", "holiday", "week_off")
+        and not _regularized_day
+    )
     worked_h = panel_hours_sec // 3600
     worked_m = (panel_hours_sec % 3600) // 60
     if _is_ot_day:
@@ -2059,6 +2100,7 @@ def attendance_monthly_summary_conflict_resolve(request):
         "shift_min_h": _shift_min_secs // 3600,
         "shift_min_m": (_shift_min_secs % 3600) // 60,
         "att_ot_sec": _att_ot_sec,
+        "att_ot_approved": att_ot_approved,
         "effective_min_secs": _effective_min,
         "ot_cutoff_sec": _ot_cutoff_sec,
         "is_ot_day": _is_ot_day,

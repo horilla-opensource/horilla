@@ -5,7 +5,7 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         :root {
-            --md-indigo: #E54F38;
+            --md-indigo: #e54f38;
             --md-green: #22c55e;
             --md-amber: #f59e0b;
             --md-red: #ef4444;
@@ -160,6 +160,15 @@
             box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
             text-decoration: none;
         }
+        .md-kpi-card__hit {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+        }
+        .md-kpi-card__hit:hover {
+            color: inherit;
+            text-decoration: none;
+        }
 
         .md-kpi-card__icon {
             display: flex;
@@ -260,7 +269,8 @@
 
         .md-chart-card {
             position: relative;
-            overflow: hidden;
+            /* visible so ApexCharts axis/legend labels are not clipped */
+            overflow: visible;
             border: 1px solid rgba(128, 128, 128, 0.09);
             border-radius: 16px;
             background: #ffffff;
@@ -282,6 +292,7 @@
 
         /* Section accent top-border strip */
         .md-chart-card::before {
+            z-index: 1;
             position: absolute;
             top: 0;
             right: 0;
@@ -289,9 +300,10 @@
             height: 3px;
             border-radius: 16px 16px 0 0;
             content: '';
+            pointer-events: none;
         }
         .md-chart-card[data-chart-section='overview']::before {
-            background: linear-gradient(90deg, #E54F38, #a855f7);
+            background: linear-gradient(90deg, #e54f38, #a855f7);
         }
         .md-chart-card[data-chart-section='attendance']::before {
             background: linear-gradient(90deg, #22c55e, #06b6d4);
@@ -300,7 +312,7 @@
             background: linear-gradient(90deg, #f59e0b, #ef4444);
         }
         .md-chart-card[data-chart-section='leave']::before {
-            background: linear-gradient(90deg, #3b82f6, #E54F38);
+            background: linear-gradient(90deg, #3b82f6, #e54f38);
         }
 
         .md-chart-card--wide {
@@ -331,7 +343,20 @@
         }
 
         .md-chart-card__body {
-            padding: 4px 12px 12px;
+            padding: 4px 12px 16px;
+            overflow: visible;
+        }
+
+        /* Force readable ApexCharts axis/legend labels on light & dark cards */
+        .md-dashboard .apexcharts-xaxis text,
+        .md-dashboard .apexcharts-yaxis text,
+        .md-dashboard .apexcharts-legend-text {
+            fill: #334155 !important;
+        }
+        .dark .md-dashboard .apexcharts-xaxis text,
+        .dark .md-dashboard .apexcharts-yaxis text,
+        .dark .md-dashboard .apexcharts-legend-text {
+            fill: #cbd5e1 !important;
         }
 
         /* Section labels inside the grid */
@@ -393,9 +418,15 @@
         }
         /* Stagger each card's shimmer slightly so they animate block by
            block left-to-right rather than all in perfect unison. */
-        .md-kpi-card--skeleton:nth-child(2) .md-skeleton { animation-delay: 0.12s; }
-        .md-kpi-card--skeleton:nth-child(3) .md-skeleton { animation-delay: 0.24s; }
-        .md-kpi-card--skeleton:nth-child(4) .md-skeleton { animation-delay: 0.36s; }
+        .md-kpi-card--skeleton:nth-child(2) .md-skeleton {
+            animation-delay: 0.12s;
+        }
+        .md-kpi-card--skeleton:nth-child(3) .md-skeleton {
+            animation-delay: 0.24s;
+        }
+        .md-kpi-card--skeleton:nth-child(4) .md-skeleton {
+            animation-delay: 0.36s;
+        }
 
         .md-empty {
             display: flex;
@@ -994,7 +1025,8 @@
             color: #fde68a;
         }
 
-        /* Pending approvals panel */
+        /* Pending approvals (sidebar) */
+
         .md-pending-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -1086,7 +1118,7 @@
 
         /* Period Picker */
         .md-period-picker {
-            display: flex;
+            display: none !important; /* TEMP: hide period picker */
             align-items: center;
             gap: 6px;
             font-size: 12px;
@@ -1214,6 +1246,78 @@
                 width: 100%;
             }
         }
+
+        .md-company-chip {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 6px;
+            padding: 3px 10px;
+            gap: 6px;
+            border: 1px solid hsl(0, 0%, 90%);
+            border-radius: 999px;
+            background: hsl(0, 0%, 96%);
+            color: hsl(0, 0%, 40%);
+            font-weight: 500;
+            font-size: 12px;
+        }
+        .dark .md-company-chip {
+            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.06);
+            color: #cbd5e1;
+        }
+
+        /* Recruitment stage funnel (HTML, not Apex) */
+        .md-funnel {
+            display: flex;
+            flex-direction: column;
+            padding: 8px 0 4px;
+            gap: 0;
+        }
+        .md-funnel-step {
+            display: flex;
+            align-items: center;
+            padding: 3px 4px;
+            gap: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .md-funnel-step:hover {
+            background: rgba(229, 79, 56, 0.06);
+        }
+        .md-funnel-step__label {
+            min-width: 88px;
+            color: inherit;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .md-funnel-step__bar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            min-width: 48px;
+            height: 28px;
+            padding: 0 10px;
+            border-radius: 6px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 12px;
+            transition: opacity 0.15s;
+        }
+        .md-funnel-step:hover .md-funnel-step__bar {
+            opacity: 0.88;
+        }
+        .md-funnel-step__share {
+            min-width: 44px;
+            font-weight: 700;
+            font-size: 11px;
+            opacity: 0.7;
+        }
+        .md-funnel-meta {
+            margin-top: 10px;
+            font-size: 11px;
+            text-align: right;
+            opacity: 0.55;
+        }
     </style>
 
     <div class="md-dashboard">
@@ -1222,6 +1326,17 @@
             <div>
                 <h1>{% trans "Dashboard" %}</h1>
                 <div class="md-header__date" id="md-date"></div>
+                {% if dashboard_company_label %}
+                    <div
+                        class="md-company-chip"
+                        id="md-company-chip"
+                        title="{% if dashboard_company_is_all %}{% trans 'KPIs span all companies you can access' %}{% else %}{% trans 'Active company scope' %}{% endif %}"
+                    >
+                        <span
+                        >{% if dashboard_company_is_all %}{% trans "Scope" %}{% else %}{% trans "Company" %}{% endif %}:</span>
+                        <strong>{{ dashboard_company_label }}</strong>
+                    </div>
+                {% endif %}
                 <div class="md-refresh">
                     <span class="md-refresh__dot" id="md-refresh-dot"></span><span
                         id="md-refresh-text"
@@ -1235,7 +1350,7 @@
                 </div>
             </div>
             <div class="md-header__actions">
-                <div class="md-period-picker">
+                <div class="md-period-picker" hidden>
                     <button class="md-period-preset" data-preset="this_month">{% trans "This Month" %}</button>
                     <button class="md-period-preset" data-preset="last_month">{% trans "Last Month" %}</button>
                     <button class="md-period-preset" data-preset="this_quarter">{% trans "Quarter" %}</button>
@@ -1272,12 +1387,31 @@
             {% include "base/setup_checklist_banner.html" %}
         {% endif %}
 
-        <!-- KPI Cards -->
         <div class="md-kpi-grid" id="md-kpi-grid">
-            <div class="md-kpi-card md-kpi-card--skeleton"><div class="md-skeleton md-skeleton--icon"></div><div class="md-skeleton md-skeleton--label"></div><div class="md-skeleton md-skeleton--value"></div><div class="md-skeleton md-skeleton--sub"></div></div>
-            <div class="md-kpi-card md-kpi-card--skeleton"><div class="md-skeleton md-skeleton--icon"></div><div class="md-skeleton md-skeleton--label"></div><div class="md-skeleton md-skeleton--value"></div><div class="md-skeleton md-skeleton--sub"></div></div>
-            <div class="md-kpi-card md-kpi-card--skeleton"><div class="md-skeleton md-skeleton--icon"></div><div class="md-skeleton md-skeleton--label"></div><div class="md-skeleton md-skeleton--value"></div><div class="md-skeleton md-skeleton--sub"></div></div>
-            <div class="md-kpi-card md-kpi-card--skeleton"><div class="md-skeleton md-skeleton--icon"></div><div class="md-skeleton md-skeleton--label"></div><div class="md-skeleton md-skeleton--value"></div><div class="md-skeleton md-skeleton--sub"></div></div>
+            <div class="md-kpi-card md-kpi-card--skeleton">
+                <div class="md-skeleton md-skeleton--icon"></div>
+                <div class="md-skeleton md-skeleton--label"></div>
+                <div class="md-skeleton md-skeleton--value"></div>
+                <div class="md-skeleton md-skeleton--sub"></div>
+            </div>
+            <div class="md-kpi-card md-kpi-card--skeleton">
+                <div class="md-skeleton md-skeleton--icon"></div>
+                <div class="md-skeleton md-skeleton--label"></div>
+                <div class="md-skeleton md-skeleton--value"></div>
+                <div class="md-skeleton md-skeleton--sub"></div>
+            </div>
+            <div class="md-kpi-card md-kpi-card--skeleton">
+                <div class="md-skeleton md-skeleton--icon"></div>
+                <div class="md-skeleton md-skeleton--label"></div>
+                <div class="md-skeleton md-skeleton--value"></div>
+                <div class="md-skeleton md-skeleton--sub"></div>
+            </div>
+            <div class="md-kpi-card md-kpi-card--skeleton">
+                <div class="md-skeleton md-skeleton--icon"></div>
+                <div class="md-skeleton md-skeleton--label"></div>
+                <div class="md-skeleton md-skeleton--value"></div>
+                <div class="md-skeleton md-skeleton--sub"></div>
+            </div>
         </div>
 
         <!-- Main layout -->
@@ -1291,6 +1425,7 @@
                         data-chart-id="department_headcount"
                         data-chart-section="overview"
                         data-chart-label="{% trans 'Department Headcount' %}"
+                        data-chart-default="hidden"
                     >
                         <div class="md-chart-card__header">
                             <div>
@@ -1308,12 +1443,17 @@
                             data-chart-id="leave_trends"
                             data-chart-section="overview"
                             data-chart-label="{% trans 'Leave Trends' %}"
+                            data-chart-default="hidden"
                         >
                             <div class="md-chart-card__header">
                                 <div>
                                     <div class="md-chart-card__title">{% trans "Leave Trends" %}</div>
                                     <div class="md-chart-card__subtitle">{% trans "Daily leaves — current week" %}</div>
                                 </div>
+                                <a
+                                    class="md-link"
+                                    href="{% url 'leave-dashboard' %}"
+                                >{% trans "Open Leave dashboard" %}</a>
                             </div>
                             <div class="md-chart-card__body"><div id="chart-leave-trend"></div></div>
                         </div>
@@ -1325,12 +1465,17 @@
                         data-chart-id="employee_status"
                         data-chart-section="overview"
                         data-chart-label="{% trans 'Employee Status' %}"
+                        data-chart-default="hidden"
                     >
                         <div class="md-chart-card__header">
                             <div>
                                 <div class="md-chart-card__title">{% trans "Employee Status" %}</div>
                                 <div class="md-chart-card__subtitle">{% trans "Active vs Inactive" %}</div>
                             </div>
+                            <a
+                                class="md-link"
+                                href="{% url 'employee-dashboard' %}"
+                            >{% trans "Open Employee dashboard" %}</a>
                         </div>
                         <div class="md-chart-card__body"><div id="chart-employee-status"></div></div>
                     </div>
@@ -1341,6 +1486,7 @@
                         data-chart-id="gender_distribution"
                         data-chart-section="overview"
                         data-chart-label="{% trans 'Gender Distribution' %}"
+                        data-chart-default="hidden"
                     >
                         <div class="md-chart-card__header">
                             <div>
@@ -1358,6 +1504,7 @@
                             data-chart-id="leave_breakdown"
                             data-chart-section="overview"
                             data-chart-label="{% trans 'Leave Breakdown' %}"
+                            data-chart-default="hidden"
                         >
                             <div class="md-chart-card__header">
                                 <div>
@@ -1369,7 +1516,7 @@
                         </div>
                     {% endif %}
 
-                    {% if perms.attendance.view_attendance or request.user.is_superuser %}
+                    {% if perms.attendance.view_attendance or request.user.is_superuser or home_role == "manager" %}
                         <!-- Attendance Overview -->
                         <div
                             class="md-chart-card md-chart-card--wide"
@@ -1399,7 +1546,9 @@
                             <div class="md-chart-card__header">
                                 <div>
                                     <div class="md-chart-card__title">{% trans "Department Overtime" %}</div>
-                                    <div class="md-chart-card__subtitle">{% trans "Overtime hours distribution" %}</div>
+                                    <div class="md-chart-card__subtitle">
+                                        {% trans "Overtime hours by department" %}
+                                    </div>
                                 </div>
                             </div>
                             <div class="md-chart-card__body"><div id="chart-overtime"></div></div>
@@ -1424,6 +1573,25 @@
                             <div class="md-chart-card__body"><div id="chart-attendance-trend"></div></div>
                         </div>
                     {% endif %}
+
+                    <!-- Leave Coverage (7 days) -->
+                    <div
+                        class="md-chart-card md-chart-card--wide"
+                        data-chart-id="leave_coverage"
+                        data-chart-section="leave"
+                        data-chart-label="{% trans 'Leave Coverage' %}"
+                        data-chart-wide="1"
+                    >
+                        <div class="md-chart-card__header">
+                            <div>
+                                <div class="md-chart-card__title">{% trans "Leave Coverage" %}</div>
+                                <div class="md-chart-card__subtitle">
+                                    {% trans "Next 7 days — who is out vs available" %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="md-chart-card__body"><div id="chart-leave-coverage"></div></div>
+                    </div>
 
                     {% if perms.recruitment.view_recruitment or request.user.is_superuser %}
                         <!-- Recruitment Pipeline -->
@@ -1452,6 +1620,7 @@
                             data-chart-section="recruitment"
                             data-chart-label="{% trans 'Hiring Timeline' %}"
                             data-chart-wide="1"
+                            data-chart-default="hidden"
                         >
                             <div class="md-chart-card__header">
                                 <div>
@@ -1470,12 +1639,13 @@
                             data-chart-id="leave_by_department"
                             data-chart-section="leave"
                             data-chart-label="{% trans 'Leave by Department' %}"
+                            data-chart-default="hidden"
                         >
                             <div class="md-chart-card__header">
                                 <div>
                                     <div class="md-chart-card__title">{% trans "Leave by Department" %}</div>
                                     <div class="md-chart-card__subtitle">
-                                        {% trans "Department-wise leave requests" %}
+                                        {% trans "Requests ranked by department" %}
                                     </div>
                                 </div>
                             </div>
@@ -1488,6 +1658,7 @@
                             data-chart-id="department_leave_days"
                             data-chart-section="leave"
                             data-chart-label="{% trans 'Department Leave Days' %}"
+                            data-chart-default="hidden"
                         >
                             <div class="md-chart-card__header">
                                 <div>
@@ -1509,12 +1680,13 @@
                             data-chart-section="recruitment"
                             data-chart-label="{% trans 'Recruitment Funnel' %}"
                             data-chart-wide="1"
+                            data-chart-default="hidden"
                         >
                             <div class="md-chart-card__header">
                                 <div>
                                     <div class="md-chart-card__title">{% trans "Recruitment Funnel" %}</div>
                                     <div class="md-chart-card__subtitle">
-                                        {% trans "Candidates by stage — active recruitments" %}
+                                        {% trans "Stage pipeline — share of candidates" %}
                                     </div>
                                 </div>
                             </div>
@@ -1543,8 +1715,8 @@
                         </div>
                     {% endif %}
 
-                    {% if perms.payroll.view_payslip or request.user.is_superuser %}
-                        <!-- Payroll Summary (NEW) -->
+                    {% if request.user.is_superuser or perms.payroll.view_payslip and request.user.is_staff or perms.payroll.view_payslip and perms.payroll.change_payslip %}
+                        <!-- Payroll Summary — payroll operators only (staff/superuser/change_payslip) -->
                         <div
                             class="md-chart-card"
                             data-chart-id="payroll_summary"
@@ -1610,6 +1782,14 @@
                             href="{% url 'holiday-view' %}"
                             class="md-link-subtle"
                         >{% trans "View all" %}</a>
+                    </div>
+                    <div class="md-info-panel__body" id="md-holidays">
+                        <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
+                    </div>
+                </div>
+                <div class="md-info-panel">
+                    <div class="md-info-panel__header">
+                        <div class="md-info-panel__title">{% trans "Birthdays & Anniversaries" %}</div>
                     </div>
                     <div class="md-info-panel__body" id="md-birthdays">
                         <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
@@ -1680,8 +1860,10 @@
             const emptyHtml = (msg) => `<div class="md-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
             const hideCard  = id => document.querySelector(`[data-chart-id="${id}"]`)?.classList.add('md-chart-card--hidden');
             const kpiCard   = (href, perm, colorClass, svg, label, value, sub) => {
-                const inner = `<div class="md-kpi-card__icon ${colorClass}">${svg}</div><div class="md-kpi-card__label">${label}</div><div class="md-kpi-card__value">${value}</div><div class="md-kpi-card__sub">${sub}</div>`;
-                return perm ? `<a href="${href}" class="md-kpi-card">${inner}</a>` : `<div class="md-kpi-card">${inner}</div>`;
+                const body = `<div class="md-kpi-card__icon ${colorClass}">${svg}</div><div class="md-kpi-card__label">${label}</div><div class="md-kpi-card__value">${value}</div>`;
+                const subHtml = `<div class="md-kpi-card__sub">${sub}</div>`;
+                if (!perm) return `<div class="md-kpi-card">${body}${subHtml}</div>`;
+                return `<div class="md-kpi-card"><a href="${href}" class="md-kpi-card__hit">${body}</a>${subHtml}</div>`;
             };
 
             document.getElementById('md-date').textContent = new Date().toLocaleDateString('en-US', {
@@ -1818,8 +2000,22 @@
             // ═══════════════════════════════════════════
 
             function getDefaultOrder() {
+                const roleDefaults = {{ role_default_prefs|default:"[]"|safe }};
+                const byId = {};
+                if (Array.isArray(roleDefaults)) {
+                    roleDefaults.forEach(p => { if (p && p.id) byId[p.id] = !!p.visible; });
+                }
                 const cards = document.querySelectorAll('#md-charts-container [data-chart-id]');
-                return Array.from(cards).map(c => ({ id: c.dataset.chartId, visible: true }));
+                return Array.from(cards).map(c => {
+                    const id = c.dataset.chartId;
+                    let visible;
+                    if (Object.prototype.hasOwnProperty.call(byId, id)) {
+                        visible = byId[id];
+                    } else {
+                        visible = c.dataset.chartDefault !== 'hidden';
+                    }
+                    return { id, visible };
+                });
             }
 
             function loadPrefs() {
@@ -1859,26 +2055,52 @@
                     }
                 });
 
-                // Append any new charts not in prefs
+                // Append any new charts not in prefs (honor data-chart-default)
                 Object.keys(cards).forEach(id => {
                     if (!prefs.find(p => p.id === id)) {
                         container.appendChild(cards[id]);
-                        cards[id].classList.remove('md-chart-card--hidden');
+                        if (cards[id].dataset.chartDefault === 'hidden') {
+                            cards[id].classList.add('md-chart-card--hidden');
+                        } else {
+                            cards[id].classList.remove('md-chart-card--hidden');
+                        }
                     }
                 });
             }
 
-            // Apply saved preferences on load (localStorage first, DB fallback)
-            // DB prefs are embedded in the page context by the server
-            const _dbPrefsRaw = {{ employee_chart_prefs|safe }};
+            // Apply saved preferences on load (localStorage first, DB fallback, else role defaults)
+            // DB prefs are embedded in the page context by the server (already normalized)
+            let _dbPrefsRaw = {{ employee_chart_prefs|safe }};
+            if (!Array.isArray(_dbPrefsRaw) || (_dbPrefsRaw.length && typeof _dbPrefsRaw[0] === 'string')) {
+                _dbPrefsRaw = [];
+            }
             const _localPrefs = loadPrefs();
             if (_localPrefs) {
                 applyPrefs(_localPrefs);
             } else if (_dbPrefsRaw && _dbPrefsRaw.length) {
-                // DB prefs exist — apply them and cache to localStorage
                 applyPrefs(_dbPrefsRaw);
                 savePrefs(_dbPrefsRaw);
+            } else {
+                const rolePrefs = getDefaultOrder();
+                applyPrefs(rolePrefs);
             }
+
+            document.getElementById('md-reset-customize').addEventListener('click', () => {
+                const rolePrefs = getDefaultOrder();
+                localStorage.removeItem(STORAGE_KEY);
+                // Persist role defaults so reload does not restore a stale customized layout
+                fetch("{% url 'dashboard-save-prefs' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '',
+                    },
+                    body: JSON.stringify({ prefs: rolePrefs }),
+                }).finally(() => {
+                    savePrefs(rolePrefs);
+                    location.reload();
+                });
+            });
 
             // ── Customize panel ──
             const overlay = document.getElementById('md-customize-overlay');
@@ -2024,11 +2246,6 @@
                 });
             });
 
-            document.getElementById('md-reset-customize').addEventListener('click', () => {
-                localStorage.removeItem(STORAGE_KEY);
-                location.reload();
-            });
-
             // ═══════════════════════════════════════════
             //  DATA FETCHES
             // ═══════════════════════════════════════════
@@ -2058,6 +2275,18 @@
                     chartInstances[key].destroy();
                     chartInstances[key] = null;
                 }
+                // Ensure axis/legend/default label color contrasts with card surface
+                const chartOpts = options.chart || {};
+                options = {
+                    ...options,
+                    chart: {
+                        fontFamily: 'inherit',
+                        background: 'transparent',
+                        foreColor: textColor,
+                        ...chartOpts,
+                    },
+                    theme: options.theme || { mode: isDark ? 'dark' : 'light' },
+                };
                 const chart = new ApexCharts(el, options);
                 chartInstances[key] = chart;
                 chart.render();
@@ -2118,10 +2347,10 @@
                         const leaveSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
                         const recruSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>';
                         document.getElementById('md-kpi-grid').innerHTML =
-                            kpiCard("{% url 'employee-view' %}",   PERM.employee,    'md-kpi-card__icon--indigo', empSvg,   '{% trans "Total Employees" %}',   data.total_employees,   data.new_joiners > 0 ? '<span class="md-badge md-badge--green">+' + data.new_joiners + ' {% trans "this month" %}</span>' : '<span style="opacity:0.5">{% trans "No new joiners" %}</span>') +
-                            kpiCard("{% url 'attendance-view' %}",  PERM.attendance,  'md-kpi-card__icon--green',  attSvg,   '{% trans "Present Today" %}',     data.present_today,     '<span class="md-badge ' + (data.attendance_rate >= 80 ? 'md-badge--green' : 'md-badge--amber') + '">' + data.attendance_rate + '% {% trans "rate" %}</span>') +
-                            kpiCard(`{% url 'request-view' %}?from_date=${getToday()}&to_date=${getToday()}&status=approved`,     PERM.leave,       'md-kpi-card__icon--amber',  leaveSvg, '{% trans "On Leave" %}',           data.on_leave,          data.pending_leaves > 0 ? '<span class="md-badge md-badge--amber">' + data.pending_leaves + ' {% trans "pending" %}</span>' : '<span style="opacity:0.5">{% trans "No pending" %}</span>') +
-                            (PERM.recruitment ? kpiCard("{% url 'recruitment-view' %}", true, 'md-kpi-card__icon--purple', recruSvg, '{% trans "Open Recruitments" %}', data.open_recruitments, '<span style="opacity:0.5">{% trans "Active hiring" %}</span>') : '');
+                            kpiCard("{% url 'employee-view' %}?is_active=True&filter_applied=on",   PERM.employee,    'md-kpi-card__icon--indigo', empSvg,   '{% trans "Total Employees" %}',   data.total_employees,   data.new_joiners > 0 ? '<span class="md-badge md-badge--green">+' + data.new_joiners + ' {% trans "this month" %}</span>' : '<span style="opacity:0.5">{% trans "No new joiners" %}</span>') +
+                            kpiCard("{% url 'attendance-view' %}?attendance_date={% now 'Y-m-d' %}&filter_applied=on",  PERM.attendance,  'md-kpi-card__icon--green',  attSvg,   '{% trans "Present Today" %}',     data.present_today,     '<span class="md-badge ' + (data.attendance_rate >= 80 ? 'md-badge--green' : 'md-badge--amber') + '">' + data.attendance_rate + '% {% trans "of expected" %}</span>' + (data.not_checked_in > 0 ? ' <span class="md-badge md-badge--amber">' + data.not_checked_in + ' {% trans "not checked in" %}</span>' : '')) +
+                            kpiCard(`{% url 'request-view' %}?status=approved&today_leave=true&filter_applied=on`,     PERM.leave,       'md-kpi-card__icon--amber',  leaveSvg, '{% trans "On Leave" %}',           data.on_leave,          data.pending_leaves > 0 ? '<a href="{% url "request-view" %}?status=requested&filter_applied=on" class="md-badge md-badge--amber">' + data.pending_leaves + ' {% trans "pending" %}</a>' : '<span style="opacity:0.5">{% trans "No pending" %}</span>') +
+                            (PERM.recruitment ? kpiCard("{% url 'recruitment-view' %}?closed=false&filter_applied=on", true, 'md-kpi-card__icon--purple', recruSvg, '{% trans "Open Recruitments" %}', data.open_recruitments, '<span style="opacity:0.5">{% trans "Active hiring" %}</span>') : '');
                     });
             }
             loadKpiCards();
@@ -2236,16 +2465,15 @@
                     }
                     renderChart('attendance-trend', document.querySelector("#chart-attendance-trend"), {
                         series: [{ name: '{% trans "Attendance Rate" %}', data: data.weeks.map(w => w.rate) }],
-                        chart: { type: 'area', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
-                            dropShadow: { enabled: true, top: 4, blur: 10, opacity: 0.12, color: '#E54F38' } },
+                        chart: { type: 'area', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM },
                         colors: ['#E54F38'],
                         fill: { type: 'gradient', gradient: { type: 'vertical', shadeIntensity: 1, opacityFrom: 0.45, opacityTo: 0.02, stops: [0, 90, 100],
                             colorStops: [{ offset: 0, color: '#E54F38', opacity: 0.4 }, { offset: 100, color: '#a855f7', opacity: 0.02 }] } },
-                        stroke: { curve: 'smooth', width: 3 },
+                        stroke: { curve: 'straight', width: 3 },
                         markers: { size: 5, colors: ['#E54F38'], strokeColors: cardBg, strokeWidth: 2, hover: { size: 7 } },
                         dataLabels: { enabled: false },
                         xaxis: { ...XAXIS_STYLE, categories: data.weeks.map(w => w.week) },
-                        yaxis: { ...YAXIS_STYLE, min: 0, max: 100, labels: { ...YAXIS_STYLE.labels, formatter: v => v + '%' } },
+                        yaxis: { ...YAXIS_STYLE, min: 0, max: 100, tickAmount: 5, forceNiceScale: false, labels: { ...YAXIS_STYLE.labels, formatter: v => v + '%' } },
                         grid: GRID,
                         tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + '% {% trans "attendance" %}' } },
                     });
@@ -2291,24 +2519,31 @@
                 .then(r => r.json())
                 .then(data => {
                     if (!data.genders.length) { document.querySelector("#chart-gender").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-                    const gc = { 'Male': '#3b82f6', 'Female': '#ec4899', 'Other': '#a855f7', 'Not Specified': '#94a3b8' };
-                    const genderKeys = { 'Male': 'male', 'Female': 'female', 'Other': 'other', 'Not Specified': '' };
+                    {# keyed on the raw gender value: the name the API sends is translated #}
+                    const gc = { 'male': '#3b82f6', 'female': '#ec4899', 'other': '#a855f7', '': '#94a3b8' };
                     renderChart('gender', document.querySelector("#chart-gender"), {
                         series: data.genders.map(g => g.count),
-                        chart: { type: 'pie', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
+                        chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {
                                 if (!PERM.employee) return;
-                                const gender = data.genders[config.dataPointIndex].gender;
-                                window.location.href = "{% url 'employee-view' %}?gender=" + (genderKeys[gender] || gender.toLowerCase());
+                                const g = data.genders[config.dataPointIndex];
+                                window.location.href = "{% url 'employee-view' %}?gender=" + encodeURIComponent(g.key != null ? g.key : g.gender.toLowerCase());
                             }}
                         },
                         labels: data.genders.map(g => g.gender),
-                        colors: data.genders.map(g => gc[g.gender] || '#94a3b8'),
-                        plotOptions: { pie: { expandOnClick: true, dataLabels: { offset: -5, minAngleToShowLabel: 10 } } },
+                        colors: data.genders.map(g => gc[g.key != null ? g.key : ''] || '#94a3b8'),
+                        plotOptions: { pie: { expandOnClick: true, donut: { size: '68%',
+                            labels: { show: true,
+                                name: { fontSize: '13px', fontWeight: 700, color: textColor },
+                                value: { fontSize: '20px', fontWeight: 800, color: textColor },
+                                total: { show: true, label: '{% trans "Total" %}', color: subTextColor, fontSize: '11px', fontWeight: 600,
+                                    formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) }
+                            }
+                        } } },
                         stroke: { width: 3, colors: [cardBg] },
-                        dataLabels: { enabled: true, formatter: (v, opts) => opts.w.globals.labels[opts.seriesIndex] + ': ' + Math.round(v) + '%', style: { fontSize: '11px', fontWeight: 600 }, dropShadow: { enabled: false } },
+                        dataLabels: { enabled: false },
                         legend: { ...LEGEND_STYLE },
-                        tooltip: { ...TOOLTIP_STYLE },
+                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' {% trans "employees" %}' } },
                     });
                 });
             }
@@ -2337,7 +2572,7 @@
                         xaxis: { ...XAXIS_STYLE, categories: data.breakdown.map(b => b.type) },
                         yaxis: { labels: { style: { colors: textColor, fontSize: '11px', fontWeight: 500 } } },
                         grid: GRID,
-                        dataLabels: { enabled: true, formatter: (v, { dataPointIndex: i }) => v + ' (' + data.breakdown[i].days + 'd)', style: { fontSize: '11px', fontWeight: 600 }, offsetX: 0 },
+                        dataLabels: { enabled: true, formatter: (v, { dataPointIndex: i }) => v + ' (' + data.breakdown[i].days + 'd)', style: { fontSize: '11px', fontWeight: 600, colors: [textColor] }, offsetX: 6 },
                         legend: { show: false },
                         tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' {% trans "requests" %}' } },
                         states: { hover: { filter: { type: 'darken', value: 0.85 } } },
@@ -2348,36 +2583,36 @@
             {% endif %}
 
             // ─── EMPLOYEE STATUS ───
+            // Donut (not radialBar): API returns absolute headcounts; radialBar treats series as 0–100%.
             function loadEmployeeStatus() {
-                fetch("/employee/dashboard-employee")
+                fetch("{% url 'dashboard-employee-status' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-employee-status").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-                    const sc = { 'Active': '#22c55e', 'Inactive': '#ef4444' };
+                    {# keyed on the API's stable series keys, not on the translated labels #}
+                    const sc = { 'active': '#22c55e', 'inactive': '#ef4444' };
+                    const statusKeys = data.keys || ['active', 'inactive'];
                     renderChart('employee-status', document.querySelector("#chart-employee-status"), {
                         series: data.dataSet[0].data,
-                        chart: { type: 'radialBar', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
-                            events: { legendClick: (ctx, seriesIndex) => {
+                        chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
+                            events: { dataPointSelection: (e, ctx, config) => {
                                 if (!PERM.employee) return;
-                                const label = data.labels[seriesIndex];
-                                const active = label.toLowerCase().includes('active') && !label.toLowerCase().includes('in') ? 'true' : 'false';
+                                const active = statusKeys[config.dataPointIndex] === 'active' ? 'true' : 'false';
                                 window.location.href = "{% url 'employee-view' %}?is_active=" + active;
                             }}
                         },
                         labels: data.labels,
-                        colors: data.labels.map(l => sc[l] || '#E54F38'),
-                        plotOptions: { radialBar: {
-                            hollow: { size: '40%', background: 'transparent' },
-                            track: { background: isDark ? '#242424' : '#f1f5f9', strokeWidth: '90%', margin: 6 },
-                            dataLabels: {
-                                name: { fontSize: '12px', fontWeight: 600, color: textColor, offsetY: -4 },
-                                value: { fontSize: '20px', fontWeight: 800, color: textColor, offsetY: 4 },
+                        colors: statusKeys.map(k => sc[k] || '#94a3b8'),
+                        plotOptions: { pie: { expandOnClick: true, donut: { size: '68%',
+                            labels: { show: true,
+                                name: { fontSize: '13px', fontWeight: 700, color: textColor },
+                                value: { fontSize: '20px', fontWeight: 800, color: textColor },
                                 total: { show: true, label: '{% trans "Total" %}', color: subTextColor, fontSize: '11px', fontWeight: 600,
                                     formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) }
                             }
-                        } },
-                        stroke: { lineCap: 'round' },
+                        } } },
                         legend: { ...LEGEND_STYLE, show: true },
+                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' {% trans "employees" %}' } },
                     });
                 });
             }
@@ -2386,7 +2621,7 @@
             {% if perms.attendance.view_attendance or request.user.is_superuser %}
             // ─── ATTENDANCE OVERVIEW ───
             function loadAttendanceOverview() {
-                fetch("{% url 'dashboard-attendance' %}")
+                fetch("{% url 'dashboard-attendance-overview' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (data.no_permission) { hideCard('attendance_overview'); return; }
@@ -2422,25 +2657,22 @@
 
             // ─── DEPARTMENT OVERTIME ───
             function loadDepartmentOvertime() {
-                fetch("{% url 'department-overtime-chart' %}")
+                fetch("{% url 'dashboard-department-overtime' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (data.no_permission) { hideCard('department_overtime'); return; }
                     if (!data.labels || !data.labels.length || !data.dataset || !data.dataset.length) { document.querySelector("#chart-overtime").innerHTML = emptyHtml('{% trans "No overtime data" %}'); return; }
                     renderChart('overtime', document.querySelector("#chart-overtime"), {
-                        series: data.dataset[0].data,
-                        chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM },
-                        labels: data.labels,
-                        colors: ['#22c55e','#06b6d4','#E54F38','#f59e0b','#a855f7','#ef4444'].slice(0, data.labels.length),
-                        plotOptions: { pie: { expandOnClick: true, donut: { size: '68%',
-                            labels: { show: true,
-                                name: { fontSize: '13px', fontWeight: 700, color: textColor },
-                                value: { fontSize: '20px', fontWeight: 800, color: textColor, formatter: v => parseFloat(v).toFixed(1) + 'h' },
-                                total: { show: true, label: '{% trans "Total Hrs" %}', color: subTextColor, fontSize: '11px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0).toFixed(1) + 'h' } } } } },
-                        stroke: { width: 3, colors: [cardBg] },
-                        dataLabels: { enabled: false },
-                        legend: { ...LEGEND_STYLE },
-                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v.toFixed(1) + ' {% trans "hrs" %}' } },
+                        series: [{ name: '{% trans "Hours" %}', data: data.dataset[0].data }],
+                        chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM },
+                        colors: ['#06b6d4'],
+                        plotOptions: { bar: { borderRadius: 6, borderRadiusApplication: 'end', horizontal: true, barHeight: '55%', distributed: true } },
+                        xaxis: { ...XAXIS_STYLE, categories: data.labels, labels: { ...XAXIS_STYLE.labels, formatter: v => (parseFloat(v) || 0).toFixed(1) + 'h' } },
+                        yaxis: { labels: { style: { colors: textColor, fontSize: '11px', fontWeight: 500 } } },
+                        grid: GRID,
+                        dataLabels: { enabled: true, formatter: v => parseFloat(v).toFixed(1) + 'h', style: { fontSize: '11px', fontWeight: 600, colors: [textColor] }, offsetX: 6 },
+                        legend: { show: false },
+                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => (parseFloat(v) || 0).toFixed(1) + ' {% trans "hrs" %}' } },
                     });
                 }).catch(() => { document.querySelector("#chart-overtime").innerHTML = emptyHtml('{% trans "No overtime data" %}'); });
             }
@@ -2450,7 +2682,7 @@
             {% if perms.leave.view_leaverequest or request.user.is_superuser %}
             // ─── LEAVE OVER PERIOD ───
             function loadLeaveOverPeriod() {
-                fetch("{% url 'leave-over-period' %}")
+                fetch("{% url 'dashboard-leave-trends' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (data.no_permission) { hideCard('leave_trends'); return; }
@@ -2478,7 +2710,7 @@
             {% if perms.recruitment.view_recruitment or request.user.is_superuser %}
             // ─── RECRUITMENT PIPELINE ───
             function loadRecruitmentPipeline() {
-                fetch("{% url 'recruitment-pipeline' %}?_t=" + Date.now())
+                fetch("{% url 'dashboard-recruitment-by-stage' %}?_t=" + Date.now())
                 .then(r => {
                     const ct = r.headers.get('content-type') || '';
                     if (!r.ok || !ct.includes('application/json')) {
@@ -2524,7 +2756,7 @@
 
             // ─── HIRING TIMELINE ───
             function loadHiringTimeline() {
-                fetch("{% url 'dashboard-hiring' %}")
+                fetch("{% url 'dashboard-hiring-timeline' %}")
                 .then(r => {
                     const ct = r.headers.get('content-type') || '';
                     if (!r.ok || !ct.includes('application/json')) {
@@ -2571,32 +2803,64 @@
 
             {% if perms.leave.view_leaverequest or request.user.is_superuser %}
             // ─── LEAVE BY DEPARTMENT ───
+            function loadLeaveCoverage() {
+                const el = document.querySelector("#chart-leave-coverage");
+                if (!el) return;
+                fetchP("{% url 'dashboard-leave-coverage' %}")
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.days || !data.days.length) {
+                        el.innerHTML = emptyHtml('{% trans "No leave coverage data" %}');
+                        return;
+                    }
+                    renderChart('leave-coverage', el, {
+                        series: [
+                            { name: '{% trans "On leave" %}', data: data.days.map(d => d.on_leave) },
+                            { name: '{% trans "Available" %}', data: data.days.map(d => d.available) },
+                        ],
+                        chart: { type: 'bar', height: 280, stacked: true, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                        colors: ['#f59e0b', '#22c55e'],
+                        plotOptions: { bar: { columnWidth: '55%', borderRadius: 4 } },
+                        xaxis: { ...XAXIS_STYLE, categories: data.days.map(d => d.label) },
+                        yaxis: { labels: { style: { colors: textColor, fontSize: '11px' } } },
+                        legend: { ...LEGEND_STYLE, position: 'top', horizontalAlign: 'left' },
+                        grid: GRID,
+                        dataLabels: { enabled: false },
+                        tooltip: {
+                            theme: isDark ? 'dark' : 'light',
+                            y: { formatter: v => v + ' {% trans "employees" %}' },
+                        },
+                    });
+                }).catch(() => {
+                    if (el) el.innerHTML = emptyHtml('{% trans "Could not load coverage" %}');
+                });
+            }
+            loadLeaveCoverage();
+
             function loadLeaveByDepartment() {
-                fetch("{% url 'overall-leave' %}")
+                fetch("{% url 'dashboard-leave-by-department' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (data.no_permission) { hideCard('leave_by_department'); return; }
                     if (!data.labels || !data.labels.length || !data.data || !data.data.length) { document.querySelector("#chart-leave-dept").innerHTML = emptyHtml('{% trans "No leave data" %}'); return; }
                     renderChart('leave-dept', document.querySelector("#chart-leave-dept"), {
-                        series: data.data,
-                        chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
+                        series: [{ name: '{% trans "Requests" %}', data: data.data }],
+                        chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {
                                 if (!PERM.leave) return;
                                 const dept = data.labels[config.dataPointIndex];
                                 window.location.href = "{% url 'request-view' %}?department=" + encodeURIComponent(dept);
                             }}
                         },
-                        labels: data.labels,
-                        colors: ['#3b82f6','#E54F38','#a855f7','#ec4899','#06b6d4','#14b8a6'].slice(0, data.labels.length),
-                        plotOptions: { pie: { expandOnClick: true, donut: { size: '68%',
-                            labels: { show: true,
-                                name: { fontSize: '13px', fontWeight: 700, color: textColor },
-                                value: { fontSize: '20px', fontWeight: 800, color: textColor },
-                                total: { show: true, label: '{% trans "Total" %}', color: subTextColor, fontSize: '11px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
-                        stroke: { width: 3, colors: [cardBg] },
-                        dataLabels: { enabled: false },
-                        legend: { ...LEGEND_STYLE },
-                        tooltip: { ...TOOLTIP_STYLE },
+                        colors: ['#3b82f6','#E54F38','#a855f7','#ec4899','#06b6d4','#14b8a6'],
+                        plotOptions: { bar: { borderRadius: 8, borderRadiusApplication: 'end', horizontal: true, barHeight: '52%', distributed: true } },
+                        xaxis: { ...XAXIS_STYLE, categories: data.labels },
+                        yaxis: { labels: { style: { colors: textColor, fontSize: '11px', fontWeight: 500 } } },
+                        grid: GRID,
+                        dataLabels: { enabled: true, style: { fontSize: '11px', fontWeight: 600, colors: [textColor] }, offsetX: 6 },
+                        legend: { show: false },
+                        tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' {% trans "request(s)" %}' } },
+                        states: { hover: { filter: { type: 'darken', value: 0.85 } } },
                     });
                 }).catch(() => { document.querySelector("#chart-leave-dept").innerHTML = emptyHtml('{% trans "No leave data" %}'); });
             }
@@ -2604,7 +2868,7 @@
 
             // ─── DEPARTMENT LEAVE DAYS ───
             function loadDepartmentLeaveDays() {
-                fetch("{% url 'department-leave-chart' %}")
+                fetch("{% url 'dashboard-department-leave-days' %}")
                 .then(r => r.json())
                 .then(data => {
                     if (data.no_permission) { hideCard('department_leave_days'); return; }
@@ -2617,7 +2881,7 @@
                         xaxis: { ...XAXIS_STYLE, categories: data.labels },
                         yaxis: { labels: { style: { colors: textColor, fontSize: '11px', fontWeight: 500 } } },
                         grid: GRID,
-                        dataLabels: { enabled: true, formatter: v => v + ' {% trans "days" %}', style: { fontSize: '11px', fontWeight: 600 }, offsetX: 0 },
+                        dataLabels: { enabled: true, formatter: v => v + ' {% trans "days" %}', style: { fontSize: '11px', fontWeight: 600, colors: [textColor] }, offsetX: 6 },
                         legend: { show: false },
                         tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' {% trans "day(s)" %}' } },
                         states: { hover: { filter: { type: 'darken', value: 0.85 } } },
@@ -2632,10 +2896,8 @@
                 fetch("{% url 'dashboard-upcoming-holidays' %}")
                 .then(r => r.json())
                 .then(data => {
-                    const el = document.getElementById('md-birthdays');
-                    // Update "Next 7 days" link to filter holidays
-                    const todayStr = new Date().toISOString().split('T')[0];
-                    const nextWeekStr = new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0];
+                    const el = document.getElementById('md-holidays');
+                    if (!el) return;
                     const viewAllLink = document.getElementById('md-holidays-viewall');
                     if (viewAllLink) viewAllLink.href = `{% url 'holiday-view' %}`;
 
@@ -2647,7 +2909,7 @@
                         const dateRange = h.end_date && h.end_date !== h.start_date ? `${h.start_date} – ${h.end_date}` : h.start_date;
                         return `
                     <div class="md-bday-item">
-                        <div class="md-bday-item__avatar" style="background:#fef3c7;color:#92400e;">🏖</div>
+                        <div class="md-bday-item__avatar" style="background:#fef3c7;color:#92400e;">H</div>
                         <div class="md-bday-item__info">
                             <div class="md-bday-item__name">${h.name}</div>
                             <div class="md-bday-item__detail">${dateRange}</div>
@@ -2655,95 +2917,157 @@
                         ${badge}
                     </div>`;
                     }).join('');
-                }).catch(() => { document.getElementById('md-birthdays').innerHTML = '<div class="md-info-panel__empty">{% trans "No holidays this week" %}</div>'; });
+                }).catch(() => {
+                    const el = document.getElementById('md-holidays');
+                    if (el) el.innerHTML = '<div class="md-info-panel__empty">{% trans "No holidays this week" %}</div>';
+                });
             }
             loadUpcomingHolidays();
 
-            // ─── PENDING APPROVALS ───
-            function loadPendingApprovals() {
-                fetchP("{% url 'dashboard-pending-approvals' %}")
+            // ─── BIRTHDAYS & ANNIVERSARIES ───
+            function loadBirthdaysAnniversaries() {
+                fetch("{% url 'dashboard-birthdays-anniversaries' %}")
                 .then(r => r.json())
                 .then(data => {
-                    const p = data.pending;
-                    const isRestricted = data.is_restricted;
-
-                    // Hide the entire panel for normal users without approval permission
-                    if (isRestricted) {
-                        const panel = document.getElementById('md-pending-approvals')?.closest('.md-info-panel');
-                        if (panel) panel.style.display = 'none';
+                    const el = document.getElementById('md-birthdays');
+                    if (!el) return;
+                    const items = [];
+                    (data.birthdays || []).forEach(b => {
+                        items.push({
+                            name: b.name,
+                            detail: '{% trans "Birthday" %}',
+                            date: b.date,
+                            days_away: b.days_away,
+                            avatar: b.avatar,
+                        });
+                    });
+                    (data.anniversaries || []).forEach(a => {
+                        items.push({
+                            name: a.name,
+                            detail: (a.years || 0) + ' {% trans "yr anniversary" %}',
+                            date: a.date,
+                            days_away: a.days_away,
+                            avatar: a.avatar,
+                        });
+                    });
+                    items.sort((a, b) => a.days_away - b.days_away);
+                    if (!items.length) {
+                        el.innerHTML = '<div class="md-info-panel__empty">{% trans "None in the next 7 days" %}</div>';
                         return;
                     }
+                    el.innerHTML = items.slice(0, 8).map(item => {
+                        const badge = item.days_away === 0
+                            ? '<span class="md-bday-item__badge md-bday-item__badge--today">{% trans "Today" %}</span>'
+                            : `<span class="md-bday-item__badge md-bday-item__badge--soon">${item.date}</span>`;
+                        const avatar = item.avatar
+                            ? `<img src="${item.avatar}" alt="">`
+                            : (item.name || '?').charAt(0);
+                        return `
+                    <div class="md-bday-item">
+                        <div class="md-bday-item__avatar">${avatar}</div>
+                        <div class="md-bday-item__info">
+                            <div class="md-bday-item__name">${item.name}</div>
+                            <div class="md-bday-item__detail">${item.detail}</div>
+                        </div>
+                        ${badge}
+                    </div>`;
+                    }).join('');
+                }).catch(() => {
+                    const el = document.getElementById('md-birthdays');
+                    if (el) el.innerHTML = '<div class="md-info-panel__empty">{% trans "Could not load" %}</div>';
+                });
+            }
+            loadBirthdaysAnniversaries();
 
-                    // Admins / managers: render clickable approval cards
-                    document.getElementById('md-pending-approvals').innerHTML = `
+            // ─── PENDING APPROVALS ───
+            function renderPendingCards(p) {
+                return `
                 <div class="md-pending-grid">
-                    <a href="{% url 'request-view' %}?status=requested" class="md-pending-card md-pending-card--amber">
+                    <a href="{% url 'request-view' %}?status=requested&filter_applied=1" class="md-pending-card md-pending-card--amber">
                         <div class="md-pending-card__count">${p.leave_requests}</div>
                         <div class="md-pending-card__label">{% trans "Leave" %}</div>
                     </a>
-                    <a href="{% url 'request-attendance-view' %}?approved=false" class="md-pending-card md-pending-card--blue">
+                    <a href="{% url 'request-attendance-view' %}?open_tab=1&is_validate_request_approved=false&filter_applied=1" class="md-pending-card md-pending-card--blue">
                         <div class="md-pending-card__count">${p.attendance_requests}</div>
                         <div class="md-pending-card__label">{% trans "Attendance" %}</div>
                     </a>
-                    <a href="{% url 'asset-request-allocation-view' %}?approval_status=pending" class="md-pending-card md-pending-card--green">
+                    <a href="{% url 'asset-request-allocation-view' %}?open_tab=2&asset_request_status=Requested&filter_applied=1" class="md-pending-card md-pending-card--green">
                         <div class="md-pending-card__count">${p.asset_requests}</div>
                         <div class="md-pending-card__label">{% trans "Assets" %}</div>
                     </a>
-                    <a href="{% url 'shift-request-view' %}?approved=false&canceled=false" class="md-pending-card" style="background:#f0fdfa;">
+                    <a href="{% url 'shift-request-view' %}?open_tab=1&status=requested&filter_applied=1" class="md-pending-card" style="background:#f0fdfa;">
                         <div class="md-pending-card__count" style="color:#0d9488;">${p.shift_requests}</div>
                         <div class="md-pending-card__label">{% trans "Shift" %}</div>
                     </a>
-                    <a href="{% url 'work-type-request-view' %}?approved=false&canceled=false" class="md-pending-card" style="background:#eef2ff;">
+                    <a href="{% url 'work-type-request-view' %}?status=requested&filter_applied=1" class="md-pending-card" style="background:#eef2ff;">
                         <div class="md-pending-card__count" style="color:#4f46e5;">${p.work_type_requests}</div>
                         <div class="md-pending-card__label">{% trans "Work Type" %}</div>
                     </a>
-                    <a href="{% url 'view-reimbursement' %}" class="md-pending-card md-pending-card--purple">
+                    <a href="{% url 'view-reimbursement' %}?open_tab=1&status=requested&type=reimbursement&filter_applied=1" class="md-pending-card md-pending-card--purple">
                         <div class="md-pending-card__count">${p.reimbursements}</div>
                         <div class="md-pending-card__label">{% trans "Reimbursements" %}</div>
                     </a>
                 </div>`;
-                }).catch(() => { document.getElementById('md-pending-approvals').innerHTML = '<div class="md-info-panel__empty">{% trans "Unable to load" %}</div>'; });
+            }
+            function loadPendingApprovals() {
+                fetchP("{% url 'dashboard-pending-approvals' %}")
+                .then(r => r.json())
+                .then(data => {
+                    const sideEl = document.getElementById('md-pending-approvals');
+                    if (data.is_restricted) {
+                        const panel = sideEl?.closest('.md-info-panel');
+                        if (panel) panel.style.display = 'none';
+                        return;
+                    }
+                    if (sideEl) sideEl.innerHTML = renderPendingCards(data.pending);
+                }).catch(() => {
+                    const sideEl = document.getElementById('md-pending-approvals');
+                    if (sideEl) sideEl.innerHTML = '<div class="md-info-panel__empty">{% trans "Unable to load" %}</div>';
+                });
             }
             loadPendingApprovals();
 
             {% if perms.recruitment.view_recruitment or request.user.is_superuser %}
-            // ─── RECRUITMENT FUNNEL ───
+            // ─── RECRUITMENT FUNNEL (HTML stage funnel — share of candidates) ───
             function loadRecruitmentFunnel() {
                 fetch("{% url 'dashboard-recruitment-pipeline' %}?_t=" + Date.now())
                 .then(r => r.json())
                 .then(data => {
+                    const el = document.querySelector("#chart-recruitment-funnel");
+                    if (!el) return;
                     if (data.no_permission) {
                         hideCard('recruitment_funnel');
                         return;
                     }
-                    if (!data.stages || !data.stages.length) { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('{% trans "No active recruitments" %}'); return; }
+                    if (chartInstances['recruitment-funnel']) {
+                        chartInstances['recruitment-funnel'].destroy();
+                        chartInstances['recruitment-funnel'] = null;
+                    }
+                    if (!data.stages || !data.stages.length) { el.innerHTML = emptyHtml('{% trans "No active recruitments" %}'); return; }
                     const stageColors = { initial: '#94a3b8', applied: '#E54F38', test: '#3b82f6', interview: '#f59e0b', hired: '#22c55e', cancelled: '#ef4444' };
-                    try {
-                        renderChart('recruitment-funnel', document.querySelector("#chart-recruitment-funnel"), {
-                            series: [{ name: '{% trans "Candidates" %}', data: data.stages.map(s => s.count) }],
-                            chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
-                                events: { dataPointSelection: (e, ctx, config) => {
-                                    if (!PERM.candidate) return;
-                                    const stage = data.stages[config.dataPointIndex];
-                                    if (!stage) return;
-                                    window.location.href = "{% url 'candidate-view' %}?stage_id__stage_type=" + encodeURIComponent(stage.type);
-                                }}
-                            },
-                            colors: data.stages.map((s, i) => stageColors[s.type] || COLORS[i % COLORS.length]),
-                            plotOptions: { bar: { horizontal: true, barHeight: '55%', distributed: true } },
-                            xaxis: { ...XAXIS_STYLE, categories: data.stages.map(s => s.stage) },
-                            yaxis: { labels: { style: { colors: textColor, fontSize: '12px', fontWeight: 600 } } },
-                            grid: GRID,
-                            dataLabels: { enabled: true, formatter: v => v + ' {% trans "candidates" %}', style: { fontSize: '11px', fontWeight: 600 }, offsetX: 0 },
-                            legend: { show: false },
-                            subtitle: {
-                                text: `${data.total_active || ''} {% trans "active recruitments" %} · ${data.total_candidates || ''} {% trans "total" %} · ${data.hired || ''} {% trans "hired" %}`,
-                                align: 'right', style: { fontSize: '11px', color: subTextColor }
-                            },
-                            tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' {% trans "candidate(s)" %}' } },
-                        });
-                    } catch(e) { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('{% trans "Chart error" %}: ' + e.message); }
-                }).catch(e => { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('{% trans "Failed to load recruitment data" %}'); });
+                    const maxCount = Math.max(...data.stages.map(s => s.count), 1);
+                    const total = data.total_candidates || data.stages.reduce((a, s) => a + (s.count || 0), 0) || 1;
+                    let html = '<div class="md-funnel">';
+                    data.stages.forEach((s, i) => {
+                        const pct = Math.max(18, (s.count / maxCount) * 100);
+                        const share = Math.round((s.count / total) * 1000) / 10;
+                        const color = stageColors[s.type] || COLORS[i % COLORS.length];
+                        const url = PERM.candidate
+                            ? ("{% url 'candidate-view' %}?stage_id__stage_type=" + encodeURIComponent(s.type))
+                            : '';
+                        const click = url ? `onclick="window.location.href='${url}'"` : '';
+                        html += `<div class="md-funnel-step" ${click} title="${s.stage}">
+                            <div class="md-funnel-step__label">${s.stage}</div>
+                            <div class="md-funnel-step__bar" style="width:${pct}%;background:${color};">${s.count}</div>
+                            <div class="md-funnel-step__share">${share}%</div>
+                        </div>`;
+                    });
+                    html += `</div><div class="md-funnel-meta">${data.total_active || 0} {% trans "active recruitments" %} · ${data.total_candidates || 0} {% trans "candidates" %} · ${data.hired || 0} {% trans "hired" %}</div>`;
+                    el.innerHTML = html;
+                }).catch(() => {
+                    const el = document.querySelector("#chart-recruitment-funnel");
+                    if (el) el.innerHTML = emptyHtml('{% trans "Failed to load recruitment data" %}');
+                });
             }
             loadRecruitmentFunnel();
             {% endif %}
@@ -2755,7 +3079,13 @@
                 .then(r => r.json())
                 .then(data => {
                     if (!data.months.length) { document.querySelector("#chart-turnover").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-                    document.getElementById('turnover-rate').textContent = `{% trans "6-month turnover rate" %}: ${data.turnover_rate_6m}%`;
+                    const rateEl = document.getElementById('turnover-rate');
+                    const rateTxt = `{% trans "6-month turnover rate" %}: ${data.turnover_rate_6m}%`;
+                    if (data.report_url) {
+                        rateEl.innerHTML = `${rateTxt} · <a class="md-link" href="${data.report_url}">{% trans "Open turnover report" %}</a>`;
+                    } else {
+                        rateEl.textContent = rateTxt;
+                    }
                     renderChart('turnover', document.querySelector("#chart-turnover"), {
                         series: [
                             { name: '{% trans "New Hires" %}', data: data.months.map(m => m.hires) },
@@ -2778,7 +3108,7 @@
             loadEmployeeTurnover();
             {% endif %}
 
-            {% if perms.payroll.view_payslip or request.user.is_superuser %}
+            {% if request.user.is_superuser or perms.payroll.view_payslip and request.user.is_staff or perms.payroll.view_payslip and perms.payroll.change_payslip %}
             // ─── PAYROLL SUMMARY ───
             function loadPayrollSummary() {
                 fetchP("{% url 'dashboard-payroll-summary' %}")
@@ -2846,9 +3176,11 @@
                 if (typeof loadLeaveOverPeriod === 'function') loadLeaveOverPeriod();
                 if (typeof loadRecruitmentPipeline === 'function') loadRecruitmentPipeline();
                 if (typeof loadHiringTimeline === 'function') loadHiringTimeline();
+                if (typeof loadLeaveCoverage === 'function') loadLeaveCoverage();
                 if (typeof loadLeaveByDepartment === 'function') loadLeaveByDepartment();
                 if (typeof loadDepartmentLeaveDays === 'function') loadDepartmentLeaveDays();
                 loadUpcomingHolidays();
+                if (typeof loadBirthdaysAnniversaries === 'function') loadBirthdaysAnniversaries();
                 loadPendingApprovals();
                 if (typeof loadRecruitmentFunnel === 'function') loadRecruitmentFunnel();
                 if (typeof loadEmployeeTurnover === 'function') loadEmployeeTurnover();

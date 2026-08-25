@@ -23,10 +23,33 @@
 <div style="display: none">{{filter_dict}}</div>
 
 <script type="text/template" class="filter-tags-template">
-	{% if filter_dict %}
+	{% if filter_dict or nested_fields_active %}
         <span class="oh-titlebar__tag oh-titlebar__tag--custom">
         {% trans 'Filters' %}:
         </span>
+
+        {% if nested_fields_active %}
+            {% comment %}
+                nested_fields is deliberately excluded from filter_dict below
+                (it needs ordered, hierarchical rendering -- "A > B > C", not
+                the generic multi-value join) but still needs to show up
+                here as a real, clearable filter tag -- the "Grouped by"
+                breadcrumb in the view itself covers reconfiguring it, so
+                this one just needs a label and a clear (x).
+            {% endcomment %}
+            <span class="oh-titlebar__tag filter-field" data-field="nested_fields">
+                {% trans "Group by" %}: &nbsp
+                {% for f in nested_fields_active %}
+                    <span class="filter-value">{{ f.1 }}</span>{% if not forloop.last %}<span> &rsaquo; </span>{% endif %}
+                {% endfor %}
+                <button class="oh-titlebar__tag-close"
+                    data-x-field="nested_fields"
+                    title="{% trans 'Clear grouping' %}"
+                >
+                    <ion-icon name="close-outline" class="close-icon"></ion-icon>
+                </button>
+            </span>
+        {% endif %}
 
         {% for field, values in filter_dict.items %}
             {% if values and field != "path" %}

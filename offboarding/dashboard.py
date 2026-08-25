@@ -61,12 +61,19 @@ def offboarding_kpi_data(request):
 
     employees = Employee.objects.filter(is_active=True).count()
     total_offboarding = period_offboardings.count()
-    archived = period_offboardings.filter(stage_id__type="archived").count()
+    # OffboardingEmployee has no timestamp for "when did this reach its
+    # current stage" (stage moves happen either via drag-and-drop, which
+    # bulk_updates and skips .save(), or via the stage dropdown, which
+    # does call .save() -- an unreliable mix to hang a period filter on),
+    # so this is a current-state count, not scoped to the picker range.
+    archived = OffboardingEmployee.objects.filter(stage_id__type="archived").count()
 
     exit_ratio = round((archived / employees * 100), 1) if employees > 0 else 0
 
-    # Resignation stats (in period)
-    pending_resignations = period_resignations.filter(status="requested").count()
+    # Pending resignations are a review queue -- a letter submitted before
+    # the selected period but still awaiting review should still count, so
+    # (unlike total_offboarding above) this ignores the period.
+    pending_resignations = ResignationLetter.objects.filter(status="requested").count()
     approved_resignations = period_resignations.filter(status="approved").count()
 
     # Task completion (current state across all offboardings)

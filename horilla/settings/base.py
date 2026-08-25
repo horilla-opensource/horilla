@@ -143,6 +143,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
+    "horilla.horilla_middlewares.DefaultLanguageMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -318,6 +319,7 @@ LANGUAGES = (
     ("it", "Italian"),
     ("tr", "Turkish"),
     ("uk", "Українська"),
+    ("ro", "Română"),
 )
 
 LOCALE_PATHS = [join(BASE_DIR, "horilla", "locale")]

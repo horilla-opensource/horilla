@@ -11,37 +11,20 @@
         <div class="flex items-center gap-4">
           <ion-icon name="chevron-down-outline" class="movable-toggle-icon icon text-lg"></ion-icon>
 
-          <div onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
-            <div style="cursor: pointer;" onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
-              <button
-                class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
-                @click="open = !open"
-                @click.outside="open = false"
-                title="{% trans 'Actions' %}"
-                class="text-primary-600"
-              >
-                <ion-icon
-                  name="ellipsis-vertical"
-                  role="img"
-                  class="md hydrated"
-                  aria-label="{% trans 'ellipsis vertical' %}"
-                ></ion-icon>
-              </button>
-              <div
-                class="oh-dropdown__menu oh-dropdown__menu--right mwidth"
-                x-show="open"
-                style="display: none; min-width:135px !important;"
-              >
-                <ul class="oh-dropdown__items">
-                  {% for action in actions %}
-                  {% if action.accessibility|accessibility:group %}
-                  <li class="oh-dropdown__item">
-                    <a {{action.attrs|format:group|safe}}>{{action.action}}</a>
-                  </li>
-                  {% endif %}
-                  {% endfor %}
-                </ul>
-              </div>
+          <div onclick="event.stopPropagation()" class="relative inline-block dropdown-wrapper" role="button" title="{% trans 'Actions' %}">
+            <button class="cursor-pointer dropdown-toggle w-[20px]" onclick="event.stopPropagation(); var m = $(this).next('.dropdown-menu'); $('.dropdown-menu').not(m).addClass('hidden'); m.toggleClass('hidden');">
+              <i class="fa-solid fa-ellipsis-vertical text-black"></i>
+            </button>
+            <div class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200" style="min-width:120px !important;">
+              <ul class="text-xs text-dark-600">
+                {% for action in actions %}
+                {% if action.accessibility|accessibility:group %}
+                <li>
+                  <a {{action.attrs|format:group|safe}} class="block w-full text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300 cursor-pointer">{{action.action}}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+              </ul>
             </div>
           </div>
         </div>

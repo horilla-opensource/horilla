@@ -4,6 +4,8 @@ this page handles cbv of allowances page
 
 from typing import Any
 
+from django.contrib import messages
+from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.text import format_lazy
@@ -13,12 +15,38 @@ from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaCardView,
     HorillaDetailedView,
+    HorillaFormView,
     HorillaListView,
     HorillaNavView,
     TemplateView,
 )
 from payroll.filters import AllowanceFilter
+from payroll.forms.component_forms import AllowanceForm
 from payroll.models.models import Allowance
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("payroll.add_allowance"), name="dispatch")
+class AllowanceFormView(HorillaFormView):
+    """
+    Form view for Allowance creation and update.
+    """
+
+    model = Allowance
+    form_class = AllowanceForm
+    new_display_title = _("Create Allowance")
+    template_name = "payroll/allowance/allowance_form.html"
+
+    def form_valid(self, form: AllowanceForm) -> HttpResponse:
+        if form.is_valid():
+            if form.instance.pk:
+                msg = _("Allowance updated.")
+            else:
+                msg = _("Allowance created.")
+            form.save()
+            messages.success(self.request, msg)
+            return self.HttpResponse(targets_to_reload=["#applyFilter"])
+        return super().form_valid(form)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -64,8 +92,6 @@ class AllowanceListView(HorillaListView):
 
     columns = [
         (_("Allowance"), "title"),
-        (_("Specific Employees"), "get_specific_employees"),
-        (_("Excluded Employees"), "get_exclude_employees"),
         (_("Is Taxable"), "get_is_taxable_display"),
         (_("Is Condition Based"), "get_is_condition_based"),
         (_("Condition"), "condition_based_display"),
@@ -77,8 +103,6 @@ class AllowanceListView(HorillaListView):
 
     sortby_mapping = [
         (_("Allowance"), "title"),
-        (_("Specific Employees"), "get_specific_employees"),
-        (_("Excluded Employees"), "get_exclude_employees"),
         (_("Amount"), "amount"),
     ]
 
@@ -176,10 +200,10 @@ class AllowanceNavView(HorillaNavView):
 
         if self.request.user.has_perm("payroll.add_allowance"):
             self.create_attrs = f"""
-                                href="#"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#objectCreateModal"
                                 hx-get="{reverse_lazy('create-allowance')}"
-                                hx-target="#listContainer"
-                                hx-swap="innerHTML"
+                                hx-target="#objectCreateModalTarget"
                                 """
 
         self.view_types = [
@@ -307,7 +331,9 @@ class AllowancesCardView(HorillaCardView):
             "attrs": """
             class="oh-dropdown__link"
             hx-get="{get_update_url}"
-            hx-target="#listContainer"
+            hx-target="#objectCreateModalTarget"
+            data-target="#objectCreateModal"
+            data-toggle="oh-modal-toggle"
             hx-swap="innerHTML"
             """,
         },

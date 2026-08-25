@@ -14,6 +14,7 @@ from horilla_views.generic.cbv.views import HorillaListView, HorillaProfileView
 from onboarding.filters import CandidateTaskFilter
 from onboarding.models import CandidateTask
 from recruitment.cbv import skill_zone
+from recruitment.cbv.candidate_document import CandidateDocumentListView
 from recruitment.cbv.candidate_mail_log import CandidateMailLogTabList
 from recruitment.cbv_decorators import all_manager_can_enter
 from recruitment.filters import CandidateFilter
@@ -82,6 +83,7 @@ class CandidateProfileTasks(HorillaListView):
 
     custom_empty_template = "onboarding/empty_task.html"
     model = CandidateTask
+    template_name = "cbv/candidates/onboarding_tasks_tab.html"
     show_filter_tags = False
     filter_class = CandidateTaskFilter
     filter_selected = False
@@ -108,6 +110,12 @@ class CandidateProfileTasks(HorillaListView):
         ),
     ]
 
+    sortby_mapping = [
+        (_("Task"), "onboarding_task_id__task_title"),
+        (_("Status"), "status"),
+        (_("Modified By"), "modified_by__employee_get__get_full_name"),
+    ]
+
     header_attrs = {
         "status_col": """
         style="width:180px!important;"
@@ -117,6 +125,19 @@ class CandidateProfileTasks(HorillaListView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.search_url = self.request.path
+        # Fixed (not auto-random) so pagination/sort/search requests - which
+        # all hx-target="#{{view_id}}" from generic/horilla_list_table.html -
+        # can be recognized in get_template_names() below and answered with
+        # just that fragment. Without this, every such request re-renders the
+        # full tab (title header included) and htmx's outerHTML swap dumps
+        # that whole response in place of the table, duplicating the header
+        # on each page/sort/search click.
+        self.view_id = "candidateOnboardingTaskList"
+
+    def get_template_names(self):
+        if self.request.headers.get("HX-Target") == self.view_id:
+            return ["generic/horilla_list_table.html"]
+        return [self.template_name]
 
     def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
         self.queryset = (
@@ -125,6 +146,11 @@ class CandidateProfileTasks(HorillaListView):
             .filter(candidate_id__pk=self.kwargs["pk"])
         )
         return self.queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["candidate"] = Candidate.objects.get(id=self.kwargs.get("pk"))
+        return context
 
 
 CandidateProfileView.add_tab(
@@ -146,7 +172,7 @@ CandidateProfileView.add_tab(
         },
         {
             "title": _("Documents"),
-            "view": views.candidate_document_request_tab,
+            "view": CandidateDocumentListView.as_view(),
             "accessibility": "recruitment.cbv.accessibility.if_manager_accessibility",
         },
         {

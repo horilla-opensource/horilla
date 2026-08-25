@@ -22,7 +22,11 @@ from datetime import date, datetime
 from itertools import chain
 from urllib.parse import parse_qs
 
-import fitz  # type: ignore
+import phonenumbers
+import pycountry
+import pymupdf  # type: ignore
+import spacy
+from dateutil import parser as dateutil_parser
 from django import template
 from django.conf import settings
 from django.contrib import messages
@@ -38,6 +42,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
+from rapidfuzz import fuzz
 
 from base.backends import ConfiguredEmailBackend
 from base.context_processors import check_candidate_self_tracking
@@ -1009,12 +1014,15 @@ def add_note(request, pk=None):
             note.stage_files.set(attachment_ids)
             messages.success(request, _("Note added successfully.."))
     candidate_obj = Candidate.objects.get(id=pk)
+    notes = candidate_obj.stagenote_set.all().order_by("-id")
+    notes = paginator_qry(notes, request.GET.get("page"))
     return render(
         request,
         "cbv/candidates/profile_notes_tab.html",
         {
             "candidate": candidate_obj,
             "note_form": form,
+            "notes": notes,
         },
     )
 
@@ -1184,10 +1192,14 @@ def delete_individual_note_file(request, id):
 @manager_can_enter(perm="recruitment.add_stagenote")
 def candidate_can_view_note(request, id):
     note = StageNote.objects.filter(id=id)
-    note.update(candidate_can_view=not note.first().candidate_can_view)
+    note_obj = note.first()
+    if not note_obj:
+        return HorillaRedirect(request, message=_("Note not found."))
+
+    note.update(candidate_can_view=not note_obj.candidate_can_view)
 
     messages.success(request, _("Candidate view status updated"))
-    return redirect("view-note", cand_id=note.first().candidate_id.id)
+    return redirect("view-note", cand_id=note_obj.candidate_id.id)
 
 
 @login_required
@@ -1765,25 +1777,6 @@ def candidate_survey_tab(request, pk, **kwargs):
     )
 
 
-@login_required
-@manager_can_enter(perm="recruitment.view_candidate")
-def candidate_document_request_tab(request, pk, **kwargs):
-    """
-    method for rendering survey tab
-    """
-
-    candidate_obj = Candidate.find(pk)
-    documents = candidate_obj.candidatedocument_set.all()
-    return render(
-        request,
-        "candidate/document.html",
-        {
-            "candidate": candidate_obj,
-            "documents": documents,
-        },
-    )
-
-
 # @login_required
 # @manager_can_enter(perm="recruitment.view_candidate")
 # def candidate_notes_tab(request, pk, **kwargs):
@@ -1843,11 +1836,17 @@ def candidate_rating_tab(request, pk, **kwargs):
     """
 
     candidate_obj = Candidate.find(pk)
+    if not candidate_obj:
+        return HorillaRedirect(request, message=_("Candidate not found."))
+
+    ratings = candidate_obj.candidate_rating.all().order_by("-id")
+    ratings = paginator_qry(ratings, request.GET.get("page"))
     return render(
         request,
         "candidate/rating_tab.html",
         {
             "candidate": candidate_obj,
+            "ratings": ratings,
         },
     )
 
@@ -1860,11 +1859,17 @@ def candidate_interview_tab(request, pk, **kwargs):
     """
 
     candidate_obj = Candidate.find(pk)
+    if not candidate_obj:
+        return HorillaRedirect(request, message=_("Candidate not found."))
+
+    interviews = candidate_obj.candidate_interview.all().order_by("-interview_date")
+    interviews = paginator_qry(interviews, request.GET.get("page"))
     return render(
         request,
         "cbv/candidates/profile_interview_tab.html",
         {
             "candidate": candidate_obj,
+            "interviews": interviews,
         },
     )
 
@@ -3193,6 +3198,9 @@ def get_mail_log(request, pk):
     """
 
     candidate_obj = Candidate.find(pk)
+    if not candidate_obj:
+        return HorillaRedirect(request, message=_("Candidate not found."))
+
     tracked_mails = EmailLog.objects.filter(to__icontains=candidate_obj.email).order_by(
         "-created_at"
     )
@@ -3409,6 +3417,11 @@ def delete_reject_reason(request):
     return HttpResponse(f"<script>{script}</script>")
 
 
+# Loaded once per worker process at import time (spaCy model load is slow;
+# never call spacy.load() inside a request-handling function).
+_resume_nlp = spacy.load("en_core_web_sm")
+
+
 def extract_text_with_font_info(pdf):
     """
     This method is used to extract text from the pdf and create a list of dictionaries containing details about the extracted text.
@@ -3417,7 +3430,7 @@ def extract_text_with_font_info(pdf):
     """
     pdf_bytes = pdf.read()
     pdf_doc = io.BytesIO(pdf_bytes)
-    doc = fitz.open("pdf", pdf_doc)
+    doc = pymupdf.open("pdf", pdf_doc)
     text_info = []
 
     for page_num in range(len(doc)):
@@ -3459,6 +3472,36 @@ def rank_text(text_info):
     return ranked_text
 
 
+# --- Legacy implementation (superseded below, kept for reference) ---
+# def dob_matching(dob):
+#     """
+#     This method is used to change the date format to YYYY-MM-DD
+#
+#     Args:
+#         dob: Date
+#
+#     Returns:
+#         Return date in YYYY-MM-DD
+#     """
+#     date_formats = [
+#         "%Y-%m-%d",
+#         "%Y/%m/%d",
+#         "%d-%m-%Y",
+#         "%d/%m/%Y",
+#         "%Y.%m.%d",
+#         "%d.%m.%Y",
+#     ]
+#
+#     for fmt in date_formats:
+#         try:
+#             parsed_date = datetime.strptime(dob, fmt)
+#             return parsed_date.strftime("%Y-%m-%d")
+#         except ValueError:
+#             continue
+#
+#     return dob
+
+
 def dob_matching(dob):
     """
     This method is used to change the date format to YYYY-MM-DD
@@ -3469,23 +3512,90 @@ def dob_matching(dob):
     Returns:
         Return date in YYYY-MM-DD
     """
-    date_formats = [
-        "%Y-%m-%d",
-        "%Y/%m/%d",
-        "%d-%m-%Y",
-        "%d/%m/%Y",
-        "%Y.%m.%d",
-        "%d.%m.%Y",
-    ]
+    try:
+        parsed_date = dateutil_parser.parse(dob, dayfirst=True, fuzzy=True)
+        return parsed_date.strftime("%Y-%m-%d")
+    except (ValueError, OverflowError):
+        return dob
 
-    for fmt in date_formats:
-        try:
-            parsed_date = datetime.strptime(dob, fmt)
-            return parsed_date.strftime("%Y-%m-%d")
-        except ValueError:
-            continue
 
-    return dob
+# --- Legacy implementation (superseded below, kept for reference) ---
+# def extract_info(pdf):
+#     """
+#     This method creates the contact information dictionary from the provided pdf file
+#     Args:
+#         pdf_file: pdf file
+#     """
+#     extracted_info = {
+#         "full_name": "",
+#         "address": "",
+#         "country": "",
+#         "state": "",
+#         "phone_number": "",
+#         "dob": "",
+#         "email_id": "",
+#         "zip": "",
+#     }
+#     if not pdf:
+#         return extracted_info
+#
+#     text_info = extract_text_with_font_info(pdf)
+#     ranked_text = rank_text(text_info)
+#
+#     phone_pattern = re.compile(r"\b\+?\d{1,2}\s?\d{9,10}\b")
+#     dob_pattern = re.compile(
+#         r"\b(?:\d{1,2}|\d{4})[-/.,]\d{1,2}[-/.,](?:\d{1,2}|\d{4})\b"
+#     )
+#     email_pattern = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b")
+#     zip_code_pattern = re.compile(r"\b\d{5,6}(?:-\d{4})?\b")
+#
+#     name_candidates = [
+#         item["text"]
+#         for item in ranked_text
+#         if item["font_size"] == max(item["font_size"] for item in ranked_text)
+#     ]
+#
+#     if name_candidates:
+#         extracted_info["full_name"] = " ".join(name_candidates)
+#
+#     for item in ranked_text:
+#         text = item["text"]
+#
+#         if not text:
+#             continue
+#
+#         if not extracted_info["phone_number"]:
+#             phone_match = phone_pattern.search(text)
+#             if phone_match:
+#                 extracted_info["phone_number"] = phone_match.group()
+#
+#         if not extracted_info["dob"]:
+#             dob_match = dob_pattern.search(text)
+#             if dob_match:
+#                 extracted_info["dob"] = dob_matching(dob_match.group())
+#
+#         if not extracted_info["zip"]:
+#             zip_match = zip_code_pattern.search(text)
+#             if zip_match:
+#                 extracted_info["zip"] = zip_match.group()
+#
+#         if not extracted_info["email_id"]:
+#             email_match = email_pattern.search(text)
+#             if email_match:
+#                 extracted_info["email_id"] = email_match.group()
+#
+#         if "address" in text.lower() and not extracted_info["address"]:
+#             extracted_info["address"] = text.replace("Address:", "").strip()
+#
+#         for item in text.split(" "):
+#             if item.capitalize() in country_arr:
+#                 extracted_info["country"] = item
+#
+#         for item in text.split(" "):
+#             if item.capitalize() in states:
+#                 extracted_info["state"] = item
+#
+#     return extracted_info
 
 
 def extract_info(pdf):
@@ -3503,6 +3613,7 @@ def extract_info(pdf):
         "dob": "",
         "email_id": "",
         "zip": "",
+        "portfolio": "",
     }
     if not pdf:
         return extracted_info
@@ -3510,21 +3621,93 @@ def extract_info(pdf):
     text_info = extract_text_with_font_info(pdf)
     ranked_text = rank_text(text_info)
 
-    phone_pattern = re.compile(r"\b\+?\d{1,2}\s?\d{9,10}\b")
+    if not ranked_text:
+        return extracted_info
+
+    # Use text_info (natural document order), not ranked_text (font-size sorted),
+    # since spaCy's NER needs coherent word order to detect entities correctly.
+    full_text = "\n".join(item["text"] for item in text_info if item["text"])
+    # added: line list, so a spaCy entity's char offset can be mapped back to
+    # its source line for the address fallback below.
+    lines = [item["text"] for item in text_info if item["text"]]
+
     dob_pattern = re.compile(
         r"\b(?:\d{1,2}|\d{4})[-/.,]\d{1,2}[-/.,](?:\d{1,2}|\d{4})\b"
     )
     email_pattern = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b")
     zip_code_pattern = re.compile(r"\b\d{5,6}(?:-\d{4})?\b")
+    dob_keyword_pattern = re.compile(r"\b(dob|date\s+of\s+birth|born)\b", re.IGNORECASE)
+    url_pattern = re.compile(
+        r"\b(?:https?://\S+|www\.\S+"
+        r"|(?:github|linkedin|gitlab|behance|dribbble)\.com/\S+)",
+        re.IGNORECASE,
+    )
 
-    name_candidates = [
-        item["text"]
-        for item in ranked_text
-        if item["font_size"] == max(item["font_size"] for item in ranked_text)
-    ]
+    max_font_size = max(item["font_size"] for item in ranked_text)
+    top_spans = [item for item in ranked_text if item["font_size"] == max_font_size]
+    name_doc = _resume_nlp(" ".join(item["text"] for item in top_spans))
+    person_names = [ent.text for ent in name_doc.ents if ent.label_ == "PERSON"]
+    if person_names:
+        extracted_info["full_name"] = " ".join(person_names)
+    else:
+        extracted_info["full_name"] = " ".join(item["text"] for item in top_spans)
 
-    if name_candidates:
-        extracted_info["full_name"] = " ".join(name_candidates)
+    # added: fallback address candidate, taken from the resume line containing
+    # the matched country/state entity, used only if the "Address:"-keyword
+    # pass above found nothing.
+    def _line_for_char_offset(offset):
+        """Map a spaCy entity's char offset in full_text back to its source line."""
+        pos = 0
+        for line in lines:
+            end = pos + len(line)
+            if pos <= offset <= end:
+                return line
+            pos = end + 1  # account for the "\n" joiner
+        return None
+
+    gpe_address_candidate = None
+
+    doc = _resume_nlp(full_text)
+    for ent in doc.ents:
+        if ent.label_ != "GPE":
+            continue
+        if not extracted_info["country"]:
+            try:
+                country_match = pycountry.countries.lookup(ent.text)
+                extracted_info["country"] = getattr(
+                    country_match, "common_name", country_match.name
+                )
+                # added: capture the containing line as an address candidate
+                if not gpe_address_candidate:
+                    candidate_line = _line_for_char_offset(ent.start_char)
+                    if (
+                        candidate_line
+                        and candidate_line.strip().lower() != ent.text.lower()
+                    ):
+                        gpe_address_candidate = candidate_line.strip()
+                continue
+            except LookupError:
+                pass
+        if not extracted_info["state"]:
+            try:
+                subdivision_match = pycountry.subdivisions.lookup(ent.text)
+                extracted_info["state"] = subdivision_match.name
+                # added: capture the containing line as an address candidate
+                if not gpe_address_candidate:
+                    candidate_line = _line_for_char_offset(ent.start_char)
+                    if (
+                        candidate_line
+                        and candidate_line.strip().lower() != ent.text.lower()
+                    ):
+                        gpe_address_candidate = candidate_line.strip()
+            except LookupError:
+                pass
+
+    phone_matches = list(phonenumbers.PhoneNumberMatcher(full_text, None))
+    if phone_matches:
+        extracted_info["phone_number"] = phonenumbers.format_number(
+            phone_matches[0].number, phonenumbers.PhoneNumberFormat.INTERNATIONAL
+        )
 
     for item in ranked_text:
         text = item["text"]
@@ -3532,14 +3715,9 @@ def extract_info(pdf):
         if not text:
             continue
 
-        if not extracted_info["phone_number"]:
-            phone_match = phone_pattern.search(text)
-            if phone_match:
-                extracted_info["phone_number"] = phone_match.group()
-
         if not extracted_info["dob"]:
             dob_match = dob_pattern.search(text)
-            if dob_match:
+            if dob_match and dob_keyword_pattern.search(text):
                 extracted_info["dob"] = dob_matching(dob_match.group())
 
         if not extracted_info["zip"]:
@@ -3555,13 +3733,15 @@ def extract_info(pdf):
         if "address" in text.lower() and not extracted_info["address"]:
             extracted_info["address"] = text.replace("Address:", "").strip()
 
-        for item in text.split(" "):
-            if item.capitalize() in country_arr:
-                extracted_info["country"] = item
+        if not extracted_info["portfolio"]:
+            url_match = url_pattern.search(text)
+            if url_match:
+                extracted_info["portfolio"] = url_match.group()
 
-        for item in text.split(" "):
-            if item.capitalize() in states:
-                extracted_info["state"] = item
+    # added: fall back to the spaCy-derived address candidate only if the
+    # explicit "Address:" keyword pass above found nothing.
+    if not extracted_info["address"] and gpe_address_candidate:
+        extracted_info["address"] = gpe_address_candidate
 
     return extracted_info
 
@@ -3700,6 +3880,7 @@ def add_bulk_resumes(request):
                 file=file,
                 recruitment_id=recruitment,
             )
+        CACHE.delete(f"matching_resumes_{rec_id}")
 
         url = reverse("view-bulk-resume")
         query_params = f"?rec_id={rec_id}"
@@ -3717,6 +3898,7 @@ def delete_resume_file(request):
     ids = request.GET.getlist("ids")
     rec_id = request.GET.get("rec_id")
     Resume.objects.filter(id__in=ids).delete()
+    CACHE.delete(f"matching_resumes_{rec_id}")
 
     url = reverse("view-bulk-resume")
     query_params = f"?rec_id={rec_id}"
@@ -3724,28 +3906,66 @@ def delete_resume_file(request):
     return redirect(f"{url}{query_params}")
 
 
+# --- Legacy implementation (superseded below, kept for reference) ---
+# def extract_words_from_pdf(pdf_file):
+#     """
+#     This method is used to extract the words from the pdf file into a list.
+#     Args:
+#         pdf_file: pdf file
+#
+#     """
+#     pdf_document = fitz.open(pdf_file.path)
+#
+#     words = []
+#
+#     for page_num in range(len(pdf_document)):
+#         page = pdf_document.load_page(page_num)
+#         page_text = page.get_text()
+#
+#         page_words = re.findall(r"\b\w+\b", page_text.lower())
+#
+#         words.extend(page_words)
+#
+#     pdf_document.close()
+#
+#     return words
+
+
 def extract_words_from_pdf(pdf_file):
     """
-    This method is used to extract the words from the pdf file into a list.
+    This method is used to extract the raw text content from the pdf file.
     Args:
         pdf_file: pdf file
 
     """
-    pdf_document = fitz.open(pdf_file.path)
+    pdf_document = pymupdf.open(pdf_file.path)
 
-    words = []
+    text_chunks = []
 
     for page_num in range(len(pdf_document)):
         page = pdf_document.load_page(page_num)
-        page_text = page.get_text()
-
-        page_words = re.findall(r"\b\w+\b", page_text.lower())
-
-        words.extend(page_words)
+        text_chunks.append(page.get_text())
 
     pdf_document.close()
 
-    return words
+    return "\n".join(text_chunks).lower()
+
+
+def skill_match_count(text, skills, threshold=85):
+    """
+    This method counts how many of the given skills are present in the resume
+    text, using fuzzy matching so multi-word skills and near-variant spellings
+    (e.g. "Node.js" vs "NodeJS") are still counted as a match.
+
+    Args:
+        text: Full lowercased resume text
+        skills: Iterable of skill title strings
+        threshold: Minimum rapidfuzz partial_ratio score (0-100) to count as a match
+    """
+    if not text:
+        return 0
+    text = text.lower()
+    return sum(fuzz.partial_ratio(skill.lower(), text) >= threshold for skill in skills)
 
 
 @login_required
@@ -3759,38 +3979,44 @@ def matching_resumes(request, rec_id):
         rec_id: Recruitment ID
 
     """
-    recruitment = Recruitment.objects.filter(id=rec_id).first()
-    skills = recruitment.skills.values_list("title", flat=True)
-    resumes = recruitment.resume.all()
-    is_candidate = resumes.filter(is_candidate=True)
-    is_candidate_ids = set(is_candidate.values_list("id", flat=True))
+    cache_key = f"matching_resumes_{rec_id}"
+    ranked_resumes = CACHE.get(cache_key)
+    if ranked_resumes is None:
+        recruitment = Recruitment.objects.filter(id=rec_id).first()
+        skills = recruitment.skills.values_list("title", flat=True)
+        resumes = recruitment.resume.all()
+        is_candidate = resumes.filter(is_candidate=True)
+        is_candidate_ids = set(is_candidate.values_list("id", flat=True))
 
-    resume_ranks = []
-    for resume in resumes:
-        words = extract_words_from_pdf(resume.file)
-        matching_skills_count = sum(skill.lower() in words for skill in skills)
+        resume_ranks = []
+        for resume in resumes:
+            text = extract_words_from_pdf(resume.file)
+            matching_skills_count = skill_match_count(text, skills)
 
-        item = {"resume": resume, "matching_skills_count": matching_skills_count}
-        if not len(words):
-            item["image_pdf"] = True
+            item = {"resume": resume, "matching_skills_count": matching_skills_count}
+            if not len(text):
+                item["image_pdf"] = True
 
-        resume_ranks.append(item)
+            resume_ranks.append(item)
 
-    candidate_resumes = [
-        rank for rank in resume_ranks if rank["resume"].id in is_candidate_ids
-    ]
-    non_candidate_resumes = [
-        rank for rank in resume_ranks if rank["resume"].id not in is_candidate_ids
-    ]
+        candidate_resumes = [
+            rank for rank in resume_ranks if rank["resume"].id in is_candidate_ids
+        ]
+        non_candidate_resumes = [
+            rank for rank in resume_ranks if rank["resume"].id not in is_candidate_ids
+        ]
 
-    non_candidate_resumes = sorted(
-        non_candidate_resumes, key=lambda x: x["matching_skills_count"], reverse=True
-    )
-    candidate_resumes = sorted(
-        candidate_resumes, key=lambda x: x["matching_skills_count"], reverse=True
-    )
+        non_candidate_resumes = sorted(
+            non_candidate_resumes,
+            key=lambda x: x["matching_skills_count"],
+            reverse=True,
+        )
+        candidate_resumes = sorted(
+            candidate_resumes, key=lambda x: x["matching_skills_count"], reverse=True
+        )
 
-    ranked_resumes = non_candidate_resumes + candidate_resumes
+        ranked_resumes = non_candidate_resumes + candidate_resumes
+        CACHE.set(cache_key, ranked_resumes, timeout=None)
 
     return render(
         request,

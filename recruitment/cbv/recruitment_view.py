@@ -6,6 +6,7 @@ from typing import Any
 
 from django import forms
 from django.contrib import messages
+from django.core.cache import cache as CACHE
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -126,6 +127,25 @@ class RecruitmentList(HorillaListView):
                 data-toggle="oh-modal-toggle"
                 """
 
+    # Mirrors RecruitmentNav.nested_group_by_fields below -- List and Nav
+    # are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split). "Managers"
+    # (recruitment_managers) and the M2M "Open Positions" (open_positions)
+    # are deliberately left out: they're ManyToManyFields, and the nested
+    # engine's `values(*fields).annotate(Count("pk"))` aggregate would fan
+    # out one row per related manager/position, double-counting
+    # recruitments with more than one assigned. `job_position_id` (a
+    # single FK, distinct from the open_positions M2M) is used instead.
+    nested_group_by_fields = [
+        ("title", _("Recruitment")),
+        ("job_position_id", _("Job Position")),
+        ("company_id", _("Company")),
+        ("closed", _("Is Closed")),
+        ("is_published", _("Is Published")),
+        ("start_date", _("Start Date")),
+        ("end_date", _("End Date")),
+    ]
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
@@ -152,6 +172,17 @@ class RecruitmentNav(HorillaNavView):
     filter_form_context_name = "form"
     search_swap_target = "#listContainer"
     filter_body_template = "cbv/recruitment/filters.html"
+
+    # Mirrors RecruitmentList.nested_group_by_fields
+    nested_group_by_fields = [
+        ("title", _("Recruitment")),
+        ("job_position_id", _("Job Position")),
+        ("company_id", _("Company")),
+        ("closed", _("Is Closed")),
+        ("is_published", _("Is Published")),
+        ("start_date", _("Start Date")),
+        ("end_date", _("End Date")),
+    ]
 
 
 class RecruitmentCreationFormExtended(RecruitmentCreationForm):
@@ -202,7 +233,7 @@ class RecruitmentCreationFormExtended(RecruitmentCreationForm):
             "start_date": _("Start Date"),
             "end_date": _("End Date"),
             "survey_templates": _("Survey Templates"),
-            "is_published": _("Is Published?"),
+            "is_published": _("Publish"),
             "vacancy": _("Vacancy"),
             "open_positions": _("Job Position"),
             "recruitment_managers": _("Managers"),
@@ -295,6 +326,7 @@ class RecruitmentForm(HorillaFormView):
                     self.request, recruitment, recruitment.linkedin_account_id
                 )
             message = _("Recruitment Created Successfully")
+        CACHE.delete(f"matching_resumes_{recruitment.pk}")
         messages.success(self.request, message)
         if self.request.GET.get("pipeline") == "true" or (
             self.request.resolver_match

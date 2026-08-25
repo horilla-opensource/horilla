@@ -132,8 +132,7 @@ class WorkRequestListView(HorillaListView):
             _("Rejected"),
             """
             onclick="
-                $('#applyFilter').closest('form').find('[name=canceled]').val('true');
-                $('[name=approved]').val('unknown').change();
+                $('#applyFilter').closest('form').find('[name=status]').val('canceled').change();
                 $('#applyFilter').click();
             "
             """,
@@ -143,8 +142,7 @@ class WorkRequestListView(HorillaListView):
             _("Approved"),
             """
             onclick="
-                $('#applyFilter').closest('form').find('[name=approved]').val('true');
-                $('[name=canceled]').val('unknown').change();
+                $('#applyFilter').closest('form').find('[name=status]').val('approved').change();
                 $('#applyFilter').click();
             "
             """,
@@ -154,9 +152,7 @@ class WorkRequestListView(HorillaListView):
             _("Requested"),
             """
             onclick="
-                $('#applyFilter').closest('form').find('[name=requested]').val('true');
-                $('[name=canceled]').val('unknown').change();
-                $('[name=approved]').val('unknown').change();
+                $('#applyFilter').closest('form').find('[name=status]').val('requested').change();
                 $('#applyFilter').click();
             "
             """,

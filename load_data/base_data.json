@@ -3707,5 +3707,335 @@
       "employee_id": 22,
       "comment": "I referred someone last quarter and the process was smooth — HR confirmed within 3 days. Happy to share my experience with anyone who has questions."
     }
+  },
+  {
+    "model": "base.worktyperequest",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 3,
+      "work_type_id": 3,
+      "previous_work_type_id": 1,
+      "requested_date": "2025-07-19",
+      "requested_till": "2025-08-19",
+      "description": "Requesting a temporary work-type change.",
+      "is_permanent_work_type": false,
+      "approved": false,
+      "canceled": false,
+      "work_type_changed": false
+    }
+  },
+  {
+    "model": "base.worktyperequest",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 9,
+      "work_type_id": 4,
+      "previous_work_type_id": 2,
+      "requested_date": "2025-07-19",
+      "requested_till": "2025-08-19",
+      "description": "Requesting a temporary work-type change.",
+      "is_permanent_work_type": false,
+      "approved": true,
+      "canceled": false,
+      "work_type_changed": true
+    }
+  },
+  {
+    "model": "base.worktyperequest",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 20,
+      "work_type_id": 2,
+      "previous_work_type_id": 1,
+      "requested_date": "2025-07-19",
+      "requested_till": "2025-08-19",
+      "description": "Requesting a temporary work-type change.",
+      "is_permanent_work_type": false,
+      "approved": true,
+      "canceled": false,
+      "work_type_changed": true
+    }
+  },
+  {
+    "model": "base.worktyperequest",
+    "pk": 9,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 38,
+      "work_type_id": 3,
+      "previous_work_type_id": 2,
+      "requested_date": "2025-07-19",
+      "requested_till": "2025-08-19",
+      "description": "Requesting a temporary work-type change.",
+      "is_permanent_work_type": false,
+      "approved": false,
+      "canceled": false,
+      "work_type_changed": false
+    }
+  },
+  {
+    "model": "base.worktyperequest",
+    "pk": 10,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 60,
+      "work_type_id": 4,
+      "previous_work_type_id": 1,
+      "requested_date": "2025-07-19",
+      "requested_till": "2025-08-19",
+      "description": "Requesting a temporary work-type change.",
+      "is_permanent_work_type": false,
+      "approved": true,
+      "canceled": false,
+      "work_type_changed": true
+    }
+  },
+  {
+    "model": "base.shiftrequest",
+    "pk": 11,
+    "fields": {
+      "created_at": "2025-07-20T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 3,
+      "shift_id": 2,
+      "previous_shift_id": 1,
+      "requested_date": "2025-07-20",
+      "reallocate_to": null,
+      "reallocate_approved": false,
+      "reallocate_canceled": false,
+      "requested_till": "2025-08-20",
+      "description": "Requesting a temporary shift change.",
+      "is_permanent_shift": false,
+      "approved": true,
+      "canceled": false,
+      "shift_changed": true
+    }
+  },
+  {
+    "model": "base.shiftrequest",
+    "pk": 12,
+    "fields": {
+      "created_at": "2025-07-20T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 9,
+      "shift_id": 3,
+      "previous_shift_id": 1,
+      "requested_date": "2025-07-20",
+      "reallocate_to": null,
+      "reallocate_approved": false,
+      "reallocate_canceled": false,
+      "requested_till": "2025-08-20",
+      "description": "Requesting a temporary shift change.",
+      "is_permanent_shift": false,
+      "approved": false,
+      "canceled": false,
+      "shift_changed": false
+    }
+  },
+  {
+    "model": "base.shiftrequest",
+    "pk": 13,
+    "fields": {
+      "created_at": "2025-07-20T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 20,
+      "shift_id": 1,
+      "previous_shift_id": 3,
+      "requested_date": "2025-07-20",
+      "reallocate_to": null,
+      "reallocate_approved": false,
+      "reallocate_canceled": false,
+      "requested_till": "2025-08-20",
+      "description": "Requesting a temporary shift change.",
+      "is_permanent_shift": false,
+      "approved": true,
+      "canceled": false,
+      "shift_changed": true
+    }
+  },
+  {
+    "model": "base.shiftrequest",
+    "pk": 14,
+    "fields": {
+      "created_at": "2025-07-20T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 38,
+      "shift_id": 2,
+      "previous_shift_id": 1,
+      "requested_date": "2025-07-20",
+      "reallocate_to": null,
+      "reallocate_approved": false,
+      "reallocate_canceled": false,
+      "requested_till": "2025-08-20",
+      "description": "Requesting a temporary shift change.",
+      "is_permanent_shift": false,
+      "approved": false,
+      "canceled": false,
+      "shift_changed": false
+    }
+  },
+  {
+    "model": "base.shiftrequest",
+    "pk": 15,
+    "fields": {
+      "created_at": "2025-07-20T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 60,
+      "shift_id": 3,
+      "previous_shift_id": 2,
+      "requested_date": "2025-07-20",
+      "reallocate_to": null,
+      "reallocate_approved": false,
+      "reallocate_canceled": false,
+      "requested_till": "2025-08-20",
+      "description": "Requesting a temporary shift change.",
+      "is_permanent_shift": false,
+      "approved": true,
+      "canceled": false,
+      "shift_changed": true
+    }
+  },
+  {
+    "model": "base.rotatingshiftassign",
+    "pk": 11,
+    "fields": {
+      "created_at": "2025-07-21T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 3,
+      "rotating_shift_id": 1,
+      "start_date": "2025-07-21",
+      "next_change_date": "2025-07-28",
+      "current_shift": 1,
+      "next_shift": 2,
+      "based_on": "after",
+      "rotate_after_day": 7,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": {
+        "next_shift_index": 1
+      }
+    }
+  },
+  {
+    "model": "base.rotatingshiftassign",
+    "pk": 12,
+    "fields": {
+      "created_at": "2025-07-21T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 9,
+      "rotating_shift_id": 2,
+      "start_date": "2025-07-21",
+      "next_change_date": "2025-07-28",
+      "current_shift": 1,
+      "next_shift": 3,
+      "based_on": "after",
+      "rotate_after_day": 7,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": {
+        "next_shift_index": 1
+      }
+    }
+  },
+  {
+    "model": "base.rotatingshiftassign",
+    "pk": 13,
+    "fields": {
+      "created_at": "2025-07-21T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 20,
+      "rotating_shift_id": 1,
+      "start_date": "2025-07-21",
+      "next_change_date": "2025-07-28",
+      "current_shift": 1,
+      "next_shift": 2,
+      "based_on": "after",
+      "rotate_after_day": 7,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": {
+        "next_shift_index": 1
+      }
+    }
+  },
+  {
+    "model": "base.rotatingshiftassign",
+    "pk": 14,
+    "fields": {
+      "created_at": "2025-07-21T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 38,
+      "rotating_shift_id": 2,
+      "start_date": "2025-07-21",
+      "next_change_date": "2025-07-28",
+      "current_shift": 1,
+      "next_shift": 3,
+      "based_on": "after",
+      "rotate_after_day": 7,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": {
+        "next_shift_index": 1
+      }
+    }
+  },
+  {
+    "model": "base.rotatingshiftassign",
+    "pk": 15,
+    "fields": {
+      "created_at": "2025-07-21T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 60,
+      "rotating_shift_id": 1,
+      "start_date": "2025-07-21",
+      "next_change_date": "2025-07-28",
+      "current_shift": 1,
+      "next_shift": 2,
+      "based_on": "after",
+      "rotate_after_day": 7,
+      "rotate_every_weekend": "monday",
+      "rotate_every": "1",
+      "additional_data": {
+        "next_shift_index": 1
+      }
+    }
   }
 ]

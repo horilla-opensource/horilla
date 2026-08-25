@@ -1,0 +1,47 @@
+{% load i18n %}
+<div class="d-flex justify-content-between mb-3 me-3 align-items-center">
+    <span class="oh-activity-sidebar__title fw-bold font-semibold text-sm">{% trans "Documents" %}</span>
+    {% if perms.recruitment.add_candidatedocument or perms.recruitment.change_candidate %}
+        <button
+            type="button"
+            class="oh-btn oh-btn--secondary mt-2 mr-0"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'candidate-document-create' candidate.id %}"
+            hx-target="#objectCreateModalTarget"
+        >
+            <ion-icon name="add-sharp" class="mr-1"></ion-icon>
+            {% trans "Create" %}
+        </button>
+    {% endif %}
+</div>
+
+{% include "generic/horilla_list_table.html" %}
+
+<div class="oh-modal" id="viewFileModal" role="dialog" aria-labelledby="viewFileModal" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 1000px; max-height: 800px;">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="viewFileModalLabel">{% trans "View File" %}</span>
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="viewFile"></div>
+    </div>
+</div>
+
+<div class="oh-modal" id="rejectFileModal" role="dialog" aria-labelledby="rejectFileModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="rejectFileModalLabel">{% trans "Reject" %}</span>
+            <button
+                class="oh-modal__close--custom"
+                aria-label="{% trans 'Close' %}"
+                onclick="event.stopPropagation();event.preventDefault();$('#rejectFileModal').toggleClass('oh-modal--show');"
+            >
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="rejectFileForm"></div>
+    </div>
+</div>

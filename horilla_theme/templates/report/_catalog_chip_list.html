@@ -1,0 +1,20 @@
+{% load i18n %}
+{% if reports %}
+{% for report in reports %}
+<button
+    type="button"
+    class="sr-chip-item"
+    data-toggle="oh-modal-toggle"
+    data-target="#genericModal"
+    hx-get="{% url 'standard-report-print-filters' report.slug %}"
+    hx-target="#genericModalBody"
+>
+    {% if kind == "favorite" %}<ion-icon name="star"></ion-icon>{% endif %}
+    <span>{{ report.name }}</span>
+</button>
+{% endfor %}
+{% else %}
+<div class="sr-chip-empty text-muted small">
+    {% if kind == "favorite" %}{% trans "No favorites yet." %}{% else %}{% trans "No recent reports yet." %}{% endif %}
+</div>
+{% endif %}

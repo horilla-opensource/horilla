@@ -1,5 +1,7 @@
 from typing import Any
 
+from django.contrib import messages
+from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -7,11 +9,13 @@ from django.utils.translation import gettext_lazy as _
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaCardView,
+    HorillaFormView,
     HorillaListView,
     HorillaNavView,
     TemplateView,
 )
 from payroll.filters import DeductionFilter
+from payroll.forms.component_forms import DeductionForm
 from payroll.models.models import Deduction
 
 
@@ -34,9 +38,10 @@ class DeductionNav(HorillaNavView):
         self.search_url = reverse("deduction-view-list")
         if self.request.user.has_perm("payroll.add_deduction"):
             self.create_attrs = f"""
-                            href="#"
                             hx-get="{reverse('create-deduction')}"
-                            hx-target="#deductionListContainer"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#objectCreateModal"
+                            hx-target="#objectCreateModalTarget"
                             hx-swap="innerHTML"
                             """
         self.view_types = [
@@ -147,8 +152,6 @@ class DeductionListView(HorillaListView):
 
     columns = [
         (_("Deduction"), "title"),
-        (_("Specific Employees"), "specific_employees_col"),
-        (_("Excluded Employees"), "excluded_employees_col"),
         (_("Is Pretax"), "get_is_pretax_display"),
         (_("Is Condition Based"), "get_is_condition_based_display"),
         (_("Condition"), "condition_based_col"),
@@ -165,8 +168,6 @@ class DeductionListView(HorillaListView):
 
     sortby_mapping = [
         (_("Deduction"), "title"),
-        (_("Specific Employees"), "specific_employees_col"),
-        (_("Excluded Employees"), "excluded_employees_col"),
         (_("Amount"), "amount"),
     ]
 
@@ -258,8 +259,10 @@ class DeductionCardView(HorillaCardView):
             "action": _("Edit"),
             "attrs": """
             class="oh-dropdown__link"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectUpdateModal"
+            hx-target="#objectUpdateModalTarget"
             hx-get="{get_update_url}"
-            hx-target="#deductionListContainer"
             hx-swap="innerHTML"
             """,
         },
@@ -277,3 +280,27 @@ class DeductionCardView(HorillaCardView):
                     """,
         },
     ]
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("payroll.add_deduction"), name="dispatch")
+class DeductionFormView(HorillaFormView):
+    """
+    Form view for Deduction creation and update.
+    """
+
+    model = Deduction
+    form_class = DeductionForm
+    new_display_title = _("Create Deduction")
+    template_name = "payroll/deduction/deduction_form.html"
+
+    def form_valid(self, form: DeductionForm) -> HttpResponse:
+        if form.is_valid():
+            if form.instance.pk:
+                msg = _("Deduction updated.")
+            else:
+                msg = _("Deduction created.")
+            form.save()
+            messages.success(self.request, msg)
+            return self.HttpResponse(targets_to_reload=["#applyFilter"])
+        return super().form_valid(form)

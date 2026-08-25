@@ -128,8 +128,8 @@
       "installments": 6,
       "installment_start_date": "2025-02-01",
       "apply_on": "end_of_month",
-      "settled": false,
-      "settled_date": null,
+      "settled": true,
+      "settled_date": "2025-07-30T09:00:00Z",
       "asset_id": null,
       "deduction_ids": [1018, 1019, 1020, 1021, 1022, 1023]
     }
@@ -182,10 +182,37 @@
       "installments": 3,
       "installment_start_date": "2025-05-01",
       "apply_on": "end_of_month",
-      "settled": false,
-      "settled_date": null,
+      "settled": true,
+      "settled_date": "2025-07-30T09:00:00Z",
       "asset_id": null,
       "deduction_ids": [1026, 1027, 1028]
+    }
+  },
+  {
+    "model": "payroll.loanaccount",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-04-01T09:00:00Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "type": "advanced_salary",
+      "title": "Relocation Advance",
+      "employee_id": 20,
+      "loan_amount": 15000.0,
+      "provided_date": "2025-04-01",
+      "allowance_id": null,
+      "description": "Advance against salary for relocation expenses.",
+      "is_fixed": true,
+      "rate": 0.0,
+      "installment_amount": 5000.0,
+      "installments": 3,
+      "installment_start_date": "2025-04-01",
+      "apply_on": "end_of_month",
+      "settled": true,
+      "settled_date": "2025-06-30T09:00:00Z",
+      "asset_id": null,
+      "deduction_ids": []
     }
   }
 ]

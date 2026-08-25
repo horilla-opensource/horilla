@@ -1,33 +1,38 @@
 {% load i18n %}
 
 <div class="col-span-12 lg:col-span-6" id="setting-default-expire-days">
-    <form
-        action="{% url 'system-preferences-view' %}"
-        method="post"
-        hx-post="{% url 'system-preferences-view' %}"
-        hx-target="#settingsContainer"
-        hx-select="#settingsContainer"
-        hx-swap="outerHTML show:none"
-    >
-        {% csrf_token %}
-        <div class="flex space-x-2 pb-1">
-            <label>{% trans "Default Expire Days" %}</label>
-            <span class="oh-info mr-2" title="{% trans 'Set default announcement expire days' %}"> </span>
-        </div>
-        <p class="text-xs text-gray-500 mt-1 pb-2">
-            {% trans "Number of days after which an announcement automatically expires when no expiry date is set." %}
-        </p>
-        <div class="flex gap-2">
-            <input
-                type="number"
-                name="days"
-                placeholder="{% trans 'Days' %}"
-                value="{{form.instance.days}}"
-                id="id_days"
-            >
-            {% if perms.payroll.change_payrollsettings %}
-                <button class="btn" type="submit">{% trans "Save" %}</button>
-            {% endif %}
-        </div>
-    </form>
+    {% for setting in announcement_expire_settings %}
+        <form
+            hx-post="{% url 'update-announcement-expire-days' %}"
+            hx-swap="none"
+            hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 100);"
+        >
+            {% csrf_token %}
+            <input type="hidden" name="setting_id" value="{{ setting.id }}">
+            <div class="flex space-x-2 pb-1">
+                <label>
+                    {% trans "Default Expire Days" %}
+                    {% if show_expire_company %}
+                        <span class="text-xs text-gray-400">({{ setting.company_col }})</span>
+                    {% endif %}
+                </label>
+                <span class="oh-info mr-2" title="{% trans 'Set default announcement expire days' %}"> </span>
+            </div>
+            <p class="text-xs text-gray-500 mt-1 pb-2">
+                {% trans "Number of days after which an announcement automatically expires when no expiry date is set." %}
+            </p>
+            <div class="flex gap-2">
+                <input
+                    type="number"
+                    name="days"
+                    placeholder="{% trans 'Days' %}"
+                    value="{{ setting.days }}"
+                    id="id_days_{{ setting.id }}"
+                >
+                {% if perms.base.change_announcementexpire %}
+                    <button class="btn" type="submit">{% trans "Save" %}</button>
+                {% endif %}
+            </div>
+        </form>
+    {% endfor %}
 </div>

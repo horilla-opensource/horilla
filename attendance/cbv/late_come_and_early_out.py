@@ -118,6 +118,35 @@ class LateComeAndEarlyOutList(HorillaListView):
         (_("At Work"), "attendance_id__attendance_worked_hour"),
         (_("Min Hour"), "attendance_id__minimum_hour"),
     ]
+    # Mirrors LateComeAndEarlyOutListNav.nested_group_by_fields -- needed
+    # here too since this (List) and Nav are separate classes; see the
+    # same split in employee/cbv/employees.py's EmployeesList/EmployeeNav.
+    nested_group_by_fields = [
+        ("employee_id", _("Employee")),
+        ("type", _("Type")),
+        ("attendance_id__attendance_date", _("Attendance Date")),
+        ("attendance_id__shift_id", _("Shift")),
+        ("attendance_id__work_type_id", _("Work Type")),
+        ("attendance_id__minimum_hour", _("Minimum Hour")),
+        ("attendance_id__employee_id__country", _("Country")),
+        (
+            "attendance_id__employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
+        (
+            "attendance_id__employee_id__employee_work_info__department_id",
+            _("Department"),
+        ),
+        (
+            "attendance_id__employee_id__employee_work_info__job_position_id",
+            _("Job Position"),
+        ),
+        (
+            "attendance_id__employee_id__employee_work_info__employee_type_id",
+            _("Employment Type"),
+        ),
+        ("attendance_id__employee_id__employee_work_info__company_id", _("Company")),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")
@@ -176,6 +205,39 @@ class LateComeAndEarlyOutListNav(HorillaNavView):
     search_swap_target = "#listContainer"
 
     group_by_fields = [
+        ("employee_id", _("Employee")),
+        ("type", _("Type")),
+        ("attendance_id__attendance_date", _("Attendance Date")),
+        ("attendance_id__shift_id", _("Shift")),
+        ("attendance_id__work_type_id", _("Work Type")),
+        ("attendance_id__minimum_hour", _("Minimum Hour")),
+        ("attendance_id__employee_id__country", _("Country")),
+        (
+            "attendance_id__employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
+        (
+            "attendance_id__employee_id__employee_work_info__department_id",
+            _("Department"),
+        ),
+        (
+            "attendance_id__employee_id__employee_work_info__job_position_id",
+            _("Job Position"),
+        ),
+        (
+            "attendance_id__employee_id__employee_work_info__employee_type_id",
+            _("Employment Type"),
+        ),
+        ("attendance_id__employee_id__employee_work_info__company_id", _("Company")),
+    ]
+    # Mirrors LateComeAndEarlyOutList.nested_group_by_fields below -- List
+    # and Nav are separate classes/templates (see employee/cbv/employees.py's
+    # EmployeesList/EmployeeNav for the same split), so the inline
+    # "add/change field" dropdowns in the "Grouped by" breadcrumb
+    # (nested_group_by_table.html, rendered by the List view) need this
+    # here too, not just the currently-active fields it already had access
+    # to via nested_fields_active.
+    nested_group_by_fields = [
         ("employee_id", _("Employee")),
         ("type", _("Type")),
         ("attendance_id__attendance_date", _("Attendance Date")),

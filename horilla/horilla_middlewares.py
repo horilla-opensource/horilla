@@ -9,6 +9,7 @@ from contextvars import ContextVar
 
 from django.conf import settings
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import render
 from django.utils.datastructures import MultiValueDictKeyError
@@ -53,6 +54,24 @@ class ThreadLocalMiddleware:
         _thread_locals.request = request
         response = self.get_response(request)
         return response
+
+
+class DefaultLanguageMiddleware:
+    """
+    Runs before django.middleware.locale.LocaleMiddleware to stop it from
+    picking a language via the browser's Accept-Language header. Django's
+    set_language view (used by the navbar language switcher) only persists
+    an explicit choice in the LANGUAGE_COOKIE_NAME cookie, so that cookie
+    is the sole signal that should override settings.LANGUAGE_CODE.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if settings.LANGUAGE_COOKIE_NAME not in request.COOKIES:
+            request.META.pop("HTTP_ACCEPT_LANGUAGE", None)
+        return self.get_response(request)
 
 
 class MethodNotAllowedMiddleware:
@@ -100,6 +119,13 @@ class MissingParameterMiddleware:
             if not settings.DEBUG:
                 messages.error(request, message)
                 return render(request, "went_wrong.html", status=400)
+
+        elif isinstance(exception, ObjectDoesNotExist):
+            logger.error(f"{exception.__class__.__name__}: {exception}")
+
+            if not settings.DEBUG:
+                messages.error(request, "The requested item could not be found.")
+                return render(request, "went_wrong.html", status=404)
 
         return None
 

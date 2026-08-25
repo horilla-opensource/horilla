@@ -4,7 +4,7 @@ Modern recruitment dashboard views — KPI summary + ApexCharts.
 Accessible at /recruitment/dashboard/modern/ alongside the existing dashboard.
 """
 
-from datetime import date
+from datetime import date, timedelta
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
@@ -45,6 +45,23 @@ def _parse_period(request):
     return from_date, to_date
 
 
+def _upcoming_interview_period(request):
+    """Like _parse_period, but defaults to a forward-looking window.
+
+    This widget shows *upcoming* interviews -- _parse_period's generic
+    [month-start, today] default (built for the dashboard's other,
+    backward-looking widgets) can never show anything scheduled in the
+    future, even though interviews are deliberately scheduled ahead. Only
+    applies when neither from_date nor to_date was explicitly requested, so
+    an actual date-range-picker selection is still honored exactly as
+    before.
+    """
+    if not request.GET.get("from_date") and not request.GET.get("to_date"):
+        today = date.today()
+        return today, today + timedelta(days=30)
+    return _parse_period(request)
+
+
 def _candidates_in_period(request):
     """Return Candidate queryset filtered to the requested period (by created_at)."""
     from recruitment.models import Candidate
@@ -79,6 +96,7 @@ def recruitment_kpi_data(request):
         if rec.vacancy is not None:
             total_vacancy += rec.vacancy
 
+    from_date, to_date = _parse_period(request)
     candidates = _candidates_in_period(request)
     total_candidates = candidates.count()
 
@@ -92,6 +110,7 @@ def recruitment_kpi_data(request):
         conversion_rate = round((total_hired / total_candidates) * 100, 1)
 
     acceptance_rate = 0
+    accepted = 0
     try:
         accepted = candidates.filter(offer_letter_status="accepted").count()
         if total_hired > 0:
@@ -113,7 +132,13 @@ def recruitment_kpi_data(request):
             "total_candidates": total_candidates,
             "conversion_rate": conversion_rate,
             "acceptance_rate": acceptance_rate,
+            "accepted_count": accepted,
             "onboarding_count": onboarding_count,
+            # Echoed back so the "Hired"/"Acceptance Rate" cards' click-
+            # throughs can filter to the exact same period the counts
+            # above were computed from, instead of showing all-time data.
+            "period_from_date": from_date.isoformat(),
+            "period_to_date": to_date.isoformat(),
         }
     )
 
@@ -349,7 +374,7 @@ def recruitment_upcoming_interviews(request):
         return JsonResponse({"no_permission": True})
     from recruitment.models import InterviewSchedule
 
-    from_date, to_date = _parse_period(request)
+    from_date, to_date = _upcoming_interview_period(request)
     today = date.today()
     interviews = []
 
@@ -468,10 +493,16 @@ def recruitment_stage_conversion(request):
             canceled=False,
         ).count()
 
-        prev_count = total
+        # Each stage_type is an independent category a candidate's current
+        # stage falls into (not a nested cohort that must first pass through
+        # every earlier stage_type), so "% of previous stage" can exceed
+        # 100% whenever a later, wider stage (e.g. "Applied") holds more
+        # candidates than an earlier, narrower one (e.g. "Initial"). Share of
+        # the total pool is the metric that's actually well-defined here and
+        # is naturally bounded to 0-100%.
         for st in stage_types:
             current = counts.get(st, 0)
-            rate = round((current / prev_count * 100), 1) if prev_count > 0 else 0
+            rate = round((current / total * 100), 1) if total > 0 else 0
             conversions.append(
                 {
                     "stage": str(stage_labels.get(st, st)),
@@ -480,8 +511,6 @@ def recruitment_stage_conversion(request):
                     "conversion_rate": rate,
                 }
             )
-            if current > 0:
-                prev_count = current
     except Exception:
         pass
 

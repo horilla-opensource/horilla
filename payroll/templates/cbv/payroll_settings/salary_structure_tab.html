@@ -1,0 +1,22 @@
+{% load i18n static %}
+
+<div class="oh-inner-sidebar-content border border-[#ebebeb] rounded-md mb-5" id="salaryStructureTabRoot">
+    <div hx-get="{% url 'salary-structure-nav-view' %}" hx-trigger="load"></div>
+
+    <p class="text-xs text-gray-500 mt-1 ml-2">
+        {% trans "Configure reusable salary structures for your company." %}
+    </p>
+
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
+
+    <div class="oh-wrapper" id="structureContainer">
+        <div class="animated-background"></div>
+    </div>
+</div>

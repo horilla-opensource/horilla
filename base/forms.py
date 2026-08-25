@@ -46,7 +46,6 @@ from base.models import (
     Department,
     DriverViewed,
     DynamicEmailConfiguration,
-    DynamicPagination,
     EmployeeShift,
     EmployeeShiftDay,
     EmployeeShiftSchedule,
@@ -1128,7 +1127,7 @@ class RotatingWorkTypeForm(ModelForm):
         super().__init__(*args, **kwargs)
         work_type_counts = 0
 
-        def create_work_type_field(work_type_key, required, initial=None):
+        def create_work_type_field(work_type_key, required, initial=None, label=""):
 
             self.fields[work_type_key] = forms.ModelChoiceField(
                 queryset=WorkType.objects.all(),
@@ -1143,29 +1142,53 @@ class RotatingWorkTypeForm(ModelForm):
                 required=required,
                 empty_label=_("---Choose Work Type---"),
                 initial=initial,
-                label="",
+                label=label,
             )
 
         for key in self.data.keys():
             if key.startswith("work_type"):
                 work_type_counts += 1
-                create_work_type_field(key, work_type_counts <= 2)
+                # work_type1/work_type2 already carry their model verbose_name
+                # label; preserve it instead of blanking it out like the
+                # dynamically added (3rd+) work type fields.
+                existing_field = self.fields.get(key)
+                label = existing_field.label if existing_field else ""
+                create_work_type_field(key, work_type_counts <= 2, label=label)
 
-        additional_data = self.initial.get("additional_data")
-        additional_work_types = (
-            additional_data.get("additional_work_types") if additional_data else None
-        )
-        if additional_work_types:
-            work_type_counts = 3
-            for work_type_id in additional_work_types:
-                create_work_type_field(
-                    f"work_type{work_type_counts}",
-                    work_type_counts <= 2,
-                    initial=work_type_id,
-                )
-                work_type_counts += 1
+        if not self.is_bound:
+            # Unbound form (initial GET): work_type1 and work_type2 always
+            # exist as base fields. When editing an existing instance, its
+            # saved additional work types (from self.initial, populated by
+            # ModelForm from the instance) seed the extra fields here. Once
+            # the form is bound (POST, valid or invalid-reload), the loop
+            # above already rebuilt every work_type field from what was
+            # actually submitted, so this stale, DB-only snapshot must not
+            # run and clobber that count/fields with outdated data.
+            work_type_counts = 2
+            additional_data = self.initial.get("additional_data")
+            additional_work_types = (
+                additional_data.get("additional_work_types")
+                if additional_data
+                else None
+            )
+            if additional_work_types:
+                for work_type_id in additional_work_types:
+                    work_type_counts += 1
+                    create_work_type_field(
+                        f"work_type{work_type_counts}",
+                        False,
+                        initial=work_type_id,
+                    )
 
         self.work_type_counts = work_type_counts
+        # Every work_type field (base or dynamically added) should render
+        # full width; relying on client-side JS to fix this up after the
+        # fact is fragile, so drive it from the same col() lookup the
+        # template already uses for every other field.
+        self.cols = {
+            **self.cols,
+            **{f"work_type{i}": 12 for i in range(1, work_type_counts + 1)},
+        }
 
     def as_p(self, *args, **kwargs):
         context = {"form": self}
@@ -1312,7 +1335,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
         ).first()
 
         self.errors.pop("employee_id", None)
-        if self.instance.employee_id is None:
+        if self.data.getlist("employee_id"):
             raise ValidationError({"employee_id": _("This field is required")})
         super().clean()
         cleaned_data = super().clean()
@@ -1988,7 +2011,7 @@ class RotatingShiftAssignForm(ModelForm):
         ).first()
 
         self.errors.pop("employee_id", None)
-        if self.instance.employee_id is None:
+        if not self.data.getlist("employee_id"):
             raise ValidationError({"employee_id": _("This field is required")})
         super().clean()
         cleaned_data = super().clean()
@@ -2316,6 +2339,7 @@ class WorkTypeRequestForm(ModelForm):
     """
 
     cols = {"description": 12}
+    required_fields = ["requested_till"]
 
     class Meta:
         """
@@ -2893,17 +2917,6 @@ class MultipleApproveConditionForm(ModelForm):
         self.fields["multi_approval_manager"].choices = choices
 
 
-class DynamicPaginationForm(ModelForm):
-    """
-    Form for setting default pagination
-    """
-
-    class Meta:
-        model = DynamicPagination
-        fields = "__all__"
-        exclude = ("user_id",)
-
-
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
 
@@ -2985,8 +2998,25 @@ class AnnouncementForm(ModelForm):
             {"hx-on:click": "togglePublicComments()"}
         )
         if not self.instance.pk:
+            request = getattr(_thread_locals, "request", None)
+            selected_company = (
+                request.session.get("selected_company") if request else None
+            )
+            if not selected_company or selected_company == "all":
+                company = None
+            else:
+                company = Company.objects.filter(id=selected_company).first()
+            expire_setting = AnnouncementExpire.objects.filter(
+                company_id=company
+            ).first()
+            if not expire_setting and company is not None:
+                expire_setting = AnnouncementExpire.objects.filter(
+                    company_id=None
+                ).first()
             general_expire_date = (
-                AnnouncementExpire.objects.values_list("days", flat=True).first() or 30
+                expire_setting.days
+                if expire_setting and expire_setting.days is not None
+                else 30
             )
             self.fields["expire_date"].initial = date.today() + timedelta(
                 days=general_expire_date
@@ -3058,20 +3088,6 @@ class AnnouncementCommentForm(ModelForm):
 
         model = AnnouncementComment
         fields = ["comment"]
-
-
-class AnnouncementExpireForm(ModelForm):
-    """
-    Announcement Expire form
-    """
-
-    class Meta:
-        """
-        Meta class for additional options
-        """
-
-        model = AnnouncementExpire
-        fields = ("days",)
 
 
 class DriverForm(forms.ModelForm):

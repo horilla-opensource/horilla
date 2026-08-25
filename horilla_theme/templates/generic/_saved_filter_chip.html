@@ -1,6 +1,6 @@
 {% load i18n %}
 <div
-    class="relative group oh-hover-btn__main flex flex-shrink-0 transition duration-300 bg-white hover:bg-primary-100 border border-[#e6e6e6] rounded-md"
+    class="relative group oh-hover-btn__main flex flex-shrink-0 justify-between items-center transition duration-300 bg-white hover:bg-primary-100 border border-[#e6e6e6] rounded-md"
     hx-get="{{ request.path }}?{{ filter.urlencode }}"
     hx-target="#{{ root_view_id|default:view_id|safe }}"
     hx-swap="outerHTML"

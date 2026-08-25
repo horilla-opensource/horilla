@@ -39,10 +39,10 @@ def create_default_themes(sender, **kwargs):
             )
             if created:
                 created_count += 1
-                print(f"✓ Created theme: {theme.name}")
+                print(f"Created theme: {theme.name}")
             else:
-                print(f"- Theme already exists: {theme.name}")
+                print(f"Theme already exists: {theme.name}")
         except Exception as e:
-            print(f"✗ Error creating theme {theme_data['name']}: {str(e)}")
+            print(f"Error creating theme {theme_data['name']}: {str(e)}")
 
     print(f"\nSuccessfully created {created_count} themes.")

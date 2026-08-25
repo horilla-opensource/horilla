@@ -2,6 +2,7 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from base.methods import get_session_company
 from base.models import AttendanceAllowedIP
 from horilla_views.cbv_methods import (
     login_required,
@@ -9,16 +10,6 @@ from horilla_views.cbv_methods import (
     render_template,
 )
 from horilla_views.generic.cbv.views import HorillaListView, HorillaNavView
-
-
-def _get_session_company(request):
-    """Return the Company instance for the session-selected company, or None."""
-    from base.models import Company
-
-    selected = request.session.get("selected_company")
-    if selected == "all" or not selected:
-        return None
-    return Company.objects.filter(id=selected).first()
 
 
 @method_decorator(login_required, name="dispatch")
@@ -47,7 +38,7 @@ class IpRestrictionList(HorillaListView):
 
     def get_queryset(self, *args, **kwargs):
         self._saved_filters = self.request.GET.copy()
-        company = _get_session_company(self.request)
+        company = get_session_company(self.request)
         qs = self.model.objects.filter(company_id=company).first()
 
         class IP:

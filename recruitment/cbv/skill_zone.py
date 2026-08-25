@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaFormView, HorillaListView
 from recruitment.cbv_decorators import manager_can_enter
+from recruitment.filters import SkillZoneCandidateFilter
 from recruitment.forms import SkillZoneCandidateForm, SkillZoneCreateForm
 from recruitment.models import Candidate, SkillZone, SkillZoneCandidate
 
@@ -93,6 +94,7 @@ class SkillZoneProfileListView(HorillaListView):
     """
 
     model = SkillZoneCandidate
+    filter_class = SkillZoneCandidateFilter
     show_filter_tags = False
     filter_selected = False
     bulk_select_option = False
@@ -104,6 +106,22 @@ class SkillZoneProfileListView(HorillaListView):
         "added_on",
         "reason",
     ]
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Fixed (not auto-random) so pagination/sort/search requests - which
+        # all hx-target="#{{view_id}}" from generic/horilla_list_table.html -
+        # can be recognized in get_template_names() below and answered with
+        # just that fragment. Without this, every such request re-renders the
+        # full tab (header + Add button included) and htmx's outerHTML swap
+        # dumps that whole response in place of the table, duplicating the
+        # header on each page/sort/search click.
+        self.view_id = "skillZoneCandidateList"
+
+    def get_template_names(self):
+        if self.request.headers.get("HX-Target") == self.view_id:
+            return ["generic/horilla_list_table.html"]
+        return [self.template_name]
 
     def get_queryset(self):
         qureryset = super().get_queryset()

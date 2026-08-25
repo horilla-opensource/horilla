@@ -227,14 +227,25 @@ class LoadAutomationsView(View):
     )
 
     def load_json_files(self):
-        with open(self.template_file, "r") as tf:
-            templates_raw = json.load(tf)
-        with open(self.automation_file, "r") as af:
-            automations_raw = json.load(af)
+        try:
+            with open(self.template_file, "r") as tf:
+                templates_raw = json.load(tf)
+            with open(self.automation_file, "r") as af:
+                automations_raw = json.load(af)
+        except (OSError, json.JSONDecodeError):
+            return None, None
         return templates_raw, automations_raw
 
     def get(self, request):
         templates_raw, automations_raw = self.load_json_files()
+        if templates_raw is None:
+            messages.error(
+                request,
+                _(
+                    "Default mail automations could not be loaded. Please contact support."
+                ),
+            )
+            return render(request, self.template_name, {"automations": []})
 
         template_lookup = {item["pk"]: item["fields"]["body"] for item in templates_raw}
 
@@ -253,6 +264,14 @@ class LoadAutomationsView(View):
 
     def post(self, request):
         templates_raw, automations_raw = self.load_json_files()
+        if templates_raw is None:
+            messages.error(
+                request,
+                _(
+                    "Default mail automations could not be loaded. Please contact support."
+                ),
+            )
+            return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
         template_lookup = {item["pk"]: item["fields"]["body"] for item in templates_raw}
 

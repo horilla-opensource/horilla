@@ -1,5 +1,27 @@
 {% load i18n %}
-<span class="oh-recuritment_tag  {% if instance.status == 'done' %} done-task {% elif instance.status == 'scheduled' %} scheduled-task{% elif instance.status == 'ongoing' %} ongoing-task{% elif instance.status == 'stuck' %} dd stuck-task {% elif instance.status == 'todo' %} todo-task{% endif %}">
+<style>
+    .oh-recuritment_tag.todo-task {
+        background-color: #f1f1f1;
+        color: #666666;
+    }
+    .oh-recuritment_tag.scheduled-task {
+        background-color: #e0f2fe;
+        color: #0284c7;
+    }
+    .oh-recuritment_tag.ongoing-task {
+        background-color: #fde68a;
+        color: #b45309;
+    }
+    .oh-recuritment_tag.stuck-task {
+        background-color: #fca5a5;
+        color: #b91c1c;
+    }
+    .oh-recuritment_tag.done-task {
+        background-color: #86efac;
+        color: #15803d;
+    }
+</style>
+<span class="oh-recuritment_tag  {% if instance.status == 'done' %} done-task {% elif instance.status == 'scheduled' %} scheduled-task{% elif instance.status == 'ongoing' %} ongoing-task{% elif instance.status == 'stuck' %} stuck-task {% elif instance.status == 'todo' %} todo-task{% endif %}">
     <select  onchange="
     if ($(this).val() == 'done') {
         $(this).parent().addClass('done-task')

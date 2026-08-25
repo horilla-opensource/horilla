@@ -152,6 +152,16 @@ class CompensatoryNavView(HorillaNavView):
     search_swap_target = "#listContainer"
 
 
+def _compensatory_tab_badge_count(request, view_cls):
+    """Same queryset rules as the tab's HorillaListView (filters, subordinates)."""
+    view = view_cls()
+    view.request = request
+    view.args = ()
+    view.kwargs = {}
+    view.queryset = None
+    return view.get_queryset().count()
+
+
 @method_decorator(login_required, name="dispatch")
 @method_decorator(is_compensatory_leave_enabled(), name="dispatch")
 class CompensatoryLeaveTabView(HorillaTabView):
@@ -179,6 +189,22 @@ class CompensatoryLeaveTabView(HorillaTabView):
                     "url": f"{reverse('compensatory-tab')}",
                 }
             )
+
+    def get_context_data(self, **kwargs: Any):
+        """
+        Eagerly compute each tab's real record count so its badge shows the
+        right number on first load — lazy-loaded (non-active) tabs don't run
+        the count-updating script embedded in their list template until the
+        user actually clicks them, so without this they'd sit at "0".
+        """
+        context = super().get_context_data(**kwargs)
+        view_classes = [MyCompensatoryLeaveTab, CompensatoryLeaveTab]
+        for idx, tab in enumerate(self.tabs):
+            if idx < len(view_classes):
+                tab["badge"] = _compensatory_tab_badge_count(
+                    self.request, view_classes[idx]
+                )
+        return context
 
 
 @method_decorator(login_required, name="dispatch")

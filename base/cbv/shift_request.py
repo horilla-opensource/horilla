@@ -76,9 +76,7 @@ class ShiftList(HorillaListView):
             _("Canceled"),
             """
             onclick="
-                $('#applyFilter').closest('form').find('[name=canceled]').val('true');
-                $('[name=approved]').val('unknown').change();
-                $('[name=requested]').val('unknown').change();
+                $('#applyFilter').closest('form').find('[name=status]').val('canceled').change();
                 $('#applyFilter').click();
             "
             """,
@@ -88,9 +86,7 @@ class ShiftList(HorillaListView):
             _("Approved"),
             """
             onclick="
-                $('#applyFilter').closest('form').find('[name=approved]').val('true');
-                $('[name=canceled]').val('unknown').change();
-                $('[name=requested]').val('unknown').change();
+                $('#applyFilter').closest('form').find('[name=status]').val('approved').change();
                 $('#applyFilter').click();
             "
             """,
@@ -100,9 +96,7 @@ class ShiftList(HorillaListView):
             _("Requested"),
             """
             onclick="
-                $('#applyFilter').closest('form').find('[name=requested]').val('true');
-                $('[name=approved]').val('unknown').change();
-                $('[name=canceled]').val('unknown').change();
+                $('#applyFilter').closest('form').find('[name=status]').val('requested').change();
                 $('#applyFilter').click();
             "
             """,

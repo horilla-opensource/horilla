@@ -34,7 +34,7 @@
     </style>
 
     <div id="objectivesListNavBar">
-        <div hx-get="{% url 'nav-objectives-view' %}" hx-trigger="load"></div>
+        <div hx-get="{% url 'nav-objectives-view' %}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
     </div>
 
     {% include "generic/components.html" %}

@@ -1,30 +1,38 @@
 {% load i18n %}
 
 <div class="col-span-12 lg:col-span-6 self-end" id="setting-default-records-per-page">
-    <form
-        hx-post="{% url 'pagination-settings-view' %}"
-        hx-swap="none"
-        hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 100);"
-    >
-        {% csrf_token %}
-        <div class="flex space-x-2 pb-1">
-            <label>{% trans "Default Records Per Page" %}</label>
-            <span class="oh-info mr-2" title='{% trans "Default pagination for all views." %}'> </span>
-        </div>
-        <p class="text-xs text-gray-500 mt-1 pb-2">
-            {% trans "Number of records shown per page across all list views." %}
-        </p>
-        <div class="flex gap-2">
-            <input
-                type="number"
-                name="pagination"
-                placeholder="{% trans 'Pagination' %}"
-                value="{{pagination_form.instance.pagination}}"
-                required=""
-                id="id_pagination"
-            >
+    {% for setting in pagination_settings %}
+        <form
+            hx-post="{% url 'pagination-settings-view' %}"
+            hx-swap="none"
+            hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 100);"
+        >
+            {% csrf_token %}
+            <input type="hidden" name="setting_id" value="{{ setting.id }}">
+            <div class="flex space-x-2 pb-1">
+                <label>
+                    {% trans "Default Records Per Page" %}
+                    {% if show_pagination_company %}
+                        <span class="text-xs text-gray-400">({{ setting.company_col }})</span>
+                    {% endif %}
+                </label>
+                <span class="oh-info mr-2" title='{% trans "Default pagination for all views." %}'> </span>
+            </div>
+            <p class="text-xs text-gray-500 mt-1 pb-2">
+                {% trans "Number of records shown per page across all list views." %}
+            </p>
+            <div class="flex gap-2">
+                <input
+                    type="number"
+                    name="pagination"
+                    placeholder="{% trans 'Pagination' %}"
+                    value="{{ setting.pagination }}"
+                    required=""
+                    id="id_pagination_{{ setting.id }}"
+                >
 
-            <button class="btn" type="submit">{% trans "Save" %}</button>
-        </div>
-    </form>
+                <button class="btn" type="submit">{% trans "Save" %}</button>
+            </div>
+        </form>
+    {% endfor %}
 </div>

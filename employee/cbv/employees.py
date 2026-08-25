@@ -117,6 +117,20 @@ class EmployeesList(HorillaListView):
     model = Employee
     filter_class = EmployeeFilter
     view_id = "view-container"
+    # Mirrors EmployeeNav.nested_group_by_fields below -- needed here too
+    # since this (List) and EmployeeNav are separate classes, and the
+    # inline "add/change field" dropdowns in the "Grouped by" breadcrumb
+    # (nested_group_by_table.html, rendered by this List view) need the
+    # full set of available fields, not just whichever ones are active.
+    nested_group_by_fields = [
+        ("employee_work_info__department_id", _("Department")),
+        ("employee_work_info__job_position_id", _("Job Position")),
+        ("employee_work_info__job_role_id", _("Job Role")),
+        ("employee_work_info__shift_id", _("Shift")),
+        ("employee_work_info__work_type_id", _("Work Type")),
+        ("employee_work_info__reporting_manager_id", _("Reporting Manager")),
+        ("employee_work_info__company_id", _("Company")),
+    ]
     # The "Actions" dropdown already has an Export entry that exports the
     # selected employees (falling back to the full filtered list when nothing
     # is selected), so this standalone quick-action button would just be a
@@ -642,6 +656,15 @@ class EmployeeNav(HorillaNavView):
         ("employee_work_info__shift_id", _("Shift")),
         ("employee_work_info__work_type_id", _("Work Type")),
         ("employee_work_info__job_role_id", _("Job Role")),
+        ("employee_work_info__reporting_manager_id", _("Reporting Manager")),
+        ("employee_work_info__company_id", _("Company")),
+    ]
+    nested_group_by_fields = [
+        ("employee_work_info__department_id", _("Department")),
+        ("employee_work_info__job_position_id", _("Job Position")),
+        ("employee_work_info__job_role_id", _("Job Role")),
+        ("employee_work_info__shift_id", _("Shift")),
+        ("employee_work_info__work_type_id", _("Work Type")),
         ("employee_work_info__reporting_manager_id", _("Reporting Manager")),
         ("employee_work_info__company_id", _("Company")),
     ]
