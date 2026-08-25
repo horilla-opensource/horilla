@@ -371,9 +371,15 @@ class OffboardingPipelineNav(HorillaNavView):
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
-        context["employee_filter"] = PipelineEmployeeFilter()
-        context["pipeline_filter"] = PipelineFilter()
-        context["stage_filter"] = PipelineStageFilter()
+        # Bound to self.request.GET: this form's own hx-trigger="load"
+        # auto-submits it on every load (see horilla_nav.html), serializing
+        # its current field values as the query string. Left unbound, every
+        # field (including "Stage > Status") always renders blank, so that
+        # auto-submit silently wipes out any filter (e.g. ?type=archived)
+        # that arrived via a deep link before the page ever settles.
+        context["employee_filter"] = PipelineEmployeeFilter(self.request.GET)
+        context["pipeline_filter"] = PipelineFilter(self.request.GET)
+        context["stage_filter"] = PipelineStageFilter(self.request.GET)
 
         return context
 

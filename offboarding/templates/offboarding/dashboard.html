@@ -16,6 +16,7 @@
     .ob-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
     .ob-kpi-card { border-radius: 12px; padding: 18px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); transition: all 0.2s; text-decoration: none; color: inherit; display: block; }
     .ob-kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); text-decoration: none; color: inherit; }
+    .ob-kpi-card--static:hover { transform: none; box-shadow: none; cursor: default; }
     .dark .ob-kpi-card { background: #242424; border-color: rgba(255,255,255,0.08); }
     .ob-kpi-card__icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
     .ob-kpi-card__icon--red { background: #fee2e2; color: var(--ob-red); } .ob-kpi-card__icon--amber { background: #fef3c7; color: var(--ob-amber); }
@@ -402,13 +403,13 @@
                     <div class="ob-kpi-card__value">${data.pending_resignations}</div>
                     <div class="ob-kpi-card__sub">${data.approved_resignations > 0 ? '<span class="ob-badge ob-badge--green">' + data.approved_resignations + ' {% trans "approved" %}</span>' : '{% trans "Pending review" %}'}</div>
                 </a>
-                <a href="{% url 'offboarding-pipeline' %}" class="ob-kpi-card">
+                <div class="ob-kpi-card ob-kpi-card--static" title="${'Task Completion = Completed Tasks (' + data.completed_tasks + ') / Total Tasks (' + data.total_tasks + ') × 100 = ' + data.task_completion + '%'}">
                     <div class="ob-kpi-card__icon ob-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
                     <div class="ob-kpi-card__label">{% trans "Task Completion" %}</div>
                     <div class="ob-kpi-card__value">${data.task_completion}%</div>
                     <div class="ob-kpi-card__sub">${data.completed_tasks}/${data.total_tasks} {% trans "tasks done" %}</div>
-                </a>
-                <a href="{% url 'offboarding-pipeline' %}?stage_type=archived" class="ob-kpi-card">
+                </div>
+                <a href="{% url 'offboarding-pipeline' %}?type=archived" class="ob-kpi-card">
                     <div class="ob-kpi-card__icon ob-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
                     <div class="ob-kpi-card__label">{% trans "Archived" %}</div>
                     <div class="ob-kpi-card__value">${data.archived}</div>
