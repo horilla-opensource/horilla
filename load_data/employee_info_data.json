@@ -1099,7 +1099,7 @@
       "emergency_contact": null,
       "emergency_contact_name": null,
       "emergency_contact_relation": null,
-      "is_active": true,
+      "is_active": false,
       "additional_info": null,
       "is_from_onboarding": false,
       "is_directly_converted": false
@@ -1657,7 +1657,7 @@
       "emergency_contact": null,
       "emergency_contact_name": null,
       "emergency_contact_relation": null,
-      "is_active": true,
+      "is_active": false,
       "additional_info": null,
       "is_from_onboarding": false,
       "is_directly_converted": false

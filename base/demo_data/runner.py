@@ -18,6 +18,7 @@ from base.demo_data.modules.attendance_trend import (
     backfill_attendance_activities,
     backfill_attendance_overtime,
     backfill_attendance_spread,
+    backfill_pending_validation_today,
     backfill_zero_coverage_attendance,
     reconcile_attendance_with_leave,
 )
@@ -109,7 +110,7 @@ def run_enterprise_demo_seeder(
     result["leave_zero_coverage_backfill"] = backfill_zero_coverage_available_leave(
         today
     )
-    employee_lifecycle = backfill_employee_lifecycle(today)
+    employee_lifecycle = backfill_employee_lifecycle(today, root)
     result["employee_lifecycle"] = employee_lifecycle
     result["project_backfill"] = backfill_project_trend(today)
     result["project_scenarios_reanchor"] = reanchor_project_scenarios(today)
@@ -129,6 +130,12 @@ def run_enterprise_demo_seeder(
     result["helpdesk_backfill"] = backfill_helpdesk_tickets(today)
     result["helpdesk_scenarios_reanchor"] = reanchor_helpdesk_scenarios(today)
 
+    # Assign SalaryStructure/FilingStatus to a handful of contracts per
+    # company *before* creating any new demo payslips below, so a
+    # newly-backfilled payslip is never computed against a contract whose
+    # tax/salary-structure FKs are still unset.
+    result["payroll_feature_coverage"] = backfill_payroll_feature_coverage(today)
+
     # Depends on Contract (fixtures, already loaded) and Attendance (just
     # backfilled above) for its per-employee day-count computation.
     result["payroll_coverage_backfill"] = backfill_payroll_coverage(today)
@@ -140,14 +147,14 @@ def run_enterprise_demo_seeder(
     result["asset_company_pools"] = backfill_company_asset_pools(today)
     result["asset_reports"] = backfill_asset_reports(today)
 
-    # Fully-built features (SalaryStructure, Federal Tax, bank details,
-    # notes, roster, announcement read-receipts, multi-level approval
-    # managers) that ship with zero demo rows connecting them to anything.
-    result["payroll_feature_coverage"] = backfill_payroll_feature_coverage(today)
+    # Fully-built features (bank details, notes, roster, announcement
+    # read-receipts, multi-level approval managers) that ship with zero
+    # demo rows connecting them to anything.
     result["employee_feature_coverage"] = backfill_employee_feature_coverage(today)
     result["request_windows"] = backfill_request_windows(today)
     result["attendance_leave_reconcile"] = reconcile_attendance_with_leave(today)
     result["attendance_activities"] = backfill_attendance_activities(today)
+    result["attendance_pending_validation"] = backfill_pending_validation_today(today)
 
     # System ReportTemplate rows (Explorer's pre-built pivot layouts) aren't
     # part of any load_data/*.json fixture, so a --flush reload wipes them

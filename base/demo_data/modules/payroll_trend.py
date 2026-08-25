@@ -23,10 +23,17 @@ from datetime import date
 
 from django.apps import apps
 from django.db import transaction
+from django.db.models import Q
 
 logger = logging.getLogger(__name__)
 
 DEMO_PAYROLL_GROUP_PREFIX = "Demo Payroll M-"
+# base/views.py's normalize_demo_payslips() renames this prefix to
+# "Demo Payroll - <Mon Year>" for a human-readable label, every load -- the
+# "already paid" check below must recognize both forms, or a payslip that's
+# already been through that rename becomes invisible to this check and a
+# brand-new cohort gets backfilled on top of it every reload.
+DEMO_PAYROLL_RENAMED_PREFIX = "Demo Payroll - "
 TRAILING_MONTHS = 6
 TARGET_PAID_PER_COMPANY = 12
 
@@ -57,7 +64,10 @@ def backfill_payroll_coverage(today: date | None = None) -> int:
 
     already_paid_by_company: dict[int, set[int]] = {}
     paid_employee_ids = (
-        Payslip._base_manager.filter(group_name__startswith=DEMO_PAYROLL_GROUP_PREFIX)
+        Payslip._base_manager.filter(
+            Q(group_name__startswith=DEMO_PAYROLL_GROUP_PREFIX)
+            | Q(group_name__startswith=DEMO_PAYROLL_RENAMED_PREFIX)
+        )
         .values_list("employee_id", flat=True)
         .distinct()
     )

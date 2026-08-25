@@ -206,18 +206,26 @@ def backfill_pms_coverage(today: date | None = None) -> int:
         .values_list("id", flat=True)
     )
 
-    candidates_by_company: dict[int, list[int]] = defaultdict(list)
+    # Target is a fraction of each company's *total* headcount, not of
+    # whatever's currently uncovered -- computing it from the shrinking
+    # uncovered pool would make every additional non-flush reload add ~15%
+    # of whatever's left, converging toward full coverage instead of
+    # holding steady near the intended ratio.
+    all_ids_by_company: dict[int, list[int]] = defaultdict(list)
     for employee_id in active_ids:
-        if employee_id in covered_ids:
-            continue
         company_id = company_by_employee.get(employee_id)
         if company_id:
-            candidates_by_company[company_id].append(employee_id)
+            all_ids_by_company[company_id].append(employee_id)
 
     created = 0
-    for candidate_ids in candidates_by_company.values():
-        target = max(1, int(len(candidate_ids) * NEW_COVERAGE_RATE))
-        for employee_id in candidate_ids[:target]:
+    for company_id, all_ids in all_ids_by_company.items():
+        target = max(1, int(len(all_ids) * NEW_COVERAGE_RATE))
+        currently_covered = sum(1 for e in all_ids if e in covered_ids)
+        need = target - currently_covered
+        if need <= 0:
+            continue
+        candidate_ids = [e for e in all_ids if e not in covered_ids][:need]
+        for employee_id in candidate_ids:
             objective_id = objective_ids[created % len(objective_ids)]
             EmployeeObjective._base_manager.get_or_create(
                 employee_id_id=employee_id,
@@ -234,6 +242,6 @@ def backfill_pms_coverage(today: date | None = None) -> int:
     logger.info(
         "PMS backfill: created %s EmployeeObjective assignment(s) across %s compan(ies)",
         created,
-        len(candidates_by_company),
+        len(all_ids_by_company),
     )
     return created

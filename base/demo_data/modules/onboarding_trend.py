@@ -36,7 +36,12 @@ def backfill_onboarding_pipeline(today: date | None = None) -> int:
     today = today or date.today()
     window_start = today - timedelta(days=TRAILING_DAYS)
 
-    from onboarding.models import CandidateStage, OnboardingStage
+    from onboarding.models import (
+        CandidateStage,
+        CandidateTask,
+        OnboardingStage,
+        OnboardingTask,
+    )
     from recruitment.models import Candidate
 
     final_stage = OnboardingStage._base_manager.filter(
@@ -72,6 +77,16 @@ def backfill_onboarding_pipeline(today: date | None = None) -> int:
     if not hired_ids:
         return 0
 
+    # The onboarding checklist (OnboardingTask) is a real, per-stage task
+    # board -- populate CandidateTask for every hired candidate too, so it
+    # isn't left permanently empty alongside the CandidateStage progress
+    # this function already tracks.
+    tasks = list(
+        OnboardingTask._base_manager.filter(stage_id__recruitment_id=RECRUITMENT_ID)
+        .select_related("stage_id")
+        .order_by("stage_id__sequence")
+    )
+
     count = len(hired_ids)
     processed = 0
     for i, candidate_id in enumerate(hired_ids):
@@ -95,6 +110,25 @@ def backfill_onboarding_pipeline(today: date | None = None) -> int:
             onboarding_stage_id_id=target_stage.pk,
             onboarding_end_date=completion_date,
         )
+
+        current_sequence = target_stage.sequence
+        for task in tasks:
+            if task.stage_id.sequence < current_sequence:
+                status = "done"
+            elif task.stage_id.sequence == current_sequence:
+                status = "ongoing" if in_progress else "done"
+            else:
+                status = "todo"
+            task.candidates.add(candidate_id)
+            candidate_task, _ = CandidateTask._base_manager.get_or_create(
+                candidate_id_id=candidate_id,
+                onboarding_task_id_id=task.pk,
+                defaults={"stage_id_id": task.stage_id_id, "status": status},
+            )
+            CandidateTask._base_manager.filter(pk=candidate_task.pk).update(
+                stage_id_id=task.stage_id_id, status=status
+            )
+
         processed += 1
 
     logger.info(

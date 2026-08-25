@@ -103,5 +103,90 @@
         "is_final_stage": true,
         "employee_id": [13]
       }
+    },
+    {
+      "model": "onboarding.onboardingtask",
+      "pk": 1,
+      "fields": {
+        "created_at": "2025-07-15T05:00:00.000Z",
+        "created_by": 1,
+        "modified_by": 1,
+        "is_active": true,
+        "task_title": "Complete Employment Paperwork",
+        "stage_id": 1,
+        "candidates": [],
+        "employee_id": [
+          1
+        ],
+        "is_required": true
+      }
+    },
+    {
+      "model": "onboarding.onboardingtask",
+      "pk": 2,
+      "fields": {
+        "created_at": "2025-07-15T05:05:00.000Z",
+        "created_by": 1,
+        "modified_by": 1,
+        "is_active": true,
+        "task_title": "Attend Orientation Session",
+        "stage_id": 4,
+        "candidates": [],
+        "employee_id": [
+          1
+        ],
+        "is_required": true
+      }
+    },
+    {
+      "model": "onboarding.onboardingtask",
+      "pk": 3,
+      "fields": {
+        "created_at": "2025-07-15T05:10:00.000Z",
+        "created_by": 1,
+        "modified_by": 1,
+        "is_active": true,
+        "task_title": "Set Up Laptop and Accounts",
+        "stage_id": 5,
+        "candidates": [],
+        "employee_id": [
+          1
+        ],
+        "is_required": true
+      }
+    },
+    {
+      "model": "onboarding.onboardingtask",
+      "pk": 4,
+      "fields": {
+        "created_at": "2025-07-15T05:15:00.000Z",
+        "created_by": 1,
+        "modified_by": 1,
+        "is_active": true,
+        "task_title": "Complete Onboarding Training Modules",
+        "stage_id": 6,
+        "candidates": [],
+        "employee_id": [
+          1
+        ],
+        "is_required": true
+      }
+    },
+    {
+      "model": "onboarding.onboardingtask",
+      "pk": 5,
+      "fields": {
+        "created_at": "2025-07-15T05:20:00.000Z",
+        "created_by": 1,
+        "modified_by": 1,
+        "is_active": true,
+        "task_title": "Submit First Assignment",
+        "stage_id": 7,
+        "candidates": [],
+        "employee_id": [
+          1
+        ],
+        "is_required": false
+      }
     }
   ]

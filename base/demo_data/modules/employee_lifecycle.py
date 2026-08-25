@@ -15,10 +15,13 @@ so this never "re-hires" someone the offboarding pipeline shows as archived.
 
 from __future__ import annotations
 
+import json
 import logging
 from datetime import date, timedelta
+from pathlib import Path
 
 from django.apps import apps
+from django.conf import settings
 from django.db import transaction
 
 logger = logging.getLogger(__name__)
@@ -43,8 +46,39 @@ _PROTECTED_EMAILS = {
 }
 
 
+def _static_offboarding_employee_ids(load_dir: Path | None = None) -> set[int]:
+    """Employee ids the *static* offboarding fixture already marks departed.
+
+    Read directly from load_data/offboarding_data.json rather than querying
+    OffboardingEmployee/ResignationLetter in the DB -- those tables also
+    accumulate rows this same seeder creates on every run (offboarding_trend,
+    offboarding_expansion), so live-querying them would make the exclusion
+    set grow indefinitely and shift which employees land in hire_ids/
+    exit_ids on every reload. The static fixture file never changes, so this
+    set is always the same.
+    """
+    load_dir = load_dir or Path(settings.BASE_DIR) / "load_data"
+    path = load_dir / "offboarding_data.json"
+    if not path.exists():
+        return set()
+    with open(path) as f:
+        rows = json.load(f)
+    ids: set[int] = set()
+    for row in rows:
+        if row.get("model") in (
+            "offboarding.offboardingemployee",
+            "offboarding.resignationletter",
+        ):
+            emp_id = row.get("fields", {}).get("employee_id")
+            if emp_id is not None:
+                ids.add(emp_id)
+    return ids
+
+
 @transaction.atomic
-def backfill_employee_lifecycle(today: date | None = None) -> dict:
+def backfill_employee_lifecycle(
+    today: date | None = None, load_dir: Path | None = None
+) -> dict:
     """
     Move a deterministic set of employees' date_joining into the trailing
     6 months (new hires), and a separate set's contract_end_date + is_active
@@ -68,18 +102,11 @@ def backfill_employee_lifecycle(today: date | None = None) -> dict:
         employee_user_id__is_superuser=True
     )
     # The static offboarding fixture already tells a complete departure
-    # story for a fixed set of employees (OffboardingEmployee/
-    # ResignationLetter). Picking one of them as a "new hire" here
-    # contradicts that story every run -- e.g. re-hiring someone the
+    # story for a fixed set of employees. Picking one of them as a "new
+    # hire" here contradicts that story -- e.g. re-hiring someone the
     # fixture shows sitting in an Archived offboarding stage.
     if apps.is_installed("offboarding"):
-        from offboarding.models import OffboardingEmployee, ResignationLetter
-
-        offboarding_employee_ids = set(
-            OffboardingEmployee._base_manager.values_list("employee_id_id", flat=True)
-        ) | set(
-            ResignationLetter._base_manager.values_list("employee_id_id", flat=True)
-        )
+        offboarding_employee_ids = _static_offboarding_employee_ids(load_dir)
         if offboarding_employee_ids:
             safe_qs = safe_qs.exclude(pk__in=offboarding_employee_ids)
     # The turnover/joining dashboards are company-scoped by session, and a

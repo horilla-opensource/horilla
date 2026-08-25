@@ -1,5 +1,6 @@
 import os
 import tempfile
+import traceback
 from pathlib import Path
 
 from django.conf import settings
@@ -96,17 +97,29 @@ class Command(BaseCommand):
                 if tmp and os.path.exists(tmp):
                     os.remove(tmp)
 
-        seed_result = run_enterprise_demo_seeder(
-            load_dir=load_dir, copy_media=False, scrub_side_files=True
-        )
-        self.stdout.write(
-            self.style.SUCCESS(
-                "  Enterprise seeder applied: "
-                f"companies={seed_result.get('companies', 0)}, "
-                f"announcements={seed_result.get('announcements', 0)}, "
-                f"org={seed_result.get('org', {})}."
+        try:
+            seed_result = run_enterprise_demo_seeder(
+                load_dir=load_dir, copy_media=False, scrub_side_files=True
             )
-        )
+            self.stdout.write(
+                self.style.SUCCESS(
+                    "  Enterprise seeder applied: "
+                    f"companies={seed_result.get('companies', 0)}, "
+                    f"announcements={seed_result.get('announcements', 0)}, "
+                    f"org={seed_result.get('org', {})}."
+                )
+            )
+        except Exception:
+            # The seeder is one long sequence of ~25 steps -- without this,
+            # an exception from any one of them would crash the whole
+            # command before normalize_demo_payslips()/assign_demo_user_groups()
+            # below ever run. Mirrors the web-UI reload path's same
+            # warn-and-continue behavior (base/views.py's load_demo_database)
+            # instead of leaving the two entry points asymmetric.
+            self.stderr.write(
+                self.style.ERROR("  Enterprise demo seeder failed partway through:")
+            )
+            self.stderr.write(self.style.ERROR(traceback.format_exc()))
 
         normalized = normalize_demo_payslips()
         if normalized:

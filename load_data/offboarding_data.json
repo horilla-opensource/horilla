@@ -268,22 +268,6 @@
   },
   {
     "model": "offboarding.offboardingemployee",
-    "pk": 11,
-    "fields": {
-      "created_at": "2025-06-12T10:00:00.000Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "employee_id": 5,
-      "stage_id": 18,
-      "notice_period": 30,
-      "unit": "day",
-      "notice_period_starts": "2025-05-10",
-      "notice_period_ends": "2025-06-25"
-    }
-  },
-  {
-    "model": "offboarding.offboardingemployee",
     "pk": 12,
     "fields": {
       "created_at": "2025-07-08T14:00:00.000Z",
@@ -725,34 +709,6 @@
   },
   {
     "model": "offboarding.employeetask",
-    "pk": 5,
-    "fields": {
-      "created_at": "2025-07-01T06:00:00.000Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "employee_id": 5,
-      "status": "completed",
-      "task_id": 2,
-      "description": null
-    }
-  },
-  {
-    "model": "offboarding.employeetask",
-    "pk": 6,
-    "fields": {
-      "created_at": "2025-07-01T06:05:00.000Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "employee_id": 5,
-      "status": "stuck",
-      "task_id": 3,
-      "description": null
-    }
-  },
-  {
-    "model": "offboarding.employeetask",
     "pk": 7,
     "fields": {
       "created_at": "2025-06-28T10:30:00.000Z",
@@ -935,20 +891,6 @@
   },
   {
     "model": "offboarding.exitreason",
-    "pk": 3,
-    "fields": {
-      "created_at": "2025-06-25T10:00:00.000Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "title": "Career change",
-      "description": "Switching to a different industry.",
-      "offboarding_employee_id": 11,
-      "attachments": []
-    }
-  },
-  {
-    "model": "offboarding.exitreason",
     "pk": 4,
     "fields": {
       "created_at": "2025-07-02T10:00:00.000Z",
@@ -1013,6 +955,66 @@
       "is_active": true,
       "resignation_request": true,
       "company_id": null
+    }
+  },
+  {
+    "model": "offboarding.offboardingnote",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-06-15T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "attachments": [],
+      "description": "Initial exit interview scheduled for next week.",
+      "note_by": 1,
+      "employee_id": 1,
+      "stage_id": 13
+    }
+  },
+  {
+    "model": "offboarding.offboardingnote",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-06-20T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "attachments": [],
+      "description": "Handover documentation received and reviewed by the reporting manager.",
+      "note_by": 1,
+      "employee_id": 3,
+      "stage_id": 14
+    }
+  },
+  {
+    "model": "offboarding.offboardingnote",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-06-25T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "attachments": [],
+      "description": "IT assets (laptop, access badge) returned and confirmed.",
+      "note_by": 1,
+      "employee_id": 7,
+      "stage_id": 16
+    }
+  },
+  {
+    "model": "offboarding.offboardingnote",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-06-28T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "attachments": [],
+      "description": "Final settlement processed; full and final clearance issued.",
+      "note_by": 1,
+      "employee_id": 9,
+      "stage_id": 18
     }
   }
 ]

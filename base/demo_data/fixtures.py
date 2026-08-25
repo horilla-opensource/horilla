@@ -9,6 +9,7 @@ CORE_DEMO_FIXTURES = (
     "employee_info_data.json",
     "base_data.json",
     "work_info_data.json",
+    "mail_log_data.json",
 )
 
 OPTIONAL_DEMO_FIXTURES = (

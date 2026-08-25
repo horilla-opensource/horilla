@@ -19,6 +19,18 @@ def attendance_post_save(sender, instance, **kwargs):
     """
     Handle post-save actions for Attendance model.
     """
+    if kwargs.get("raw"):
+        # Fixture loading (loaddata) already ships its own explicit
+        # WorkRecords row for every Attendance row, computed the same way
+        # this signal would compute it. Running this anyway shadow-creates
+        # a second WorkRecords row (auto-assigned pk) for the same
+        # (employee, date) *before* the fixture's own explicit row gets
+        # inserted, which then collides on the (employee_id, date) unique
+        # constraint -- masked on a full --flush (pk sequences reset, so
+        # the auto-assigned pk often coincidentally matches the fixture's),
+        # but a guaranteed collision on any subsequent non-flush reload
+        # once the sequence has advanced.
+        return
     min_hour_second = strtime_seconds(instance.minimum_hour)
     at_work_second = strtime_seconds(instance.attendance_worked_hour)
 

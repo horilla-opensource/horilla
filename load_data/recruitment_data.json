@@ -1265,5 +1265,148 @@
       ],
       "job_position_ids": []
     }
+  },
+  {
+    "model": "recruitment.recruitmentsurveyanswer",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-16T09:00:00.000Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "candidate_id": 1,
+      "recruitment_id": 1,
+      "job_position_id": 1,
+      "answer_json": "{\"What is Python, and what are its key features?\": [\"A high-level, interpreted language known for readability, dynamic typing, and a large standard library.\"], \"Have you worked with an ORM framework before?\": [\"yes\"], \"How many years of professional software development experience do you have?\": [\"4\"]}"
+    }
+  },
+  {
+    "model": "recruitment.recruitmentsurveyanswer",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-17T09:00:00.000Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "candidate_id": 7,
+      "recruitment_id": 1,
+      "job_position_id": 1,
+      "answer_json": "{\"What is the difference between a list and a tuple?\": [\"Lists are mutable and tuples are immutable; tuples are generally faster and hashable.\"], \"Which application modules have you worked on the most?\": [\"Human Resources\"], \"Estimate your proficiency with Python (0-100%).\": [\"85\"]}"
+    }
+  },
+  {
+    "model": "recruitment.stagenote",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "candidate_id": 1,
+      "description": "Strong technical interview -- moving to the final stage for offer discussion.",
+      "stage_id": 5,
+      "stage_files": [],
+      "updated_by": 1,
+      "candidate_can_view": false
+    }
+  },
+  {
+    "model": "recruitment.stagenote",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "candidate_id": 7,
+      "description": "Reference checks completed, all positive. Scheduling the next round.",
+      "stage_id": 4,
+      "stage_files": [],
+      "updated_by": 1,
+      "candidate_can_view": false
+    }
+  },
+  {
+    "model": "recruitment.stagenote",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "candidate_id": 8,
+      "description": "Portfolio review went well; technical assessment scheduled for next week.",
+      "stage_id": 5,
+      "stage_files": [],
+      "updated_by": 1,
+      "candidate_can_view": false
+    }
+  },
+  {
+    "model": "recruitment.candidatedocumentrequest",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-10T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Government ID Proof",
+      "candidate_id": [
+        1,
+        7,
+        8
+      ],
+      "format": "pdf",
+      "max_size": 5,
+      "description": "Upload a valid government-issued ID for verification."
+    }
+  },
+  {
+    "model": "recruitment.candidatedocument",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Government ID Proof",
+      "candidate_id": 1,
+      "document_request_id": 1,
+      "document": null,
+      "status": "requested",
+      "reject_reason": ""
+    }
+  },
+  {
+    "model": "recruitment.candidatedocument",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Government ID Proof",
+      "candidate_id": 7,
+      "document_request_id": 1,
+      "document": null,
+      "status": "approved",
+      "reject_reason": ""
+    }
+  },
+  {
+    "model": "recruitment.candidatedocument",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-07-19T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Government ID Proof",
+      "candidate_id": 8,
+      "document_request_id": 1,
+      "document": null,
+      "status": "requested",
+      "reject_reason": ""
+    }
   }
 ]

@@ -244,9 +244,13 @@ def backfill_attendance_overtime(today: date | None = None) -> int:
     spread above moves every Attendance row out of the fixture's original
     months, those methods permanently return 0 for every OT row, and the
     Hour Account / OT-approval screens render empty despite having rows.
-    Old bucket years are always the fixture's fixed authored year (never
-    the real current year), so mapping them onto the real trailing months
-    can't collide with an unprocessed old bucket mid-loop.
+    Moves are done per-row rather than bucket-wide: `Attendance.save()`
+    itself maintains a live AttendanceOverTime row for whichever (employee,
+    month, year) its own attendance_date falls in, so an employee can
+    already legitimately own a row in a target bucket before this runs
+    (e.g. via backfill_zero_coverage_attendance's newly-created rows). When
+    that happens the live row wins and the stale fixture-authored one is
+    dropped, instead of the two colliding on the unique constraint.
     """
     if not apps.is_installed("attendance"):
         return 0
@@ -269,8 +273,21 @@ def backfill_attendance_overtime(today: date | None = None) -> int:
         if (old_month, old_year) == (new_month, new_year):
             continue
         rows = AttendanceOverTime._base_manager.filter(month=old_month, year=old_year)
-        count = rows.count()
-        rows.update(
+        occupied_employee_ids = set(
+            AttendanceOverTime._base_manager.filter(
+                month=new_month, year=new_year
+            ).values_list("employee_id", flat=True)
+        )
+        blocked_ids = [
+            row["id"]
+            for row in rows.values("id", "employee_id")
+            if row["employee_id"] in occupied_employee_ids
+        ]
+        if blocked_ids:
+            AttendanceOverTime._base_manager.filter(pk__in=blocked_ids).delete()
+        movable = rows.exclude(pk__in=blocked_ids)
+        count = movable.count()
+        movable.update(
             month=new_month,
             year=new_year,
             month_sequence=MONTH_NAMES.index(new_month),
@@ -485,3 +502,48 @@ def backfill_attendance_activities(today: date | None = None) -> int:
 
     logger.info("Attendance activity backfill: created %s row(s)", created)
     return created
+
+
+# A real same-day check-in starts attendance_validated=False (the model's
+# own default) until a manager works through the validation queue -- but
+# every demo Attendance row, fixture-shipped or seeder-created alike, ships
+# pre-validated. Left alone, the Attendance dashboard's own "Present Today"
+# KPI (deliberately attendance_validated=False, since it links to the
+# "Attendance To Validate" tab) permanently reads 0 in the demo. This marks
+# a realistic backlog, not the whole day's roster, as still pending.
+PENDING_VALIDATION_TODAY_RATE = 0.15
+
+
+@transaction.atomic
+def backfill_pending_validation_today(today: date | None = None) -> int:
+    """Mark a realistic fraction of today's Attendance rows as not yet
+    validated, so the Attendance dashboard's validation-queue KPI has
+    something to show."""
+    if not apps.is_installed("attendance"):
+        return 0
+
+    today = today or date.today()
+
+    from attendance.models import Attendance
+
+    today_ids = list(
+        Attendance._base_manager.filter(
+            attendance_date=today, employee_id__is_active=True
+        )
+        .order_by("employee_id")
+        .values_list("id", flat=True)
+    )
+    if not today_ids:
+        return 0
+
+    target = max(1, int(len(today_ids) * PENDING_VALIDATION_TODAY_RATE))
+    updated = Attendance._base_manager.filter(pk__in=today_ids[:target]).update(
+        attendance_validated=False
+    )
+
+    logger.info(
+        "Attendance backfill: marked %s of %s today's attendance row(s) as pending validation",
+        updated,
+        len(today_ids),
+    )
+    return updated

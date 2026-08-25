@@ -4,7 +4,7 @@ Modern recruitment dashboard views — KPI summary + ApexCharts.
 Accessible at /recruitment/dashboard/modern/ alongside the existing dashboard.
 """
 
-from datetime import date
+from datetime import date, timedelta
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
@@ -43,6 +43,23 @@ def _parse_period(request):
     except (ValueError, TypeError):
         to_date = today
     return from_date, to_date
+
+
+def _upcoming_interview_period(request):
+    """Like _parse_period, but defaults to a forward-looking window.
+
+    This widget shows *upcoming* interviews -- _parse_period's generic
+    [month-start, today] default (built for the dashboard's other,
+    backward-looking widgets) can never show anything scheduled in the
+    future, even though interviews are deliberately scheduled ahead. Only
+    applies when neither from_date nor to_date was explicitly requested, so
+    an actual date-range-picker selection is still honored exactly as
+    before.
+    """
+    if not request.GET.get("from_date") and not request.GET.get("to_date"):
+        today = date.today()
+        return today, today + timedelta(days=30)
+    return _parse_period(request)
 
 
 def _candidates_in_period(request):
@@ -357,7 +374,7 @@ def recruitment_upcoming_interviews(request):
         return JsonResponse({"no_permission": True})
     from recruitment.models import InterviewSchedule
 
-    from_date, to_date = _parse_period(request)
+    from_date, to_date = _upcoming_interview_period(request)
     today = date.today()
     interviews = []
 

@@ -9,7 +9,7 @@ PRESENT_TODAY_RATE = 87  # employee_id % 100 < this → checked in today
 
 # Last attendance_date in load_data/attendance_data.json. Every fixture date
 # in 2020–2030 shifts so this day becomes the load day.
-FIXTURE_AS_OF = date(2025, 8, 1)
+FIXTURE_AS_OF = date(2025, 7, 31)
 _SHIFT_MIN = date(2020, 1, 1)
 _SHIFT_MAX = date(2030, 12, 31)
 _DATE_RE = re.compile(r"(?<!\d)(\d{4}-\d{2}-\d{2})(?!\d)")

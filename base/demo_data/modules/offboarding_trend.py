@@ -70,13 +70,16 @@ def backfill_offboarding_letters(
         )
 
         if archived_stage:
-            OffboardingEmployee._base_manager.get_or_create(
+            offboarding_employee, _ = OffboardingEmployee._base_manager.get_or_create(
                 employee_id_id=employee_id,
                 defaults={
                     "stage_id_id": archived_stage.pk,
                     "notice_period_starts": planned,
                     "notice_period_ends": planned,
                 },
+            )
+            OffboardingEmployee._base_manager.filter(pk=offboarding_employee.pk).update(
+                notice_period_starts=planned, notice_period_ends=planned
             )
 
         created_or_updated += 1

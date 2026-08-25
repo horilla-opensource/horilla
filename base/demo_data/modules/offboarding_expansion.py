@@ -49,6 +49,11 @@ def backfill_company_offboarding_pipelines(today: date | None = None) -> int:
         ResignationLetter,
     )
 
+    # Excludes rows this same function created on a PRIOR run too -- used only
+    # to keep this company's picks disjoint from other seeder modules' exits,
+    # never to decide whether to add more (that's bounded against this
+    # company's own archived-stage headcount below instead, so repeated
+    # non-flush reloads can't keep manufacturing new exits indefinitely).
     already_offboarding_ids = set(
         OffboardingEmployee._base_manager.values_list("employee_id_id", flat=True)
     ) | set(ResignationLetter._base_manager.values_list("employee_id_id", flat=True))
@@ -68,22 +73,34 @@ def backfill_company_offboarding_pipelines(today: date | None = None) -> int:
         if not archived_stage:
             continue
 
-        candidate_ids = list(
+        # Employees this function already exited for this company on a prior
+        # run -- refresh these instead of always picking `exit_count` new
+        # people every reload.
+        existing_ids = list(
+            OffboardingEmployee._base_manager.filter(stage_id=archived_stage)
+            .order_by("employee_id_id")
+            .values_list("employee_id_id", flat=True)
+        )
+        needed = max(0, exit_count - len(existing_ids))
+        new_ids = list(
             Employee._base_manager.filter(is_active=True)
             .exclude(email__in=_PROTECTED_EMAILS)
             .exclude(employee_user_id__is_superuser=True)
             .exclude(pk__in=already_offboarding_ids)
             .filter(employee_work_info__company_id=company_id)
             .order_by("id")
-            .values_list("id", flat=True)[:exit_count]
+            .values_list("id", flat=True)[:needed]
         )
+        for employee_id in new_ids:
+            Employee._base_manager.filter(pk=employee_id).update(is_active=False)
 
-        for i, employee_id in enumerate(candidate_ids):
+        employee_ids = existing_ids + new_ids
+
+        for i, employee_id in enumerate(employee_ids):
             planned = today - timedelta(days=30 * (i + 1))
             EmployeeWorkInformation._base_manager.filter(
                 employee_id=employee_id
             ).update(contract_end_date=planned)
-            Employee._base_manager.filter(pk=employee_id).update(is_active=False)
 
             letter, _ = ResignationLetter._base_manager.get_or_create(
                 employee_id_id=employee_id,
@@ -94,6 +111,9 @@ def backfill_company_offboarding_pipelines(today: date | None = None) -> int:
                     "status": "approved",
                 },
             )
+            ResignationLetter._base_manager.filter(pk=letter.pk).update(
+                planned_to_leave_on=planned, status="approved"
+            )
             offboarding_employee, _ = OffboardingEmployee._base_manager.get_or_create(
                 employee_id_id=employee_id,
                 defaults={
@@ -101,6 +121,9 @@ def backfill_company_offboarding_pipelines(today: date | None = None) -> int:
                     "notice_period_starts": planned,
                     "notice_period_ends": planned,
                 },
+            )
+            OffboardingEmployee._base_manager.filter(pk=offboarding_employee.pk).update(
+                notice_period_starts=planned, notice_period_ends=planned
             )
             ExitReason._base_manager.get_or_create(
                 offboarding_employee_id=offboarding_employee,

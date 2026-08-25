@@ -6907,7 +6907,9 @@
       "return_condition": "good condition",
       "return_status": "Healthy",
       "return_request": false,
-      "return_images": [],
+      "return_images": [
+        3
+      ],
       "assign_images": [],
       "asset_item_id": 64
     }
@@ -6945,11 +6947,13 @@
       "assigned_to_employee_id": 2,
       "assigned_date": "2025-05-12",
       "assigned_by_employee_id": 1,
-      "return_date": null,
-      "return_condition": null,
-      "return_status": null,
-      "return_request": true,
-      "return_images": [],
+      "return_date": "2025-07-20",
+      "return_condition": "good condition",
+      "return_status": "Healthy",
+      "return_request": false,
+      "return_images": [
+        1
+      ],
       "assign_images": [],
       "asset_item_id": 26
     }
@@ -6966,11 +6970,13 @@
       "assigned_to_employee_id": 3,
       "assigned_date": "2025-06-01",
       "assigned_by_employee_id": 1,
-      "return_date": null,
-      "return_condition": null,
-      "return_status": null,
-      "return_request": true,
-      "return_images": [],
+      "return_date": "2025-07-22",
+      "return_condition": "minor wear",
+      "return_status": "Minor damage",
+      "return_request": false,
+      "return_images": [
+        2
+      ],
       "assign_images": [],
       "asset_item_id": 3
     }
@@ -11147,6 +11153,27 @@
       "return_images": [],
       "assign_images": [],
       "asset_item_id": 199
+    }
+  },
+  {
+    "model": "asset.returnimages",
+    "pk": 1,
+    "fields": {
+      "image": null
+    }
+  },
+  {
+    "model": "asset.returnimages",
+    "pk": 2,
+    "fields": {
+      "image": null
+    }
+  },
+  {
+    "model": "asset.returnimages",
+    "pk": 3,
+    "fields": {
+      "image": null
     }
   }
 ]

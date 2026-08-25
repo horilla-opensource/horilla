@@ -71,7 +71,7 @@ class DemoDateWindowTests(SimpleTestCase):
     def test_fixture_shift_maps_snapshot_day_to_load_day(self):
         today = date(2026, 8, 20)
         text = (
-            '{"attendance_date": "2025-08-01", "clock": "2025-07-31T18:00:00Z",'
+            '{"attendance_date": "2025-07-31", "clock": "2025-07-30T18:00:00Z",'
             ' "dob": "1968-04-12"}'
         )
         shifted = shift_fixture_dates_text(text, today)

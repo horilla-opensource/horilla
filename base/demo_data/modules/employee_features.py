@@ -18,10 +18,10 @@ from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
-BANK_DETAILS_COUNT = 10
-NOTES_COUNT = 10
+BANK_DETAILS_COUNT = 40
+NOTES_COUNT = 30
 ROSTER_DAYS = 7
-ROSTER_EMPLOYEES_PER_DEPARTMENT = 5
+ROSTER_EMPLOYEES_PER_DEPARTMENT = 8
 
 
 @transaction.atomic
@@ -42,6 +42,12 @@ def backfill_employee_feature_coverage(today: date | None = None) -> dict[str, i
 
     from employee.models import Employee, EmployeeBankDetails, EmployeeNote
 
+    # Bounded against a fixed target, not "+BANK_DETAILS_COUNT more every
+    # call" -- excluding already-covered employees without also capping
+    # how many are added would let repeated non-flush reloads keep growing
+    # coverage indefinitely instead of holding steady at the target.
+    already_covered = EmployeeBankDetails._base_manager.count()
+    need = max(0, BANK_DETAILS_COUNT - already_covered)
     employee_ids = list(
         Employee._base_manager.filter(is_active=True)
         .exclude(
@@ -50,7 +56,7 @@ def backfill_employee_feature_coverage(today: date | None = None) -> dict[str, i
             )
         )
         .order_by("id")
-        .values_list("id", flat=True)[:BANK_DETAILS_COUNT]
+        .values_list("id", flat=True)[:need]
     )
     for i, employee_id in enumerate(employee_ids):
         EmployeeBankDetails._base_manager.get_or_create(

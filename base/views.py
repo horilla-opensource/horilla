@@ -6,6 +6,7 @@ This module is used to map url pattens with django views or methods
 
 import csv
 import json
+import logging
 import mimetypes
 import os
 import threading
@@ -222,6 +223,8 @@ CHARTS = [
     ("feedback_status", _("Feedback Status")),
 ]
 
+logger = logging.getLogger(__name__)
+
 
 def custom404(request):
     """
@@ -310,6 +313,7 @@ def reset_backfilled_rows_before_reload(fname: str) -> None:
 
 
 DEMO_PAYROLL_GROUP_PREFIX = "Demo Payroll M-"
+DEMO_PAYROLL_RENAMED_PREFIX = "Demo Payroll - "
 
 
 def normalize_demo_payslips():
@@ -322,6 +326,14 @@ def normalize_demo_payslips():
     boundaries, so the period, the dates embedded in ``pay_head_data`` and the batch
     label are recomputed from that tag instead. Returns the number of payslips
     updated.
+
+    A row's group_name is renamed to ``Demo Payroll - <Mon Year>`` below for a
+    human-readable label -- but that also matches the seeder's own
+    "already covered" check in payroll_trend.py, so this must keep
+    recognizing renamed rows on every future call too (re-deriving the
+    offset from start_date instead of the now-gone "M-<n>" tag), or a
+    dynamically-created (non-fixture) backfilled payslip would only ever
+    get re-anchored once and then drift stale forever.
 
     Also runs the app's own ``expire_contract()`` scheduled task inline:
     fixture loaddata bypasses both Contract.save() and the scheduler, so a
@@ -342,13 +354,22 @@ def normalize_demo_payslips():
 
     # _base_manager skips the company scoping that would hide other companies' rows.
     payslips = Payslip._base_manager.filter(
-        group_name__startswith=DEMO_PAYROLL_GROUP_PREFIX
+        Q(group_name__startswith=DEMO_PAYROLL_GROUP_PREFIX)
+        | Q(group_name__startswith=DEMO_PAYROLL_RENAMED_PREFIX)
     )
     for payslip in payslips:
-        try:
-            offset = int(payslip.group_name.rsplit("M-", 1)[1])
-        except (IndexError, ValueError):
-            continue
+        if payslip.group_name.startswith(DEMO_PAYROLL_GROUP_PREFIX):
+            try:
+                offset = int(payslip.group_name.rsplit("M-", 1)[1])
+            except (IndexError, ValueError):
+                continue
+        else:
+            # Already renamed on a prior run -- the "M-<n>" tag is gone, so
+            # re-derive the same offset from how far start_date's month
+            # already sits from today's.
+            offset = (today.year - payslip.start_date.year) * 12 + (
+                today.month - payslip.start_date.month
+            )
 
         year, month = today.year, today.month - offset
         while month < 1:
@@ -376,7 +397,7 @@ def normalize_demo_payslips():
             start_date=start,
             end_date=end,
             pay_head_data=pay_head_data,
-            group_name=f"Demo Payroll - {start.strftime('%b %Y')}",
+            group_name=f"{DEMO_PAYROLL_RENAMED_PREFIX}{start.strftime('%b %Y')}",
             status=status,
         )
         updated += 1
@@ -441,6 +462,13 @@ def load_demo_database(request):
                         scrub_side_files=True,
                     )
                 except Exception as e:
+                    # The seeder is one long sequence of ~25 steps -- an
+                    # exception here could come from any of them, and every
+                    # step after the failing one silently never runs. Log
+                    # the full traceback so whoever reloads the demo can
+                    # actually find which step broke, instead of only ever
+                    # seeing this generic toast.
+                    logger.exception("Enterprise demo seeder failed partway through")
                     messages.warning(
                         request,
                         _("Enterprise demo seeder could not finish: %(error)s")

@@ -21,7 +21,9 @@
       "salary_hour": 0,
       "additional_info": null,
       "experience": 6.2,
-      "tags": []
+      "tags": [
+        1
+      ]
     }
   },
   {
@@ -46,7 +48,9 @@
       "salary_hour": 0,
       "additional_info": null,
       "experience": 6.4,
-      "tags": []
+      "tags": [
+        1
+      ]
     }
   },
   {
@@ -96,7 +100,9 @@
       "salary_hour": 0,
       "additional_info": null,
       "experience": 4.4,
-      "tags": []
+      "tags": [
+        2
+      ]
     }
   },
   {
@@ -146,7 +152,9 @@
       "salary_hour": 0,
       "additional_info": null,
       "experience": 5.1,
-      "tags": []
+      "tags": [
+        2
+      ]
     }
   },
   {
@@ -271,7 +279,9 @@
       "salary_hour": 0,
       "additional_info": null,
       "experience": 3.9,
-      "tags": []
+      "tags": [
+        1
+      ]
     }
   },
   {
@@ -296,7 +306,9 @@
       "salary_hour": 0,
       "additional_info": null,
       "experience": 4.1,
-      "tags": []
+      "tags": [
+        1
+      ]
     }
   },
   {
@@ -471,7 +483,9 @@
       "salary_hour": 0,
       "additional_info": null,
       "experience": 4.5,
-      "tags": []
+      "tags": [
+        2
+      ]
     }
   },
   {
@@ -921,7 +935,9 @@
       "salary_hour": 0,
       "additional_info": null,
       "experience": 4.1,
-      "tags": []
+      "tags": [
+        2
+      ]
     }
   },
   {
@@ -1671,7 +1687,9 @@
       "salary_hour": 0,
       "additional_info": null,
       "experience": 2.3,
-      "tags": []
+      "tags": [
+        2
+      ]
     }
   },
   {
@@ -1896,7 +1914,9 @@
       "salary_hour": 0,
       "additional_info": null,
       "experience": 6.1,
-      "tags": []
+      "tags": [
+        1
+      ]
     }
   },
   {
@@ -3258,7 +3278,7 @@
       "modified_by": 1,
       "is_active": true,
       "title": "Support Policy",
-      "body": "<h3 style=\"text-align: center; \"><strong>IT Support Policy</strong></h3><p><strong>Purpose:</strong><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; To provide employees with guidelines for receiving technical support.</p><p><strong>Body:</strong><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Employees encountering technical issues must submit a support ticket through the company\u00c6s IT service desk. Priority will be given to high-impact issues that affect business operations. IT support staff will resolve issues within a specified time frame based on severity. Employees are encouraged to check for common solutions in the knowledge base before requesting support. Any hardware issues with company devices should also be reported to IT for troubleshooting or replacement.</p>",
+      "body": "<h3 style=\"text-align: center; \"><strong>IT Support Policy</strong></h3><p><strong>Purpose:</strong><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; To provide employees with guidelines for receiving technical support.</p><p><strong>Body:</strong><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Employees encountering technical issues must submit a support ticket through the companyÆs IT service desk. Priority will be given to high-impact issues that affect business operations. IT support staff will resolve issues within a specified time frame based on severity. Employees are encouraged to check for common solutions in the knowledge base before requesting support. Any hardware issues with company devices should also be reported to IT for troubleshooting or replacement.</p>",
       "is_visible_to_all": true,
       "specific_employees": [],
       "attachments": [],
@@ -3318,7 +3338,7 @@
       "modified_by": 1,
       "is_active": true,
       "title": "Internet Policy",
-      "body": "<h3 style=\"text-align: center; \"><strong>Internet Usage Policy</strong></h3><p><strong>Purpose:</strong><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;To manage the appropriate use of the company\u00c6s internet and network resources.</p><p><strong>Body:</strong><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Employees are expected to use the company\u00c6s internet resources primarily for work-related activities. Access to social media, streaming services, and non-work-related websites should be limited during working hours unless part of the employee's job. Monitoring systems are in place to track internet usage, and any misuse of company bandwidth may result in restricted access. Downloading unauthorized files or software from the internet is strictly prohibited.</p>",
+      "body": "<h3 style=\"text-align: center; \"><strong>Internet Usage Policy</strong></h3><p><strong>Purpose:</strong><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;To manage the appropriate use of the companyÆs internet and network resources.</p><p><strong>Body:</strong><br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Employees are expected to use the companyÆs internet resources primarily for work-related activities. Access to social media, streaming services, and non-work-related websites should be limited during working hours unless part of the employee's job. Monitoring systems are in place to track internet usage, and any misuse of company bandwidth may result in restricted access. Downloading unauthorized files or software from the internet is strictly prohibited.</p>",
       "is_visible_to_all": true,
       "specific_employees": [],
       "attachments": [],
@@ -8373,6 +8393,46 @@
       "additional_info": null,
       "experience": 8.3,
       "tags": []
+    }
+  },
+  {
+    "model": "employee.disciplinaryaction",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-11-05T05:46:13.737Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "action": 1,
+      "description": "First Warning for repeated attendance policy violations",
+      "unit_in": "days",
+      "days": 1,
+      "hours": "00:00",
+      "start_date": "2024-11-05",
+      "attachment": "",
+      "employee_id": [
+        20
+      ]
+    }
+  },
+  {
+    "model": "employee.disciplinaryaction",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-01-14T05:46:13.737Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "action": 3,
+      "description": "One Month Suspension for a serious code-of-conduct violation",
+      "unit_in": "days",
+      "days": 30,
+      "hours": "00:00",
+      "start_date": "2025-01-14",
+      "attachment": "",
+      "employee_id": [
+        60
+      ]
     }
   }
 ]

@@ -1611,6 +1611,36 @@
     }
   },
   {
+    "model": "pms.bonuspointsetting",
+    "pk": 4,
+    "fields": {
+      "model": "pms.models.EmployeeObjective",
+      "applicable_for": "members",
+      "bonus_for": "completed",
+      "field_1": "complition_date",
+      "conditions": "<=",
+      "field_2": "end_date",
+      "points": 50,
+      "is_active": true,
+      "company_id": 2
+    }
+  },
+  {
+    "model": "pms.bonuspointsetting",
+    "pk": 5,
+    "fields": {
+      "model": "pms.models.EmployeeObjective",
+      "applicable_for": "members",
+      "bonus_for": "completed",
+      "field_1": "complition_date",
+      "conditions": "<=",
+      "field_2": "end_date",
+      "points": 50,
+      "is_active": true,
+      "company_id": 3
+    }
+  },
+  {
     "model": "pms.employeebonuspoint",
     "pk": 1,
     "fields": {
