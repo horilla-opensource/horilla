@@ -1140,7 +1140,7 @@
                 .then(r => r.json())
                 .then(data => {
                     document.getElementById('pm-kpi-grid').innerHTML = `
-                <a href="{% url 'objective-list-view' %}" class="pm-kpi-card">
+                <a href="{% url 'objective-list-view' %}?open_tab=1" class="pm-kpi-card">
                     <div class="pm-kpi-card__icon pm-kpi-card__icon--indigo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
                     <div class="pm-kpi-card__label">{% trans "Objectives" %}</div>
                     <div class="pm-kpi-card__value">${data.total_objectives}</div>
@@ -1152,7 +1152,7 @@
                     <div class="pm-kpi-card__value">${data.avg_progress}%</div>
                     <div class="pm-kpi-card__sub">${data.total_key_results} {% trans "key results" %}</div>
                 </a>
-                <a href="{% url 'objective-list-view' %}?status=At+Risk" class="pm-kpi-card">
+                <a href="{% url 'objective-list-view' %}?status=At+Risk&open_tab=1" class="pm-kpi-card">
                     <div class="pm-kpi-card__icon pm-kpi-card__icon--red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
                     <div class="pm-kpi-card__label">{% trans "At Risk" %}</div>
                     <div class="pm-kpi-card__value">${data.at_risk}</div>
@@ -1180,7 +1180,7 @@
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
                                 const status = data.statuses[config.dataPointIndex].status;
-                                window.location.href = "{% url 'objective-list-view' %}?status=" + encodeURIComponent(status);
+                                window.location.href = "{% url 'objective-list-view' %}?status=" + encodeURIComponent(status) + "&open_tab=1";
                             }}
                         },
                         labels: data.statuses.map(s => s.label),
@@ -1262,9 +1262,9 @@
                                 const d = data.departments[config.dataPointIndex];
                                 const base = "{% url 'objective-list-view' %}";
                                 if (d && d.dept_id) {
-                                    window.location.href = base + "?employee_id__employee_work_info__department_id=" + d.dept_id;
+                                    window.location.href = base + "?employee_id__employee_work_info__department_id=" + d.dept_id + "&open_tab=1";
                                 } else {
-                                    window.location.href = base;
+                                    window.location.href = base + "?open_tab=1";
                                 }
                             }}
                         },
@@ -1336,9 +1336,9 @@
                                 const m = data.months[config.dataPointIndex];
                                 const base = "{% url 'objective-list-view' %}";
                                 if (m && m.from_date) {
-                                    window.location.href = base + "?updated_at__gte=" + m.from_date + "&updated_at__lte=" + m.to_date;
+                                    window.location.href = base + "?updated_at__gte=" + m.from_date + "&updated_at__lte=" + m.to_date + "&open_tab=1";
                                 } else {
-                                    window.location.href = base;
+                                    window.location.href = base + "?open_tab=1";
                                 }
                             }}
                         },
