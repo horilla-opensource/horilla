@@ -74,6 +74,7 @@ def onboarding_kpi_data(request):
     from onboarding.models import CandidateStage, CandidateTask
     from recruitment.models import Recruitment
 
+    from_date, to_date = _parse_period(request)
     period_candidates = _onboarding_candidates_in_period(request)
     total_candidates = period_candidates.count()
     active_recruitments = Recruitment.objects.filter(
@@ -89,14 +90,25 @@ def onboarding_kpi_data(request):
         round((completed_tasks / total_tasks * 100), 1) if total_tasks > 0 else 0
     )
 
-    # Candidates who completed onboarding (on final stage) — within the period
+    # Candidates who completed onboarding (reached the final stage) during the
+    # selected period, scoped by onboarding_end_date -- the date the final
+    # stage was actually reached -- not by candidate_id__in=period_candidates
+    # (creation date), since a candidate can be created in one period and
+    # only finish onboarding in a later one.
     completed_onboarding = CandidateStage.objects.filter(
+        onboarding_stage_id__is_final_stage=True,
+        onboarding_end_date__gte=from_date,
+        onboarding_end_date__lte=to_date,
+    ).count()
+
+    # Of this period's own new onboarding candidates, how many are still
+    # in progress (not yet on the final stage) -- kept separate from
+    # `completed_onboarding` above so this always stays <= total_candidates.
+    completed_of_period_starters = CandidateStage.objects.filter(
         onboarding_stage_id__is_final_stage=True,
         candidate_id__in=period_candidates,
     ).count()
-
-    # Candidates in progress (not on final stage)
-    in_progress = total_candidates - completed_onboarding
+    in_progress = total_candidates - completed_of_period_starters
 
     return JsonResponse(
         {
@@ -108,6 +120,11 @@ def onboarding_kpi_data(request):
             "completed_tasks": completed_tasks,
             "stuck_tasks": stuck_tasks,
             "task_completion": task_completion,
+            # Echoed back so the "Onboarding" card's click-through can
+            # filter to the exact same period the count above was
+            # computed from, instead of showing all-time candidates.
+            "period_from_date": from_date.isoformat(),
+            "period_to_date": to_date.isoformat(),
         }
     )
 

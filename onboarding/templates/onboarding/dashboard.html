@@ -185,7 +185,7 @@
             <div class="on-info-panel">
                 <div class="on-info-panel__header">
                     <div class="on-info-panel__title">{% trans "Onboarding Candidates" %}</div>
-                    <a href="{% url 'candidate-view' %}?start_onboard=true" style="font-size:11px;color:var(--on-indigo);text-decoration:none;">{% trans "View all" %}</a>
+                    <a href="{% url 'candidates-view' %}?start_onboard=true&filter_applied=on" style="font-size:11px;color:var(--on-indigo);text-decoration:none;">{% trans "View all" %}</a>
                 </div>
                 <div class="on-info-panel__body" id="on-candidates">
                     <div class="on-info-panel__empty">{% trans "Loading..." %}</div>
@@ -389,7 +389,7 @@
         .then(r => r.json())
         .then(data => {
             document.getElementById('on-kpi-grid').innerHTML = `
-                <a href="{% url 'candidate-view' %}?start_onboard=true" class="on-kpi-card">
+                <a href="{% url 'candidates-view' %}?start_onboard=true&created_at_from=${data.period_from_date}&created_at_till=${data.period_to_date}&filter_applied=on" class="on-kpi-card">
                     <div class="on-kpi-card__icon on-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg></div>
                     <div class="on-kpi-card__label">{% trans "Onboarding" %}</div>
                     <div class="on-kpi-card__value">${data.total_candidates}</div>
@@ -483,7 +483,7 @@
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
                         const rec = data.recruitments[config.dataPointIndex].recruitment;
-                        window.location.href = "{% url 'candidate-view' %}?recruitment=" + encodeURIComponent(rec) + "&start_onboard=true";
+                        window.location.href = "{% url 'candidates-view' %}?recruitment=" + encodeURIComponent(rec) + "&start_onboard=true&filter_applied=on";
                     }}
                 },
                 labels: data.recruitments.map(r => r.recruitment),
@@ -508,7 +508,7 @@
                 chart: { type: 'bar', height: 260, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, cfg) => {
                         const pos = data.positions[cfg.dataPointIndex];
-                        if (pos && pos.position_id) window.location.href = "{% url 'candidate-view' %}?job_position_id=" + pos.position_id + "&start_onboard=true";
+                        if (pos && pos.position_id) window.location.href = "{% url 'candidates-view' %}?job_position_id=" + pos.position_id + "&start_onboard=true&filter_applied=on";
                     }}
                 },
                 colors: COLORS,
