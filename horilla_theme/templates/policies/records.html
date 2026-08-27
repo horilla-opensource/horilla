@@ -54,26 +54,7 @@
                 </div>
 
                 <div class="h-80 overflow-hidden mb-3 border rounded-md p-4 sha">
-                    {% if policy.body %}
-                        <p class="text-sm text-[#565E6C] mb-3">{{ policy.body|safe }}</p>
-                    {% endif %}
-                    {# a policy can be an attachment with no body, which used to render as a blank card #}
-                    {% with attachments=policy.attachments.all %}
-                        {% if attachments %}
-                            <div class="flex flex-wrap gap-2">
-                                {% for attachment in attachments %}
-                                    <a
-                                        href="{{ attachment.attachment.url }}"
-                                        rel="noopener noreferrer"
-                                        target="_blank"
-                                        class="oh-file-icon oh-file-icon--pdf"
-                                        style="width:40px;height:40px"
-                                        title="{% trans 'Open attachment' %}"
-                                    ></a>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    {% endwith %}
+                    <p class="text-sm text-[#565E6C] mb-3">{{ policy.body|safe }}</p>
                 </div>
 
                 <button

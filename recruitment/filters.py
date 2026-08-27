@@ -612,6 +612,11 @@ class SurveyFilter(HorillaFilterSet):
         field_name="question",
     )
 
+    search = django_filters.CharFilter(
+        lookup_expr="icontains",
+        field_name="question",
+    )
+
     class Meta:
         """
         class Meta for additional options

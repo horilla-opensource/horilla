@@ -300,12 +300,9 @@
         </div>
     </div>
 
-    {# This page is standalone (it does not extend index.html), so its dependencies
-       have to be listed here. The inline block below inlines the whole Select2
-       library and then uses $(...) throughout, so jQuery must load first. #}
+    {# This page is standalone (it does not extend index.html), so its dependencies have to be listed here. The inline block below inlines the whole Select2 library and then uses $(...) throughout, so jQuery must load first. #}
     <script src="{% static '/jquery/jquery.min.js' %}"></script>
-    {# country.js localises its option labels via gettext(); this page is standalone
-       and does not extend index.html, so the catalog has to be pulled in here #}
+    {# country.js localises its option labels via gettext(); this page is standalone and does not extend index.html, so the catalog has to be pulled in here #}
     <script src="{% url 'javascript-catalog' %}"></script>
     <script src="{% static '/index/country.js' %}"></script>
     <script>

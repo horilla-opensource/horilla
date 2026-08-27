@@ -8,14 +8,157 @@ from django import forms
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required, permission_required
-from horilla_views.generic.cbv.views import HorillaDetailedView, HorillaFormView
+from horilla_views.generic.cbv.views import (
+    HorillaDetailedView,
+    HorillaFormView,
+    HorillaNavView,
+    HorillaTabView,
+    TemplateView,
+)
+from recruitment.filters import SurveyFilter
 from recruitment.forms import QuestionForm, TemplateForm
 from recruitment.models import RecruitmentSurvey, SurveyTemplate
+
+
+@method_decorator(login_required, name="dispatch")
+class SurveyTemplateSettingsView(TemplateView):
+    """
+    page for survey templates (Template / Questions tabs)
+    """
+
+    template_name = "survey/view_question_templates.html"
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required(perm="recruitment.view_recruitmentsurvey"), name="dispatch"
+)
+class SurveyTemplateTabView(HorillaTabView):
+    """
+    tab view for survey templates, shows template and questions as tabs
+    """
+
+    view_id = "surveyTemplateSettingsTab"
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.tabs = [
+            {
+                "title": _("Template"),
+                "url": reverse("survey-template-tab"),
+                "badge": SurveyTemplate.objects.count(),
+            },
+            {
+                "title": _("Questions"),
+                "url": reverse("survey-question-tab"),
+                "badge": RecruitmentSurvey.objects.count(),
+            },
+        ]
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required(perm="recruitment.view_recruitmentsurvey"), name="dispatch"
+)
+class SurveyTemplateNavView(HorillaNavView):
+    """
+    navbar of the Template tab
+    """
+
+    template_name = "generic/inline_nav.html"
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("survey-template-tab-list")
+        if self.request.user.has_perm("recruitment.add_surveytemplate"):
+            self.create_attrs = f"""
+                                hx-get="{reverse('survey-template-create')}"
+                                hx-target="#genericModalBody"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#genericModal"
+                                """
+
+    nav_title = _(" Survey Template")
+    filter_instance = SurveyFilter()
+    filter_form_context_name = "form"
+    filter_body_template = "survey/filter.html"
+    search_swap_target = "#view-container"
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required("recruitment.add_surveytemplate"), name="dispatch"
+)
+class SurveyTemplateFormView(HorillaFormView):
+    """
+    form view for create and edit survey templates
+    """
+
+    form_class = TemplateForm
+    model = SurveyTemplate
+
+    def get_form(self, form_class=None):
+        title = self.request.GET.get("title")
+        instance = SurveyTemplate.objects.filter(title=title).first()
+
+        if not self.request.POST:
+            self.form = self.form_class(instance=instance)
+        else:
+            self.form = self.form_class(self.request.POST, instance=instance)
+        return self.form
+
+    def form_invalid(self, form: Any) -> HttpResponse:
+        if not form.is_valid():
+            errors = form.errors.as_data()
+            return render(
+                self.request, self.template_name, {"form": form, "errors": errors}
+            )
+        return super().form_invalid(form)
+
+    def form_valid(self, form: TemplateForm) -> HttpResponse:
+        if form.is_valid():
+            message = _("Template saved")
+            form.save()
+            messages.success(self.request, _(message))
+            return self.HttpResponse(
+                targets_to_reload=["#templateTabRoot .filterButton"]
+            )
+        return super().form_valid(form)
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required(perm="recruitment.view_recruitmentsurvey"), name="dispatch"
+)
+class SurveyQuestionNavView(HorillaNavView):
+    """
+    navbar of the Questions tab
+    """
+
+    template_name = "generic/inline_nav.html"
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("survey-question-tab-list")
+        if self.request.user.has_perm("recruitment.add_recruitmentsurvey"):
+            self.create_attrs = f"""
+                                hx-get="{reverse('recruitment-survey-question-template-create')}"
+                                hx-target="#genericModalBody"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#genericModal"
+                                """
+
+    nav_title = _("Survey Questions")
+    filter_instance = SurveyFilter()
+    filter_form_context_name = "form"
+    filter_body_template = "survey/filter.html"
+    search_swap_target = "#questionViewContainer"
 
 
 @method_decorator(login_required, name="dispatch")
@@ -49,7 +192,9 @@ class QuestionFormView(HorillaFormView):
             instance.recruitment_ids.set(form.recruitment)
             instance.template_id.set(form.cleaned_data["template_id"])
             messages.success(self.request, _(message))
-            return self.HttpResponse(targets_to_reload=["#filterSubmit"])
+            return self.HttpResponse(
+                targets_to_reload=["#questionTabRoot .filterButton"]
+            )
         return super().form_valid(form)
 
 
@@ -91,46 +236,9 @@ class QuestionDuplicateFormView(HorillaFormView):
             instance.recruitment_ids.set(form.recruitment)
             instance.template_id.set(form.cleaned_data["template_id"])
             messages.success(self.request, _(message))
-            return self.HttpResponse(targets_to_reload=["#filterSubmit"])
-        return super().form_valid(form)
-
-
-@method_decorator(login_required, name="dispatch")
-@method_decorator(
-    permission_required("recruitment.add_surveytemplate"), name="dispatch"
-)
-class SurveyTemplateFormView(HorillaFormView):
-    """
-    form view for create and edit survey templates
-    """
-
-    form_class = TemplateForm
-    model = SurveyTemplate
-
-    def get_form(self, form_class=None):
-        title = self.request.GET.get("title")
-        instance = SurveyTemplate.objects.filter(title=title).first()
-
-        if not self.request.POST:
-            self.form = self.form_class(instance=instance)
-        else:
-            self.form = self.form_class(self.request.POST, instance=instance)
-        return self.form
-
-    def form_invalid(self, form: Any) -> HttpResponse:
-        if not form.is_valid():
-            errors = form.errors.as_data()
-            return render(
-                self.request, self.template_name, {"form": form, "errors": errors}
+            return self.HttpResponse(
+                targets_to_reload=["#questionTabRoot .filterButton"]
             )
-        return super().form_invalid(form)
-
-    def form_valid(self, form: TemplateForm) -> HttpResponse:
-        if form.is_valid():
-            message = _("Template saved")
-            form.save()
-            messages.success(self.request, _(message))
-            return self.HttpResponse(targets_to_reload=["#filterSubmit"])
         return super().form_valid(form)
 
 
