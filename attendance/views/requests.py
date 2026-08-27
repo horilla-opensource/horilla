@@ -437,7 +437,7 @@ def validate_attendance_request(request, attendance_id):
         other_dict = first_dict
         first_dict = empty_data
     else:
-        requested_data = attendance.requested_data
+        requested_data = attendance.requested_data or {}
         other_dict = (
             requested_data
             if isinstance(requested_data, dict)
