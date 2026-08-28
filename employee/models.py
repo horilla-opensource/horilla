@@ -1103,6 +1103,18 @@ class PolicyMultipleFile(HorillaModel):
 
     attachment = models.FileField(upload_to=upload_path)
 
+    @property
+    def is_pdf(self):
+        """Lets templates inline the document instead of linking an icon."""
+        return self.attachment.name.lower().endswith(".pdf")
+
+    @property
+    def is_image(self):
+        """Images get the same inline treatment as PDFs."""
+        return self.attachment.name.lower().endswith(
+            (".png", ".jpg", ".jpeg", ".gif", ".webp")
+        )
+
 
 class Policy(HorillaModel):
     """

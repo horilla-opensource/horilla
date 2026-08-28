@@ -18,6 +18,24 @@
 <div class="oh-modal__dialog-body border rounded-md shadow-card m-[20px]">
     <p class="oh-card__footer--border-top"></p>
     {{ policy.body|safe }}
+    {# Inline the attached documents: a policy that is just an uploaded PDF used to show an empty modal with a 40px icon. #}
+    {% for attachment in policy.attachments.all %}
+        {% if attachment.is_pdf %}
+            <iframe
+                src="{{ attachment.attachment.url }}"
+                title="{{ policy.title }}"
+                class="border rounded-md mt-3"
+                style="width:100%;height:65vh"
+            ></iframe>
+        {% elif attachment.is_image %}
+            <img
+                src="{{ attachment.attachment.url }}"
+                alt="{{ policy.title }}"
+                class="border rounded-md mt-3"
+                style="max-width:100%"
+            />
+        {% endif %}
+    {% endfor %}
     <div
         id="attachmentContainer"
         class="d-flex"
