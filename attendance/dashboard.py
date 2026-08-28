@@ -76,14 +76,12 @@ def attendance_kpi_data(request):
     # today is a more honest result than a non-zero count for some other day.
     today = date.today()
 
-    # This card (and "On Time" below) link through to the "Attendance To
-    # Validate" tab, which only ever shows attendance_validated=False rows
-    # - so the count needs the same scope, or it'll show a number here that
-    # doesn't match a single row on the page it links to.
+    # Everyone with an attendance row today, validated or not - matches the
+    # main HR dashboard's definition (base/dashboard.py's dashboard_kpi_data)
+    # and the card's own link, which has no attendance_validated filter.
     present_today = (
         Attendance.objects.filter(
             attendance_date=today,
-            attendance_validated=False,
             employee_id__is_active=True,
         )
         .values("employee_id")
@@ -95,11 +93,13 @@ def attendance_kpi_data(request):
         round((present_today / total_employees * 100), 1) if total_employees > 0 else 0
     )
 
+    # Not scoped to attendance_validated=False: "On Time" below is present_today
+    # minus late_come, so both sides need the same validated+unvalidated scope
+    # or the subtraction undercounts lateness and inflates "On Time".
     late_come = (
         AttendanceLateComeEarlyOut.objects.filter(
             type="late_come",
             attendance_id__attendance_date=today,
-            attendance_id__attendance_validated=False,
             employee_id__is_active=True,
         )
         .values("employee_id")
@@ -111,7 +111,6 @@ def attendance_kpi_data(request):
         AttendanceLateComeEarlyOut.objects.filter(
             type="early_out",
             attendance_id__attendance_date=today,
-            attendance_id__attendance_validated=False,
             employee_id__is_active=True,
         )
         .values("employee_id")
