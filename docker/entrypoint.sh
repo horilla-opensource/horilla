@@ -45,6 +45,9 @@ esac
 # Run migrations
 python manage.py migrate --noinput
 
+# Compile .po translation catalogs to .mo (gettext is required in the image)
+python manage.py compilemessages
+
 # Collect static files
 python manage.py collectstatic --noinput
 

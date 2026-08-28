@@ -52,6 +52,7 @@ RUN apt-get update \
         libffi8 \
         curl \
         netcat-openbsd \
+        gettext \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
