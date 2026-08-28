@@ -179,6 +179,10 @@ def attendance_weekly_trend(request):
                 attendance_date__lte=to_date,
                 employee_id__is_active=True,
             )
+            # Attendance's default ordering (-attendance_date, employee name,
+            # clock_in) otherwise leaks into the GROUP BY below, splintering
+            # each date into one group per employee instead of one total.
+            .order_by()
             .values("attendance_date")
             .annotate(c=Count("employee_id", distinct=True))
         )
@@ -265,6 +269,9 @@ def attendance_department_breakdown(request):
                 attendance_date=today,
                 employee_id__is_active=True,
             )
+            # Clear Attendance's default ordering before grouping -- see
+            # attendance_weekly_trend for why it otherwise pollutes GROUP BY.
+            .order_by()
             .values("employee_id__employee_work_info__department_id__department")
             .annotate(present=Count("employee_id", distinct=True))
             .order_by("-present")
@@ -359,6 +366,7 @@ def attendance_overtime_summary(request):
                 attendance_validated=True,
                 overtime_second__gt=0,
             )
+            .order_by()
             .values("employee_id__employee_work_info__department_id__department")
             .annotate(
                 total_ot=Sum("overtime_second"),
@@ -661,6 +669,7 @@ def attendance_avg_working_hours(request):
                 attendance_date__lte=today,
                 at_work_second__gt=0,
             )
+            .order_by()
             .values("employee_id__employee_work_info__department_id__department")
             .annotate(
                 total_seconds=Sum("at_work_second"),
@@ -818,6 +827,7 @@ def attendance_calendar_heatmap(request):
                     attendance_date__lte=to_date,
                     employee_id__is_active=True,
                 )
+                .order_by()
                 .values("attendance_date")
                 .annotate(c=Count("employee_id", distinct=True))
             )
