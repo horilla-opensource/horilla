@@ -2,10 +2,52 @@
 {% load static i18n widget_tweaks assets_custom_filter %}
 {% block content %}
     <div
+        id="assetCategoryNavBar"
         hx-get="{% url 'asset-category-nav' %}?{{request.GET.urlencode}}"
         hx-trigger="load"
     >
     </div>
+
+    {% if request.GET.asset_purchase_date_from or request.GET.asset_purchase_date_till or request.GET.asset_status %}
+        <script>
+            // Deep-link support for e.g. the dashboard's "Total Value" and
+            // "Asset Status" chart click-throughs. AssetCategoryNav (a
+            // HorillaNavView, not a HorillaListView) has no filter_dict/chip
+            // logic of its own -- the standard "Filters:" row only ever
+            // comes from a HorillaListView's own rendering, which here only
+            // happens once a category is expanded. Populate the same
+            // #filterTagContainerSectionNav (rendered empty by the nav)
+            // directly, in the same visual style, so the applied filter is
+            // visible without expanding anything or opening the Filter
+            // dropdown.
+            document.body.addEventListener("htmx:afterSettle", function once(e) {
+                if (e.detail.target && e.detail.target.id === "assetCategoryNavBar") {
+                    document.body.removeEventListener("htmx:afterSettle", once);
+                    var container = e.detail.target.querySelector("#filterTagContainerSectionNav");
+                    if (!container) return;
+                    var tags = '<span class="oh-titlebar__tag oh-titlebar__tag--custom">{% trans "Filters" %}: </span>';
+                    {% if request.GET.asset_purchase_date_from %}
+                        tags += '<span class="oh-titlebar__tag filter-field"><span class="filter-value">{% trans "Purchase date from" %}: {{ request.GET.asset_purchase_date_from }}</span></span>';
+                    {% endif %}
+                    {% if request.GET.asset_purchase_date_till %}
+                        tags += '<span class="oh-titlebar__tag filter-field"><span class="filter-value">{% trans "Purchase date till" %}: {{ request.GET.asset_purchase_date_till }}</span></span>';
+                    {% endif %}
+                    {% if request.GET.asset_status %}
+                        tags += '<span class="oh-titlebar__tag filter-field"><span class="filter-value">{% trans "Status" %}: {{ request.GET.asset_status }}</span></span>';
+                    {% endif %}
+                    // Not class="clear-all" -- that class is claimed by
+                    // filter_tags.html's own delegated handler (clearAllFilter),
+                    // which resets an unrelated form (the "Filter" dropdown's)
+                    // and swallows this click, so the anchor's own navigation
+                    // never actually happens and the chip is left behind even
+                    // though the list itself does reset. Clear this container
+                    // directly instead of relying on a link to navigate away.
+                    tags += '<a href="javascript:void(0)" class="oh-titlebar__tag oh-titlebar__tag--custom" title="{% trans "Clear" %}" onclick="document.getElementById(\'filterTagContainerSectionNav\').innerHTML=\'\'; window.location.href=\'{% url "asset-category-view" %}\';"><ion-icon class="close-icon" name="close-outline"></ion-icon></a>';
+                    container.innerHTML = tags;
+                }
+            });
+        </script>
+    {% endif %}
 
     <div
         class="oh-checkpoint-badge mb-2"

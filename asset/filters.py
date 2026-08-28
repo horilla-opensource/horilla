@@ -96,6 +96,16 @@ class AssetFilter(CustomFilterSet):
 
     search = django_filters.CharFilter(method="search_method")
     category = django_filters.CharFilter(field_name="asset_category_id")
+    asset_purchase_date_from = django_filters.DateFilter(
+        field_name="asset_purchase_date",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    asset_purchase_date_till = django_filters.DateFilter(
+        field_name="asset_purchase_date",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
 
     class Meta:
         """

@@ -101,6 +101,11 @@ def asset_kpi_data(request):
             "total_value": float(total_value),
             "expiring_soon": expiring_soon,
             "return_requests": return_requests,
+            # Echoed back so the "Total Value" card's click-through can
+            # filter to the exact same purchase-date range the sum above
+            # was computed from, instead of showing every asset.
+            "period_from_date": from_date.isoformat(),
+            "period_to_date": to_date.isoformat(),
         }
     )
 

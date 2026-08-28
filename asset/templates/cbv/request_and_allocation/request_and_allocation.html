@@ -16,6 +16,50 @@
 
     <div hx-get="{% url 'nav-asset-request-allocation' %}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
 
+    <script>
+        (function () {
+            // This page's "Asset Request" tab and its page-level nav both
+            // render their own #filterTagContainerSectionNav (a hardcoded,
+            // non-unique id from the shared filter_tags.html partial), and
+            // the nav's is always first in the DOM. Its own close-button
+            // handler (bound in filter_tags.html, via clearFilterFromTag)
+            // always resolves to the FIRST #applyFilter it finds -- the
+            // page-level nav's own form (AssetAllocationFilter), which has
+            // no "asset_request_status" field at all -- so a click on the
+            // "Asset request status" chip's x silently resets the wrong
+            // form and the chip never actually clears. Rather than change
+            // the shared, widely-reused filter_tags.html/clearFilter.js
+            // (real regression risk elsewhere), intercept just this one
+            // field's close button in the capture phase (runs before the
+            // bubble-phase handler that's actually broken) and handle it
+            // ourselves: drop the deep-link session value the normal way
+            // (see RequestAndAllocationView.get / AssetRequestList) by
+            // reloading this page with the field explicitly empty.
+            // Same story for the "Clear All" (x) button at the far right of
+            // the Filters row -- a separate element/handler (clearAllFilter)
+            // from the per-field close buttons above, but resolving to the
+            // same wrong #applyFilter for the same reason.
+            document.addEventListener("click", function (e) {
+                var tagClose = e.target.closest('[data-x-field="asset_request_status"]');
+                var clearAll = e.target.closest(".clear-all");
+                if (!tagClose) {
+                    // Only hijack "Clear All" when the deep-link chip is
+                    // actually part of what it'd be clearing -- otherwise
+                    // this would hijack a legitimate clear-all click on an
+                    // unrelated filter (e.g. on the Asset Allocation tab)
+                    // and wrongly force-navigate to the Request tab.
+                    if (!clearAll || !document.querySelector('[data-x-field="asset_request_status"]')) {
+                        return;
+                    }
+                }
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                window.location.href = "{% url 'asset-request-allocation-view' %}?open_tab=2&asset_request_status=";
+            }, true);
+        })();
+    </script>
+
     {% include "generic/components.html" %}
 
     <div

@@ -239,11 +239,18 @@ class AssetRequestList(HorillaListView):
 
         # Fallback for a deep link into this tab (see
         # RequestAndAllocationView.get) - only applies when the current
-        # request didn't already specify its own status filter. Read (not
-        # popped) since HorillaListView calls get_queryset() more than once
-        # per request; RequestAndAllocationView.get clears it on the next
-        # plain visit instead, so it doesn't linger indefinitely.
-        if not self.request.GET.get("asset_request_status"):
+        # request didn't already specify its own status filter. Checked by
+        # key presence, not truthiness: clicking the "x" on the "Asset
+        # request status" chip (clearFilterFromTag in clearFilter.js) sets
+        # the form field to "" and resubmits, so the key IS present (just
+        # empty) - `not self.request.GET.get(...)` would still be True for
+        # that, silently re-applying the just-cleared filter forever. Read
+        # (not popped) since HorillaListView calls get_queryset() more than
+        # once per request; RequestAndAllocationView.get clears it on the
+        # next plain visit instead, so it doesn't linger indefinitely -- an
+        # explicit clear here also drops it immediately instead of waiting
+        # for that.
+        if "asset_request_status" not in self.request.GET:
             deep_link_status = self.request.session.get(
                 "asset_request_deep_link_status"
             )
@@ -255,6 +262,8 @@ class AssetRequestList(HorillaListView):
                 saved_filters = self._saved_filters.copy()
                 saved_filters["asset_request_status"] = deep_link_status
                 self._saved_filters = saved_filters
+        else:
+            self.request.session.pop("asset_request_deep_link_status", None)
         return queryset
 
     columns = [
