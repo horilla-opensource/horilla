@@ -16,6 +16,7 @@ from base.demo_data.modules.asset_expansion import backfill_company_asset_pools
 from base.demo_data.modules.asset_features import backfill_asset_reports
 from base.demo_data.modules.attendance_trend import (
     backfill_attendance_activities,
+    backfill_attendance_density,
     backfill_attendance_overtime,
     backfill_attendance_spread,
     backfill_pending_validation_today,
@@ -111,6 +112,10 @@ def run_enterprise_demo_seeder(
     result["attendance_zero_coverage_backfill"] = backfill_zero_coverage_attendance(
         today
     )
+    # Tops up everyone (including the just-covered employees above) to a
+    # realistic shift-aware density -- must run after zero-coverage fill and
+    # before leave spread finalizes leave dates below.
+    result["attendance_density_backfill"] = backfill_attendance_density(today)
     result["leave_backfill"] = backfill_leave_spread(today)
     result["leave_zero_coverage_backfill"] = backfill_zero_coverage_available_leave(
         today

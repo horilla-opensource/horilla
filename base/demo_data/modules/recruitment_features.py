@@ -204,6 +204,21 @@ def backfill_recruitment_job_position(today: date | None = None) -> int:
         )
         if job_position_id is None:
             continue
+        # Recruitment has a unique_together on (job_position_id, start_date)
+        # -- two still-unassigned recruitments can share both a candidate's
+        # job position and a start_date, so blindly setting this can collide
+        # with another row that already occupies that pair. Skip rather than
+        # crash; that recruitment just keeps showing under "Unassigned".
+        collides = (
+            Recruitment._base_manager.exclude(pk=recruitment.pk)
+            .filter(
+                job_position_id_id=job_position_id,
+                start_date=recruitment.start_date,
+            )
+            .exists()
+        )
+        if collides:
+            continue
         Recruitment._base_manager.filter(pk=recruitment.pk).update(
             job_position_id_id=job_position_id
         )

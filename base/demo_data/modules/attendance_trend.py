@@ -16,7 +16,11 @@ from datetime import date, timedelta
 from django.apps import apps
 from django.db import transaction
 
-from base.demo_data.dates import attendance_dates_for_employee
+from base.demo_data.dates import (
+    attendance_dates_for_employee,
+    scheduled_weekdays_for_shift,
+    weekdays_inclusive,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -389,6 +393,186 @@ def backfill_zero_coverage_attendance(today: date | None = None) -> int:
         len(uncovered_ids),
     )
     return created
+
+
+DENSITY_TARGET_MIN = 0.85  # 85-95% of an employee's scheduled working-day pool
+DENSITY_TARGET_SPAN = 0.10
+DENSITY_CLOCK_IN = "09:00:00"
+DENSITY_CLOCK_OUT = "17:00:00"
+DENSITY_WORKED_HOUR = "08:00"
+DENSITY_MINIMUM_HOUR = "08:00"  # matches worked hour: no implied overtime for
+# rows created here (see note below on why AttendanceOverTime is untouched)
+
+
+@transaction.atomic
+def backfill_attendance_density(today: date | None = None) -> int:
+    """
+    Bring every active, shift-assigned employee's Attendance row count up to
+    a realistic 85-95% of their own scheduled working days over the trailing
+    6-month window (shift-aware: a Mon-Sat employee's pool includes
+    Saturdays, via scheduled_weekdays_for_shift).
+
+    backfill_attendance_spread only *redistributes* the fixture's original
+    ~27 rows/employee across 180 days -- ~4-5 rows/employee/month, far below
+    what any chart comparing attendance to expected working days assumes.
+    This adds a second, additive pass on top of that redistribution.
+
+    Bounded-target, always-recompute (same pattern as PMS/payroll/asset
+    coverage backfills elsewhere in this seeder): computes current coverage
+    against the target and only creates the shortfall, so repeated reloads
+    top up rather than grow the dataset without bound.
+
+    Uses bulk_create for both Attendance and WorkRecords rather than
+    Attendance.create() (which backfill_zero_coverage_attendance above
+    uses) -- at this volume (tens of thousands of rows), the per-row
+    Attendance.save() override plus the attendance_post_save signal's own
+    WorkRecords get_or_create would cost 5-7 queries each. WorkRecords
+    bookkeeping is replicated here in bulk to match what that signal would
+    have done; AttendanceOverTime is deliberately left alone since these
+    rows carry no overtime (worked hour == minimum hour), so no OT bucket
+    is needed for them.
+    """
+    if not apps.is_installed("attendance"):
+        return 0
+
+    today = today or date.today()
+    window_start = today - timedelta(days=TRAILING_DAYS)
+
+    from attendance.models import Attendance, WorkRecords
+    from base.models import EmployeeShiftDay, EmployeeShiftSchedule
+    from employee.models import Employee, EmployeeWorkInformation
+
+    seen_days: dict[str, int] = {}
+    for row in EmployeeShiftDay.objects.all().order_by("id"):
+        seen_days.setdefault(row.day, row.pk)
+
+    work_info_by_employee = {
+        wi["employee_id"]: wi
+        for wi in EmployeeWorkInformation._base_manager.filter(
+            shift_id__isnull=False
+        ).values("employee_id", "shift_id", "work_type_id")
+    }
+    active_ids = set(
+        Employee._base_manager.filter(is_active=True).values_list("id", flat=True)
+    )
+    eligible_ids = [eid for eid in work_info_by_employee if eid in active_ids]
+    if not eligible_ids:
+        return 0
+
+    existing_by_employee: dict[int, set[date]] = defaultdict(set)
+    for emp_id, att_date in Attendance._base_manager.filter(
+        attendance_date__gte=window_start, attendance_date__lte=today
+    ).values_list("employee_id", "attendance_date"):
+        existing_by_employee[emp_id].add(att_date)
+
+    shift_ids = {work_info_by_employee[eid]["shift_id"] for eid in eligible_ids}
+    day_names_by_shift: dict[int, list[str]] = defaultdict(list)
+    for shift_id, day_name in EmployeeShiftSchedule.objects.filter(
+        shift_id__in=shift_ids
+    ).values_list("shift_id", "day__day"):
+        day_names_by_shift[shift_id].append(day_name)
+    weekdays_by_shift = {
+        shift_id: scheduled_weekdays_for_shift(names)
+        for shift_id, names in day_names_by_shift.items()
+    }
+    pool_size_by_shift = {
+        shift_id: len(weekdays_inclusive(window_start, today, weekdays))
+        for shift_id, weekdays in weekdays_by_shift.items()
+    }
+
+    new_attendance_rows: list[Attendance] = []
+    for employee_id in eligible_ids:
+        work_info = work_info_by_employee[employee_id]
+        shift_id = work_info["shift_id"]
+        weekdays = weekdays_by_shift.get(shift_id)
+        pool_size = pool_size_by_shift.get(shift_id, 0)
+        if not weekdays or pool_size == 0:
+            continue
+
+        # Deterministic per-employee jitter within [85%, 95%] for realism.
+        target_rate = DENSITY_TARGET_MIN + (employee_id % 11) / 10 * DENSITY_TARGET_SPAN
+        target = round(pool_size * target_rate)
+
+        existing_dates = existing_by_employee.get(employee_id, set())
+        shortfall = target - len(existing_dates)
+
+        candidate_dates = attendance_dates_for_employee(
+            employee_id, window_start, today, target, weekdays=weekdays
+        )
+        missing = [d for d in candidate_dates if d not in existing_dates]
+        if not missing:
+            continue
+
+        # Prioritize the most recent missing dates over the front of the
+        # (older-first) candidate list -- otherwise an employee already near
+        # target from a prior run never gets a fresh "today" row once the
+        # window slides forward, since a small shortfall would only ever
+        # pull from the older, evenly-spaced head of the list.
+        missing.sort(reverse=True)
+        if shortfall > 0:
+            new_dates = missing[:shortfall]
+        elif missing[0] == today:
+            # Already at/above the volume target from an earlier run, but
+            # "today" itself still has no row -- always add just that one so
+            # same-day KPIs (Present Today, etc.) don't go stale between
+            # reloads even though the overall count is already satisfied.
+            new_dates = [today]
+        else:
+            continue
+
+        for attendance_date in new_dates:
+            shift_day_pk = seen_days.get(attendance_date.strftime("%A").lower())
+            new_attendance_rows.append(
+                Attendance(
+                    employee_id_id=employee_id,
+                    attendance_date=attendance_date,
+                    shift_id_id=shift_id,
+                    work_type_id_id=work_info.get("work_type_id"),
+                    attendance_day_id=shift_day_pk,
+                    attendance_clock_in_date=attendance_date,
+                    attendance_clock_in=DENSITY_CLOCK_IN,
+                    attendance_clock_out_date=attendance_date,
+                    attendance_clock_out=DENSITY_CLOCK_OUT,
+                    attendance_worked_hour=DENSITY_WORKED_HOUR,
+                    minimum_hour=DENSITY_MINIMUM_HOUR,
+                    attendance_validated=True,
+                )
+            )
+
+    if not new_attendance_rows:
+        return 0
+
+    created_rows = Attendance._base_manager.bulk_create(
+        new_attendance_rows, batch_size=1000
+    )
+
+    new_workrecord_rows = [
+        WorkRecords(
+            employee_id_id=row.employee_id_id,
+            date=row.attendance_date,
+            at_work=row.attendance_worked_hour,
+            min_hour=row.minimum_hour,
+            at_work_second=8 * 3600,
+            min_hour_second=8 * 3600,
+            note="",
+            work_record_type="FDP",
+            is_attendance_record=True,
+            attendance_id_id=row.pk,
+            shift_id_id=row.shift_id_id,
+            day_percentage=1.00,
+        )
+        for row in created_rows
+    ]
+    WorkRecords._base_manager.bulk_create(
+        new_workrecord_rows, batch_size=1000, ignore_conflicts=True
+    )
+
+    logger.info(
+        "Attendance density backfill: created %s row(s) across %s employee(s)",
+        len(created_rows),
+        len({r.employee_id_id for r in created_rows}),
+    )
+    return len(created_rows)
 
 
 @transaction.atomic
