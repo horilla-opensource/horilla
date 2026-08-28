@@ -88,6 +88,7 @@ def helpdesk_kpi_data(request):
 
     # Avg resolution time (days between created_date and resolved_date) for period tickets
     avg_resolution = None
+    avg_resolution_count = 0
     try:
         resolved_tickets = period_tickets.filter(
             status="resolved",
@@ -103,6 +104,7 @@ def helpdesk_kpi_data(request):
                         total_days += delta
                         count += 1
             avg_resolution = round(total_days / count, 1) if count > 0 else None
+            avg_resolution_count = count
     except Exception:
         pass
 
@@ -116,9 +118,15 @@ def helpdesk_kpi_data(request):
             "resolved": resolved,
             "canceled": canceled,
             "resolution_rate": resolution_rate,
+            # Echoed so the (non-clickable) "Resolution Rate" card's hover
+            # tooltip can show the exact numbers the % above was computed
+            # from -- period_resolved, not the current-state "resolved"
+            # count above, which is a different (unscoped) number.
+            "period_resolved": period_resolved,
             "overdue": overdue,
             "pending_claims": pending_claims,
             "avg_resolution_days": avg_resolution,
+            "avg_resolution_count": avg_resolution_count,
         }
     )
 
