@@ -215,7 +215,6 @@
                 <div class="px-4" hx-get="{% url 'allowed-ips-nav' %}" hx-trigger="load"></div>
                 {% if allowed_ips.additional_data.allowed_ips %}
                     <div hx-get="{% url 'allowed-ips-list' %}" hx-trigger="load">
-                        <div class="animated-background"></div>
                     </div>
                 {% endif %}
             {% endif %}

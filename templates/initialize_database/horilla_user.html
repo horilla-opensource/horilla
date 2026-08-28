@@ -30,19 +30,6 @@
 
     <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         <style>
-            .animated-background {
-                position: relative;
-                height: 623px;
-                background: linear-gradient(to right, #eeeeee9c -58%, #e4e4e496 18%, #eeeeee61 33%);
-                background-size: 800px 64px;
-                background-color: #f6f7f8;
-                animation-duration: 2s;
-                animation-timing-function: linear;
-                animation-iteration-count: infinite;
-                animation-fill-mode: forwards;
-                animation-name: placeHolderShimmer;
-            }
-
             .select2-selection.select2-selection--multiple {
                 height: 46px !important;
             }
@@ -150,7 +137,7 @@
                 var response = event.detail.xhr.response;
                 var target = $(event.detail.elt.getAttribute("hx-target"));
                 if (!target.closest("form").length) {
-                    target.html(`<div class="animated-background"></div>`);
+                    target.html(``);
                 }
             });
         </script>

@@ -40,13 +40,11 @@
 
     {% if nav_url %}
         <div hx-get="{{nav_url}}?{{request.GET.urlencode}}" hx-trigger="load">
-            <div class="mt-5 oh-wrapper animated-background" style="height: 80px"></div>
         </div>
     {% endif %}
 
     {% if view_url %}
         <div class="oh-wrapper" id="pipelineContainer">
-            <div class="mt-4 animated-background" style="height: 600px"></div>
         </div>
     {% endif %}
 

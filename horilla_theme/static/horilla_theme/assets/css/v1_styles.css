@@ -44,12 +44,6 @@
   -webkit-font-smoothing: antialiased;
 }
 
-.animated-background {
-  background-color: #f6f7f8;
-  height: 300px;
-  position: relative;
-}
-
 .oh-modal {
   position: fixed;
   background-color: rgba(28.05, 28.05, 28.05, 0.2);
@@ -1464,11 +1458,7 @@ table .oh-btn-group a {
   background-color: hsl(0, 0%, 95%) !important;
 }
 
-/* .oh-btn--light-bkg forces a near-white background; color modifiers like
-   .oh-btn--danger/.oh-btn--success/.oh-btn--secondary set the icon color to
-   white (assuming a solid background). Combined, the icon becomes invisible
-   (white-on-white). When both are used together, keep the light background
-   but tint the icon with the modifier's color instead of white. */
+/* avoid white-on-white icon */
 .oh-btn--light-bkg.oh-btn--danger {
   color: hsl(1, 100%, 61%) !important;
 }
@@ -1760,14 +1750,6 @@ table .oh-btn-group a {
   background-color: rgb(221, 51, 51);
 }
 
-/* Stacked accordions in a filter dropdown (Work Info / Work Type Request /
-   Advanced / Group By, etc.) only get a gap between each other from the
-   wrapper's Tailwind "space-y-2" utility class - since these dropdowns are
-   injected via htmx after the initial page load, that class can briefly
-   render unstyled before the Tailwind CDN Play compiler rescans the DOM
-   (see .oh-filter-dropdown further down for the same issue on the outer
-   padding). Pinning the gap here, on the plain (non-Tailwind) .oh-accordion class,
-   guarantees it regardless of that timing. */
 .oh-accordion + .oh-accordion {
   margin-top: 0.5rem;
 }
@@ -1850,9 +1832,7 @@ table .oh-btn-group a {
   transform: rotate(180deg);
 }
 
-/* Nested HLV tables inside category/accordion panels must not use the
-   full-viewport max-height — that inflated the panel and left a large empty
-   band around the pagination toolbar. */
+/* avoid empty gap above pagination */
 .accordion-panel .heightContainer,
 .accordion-panel .hlv-container .heightContainer {
   max-height: 300px !important;
@@ -1862,12 +1842,7 @@ table .oh-btn-group a {
   padding-top: 0.25rem;
 }
 
-/* Compact, vertically centered list pagination control. Like
-   .oh-filter-dropdown below, this is loaded via htmx after the initial page
-   load (every sub-tab except the first one eager-loaded on ready), so its
-   Tailwind CDN utility classes can briefly render unstyled until the Play
-   CDN's JIT compiler rescans the DOM. Pinning the layout/appearance here, in
-   the plain stylesheet loaded upfront on every page, avoids that flash. */
+/* htmx-loaded */
 .hlv-pagination {
   display: inline-flex;
   align-items: center;
@@ -1931,12 +1906,7 @@ table .oh-btn-group a {
   white-space: nowrap;
 }
 
-/* The "Filter" dropdown (nav bars + attendance work record view) is loaded
-   via htmx into the page after the initial load, so its Tailwind CDN
-   utility classes (min-w-[400px] p-3) can briefly render unstyled until the
-   Play CDN's JIT compiler rescans the DOM. Pinning padding/min-width here,
-   in the plain stylesheet loaded upfront on every page, keeps this
-   consistent across every filter form regardless of that timing. */
+/* htmx-loaded */
 .oh-filter-dropdown {
   min-width: 400px;
   padding: 0.75rem;
@@ -2368,32 +2338,6 @@ table .oh-btn-group a {
   font-size: 0.875rem;
 }
 
-/* @media (max-width: 767.98px) {
-    .oh-main__titlebar-button-container .oh-btn-group.ml-2 {
-      margin-left: 0 !important;
-    }
-    .oh-view-types.ml-2 {
-      margin-left: 0;
-      margin-right: 10px;
-    }
-    .oh-btn-group.ml-2:last-child {
-      margin-left: 0 !important;
-    }
-    .oh-main__titlebar-button-container {
-      margin-top: 0 !important;
-    }
-    .oh-main__titlebar--right {
-      width: unset;
-    }
-    .oh-dropdown__filter {
-      z-index: 9999;
-      left: 50%;
-      position: fixed;
-      width: 80%;
-      transform: translateX(-50%);
-    }
-  } */
-
 @media (max-width: 575.98px) {
   .oh-tabs__movable-title {
     font-size: 1rem;
@@ -2541,10 +2485,6 @@ ul.errorlist ul.errorlist li {
   font-size: 0.85rem;
 }
 
-/* Hover-open disabled: the submenu panel now opens only on click via
-   the `.sidebox-active` class (see sidebar.html's delegated click
-   handler and global.css). This prevents the panel from popping open
-   whenever the cursor grazes a sidebar icon. */
 /*
 .sideboxmain:hover .sidebox {
   opacity: 1;
@@ -3741,9 +3681,7 @@ span.oh-activity-sidebar__a img {
   align-items: center !important;
 }
 
-/* ===========================
-*         Employee Forms
-* ============================ */
+/* Employee Forms */
 .oh-main__org-chart-data {
   display: none;
 }
@@ -3887,9 +3825,7 @@ span.oh-activity-sidebar__a img {
   font-size: 1.5rem;
 }
 
-/* ==================================
-    *     Employee Form GENERAL TABS
-    * ================================= */
+/* General tabs */
 .oh-general__tabs {
   display: flex;
   flex-wrap: wrap;
@@ -4110,7 +4046,7 @@ input[type="range"]::-ms-fill-upper {
   position: relative;
 }
 
-/* Triangle opens a per-field "filter this field's values" popup. */
+/* per-field filter popup trigger */
 .pvtAxisContainer li span.pvtAttr .pvtTriangle {
   position: absolute;
   right: 8px;
@@ -4145,16 +4081,7 @@ input[type="range"]::-ms-fill-upper {
   table-layout: auto;
 }
 
-/* .pvtUi is a real <table> (the library's markup). Converted to CSS Grid so
-   each cell can be positioned explicitly and the 3 columns get independent,
-   controllable widths: `display:contents` on <tr> removes the row wrapper
-   from the box tree so its <td> children become direct grid items. Cells
-   still stretch to fill their grid row's height by default (same visual
-   effect as the original table), which is intentional -- see the note by
-   .pvtAxisContainer.pvtUnused below for why. This only changes visual
-   layout -- the DOM tree (and therefore the jQuery UI Sortable drag-and-
-   drop wiring, which only cares about element positions, not display mode)
-   is completely untouched. */
+/* grid layout for pvtUi table */
 .pvtUi {
   width: 100% !important;
   display: grid !important;
@@ -4181,13 +4108,7 @@ input[type="range"]::-ms-fill-upper {
   grid-row: 1;
 }
 
-/* align-self left at its default (stretch) here on purpose: with `start`,
-   the box shrinks to fit just its own field pills, which looked fine when
-   the pill list was long but left a jarring, abruptly-short white box with
-   a gray gap underneath whenever the field list was shorter than the
-   actual data table next to it. Stretching keeps the white background
-   filling the same height as the table, regardless of which one has more
-   content, so the layout never looks visually "cut off". */
+/* stretch matches table height */
 .pvtAxisContainer.pvtUnused {
   grid-column: 1;
   grid-row: 2;
@@ -4220,11 +4141,7 @@ input[type="range"]::-ms-fill-upper {
   margin-bottom: 4px !important;
 }
 
-/* The per-field value filter popup (opened via the ▾ triangle) previously
-   had flat, sharp-cornered, shadow-less styling that made it look like a
-   stray box sitting on the page rather than a floating overlay -- give it
-   the same elevated-card treatment (rounded corners, drop shadow) used by
-   modals/dropdowns elsewhere in the app. */
+/* card styling for overlay */
 .pvtFilterBox {
   padding: 16px;
   width: auto !important;
@@ -4264,17 +4181,7 @@ input[type="range"]::-ms-fill-upper {
   background-color: #f4f5f7;
 }
 
-/* Report pivot builder: make the drag-and-drop mechanics understandable.
-   The library gives every zone (available fields / rows / columns) the
-   same look with no labels or drag affordance, so people can't tell what
-   they're looking at or that the field pills can be dragged around.
-
-   The "drag fields..." hint itself is NOT a ::before on .pvtUi (the
-   <table> the library generates) -- a pseudo-element's content there
-   still participates in the table's own auto-layout width calculation
-   (specifically it was inflating the Available Fields column), so it's a
-   real, separate <p class="oh-report-drag-hint"> placed in the template
-   above #pivot-container instead, completely independent of the table. */
+/* separate <p>, not a pseudo-element */
 .oh-report-drag-hint {
   font-size: 13px;
   color: #6b7280;
@@ -4290,27 +4197,14 @@ input[type="range"]::-ms-fill-upper {
   padding-top: 26px !important;
 }
 
-/* Available Fields was taking up way more width than it needs (the table's
-   auto-layout was giving it several times the Rows column's width). A plain
-   `width` on the <td> doesn't stick because the table's auto-layout sizes
-   each column to its widest content in the column -- which turned out to
-   be the "Table" renderer <select> above it (native selects size to their
-   widest option, e.g. "Horizontal Stacked Bar Chart"), not the field pills.
-   Constrain the select too, and the field pills (li/span), so nothing in
-   the column forces it wider than intended. */
+/* fixed width, ignore content */
 .pvtUi select.pvtRenderer {
   width: 150px;
   max-width: 150px;
   min-width: 150px;
 }
 
-/* The field-picker select that appears next to aggregators needing a target
-   field (e.g. "Sum" of <field>) isn't covered by the Renderer/Aggregator
-   border-reset rule above, so the browser's native widget chrome (appearance:
-   auto) was overriding the shared border-radius/border-color and rendering
-   as a plain, square-cornered, unstyled box. Forcing appearance:none makes
-   the custom border actually take effect, matching the rest of the pivot
-   table's inputs. */
+/* reset native select chrome */
 .pvtUi select.pvtAttrDropdown {
   appearance: none;
   -webkit-appearance: none;
@@ -4322,23 +4216,12 @@ input[type="range"]::-ms-fill-upper {
   background-color: #fff;
 }
 
-/* Row/column sort-order toggles (cycle through key/asc/desc order) -- not
-   a control this app's reports need, and left as visual clutter next to
-   the aggregator box. */
 .pvtRowOrder,
 .pvtColOrder {
   display: none !important;
 }
 
-/* When there's no data, the library renders zero field pills, so these
-   columns have no content left to hold their width open -- without a
-   min-width the whole table collapses/reflows into a broken-looking mess.
-   A floor width keeps the layout stable whether it's full or empty.
-
-   Cap both Available Fields AND Rows at the same width -- different report
-   types have a different split of how many fields land in each (e.g. a
-   report with few Available Fields but many Row fields), and whichever one
-   has more fields otherwise balloons to fill the leftover table width. */
+/* min width when empty */
 .pvtAxisContainer.pvtUnused,
 .pvtAxisContainer.pvtRows {
   width: 1%;
@@ -4372,9 +4255,7 @@ input[type="range"]::-ms-fill-upper {
   box-sizing: border-box;
 }
 
-/* Visual split between the report builder controls (renderer/aggregator
-   pickers, Available Fields, Rows, Columns) on the left/top and the actual
-   report table on the right, so the two are easy to tell apart at a glance. */
+/* split builder vs table visually */
 .pvtUiCell {
   background-color: #fafbfc;
 }
@@ -4384,13 +4265,7 @@ input[type="range"]::-ms-fill-upper {
   border-right: 2px solid #9aa1ab !important;
 }
 
-/* The actual report table gets its own darker, fully-enclosing border, PLUS
-   a light tinted background behind it (with real padding -- an earlier rule
-   set padding to 0, which would have hidden any tint) so the table reads as
-   its own clearly bordered, distinctly colored area rather than blending
-   into the same white background as the rest of the page. The table's own
-   cells stay white (set elsewhere) so the data itself stays crisp against
-   this tinted "frame". */
+/* bordered frame for report table */
 .pvtRendererArea {
   border: 2px solid #9aa1ab !important;
   background-color: #eef2f7;
@@ -4427,19 +4302,12 @@ input[type="range"]::-ms-fill-upper {
   content: "Rows";
 }
 
-/* Available Fields is an inert shelf, not part of the active report
-   configuration -- give it a visually "dimmer" pool look so it doesn't
-   read the same as the active Rows/Columns zones next to it. */
+/* dim inactive shelf */
 .pvtAxisContainer.pvtUnused {
   background-color: #fbfbfc;
 }
 
-/* Empty-state placeholder so an empty Rows/Columns zone reads as a real
-   drop target instead of unexplained blank space. Kept compact -- this sits
-   in the Columns zone, which is in the SAME table row as the "Table"
-   renderer select; a tall placeholder here stretches that whole row (table
-   rows share one height across all cells) and pushes Available Fields/Rows
-   down with an empty-looking gap above them. */
+/* placeholder for empty drop zone */
 .pvtAxisContainer.pvtRows:not(:has(li)),
 .pvtAxisContainer.pvtCols:not(:has(li)) {
   min-height: 24px;
@@ -4459,10 +4327,7 @@ input[type="range"]::-ms-fill-upper {
   padding: 6px 6px;
 }
 
-/* Drag handle: a 6-dot grip before each field's label, plus a grab cursor,
-   so fields visually announce that they can be dragged (the chevron next
-   to the label is a separate, unrelated "filter this field's values"
-   control, not a drag handle). */
+/* drag handle */
 .pvtAxisContainer li span.pvtAttr {
   cursor: grab;
   padding-left: 22px !important;
@@ -4678,7 +4543,7 @@ a,
   text-align: left !important;
 }
 
-/* Email text: ellipsize instead of clipping; tighter cap when many columns are enabled */
+/* ellipsize instead of clipping */
 .oh-mail-ellipsis {
   display: inline-block;
   max-width: 250px;
@@ -4691,9 +4556,7 @@ a,
   max-width: 160px;
 }
 
-/* Pipeline stage tables: size columns by cell content, not by heading width.
-   Headers may wrap; sparse columns may shrink below the default 85px floor;
-   body cells stay on one line so real content still defends its width. */
+/* size by content, not heading */
 .oh-tabs__movable-body .fixed-table thead th {
   min-width: unset !important;
   white-space: normal;
@@ -4701,39 +4564,25 @@ a,
 .oh-tabs__movable-body .fixed-table tbody td {
   white-space: nowrap;
 }
-/* Columns whose widgets (selects, star ratings) can't defend their own
-   width in content-based sizing get an explicit floor on the header cell */
-.oh-tabs__movable-body .fixed-table thead th[id$="-stage_drop_down-header"],
-.oh-tabs__movable-body .fixed-table thead th[id$="-rating_bar-header"] {
+/* floor width for narrow widgets */
+.oh-tabs__movable-body .fixed-table thead th[id$="stage_drop_down-header"],
+.oh-tabs__movable-body .fixed-table thead th[id$="rating_bar-header"] {
   min-width: 110px !important;
 }
-/* Generic list headers: the sortable heading's inner flex wrapper has the
-   default min-width:auto, so it never shrinks below its one-line width. In a
-   column pinned by an inline width (the onboarding date columns are 190px for
-   their <input type=date>) a long heading - Ukrainian labels especially -
-   paints straight across the neighbouring columns instead of wrapping. Let
-   the wrapper shrink; the text then wraps inside its own cell. */
-.fixed-table thead th > div > .flex {
-  min-width: 0;
-}
-
-/* Email keeps a readable width regardless */
-th[id$="-mail_indication-header"] {
+th[id$="mail_indication-header"] {
   width: 280px;
   min-width: 250px !important;
 }
-.fixed-table:has(thead th:nth-child(7)) th[id$="-mail_indication-header"] {
+.fixed-table:has(thead th:nth-child(7)) th[id$="mail_indication-header"] {
   width: 210px;
   min-width: 170px !important;
 }
 
-/* Once Summernote has taken over a [data-summernote] textarea (its rich
-   .note-editor sibling exists), the raw source element must stay hidden.
-   Summernote's own JS hide step has been observed to silently no-op on a
-   form that's been closed and reopened more than once, leaving the raw
-   textarea visible side-by-side with the working rich editor. A CSS
-   !important rule wins over whatever inline display value that JS-timing
-   issue leaves behind, so this doesn't depend on init call order/timing. */
+.fixed-table thead th > div > .flex {
+  min-width: 0;
+}
+
+/* Summernote hide-bug workaround */
 textarea[data-summernote]:has(+ .note-editor) {
   display: none !important;
 }

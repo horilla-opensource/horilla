@@ -13,7 +13,7 @@
                         onclick="event.preventDefault();
           const listContainer = document.querySelector('#listContainer');
           if (listContainer) {
-            listContainer.innerHTML = '<div class=&quot;animated-background&quot;></div>';
+            listContainer.innerHTML = '';
           }
           htmx.ajax('GET', '{{ back_url }}', { target: '#listContainer', swap: 'innerHTML' });
           setTimeout(function () {

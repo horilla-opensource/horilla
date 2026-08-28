@@ -22,7 +22,11 @@
     hx-trigger="load, submit"
     hx-replace-url="false"
     hx-target="{{search_swap_target}}"
+    hx-timeout="15000"
     hx-on:submit="htmxLoadIndicator(this);"
+    hx-on::response-error="htmxLoadFailIndicator(this, event);"
+    hx-on::send-error="htmxLoadFailIndicator(this, event);"
+    hx-on::timeout="htmxLoadFailIndicator(this, event);"
     class="oh-main__titlebar oh-main__titlebar--right"
   >
     <input type="text" name="nav_url" value="{{request.path}}" hidden>

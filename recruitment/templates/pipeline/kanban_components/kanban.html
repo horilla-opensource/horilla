@@ -7,7 +7,6 @@
 <div class="oh-tabs__content " id="tab_rec_{{rec.id}}">
   <div class="ui-sortable">
     <div class="oh-kanban ui-sortable drop-target" id="stageContainer{{ rec.id }}" hx-trigger="load" hx-get="{% url 'pipeline-stages-component' 'card' %}?rec_id={{ rec.id }}&view=card">
-        <div class="animated-background"></div>
     </div>
 </div>
 </div>

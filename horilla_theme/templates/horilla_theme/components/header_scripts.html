@@ -83,6 +83,22 @@
         background-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
         border-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
     }
+
+    /* Tab panels on detail/profile pages (e.g. Employee > Mail Log/History,
+       and the self "My Profile" page) reuse the plain list view's table
+       wrapper, which caps its own height and scrolls internally
+       (.heightContainer, "max-h-[calc(100vh_-_260px)] overflow-y-auto").
+       That offset only fits a page where the table starts near the top of
+       the viewport. Nested under a tab bar (and, on the profile page, an
+       extra "#...profileTab" scroll wrapper on top of that), the table sits
+       much lower, so its own scrollbar shows up stacked next to the
+       ancestor's. Drop the inner height cap so only the outer wrapper
+       scrolls. */
+    .oh-tabs__content .heightContainer,
+    [id$="profileTab"] .heightContainer {
+        max-height: none !important;
+        overflow-y: visible !important;
+    }
 </style>
 <script>
     document.addEventListener("DOMContentLoaded", function () {

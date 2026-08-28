@@ -256,7 +256,16 @@
     			$(el).attr('data-loaded', 'true');
     			var req = htmx.ajax('GET', url, {target: target, source: el});
     			if (req && typeof req.then === 'function') {
-    				return req.catch(function () {});
+    				// A failed/aborted request never swaps into `target`, so
+    				// it's left empty indefinitely with no indication
+    				// anything went wrong -- render an explicit retry state
+    				// instead of silently swallowing the failure.
+    				return req.catch(function () {
+    					$(el).removeAttr('data-loaded');
+    					if (typeof renderLoadFailure === 'function') {
+    						renderLoadFailure(target, null, "htmx.ajax('GET', '" + url + "', {target: '" + target + "'});");
+    					}
+    				});
     			}
     			return $.Deferred().resolve().promise();
     		}

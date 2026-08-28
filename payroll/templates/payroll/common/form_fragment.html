@@ -55,7 +55,7 @@
                     if (window.history && history.pushState) {
                         history.pushState({}, "", window.location.pathname + (window.location.search || ""));
                     }
-                    list.innerHTML = '<div class="animated-background"></div>';
+                    list.innerHTML = '';
                     if (window.htmx) {
                         htmx.ajax("GET", backUrl + (window.location.search || ""), {
                             target: "#listContainer",
