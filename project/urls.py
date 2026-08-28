@@ -19,9 +19,9 @@ urlpatterns = [
         name="project-dashboard-kpi",
     ),
     path(
-        "dashboard/api/status/",
-        proj_dashboard.project_status_distribution,
-        name="project-dashboard-status",
+        "dashboard/api/pipeline/",
+        proj_dashboard.project_status_pipeline,
+        name="project-dashboard-pipeline",
     ),
     path(
         "dashboard/api/tasks/",
@@ -34,14 +34,19 @@ urlpatterns = [
         name="project-dashboard-trend",
     ),
     path(
-        "dashboard/api/deadlines/",
-        proj_dashboard.project_upcoming_deadlines,
-        name="project-dashboard-deadlines",
-    ),
-    path(
         "dashboard/api/top/",
         proj_dashboard.project_top_active,
         name="project-dashboard-top",
+    ),
+    path(
+        "dashboard/api/contributors/",
+        proj_dashboard.project_top_contributors,
+        name="project-dashboard-contributors",
+    ),
+    path(
+        "dashboard/api/task-deadlines/",
+        proj_dashboard.project_task_deadlines,
+        name="project-dashboard-task-deadlines",
     ),
     path(
         "projects-due-in-this-month/",

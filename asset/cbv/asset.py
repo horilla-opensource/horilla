@@ -20,9 +20,9 @@ class AssetListView(HorillaListView):
     filter_class = AssetFilter
     template_name = "cbv/asset/asset_list_with_count.html"
     columns = [
+        (_("Tracking Id"), "asset_tracking_id"),
         (_("Asset Name"), "asset_name_display"),
         (_("Status"), "asset_status_col"),
-        "asset_tracking_id",
         "asset_lot_number_id",
     ]
     show_filter_tags = False
@@ -30,7 +30,7 @@ class AssetListView(HorillaListView):
     quick_export = True
     action_method = "action_column"
     header_attrs = {
-        "asset_name": "style='width:200px !important;'",
+        "asset_tracking_id": "style='width:160px !important;'",
         "action": "style='width:130px !important;'",
     }
 
@@ -92,7 +92,7 @@ class AssetInformationView(HorillaDetailedView):
     header = False
     action_method = "detail_view_action"
     body = [
-        "asset_tracking_id",
+        "asset_name_display",
         "asset_purchase_date",
         "asset_purchase_cost",
         (_("Status"), "asset_status_col"),
@@ -102,11 +102,14 @@ class AssetInformationView(HorillaDetailedView):
 
     def get_context_data(self, **kwargs: Any):
         """
-        Return context data with the title set to the contract's name.
+        Return context data with the title set to the asset's tracking id --
+        the tracking id is the unique identifier for the physical asset;
+        asset_name is often shared across many units and is shown in the
+        body instead.
         """
 
         context = super().get_context_data(**kwargs)
-        context["title"] = context["asset"].asset_name_display()
+        context["title"] = context["asset"].asset_tracking_id
 
         body = list(self.body)
         if self.instance.asset_status == "In use":

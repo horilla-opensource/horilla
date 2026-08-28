@@ -295,6 +295,92 @@
   })();
 </script>
 <script>
+  (function () {
+    // The Allocation button (employee_actions.html) pushes "?allocation=<id>"
+    // on the *list* URL when opening the modal -- not a path like
+    // /employee/employee-view/<id>/, which is the detail-view route and
+    // would otherwise render the full detail page on reload instead of the
+    // list with the modal open. This block is what actually reopens the
+    // modal on load/back-forward for that query param; the button only sets
+    // the URL, it doesn't know how to restore state from it.
+    var ALLOCATION_URL_TEMPLATE = "{% url 'allocation-view' 0 %}";
+
+    function allocationUrlFor(id) {
+      return ALLOCATION_URL_TEMPLATE.replace("/0/", "/" + id + "/");
+    }
+
+    function getAllocationIdFromUrl() {
+      var id = new URLSearchParams(window.location.search).get("allocation");
+      return id && /^\d+$/.test(id) ? id : null;
+    }
+
+    function openAllocationModal(id) {
+      var modal = document.getElementById("allocationModal");
+      if (!modal || !window.htmx) {
+        return;
+      }
+      htmx.ajax("GET", allocationUrlFor(id), {
+        target: "#allocationModalBody",
+        swap: "innerHTML",
+      });
+      modal.classList.add("oh-modal--show");
+    }
+
+    function closeAllocationModal() {
+      var modal = document.getElementById("allocationModal");
+      if (modal) {
+        modal.classList.remove("oh-modal--show");
+      }
+    }
+
+    function stripAllocationParam() {
+      var url = new URL(window.location.href);
+      if (!url.searchParams.has("allocation")) {
+        return;
+      }
+      url.searchParams.delete("allocation");
+      history.pushState({}, "", url.pathname + url.search);
+    }
+
+    // Reload/direct-link: reopen the modal the URL says should be open,
+    // instead of silently landing on the bare list.
+    document.addEventListener("DOMContentLoaded", function () {
+      var id = getAllocationIdFromUrl();
+      if (id) {
+        openAllocationModal(id);
+      }
+    });
+
+    // Explicit close ("x") drops the query param, so the URL goes back to
+    // the plain list -- otherwise the modal would keep reopening on every
+    // reload even after the user closed it.
+    document.addEventListener("click", function (event) {
+      if (
+        event.target.closest(
+          "#allocationModal .oh-modal__close, #allocationModal .oh-modal__cancel"
+        ) &&
+        getAllocationIdFromUrl()
+      ) {
+        stripAllocationParam();
+      }
+    });
+
+    // Back/forward: reflect whichever state the URL now represents, so the
+    // back button closes the modal (or a forward navigation reopens it)
+    // instead of leaving the visible modal out of sync with the address bar.
+    window.addEventListener("popstate", function () {
+      var id = getAllocationIdFromUrl();
+      var modal = document.getElementById("allocationModal");
+      var isShown = modal && modal.classList.contains("oh-modal--show");
+      if (id && !isShown) {
+        openAllocationModal(id);
+      } else if (!id && isShown) {
+        closeAllocationModal();
+      }
+    });
+  })();
+</script>
+<script>
   function getCSRFToken() {
     return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
   }

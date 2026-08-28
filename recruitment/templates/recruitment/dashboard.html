@@ -1079,7 +1079,7 @@
                 <div class="rd-info-panel">
                     <div class="rd-info-panel__header">
                         <div class="rd-info-panel__title">{% trans "Interviews" %}</div>
-                        <span style="font-size: 11px; opacity: 0.5">{% trans "In selected period" %}</span>
+                        <a href="{% url 'interview-view' %}" style="font-size: 11px; opacity: 0.7;">{% trans "View all" %} &rarr;</a>
                     </div>
                     <div class="rd-info-panel__body" id="rd-interviews">
                         <div class="rd-info-panel__empty">{% trans "Loading..." %}</div>
@@ -1331,7 +1331,11 @@
                 fetchP("{% url 'recruitment-dashboard-source' %}")
                 .then(r => r.json())
                 .then(data => {
-                    if (!data.sources.length) { document.querySelector("#chart-source-hire").innerHTML = emptyHtml('{% trans "No source data" %}'); return; }
+                    // A single "not_set" slice isn't real signal -- every candidate's
+                    // source is simply unrecorded -- so treat it the same as no data,
+                    // rather than rendering a misleading 100% pie.
+                    const hasRealSource = data.sources.some(s => s.key !== 'not_set');
+                    if (!data.sources.length || !hasRealSource) { document.querySelector("#chart-source-hire").innerHTML = emptyHtml('{% trans "No source data available yet" %}'); return; }
                     const sourceColors = { 'Application Form': '#3b82f6', 'Inside Software': '#E54F38', 'Referral': '#22c55e', 'Other': '#94a3b8' };
                     renderChart('source-hire', document.querySelector("#chart-source-hire"), {
                         series: data.sources.map(s => s.count),
@@ -1389,7 +1393,8 @@
                 fetchP("{% url 'recruitment-dashboard-source-conv' %}")
                 .then(r => r.json())
                 .then(data => {
-                    if (!data.sources.length) { document.querySelector("#chart-source-conv").innerHTML = emptyHtml('{% trans "No source data" %}'); return; }
+                    const hasRealSource = data.sources.some(s => s.source !== '{% trans "Not Specified" %}');
+                    if (!data.sources.length || !hasRealSource) { document.querySelector("#chart-source-conv").innerHTML = emptyHtml('{% trans "No source data available yet" %}'); return; }
                     renderChart('source-conv', document.querySelector("#chart-source-conv"), {
                         series: [
                             { name: '{% trans "Hired" %}', data: data.sources.map(s => s.hired) },
@@ -1555,8 +1560,8 @@
                         xaxis: { categories: data.data.map(d => d.recruitment), labels: { style: { colors: textColor, fontSize: '11px' }, rotate: -45 }, axisBorder: { show: false }, axisTicks: { show: false } },
                         yaxis: { labels: { style: { colors: textColor }, formatter: v => v + 'd' } },
                         grid: { borderColor: gridColor, strokeDashArray: 4 },
-                        dataLabels: { enabled: true, formatter: v => v + ' {% trans "days" %}', style: { fontSize: '11px', colors: ['#fff'] } },
-                        tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { dataPointIndex: i }) => `${v} days (${data.data[i].hired_count} hired)` } },
+                        dataLabels: { enabled: true, formatter: v => (v === null ? '{% trans "N/A" %}' : v + ' {% trans "days" %}'), style: { fontSize: '11px', colors: ['#fff'] } },
+                        tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { dataPointIndex: i }) => v === null ? '{% trans "No joining date recorded" %}' : `${v} days (${data.data[i].hired_count} hired)` } },
                     });
                 });
             }

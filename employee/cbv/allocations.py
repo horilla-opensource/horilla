@@ -510,7 +510,7 @@ if app_installed("leave"):
         header_attrs = {
             "payment": "style='width:80px;'",
             "count": "style='width:105px;'",
-            "action": "style='width:105px;'",
+            "action": "style='width:70px;'",
         }
         row_status_indications = []
         filter_selected = False
@@ -647,10 +647,11 @@ if app_installed("asset"):
         template_name = "cbv/allocations/asset/asset_list.html"
 
         header_attrs = {
+            "asset_tracking_id": "style='width:120px !important;'",
             "asset_name": "style='width:160px !important;'",
             "asset_category_id": "style='width:150px !important;'",
             "asset_status": "style='width:140px !important;'",
-            "action": "style='width:105px;'",
+            "action": "style='width:70px;'",
         }
         row_status_indications = []
         filter_selected = False
@@ -659,6 +660,7 @@ if app_installed("asset"):
             onclick="$(this).find('td:first [type=checkbox]').prop('checked',!$(this).find('td:first [type=checkbox]').is(':checked')).change()"
         """
         columns = [
+            (_("Tracking Id"), "asset_tracking_id"),
             (_("Asset"), "asset_name", "allocation_asset_get_avatar"),
             (_("Category"), "asset_category_id"),
             (_("Status"), "asset_allocation_status"),
@@ -707,6 +709,11 @@ if app_installed("asset"):
                             )
                         )
                         | Q(asset_name__icontains=self.request.GET.get("search", ""))
+                        | Q(
+                            asset_tracking_id__icontains=self.request.GET.get(
+                                "search", ""
+                            )
+                        )
                     )
                 )
 
@@ -810,7 +817,7 @@ if app_installed("asset"):
 
         header_attrs = {
             "asset_category_name": "style='width:160px !important;'",
-            "action": "style='width:105px;'",
+            "action": "style='width:70px;'",
         }
         row_status_indications = []
         filter_selected = False

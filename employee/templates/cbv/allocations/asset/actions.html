@@ -1,9 +1,9 @@
 {% load i18n %}
 {% if not instance.asset_status != "Available" %}
-  <a style="font-size: 15px;color: darkseagreen;" title="{% trans 'Allocate Asset' %}" onclick="
+  <a title="{% trans 'Allocate Asset' %}" onclick="
   $(this).closest('tr').find('td:first [type=checkbox]').prop('checked',!$(this).find('td:first [type=checkbox]').is(':checked')).change();
   $('#addTypesButton').click();
-  " class="oh-btn oh-btn--danger w-100"><ion-icon name="checkmark-done-circle-outline"></ion-icon></a>
+  " class="oh-btn oh-btn--success oh-btn--sq-sm"><ion-icon name="checkmark-done-circle-outline"></ion-icon></a>
 {% else %}
-  <a style="font-size: 15px;" hx-get="{% url "allocation-return-asset" instance.pk %}" hx-target="#genericModalBody" data-toggle="oh-modal-toggle" data-target="#genericModal" title="{% trans 'Return Asset' %}" class="oh-btn oh-btn--danger w-100"><ion-icon name="return-up-back-outline"></ion-icon></a>
+  <a hx-get="{% url "allocation-return-asset" instance.pk %}" hx-target="#genericModalBody" data-toggle="oh-modal-toggle" data-target="#genericModal" title="{% trans 'Return Asset' %}" class="oh-btn oh-btn--danger oh-btn--sq-sm"><ion-icon name="return-up-back-outline"></ion-icon></a>
 {% endif %}

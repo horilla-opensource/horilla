@@ -53,7 +53,12 @@ from base.demo_data.modules.recruitment import seed_recruitment_catalog
 from base.demo_data.modules.recruitment_expansion import (
     backfill_company_recruitment_pipelines,
 )
-from base.demo_data.modules.recruitment_features import backfill_rejected_candidates
+from base.demo_data.modules.recruitment_features import (
+    backfill_candidate_offer_status,
+    backfill_candidate_source,
+    backfill_recruitment_job_position,
+    backfill_rejected_candidates,
+)
 from base.demo_data.modules.request_windows import backfill_request_windows
 from base.demo_data.org import (
     differentiate_org_taxonomy_by_company,
@@ -144,6 +149,9 @@ def run_enterprise_demo_seeder(
         today
     )
     result["recruitment_rejected_candidates"] = backfill_rejected_candidates(today)
+    result["recruitment_candidate_source"] = backfill_candidate_source(today)
+    result["recruitment_job_position"] = backfill_recruitment_job_position(today)
+    result["recruitment_offer_status"] = backfill_candidate_offer_status(today)
     result["asset_company_pools"] = backfill_company_asset_pools(today)
     result["asset_reports"] = backfill_asset_reports(today)
 

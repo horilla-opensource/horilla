@@ -118,7 +118,8 @@ class AssetFilter(CustomFilterSet):
         Search method
         """
         return (
-            queryset.filter(asset_name__icontains=value)
+            queryset.filter(asset_tracking_id__icontains=value)
+            | queryset.filter(asset_name__icontains=value)
             | queryset.filter(asset_category_id__asset_category_name__icontains=value)
         ).distinct()
 

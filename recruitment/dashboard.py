@@ -289,7 +289,12 @@ def recruitment_time_to_hire(request):
             }
         )
 
-    return JsonResponse({"data": [d for d in data if d["avg_days"] is not None]})
+    # Every recruitment with >=1 hire is returned, even when none of its
+    # hires have a usable (joining_date, created_at) pair yet -- avg_days
+    # is null in that case rather than the recruitment being dropped
+    # entirely, so a recruitment with real hires never silently vanishes
+    # from the chart just because its join-date data is incomplete.
+    return JsonResponse({"data": data})
 
 
 @login_required

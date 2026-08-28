@@ -522,6 +522,12 @@ def application_form(request):
         form = ApplicationForm(request.POST, request.FILES)
         if form.is_valid():
             candidate_obj = form.save(commit=False)
+            # Mirrors the internal "add candidate" form always tagging
+            # itself "software" (recruitment/views/views.py) -- without
+            # this, every public career-page applicant leaves `source`
+            # NULL, which is why "Source of Hire" on the dashboard only
+            # ever had a "Not Specified" slice to show.
+            candidate_obj.source = "application"
             recruitment_obj = candidate_obj.recruitment_id
             stages = recruitment_obj.stage_set.all()
             if stages.filter(stage_type="applied").exists():
