@@ -177,6 +177,7 @@ def attendance_weekly_trend(request):
             Attendance.objects.filter(
                 attendance_date__gte=from_date,
                 attendance_date__lte=to_date,
+                employee_id__is_active=True,
             )
             .values("attendance_date")
             .annotate(c=Count("employee_id", distinct=True))
@@ -260,7 +261,10 @@ def attendance_department_breakdown(request):
 
     try:
         dept_data = (
-            Attendance.objects.filter(attendance_date=today)
+            Attendance.objects.filter(
+                attendance_date=today,
+                employee_id__is_active=True,
+            )
             .values("employee_id__employee_work_info__department_id__department")
             .annotate(present=Count("employee_id", distinct=True))
             .order_by("-present")
@@ -473,18 +477,61 @@ def attendance_shift_distribution(request):
 
 @login_required
 def attendance_absenteeism_trend(request):
-    """Monthly absenteeism rate for the last 6 months."""
+    """Monthly absenteeism rate for the last 6 months.
+
+    "Expected" days excludes weekends, days before an employee's joining
+    date, approved leave, and company-wide holidays -- otherwise every
+    approved leave/holiday gets miscounted as an absence and the rate is
+    structurally overstated regardless of how complete attendance data is.
+    """
     from attendance.models import Attendance
+    from base.models import Holidays
     from employee.models import Employee
+    from leave.methods import holiday_dates_list
+    from leave.models import LeaveRequest
 
     _, to_date = _parse_period(request)
     today = to_date
     months = []
 
     try:
-        total_employees = Employee.objects.filter(is_active=True).count()
-
         current_month_start = today.replace(day=1)
+
+        # Trailing-6-month window bounds, so holidays/leaves/employees are
+        # each fetched once instead of once per month.
+        year = current_month_start.year
+        month = current_month_start.month - 5
+        while month <= 0:
+            month += 12
+            year -= 1
+        window_start = date(year, month, 1)
+
+        employees = list(
+            Employee.objects.filter(is_active=True).values(
+                "id", "employee_work_info__date_joining"
+            )
+        )
+
+        holiday_dates = set(
+            holiday_dates_list(
+                Holidays.objects.filter(
+                    start_date__lte=today,
+                    end_date__gte=window_start,
+                    is_specific=False,
+                )
+            )
+        )
+
+        leaves_by_employee = {}
+        for leave in LeaveRequest.objects.filter(
+            status="approved",
+            start_date__lte=today,
+            end_date__gte=window_start,
+        ).values("employee_id", "start_date", "end_date"):
+            leaves_by_employee.setdefault(leave["employee_id"], []).append(
+                (leave["start_date"], leave["end_date"] or leave["start_date"])
+            )
+
         for i in range(5, -1, -1):
             # Step back i full months using year/month arithmetic (no day drift)
             year = current_month_start.year
@@ -497,33 +544,49 @@ def attendance_absenteeism_trend(request):
                 month_end = date(year + 1, 1, 1) - timedelta(days=1)
             else:
                 month_end = date(year, month + 1, 1) - timedelta(days=1)
+            month_end = min(month_end, today)
 
-            # Count working days (Mon-Fri) in the month
-            working_days = 0
+            # Working days (Mon-Fri, non-holiday) in the month
+            working_dates = []
             d = month_start
-            while d <= min(month_end, today):
-                if d.weekday() < 5:
-                    working_days += 1
+            while d <= month_end:
+                if d.weekday() < 5 and d not in holiday_dates:
+                    working_dates.append(d)
                 d += timedelta(days=1)
 
-            if working_days == 0 or total_employees == 0:
+            if not working_dates or not employees:
                 months.append({"month": month_start.strftime("%b %Y"), "rate": 0})
                 continue
+
+            # Expected days: each employee's working days in the month,
+            # minus days before they joined and days covered by approved leave.
+            expected_days = 0
+            for emp in employees:
+                join_date = emp["employee_work_info__date_joining"]
+                emp_leaves = leaves_by_employee.get(emp["id"], [])
+                for d in working_dates:
+                    if join_date and d < join_date:
+                        continue
+                    if any(start <= d <= end for start, end in emp_leaves):
+                        continue
+                    expected_days += 1
 
             # Count unique employee-days with attendance
             present_days = (
                 Attendance.objects.filter(
                     attendance_date__gte=month_start,
-                    attendance_date__lte=min(month_end, today),
+                    attendance_date__lte=month_end,
+                    employee_id__is_active=True,
                 )
                 .values("employee_id", "attendance_date")
                 .distinct()
                 .count()
             )
 
-            expected_days = total_employees * working_days
             absent_days = max(0, expected_days - present_days)
-            absenteeism_rate = round((absent_days / expected_days * 100), 1)
+            absenteeism_rate = (
+                round((absent_days / expected_days * 100), 1) if expected_days else 0
+            )
 
             months.append(
                 {
@@ -753,6 +816,7 @@ def attendance_calendar_heatmap(request):
                 Attendance.objects.filter(
                     attendance_date__gte=from_date,
                     attendance_date__lte=to_date,
+                    employee_id__is_active=True,
                 )
                 .values("attendance_date")
                 .annotate(c=Count("employee_id", distinct=True))
@@ -857,6 +921,7 @@ def attendance_overview(request):
             dept_attendance = Attendance.objects.filter(
                 attendance_date=target_date,
                 employee_id__employee_work_info__department_id=dept,
+                employee_id__is_active=True,
             )
             present_count = dept_attendance.values("employee_id").distinct().count()
             if not present_count:
@@ -867,6 +932,7 @@ def attendance_overview(request):
                     type="late_come",
                     attendance_id__attendance_date=target_date,
                     employee_id__employee_work_info__department_id=dept,
+                    employee_id__is_active=True,
                 )
                 .values("employee_id")
                 .distinct()
@@ -877,6 +943,7 @@ def attendance_overview(request):
                     type="early_out",
                     attendance_id__attendance_date=target_date,
                     employee_id__employee_work_info__department_id=dept,
+                    employee_id__is_active=True,
                 )
                 .values("employee_id")
                 .distinct()
