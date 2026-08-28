@@ -18,8 +18,8 @@ services:
       - DEBUG=1
       - DB_HOST=db
       - SECRET_KEY=dev-secret-key-change-in-production
-      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
-      - CSRF_TRUSTED_ORIGINS=http://localhost:8000
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,45.192.12.105,main-horilla.bi2uoy.easypanel.host
+      - CSRF_TRUSTED_ORIGINS=https://main-horilla.bi2uoy.easypanel.host,http://localhost:8000
       - DATABASE_URL=postgres://horilla_user:horilla_pass@db:5432/horilla_db
       - DB_INIT_PASSWORD=dev-init-password-change-in-production
       - REDIS_URL=redis://:horilla_pass@redis:6379/0
