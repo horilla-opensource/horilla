@@ -4707,6 +4707,16 @@ a,
 .oh-tabs__movable-body .fixed-table thead th[id$="-rating_bar-header"] {
   min-width: 110px !important;
 }
+/* Generic list headers: the sortable heading's inner flex wrapper has the
+   default min-width:auto, so it never shrinks below its one-line width. In a
+   column pinned by an inline width (the onboarding date columns are 190px for
+   their <input type=date>) a long heading - Ukrainian labels especially -
+   paints straight across the neighbouring columns instead of wrapping. Let
+   the wrapper shrink; the text then wraps inside its own cell. */
+.fixed-table thead th > div > .flex {
+  min-width: 0;
+}
+
 /* Email keeps a readable width regardless */
 th[id$="-mail_indication-header"] {
   width: 280px;
