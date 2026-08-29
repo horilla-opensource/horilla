@@ -31,6 +31,7 @@ def backfill_request_windows(today: date | None = None) -> dict[str, int]:
         "timesheets_clamped": 0,
         "tickets_clamped": 0,
         "assets_expiry": 0,
+        "documents_expiry": 0,
         "attendance_validations": 0,
     }
 
@@ -43,6 +44,7 @@ def backfill_request_windows(today: date | None = None) -> dict[str, int]:
     result["timesheets_clamped"] = _clamp_timesheets(today)
     result["tickets_clamped"] = _clamp_tickets(today)
     result["assets_expiry"] = _fix_asset_expiry(today)
+    result["documents_expiry"] = _document_expiry(today)
     result["attendance_validations"] = _pending_attendance_validations(today)
 
     logger.info("Request windows backfill: %s", result)
@@ -264,3 +266,42 @@ def _pending_attendance_validations(today: date) -> int:
         is_validate_request_approved=False,
         attendance_validated=False,
     )
+
+
+def _document_expiry(today: date) -> int:
+    """Give approved employee documents an issue/expiry date.
+
+    Nothing in the fixtures or the other backfills ever sets
+    Document.expiry_date, so every row sits NULL and the Document Expiry /
+    Document Expiry Aging reports render completely empty on a fresh
+    install -- the reports are correct, they simply have nothing to show.
+    Spread the dates so all three buckets a compliance officer cares about
+    are represented: already expired, expiring inside the notify window,
+    and comfortably valid.
+    """
+    if not apps.is_installed("horilla_documents"):
+        return 0
+    from horilla_documents.models import Document
+
+    updated = 0
+    for i, doc in enumerate(
+        Document._base_manager.filter(expiry_date=None).order_by("id")
+    ):
+        # Deterministic spread -- same rows land in the same buckets on
+        # every reload, so the reports don't churn between loads.
+        bucket = i % 10
+        if bucket == 0:
+            expiry = today - timedelta(days=15 + i)  # overdue
+        elif bucket in (1, 2):
+            expiry = today + timedelta(days=10 + bucket * 5)  # expiring soon
+        elif bucket in (3, 4):
+            expiry = today + timedelta(days=75 + bucket * 5)  # within 90 days
+        else:
+            expiry = today + timedelta(days=400 + i)  # comfortably valid
+        issue = expiry - timedelta(days=730)
+        Document._base_manager.filter(pk=doc.pk).update(
+            issue_date=issue,
+            expiry_date=expiry,
+        )
+        updated += 1
+    return updated

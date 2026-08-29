@@ -31,13 +31,12 @@ SUGGESTED_REPORT_SLUGS: tuple[str, ...] = (
     "attendance-summary",
     "unscheduled-absence",
     "leave-liability",  # catalog: Open Leave Balance (Days)
-    "ot-concentration",  # department / KPI defaults; names gated
+    "overtime-analysis",  # department / KPI defaults; names gated
     "recruitment-funnel",
     "time-to-hire",
     "offer-acceptance",
     "pipeline-aging",
     "quality-of-hire",
-    "document-expiry",
     "document-expiry-aging",
 )
 
@@ -46,9 +45,9 @@ SUGGESTED_REPORT_SLUGS: tuple[str, ...] = (
 DASHBOARD_PIN_PRIORITY_SLUGS: tuple[str, ...] = (
     "turnover-attrition",
     "time-to-hire",
-    "document-expiry",
+    "document-expiry-aging",
     "span-of-control",
-    "ot-concentration",
+    "overtime-analysis",
     "leave-liability",
 )
 

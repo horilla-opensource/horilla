@@ -4,6 +4,9 @@
 <head>
   <meta charset="utf-8" />
   <title>{{ report_title }}</title>
+  <meta name="author" content="{{ company_name }}" />
+  <meta name="subject" content="{% blocktrans %}{{ report_title }} — {{ period_label }}{% endblocktrans %}" />
+  <meta name="keywords" content="{{ domain_label }}, {{ report_title }}" />
   <style>
     @page {
       size: A4 {% if landscape %}landscape{% else %}portrait{% endif %};
@@ -38,7 +41,7 @@
     .chart-block {
       page-break-inside: avoid;
       text-align: center;
-      margin: 4px 0 14px;
+      margin: 4px 0 10px;
     }
     .chart-title {
       font-size: 10px;
@@ -46,9 +49,32 @@
       color: #333333;
       margin-bottom: 4px;
       text-align: left;
+      page-break-after: avoid;
+    }
+    .chart-grid { width: 100%; border-collapse: collapse; }
+    /* Rows, not the blocks themselves, carry the no-break rule: xhtml2pdf
+       honours page-break-inside on table rows, and a row keeps each chart
+       with its own title instead of stranding one behind. */
+    .chart-grid tr { page-break-inside: avoid; }
+    .chart-cell {
+      width: 50%;
+      vertical-align: top;
+      padding: 0 4mm 8mm 0;
     }
     .chart-img {
-      max-width: 100%;
+      /* Source PNGs are ~1167x542px (560x260pt at dpi=150). Unconstrained
+         they filled the full content width and stood ~86mm tall -- a third
+         of the page each. At ~88mm (half the content width, less padding)
+         the 2.15 aspect ratio renders ~41mm tall, so two sit side by side
+         and several rows share a page, still well above print resolution. */
+      width: 84mm;
+    }
+    .chart-empty {
+      color: #888888;
+      font-size: 9px;
+      font-style: italic;
+      text-align: left;
+      padding: 10px 0 14px;
     }
     .truncation-note {
       background: #FFF4CE;
@@ -74,25 +100,32 @@
     .company-name {
       font-size: 14px;
       font-weight: bold;
-      margin: 0 0 3px;
+      /* Nudged to sit on the same optical baseline as .report-title
+         opposite it, which starts with a smaller uppercase eyebrow. */
+      margin: 8px 0 3px;
       color: #222222;
     }
     .company-line { margin: 0 0 1px; color: #555555; font-size: 9px; }
     .report-meta { text-align: right; }
+    /* No background here: xhtml2pdf treats inline-block as a full-width
+       block, so a tinted badge rendered as an empty bar spanning the whole
+       column with the label floating at its right edge. Plain uppercase
+       text on the same right edge as the title reads as an eyebrow and
+       actually aligns with it. */
     .badge {
-      display: inline-block;
-      background: #FCEDEB;
       color: #E54F38;
-      font-size: 9px;
+      font-size: 8px;
       font-weight: bold;
-      padding: 2px 6px;
-      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin: 0 0 2px;
     }
     .report-title {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: bold;
       color: #E54F38;
-      margin: 0 0 4px;
+      margin: 0 0 3px;
+      line-height: 1.2;
     }
     .period { color: #555555; font-size: 9px; margin: 0; }
 
@@ -122,6 +155,8 @@
       margin: 14px 0 6px;
       border-bottom: 1px solid #F7C8C1;
       padding-bottom: 3px;
+      /* Never strand a section heading at the foot of a page. */
+      page-break-after: avoid;
     }
     .narrative {
       background: #FFF8E8;
@@ -205,7 +240,7 @@
           {% endfor %}
         </td>
         <td class="report-meta meta-col">
-          {% if domain_label %}<div class="badge">{{ domain_label }}</div>{% endif %}
+          {% if domain_label %}<p class="badge">{{ domain_label }}</p>{% endif %}
           <div class="report-title">{{ report_title }}</div>
           {% if period_label %}<p class="period">{% trans "Reporting period" %}: {{ period_label }}</p>{% endif %}
           {% if compare_label %}<p class="period">{{ compare_label }}</p>{% endif %}
@@ -308,12 +343,23 @@
   <!-- ==================== Charts ==================== -->
   {% if chart_images %}
   <h2>{% trans "Charts" %}</h2>
-  {% for chart in chart_images %}
-  <div class="chart-block">
-    <div class="chart-title">{{ chart.title }}</div>
-    <img class="chart-img" src="{{ chart.path }}" />
-  </div>
-  {% endfor %}
+  <table class="chart-grid">
+    {% for row in chart_rows %}
+    <tr>
+      {% for chart in row %}
+      <td class="chart-cell">
+        <div class="chart-title">{{ chart.title }}</div>
+        {% if chart.empty %}
+        <div class="chart-empty">{% trans "No data for the selected period." %}</div>
+        {% else %}
+        <img class="chart-img" src="{{ chart.path }}" />
+        {% endif %}
+      </td>
+      {% endfor %}
+      {% if row|length == 1 %}<td class="chart-cell"></td>{% endif %}
+    </tr>
+    {% endfor %}
+  </table>
   {% endif %}
 
   <!-- ==================== Detail data ==================== -->

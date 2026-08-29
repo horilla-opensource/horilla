@@ -288,6 +288,25 @@ def overtime_analysis(filters: ReportFilters) -> dict:
         or 0
     )
 
+    # Concentration view, absorbed from the former ot-concentration report:
+    # same base queryset, same department chart, same privacy gate -- the only
+    # things it added were the top-5/top-10 share KPIs and a per-department
+    # share column, so it is a view of this report rather than its own report.
+    from report.formulas import ot_concentration_share
+
+    by_emp_totals = list(
+        att_qs.values("employee_id")
+        .annotate(total_seconds=Sum("overtime_second"))
+        .order_by("-total_seconds")
+        .values_list("total_seconds", flat=True)
+    )
+    top5_share = ot_concentration_share(
+        sum(v or 0 for v in by_emp_totals[:5]), total_ot
+    )
+    top10_share = ot_concentration_share(
+        sum(v or 0 for v in by_emp_totals[:10]), total_ot
+    )
+
     by_dept = list(
         att_qs.filter(employee_id__employee_work_info__department_id__isnull=False)
         .values("employee_id__employee_work_info__department_id__department")
@@ -304,6 +323,7 @@ def overtime_analysis(filters: ReportFilters) -> dict:
         {"key": "department", "label": _("Department")},
         {"key": "ot_hours", "label": _("OT Hours")},
         {"key": "employees", "label": _("Employees")},
+        {"key": "share", "label": _("Share")},
     ]
     table_rows = [
         {
@@ -313,6 +333,7 @@ def overtime_analysis(filters: ReportFilters) -> dict:
             or "",
             "ot_hours": round((r["total_seconds"] or 0) / 3600, 1),
             "employees": r["employees"],
+            "share": f"{ot_concentration_share(r['total_seconds'] or 0, total_ot)}%",
         }
         for r in by_dept
     ]
@@ -366,6 +387,16 @@ def overtime_analysis(filters: ReportFilters) -> dict:
                 "label": _("Departments"),
                 "value": len(by_dept),
                 "hint": _("With OT"),
+            },
+            {
+                "label": _("Top 5 share"),
+                "value": f"{top5_share}%",
+                "hint": _("OT concentrated in the top 5 employees"),
+            },
+            {
+                "label": _("Top 10 share"),
+                "value": f"{top10_share}%",
+                "hint": _("OT concentrated in the top 10 employees"),
             },
         ],
         "charts": [

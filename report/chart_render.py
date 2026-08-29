@@ -18,7 +18,7 @@ from reportlab.graphics.charts.barcharts import VerticalBarChart
 from reportlab.graphics.charts.legends import Legend
 from reportlab.graphics.charts.lineplots import LinePlot
 from reportlab.graphics.charts.piecharts import Pie
-from reportlab.graphics.shapes import Drawing
+from reportlab.graphics.shapes import Circle, Drawing
 from reportlab.lib import colors
 
 # Same brand palette as report/export.py's COLOR_PRIMARY, plus a few
@@ -32,6 +32,12 @@ PALETTE = [
     colors.HexColor("#0D9488"),  # teal
     colors.HexColor("#F59E0B"),  # amber
 ]
+
+# reportlab defaults to Times for all chart text. The exported document is set
+# in Helvetica, so unset labels made every chart look pasted in from another
+# system. Helvetica is a built-in Type 1 face, so this needs no font files.
+FONT = "Helvetica"
+FONT_BOLD = "Helvetica-Bold"
 
 WIDTH = 560
 HEIGHT = 260
@@ -71,6 +77,7 @@ def _legend(pairs: list[tuple], x: float, y: float) -> Legend:
     legend.x = x
     legend.y = y
     legend.alignment = "left"
+    legend.fontName = FONT
     legend.fontSize = 8
     legend.boxAnchor = "nw"
     legend.dx = 8
@@ -94,18 +101,44 @@ def _bar_drawing(categories, series, width, height) -> Drawing:
     chart.height = height - 80
     chart.data = [[v or 0 for v in (s.get("data") or [])] for s in series]
     chart.categoryAxis.categoryNames = [str(c) for c in categories]
+    chart.categoryAxis.labels.fontName = FONT
     chart.categoryAxis.labels.fontSize = 7
     if len(categories) > 6:
         chart.categoryAxis.labels.angle = 30
         chart.categoryAxis.labels.dx = -6
         chart.categoryAxis.labels.dy = -8
+    chart.valueAxis.labels.fontName = FONT
     chart.valueAxis.labels.fontSize = 7
-    chart.valueAxis.valueMin = 0
+
+    # Negative values: valueMin pinned to 0 clipped bars that fell below the
+    # axis (a bridge or variance chart draws them routinely), and category
+    # labels sat on the axis line, printing on top of those bars. Let the
+    # axis span the real range and drop the labels below the plot instead.
+    flat = [v or 0 for s_ in series for v in (s_.get("data") or [])]
+    has_negative = any(v < 0 for v in flat)
+    if has_negative:
+        span = max(abs(min(flat)), abs(max(flat))) or 1
+        chart.valueAxis.valueMin = min(flat) - span * 0.1
+        chart.valueAxis.valueMax = max(max(flat) + span * 0.1, 0)
+        chart.categoryAxis.labels.dy = -10
+        chart.categoryAxis.labelAxisMode = "low"
+        chart.valueAxis.gridStrokeColor = colors.HexColor("#E5E7EB")
+        chart.valueAxis.gridStrokeWidth = 0.5
+        chart.valueAxis.visibleGrid = 1
+    else:
+        chart.valueAxis.valueMin = 0
+
     chart.barSpacing = 3
     chart.groupSpacing = 12
     chart.bars.strokeColor = None
     for i in range(len(series)):
         chart.bars[i].fillColor = PALETTE[i % len(PALETTE)]
+    # A single series carrying negatives reads as one undifferentiated block
+    # otherwise -- tint the negative bars so decreases are visible at a glance.
+    if has_negative and len(series) == 1:
+        for j, v in enumerate((series[0].get("data") or [])):
+            if (v or 0) < 0:
+                chart.bars[(0, j)].fillColor = colors.HexColor("#B91C1C")
     drawing.add(chart)
 
     if has_legend:
@@ -127,18 +160,46 @@ def _pie_drawing(categories, series, width, height) -> Drawing:
     pie.width = diameter
     pie.height = diameter
     pie.data = values
-    pie.labels = None
+    # Percentage labels: a slice with no value forces the reader to eyeball
+    # proportions off the legend. Shares under 5% are left unlabelled, since
+    # the text collides with its neighbours at that size.
+    total = sum(values) or 1
+    pie.labels = [
+        f"{(v / total * 100):.0f}%" if (v / total) >= 0.05 else "" for v in values
+    ]
+    pie.sideLabels = 0
+    pie.simpleLabels = 1
+    pie.slices.fontName = FONT
+    pie.slices.fontSize = 7
+    pie.slices.fontColor = colors.white
+    pie.slices.labelRadius = 0.68
     pie.slices.strokeWidth = 1.2
     pie.slices.strokeColor = colors.white
     for i in range(len(values)):
         pie.slices[i].fillColor = PALETTE[i % len(PALETTE)]
     drawing.add(pie)
 
+    # Donut, to match the in-app charts -- the printed artefact otherwise did
+    # not look like what the user saw on screen. reportlab has no donut, so
+    # punch the hub out with a page-coloured circle over the pie's centre.
+    hub = Circle(
+        pie.x + diameter / 2.0,
+        pie.y + diameter / 2.0,
+        diameter * 0.27,
+        fillColor=colors.white,
+        strokeColor=None,
+    )
+    drawing.add(hub)
+
     pairs = [
         (PALETTE[i % len(PALETTE)], str(categories[i]))
         for i in range(min(len(categories), len(values)))
     ]
-    drawing.add(_legend(pairs, pie.x + diameter + 30, height - 30))
+    # Anchor the legend to the ring's own vertical centre rather than the top
+    # of the canvas, so it reads as part of the figure instead of floating.
+    legend_rows = len(pairs)
+    legend_top = pie.y + diameter / 2.0 + min(legend_rows, 12) * 7
+    drawing.add(_legend(pairs, pie.x + diameter + 26, legend_top))
     return drawing
 
 
@@ -162,7 +223,9 @@ def _line_drawing(categories, series, width, height) -> Drawing:
     chart.xValueAxis.labelTextFormat = lambda v: (
         labels[int(v)] if 0 <= int(v) < len(labels) else ""
     )
+    chart.xValueAxis.labels.fontName = FONT
     chart.xValueAxis.labels.fontSize = 7
+    chart.yValueAxis.labels.fontName = FONT
     chart.yValueAxis.labels.fontSize = 7
     for i in range(len(series)):
         chart.lines[i].strokeColor = PALETTE[i % len(PALETTE)]

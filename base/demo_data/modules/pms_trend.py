@@ -84,6 +84,26 @@ def backfill_pms_objectives(today: date | None = None) -> int:
         )
         key_result_deltas[kr["id"]] = delta_days
 
+    # created_at is auto_now_add and nullable, so rows created via
+    # bulk_create() never get one. A NULL here makes the row invisible to
+    # every period-filtered report (report/metrics/talent.py), not just the
+    # current window -- and the undated rows happen to carry the only
+    # non-"Not Started" statuses, so the Key Result Status chart renders a
+    # flat single bar without them. Date them from their own objective.
+    for kr in EmployeeKeyResult._base_manager.filter(created_at__isnull=True).values(
+        "id", "employee_objective_id", "start_date"
+    ):
+        seed = kr["start_date"]
+        if seed is None:
+            seed = (
+                EmployeeObjective._base_manager.filter(pk=kr["employee_objective_id"])
+                .values_list("start_date", flat=True)
+                .first()
+            )
+        if seed is None:
+            continue
+        EmployeeKeyResult._base_manager.filter(pk=kr["id"]).update(created_at=seed)
+
     for comment in Comment._base_manager.filter(
         employee_objective_id__in=objective_deltas
     ).values("id", "employee_objective_id", "created_at"):

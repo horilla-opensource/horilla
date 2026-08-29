@@ -421,26 +421,11 @@ def _load():
                 "Prefer ReportAccess matrix for production tenants."
             ),
             permission="employee.view_employee",
+            alt_permissions=("horilla_audit.view_audittag",),
             query_fn=compliance.audit_activity,
             export_model=None,
             required_apps=(),
             filter_fields=("company_id",),
-        )
-    )
-    register(
-        ReportDefinition(
-            slug="document-expiry",
-            name=_("Document Expiry"),
-            domain="compliance",
-            description=_(
-                "Employee documents (and optional assets) with expiry_date in the "
-                "selected period."
-            ),
-            permission="employee.view_employee",
-            query_fn=compliance.document_expiry,
-            export_model="employee.Employee",
-            required_apps=("employee", "horilla_documents"),
-            filter_fields=_COMPLIANCE,
         )
     )
 
@@ -506,27 +491,11 @@ def _load():
                 "Overdue and upcoming horilla_documents expiry buckets (90-day horizon)."
             ),
             permission="employee.view_employee",
+            alt_permissions=("horilla_documents.view_document",),
             query_fn=packs.document_expiry_aging,
             export_model="employee.Employee",
             required_apps=("employee", "horilla_documents"),
             filter_fields=_COMPLIANCE,
-        )
-    )
-    register(
-        ReportDefinition(
-            slug="ot-concentration",
-            name=_("OT Concentration"),
-            domain="time_leave",
-            description=_(
-                "Share of overtime concentrated in top employees (department default). "
-                "Named employee rows require ?include_names=1 and attendance.change_attendance."
-            ),
-            permission="attendance.view_attendance",
-            query_fn=packs.ot_concentration,
-            explorer_url_name="attendance-report",
-            export_model="attendance.Attendance",
-            required_apps=("attendance", "employee"),
-            filter_fields=_ATTENDANCE,
         )
     )
 
@@ -607,6 +576,10 @@ def _load():
                 "Visa-like classification is title-based only — not a legal visa register."
             ),
             permission="employee.view_employee",
+            alt_permissions=(
+                "horilla_documents.view_document",
+                "payroll.view_contract",
+            ),
             query_fn=compliance.visa_contract_expiry,
             export_model="employee.Employee",
             required_apps=("employee",),
@@ -628,6 +601,77 @@ def _load():
             export_model="recruitment.Candidate",
             required_apps=("recruitment", "employee"),
             filter_fields=_CANDIDATE,
+        )
+    )
+    register(
+        ReportDefinition(
+            slug="payroll-readiness",
+            name=_("Payroll Readiness"),
+            domain="payroll",
+            description=_(
+                "Active employees who cannot be paid: missing bank details or "
+                "no active contract. An exception report -- empty is good."
+            ),
+            permission="payroll.view_payslip",
+            alt_permissions=("payroll.view_contract",),
+            query_fn=payroll.payroll_readiness,
+            explorer_url_name="payroll-report",
+            export_model="employee.Employee",
+            required_apps=("payroll", "employee"),
+            filter_fields=_PAYROLL,
+        )
+    )
+    register(
+        ReportDefinition(
+            slug="loan-advance-ledger",
+            name=_("Loan & Advance Ledger"),
+            domain="payroll",
+            description=_(
+                "Outstanding employee loans and advances: principal, recovered "
+                "installments and remaining balance."
+            ),
+            permission="payroll.view_payslip",
+            alt_permissions=("payroll.view_loanaccount",),
+            query_fn=payroll.loan_advance_ledger,
+            explorer_url_name="payroll-report",
+            export_model="payroll.LoanAccount",
+            required_apps=("payroll",),
+            filter_fields=_PAYROLL,
+        )
+    )
+    register(
+        ReportDefinition(
+            slug="reimbursement-register",
+            name=_("Reimbursement Register"),
+            domain="payroll",
+            description=_(
+                "Reimbursement and encashment claims by type and status, with "
+                "pending exposure before a payroll run closes."
+            ),
+            permission="payroll.view_payslip",
+            alt_permissions=("payroll.view_reimbursement",),
+            query_fn=payroll.reimbursement_register,
+            explorer_url_name="payroll-report",
+            export_model="payroll.Reimbursement",
+            required_apps=("payroll",),
+            filter_fields=_PAYROLL,
+        )
+    )
+    register(
+        ReportDefinition(
+            slug="asset-register",
+            name=_("Asset Register"),
+            domain="compliance",
+            description=_(
+                "Asset inventory by status, and how long each assigned asset "
+                "has been held -- the offboarding recovery control."
+            ),
+            permission="asset.view_asset",
+            alt_permissions=("employee.view_employee",),
+            query_fn=compliance.asset_register,
+            export_model="asset.Asset",
+            required_apps=("asset",),
+            filter_fields=_COMPLIANCE,
         )
     )
 

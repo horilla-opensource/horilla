@@ -25,6 +25,11 @@ class ReportDefinition:
     description: str
     permission: str
     query_fn: QueryFn
+    # Additional permissions that also grant this report, any-of. Lets a
+    # report be granted on its own subject-matter permission without
+    # revoking access from roles that only hold the primary one -- swapping
+    # `permission` outright would silently drop existing users on upgrade.
+    alt_permissions: tuple[str, ...] = field(default_factory=tuple)
     explorer_url_name: Optional[str] = None
     export_model: Optional[str] = None
     required_apps: tuple[str, ...] = field(default_factory=tuple)
@@ -42,7 +47,9 @@ class ReportDefinition:
             return False
         if user.is_superuser:
             return True
-        return user.has_perm(self.permission)
+        if user.has_perm(self.permission):
+            return True
+        return any(user.has_perm(perm) for perm in self.alt_permissions)
 
 
 _REGISTRY: dict[str, ReportDefinition] = {}
@@ -62,8 +69,27 @@ def register(definition: ReportDefinition) -> ReportDefinition:
     return definition
 
 
+# Retired slugs, mapped to the report that absorbed them. Kept so existing
+# bookmarks, saved views and subscriptions keep resolving instead of 404ing
+# the moment a report is consolidated away.
+RETIRED_SLUGS = {
+    # Absorbed into overtime-analysis as a concentration view: same base
+    # queryset and chart, only the share KPIs and column differed.
+    "ot-concentration": "overtime-analysis",
+    # Absorbed into document-expiry-aging, the strictly stronger of the pair
+    # -- it buckets by age and can show overdue items, which document-expiry
+    # structurally could not (its floor was expiry_date >= from_date).
+    "document-expiry": "document-expiry-aging",
+}
+
+
+def resolve_slug(slug: str) -> str:
+    "Map a retired slug onto its surviving report."
+    return RETIRED_SLUGS.get(slug, slug)
+
+
 def get_report(slug: str) -> Optional[ReportDefinition]:
-    definition = _REGISTRY.get(slug)
+    definition = _REGISTRY.get(resolve_slug(slug))
     if definition and definition.is_available():
         return definition
     return None

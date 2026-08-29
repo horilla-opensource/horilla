@@ -90,6 +90,78 @@ class EngineHelpersTests(SimpleTestCase):
 
 
 class RegistryTests(SimpleTestCase):
+    def test_new_operational_registers_registered(self):
+        "Payroll readiness and the three registers are in the catalog."
+        import report.metrics  # noqa: F401
+        from report.registry import get_report
+
+        expected = {
+            "payroll-readiness": "payroll",
+            "loan-advance-ledger": "payroll",
+            "reimbursement-register": "payroll",
+            "asset-register": "compliance",
+        }
+        for slug, domain in expected.items():
+            definition = get_report(slug)
+            self.assertIsNotNone(definition, f"{slug} not registered")
+            self.assertEqual(definition.domain, domain)
+            self.assertTrue(callable(definition.query_fn))
+            # Each carries its own subject-matter permission so it can be
+            # granted without handing over unrelated access.
+            self.assertTrue(definition.alt_permissions)
+
+    def test_reimbursement_register_keeps_undated_claims(self):
+        "Undated rows must not vanish from every window."
+        import inspect
+
+        from report.metrics.payroll import reimbursement_register
+
+        # Guards the bulk_create/auto_now_add NULL created_at trap: a plain
+        # range filter excludes those rows from any period at all.
+        source = inspect.getsource(reimbursement_register)
+        self.assertIn("created_at__isnull=True", source)
+
+    def test_retired_slugs_still_resolve(self):
+        "Consolidated reports keep resolving so bookmarks do not 404."
+        import report.metrics  # noqa: F401
+        from report.registry import RETIRED_SLUGS, get_report
+
+        self.assertTrue(RETIRED_SLUGS)
+        for retired, survivor in RETIRED_SLUGS.items():
+            definition = get_report(retired)
+            self.assertIsNotNone(
+                definition, f"retired slug {retired} no longer resolves"
+            )
+            self.assertEqual(definition.slug, survivor)
+
+    def test_compliance_reports_grantable_independently(self):
+        "Compliance must not require full workforce analytics access."
+        import report.metrics  # noqa: F401
+        from report.registry import get_report
+
+        definition = get_report("document-expiry-aging")
+        self.assertIn("horilla_documents.view_document", definition.alt_permissions)
+
+        class _User:
+            is_authenticated = True
+            is_superuser = False
+
+            def __init__(self, perms):
+                self._perms = perms
+
+            def has_perm(self, perm):
+                return perm in self._perms
+
+        # Granted on its own subject-matter permission ...
+        self.assertTrue(
+            definition.user_has_permission(_User({"horilla_documents.view_document"}))
+        )
+        # ... without revoking anyone who only holds the original one.
+        self.assertTrue(
+            definition.user_has_permission(_User({"employee.view_employee"}))
+        )
+        self.assertFalse(definition.user_has_permission(_User({"asset.view_asset"})))
+
     def test_definitions_registered(self):
         import report.metrics  # noqa: F401
 
@@ -119,12 +191,10 @@ class RegistryTests(SimpleTestCase):
             "offer-acceptance",
             "performance-distribution",
             "audit-activity",
-            "document-expiry",
             "span-of-control",
             "pipeline-aging",
             "source-quality",
             "document-expiry-aging",
-            "ot-concentration",
             "headcount-bridge",
             "exit-analysis",
             "new-hire-90-day-attrition",
@@ -194,6 +264,49 @@ class RegistryTests(SimpleTestCase):
 
 
 class ExportTests(SimpleTestCase):
+    def test_exports_neutralize_spreadsheet_formulas(self):
+        """A value beginning =, +, -, @ must not execute when opened."""
+        import io as _io
+
+        import openpyxl
+
+        from report.export import export_csv, export_xlsx
+
+        payload = {
+            "title": "Injection",
+            "period": {"from_date": "2026-01-01", "to_date": "2026-01-31"},
+            "kpis": [],
+            "table": {
+                "columns": [
+                    {"key": "name", "label": "Name"},
+                    {"key": "n", "label": "Count"},
+                ],
+                "rows": [
+                    {"name": '=HYPERLINK("http://evil.test","x")', "n": 5},
+                    {"name": "@SUM(A1:A9)", "n": -3},
+                    {"name": "Normal Name", "n": 7},
+                ],
+            },
+        }
+
+        csv_body = export_csv(payload, "i.csv").content.decode("utf-8-sig")
+        self.assertIn("'=HYPERLINK", csv_body)
+        self.assertIn("'@SUM(A1:A9)", csv_body)
+        self.assertIn("Normal Name", csv_body)
+
+        wb = openpyxl.load_workbook(
+            _io.BytesIO(export_xlsx(payload, "i.xlsx", meta={}).content)
+        )
+        values = [c for row in wb["Data"].iter_rows(values_only=True) for c in row]
+        # The exporter writes its own =SUM(...) for the totals row, which must
+        # stay a live formula -- only data carried through from the payload is
+        # neutralized, so assert on the injected values specifically.
+        self.assertIn('\'=HYPERLINK("http://evil.test","x")', values)
+        self.assertIn("'@SUM(A1:A9)", values)
+        self.assertIn("Normal Name", values)
+        # Negative numbers must stay numeric -- the guard only touches strings.
+        self.assertIn(-3, values)
+
     def test_export_csv_and_xlsx(self):
         payload = {
             "title": "Workforce Composition",
@@ -225,7 +338,10 @@ class ExportTests(SimpleTestCase):
             ],
         }
         csv_resp = export_csv(payload, "sample.csv")
-        self.assertEqual(csv_resp["Content-Type"], "text/csv")
+        # charset is declared explicitly, and the body carries a UTF-8 BOM so
+        # Excel on Windows does not fall back to the local ANSI codepage.
+        self.assertTrue(csv_resp["Content-Type"].startswith("text/csv"))
+        self.assertTrue(csv_resp.content.startswith(b"\xef\xbb\xbf"))
         self.assertIn(b"Headcount", csv_resp.content)
         self.assertIn(b"Key Metrics", csv_resp.content)
 

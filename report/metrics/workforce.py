@@ -496,6 +496,22 @@ def turnover_attrition(filters: ReportFilters) -> dict:
 
     return {
         "title": _("Turnover (All Exits)"),
+        # This report deliberately analyses a fixed rolling 6-month window
+        # anchored on to_date (see window_start above) so the rate stays a
+        # stable trend metric -- it does not read filters.from_date. Declaring
+        # the real window here stops run_report defaulting the header to the
+        # user's picked period, which made a 1-month and a 20-month selection
+        # display different headers over identical numbers.
+        "period": {
+            "from_date": window_start.isoformat(),
+            "to_date": filters.to_date.isoformat(),
+            "preset": "rolling_6m",
+            "label": _("Rolling 6 months"),
+        },
+        "period_note": _(
+            "Fixed rolling 6-month window — this report ignores the selected "
+            "start date so the turnover rate stays comparable between runs."
+        ),
         "kpis": [
             {
                 "label": _("Turnover rate (6m)"),
