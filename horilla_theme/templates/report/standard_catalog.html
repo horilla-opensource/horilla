@@ -310,7 +310,7 @@
        colored row_status_class border used on model-backed lists (e.g.
        payroll's Payslip list), just keyed to domain instead of a lifecycle
        status since reports don't have one. */
-    .sr-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid #ebebeb; border-left: 3.4px solid transparent; cursor: pointer; }
+    .sr-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #ebebeb; border-left: 3.4px solid transparent; cursor: pointer; }
     .dark .sr-row { border-color: hsl(0, 0%, 25%); }
     .sr-row:last-child { border-bottom: none; }
     .sr-row:hover { background: hsl(213, 22%, 96%); }
@@ -337,8 +337,20 @@
        table's own header/cell typography (14px/#000 header-ish text,
        14px/#666 muted cell text) confirmed via computed styles on the
        Audit tab's real HorillaListView table. */
-    .sr-row__name { font-weight: 600; font-size: 14px; }
-    .sr-row__desc { margin-top: 1px; font-size: 14px; color: #666; }
+    .sr-row__name { font-weight: 600; font-size: 14px; line-height: 1.4; }
+    /* 13px and single-line for the list: at 14px the description carried the
+       same visual weight as the name it sits under, so nothing anchored the
+       eye when scanning 30+ rows. One line keeps every row the same height
+       -- the inspector panel is where the full text belongs. */
+    .sr-row__desc {
+        margin-top: 1px;
+        font-size: 13px;
+        line-height: 1.45;
+        color: #666;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
     .dark .sr-row__desc { color: hsl(0, 0%, 65%); }
     .sr-row__meta {
         width: 150px;
@@ -361,29 +373,55 @@
        text-sm/text-xs sizing) are copied from the theme's own card
        component — horilla_theme/templates/generic/horilla_card.html, which
        is what HorillaCardView (e.g. the Employees grid) actually renders. */
+    /* 320px floor rather than 260px: at 260 the old four-across
+       "check | icon | body | actions" band left the description roughly
+       130px wide, which wrapped it to ~7 words a line and stretched cards
+       to ~490px tall for ~30 words. The theme's own card grid
+       (generic/horilla_card.html) uses a fixed grid-cols-4, so this tracks
+       the same density while still collapsing on narrow screens. */
     .sr-sections.sr-view--grid .sr-rows {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 16px;
         background: transparent;
         border: none;
     }
+    /* Header band (icon + title) over a full-width description, instead of
+       the description sharing a row with the icon and action buttons. The
+       description gets the card's whole width, and actions are lifted out
+       of flow to the top-right corner the way the theme card's own
+       dropdown-toggle is positioned. */
     .sr-sections.sr-view--grid .sr-row {
+        position: relative;
         display: grid;
-        grid-template-columns: 18px 44px minmax(0, 1fr) auto;
+        grid-template-columns: 34px minmax(0, 1fr);
         grid-template-areas:
-            "check icon body actions"
-            "check icon meta meta";
-        column-gap: 12px;
-        row-gap: 6px;
-        align-items: start;
+            "icon  name"
+            "desc  desc"
+            "meta  meta";
+        column-gap: 10px;
+        row-gap: 8px;
+        align-content: start;
+        align-items: center;
         background: hsl(0, 0%, 100%);
         border: 1px solid #ebebeb;
         border-left-width: 3.4px;
         border-radius: 6px;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
-        padding: 16px;
+        padding: 14px 16px;
         min-width: 0;
+        /* Uniform card heights so rows align across the grid. */
+        min-height: 150px;
+        transition: box-shadow .15s ease, border-color .15s ease;
+    }
+    .sr-sections.sr-view--grid .sr-row:hover {
+        background: hsl(0, 0%, 100%);
+        border-color: #d9d9d9;
+        box-shadow: 0px 2px 14px rgba(0, 0, 0, 0.09);
+    }
+    .dark .sr-sections.sr-view--grid .sr-row:hover {
+        background: #242424;
+        border-color: hsl(0, 0%, 32%);
     }
     .sr-sections.sr-view--grid .sr-row.is-selected {
         border-color: var(--primary-600, #E54F38);
@@ -393,52 +431,103 @@
         background: #242424;
         border-color: hsl(0, 0%, 25%);
     }
+    /* Checkbox lifted out of the grid flow to the top-left corner: as a
+       real column it stole ~30px from the description on every card while
+       being used only during bulk-select. It stays hit-testable and only
+       reveals itself on hover or once something is checked. */
     .sr-sections.sr-view--grid .sr-row__check {
-        grid-area: check;
-        align-self: center;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 2;
         display: flex;
         align-items: center;
         justify-content: center;
+        opacity: 0;
+        transition: opacity .12s ease;
     }
+    .sr-sections.sr-view--grid .sr-row:hover .sr-row__check,
+    .sr-sections.sr-view--grid .sr-row:focus-within .sr-row__check,
+    .sr-sections.sr-view--grid .sr-row.is-checked .sr-row__check {
+        opacity: 1;
+    }
+    /* 34px square with the theme's 6px radius, matching the list view's own
+       icon tile -- the 44px circle was sized for a layout where it sat
+       beside the text rather than above it. */
     .sr-sections.sr-view--grid .sr-row__icon {
         grid-area: icon;
         align-self: center;
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        font-size: 18px;
+        width: 34px;
+        height: 34px;
+        border-radius: 6px;
+        font-size: 16px;
     }
+    /* .sr-row__body is a flex wrapper in list mode; in grid mode its two
+       children are promoted onto the card grid itself so the description
+       can span the full width instead of being trapped beside the icon. */
     .sr-sections.sr-view--grid .sr-row__body {
-        grid-area: body;
-        min-width: 0;
-        overflow-wrap: break-word;
+        display: contents;
     }
     .sr-sections.sr-view--grid .sr-row__name {
+        grid-area: name;
         font-size: 14px;
         font-weight: 600;
+        line-height: 1.35;
+        /* Two lines maximum: report names such as "Quality of Hire
+           (90-day retention)" otherwise push the description down and
+           break card alignment across the row. */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        /* Keep clear of the absolutely-positioned action buttons. */
+        padding-right: 56px;
     }
     .sr-sections.sr-view--grid .sr-row__desc {
-        font-size: 14px;
+        grid-area: desc;
+        margin-top: 0;
+        font-size: 13px;
+        line-height: 1.5;
         color: #666;
+        overflow-wrap: break-word;
+        /* Clamped rather than unbounded: descriptions run from 6 to 30+
+           words, and without this the tallest one set the height of every
+           card in its row. The inspector panel shows the full text. */
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
     .dark .sr-sections.sr-view--grid .sr-row__desc { color: hsl(0, 0%, 65%); }
     .sr-sections.sr-view--grid .sr-row__meta {
         grid-area: meta;
+        align-self: end;
         width: auto;
         min-width: 0;
         text-align: left;
-        white-space: normal;
-        overflow-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         font-size: 12px;
-        color: #666;
+        color: #8a8a8a;
+        padding-top: 8px;
+        border-top: 1px solid #f2f2f2;
     }
-    .dark .sr-sections.sr-view--grid .sr-row__meta { color: hsl(0, 0%, 65%); }
+    .dark .sr-sections.sr-view--grid .sr-row__meta {
+        color: hsl(0, 0%, 58%);
+        border-top-color: hsl(0, 0%, 24%);
+    }
+    /* Actions pinned to the top-right, mirroring the theme card's own
+       absolutely-positioned action affordance -- as a grid column they
+       competed with the title for width on every card. */
     .sr-sections.sr-view--grid .sr-row__actions {
-        grid-area: actions;
-        align-self: start;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
     }
     .sr-row__check { display: none; }
-    .sr-sections.sr-view--grid .sr-row__check { display: block; }
+    .sr-sections.sr-view--grid .sr-row__check { display: flex; }
 
     /* Bulk action bar — grid mode only, shown once 1+ cards are checked.
        Coral, not the mockup's blue. */
@@ -1157,7 +1246,13 @@ function initStandardCatalog() {
 
     document.querySelectorAll(".sr-bulk-check").forEach(function (cb) {
         cb.addEventListener("click", function (e) { e.stopPropagation(); });
-        cb.addEventListener("change", updateBulkBar);
+        cb.addEventListener("change", function () {
+            // In grid mode the checkbox only appears on hover, so a checked
+            // card needs to keep showing it once the pointer moves away.
+            var card = cb.closest(".sr-row");
+            if (card) card.classList.toggle("is-checked", cb.checked);
+            updateBulkBar();
+        });
     });
 
     document.getElementById("srBulkExport").addEventListener("click", function () {
