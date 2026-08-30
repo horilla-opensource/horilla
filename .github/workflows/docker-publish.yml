@@ -114,8 +114,12 @@ jobs:
         run: |
           set -euo pipefail
 
-          IMG_VERSION=$(docker run --rm horilla-hr:smoketest \
-            python -c "import horilla; print(horilla.__version__)")
+          # --entrypoint is required: the image's ENTRYPOINT is entrypoint.sh,
+          # which blocks waiting for Postgres (DB_HOST defaults to "db") long
+          # before it would exec this command. Overriding CMD alone is not
+          # enough -- the entrypoint still runs and the wait loop exits 1.
+          IMG_VERSION=$(docker run --rm --entrypoint python horilla-hr:smoketest \
+            -c "import horilla; print(horilla.__version__)")
           echo "Image reports __version__=$IMG_VERSION"
 
           docker network create horilla-smoke
@@ -143,6 +147,12 @@ jobs:
           for i in $(seq 1 90); do
             if curl -sf --max-time 5 http://localhost:8000/health/ | grep -q '"status"'; then
               echo "Health OK"; break
+            fi
+            # Fail fast if the container exited: waiting the full 180s for a
+            # dead container hides the real error behind a timeout.
+            if [ "$(docker inspect -f '{{.State.Status}}' smoke-web 2>/dev/null)" != "running" ]; then
+              echo "::error::Container exited during startup"
+              docker logs --tail=100 smoke-web; exit 1
             fi
             sleep 2
             if [ "$i" -eq 90 ]; then
