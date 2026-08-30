@@ -1,5 +1,5 @@
 # Core Django
-Django==5.2
+Django~=5.2.17  # ~= keeps 5.2.x security patches (CVE-2025-64459 fixed in 5.2.8)
 django-environ
 psycopg2-binary==2.9.10
 
