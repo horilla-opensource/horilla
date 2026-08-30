@@ -15,7 +15,13 @@ def handle_google_meeting_save(sender, instance, created, **kwargs):
     """
     Handles creation and updates of GoogleMeeting (excluding attendees changes).
     """
-    request = getattr(_thread_locals, "request")
+    request = getattr(_thread_locals, "request", None)
+    if request is None:
+        # Saved outside a request (shell, scheduler, data migration, tests).
+        # The Google Calendar calls below need the request for OAuth
+        # credentials, so there is nothing to sync -- skip rather than fail
+        # the save.
+        return
 
     data = {
         "title": instance.title,

@@ -52,8 +52,17 @@ class ThreadLocalMiddleware:
 
     def __call__(self, request):
         _thread_locals.request = request
-        response = self.get_response(request)
-        return response
+        try:
+            return self.get_response(request)
+        finally:
+            # Clear on the way out. Threads are reused -- by a worker for the
+            # next request, and by the test runner for the next test -- so a
+            # request left here outlives the one it belongs to. Anything that
+            # reads it later (HorillaModel.save() stamps created_by/modified_by
+            # from request.user) then attributes work to a stale user. In tests
+            # that surfaces as an IntegrityError at teardown: modified_by_id
+            # points at a user whose transaction has already rolled back.
+            _thread_locals.request = None
 
 
 class DefaultLanguageMiddleware:

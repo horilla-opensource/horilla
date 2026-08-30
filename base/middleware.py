@@ -340,7 +340,15 @@ class CompanyMiddleware:
     def __call__(self, request):
         # ✅ make request globally accessible (safe)
         _thread_locals.request = request
+        try:
+            return self._handle(request)
+        finally:
+            # Threads are reused across requests and across tests, so a request
+            # left here outlives its own lifecycle. HorillaModel.save() reads it
+            # to stamp created_by/modified_by, which then point at a stale user.
+            _thread_locals.request = None
 
+    def _handle(self, request):
         if not request.user.is_authenticated:
             set_selected_company(None)
             return self.get_response(request)
