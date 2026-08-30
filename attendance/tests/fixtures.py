@@ -13,6 +13,12 @@ from base.models import (
 from employee.models import Employee, EmployeeWorkInformation
 
 
+def _months_before(anchor_date, months):
+    """Return the 1st of the month `months` before `anchor_date` (day-safe)."""
+    month_index = anchor_date.year * 12 + (anchor_date.month - 1) - months
+    return date(month_index // 12, month_index % 12 + 1, 1)
+
+
 class HolidayFixtureMixin:
     """
     Creates two employees, a global holiday, and an employee-specific holiday.
@@ -45,10 +51,20 @@ class HolidayFixtureMixin:
         cls.emp_a = cls._make_employee("emp_a@holiday.test", "Alice", "Holiday")
         cls.emp_b = cls._make_employee("emp_b@holiday.test", "Bob", "Holiday")
 
-        # Dates well in the past to satisfy attendance_date_validate
-        cls.global_date = date.today() - timedelta(days=60)
-        cls.specific_date = date.today() - timedelta(days=30)
-        cls.normal_date = date.today() - timedelta(days=10)
+        # Dates well in the past to satisfy attendance_date_validate.
+        #
+        # The export query these fixtures exercise filters holidays by month and
+        # year, not by exact date, so global_date and specific_date must land in
+        # different months or a "global holiday must not appear" assertion sees
+        # the specific one and fails. Plain day offsets do not guarantee that:
+        # today - 60d and today - 30d share a month on roughly 2% of calendar
+        # days (e.g. 2026-08-30 puts both in July), which made the suite fail
+        # only on those dates. Anchor to the first of a month and step back in
+        # whole months so the separation holds on every run.
+        first_of_month = date.today().replace(day=1)
+        cls.global_date = _months_before(first_of_month, 3)
+        cls.specific_date = _months_before(first_of_month, 2)
+        cls.normal_date = _months_before(first_of_month, 1)
 
         # Global holiday — is_specific=False, applies to all employees
         cls.global_holiday = Holidays.objects.create(
