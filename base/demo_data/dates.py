@@ -18,6 +18,34 @@ _DATE_RE = re.compile(r"(?<!\d)(\d{4}-\d{2}-\d{2})(?!\d)")
 # the 6-month spread (which would otherwise skip most recent days).
 RECENT_ATTENDANCE_WEEKDAYS = 10
 
+DEFAULT_WEEKDAYS = frozenset({0, 1, 2, 3, 4})  # Mon-Fri, Python weekday() ints
+
+_WEEKDAY_NAME_TO_INT = {
+    "monday": 0,
+    "tuesday": 1,
+    "wednesday": 2,
+    "thursday": 3,
+    "friday": 4,
+    "saturday": 5,
+    "sunday": 6,
+}
+
+
+def scheduled_weekdays_for_shift(day_names) -> set[int]:
+    """Map EmployeeShiftSchedule day names to Python weekday() ints.
+
+    Pure (no Django import, matching this module's own constraint) -- the
+    caller queries EmployeeShiftSchedule and passes the day-name strings in.
+    Falls back to Mon-Fri if `day_names` is empty or nothing maps, mirroring
+    report/metrics/_calendar.py's _scheduled_weekdays default.
+    """
+    mapped = {
+        _WEEKDAY_NAME_TO_INT[d.lower()]
+        for d in day_names or []
+        if d and d.lower() in _WEEKDAY_NAME_TO_INT
+    }
+    return mapped or set(DEFAULT_WEEKDAYS)
+
 
 def shift_fixture_dates_text(content: str, today: date | None = None) -> str | None:
     """Shift YYYY-MM-DD (and ISO datetime prefixes) so FIXTURE_AS_OF → today.
@@ -43,14 +71,17 @@ def shift_fixture_dates_text(content: str, today: date | None = None) -> str | N
     return _DATE_RE.sub(_shift, content)
 
 
-def weekdays_inclusive(start: date, end: date) -> list[date]:
-    """Mon–Fri dates from start through end, inclusive."""
+def weekdays_inclusive(
+    start: date, end: date, weekdays: set[int] | None = None
+) -> list[date]:
+    """Scheduled-weekday dates from start through end, inclusive. Defaults to Mon-Fri."""
+    weekdays = weekdays if weekdays is not None else DEFAULT_WEEKDAYS
     if end < start:
         return []
     out: list[date] = []
     day = start
     while day <= end:
-        if day.weekday() < 5:
+        if day.weekday() in weekdays:
             out.append(day)
         day += timedelta(days=1)
     return out
@@ -79,19 +110,32 @@ def previous_weekday(day: date) -> date:
 
 
 def spaced_dates(
-    start: date, end: date, count: int, *, weekdays_only: bool = True
+    start: date,
+    end: date,
+    count: int,
+    *,
+    weekdays_only: bool = True,
+    weekdays: set[int] | None = None,
 ) -> list[date]:
-    """`count` distinct dates in [start, end], optionally Mon–Fri only.
+    """`count` distinct dates in [start, end], optionally scheduled-weekdays only.
 
     Anchors the first point at the start of the pool and the last at the end
     of the pool so the current month is never left empty when `end` is today.
+    `weekdays` defaults to Mon-Fri when `weekdays_only` is set; pass an
+    employee's actual scheduled weekday set (see scheduled_weekdays_for_shift)
+    for shift-aware selection.
     """
     if count <= 0:
         return []
+    allowed = (
+        (weekdays if weekdays is not None else DEFAULT_WEEKDAYS)
+        if weekdays_only
+        else None
+    )
     pool: list[date] = []
     day = start
     while day <= end:
-        if not weekdays_only or day.weekday() < 5:
+        if allowed is None or day.weekday() in allowed:
             pool.append(day)
         day += timedelta(days=1)
     if not pool:
@@ -116,20 +160,29 @@ def spaced_dates(
 
 
 def should_be_present_today(
-    employee_id: int, today: date, rate: int = PRESENT_TODAY_RATE
+    employee_id: int,
+    today: date,
+    rate: int = PRESENT_TODAY_RATE,
+    weekdays: set[int] | None = None,
 ) -> bool:
-    """Deterministic ~rate% of staff are present on a weekday. Nobody on weekends."""
-    if today.weekday() >= 5:
+    """Deterministic ~rate% of staff are present on a scheduled day. Nobody on days off."""
+    allowed = weekdays if weekdays is not None else DEFAULT_WEEKDAYS
+    if today.weekday() not in allowed:
         return False
     return employee_id % 100 < rate
 
 
-def _recent_weekdays(today: date, start: date, n: int) -> list[date]:
-    end = today if today.weekday() < 5 else previous_weekday(today)
+def _recent_weekdays(
+    today: date, start: date, n: int, weekdays: set[int] | None = None
+) -> list[date]:
+    allowed = weekdays if weekdays is not None else DEFAULT_WEEKDAYS
+    end = today
+    while end.weekday() not in allowed and end > start:
+        end -= timedelta(days=1)
     pin: list[date] = []
     day = end
     while len(pin) < n and day >= start:
-        if day.weekday() < 5:
+        if day.weekday() in allowed:
             pin.append(day)
         day -= timedelta(days=1)
     pin.reverse()
@@ -141,17 +194,23 @@ def attendance_dates_for_employee(
     start: date,
     today: date,
     count: int,
+    weekdays: set[int] | None = None,
 ) -> list[date]:
-    """Weekday attendance dates in the trailing window, not everyone on `today`.
+    """Scheduled-weekday attendance dates in the trailing window, not everyone on `today`.
 
-    The last few weekdays are always included (except `today` for the ~13%
-    who are off) so a load on Thursday still has Wednesday punches.
+    The last few scheduled days are always included (except `today` for the
+    ~13% who are off) so a load on Thursday still has Wednesday punches.
+    `weekdays` defaults to Mon-Fri; pass an employee's actual scheduled
+    weekday set (see scheduled_weekdays_for_shift) for shift-aware selection,
+    e.g. a Mon-Sat shift correctly gets Saturday attendance too.
     """
-    dates = spaced_dates(start, today, count, weekdays_only=True)
+    dates = spaced_dates(start, today, count, weekdays_only=True, weekdays=weekdays)
     if not dates:
         return dates
-    pin = _recent_weekdays(today, start, min(RECENT_ATTENDANCE_WEEKDAYS, count))
-    if not should_be_present_today(employee_id, today):
+    pin = _recent_weekdays(
+        today, start, min(RECENT_ATTENDANCE_WEEKDAYS, count), weekdays=weekdays
+    )
+    if not should_be_present_today(employee_id, today, weekdays=weekdays):
         pin = [d for d in pin if d != today]
     pin_set = set(pin)
     head = [d for d in dates if d not in pin_set]

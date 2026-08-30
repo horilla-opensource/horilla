@@ -22,3 +22,5 @@ try:
     _Migrate.autodetector = HorillaAutodetector
 except ImportError:
     pass
+
+from horilla.__version__ import __version__  # noqa: E402,F401

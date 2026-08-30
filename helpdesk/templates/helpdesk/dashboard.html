@@ -16,6 +16,7 @@
     .hd-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
     .hd-kpi-card { border-radius: 12px; padding: 18px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); transition: all 0.2s; text-decoration: none; color: inherit; display: block; }
     .hd-kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); text-decoration: none; color: inherit; }
+    .hd-kpi-card--static:hover { transform: none; box-shadow: none; cursor: default; }
     .dark .hd-kpi-card { background: #242424; border-color: rgba(255,255,255,0.08); }
     .hd-kpi-card__icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
     .hd-kpi-card__icon--blue { background: #dbeafe; color: var(--hd-blue); } .hd-kpi-card__icon--amber { background: #fef3c7; color: var(--hd-amber); }
@@ -388,30 +389,30 @@
         .then(r => r.json())
         .then(data => {
             document.getElementById('hd-kpi-grid').innerHTML = `
-                <a href="{% url 'ticket-view' %}" class="hd-kpi-card">
+                <a href="{% url 'ticket-view' %}?ticket_tab=all_tickets&open_tab=3&is_open=true&filter_applied=1" class="hd-kpi-card">
                     <div class="hd-kpi-card__icon hd-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg></div>
                     <div class="hd-kpi-card__label">{% trans "Open Tickets" %}</div>
                     <div class="hd-kpi-card__value">${data.open_tickets}</div>
                     <div class="hd-kpi-card__sub"><span class="hd-badge hd-badge--amber">${data.new_tickets} {% trans "new" %}</span> ${data.in_progress} {% trans "in progress" %}</div>
                 </a>
-                <a href="{% url 'ticket-view' %}" class="hd-kpi-card">
+                <div class="hd-kpi-card hd-kpi-card--static" title="${'Resolution Rate = Resolved (' + data.period_resolved + ') / Total Tickets (' + data.total_tickets + ') × 100 = ' + data.resolution_rate + '%'}">
                     <div class="hd-kpi-card__icon hd-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
                     <div class="hd-kpi-card__label">{% trans "Resolution Rate" %}</div>
                     <div class="hd-kpi-card__value">${data.resolution_rate}%</div>
-                    <div class="hd-kpi-card__sub">${data.resolved} {% trans "resolved of" %} ${data.total_tickets}</div>
-                </a>
-                <a href="{% url 'ticket-view' %}" class="hd-kpi-card">
+                    <div class="hd-kpi-card__sub">${data.period_resolved} {% trans "resolved of" %} ${data.total_tickets}</div>
+                </div>
+                <a href="{% url 'ticket-view' %}?ticket_tab=all_tickets&open_tab=3&is_overdue=true&filter_applied=1" class="hd-kpi-card">
                     <div class="hd-kpi-card__icon hd-kpi-card__icon--red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
                     <div class="hd-kpi-card__label">{% trans "Overdue" %}</div>
                     <div class="hd-kpi-card__value">${data.overdue}</div>
                     <div class="hd-kpi-card__sub">${data.on_hold > 0 ? '<span class="hd-badge hd-badge--red">' + data.on_hold + ' {% trans "on hold" %}</span>' : '{% trans "Past deadline" %}'}</div>
                 </a>
-                <a href="{% url 'ticket-view' %}" class="hd-kpi-card">
+                <div class="hd-kpi-card hd-kpi-card--static" title="${data.avg_resolution_days !== null ? ('Avg Resolution = average of (Resolved Date − Created Date) across ' + data.avg_resolution_count + ' ticket(s) resolved this period = ' + data.avg_resolution_days + ' days') : 'No tickets resolved this period yet'}">
                     <div class="hd-kpi-card__icon hd-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
                     <div class="hd-kpi-card__label">{% trans "Avg Resolution" %}</div>
                     <div class="hd-kpi-card__value">${data.avg_resolution_days !== null ? data.avg_resolution_days + 'd' : '—'}</div>
-                    <div class="hd-kpi-card__sub">${data.pending_claims > 0 ? '<span class="hd-badge hd-badge--amber">' + data.pending_claims + ' {% trans "claims pending" %}</span>' : '{% trans "Days to resolve" %}'}</div>
-                </a>`;
+                    <div class="hd-kpi-card__sub">${data.avg_resolution_count} {% trans "ticket(s) resolved this period" %}</div>
+                </div>`;
         });
     }
     loadKpiCards();

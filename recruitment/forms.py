@@ -794,7 +794,7 @@ class QuestionForm(ModelForm):
     QuestionForm
     """
 
-    cols = {"options": 12, "template_id": 12, "question": 12}
+    cols = {"options": 12, "question": 12}
 
     verbose_name = "Survey Questions"
 
@@ -914,9 +914,18 @@ class QuestionForm(ModelForm):
             if key.startswith("options"):
                 self.option_count += 1
                 create_options_field(key, initial=value)
-        fields_order = list(self.fields.keys())
-        fields_order.remove("recruitment")
-        fields_order.insert(2, "recruitment")
+
+        pinned_order = [
+            "question",
+            "type",
+            "sequence",
+            "is_mandatory",
+            "template_id",
+            "recruitment",
+        ]
+        fields_order = pinned_order + [
+            field for field in self.fields.keys() if field not in pinned_order
+        ]
         self.fields = {field: self.fields[field] for field in fields_order}
 
 

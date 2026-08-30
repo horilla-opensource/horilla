@@ -16,6 +16,7 @@ from base.demo_data.modules.asset_expansion import backfill_company_asset_pools
 from base.demo_data.modules.asset_features import backfill_asset_reports
 from base.demo_data.modules.attendance_trend import (
     backfill_attendance_activities,
+    backfill_attendance_density,
     backfill_attendance_overtime,
     backfill_attendance_spread,
     backfill_pending_validation_today,
@@ -53,7 +54,12 @@ from base.demo_data.modules.recruitment import seed_recruitment_catalog
 from base.demo_data.modules.recruitment_expansion import (
     backfill_company_recruitment_pipelines,
 )
-from base.demo_data.modules.recruitment_features import backfill_rejected_candidates
+from base.demo_data.modules.recruitment_features import (
+    backfill_candidate_offer_status,
+    backfill_candidate_source,
+    backfill_recruitment_job_position,
+    backfill_rejected_candidates,
+)
 from base.demo_data.modules.request_windows import backfill_request_windows
 from base.demo_data.org import (
     differentiate_org_taxonomy_by_company,
@@ -106,6 +112,10 @@ def run_enterprise_demo_seeder(
     result["attendance_zero_coverage_backfill"] = backfill_zero_coverage_attendance(
         today
     )
+    # Tops up everyone (including the just-covered employees above) to a
+    # realistic shift-aware density -- must run after zero-coverage fill and
+    # before leave spread finalizes leave dates below.
+    result["attendance_density_backfill"] = backfill_attendance_density(today)
     result["leave_backfill"] = backfill_leave_spread(today)
     result["leave_zero_coverage_backfill"] = backfill_zero_coverage_available_leave(
         today
@@ -144,6 +154,9 @@ def run_enterprise_demo_seeder(
         today
     )
     result["recruitment_rejected_candidates"] = backfill_rejected_candidates(today)
+    result["recruitment_candidate_source"] = backfill_candidate_source(today)
+    result["recruitment_job_position"] = backfill_recruitment_job_position(today)
+    result["recruitment_offer_status"] = backfill_candidate_offer_status(today)
     result["asset_company_pools"] = backfill_company_asset_pools(today)
     result["asset_reports"] = backfill_asset_reports(today)
 

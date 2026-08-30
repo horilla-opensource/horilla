@@ -1,0 +1,8 @@
+{% load i18n static %}
+
+<div id="templateTabRoot">
+    <div hx-get="{% url 'survey-template-nav' %}" hx-trigger="load"></div>
+
+    <div id="view-container" hx-get="{% url 'survey-template-tab-list' %}" hx-trigger="load">
+    </div>
+</div>

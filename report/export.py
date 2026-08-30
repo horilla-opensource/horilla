@@ -93,6 +93,21 @@ def _company_from_meta(meta: Optional[dict]) -> dict[str, Any]:
     }
 
 
+# Excel and Calc evaluate any cell whose text begins with one of these, so a
+# value carried through from user-entered data (an employee name, a request
+# description) can execute on open -- =HYPERLINK(...) will happily exfiltrate
+# to a remote host. Prefixing with an apostrophe forces literal text; the
+# apostrophe itself is not displayed by the spreadsheet.
+_FORMULA_TRIGGERS = ("=", "+", "-", "@", "\t", "\r")
+
+
+def _neutralize_formula(text: str) -> str:
+    """Stop a spreadsheet treating exported text as a formula."""
+    if text and text.startswith(_FORMULA_TRIGGERS):
+        return "'" + text
+    return text
+
+
 def _coerce_cell(value: Any) -> Any:
     """Normalize cell values for Excel (numbers stay numeric when possible)."""
     if value is None:
@@ -107,23 +122,26 @@ def _coerce_cell(value: Any) -> Any:
         text = value.strip()
         if not text:
             return ""
+        # Numeric-looking text resolves to a real number below, so it never
+        # reaches the sheet as a string and needs no formula guard -- only the
+        # genuine text fall-throughs do.
         if re.fullmatch(r"-?\d+(\.\d+)?%", text):
             try:
                 return float(text[:-1]) / 100.0
             except ValueError:
-                return text
+                return _neutralize_formula(text)
         if re.fullmatch(r"-?\d+", text):
             try:
                 return int(text)
             except ValueError:
-                return text
+                return _neutralize_formula(text)
         if re.fullmatch(r"-?\d+\.\d+", text):
             try:
                 return float(text)
             except ValueError:
-                return text
-        return text
-    return str(value)
+                return _neutralize_formula(text)
+        return _neutralize_formula(text)
+    return _neutralize_formula(str(value))
 
 
 def _looks_percent_header(header: str) -> bool:
@@ -238,12 +256,36 @@ def _format_table_cell(raw: Any, header: str, symbol: str, position: str) -> str
 # ---------------------------------------------------------------------------
 # CSV
 # ---------------------------------------------------------------------------
+class _SafeCsvWriter:
+    """csv.writer that neutralizes spreadsheet formulas in every cell."""
+
+    def __init__(self, writer):
+        self._writer = writer
+
+    @staticmethod
+    def _clean(cell):
+        if isinstance(cell, str):
+            return _neutralize_formula(cell)
+        return cell
+
+    def writerow(self, row):
+        self._writer.writerow([self._clean(c) for c in row])
+
+    def writerows(self, rows):
+        for row in rows:
+            self.writerow(row)
+
+
 def export_csv(
     payload: dict[str, Any], filename: str = "report.csv", meta: Optional[dict] = None
 ) -> HttpResponse:
     """Export with company letterhead + KPIs + table (explorer-compatible)."""
     buffer = io.StringIO()
-    writer = csv.writer(buffer)
+    # Wrap the writer rather than guarding each writerow call -- there are a
+    # dozen of them and a missed one is a silent hole. The literal "===" and
+    # header rows this module writes itself are unaffected: they do not start
+    # with a trigger character.
+    writer = _SafeCsvWriter(csv.writer(buffer))
     meta = meta or {}
     company = _company_from_meta(meta)
     title = payload.get("title") or "Report"
@@ -288,7 +330,12 @@ def export_csv(
         writer.writerow(headers)
         writer.writerows(rows)
 
-    response = HttpResponse(buffer.getvalue(), content_type="text/csv")
+    # UTF-8 BOM: without it Excel on Windows reads the file as the local
+    # ANSI codepage and mangles every non-ASCII name in the export.
+    response = HttpResponse(
+        buffer.getvalue().encode("utf-8-sig"),
+        content_type="text/csv; charset=utf-8",
+    )
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
     return response
 
@@ -334,6 +381,38 @@ def _styles():
         "center": Alignment(horizontal="center", vertical="center", wrap_text=True),
         "right": Alignment(horizontal="right", vertical="center"),
     }
+
+
+def _apply_print_setup(ws, meta: Optional[dict] = None, landscape: bool = False):
+    """Page setup + footer for a printed sheet.
+
+    No sheet carried a header or footer, so a printed spreadsheet lost every
+    trace of where it came from -- no page numbers, no confidentiality mark,
+    no generated-at -- while the PDF beside it carried all three. paperSize
+    was never set either, so the sheet printed to whatever the local driver
+    defaulted to.
+    """
+    from django.utils.translation import gettext as _
+    from openpyxl.worksheet.properties import PageSetupProperties
+
+    meta = meta or {}
+    ws.page_setup.orientation = "landscape" if landscape else "portrait"
+    ws.page_setup.paperSize = ws.PAPERSIZE_A4
+    ws.page_setup.fitToWidth = 1
+    ws.page_setup.fitToHeight = 0
+    ws.sheet_properties.pageSetUpPr = PageSetupProperties(fitToPage=True)
+
+    product = meta.get("product_name") or "Horilla HR"
+    generated = timezone.now().strftime("%Y-%m-%d %H:%M")
+    ws.oddFooter.left.text = f"{product}"
+    ws.oddFooter.left.size = 8
+    ws.oddFooter.left.color = "808080"
+    ws.oddFooter.center.text = str(_("Confidential - for internal use only"))
+    ws.oddFooter.center.size = 8
+    ws.oddFooter.center.color = "808080"
+    ws.oddFooter.right.text = "&P / &N  ·  " + generated
+    ws.oddFooter.right.size = 8
+    ws.oddFooter.right.color = "808080"
 
 
 def _set_col_widths(ws, widths: dict[str, float]):
@@ -466,8 +545,7 @@ def _write_cover(wb, payload: dict[str, Any], meta: Optional[dict] = None):
     ws = wb.active
     ws.title = "Cover"
     ws.sheet_view.showGridLines = False
-    ws.page_setup.orientation = "portrait"
-    ws.page_setup.fitToPage = True
+    _apply_print_setup(ws, meta)
 
     meta = meta or {}
     company = _company_from_meta(meta)
@@ -839,10 +917,7 @@ def _write_data_sheet(wb, payload: dict[str, Any], meta: Optional[dict] = None):
     ws.freeze_panes = f"A{header_row + 1}"
     ws.sheet_properties.tabColor = COLOR_PRIMARY
 
-    ws.page_setup.orientation = "landscape" if len(headers) > 5 else "portrait"
-    ws.page_setup.fitToWidth = 1
-    ws.page_setup.fitToHeight = 0
-    ws.page_setup.fitToPage = True
+    _apply_print_setup(ws, meta, landscape=len(headers) > 5)
     ws.print_title_rows = f"{header_row}:{header_row}"
 
     _autofit(ws, start_row=header_row)
@@ -907,6 +982,7 @@ def _write_chart_sheet(wb, payload: dict[str, Any], meta: Optional[dict] = None)
     ws = wb.create_sheet("Charts")
     ws.sheet_view.showGridLines = False
     ws.sheet_properties.tabColor = COLOR_PRIMARY
+    _apply_print_setup(ws, meta, landscape=True)
     meta = meta or {}
     company = _company_from_meta(meta)
 
@@ -1135,6 +1211,16 @@ def export_pdf(
     for chart in payload.get("charts") or []:
         png_bytes = render_chart_png(chart)
         if not png_bytes:
+            # A chart with no data renders nothing. Silently dropping it left
+            # the reader unable to tell an empty period from a broken export,
+            # so carry it through with an explicit empty state instead.
+            chart_images.append(
+                {
+                    "title": chart.get("title") or chart.get("id") or _("Chart"),
+                    "path": None,
+                    "empty": True,
+                }
+            )
             continue
         tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
         try:
@@ -1146,13 +1232,18 @@ def export_pdf(
             {
                 "title": chart.get("title") or chart.get("id") or _("Chart"),
                 "path": tmp.name,
+                "empty": False,
             }
         )
+
+    # Pair charts up so the template can lay them out two per row.
+    chart_rows = [chart_images[i : i + 2] for i in range(0, len(chart_images), 2)]
 
     try:
         html = render_to_string(
             "report/standard_report_pdf.html",
             {
+                "chart_rows": chart_rows,
                 "report_title": payload.get("title") or _("Standard Report"),
                 "domain_label": (payload.get("domain") or meta.get("domain") or "")
                 .replace("_", " ")

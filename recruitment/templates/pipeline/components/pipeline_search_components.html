@@ -25,7 +25,6 @@
         {% endif %}
         {% comment %}ordered_stages method in Recruitment model{% endcomment %}
         <div class="pt-3 stage-badges" id="stageContainer{{ rec.id }}" hx-trigger="load" hx-get="{% url 'pipeline-stages-component' 'list' %}?rec_id={{ rec.id }}">
-          <div class="animated-background"></div>
         </div>
       </div>
       <!-- End of TabContent -->

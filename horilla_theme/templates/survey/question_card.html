@@ -1,0 +1,173 @@
+{% load i18n %}
+{% load static %}
+{% if questions %}
+    {% if questions.has_next or questions.has_previous %}
+        {% if questions.paginator.count %}
+            <div class="flex flex-nowrap items-center justify-end gap-2 mb-2 px-5 pt-3">
+                <div class="hlv-pagination inline-flex items-center h-8 gap-0.5 bg-white border border-[#e6e6e6] rounded-md px-1 flex-shrink-0">
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if questions.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if questions.has_previous %}
+                        hx-target="#questionViewContainer"
+                        hx-get="{% url 'survey-question-tab-list' %}?{{pd}}&page=1"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angles-left"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if questions.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if questions.has_previous %}
+                        hx-target="#questionViewContainer"
+                        hx-get="{% url 'survey-question-tab-list' %}?{{pd}}&page={{ questions.previous_page_number }}"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angle-left"></i>
+                    </button>
+                    <div class="flex items-center gap-1 px-1 h-7 text-xs text-[#666] leading-none">
+                        <input
+                            type="number"
+                            name="page"
+                            min="1"
+                            max="{{ questions.paginator.num_pages }}"
+                            value="{{questions.number}}"
+                            title="{% trans 'Enter a page number and press Enter' %}"
+                            class="w-9 h-6 m-0 py-0 px-1 text-center text-xs leading-6 border border-[#e6e6e6] rounded outline-none focus:border-primary-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                            hx-get="{% url 'survey-question-tab-list' %}?{{pd}}"
+                            hx-target="#questionViewContainer"
+                            hx-trigger="keyup[keyCode==13] changed, blur changed"
+                            onclick="this.select()"
+                        >
+                        <span class="inline-flex items-center h-6 leading-none whitespace-nowrap">/ {{ questions.paginator.num_pages }}</span>
+                    </div>
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if questions.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if questions.has_next %}
+                        hx-target="#questionViewContainer"
+                        hx-get="{% url 'survey-question-tab-list' %}?{{pd}}&page={{ questions.next_page_number }}"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if questions.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if questions.has_next %}
+                        hx-target="#questionViewContainer"
+                        hx-get="{% url 'survey-question-tab-list' %}?{{pd}}&page={{ questions.paginator.num_pages }}"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angles-right"></i>
+                    </button>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+    <div id="gridView" class="p-5">
+        <div class="grid grid-cols-4 gap-4">
+            {% for question in questions %}
+                <div
+                    class="border border-[#ebebeb] p-4 rounded-md shadow-card"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{% url 'single-survey-view' question.id %}?instance_ids={{requests_ids}}"
+                    hx-target="#genericModalBody"
+                >
+                    <div class="flex gap-5 relative z-0">
+                        <span class="absolute -left-3 -top-3 bg-green-500 w-2 h-2 rounded-full"></span>
+                        {% if perms.recruitment.delete_recruitmentsurvey or perms.recruitment.change_recruitmentsurvey or perms.recruitment.add_recruitmentsurvey %}
+                            <div
+                                class="absolute inline-block right-0 -top-1"
+                                x-data="{open: false}"
+                                onclick="event.stopPropagation()"
+                            >
+                                <a
+                                    class="cursor-pointer w-4 text-center inline-block"
+                                    role="button"
+                                    @click="open = !open"
+                                    @click.outside="open = false"
+                                >
+                                    <i class="fa-solid fa-ellipsis-vertical text-black"></i>
+                                </a>
+                                <div
+                                    class="absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 z-50 transition-all duration-200"
+                                    x-show="open"
+                                    style="display: none"
+                                >
+                                    <ul class="text-xs">
+                                        {% if perms.recruitment.change_recruitmentsurvey %}
+                                            <li>
+                                                <button
+                                                    class="w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300"
+                                                    hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
+                                                    data-toggle="oh-modal-toggle"
+                                                    data-target="#genericModal"
+                                                    hx-target="#genericModalBody"
+                                                >
+                                                    {% trans "Edit" %}
+                                                </button>
+                                            </li>
+                                        {% endif %}
+                                        {% if perms.recruitment.change_recruitmentsurvey %}
+                                            <li>
+                                                <button
+                                                    class="w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300"
+                                                    hx-get="{% url 'recruitment-survey-question-template-duplicate' question.id %}"
+                                                    data-toggle="oh-modal-toggle"
+                                                    data-target="#genericModal"
+                                                    hx-target="#genericModalBody"
+                                                >
+                                                    {% trans "Duplicate" %}
+                                                </button>
+                                            </li>
+                                        {% endif %}
+                                        {% if perms.recruitment.delete_recruitmentsurvey %}
+                                            <li>
+                                                <form
+                                                    hx-post="{% url 'recruitment-survey-question-template-delete' question.id %}"
+                                                    hx-swap="none"
+                                                    hx-confirm="{% trans 'Are you sure want to delete?' %}"
+                                                    hx-on-htmx-after-request="$('#reloadMessagesButton').click(); $('#templateTabRoot .filterButton').click(); $('#questionTabRoot .filterButton').click();"
+                                                    onsubmit="event.stopPropagation()"
+                                                >
+                                                    {% csrf_token %}
+                                                    <button
+                                                        type="submit"
+                                                        class="text-danger w-full text-left px-3 py-2"
+                                                    >
+                                                        {% trans "Delete" %}
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="mr-2">
+                            <h5 class="mb-1 font-medium text-sm">{{ question }}</h5>
+                            <p class="text-xs text-[#565E6C] mb-1">
+                                {% for rec in question.recruitment_ids.all %}
+                                    {{ rec }},&nbsp;
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% else %}
+    <div class="oh-wrapper h-full" align="center">
+        <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
+            <div class="flex flex-col items-center justify-center h-full">
+                <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
+                <p class="text-[#666] mb-5">{% trans "No records available at the moment" %}</p>
+                {% include "generic/import_block.html" %}
+            </div>
+        </div>
+    </div>
+{% endif %}

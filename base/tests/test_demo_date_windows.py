@@ -10,6 +10,7 @@ from base.demo_data.dates import (
     clamp_date,
     holiday_on_year,
     previous_weekday,
+    scheduled_weekdays_for_shift,
     shift_fixture_dates_text,
     should_be_present_today,
     spaced_dates,
@@ -25,6 +26,33 @@ class DemoDateWindowTests(SimpleTestCase):
         self.assertTrue(all(d.weekday() < 5 for d in days))
         self.assertNotIn(date(2026, 8, 16), days)  # Sunday
         self.assertNotIn(date(2026, 8, 22), days)  # Saturday
+
+    def test_scheduled_weekdays_for_shift_maps_day_names(self):
+        mon_sat = scheduled_weekdays_for_shift(
+            ["monday", "Tuesday", "wednesday", "THURSDAY", "friday", "saturday"]
+        )
+        self.assertEqual(mon_sat, {0, 1, 2, 3, 4, 5})
+
+    def test_scheduled_weekdays_for_shift_falls_back_to_mon_fri(self):
+        self.assertEqual(scheduled_weekdays_for_shift([]), {0, 1, 2, 3, 4})
+        self.assertEqual(scheduled_weekdays_for_shift(None), {0, 1, 2, 3, 4})
+        self.assertEqual(scheduled_weekdays_for_shift(["not-a-day"]), {0, 1, 2, 3, 4})
+
+    def test_attendance_dates_respect_a_mon_sat_shift(self):
+        # A Mon-Sat shift's demo attendance should be able to land on
+        # Saturday -- the default Mon-Fri-only pool can never produce one.
+        mon_sat = {0, 1, 2, 3, 4, 5}
+        today = date(2026, 8, 20)  # Thursday
+        start = today - timedelta(days=180)
+        dates = attendance_dates_for_employee(1, start, today, 130, weekdays=mon_sat)
+        self.assertTrue(any(d.weekday() == 5 for d in dates))
+        self.assertTrue(all(d.weekday() != 6 for d in dates))  # never Sunday
+
+    def test_attendance_dates_default_weekdays_never_include_saturday(self):
+        today = date(2026, 8, 20)
+        start = today - timedelta(days=180)
+        dates = attendance_dates_for_employee(1, start, today, 26)
+        self.assertTrue(all(d.weekday() < 5 for d in dates))
 
     def test_spaced_dates_are_unique_and_bounded(self):
         start, end = date(2026, 2, 20), date(2026, 8, 19)

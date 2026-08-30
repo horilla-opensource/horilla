@@ -368,16 +368,6 @@ body.dark .oh-hover-btn__small {
   background-color: hsl(0deg 0% 34.17%);
   border: 1px solid hsl(0deg 0% 49.2%);
 }
-body.dark .animated-background {
-  background-color: #535353;
-  background: linear-gradient(
-    to right,
-    #9e9e9e9c -30%,
-    #4b4b4b96 10%,
-    #96969661 20%
-  );
-}
-
 body.dark .sr-only.peer + div,
 body.dark .sr-only.peer + .relative {
   background: #747474;

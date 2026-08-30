@@ -1476,7 +1476,7 @@ def candidate(request):
                     # breaks nav-bar hiding on every later edit-form open.
                     '\'<div id="candidateListNavBar"><div hx-get="/recruitment/nav-candidate/?" hx-trigger="load"></div></div>\' + '
                     '\'<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>\' + '
-                    '\'<div class="oh-wrapper" id="listContainer"><div class="animated-background"></div></div>\''
+                    '\'<div class="oh-wrapper" id="listContainer"></div>\''
                     ");"
                     "htmx.process($('#candidateMainContainer')[0]);"
                 )
@@ -2034,7 +2034,7 @@ def candidate_update(request, cand_id, **kwargs):
                                 "var tagRow = nav && nav.querySelector('#filterTagContainerSectionNav');"
                                 "if (tagRow) { tagRow.innerHTML = ''; }"
                                 "var list = document.getElementById('listContainer');"
-                                "if (list) { list.innerHTML = '<div class=\"animated-background\"></div>'; }"
+                                "if (list) { list.innerHTML = ''; }"
                                 "setTimeout(function () { "
                                 "var b = document.getElementById('applyFilter'); "
                                 "if (b) { b.click(); } }, 100);"
@@ -2066,7 +2066,7 @@ def candidate_update(request, cand_id, **kwargs):
                                 # the edit form from the second edit onward.
                                 '\'<div id="candidateListNavBar"><div hx-get="/recruitment/nav-candidate/?" hx-trigger="load"></div></div>\' + '
                                 '\'<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>\' + '
-                                '\'<div class="oh-wrapper" id="listContainer"><div class="animated-background"></div></div>\''
+                                '\'<div class="oh-wrapper" id="listContainer"></div>\''
                                 ");"
                                 "htmx.process($('#candidateMainContainer')[0]);"
                                 "}, 0);"

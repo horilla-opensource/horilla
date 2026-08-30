@@ -25,7 +25,7 @@
                 onclick="
                     const listContainer = document.querySelector('#listContainer');
                     if (listContainer) {
-                        listContainer.innerHTML = '<div class=&quot;animated-background&quot;></div>';
+                        listContainer.innerHTML = '';
                     }
                     htmx.ajax('GET', '/pms/feedback-generic-tab/', { target: '#listContainer', swap: 'innerHTML' });
                     setTimeout(function () {

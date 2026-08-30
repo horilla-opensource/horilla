@@ -32,7 +32,7 @@
               navBar.style.display = '';
               var tagRow = navBar.querySelector('#filterTagContainerSectionNav');
               if (tagRow) { tagRow.innerHTML = ''; }
-              list.innerHTML = '<div class=&quot;animated-background&quot;></div>';
+              list.innerHTML = '';
               setTimeout(function () {
                 var btn = document.getElementById('applyFilter');
                 if (btn) { btn.click(); }
@@ -58,7 +58,7 @@
             }
             var listHtml = '<div id=&quot;candidateListNavBar&quot;><div hx-get=&quot;/recruitment/nav-candidate/?&quot; hx-trigger=&quot;load&quot;></div></div>'
               + '<div class=&quot;oh-checkpoint-badge mb-2&quot; id=&quot;selectedInstances&quot; data-ids=&quot;[]&quot; data-clicked=&quot;&quot; style=&quot;display: none&quot;></div>'
-              + '<div class=&quot;oh-wrapper&quot; id=&quot;listContainer&quot;><div class=&quot;animated-background&quot;></div></div>';
+              + '<div class=&quot;oh-wrapper&quot; id=&quot;listContainer&quot;></div>';
             var container = document.getElementById('candidateMainContainer');
             if (container) {
               container.innerHTML = listHtml;

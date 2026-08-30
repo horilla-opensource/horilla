@@ -126,7 +126,6 @@
                             <div class="oh-card-dashboard__body"
                                  style="height: 310px;">
                                 <div id="notInYetIdCardBody" class="oh-sticky-table h-100" hx-get="{% url 'not-in-yet' %}" hx-trigger="load" style="border: none;">
-                                    <div class="animated-background"></div>
                                 </div>
                             </div>
                         </div>
@@ -165,7 +164,6 @@
 
                         <div class="oh-card-dashboard__body" hx-get="{% url 'on-break-employees' %}" hx-trigger="load"
                             id="onBreakEmployeesCard" style="height:400px">
-                            <div class="animated-background h-100"></div>
                         </div>
                     </div>
                 </div>
@@ -178,7 +176,6 @@
                             hx-get="{% url 'dashboard-approve-overtimes' %}" hx-trigger="load"
                             hx-on-htmx-after-request="$('#department_date_type').change();"
                             id="OTApproveBody">
-                            <div class="animated-background h-100"></div>
                         </div>
                     </div>
                 </div>
@@ -192,7 +189,6 @@
                         </div>
                         <div class="oh-card-dashboard__body" style="height:400px" id="attendanceValidateCardBody"
                             hx-get="{% url 'dashboard-validate-attendances' %}" hx-trigger="load, reloadAttendanceView from:body, reload">
-                            <div class="animated-background h-100"></div>
                         </div>
                     </div>
                 </div>

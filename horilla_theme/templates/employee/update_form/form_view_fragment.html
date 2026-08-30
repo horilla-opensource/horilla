@@ -21,9 +21,6 @@
     .emp-step-btn--done {
         color: {{ theme_obj.primary_600|default:"#E54F38" }};
     }
-    .emp-connector--done {
-        background: {{ theme_obj.primary_500|default:"#F7C8C1" }};
-    }
     @media (max-width: 768px) {
         .emp-grid-2 { grid-template-columns: 1fr !important; }
         .emp-grid-3 { grid-template-columns: 1fr 1fr !important; }
@@ -62,17 +59,13 @@
                     {% trans "Personal Information" %}
                 </a>
 
-                <div class="w-10 h-px bg-secondary-200 emp-connector" data-for="personal"></div>
-
-                <a href="#" class="emp-step-btn flex items-center gap-2 text-dark-100 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap no-underline"
+                <a href="#" class="emp-step-btn flex items-center gap-2 text-dark-200 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap no-underline"
                    data-action="general-tab" data-target="#work" id="step-work">
                     <div class="w-5 h-5 rounded-full border-2 border-secondary-200 flex items-center justify-center text-xxs font-semibold">2</div>
                     {% trans "Work Information" %}
                 </a>
 
-                <div class="w-10 h-px bg-secondary-200 emp-connector" data-for="work"></div>
-
-                <a href="#" class="emp-step-btn flex items-center gap-2 text-dark-100 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap no-underline"
+                <a href="#" class="emp-step-btn flex items-center gap-2 text-dark-200 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap no-underline"
                    data-action="general-tab" data-target="#bank" id="step-bank">
                     <div class="w-5 h-5 rounded-full border-2 border-secondary-200 flex items-center justify-center text-xxs font-semibold">3</div>
                     {% trans "Bank Information" %}
@@ -102,27 +95,19 @@
 
                 $(".emp-step-btn").each(function () {
                     $(this).removeClass("emp-step-btn--active emp-step-btn--done");
-                    $(this).addClass("text-dark-100");
+                    $(this).addClass("text-dark-200");
                     $(this).find("div:first").removeClass("bg-white/20 border-primary-600 text-primary-600").addClass("border-2 border-secondary-200");
                 });
-                $(".emp-connector").removeClass("emp-connector--done").addClass("bg-secondary-200");
 
                 steps.forEach(function (step, idx) {
                     var btn = $("#" + stepMap[step]);
                     if (idx === activeIdx) {
-                        btn.removeClass("text-dark-100").addClass("emp-step-btn--active");
+                        btn.removeClass("text-dark-200").addClass("emp-step-btn--active");
                         btn.find("div:first").removeClass("border-secondary-200").addClass("bg-white/20");
                     } else if (idx < activeIdx) {
-                        btn.removeClass("text-dark-100").addClass("emp-step-btn--done");
+                        btn.removeClass("text-dark-200").addClass("emp-step-btn--done");
                     }
                 });
-
-                if (activeIdx > 0) {
-                    $(".emp-connector[data-for='personal']").removeClass("bg-secondary-200").addClass("emp-connector--done");
-                }
-                if (activeIdx > 1) {
-                    $(".emp-connector[data-for='work']").removeClass("bg-secondary-200").addClass("emp-connector--done");
-                }
             }
 
             var root = document.getElementById("employee-update-form-root");

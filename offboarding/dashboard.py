@@ -116,34 +116,63 @@ def offboarding_kpi_data(request):
     )
 
 
+#: (OffboardingStage.type, tile label) in pipeline order. OffboardingStage
+#: rows are per-Offboarding-template -- every company/template gets its own
+#: "Notice Period" / "Exit Interview" / etc. row -- so grouping by the stage
+#: *row* (as this endpoint used to) renders one tile per template instead of
+#: one tile per stage, e.g. 3 templates x 6 types = 18 tiles. Grouping by
+#: `type` instead collapses that back to exactly one tile per pipeline step,
+#: matching every other pipeline widget in the app (Payslip/Project Pipeline).
+PIPELINE_STAGE_TYPES = (
+    ("notice_period", _("Notice Period")),
+    ("interview", _("Exit Interview")),
+    ("handover", _("Work Handover")),
+    ("fnf", _("FNF")),
+    ("other", _("Farewell")),
+    ("archived", _("Archived")),
+)
+
+
 @login_required
 @permission_required("offboarding.view_offboarding")
 def offboarding_pipeline(request):
-    """Employees grouped by offboarding stage (offboardings opened within the selected period)."""
-    from offboarding.models import OffboardingEmployee, OffboardingStage
+    """Employees grouped by offboarding stage type -- one tile per stage.
 
-    from_date, to_date = _parse_period(request)
-    stages = []
+    Live pipeline state, not scoped to the date picker: an employee doesn't
+    stop being "in the pipeline" just because their offboarding record
+    predates the selected period (same rationale as active_offboarding /
+    archived in offboarding_kpi_data above, and as project_status_pipeline
+    in project/dashboard.py).
+    """
+    from collections import Counter
 
-    try:
-        stage_qs = OffboardingStage.objects.all().order_by("sequence")
-        for stage in stage_qs:
-            count = OffboardingEmployee.objects.filter(
-                stage_id=stage,
-                created_at__date__gte=from_date,
-                created_at__date__lte=to_date,
-            ).count()
-            stages.append(
-                {
-                    "stage": stage.title,
-                    "type": stage.type,
-                    "count": count,
-                }
-            )
-    except Exception:
-        pass
+    from offboarding.models import OffboardingEmployee
 
-    return JsonResponse({"stages": stages})
+    # HorillaCompanyManager.get_queryset() applies .distinct() whenever the
+    # company OR-filter is active, which silently corrupts any aggregation
+    # built on top of it. This isn't limited to .values().annotate(Count())
+    # -- a *plain* .values_list("stage_id__type", flat=True) is just as
+    # broken: Django compiles it as `SELECT DISTINCT stage_type FROM ...`,
+    # which deduplicates on the VALUE, not the row, so two different
+    # employees who both happen to be "archived" collapse into one row and
+    # get undercounted. (Project/Task's equivalent pipeline queries in
+    # project/dashboard.py happen to dodge this only because those models
+    # have a default `ordering`, which Django folds into the SELECT DISTINCT
+    # list to satisfy ORDER BY -- an accident of unrelated Meta config, not
+    # a real fix; OffboardingEmployee has no such ordering.) Pulling `pk`
+    # alongside the field forces every row to stay distinct regardless of
+    # ordering, so the Python-side Counter below sees every row once.
+    counts = Counter(
+        stage_type
+        for _pk, stage_type in OffboardingEmployee.objects.filter(
+            stage_id__isnull=False
+        ).values_list("pk", "stage_id__type")
+    )
+    stages = [
+        {"stage": str(label), "type": stage_type, "count": counts.get(stage_type, 0)}
+        for stage_type, label in PIPELINE_STAGE_TYPES
+    ]
+    return JsonResponse({"stages": stages, "total": sum(counts.values())})
 
 
 @login_required

@@ -470,16 +470,31 @@ def performance_distribution(filters: ReportFilters) -> dict:
     from report.engine import apply_org_filters
 
     def _period_filter(qs, model):
+        # created_at is nullable and auto_now_add, so bulk_create()d rows have
+        # no date at all. A plain range filter drops those from EVERY window,
+        # not just this one -- they become permanently invisible. Keep them:
+        # an undated record is better shown than silently discarded, and here
+        # the undated rows carry the only non-"Not Started" statuses, so
+        # excluding them turned the chart into a flat, misleading single bar.
+        from django.db.models import Q
+
         field = model._meta.get_field("created_at")
+        undated = Q(created_at__isnull=True)
         if isinstance(field, DateTimeField):
             return qs.filter(
-                created_at__date__gte=filters.from_date,
-                created_at__date__lte=filters.to_date,
+                undated
+                | Q(
+                    created_at__date__gte=filters.from_date,
+                    created_at__date__lte=filters.to_date,
+                )
             )
         if isinstance(field, DateField):
             return qs.filter(
-                created_at__gte=filters.from_date,
-                created_at__lte=filters.to_date,
+                undated
+                | Q(
+                    created_at__gte=filters.from_date,
+                    created_at__lte=filters.to_date,
+                )
             )
         return qs
 

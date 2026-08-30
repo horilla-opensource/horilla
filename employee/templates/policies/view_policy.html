@@ -1,11 +1,13 @@
 {% load i18n %}
 <style>
     #enlargeImageContainer {
-        position: absolute;
-        top: 100px;
-        left: -300px;
-        width: 200px;
-        height: 200px;
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        top: 20%;
+        right: 7%;
+        width:400px;
+        height:500px;
     }
 </style>
 <div class="oh-modal__dialog-header">
@@ -18,14 +20,38 @@
 <div class="oh-modal__dialog-body border rounded-md shadow-card m-[20px]">
     <p class="oh-card__footer--border-top"></p>
     {{ policy.body|safe }}
-    <div
-        id="attachmentContainer"
-        class="d-flex"
-        hx-get="{% url 'get-attachments-policy' %}?policy_id={{ policy.id }}"
-        hx-trigger="load"
-    >
-    </div>
+    {% include "policies/attachments.html" %}
 
-    <div id="enlargeImageContainer"></div>
 </div>
 <div class="h-1"></div>
+
+<div id="enlargeImageContainer" ></div>
+
+
+<script>
+    function enlargeImage(src, element) {
+           var enlargeImageContainer = $("#enlargeImageContainer");
+           enlargeImageContainer.empty(); // Clear any previous content
+
+           var enlargedImage = $("<iframe>").attr({
+               src: src,
+               style: "width:100%; height:100%; border: none; background:white;",
+           });
+
+           enlargeImageContainer.append(enlargedImage);
+           enlargeImageContainer.css("display", "block");
+       }
+
+       function hideEnlargeImage() {
+           // Hide the enlarge image container when mouse leaves
+           var enlargeImageContainer = $("#enlargeImageContainer");
+           enlargeImageContainer.empty();
+           enlargeImageContainer.hide();
+       }
+
+    $(document).on("click", function (event) {
+    	if (!$(event.target).closest("#enlargeImageContainer").length) {
+    		hideEnlargeImage();
+    	}
+    });
+</script>

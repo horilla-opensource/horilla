@@ -15,12 +15,26 @@
                     <div class="oh-input-group">
                         <label
                             class="oh-label"
+                            for="{{form.asset_purchase_date_from.id_for_label}}"
+                        >{% trans "Purchase Date From" %}</label>
+                        {{ form.asset_purchase_date_from }}
+                    </div>
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{form.asset_purchase_date_till.id_for_label}}"
+                        >{% trans "Purchase Date Till" %}</label>
+                        {{ form.asset_purchase_date_till }}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
                             for="{{form.asset_tracking_id.id_for_label}}"
                         >{% trans "Tracking Id" %}</label>
                         {{ form.asset_tracking_id }}
                     </div>
-                </div>
-                <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
                         <label
                             class="oh-label"

@@ -481,10 +481,50 @@ urlpatterns = [
         surveys.survey_form,
         name="recruitment-application-survey",
     ),
+    # path(
+    #     "recruitment-survey-question-template-view/",
+    #     surveys.view_question_template,
+    #     name="recruitment-survey-question-template-view",
+    # ),
     path(
         "recruitment-survey-question-template-view/",
-        surveys.view_question_template,
+        recruitment_survey.SurveyTemplateSettingsView.as_view(),
         name="recruitment-survey-question-template-view",
+    ),
+    path(
+        "survey-template-settings-tab-view/",
+        recruitment_survey.SurveyTemplateTabView.as_view(),
+        name="survey-template-settings-tab-view",
+    ),
+    path(
+        "survey-template-tab/",
+        surveys.survey_template_tab,
+        name="survey-template-tab",
+    ),
+    path(
+        "survey-template-nav/",
+        recruitment_survey.SurveyTemplateNavView.as_view(),
+        name="survey-template-nav",
+    ),
+    path(
+        "survey-template-tab-list/",
+        surveys.survey_template_tab_list,
+        name="survey-template-tab-list",
+    ),
+    path(
+        "survey-question-tab/",
+        surveys.survey_question_tab,
+        name="survey-question-tab",
+    ),
+    path(
+        "survey-question-nav/",
+        recruitment_survey.SurveyQuestionNavView.as_view(),
+        name="survey-question-nav",
+    ),
+    path(
+        "survey-question-tab-list/",
+        surveys.survey_question_tab_list,
+        name="survey-question-tab-list",
     ),
     # path(
     #     "recruitment-survey-question-template-create",

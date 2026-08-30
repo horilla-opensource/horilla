@@ -716,6 +716,7 @@ function populateStates(countryElementId, stateElementId) {
             stateEl.options[stateEl.length] = option;
         }
     }
+    refreshSelect2(stateEl);
 }
 
 
@@ -748,12 +749,14 @@ function populateCountries(countryElementId, stateElementId) {
             populateStates(countryElementId, stateElementId);
         };
     }
+    refreshSelect2(countryEl);
 }
 
 
 function initCountryStateDropdowns() {
     populateCountries("id_country", "id_state");
     populateCountries("country", "state");
+    populateCountries("id_employee_bank_details__country", "id_employee_bank_details__state");
 }
 
 document.addEventListener("DOMContentLoaded", function () {

@@ -310,7 +310,7 @@
        colored row_status_class border used on model-backed lists (e.g.
        payroll's Payslip list), just keyed to domain instead of a lifecycle
        status since reports don't have one. */
-    .sr-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid #ebebeb; border-left: 3.4px solid transparent; cursor: pointer; }
+    .sr-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #ebebeb; border-left: 3.4px solid transparent; cursor: pointer; }
     .dark .sr-row { border-color: hsl(0, 0%, 25%); }
     .sr-row:last-child { border-bottom: none; }
     .sr-row:hover { background: hsl(213, 22%, 96%); }
@@ -337,8 +337,20 @@
        table's own header/cell typography (14px/#000 header-ish text,
        14px/#666 muted cell text) confirmed via computed styles on the
        Audit tab's real HorillaListView table. */
-    .sr-row__name { font-weight: 600; font-size: 14px; }
-    .sr-row__desc { margin-top: 1px; font-size: 14px; color: #666; }
+    .sr-row__name { font-weight: 600; font-size: 14px; line-height: 1.4; }
+    /* 13px and single-line for the list: at 14px the description carried the
+       same visual weight as the name it sits under, so nothing anchored the
+       eye when scanning 30+ rows. One line keeps every row the same height
+       -- the inspector panel is where the full text belongs. */
+    .sr-row__desc {
+        margin-top: 1px;
+        font-size: 13px;
+        line-height: 1.45;
+        color: #666;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
     .dark .sr-row__desc { color: hsl(0, 0%, 65%); }
     .sr-row__meta {
         width: 150px;
@@ -361,29 +373,57 @@
        text-sm/text-xs sizing) are copied from the theme's own card
        component — horilla_theme/templates/generic/horilla_card.html, which
        is what HorillaCardView (e.g. the Employees grid) actually renders. */
+    /* 320px floor rather than 260px: at 260 the old four-across
+       "check | icon | body | actions" band left the description roughly
+       130px wide, which wrapped it to ~7 words a line and stretched cards
+       to ~490px tall for ~30 words. The theme's own card grid
+       (generic/horilla_card.html) uses a fixed grid-cols-4, so this tracks
+       the same density while still collapsing on narrow screens. */
     .sr-sections.sr-view--grid .sr-rows {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         gap: 16px;
         background: transparent;
         border: none;
     }
+    /* Header band (icon + title) over a full-width description, instead of
+       the description sharing a row with the icon and action buttons. The
+       description gets the card's whole width, and actions are lifted out
+       of flow to the top-right corner the way the theme card's own
+       dropdown-toggle is positioned. */
     .sr-sections.sr-view--grid .sr-row {
+        position: relative;
         display: grid;
-        grid-template-columns: 18px 44px minmax(0, 1fr) auto;
+        grid-template-columns: 34px minmax(0, 1fr);
         grid-template-areas:
-            "check icon body actions"
-            "check icon meta meta";
-        column-gap: 12px;
-        row-gap: 6px;
-        align-items: start;
+            "icon  name"
+            "desc  desc"
+            "meta  meta";
+        column-gap: 10px;
+        row-gap: 8px;
+        align-content: start;
+        align-items: center;
         background: hsl(0, 0%, 100%);
         border: 1px solid #ebebeb;
         border-left-width: 3.4px;
         border-radius: 6px;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
-        padding: 16px;
+        padding: 12px 14px;
         min-width: 0;
+        /* Deliberately no min-height: a short description left ~55px of dead
+           space above the meta row. The clamp below bounds the tall end, so
+           cards stay within a line of each other without padding the short
+           ones out to a fixed floor. */
+        transition: box-shadow .15s ease, border-color .15s ease;
+    }
+    .sr-sections.sr-view--grid .sr-row:hover {
+        background: hsl(0, 0%, 100%);
+        border-color: #d9d9d9;
+        box-shadow: 0px 2px 14px rgba(0, 0, 0, 0.09);
+    }
+    .dark .sr-sections.sr-view--grid .sr-row:hover {
+        background: #242424;
+        border-color: hsl(0, 0%, 32%);
     }
     .sr-sections.sr-view--grid .sr-row.is-selected {
         border-color: var(--primary-600, #E54F38);
@@ -393,52 +433,112 @@
         background: #242424;
         border-color: hsl(0, 0%, 25%);
     }
+    /* Checkbox lifted out of the grid flow to the top-left corner: as a
+       real column it stole ~30px from the description on every card while
+       being used only during bulk-select. It stays hit-testable and only
+       reveals itself on hover or once something is checked. */
     .sr-sections.sr-view--grid .sr-row__check {
-        grid-area: check;
-        align-self: center;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 2;
         display: flex;
         align-items: center;
         justify-content: center;
+        opacity: 0;
+        transition: opacity .12s ease;
     }
+    .sr-sections.sr-view--grid .sr-row:hover .sr-row__check,
+    .sr-sections.sr-view--grid .sr-row:focus-within .sr-row__check,
+    .sr-sections.sr-view--grid .sr-row.is-checked .sr-row__check {
+        opacity: 1;
+    }
+    /* 34px square with the theme's 6px radius, matching the list view's own
+       icon tile -- the 44px circle was sized for a layout where it sat
+       beside the text rather than above it. */
     .sr-sections.sr-view--grid .sr-row__icon {
         grid-area: icon;
         align-self: center;
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        font-size: 18px;
+        width: 34px;
+        height: 34px;
+        border-radius: 6px;
+        font-size: 16px;
     }
+    /* .sr-row__body is a flex wrapper in list mode; in grid mode its two
+       children are promoted onto the card grid itself so the description
+       can span the full width instead of being trapped beside the icon. */
     .sr-sections.sr-view--grid .sr-row__body {
-        grid-area: body;
-        min-width: 0;
-        overflow-wrap: break-word;
+        display: contents;
     }
     .sr-sections.sr-view--grid .sr-row__name {
+        grid-area: name;
         font-size: 14px;
         font-weight: 600;
+        line-height: 1.35;
+        /* Two lines maximum: report names such as "Quality of Hire
+           (90-day retention)" otherwise push the description down and
+           break card alignment across the row. */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        /* Keep clear of the absolutely-positioned action buttons. */
+        padding-right: 56px;
     }
     .sr-sections.sr-view--grid .sr-row__desc {
-        font-size: 14px;
+        grid-area: desc;
+        margin-top: 0;
+        font-size: 13px;
+        line-height: 1.5;
         color: #666;
+        overflow-wrap: break-word;
+        /* Must reset the list view's nowrap/ellipsis: leaving it set kept
+           every card description on a single line and silently defeated the
+           clamp below. */
+        white-space: normal;
+        text-overflow: clip;
+        /* Clamped rather than unbounded: descriptions run from 6 to 30+
+           words, and without this the tallest one set the height of every
+           card in its row. Full text is available on hover and in the
+           inspector panel. */
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        cursor: help;
     }
     .dark .sr-sections.sr-view--grid .sr-row__desc { color: hsl(0, 0%, 65%); }
     .sr-sections.sr-view--grid .sr-row__meta {
         grid-area: meta;
+        /* start, not end: align-self:end pinned this to the card floor and
+           reopened the same gap the min-height was creating. */
+        align-self: start;
         width: auto;
         min-width: 0;
         text-align: left;
-        white-space: normal;
-        overflow-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         font-size: 12px;
-        color: #666;
+        color: #8a8a8a;
+        padding-top: 6px;
+        border-top: 1px solid #f2f2f2;
     }
-    .dark .sr-sections.sr-view--grid .sr-row__meta { color: hsl(0, 0%, 65%); }
+    .dark .sr-sections.sr-view--grid .sr-row__meta {
+        color: hsl(0, 0%, 58%);
+        border-top-color: hsl(0, 0%, 24%);
+    }
+    /* Actions pinned to the top-right, mirroring the theme card's own
+       absolutely-positioned action affordance -- as a grid column they
+       competed with the title for width on every card. */
     .sr-sections.sr-view--grid .sr-row__actions {
-        grid-area: actions;
-        align-self: start;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
     }
     .sr-row__check { display: none; }
-    .sr-sections.sr-view--grid .sr-row__check { display: block; }
+    .sr-sections.sr-view--grid .sr-row__check { display: flex; }
 
     /* Bulk action bar — grid mode only, shown once 1+ cards are checked.
        Coral, not the mockup's blue. */
@@ -680,7 +780,7 @@
                                     </span>
                                     <div class="sr-row__body">
                                         <div class="sr-row__name">{{ report.name }}</div>
-                                        <div class="sr-row__desc">{{ report.description }}</div>
+                                        <div class="sr-row__desc" title="{{ report.description }}">{{ report.description }}</div>
                                     </div>
                                     <div class="sr-row__meta">
                                         {% if report.last_run %}{% blocktrans with t=report.last_run|timesince %}{{ t }} ago{% endblocktrans %}{% else %}—{% endif %}
@@ -771,6 +871,93 @@
             <button type="button" class="oh-btn oh-btn--secondary oh-btn--small" id="srSaveViewSubmit">
                 <ion-icon name="bookmark-outline"></ion-icon>
                 {% trans "Save" %}
+            </button>
+        </div>
+    </div>
+</div>
+
+{# Bulk "Subscribe selected" — replaces two chained native prompt() calls    #}
+{# (recipients, then frequency), which broke the flow and could not validate. #}
+<div class="oh-modal" id="srSubscribeModal" role="dialog" aria-modal="true" aria-labelledby="srSubscribeModalLabel" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 460px;">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="srSubscribeModalLabel">{% trans "Subscribe to reports" %}</h2>
+            <button type="button" class="oh-modal__close" id="srSubscribeClose" aria-label="{% trans 'Close' %}">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body">
+            <p class="text-sm text-gray-600 mb-3" id="srSubscribeCount"></p>
+            <form id="srSubscribeForm" onsubmit="return false;">
+                <div class="oh-input-group">
+                    <label class="oh-label" for="srSubscribeRecipients">{% trans "Recipients" %}</label>
+                    <input
+                        type="text"
+                        class="oh-input w-100"
+                        id="srSubscribeRecipients"
+                        autocomplete="off"
+                        value="{{ request.user.email|default:'' }}"
+                        placeholder="{% trans 'name@example.com, other@example.com' %}"
+                    >
+                    <p class="text-xs text-gray-500 mt-1 mb-0">{% trans "Comma-separated email addresses." %}</p>
+                </div>
+                <div class="oh-input-group mb-0">
+                    <label class="oh-label" for="srSubscribeFrequency">{% trans "Frequency" %}</label>
+                    <select class="oh-select oh-select-2 w-100" id="srSubscribeFrequency">
+                        <option value="daily">{% trans "Daily" %}</option>
+                        <option value="weekly" selected>{% trans "Weekly" %}</option>
+                        <option value="monthly">{% trans "Monthly" %}</option>
+                    </select>
+                </div>
+                <p class="text-xs text-red-600 mt-2 mb-0" id="srSubscribeError" hidden></p>
+            </form>
+        </div>
+        <div class="oh-modal__dialog-footer">
+            <button type="button" class="oh-btn oh-btn--light oh-btn--small" id="srSubscribeCancel">{% trans "Cancel" %}</button>
+            <button type="button" class="oh-btn oh-btn--secondary oh-btn--small" id="srSubscribeSubmit">
+                <ion-icon name="notifications-outline"></ion-icon>
+                {% trans "Subscribe" %}
+            </button>
+        </div>
+    </div>
+</div>
+
+{# Bulk "Add to view" — replaces a prompt() that asked the user to retype an #}
+{# existing view name from a comma-separated list pasted into the dialog.    #}
+<div class="oh-modal" id="srAddToViewModal" role="dialog" aria-modal="true" aria-labelledby="srAddToViewModalLabel" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 440px;">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="srAddToViewModalLabel">{% trans "Add to view" %}</h2>
+            <button type="button" class="oh-modal__close" id="srAddToViewClose" aria-label="{% trans 'Close' %}">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body">
+            <p class="text-sm text-gray-600 mb-3" id="srAddToViewCount"></p>
+            <form id="srAddToViewForm" onsubmit="return false;">
+                <div class="oh-input-group" id="srAddToViewExistingGroup">
+                    <label class="oh-label" for="srAddToViewSelect">{% trans "Existing view" %}</label>
+                    <select class="oh-select oh-select-2 w-100" id="srAddToViewSelect"></select>
+                </div>
+                <div class="oh-input-group mb-0" id="srAddToViewNewGroup" hidden>
+                    <label class="oh-label" for="srAddToViewNewName">{% trans "New view name" %}</label>
+                    <input
+                        type="text"
+                        class="oh-input w-100"
+                        id="srAddToViewNewName"
+                        maxlength="80"
+                        autocomplete="off"
+                        placeholder="{% trans 'e.g. Q3 board pack' %}"
+                    >
+                </div>
+                <p class="text-xs text-red-600 mt-2 mb-0" id="srAddToViewError" hidden></p>
+            </form>
+        </div>
+        <div class="oh-modal__dialog-footer">
+            <button type="button" class="oh-btn oh-btn--light oh-btn--small" id="srAddToViewCancel">{% trans "Cancel" %}</button>
+            <button type="button" class="oh-btn oh-btn--secondary oh-btn--small" id="srAddToViewSubmit">
+                <ion-icon name="add-outline"></ion-icon>
+                {% trans "Add" %}
             </button>
         </div>
     </div>
@@ -1157,8 +1344,52 @@ function initStandardCatalog() {
 
     document.querySelectorAll(".sr-bulk-check").forEach(function (cb) {
         cb.addEventListener("click", function (e) { e.stopPropagation(); });
-        cb.addEventListener("change", updateBulkBar);
+        cb.addEventListener("change", function () {
+            // In grid mode the checkbox only appears on hover, so a checked
+            // card needs to keep showing it once the pointer moves away.
+            var card = cb.closest(".sr-row");
+            if (card) card.classList.toggle("is-checked", cb.checked);
+            updateBulkBar();
+        });
     });
+
+    // ---- Toast, replacing alert() for bulk-action feedback ----
+    // alert() halts the JS event loop and renders in browser chrome, so it
+    // looked nothing like the rest of the app and blocked interaction until
+    // dismissed. This is non-blocking and dismisses itself.
+    function srToast(message, kind) {
+        var host = document.getElementById("srToastHost");
+        if (!host) {
+            host = document.createElement("div");
+            host.id = "srToastHost";
+            host.style.cssText = "position:fixed;bottom:24px;right:24px;z-index:1100;display:flex;flex-direction:column;gap:8px;";
+            document.body.appendChild(host);
+        }
+        var el = document.createElement("div");
+        var accent = kind === "error" ? "#dc2626" : "var(--primary-600, #E54F38)";
+        el.style.cssText =
+            "background:#fff;border:1px solid #ebebeb;border-left:3.4px solid " + accent +
+            ";border-radius:6px;box-shadow:0px 2px 14px rgba(0,0,0,.12);padding:10px 14px;" +
+            "font-size:13px;color:#333;max-width:320px;opacity:0;transform:translateY(6px);" +
+            "transition:opacity .18s ease,transform .18s ease;";
+        el.textContent = message;
+        host.appendChild(el);
+        requestAnimationFrame(function () { el.style.opacity = "1"; el.style.transform = "translateY(0)"; });
+        setTimeout(function () {
+            el.style.opacity = "0";
+            el.style.transform = "translateY(6px)";
+            setTimeout(function () { el.remove(); }, 200);
+        }, 4000);
+    }
+
+    function srOpenModal(modal) {
+        modal.classList.add("oh-modal--show");
+        modal.setAttribute("aria-hidden", "false");
+    }
+    function srCloseModal(modal) {
+        modal.classList.remove("oh-modal--show");
+        modal.setAttribute("aria-hidden", "true");
+    }
 
     document.getElementById("srBulkExport").addEventListener("click", function () {
         var slugs = selectedSlugs();
@@ -1168,53 +1399,147 @@ function initStandardCatalog() {
                 headers: { "X-Requested-With": "XMLHttpRequest" },
             });
         });
-        alert(slugs.length + " {% trans 'report(s) queued — check your email shortly.' %}");
+        srToast(slugs.length + " {% trans 'report(s) queued — check your email shortly.' %}");
     });
+
+    // ---- Subscribe modal ----
+    var subModal = document.getElementById("srSubscribeModal");
+    var subRecipients = document.getElementById("srSubscribeRecipients");
+    var subFrequency = document.getElementById("srSubscribeFrequency");
+    var subError = document.getElementById("srSubscribeError");
+    var subSubmit = document.getElementById("srSubscribeSubmit");
+
+    function setSubError(msg) {
+        if (msg) { subError.textContent = msg; subError.hidden = false; }
+        else { subError.hidden = true; }
+    }
 
     document.getElementById("srBulkSubscribe").addEventListener("click", function () {
         var slugs = selectedSlugs();
         if (!slugs.length) return;
-        var recipients = prompt("{% trans 'Recipients (comma-separated emails)' %}", "{{ request.user.email|default:'' }}");
-        if (!recipients) return;
-        var frequency = prompt("{% trans 'Frequency: daily, weekly, or monthly' %}", "weekly");
-        if (!frequency) return;
+        setSubError("");
+        document.getElementById("srSubscribeCount").textContent =
+            slugs.length + " {% trans 'report(s) selected.' %}";
+        srOpenModal(subModal);
+        setTimeout(function () { subRecipients.focus(); }, 50);
+    });
+
+    document.getElementById("srSubscribeClose").addEventListener("click", function () { srCloseModal(subModal); });
+    document.getElementById("srSubscribeCancel").addEventListener("click", function () { srCloseModal(subModal); });
+
+    subSubmit.addEventListener("click", function () {
+        var slugs = selectedSlugs();
+        if (!slugs.length) { srCloseModal(subModal); return; }
+        var recipients = subRecipients.value.trim();
+        if (!recipients) {
+            setSubError("{% trans 'Enter at least one recipient email address.' %}");
+            subRecipients.focus();
+            return;
+        }
+        // Validated here rather than server-side-only: the old prompt() flow
+        // accepted anything and failed silently after the fact.
+        var invalid = recipients.split(",").map(function (e) { return e.trim(); })
+            .filter(function (e) { return e && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e); });
+        if (invalid.length) {
+            setSubError("{% trans 'Not a valid email address:' %} " + invalid[0]);
+            subRecipients.focus();
+            return;
+        }
+        setSubError("");
+        subSubmit.disabled = true;
         fetch("{% url 'standard-report-bulk-subscribe' %}", {
             method: "POST",
             headers: { "X-CSRFToken": csrfToken, "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
-            body: JSON.stringify({ report_slugs: slugs, frequency: frequency.trim().toLowerCase(), format: "xlsx", recipients: recipients }),
+            body: JSON.stringify({ report_slugs: slugs, frequency: subFrequency.value, format: "xlsx", recipients: recipients }),
         }).then(function (res) { return res.json(); }).then(function (data) {
-            if (data.error) { alert(data.error); return; }
+            subSubmit.disabled = false;
+            if (data.error) { setSubError(data.error); return; }
+            srCloseModal(subModal);
             var msg = data.created + " {% trans 'subscription(s) created.' %}";
             if (data.skipped && data.skipped.length) msg += " " + data.skipped.length + " {% trans 'skipped (no access).' %}";
-            alert(msg);
+            srToast(msg);
+        }).catch(function () {
+            subSubmit.disabled = false;
+            setSubError("{% trans 'Could not create subscriptions. Please try again.' %}");
         });
     });
+
+    // ---- Add to view modal ----
+    var atvModal = document.getElementById("srAddToViewModal");
+    var atvSelect = document.getElementById("srAddToViewSelect");
+    var atvNewGroup = document.getElementById("srAddToViewNewGroup");
+    var atvNewName = document.getElementById("srAddToViewNewName");
+    var atvError = document.getElementById("srAddToViewError");
+    var atvSubmit = document.getElementById("srAddToViewSubmit");
+    var ATV_NEW = "__new__";
+
+    function setAtvError(msg) {
+        if (msg) { atvError.textContent = msg; atvError.hidden = false; }
+        else { atvError.hidden = true; }
+    }
+
+    function refreshAtvOptions() {
+        // Existing views become real options instead of a comma-separated
+        // list the user had to read and retype exactly.
+        atvSelect.innerHTML = "";
+        Array.from(document.querySelectorAll("#srSavedViewsList .sr-saved-view")).forEach(function (el) {
+            var opt = document.createElement("option");
+            opt.value = el.dataset.viewId;
+            opt.textContent = el.querySelector(".sr-saved-view__name").textContent;
+            atvSelect.appendChild(opt);
+        });
+        var newOpt = document.createElement("option");
+        newOpt.value = ATV_NEW;
+        newOpt.textContent = "{% trans '+ Create a new view…' %}";
+        atvSelect.appendChild(newOpt);
+        if (atvSelect.options.length === 1) atvSelect.value = ATV_NEW;
+        toggleAtvNewName();
+    }
+
+    function toggleAtvNewName() {
+        var isNew = atvSelect.value === ATV_NEW;
+        atvNewGroup.hidden = !isNew;
+        document.getElementById("srAddToViewExistingGroup").hidden =
+            atvSelect.options.length === 1 && isNew;
+    }
+
+    atvSelect.addEventListener("change", toggleAtvNewName);
 
     document.getElementById("srBulkAddToView").addEventListener("click", function () {
         var slugs = selectedSlugs();
         if (!slugs.length) return;
-        var names = Array.from(document.querySelectorAll("#srSavedViewsList .sr-saved-view__name")).map(function (n) { return n.textContent; });
-        var chosen = prompt("{% trans 'Add to which view? (type the name, or a new name to create one)' %}\n" + names.join(", "));
-        if (!chosen) return;
-        var existing = Array.from(document.querySelectorAll("#srSavedViewsList .sr-saved-view")).find(function (el) {
-            return el.querySelector(".sr-saved-view__name").textContent === chosen;
-        });
-        if (existing) {
-            fetch("/report/standard/saved-views/" + existing.dataset.viewId + "/reports/", {
-                method: "POST",
-                headers: { "X-CSRFToken": csrfToken, "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
-                body: JSON.stringify({ report_slugs: slugs }),
-            }).then(function () {
-                existing.dataset.viewSlugs = JSON.stringify(Array.from(new Set((JSON.parse(existing.dataset.viewSlugs || "[]")).concat(slugs))));
-                alert("{% trans 'Added.' %}");
-            });
-        } else {
+        setAtvError("");
+        atvNewName.value = "";
+        refreshAtvOptions();
+        document.getElementById("srAddToViewCount").textContent =
+            slugs.length + " {% trans 'report(s) selected.' %}";
+        srOpenModal(atvModal);
+    });
+
+    document.getElementById("srAddToViewClose").addEventListener("click", function () { srCloseModal(atvModal); });
+    document.getElementById("srAddToViewCancel").addEventListener("click", function () { srCloseModal(atvModal); });
+
+    atvSubmit.addEventListener("click", function () {
+        var slugs = selectedSlugs();
+        if (!slugs.length) { srCloseModal(atvModal); return; }
+        var isNew = atvSelect.value === ATV_NEW;
+
+        if (isNew) {
+            var name = atvNewName.value.trim();
+            if (!name) {
+                setAtvError("{% trans 'Please enter a name for the new view.' %}");
+                atvNewName.focus();
+                return;
+            }
+            setAtvError("");
+            atvSubmit.disabled = true;
             fetch("/report/standard/saved-views/", {
                 method: "POST",
                 headers: { "X-CSRFToken": csrfToken, "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
-                body: JSON.stringify({ name: chosen, report_slugs: slugs }),
+                body: JSON.stringify({ name: name, report_slugs: slugs }),
             }).then(function (res) { return res.json(); }).then(function (data) {
-                if (data.error) { alert(data.error); return; }
+                atvSubmit.disabled = false;
+                if (data.error) { setAtvError(data.error); return; }
                 var list = document.getElementById("srSavedViewsList");
                 var div = document.createElement("div");
                 div.className = "sr-saved-view";
@@ -1223,8 +1548,31 @@ function initStandardCatalog() {
                 div.innerHTML = '<span class="sr-saved-view__name"></span><span class="sr-saved-view__del" data-view-id="' + data.view.id + '" title="{% trans "Delete view" %}">×</span>';
                 div.querySelector(".sr-saved-view__name").textContent = data.view.name;
                 list.appendChild(div);
+                srCloseModal(atvModal);
+                srToast("{% trans 'View created and reports added.' %}");
+            }).catch(function () {
+                atvSubmit.disabled = false;
+                setAtvError("{% trans 'Could not create the view. Please try again.' %}");
             });
+            return;
         }
+
+        var existing = document.querySelector('#srSavedViewsList .sr-saved-view[data-view-id="' + atvSelect.value + '"]');
+        if (!existing) { setAtvError("{% trans 'That view no longer exists.' %}"); return; }
+        atvSubmit.disabled = true;
+        fetch("/report/standard/saved-views/" + existing.dataset.viewId + "/reports/", {
+            method: "POST",
+            headers: { "X-CSRFToken": csrfToken, "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
+            body: JSON.stringify({ report_slugs: slugs }),
+        }).then(function () {
+            atvSubmit.disabled = false;
+            existing.dataset.viewSlugs = JSON.stringify(Array.from(new Set((JSON.parse(existing.dataset.viewSlugs || "[]")).concat(slugs))));
+            srCloseModal(atvModal);
+            srToast("{% trans 'Added to view.' %}");
+        }).catch(function () {
+            atvSubmit.disabled = false;
+            setAtvError("{% trans 'Could not add to that view. Please try again.' %}");
+        });
     });
 
 }

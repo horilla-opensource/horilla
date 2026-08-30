@@ -5,6 +5,8 @@ This page is used to register filter for employee models
 
 """
 
+from datetime import date
+
 import django_filters
 from django import forms
 from django.utils.translation import gettext_lazy as _
@@ -80,9 +82,41 @@ class TicketFilter(FilterSet):
     pipeline_status = django_filters.CharFilter(
         field_name="status",
     )
+    is_open = django_filters.BooleanFilter(
+        method="filter_is_open",
+        widget=django_filters.widgets.BooleanWidget(),
+    )
+    is_overdue = django_filters.BooleanFilter(
+        method="filter_is_overdue",
+        widget=django_filters.widgets.BooleanWidget(),
+    )
     department = django_filters.NumberFilter(
         field_name="employee_id__employee_work_info__department_id",
     )
+
+    def filter_is_open(self, queryset, name, value):
+        """
+        Matches the dashboard's "Open Tickets" KPI, which combines three
+        statuses (new/in_progress/on_hold) into one count -- there's no
+        single `status` value that represents that, so this is a separate
+        method filter rather than reusing the plain `status` field.
+        """
+        if value:
+            return queryset.filter(status__in=["new", "in_progress", "on_hold"])
+        return queryset
+
+    def filter_is_overdue(self, queryset, name, value):
+        """
+        Matches the dashboard's "Overdue" KPI: past deadline AND still in
+        one of the open statuses (from_date/to_date above are plain
+        gte/lte comparisons, not this specific combination).
+        """
+        if value:
+            return queryset.filter(
+                deadline__lt=date.today(),
+                status__in=["new", "in_progress", "on_hold"],
+            )
+        return queryset
 
     def search_method(self, queryset, name, value):
         """

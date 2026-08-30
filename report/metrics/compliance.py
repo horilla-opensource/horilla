@@ -349,3 +349,135 @@ def visa_contract_expiry(filters: ReportFilters) -> dict:
             "rows": rows[:150],
         },
     }
+
+
+def asset_register(filters: ReportFilters) -> dict:
+    """Asset inventory and assignment ageing.
+
+    Asset recovery at exit is a standard offboarding control, and this is the
+    largest dataset in the product with no report coverage. Ageing is measured
+    from assigned_date, which is auto_now_add -- fine for "how long has this
+    been out", wrong for reconstructing backdated assignments.
+    """
+    from datetime import date
+
+    if not apps.is_installed("asset"):
+        return empty_report(
+            _("Asset Register"), filters, _("Asset app is not installed.")
+        )
+
+    Asset = apps.get_model("asset", "Asset")
+    AssetAssignment = apps.get_model("asset", "AssetAssignment")
+    today = date.today()
+
+    assets = Asset.objects.all()
+    total_assets = assets.count()
+    if not total_assets:
+        return empty_report(_("Asset Register"), filters, _("No assets recorded."))
+
+    by_status: dict[str, int] = {}
+    for row in assets.values("asset_status").annotate(n=Count("id")):
+        by_status[row["asset_status"] or str(_("Unknown"))] = row["n"]
+
+    # Open assignments: handed out and not yet returned.
+    open_qs = AssetAssignment.objects.filter(return_status__isnull=True)
+    open_qs = apply_org_filters(
+        open_qs,
+        filters,
+        prefix="assigned_to_employee_id__employee_work_info",
+        employee_prefix="assigned_to_employee_id",
+    )
+
+    buckets = {"0–30": 0, "31–90": 0, "91–180": 0, "180+": 0}
+    rows = []
+    for assignment in open_qs.select_related(
+        "asset_id", "assigned_to_employee_id"
+    ).order_by("assigned_date")[:300]:
+        assigned = assignment.assigned_date
+        days = (today - assigned).days if assigned else 0
+        if days <= 30:
+            bucket = "0–30"
+        elif days <= 90:
+            bucket = "31–90"
+        elif days <= 180:
+            bucket = "91–180"
+        else:
+            bucket = "180+"
+        buckets[bucket] += 1
+        asset = getattr(assignment, "asset_id", None)
+        emp = getattr(assignment, "assigned_to_employee_id", None)
+        rows.append(
+            {
+                "asset": getattr(asset, "asset_name", "") or "",
+                "tracking_id": getattr(asset, "asset_tracking_id", "") or "",
+                "employee": emp.get_full_name() if emp else "",
+                "assigned": assigned.isoformat() if assigned else "",
+                "days_held": days,
+                "bucket": bucket,
+            }
+        )
+
+    status_labels = list(by_status.keys())
+    return {
+        "title": _("Asset Register"),
+        "kpis": [
+            {
+                "label": _("Assets tracked"),
+                "value": total_assets,
+                "hint": _("All recorded assets"),
+            },
+            {
+                "label": _("Currently assigned"),
+                "value": open_qs.count(),
+                "hint": _("Handed out, not yet returned"),
+            },
+            {
+                "label": _("Held over 180 days"),
+                "value": buckets["180+"],
+                "hint": _("Longest-outstanding assignments"),
+            },
+            {
+                "label": _("In use"),
+                "value": by_status.get("In use", 0),
+                "hint": _("By asset status"),
+            },
+        ],
+        "charts": (
+            [
+                {
+                    "id": "asset_status",
+                    "type": "donut",
+                    "title": _("Assets by Status"),
+                    "categories": status_labels,
+                    "series": [
+                        {
+                            "name": str(_("Assets")),
+                            "data": [by_status[k] for k in status_labels],
+                        }
+                    ],
+                },
+                {
+                    "id": "asset_ageing",
+                    "type": "bar",
+                    "title": _("Assignment Ageing (days held)"),
+                    "categories": list(buckets.keys()),
+                    "series": [
+                        {"name": str(_("Assignments")), "data": list(buckets.values())}
+                    ],
+                },
+            ]
+            if status_labels
+            else []
+        ),
+        "table": {
+            "columns": [
+                {"key": "asset", "label": _("Asset")},
+                {"key": "tracking_id", "label": _("Tracking ID")},
+                {"key": "employee", "label": _("Assigned To")},
+                {"key": "assigned", "label": _("Assigned On")},
+                {"key": "days_held", "label": _("Days Held")},
+                {"key": "bucket", "label": _("Ageing")},
+            ],
+            "rows": rows,
+        },
+    }

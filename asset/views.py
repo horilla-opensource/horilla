@@ -643,6 +643,26 @@ def asset_category_view(request):
         None
     """
 
+    # Deep-link support for e.g. the dashboard's "Total Value" card:
+    # ?asset_purchase_date_from=...&asset_purchase_date_till=.... The query
+    # string can't be relied on to survive down to each category's own
+    # nested asset list fetch - this page auto-submits its own (category-
+    # level) filter form on load, which htmx rebuilds the request URL
+    # from, dropping any param that isn't one of that form's own fields.
+    # Stash it in the session instead, which AssetListView.get_queryset
+    # picks up as a fallback, immune to that. A plain (non-deep-link)
+    # visit to this page clears any stale value instead of letting it
+    # linger indefinitely.
+    date_from = request.GET.get("asset_purchase_date_from")
+    date_till = request.GET.get("asset_purchase_date_till")
+    if date_from or date_till:
+        request.session["asset_purchase_date_deep_link"] = {
+            "from": date_from,
+            "till": date_till,
+        }
+    else:
+        request.session.pop("asset_purchase_date_deep_link", None)
+
     queryset = AssetCategory.objects.all()
     if queryset.exists():
         template = "category/asset_category_view.html"

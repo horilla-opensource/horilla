@@ -60,8 +60,11 @@ def pms_kpi_data(request):
     total_key_results = key_results.count()
     total_feedbacks = feedbacks.count()
 
-    # Average progress
-    avg_progress = objectives.aggregate(
+    # Average progress -- of key results, matching this card's sub-label
+    # ("N key results") and its click-through to the Key Results list, not
+    # objectives' own progress_percentage (each objective's own average of
+    # its key results, a different aggregation).
+    avg_progress = key_results.aggregate(
         avg=Coalesce(Avg("progress_percentage"), 0.0, output_field=FloatField())
     )["avg"]
 

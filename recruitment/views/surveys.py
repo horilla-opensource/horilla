@@ -220,29 +220,118 @@ def candidate_survey(request):
     )
 
 
+# Superseded by recruitment.cbv.surveys.SurveyTemplateSettingsView/
+# SurveyTemplateTabView, which render the same "survey/view_question_templates.html"
+# page but as separate Template/Questions tabs. Left here commented out
+# (rather than edited in place) so the previous combined accordion+grid page
+# can be restored easily.
+#
+# @login_required
+# @is_recruitment_manager(perm="recruitment.view_recruitmentsurvey")
+# def view_question_template(request):
+#     """
+#     This method is used to view the question template
+#     """
+#     recs = Recruitment.objects.all()
+#     ids = []
+#     for i in recs:
+#         for manager in i.recruitment_managers.all():
+#             if request.user.employee_get == manager:
+#                 ids.append(i.id)
+#     if request.user.has_perm("recruitment.view_recruitmentsurvey"):
+#         questions = RecruitmentSurvey.objects.all()
+#     else:
+#         questions = RecruitmentSurvey.objects.filter(recruitment_ids__in=ids)
+#     # See the matching fix/comment in recruitment/views/search.py's
+#     # filter_survey() - group_by_queryset() already paginates correctly, but
+#     # the unused (0-question) templates it can't see get appended afterward
+#     # and the combined list gets paginated a second time on the same
+#     # "template_page" param, so page 2+ silently lost has_previous. Fetch
+#     # every templates-with-questions group here (unpaginated) and paginate
+#     # the merged list exactly once below instead.
+#     templates = group_by_queryset(
+#         questions.filter(template_id__isnull=False).distinct(),
+#         "template_id__title",
+#         page=1,
+#         page_name="template_page",
+#         records_per_page=1000000,
+#     )
+#     all_template_object_list = []
+#     for template in templates:
+#         all_template_object_list.append(template)
+#
+#     survey_templates = SurveyTemplate.objects.all()
+#     all_templates = survey_templates.values_list("title", flat=True)
+#     used_templates = questions.values_list("template_id__title", flat=True)
+#
+#     unused_templates = list(set(all_templates) - set(used_templates))
+#     unused_groups = []
+#     for template_name in unused_templates:
+#         unused_groups.append(
+#             {
+#                 "grouper": template_name,
+#                 "list": [],
+#                 "dynamic_name": "",
+#             }
+#         )
+#     all_template_object_list = all_template_object_list + unused_groups
+#
+#     templates = paginator_qry(
+#         all_template_object_list, request.GET.get("template_page")
+#     )
+#     survey_templates = paginator_qry(
+#         survey_templates, request.GET.get("survey_template_page")
+#     )
+#     filter_obj = SurveyFilter()
+#     requests_ids = json.dumps(
+#         [
+#             instance.id
+#             for instance in paginator_qry(
+#                 questions, request.GET.get("page")
+#             ).object_list
+#         ]
+#     )
+#     return render(
+#         request,
+#         "survey/view_question_templates.html",
+#         {
+#             "questions": paginator_qry(questions, request.GET.get("page")),
+#             "templates": templates,
+#             "survey_templates": survey_templates,
+#             "f": filter_obj,
+#             "requests_ids": requests_ids,
+#         },
+#     )
+
+
 @login_required
+@hx_request_required
 @is_recruitment_manager(perm="recruitment.view_recruitmentsurvey")
-def view_question_template(request):
+def survey_template_tab(request):
     """
-    This method is used to view the question template
+    Root of the Template tab: loads its own navbar, then its own list
+    container - the same nav+list split used by the recruitment settings
+    tabs (see recruitment/cbv/settings_tabs.py).
     """
-    recs = Recruitment.objects.all()
-    ids = []
-    for i in recs:
-        for manager in i.recruitment_managers.all():
-            if request.user.employee_get == manager:
-                ids.append(i.id)
-    if request.user.has_perm("recruitment.view_recruitmentsurvey"):
-        questions = RecruitmentSurvey.objects.all()
-    else:
-        questions = RecruitmentSurvey.objects.filter(recruitment_ids__in=ids)
-    # See the matching fix/comment in recruitment/views/search.py's
-    # filter_survey() - group_by_queryset() already paginates correctly, but
-    # the unused (0-question) templates it can't see get appended afterward
-    # and the combined list gets paginated a second time on the same
-    # "template_page" param, so page 2+ silently lost has_previous. Fetch
-    # every templates-with-questions group here (unpaginated) and paginate
-    # the merged list exactly once below instead.
+    return render(request, "survey/template_tab_root.html", {})
+
+
+@login_required
+@hx_request_required
+@is_recruitment_manager(perm="recruitment.view_recruitmentsurvey")
+def survey_template_tab_list(request):
+    """
+    Template accordion content for the Template tab, and the hx-get target
+    for that tab's own navbar (recruitment.cbv.surveys.SurveyTemplateNavView)
+    search box and pagination.
+    """
+    survey_templates = SurveyTemplate.objects.all()
+    search = request.GET.get("search", "").strip()
+    if search:
+        survey_templates = survey_templates.filter(title__icontains=search)
+    questions = SurveyFilter(request.GET, RecruitmentSurvey.objects.all()).qs
+
+    previous_data = request.GET.urlencode()
     templates = group_by_queryset(
         questions.filter(template_id__isnull=False).distinct(),
         "template_id__title",
@@ -250,33 +339,19 @@ def view_question_template(request):
         page_name="template_page",
         records_per_page=1000000,
     )
-    all_template_object_list = []
-    for template in templates:
-        all_template_object_list.append(template)
+    all_template_object_list = list(templates)
 
-    survey_templates = SurveyTemplate.objects.all()
     all_templates = survey_templates.values_list("title", flat=True)
     used_templates = questions.values_list("template_id__title", flat=True)
-
     unused_templates = list(set(all_templates) - set(used_templates))
-    unused_groups = []
     for template_name in unused_templates:
-        unused_groups.append(
-            {
-                "grouper": template_name,
-                "list": [],
-                "dynamic_name": "",
-            }
+        all_template_object_list.append(
+            {"grouper": template_name, "list": [], "dynamic_name": ""}
         )
-    all_template_object_list = all_template_object_list + unused_groups
 
     templates = paginator_qry(
         all_template_object_list, request.GET.get("template_page")
     )
-    survey_templates = paginator_qry(
-        survey_templates, request.GET.get("survey_template_page")
-    )
-    filter_obj = SurveyFilter()
     requests_ids = json.dumps(
         [
             instance.id
@@ -287,12 +362,62 @@ def view_question_template(request):
     )
     return render(
         request,
-        "survey/view_question_templates.html",
+        "survey/template_accordion.html",
+        {
+            "templates": templates,
+            "pd": previous_data,
+            "requests_ids": requests_ids,
+        },
+    )
+
+
+@login_required
+@hx_request_required
+@is_recruitment_manager(perm="recruitment.view_recruitmentsurvey")
+def survey_question_tab(request):
+    """
+    Root of the Questions tab: loads its own navbar, then its own list
+    container.
+    """
+    return render(request, "survey/question_tab_root.html", {})
+
+
+@login_required
+@hx_request_required
+@is_recruitment_manager(perm="recruitment.view_recruitmentsurvey")
+def survey_question_tab_list(request):
+    """
+    Question grid content for the Questions tab, and the hx-get target for
+    that tab's own navbar (recruitment.cbv.surveys.SurveyQuestionNavView)
+    search box and pagination.
+    """
+    if request.user.has_perm("recruitment.view_recruitmentsurvey"):
+        questions = RecruitmentSurvey.objects.all()
+    else:
+        ids = []
+        for recruitment in Recruitment.objects.all():
+            for manager in recruitment.recruitment_managers.all():
+                if request.user.employee_get == manager:
+                    ids.append(recruitment.id)
+        questions = RecruitmentSurvey.objects.filter(recruitment_ids__in=ids)
+
+    questions = SurveyFilter(request.GET, questions).qs
+
+    previous_data = request.GET.urlencode()
+    requests_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                questions, request.GET.get("page")
+            ).object_list
+        ]
+    )
+    return render(
+        request,
+        "survey/question_card.html",
         {
             "questions": paginator_qry(questions, request.GET.get("page")),
-            "templates": templates,
-            "survey_templates": survey_templates,
-            "f": filter_obj,
+            "pd": previous_data,
             "requests_ids": requests_ids,
         },
     )
@@ -357,10 +482,8 @@ def delete_survey_question(request, survey_id):
     except ProtectedError:
         messages.error(request, _("You cannot delete this question"))
     if request.META.get("HTTP_HX_REQUEST") == "true":
-        from recruitment.views.search import filter_survey
-
-        return filter_survey(request)
-    return redirect(view_question_template)
+        return HttpResponse("")
+    return redirect("recruitment-survey-question-template-view")
 
 
 def application_form(request):
@@ -399,6 +522,12 @@ def application_form(request):
         form = ApplicationForm(request.POST, request.FILES)
         if form.is_valid():
             candidate_obj = form.save(commit=False)
+            # Mirrors the internal "add candidate" form always tagging
+            # itself "software" (recruitment/views/views.py) -- without
+            # this, every public career-page applicant leaves `source`
+            # NULL, which is why "Source of Hire" on the dashboard only
+            # ever had a "Not Specified" slice to show.
+            candidate_obj.source = "application"
             recruitment_obj = candidate_obj.recruitment_id
             stages = recruitment_obj.stage_set.all()
             if stages.filter(stage_type="applied").exists():
@@ -524,7 +653,9 @@ def delete_template(request):
         messages.success(request, _("Template group deleted"))
 
     if request.META.get("HTTP_HX_REQUEST") == "true":
-        return HttpResponse("<script>$('#filterSubmit').click();</script>")
+        return HttpResponse(
+            "<script>$('#templateTabRoot .filterButton').click();</script>"
+        )
     return HorillaRedirect(request)
 
 
@@ -551,7 +682,7 @@ def question_add(request):
                     "<script>"
                     "$('#templateModal').removeClass('oh-modal--show');"
                     "$('#genericModal').removeClass('oh-modal--show');"
-                    "$('#filterSubmit').click();"
+                    "$('#templateTabRoot .filterButton').click();"
                     "</script>"
                 )
             return HorillaRedirect(request)

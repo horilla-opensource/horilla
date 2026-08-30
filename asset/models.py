@@ -208,7 +208,7 @@ class Asset(HorillaModel):
         verbose_name_plural = _("Assets")
 
     def __str__(self):
-        return f"{self.asset_name}-{self.asset_tracking_id}"
+        return f"{self.asset_tracking_id}-{self.asset_name}"
 
     def asset_name_display(self):
         return self.asset_name

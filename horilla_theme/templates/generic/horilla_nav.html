@@ -119,7 +119,11 @@
                 hx-trigger="{% if apply_first_filter %}submit{% else %}load, submit{% endif %}"
                 hx-replace-url="false"
                 hx-target="{{search_swap_target}}"
+                hx-timeout="15000"
                 hx-on:submit="htmxLoadIndicator(this);"
+                hx-on::response-error="htmxLoadFailIndicator(this, event);"
+                hx-on::send-error="htmxLoadFailIndicator(this, event);"
+                hx-on::timeout="htmxLoadFailIndicator(this, event);"
                 class="flex flex-wrap gap-1 navFilterForm"
             >
                 <input type="text" name="nav_url" value="{{request.path}}" hidden>
