@@ -5,9 +5,9 @@ name: Unit Tests
 
 on:
   push:
-    branches: [dev/v2.0, feature/unit-test-coverage, v2_dev]
+    branches: [dev/v2.0, "2.0"]
   pull_request:
-    branches: [dev/v2.0, v2_dev]
+    branches: [dev/v2.0, "2.0"]
 
 jobs:
   smoke:
