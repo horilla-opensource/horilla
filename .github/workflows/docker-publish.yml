@@ -143,23 +143,34 @@ jobs:
             -e DB_INIT_PASSWORD=ci-smoke-db-init-not-a-real-secret-0000 \
             horilla-hr:smoketest
 
-          echo "Waiting for /health/ ..."
-          for i in $(seq 1 90); do
+          # 300 x 2s = 10 minutes. The entrypoint runs the full migration set
+          # against an empty database before gunicorn binds: 185 migrations at
+          # roughly 1.8s each is ~5.5 minutes on a runner, so the previous 180s
+          # budget expired mid-migrate and looked like a health failure.
+          echo "Waiting for /health/ (migrations run first, this takes minutes) ..."
+          for i in $(seq 1 300); do
             if curl -sf --max-time 5 http://localhost:8000/health/ | grep -q '"status"'; then
-              echo "Health OK"; break
+              echo "Health OK after ~$((i * 2))s"; break
             fi
-            # Fail fast if the container exited: waiting the full 180s for a
-            # dead container hides the real error behind a timeout.
+            # Fail fast if the container exited: waiting out the full budget for
+            # a dead container hides the real error behind a timeout.
             if [ "$(docker inspect -f '{{.State.Status}}' smoke-web 2>/dev/null)" != "running" ]; then
               echo "::error::Container exited during startup"
               docker logs --tail=100 smoke-web; exit 1
             fi
+            # Progress every 30s so a stall is distinguishable from slow work.
+            if [ $((i % 15)) -eq 0 ]; then
+              echo "  ... still waiting ($((i * 2))s): $(docker logs --tail=1 smoke-web 2>&1 | tail -1)"
+            fi
             sleep 2
-            if [ "$i" -eq 90 ]; then
-              echo "::error::Health check failed"; docker logs --tail=100 smoke-web; exit 1
+            if [ "$i" -eq 300 ]; then
+              echo "::error::Health check failed after 600s"
+              docker logs --tail=100 smoke-web; exit 1
             fi
           done
 
+          # /ready/ only checks DB connectivity and health already passed, so
+          # this is quick -- but keep headroom rather than a tight bound.
           echo "Waiting for /ready/ ..."
           for i in $(seq 1 60); do
             if curl -sf --max-time 5 http://localhost:8000/ready/ | grep -q '"database"'; then
