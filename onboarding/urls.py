@@ -284,6 +284,11 @@ urlpatterns = [
         pipeline.CandidateKanbanView.as_view(),
         name="candidate-card-cbv-onboarding",
     ),
+    path(
+        "onboarding-pipeline-shell/<int:rec_id>/",
+        pipeline.RecruitmentPipelineContentShell.as_view(),
+        name="onboarding-pipeline-shell",
+    ),
     # path("cbv-change-stage/<int:pk>/",pipeline.ChangeStage.as_view(),name="cbv-change-stage")
     # ── Onboarding Modern Dashboard ──────────────────────────────────────────
     path(

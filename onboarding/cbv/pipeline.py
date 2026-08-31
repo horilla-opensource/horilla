@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -105,6 +106,71 @@ class PipelineNav(HorillaNavView):
         return context
 
 
+def recruitment_pipeline_actions_onboarding(request, rec):
+    """
+    Recruitment-level actions (Add Stage/Manage Stage Order/Edit/Delete)
+    for the given recruitment's onboarding pipeline - shared between
+    RecruitmentTabView (which used to put these in the tab bar's kebab)
+    and RecruitmentPipelineContentShell (which renders them inline in the
+    pipeline content's own header instead).
+    """
+    actions = []
+    if request.user.has_perm("onboarding.add_onboardingstage") or recruitment_manages(
+        request, rec
+    ):
+        actions.append(
+            {
+                "action": _("Add Stage"),
+                "attrs": f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{reverse("stage-creation", kwargs={"obj_id": rec.pk})}"
+                    hx-target="#genericModalBody"
+                    style="cursor: pointer;"
+                """,
+            }
+        )
+        actions.append(
+            {
+                "action": _("Manage Stage Order"),
+                "attrs": f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{reverse("onboarding-stage-sequence-update", kwargs={"pk": rec.pk})}"
+                    hx-target="#genericModalBody"
+                    style="cursor: pointer;"
+                """,
+            }
+        )
+    if request.user.has_perm("recruitment.change_recruitment"):
+        actions.append(
+            {
+                "action": _("Edit"),
+                "attrs": f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{reverse("recruitment-update-pipeline", kwargs={"pk": rec.pk})}"
+                    hx-target="#genericModalBody"
+                    style="cursor: pointer;"
+                """,
+            }
+        )
+    if request.user.has_perm("recruitment.delete_recruitment"):
+        actions.append(
+            {
+                "action": _("Delete"),
+                "attrs": f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#deleteConfirmation"
+                    hx-get="{reverse('generic-delete')}?model=recruitment.Recruitment&pk={rec.pk}&reload_target=%23applyFilter"
+                    hx-target="#deleteConfirmationBody"
+                    style="cursor: pointer;"
+                """,
+            }
+        )
+    return actions
+
+
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
     all_manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
@@ -124,72 +190,45 @@ class RecruitmentTabView(HorillaTabView):
         for rec in recruitments:
             tab = {}
             tab["title"] = rec
-            url = reverse("candidate-card-cbv-onboarding", kwargs={"pk": rec.pk})
-            if view_type == "list":
-                url = reverse(
-                    "get-stages-onboarding", kwargs={"recruitment_id": rec.pk}
-                )
+            url = reverse("onboarding-pipeline-shell", kwargs={"rec_id": rec.pk})
+            if view_type != "list":
+                url += f"?view={view_type}"
             tab["url"] = url
 
             tab["badge_label"] = _("Stages")
             tab["badge"] = rec.onboarding_stage.filter(is_active=True).count()
-            tab["actions"] = []
-            if self.request.user.has_perm(
-                "onboarding.add_onboardingstage"
-            ) or recruitment_manages(self.request, rec):
-                tab["actions"].append(
-                    {
-                        "action": _("Add Stage"),
-                        "attrs": f"""
-                            data-toggle="oh-modal-toggle"
-                            data-target="#genericModal"
-                            hx-get="{reverse("stage-creation", kwargs={"obj_id": rec.pk})}"
-                            hx-target="#genericModalBody"
-                            style="cursor: pointer;"
-                        """,
-                    }
-                )
-                tab["actions"].append(
-                    {
-                        "action": _("Manage Stage Order"),
-                        "attrs": f"""
-                            data-toggle="oh-modal-toggle"
-                            data-target="#genericModal"
-                            hx-get="{reverse("onboarding-stage-sequence-update", kwargs={"pk": rec.pk})}"
-                            hx-target="#genericModalBody"
-                            style="cursor: pointer;"
-                        """,
-                    }
-                )
-            if self.request.user.has_perm("recruitment.change_recruitment"):
-                tab["actions"].append(
-                    {
-                        "action": _("Edit"),
-                        "attrs": f"""
-                                    data-toggle="oh-modal-toggle"
-                                    data-target="#genericModal"
-                                    hx-get="{reverse("recruitment-update-pipeline", kwargs={"pk": rec.pk})}"
-                                    hx-target="#genericModalBody"
-                                    style="cursor: pointer;"
-                                    onclick="
-                                    "
-                                    """,
-                    }
-                )
-            if self.request.user.has_perm("recruitment.delete_recruitment"):
-                tab["actions"].append(
-                    {
-                        "action": _("Delete"),
-                        "attrs": f"""
-                                        data-toggle="oh-modal-toggle"
-                                        data-target="#deleteConfirmation"
-                                        hx-get="{reverse('generic-delete')}?model=recruitment.Recruitment&pk={rec.pk}&reload_target=%23applyFilter"
-                                        hx-target="#deleteConfirmationBody"
-                                        style="cursor: pointer;"
-                                        """,
-                    }
-                )
             self.tabs.append(tab)
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    all_manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
+)
+class RecruitmentPipelineContentShell(TemplateView):
+    """
+    Shell rendered for a single recruitment's onboarding pipeline tab -
+    shows the recruitment-level actions (previously the tab bar's own
+    kebab) above an htmx-loaded embed of the existing list/kanban content.
+    """
+
+    template_name = "cbv/pipeline/onboarding/recruitment_pipeline_shell.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        rec = get_object_or_404(
+            recruitment_models.Recruitment, pk=self.kwargs.get("rec_id")
+        )
+        view_type = self.request.GET.get("view", "list")
+        content_url = reverse(
+            "get-stages-onboarding", kwargs={"recruitment_id": rec.pk}
+        )
+        if view_type != "list":
+            content_url = reverse(
+                "candidate-card-cbv-onboarding", kwargs={"pk": rec.pk}
+            )
+        context["actions"] = recruitment_pipeline_actions_onboarding(self.request, rec)
+        context["content_url"] = content_url
+        return context
 
 
 def edit_stage_path(self):

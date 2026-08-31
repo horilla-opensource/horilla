@@ -1,0 +1,20 @@
+{% load i18n %}
+<div class="flex justify-end items-center mb-2">
+  {% if actions %}
+  <div onclick="event.stopPropagation()" class="relative inline-block dropdown-wrapper" role="button" title="{% trans 'Actions' %}">
+    <button class="cursor-pointer dropdown-toggle w-[20px]" onclick="event.stopPropagation(); var m = $(this).next('.dropdown-menu'); $('.dropdown-menu').not(m).addClass('hidden'); m.toggleClass('hidden');">
+      <i class="fa-solid fa-ellipsis-vertical text-black"></i>
+    </button>
+    <div class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200" style="min-width:120px !important;">
+      <ul class="text-xs text-dark-600">
+        {% for action in actions %}
+        <li>
+          <a {{ action.attrs|safe }} class="block w-full text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300 cursor-pointer">{{ action.action }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+</div>
+<div hx-get="{{ content_url }}" hx-trigger="load"></div>
