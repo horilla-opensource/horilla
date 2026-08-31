@@ -1,17 +1,6 @@
 {% load i18n %} {% load horillafilters %} {% load basefilters %} {% load static %}
 {% include 'generic/components.html'%}
 {% include 'filter_tags.html' %}
-<div class="oh-modal" id="viewFileModal" role="dialog" aria-labelledby="viewFileModal" aria-hidden="true">
-	<div class="oh-modal__dialog custom-dialog">
-		<div class="oh-modal__dialog-header">
-			<span class="oh-modal__dialog-title" id="viewFileModalLabel">{% trans "View File" %}</span>
-			<button class="oh-modal__close" aria-label="{% trans 'Close' %}">
-				<ion-icon name="close-outline" role="img" class="md hydrated" aria-label="{% trans 'close outline' %}"></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="viewFile"></div>
-	</div>
-</div>
 <div class="bg-white rounded-md shadow-card p-3">
 
     <div class="">

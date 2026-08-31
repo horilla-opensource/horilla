@@ -2,9 +2,9 @@
 {% load horillafilters %}
 {% load static %}
 
-<div class="modal-box px-5 bg-white w-full max-w-md md:min-w-[700px] rounded-lg shadow-card p-0 transition-all duration-300 opacity-100 scale-100">
+<div class="bg-white w-full max-w-2xl mx-auto rounded-lg shadow-card transition-all duration-300 opacity-100 scale-100">
     <div class="p-5" id="detailViewContainer">
-        <div class="flex justify-between items-center mb-2">
+        <div class="flex justify-between items-center gap-4 mb-4">
             <h2 class="text-md font-semibold">
                 {% if document.title %}
                     {{ document.title }}
@@ -14,7 +14,7 @@
             </h2>
             <button
                 type="button"
-                class="text-gray-500 hover:text-red-500 text-xl static oh-modal__close oh-modal__close--custom"
+                class="text-gray-500 hover:text-red-500 text-xl static oh-modal__close oh-modal__close--custom shrink-0"
                 aria-label="{% trans 'Close' %}"
                 onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
             >
@@ -22,62 +22,68 @@
             </button>
         </div>
 
-        <div class="flex justify-end mb-5">
-            <div class="oh-btn-group">
-                <a
-                    type="submit"
-                    hx-get="{% url 'file-upload' document.id %}"
-                    hx-target="#objectCreateModalTarget"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#objectCreateModal"
-                    title="{% trans 'Upload file' %}"
-                    class="oh-btn oh-btn--warning w-100"
-                >
-                    <ion-icon name="attach-outline"></ion-icon>
-                </a>
-                {% if document.document %}
-                    {% if perms.horilla_documents.change_documentrequest %}
-                        {% if document.status == "approved" %}
-                            <a class="oh-btn oh-btn--success w-100 oh-btn--disabled" title="{% trans 'Approved' %}">
-                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                            </a>
-                        {% else %}
-                            <a
-                                type="submit"
-                                hx-get="{% url 'document-approve' document.id %}"
-                                hx-target="#viewFile"
-                                title="{% trans 'Approve' %}"
-                                class="oh-btn oh-btn--success w-100"
-                            >
-                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                            </a>
-                        {% endif %}
-                        {% if document.status == "rejected" %}
-                            <a class="oh-btn oh-btn--danger w-100 oh-btn--disabled" title="{% trans 'Rejected' %}">
-                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                            </a>
-                        {% else %}
-                            <a
-                                type="submit"
-                                hx-get="{% url 'document-reject' document.id %}"
-                                hx-target="#objectCreateModalTarget"
-                                data-target="#objectCreateModal"
-                                data-toggle="oh-modal-toggle"
-                                title="{% trans 'Reject' %}"
-                                class="oh-btn oh-btn--danger w-100"
-                            >
-                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                            </a>
-                        {% endif %}
+        <div class="flex justify-end items-center gap-2 flex-wrap mb-4">
+            <a
+                type="submit"
+                hx-get="{% url 'file-upload' document.id %}"
+                hx-target="#objectCreateModalTarget"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                title="{% trans 'Upload file' %}"
+                class="oh-btn oh-btn--warning px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            >
+                <ion-icon name="attach-outline"></ion-icon>
+                {% trans "Upload File" %}
+            </a>
+            {% if document.document %}
+                {% if perms.horilla_documents.change_documentrequest %}
+                    {% if document.status == "approved" %}
+                        <a class="oh-btn oh-btn--success oh-btn--disabled px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300" title="{% trans 'Approved' %}">
+                            <ion-icon name="checkmark-outline"></ion-icon>
+                            {% trans "Approved" %}
+                        </a>
+                    {% else %}
+                        <a
+                            type="submit"
+                            hx-get="{% url 'document-approve' document.id %}"
+                            hx-target="#viewFile"
+                            title="{% trans 'Approve' %}"
+                            class="oh-btn oh-btn--success px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                        >
+                            <ion-icon name="checkmark-outline"></ion-icon>
+                            {% trans "Approve" %}
+                        </a>
                     {% endif %}
-                    <a
-                        href="data:{{ content_type }};base64,{{ file_content|base64_encode }}"
-                        class="oh-btn oh-btn--info w-100"
-                        download="{{ document.title }}"
-                        title="{% trans 'Download' %}"
-                    ><ion-icon class="me-1" name="download-outline"></ion-icon></a>
+                    {% if document.status == "rejected" %}
+                        <a class="oh-btn oh-btn--danger oh-btn--disabled px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300" title="{% trans 'Rejected' %}">
+                            <ion-icon name="close-circle-outline"></ion-icon>
+                            {% trans "Rejected" %}
+                        </a>
+                    {% else %}
+                        <a
+                            type="submit"
+                            hx-get="{% url 'document-reject' document.id %}"
+                            hx-target="#objectCreateModalTarget"
+                            data-target="#objectCreateModal"
+                            data-toggle="oh-modal-toggle"
+                            title="{% trans 'Reject' %}"
+                            class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                        >
+                            <ion-icon name="close-circle-outline"></ion-icon>
+                            {% trans "Reject" %}
+                        </a>
+                    {% endif %}
                 {% endif %}
-            </div>
+                <a
+                    href="data:{{ content_type }};base64,{{ file_content|base64_encode }}"
+                    class="oh-btn oh-btn--info px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                    download="{{ document.title }}"
+                    title="{% trans 'Download' %}"
+                >
+                    <ion-icon name="download-outline"></ion-icon>
+                    {% trans "Download" %}
+                </a>
+            {% endif %}
         </div>
 
         {% if document.document %}
@@ -114,15 +120,16 @@
                 <p class="ms-4">{{ document.reject_reason }}</p>
             {% endif %}
         {% else %}
-            <div class="flex flex-col items-center justify-center py-10">
+            <div class="flex flex-col items-center justify-center gap-1 py-12 border border-dashed border-[#e6e6e6] rounded-md">
                 <img
                     src="{% static 'images/ui/document.png' %}"
                     alt=""
-                    style="width: 150px; height: 150px"
-                    width="150"
-                    class="mb-4"
+                    width="88"
+                    height="88"
+                    class="mb-2 opacity-80"
                 >
-                <p class="text-[#666]">{% trans "No Document to view." %}</p>
+                <p class="text-sm font-medium text-dark-600">{% trans "No document uploaded yet" %}</p>
+                <p class="text-xs text-[#8a8a8a]">{% trans "Upload a file to preview it here." %}</p>
             </div>
         {% endif %}
     </div>

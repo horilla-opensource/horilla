@@ -20,19 +20,7 @@
     </div>
 
     <div class="oh-modal" id="viewFileModal" role="dialog" aria-labelledby="viewFileModal" aria-hidden="true">
-        <div class="oh-modal__dialog custom-dialog">
-            <div class="oh-modal__dialog-header">
-                <span class="oh-modal__dialog-title" id="viewFileModalLabel">{% trans "View File" %}</span>
-                <button
-                    class="oh-modal__close"
-                    aria-label="{% trans 'Close' %}"
-                    onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
-                >
-                    <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="{% trans 'close outline' %}"></ion-icon>
-                </button>
-            </div>
-            <div class="oh-modal__dialog-body" id="viewFile"></div>
-        </div>
+        <div class="oh-modal__dialog" id="viewFile"></div>
     </div>
 </div>
 
