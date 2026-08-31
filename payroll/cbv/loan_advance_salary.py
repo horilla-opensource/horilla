@@ -10,6 +10,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from attendance.cbv.tab_shell import AttendanceTabContentShell
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -21,7 +22,7 @@ from horilla_views.generic.cbv.views import (
 )
 from payroll.filters import LoanAccountFilter
 from payroll.forms.component_forms import LoanAccountForm
-from payroll.models.models import LoanAccount
+from payroll.models.models import LoanAccount, Payslip
 
 
 @method_decorator(login_required, name="dispatch")
@@ -43,18 +44,19 @@ class LoansGenericTab(HorillaTabView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        self.view_id = "loan-generic-tab-view"
         self.tabs = [
             {
                 "title": _("Loan"),
-                "url": f"{reverse('loan-tab-list-view')}",
+                "url": f"{reverse('loan-tab-shell')}",
             },
             {
                 "title": _("Salary Advance"),
-                "url": f"{reverse('advanced-salary-list-view')}",
+                "url": f"{reverse('advanced-salary-tab-shell')}",
             },
             {
                 "title": _("Fine"),
-                "url": f"{reverse('fines-list-view')}",
+                "url": f"{reverse('fine-tab-shell')}",
             },
         ]
 
@@ -70,9 +72,9 @@ class LoansGenericTab(HorillaTabView):
         adv_count = qs.filter(type="advanced_salary").count()
         fine_count = qs.filter(type="fine").count()
 
-        loan_url = reverse("loan-tab-list-view")
-        adv_url = reverse("advanced-salary-list-view")
-        fine_url = reverse("fines-list-view")
+        loan_url = reverse("loan-tab-shell")
+        adv_url = reverse("advanced-salary-tab-shell")
+        fine_url = reverse("fine-tab-shell")
 
         for tab in self.tabs:
             url = tab.get("url", "")
@@ -197,29 +199,92 @@ class FinesListView(LoanListView):
         return queryset
 
 
-@method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("payroll.view_loanaccount"), name="dispatch")
-class LoanNavView(HorillaNavView):
+class _LoanTabNavBase(HorillaNavView):
     """
-    Navbar for the laons/advance salary
+    Shared Search/Filter wiring for each Loans & Salary Advances tab's own,
+    independent Nav - nav_title/search_url/search_swap_target/create_attrs
+    differ per tab, since each tab's Create button must open its own
+    type-scoped form (see LoanFormView.loan_type) and its heading should
+    read as that tab's own name, not the page's combined name.
     """
 
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.search_url = reverse("loan-generic-tab-view")
+    filter_body_template = "cbv/loan/loan_filter.html"
+    filter_instance = LoanAccountFilter()
+    filter_form_context_name = "form"
 
+    def _set_create_attrs(self, create_url_name: str) -> None:
         self.create_attrs = f"""
-             hx-get="{reverse_lazy("loan-create-form")}"
+             hx-get="{reverse_lazy(create_url_name)}"
              hx-target="#genericModalBody"
              data-target="#genericModal"
              data-toggle="oh-modal-toggle"
          """
 
-    nav_title = _("Loans & Salary Advances")
-    filter_body_template = "cbv/loan/loan_filter.html"
-    filter_instance = LoanAccountFilter()
-    filter_form_context_name = "form"
-    search_swap_target = "#listContainer"
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("payroll.view_loanaccount"), name="dispatch")
+class LoanNav(_LoanTabNavBase):
+    """
+    Independent Nav for the Loan tab.
+    """
+
+    nav_title = _("Loan")
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("loan-tab-list-view")
+        self.search_swap_target = "#loanListContainer"
+        self._set_create_attrs("loan-create-form")
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("payroll.view_loanaccount"), name="dispatch")
+class AdvancedSalaryNav(_LoanTabNavBase):
+    """
+    Independent Nav for the Salary Advance tab.
+    """
+
+    nav_title = _("Salary Advance")
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("advanced-salary-list-view")
+        self.search_swap_target = "#advancedSalaryListContainer"
+        self._set_create_attrs("advanced-salary-create-form")
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("payroll.view_loanaccount"), name="dispatch")
+class FineNav(_LoanTabNavBase):
+    """
+    Independent Nav for the Fine tab.
+    """
+
+    nav_title = _("Fine")
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("fines-list-view")
+        self.search_swap_target = "#fineListContainer"
+        self._set_create_attrs("fine-create-form")
+
+
+class LoanTabShell(AttendanceTabContentShell):
+    nav_url_name = "loan-nav"
+    container_id = "loanListContainer"
+    tabs_root_id = "loan-generic-tab-view"
+
+
+class AdvancedSalaryTabShell(AttendanceTabContentShell):
+    nav_url_name = "advanced-salary-nav"
+    container_id = "advancedSalaryListContainer"
+    tabs_root_id = "loan-generic-tab-view"
+
+
+class FineTabShell(AttendanceTabContentShell):
+    nav_url_name = "fine-nav"
+    container_id = "fineListContainer"
+    tabs_root_id = "loan-generic-tab-view"
 
     # Mirrors LoanListView.nested_group_by_fields below -- List and Nav
     # are separate classes/templates (see employee/cbv/employees.py's
@@ -260,7 +325,8 @@ class LoanDetailView(HorillaDetailedView):
         context = super().get_context_data(**kwargs)
         pk = self.kwargs.get("pk")
         loan = LoanAccount.objects.get(id=pk)
-        installments = loan.deduction_ids.all()
+        installments = list(loan.deduction_ids.all())
+        self._attach_installment_payslips(installments)
         loan_id = self.request.GET.get("loan_id")
         ded_id = self.request.GET.get("ded_id")
         context["loan"] = loan
@@ -269,28 +335,93 @@ class LoanDetailView(HorillaDetailedView):
         context["installments"] = installments
         return context
 
+    @staticmethod
+    def _attach_installment_payslips(installments: list) -> None:
+        """
+        Loans can have hundreds of installments, and the repayment schedule
+        template/filters check `deduction.installment_payslip` per row (and
+        twice more for the paid/balance totals) -- left alone, that's a
+        `Payslip.objects.filter(...).first()` query per check, so one loan
+        with N installments cost 3N+ queries to render. Resolve all of them
+        here in a single query against the M2M through table and pre-set
+        the cached_property so no per-installment query happens later.
+        """
+        if not installments:
+            return
+        payslip_id_by_deduction_id = dict(
+            Payslip.installment_ids.through.objects.filter(
+                deduction_id__in=[installment.id for installment in installments]
+            ).values_list("deduction_id", "payslip_id")
+        )
+        payslip_by_id = Payslip.objects.in_bulk(payslip_id_by_deduction_id.values())
+        for installment in installments:
+            installment.installment_payslip = payslip_by_id.get(
+                payslip_id_by_deduction_id.get(installment.id)
+            )
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required("payroll.view_loanaccount"), name="dispatch")
 class LoanFormView(HorillaFormView):
     """
-    form view for create and edit loans
+    Form view for creating and editing loans. Also the base class for
+    AdvancedSalaryFormView/FineFormView below, which reuse everything here
+    and only override `new_display_title`/`loan_type` to scope their tab's
+    Create button to that type. The Type field is never shown - fixed to
+    the tab's own type on create, and left as-is (unchanged) on edit, since
+    which type a record is doesn't change after creation either.
     """
 
     form_class = LoanAccountForm
     model = LoanAccount
-    new_display_title = _("Loans & Salary Advances")
+    new_display_title = _("Loan")
+    loan_type = "loan"
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        if not form.instance.pk:
+            # Each tab only ever creates its own type, so there's nothing
+            # for the user to choose here.
+            form.instance.type = self.loan_type
+        form.fields.pop("type", None)
+        return form
 
     def form_valid(self, form: LoanAccountForm) -> HttpResponse:
         if form.is_valid():
             if form.instance.pk:
-                message = _("Loan Updated Successfully")
+                message = _("%(title)s Updated Successfully") % {
+                    "title": form.instance.get_type_display()
+                }
             else:
-                message = _("New Loan Created Successfully")
+                message = _("New %(title)s Created Successfully") % {
+                    "title": self.new_display_title
+                }
             form.save()
 
-            messages.success(self.request, _(message))
+            messages.success(self.request, message)
             return self.HttpResponse(
                 "<script>$('#reloadMessagesButton').click();</script>"
             )
         return super().form_valid(form)
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("payroll.view_loanaccount"), name="dispatch")
+class AdvancedSalaryFormView(LoanFormView):
+    """
+    Create form view scoped to the Salary Advance tab.
+    """
+
+    new_display_title = _("Salary Advance")
+    loan_type = "advanced_salary"
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("payroll.view_loanaccount"), name="dispatch")
+class FineFormView(LoanFormView):
+    """
+    Create form view scoped to the Fine tab.
+    """
+
+    new_display_title = _("Fine")
+    loan_type = "fine"

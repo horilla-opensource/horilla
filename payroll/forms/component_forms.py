@@ -777,32 +777,70 @@ class LoanAccountForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.initial["provided_date"] = str(datetime.date.today())
-        self.initial["installment_start_date"] = str(datetime.date.today())
+        if not self.instance.pk:
+            self.initial["provided_date"] = str(datetime.date.today())
+            self.initial["installment_start_date"] = str(datetime.date.today())
         if self.instance.pk:
             self.verbose_name = self.instance.title
-            fields_to_exclude = ["employee_id", "installment_start_date"]
+            # <input type="date"> needs YYYY-MM-DD; the DateTimeInput widget
+            # doesn't render date objects that way, so pass strings.
+            if self.instance.provided_date:
+                self.initial["provided_date"] = str(self.instance.provided_date)
+            if self.instance.installment_start_date:
+                self.initial["installment_start_date"] = str(
+                    self.instance.installment_start_date
+                )
+            # Edit shows the same fields as create; the ones that must not
+            # change any more are locked (disabled) instead of removed, so
+            # both forms keep an identical layout across the Loan / Salary
+            # Advance / Fine tabs.
+            locked_fields = []
             if Payslip.objects.filter(
                 installment_ids__in=list(
                     self.instance.deduction_ids.values_list("id", flat=True)
                 )
             ).exists():
-                fields_to_exclude = fields_to_exclude + [
+                # Once an installment is on a paid payslip the schedule can
+                # no longer be regenerated (see payroll.signals
+                # create_installments), so these become read-only.
+                locked_fields += [
+                    "employee_id",
                     "loan_amount",
                     "installments",
                     "installment_amount",
+                    "installment_start_date",
                 ]
-            self.initial["provided_date"] = str(self.instance.provided_date)
-            for field in fields_to_exclude:
-                if field in self.fields:
-                    del self.fields[field]
+            for field_name in locked_fields:
+                if field_name not in self.fields:
+                    continue
+                field = self.fields[field_name]
+                field.disabled = True
+                if field_name == "employee_id":
+                    # Disabled selects normally render as bare text (see
+                    # .oh-select:disabled in the theme) - opt this one back
+                    # into a boxed look via oh-select--boxed-locked so it
+                    # doesn't stand out next to the other fields here.
+                    attrs = field.widget.attrs
+                    attrs["class"] = (
+                        attrs.get("class", "") + " oh-select--boxed-locked"
+                    ).strip()
 
     def clean(self, *args, **kwargs):
         cleaned_data = super().clean(*args, **kwargs)
 
-        if not self.instance.pk and cleaned_data.get(
-            "installment_start_date"
-        ) < cleaned_data.get("provided_date"):
+        start_date = cleaned_data.get("installment_start_date")
+        provided_date = cleaned_data.get("provided_date")
+        dates_touched = (
+            not self.instance.pk
+            or "installment_start_date" in self.changed_data
+            or "provided_date" in self.changed_data
+        )
+        if (
+            start_date
+            and provided_date
+            and dates_touched
+            and start_date < provided_date
+        ):
             raise forms.ValidationError(
                 _(
                     "Installment start date should be greater than or equal to provided date"
@@ -891,6 +929,18 @@ class ReimbursementForm(ModelForm):
 
         self.initial["employee_id"] = self.employee.id if self.employee else None
 
+        # When opened from a specific tab (Reimbursements / Leave Encashments /
+        # Bonus Encashments), the tab's own Create button passes ?type=... so
+        # the record being created always matches the tab it was opened from -
+        # the Type field is then locked instead of shown as a free choice.
+        self.fixed_type = (
+            self.request.GET.get("type")
+            if self.request and not self.instance.pk
+            else None
+        )
+        if self.fixed_type:
+            self.initial["type"] = self.fixed_type
+
         self.configure_fields()
 
     def get_employee(self):
@@ -940,6 +990,11 @@ class ReimbursementForm(ModelForm):
         self.fields["attachment"] = MultipleFileField(label="Attachments")
         self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
 
+        # Also hidden when editing - which type a record is doesn't change
+        # after creation, so there's nothing to pick here either.
+        if self.fixed_type or self.instance.pk:
+            self.fields["type"].widget = forms.HiddenInput()
+
         self.exclude_fields_by_type(exclude_fields)
 
         for field in exclude_fields:
@@ -967,20 +1022,20 @@ class ReimbursementForm(ModelForm):
         type = (
             self.data.get("type")
             if self.data
-            else self.instance.type if self.instance else None
+            else (self.fixed_type or (self.instance.type if self.instance else None))
         )
         is_edit = self.instance and self.instance.pk
 
-        if type == "reimbursement" and (is_edit or self.data):
+        if type == "reimbursement" and (is_edit or self.data or self.fixed_type):
             exclude_fields += [
                 "leave_type_id",
                 "cfd_to_encash",
                 "ad_to_encash",
                 "bonus_to_encash",
             ]
-        elif type == "leave_encashment" and (is_edit or self.data):
+        elif type == "leave_encashment" and (is_edit or self.data or self.fixed_type):
             exclude_fields += ["attachment", "amount", "bonus_to_encash"]
-        elif type == "bonus_encashment" and (is_edit or self.data):
+        elif type == "bonus_encashment" and (is_edit or self.data or self.fixed_type):
             exclude_fields += [
                 "attachment",
                 "amount",

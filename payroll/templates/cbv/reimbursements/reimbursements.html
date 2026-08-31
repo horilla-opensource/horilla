@@ -29,28 +29,16 @@
 
 <meta name="csrf-token" content="{{ csrf_token }}">
 
-
-<div hx-get="{% url "reimbursement-nav" %}?{{ request.GET.urlencode }}" hx-trigger="load">
-</div>
-{% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
-
-
-
 {% include "generic/components.html" %}
 
-
 <div
-    class="oh-checkpoint-badge mb-2"
-    id="selectedInstances"
-    data-ids="[]"
-    data-clicked=""
-    style="display: none"
-  ></div>
- {% comment %} status=requested {% endcomment %}
-
-  <div
   class="oh-wrapper"
-  id="listContainer">
+  id="listContainer"
+  hx-get="{% url 'tab-reimbursement' %}"
+  hx-trigger="load"
+>
+  <div class="animated-background">
+  </div>
 </div>
 
 <div class="oh-activity-sidebar" id="activitySidebar" style="z-index:1000;">
@@ -154,7 +142,7 @@
     if (applyFilterButton) {
       applyFilterButton.click();
     } else if (window.htmx) {
-      htmx.ajax("GET", "{% url 'list-reimbursement' %}" + (window.location.search || ""), {
+      htmx.ajax("GET", "{% url 'tab-reimbursement' %}" + (window.location.search || ""), {
         target: "#listContainer",
         swap: "innerHTML",
       });

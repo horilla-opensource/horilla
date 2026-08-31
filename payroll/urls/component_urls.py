@@ -87,9 +87,34 @@ urlpatterns = [
         name="fines-list-view",
     ),
     path(
-        "loan-navbar-view/",
-        loan_advance_salary.LoanNavView.as_view(),
-        name="loan-navbar-view",
+        "loan-nav/",
+        loan_advance_salary.LoanNav.as_view(),
+        name="loan-nav",
+    ),
+    path(
+        "advanced-salary-nav/",
+        loan_advance_salary.AdvancedSalaryNav.as_view(),
+        name="advanced-salary-nav",
+    ),
+    path(
+        "fine-nav/",
+        loan_advance_salary.FineNav.as_view(),
+        name="fine-nav",
+    ),
+    path(
+        "loan-tab-shell/",
+        loan_advance_salary.LoanTabShell.as_view(),
+        name="loan-tab-shell",
+    ),
+    path(
+        "advanced-salary-tab-shell/",
+        loan_advance_salary.AdvancedSalaryTabShell.as_view(),
+        name="advanced-salary-tab-shell",
+    ),
+    path(
+        "fine-tab-shell/",
+        loan_advance_salary.FineTabShell.as_view(),
+        name="fine-tab-shell",
     ),
     path(
         "loan-detail-view/<int:pk>/",
@@ -100,6 +125,16 @@ urlpatterns = [
         "loan-create-form/",
         loan_advance_salary.LoanFormView.as_view(),
         name="loan-create-form",
+    ),
+    path(
+        "advanced-salary-create-form/",
+        loan_advance_salary.AdvancedSalaryFormView.as_view(),
+        name="advanced-salary-create-form",
+    ),
+    path(
+        "fine-create-form/",
+        loan_advance_salary.FineFormView.as_view(),
+        name="fine-create-form",
     ),
     path(
         "loan-edit-form/<int:pk>/",
@@ -388,8 +423,33 @@ urlpatterns = [
     ),
     path(
         "reimbursement-nav/",
-        reimbursements.ReimbursementsNav.as_view(),
+        reimbursements.ReimbursementNav.as_view(),
         name="reimbursement-nav",
+    ),
+    path(
+        "leave-encash-nav/",
+        reimbursements.LeaveEncashNav.as_view(),
+        name="leave-encash-nav",
+    ),
+    path(
+        "bonus-encash-nav/",
+        reimbursements.BonusEncashNav.as_view(),
+        name="bonus-encash-nav",
+    ),
+    path(
+        "reimbursement-tab-shell/",
+        reimbursements.ReimbursementTabShell.as_view(),
+        name="reimbursement-tab-shell",
+    ),
+    path(
+        "leave-encash-tab-shell/",
+        reimbursements.LeaveEncashTabShell.as_view(),
+        name="leave-encash-tab-shell",
+    ),
+    path(
+        "bonus-encash-tab-shell/",
+        reimbursements.BonusEncashTabShell.as_view(),
+        name="bonus-encash-tab-shell",
     ),
     path(
         "tab-reimbursement/",
