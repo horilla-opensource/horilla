@@ -23,6 +23,63 @@ from report.models import ReportSubscription
 from report.registry import DOMAIN_LABELS, get_report, reports_by_domain
 
 
+def _subscription_actions():
+    """
+    Edit/Send now/Pause-Activate/Delete action buttons, shared verbatim
+    between the subscriptions list row and the detail-view modal footer -
+    both render a dict-based `actions` list the same way (see
+    horilla_detailed_view.html and horilla_list_table.html, both do
+    `{{action.attrs|format:object_or_instance}}`), so one shared list keeps
+    them from drifting out of sync.
+    """
+    return [
+        {
+            "action": _("Edit"),
+            "icon": "create-outline",
+            "attrs": """
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
+                title="{% trans 'Edit' %}"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-get="{get_edit_url}"
+                hx-target="#genericModalBody"
+            """,
+        },
+        {
+            "action": _("Send now"),
+            "icon": "send-outline",
+            "attrs": """
+                class="oh-btn oh-btn--success oh-btn--sq-sm"
+                title="{% trans 'Send now' %}"
+                hx-confirm="{% trans 'Send this report now?' %}"
+                hx-post="{get_run_url}"
+                hx-target="#relatedModel"
+            """,
+        },
+        {
+            "action": _("Pause/Activate"),
+            "icon": "power-outline",
+            "attrs": """
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
+                title="{% trans 'Pause or activate' %}"
+                hx-post="{get_toggle_url}"
+                hx-target="#relatedModel"
+            """,
+        },
+        {
+            "action": _("Delete"),
+            "icon": "trash-outline",
+            "attrs": """
+                class="oh-btn oh-btn--danger oh-btn--sq-sm"
+                title="{% trans 'Delete' %}"
+                hx-confirm="{% trans 'Delete this subscription?' %}"
+                hx-post="{get_delete_url}"
+                hx-target="#relatedModel"
+            """,
+        },
+    ]
+
+
 @method_decorator(login_required, name="dispatch")
 class ReportSubscriptionsView(TemplateView):
     """Thin page shell — HTMX-loads the Nav and List fragments below."""
@@ -122,52 +179,7 @@ class ReportSubscriptionsListView(HorillaListView):
                 """,
             ),
         ]
-        self.actions = [
-            {
-                "action": _("Edit"),
-                "icon": "create-outline",
-                "attrs": """
-                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
-                    title="{% trans 'Edit' %}"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#genericModal"
-                    hx-get="{get_edit_url}"
-                    hx-target="#genericModalBody"
-                """,
-            },
-            {
-                "action": _("Send now"),
-                "icon": "send-outline",
-                "attrs": """
-                    class="oh-btn oh-btn--success oh-btn--sq-sm"
-                    title="{% trans 'Send now' %}"
-                    hx-confirm="{% trans 'Send this report now?' %}"
-                    hx-post="{get_run_url}"
-                    hx-target="#relatedModel"
-                """,
-            },
-            {
-                "action": _("Pause/Activate"),
-                "icon": "power-outline",
-                "attrs": """
-                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
-                    title="{% trans 'Pause or activate' %}"
-                    hx-post="{get_toggle_url}"
-                    hx-target="#relatedModel"
-                """,
-            },
-            {
-                "action": _("Delete"),
-                "icon": "trash-outline",
-                "attrs": """
-                    class="oh-btn oh-btn--danger oh-btn--sq-sm"
-                    title="{% trans 'Delete' %}"
-                    hx-confirm="{% trans 'Delete this subscription?' %}"
-                    hx-post="{get_delete_url}"
-                    hx-target="#relatedModel"
-                """,
-            },
-        ]
+        self.actions = _subscription_actions()
 
     def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
         # HorillaListView's base get_queryset() ultimately calls the manager's
@@ -321,6 +333,10 @@ class ReportSubscriptionDetailView(HorillaDetailedView):
         (_("Last sent"), "last_run_at"),
         (_("Created"), "created_at"),
     ]
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.actions = _subscription_actions()
 
     def get_queryset(self):
         return ReportSubscription.objects.filter(owner=self.request.user)
