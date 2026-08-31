@@ -4190,7 +4190,12 @@ $(document).on("htmx:afterSettle", function (e) {
     $(`#${targetId} .oh-modal__close, .oh-modal__cancel`).on(
         "click",
         function () {
-            $(".oh-modal--show").removeClass("oh-modal--show");
+            // Close only the nearest shown modal, not every shown modal on
+            // the page - a blanket $(".oh-modal--show") here closed a
+            // modal opened from WITHIN another still-open modal (e.g. the
+            // "Cancel Request" form opened from the leave request Details
+            // modal) along with its parent, instead of just itself.
+            $(this).closest(".oh-modal--show").removeClass("oh-modal--show");
         }
     );
 
