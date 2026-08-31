@@ -12,6 +12,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from attendance.cbv.tab_shell import AttendanceTabContentShell
 from base.decorators import manager_can_enter
 from base.methods import choosesubordinates, is_reportingmanager
 from employee.cbv.employee_profile import EmployeeProfileView
@@ -195,6 +196,11 @@ class FeedbackGenericTabView(HorillaTabView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("feedback-generic-tab")
+        self.view_id = "feedbackTabs"
+
+        if not self.request or not self.request.user.is_authenticated:
+            self.tabs = []
+            return
 
         employee = self.request.user.employee_get
 
@@ -238,30 +244,18 @@ class FeedbackGenericTabView(HorillaTabView):
         tabs = [
             {
                 "title": _("Self Feedback"),
-                "url": with_query(reverse("self-feedback-tab")),
+                "url": with_query(reverse("self-feedback-tab-shell")),
                 "badge": self_feedback_count,
             },
             {
                 "title": _("Requested Feedback"),
-                "url": with_query(reverse("requested-feedback-tab")),
+                "url": with_query(reverse("requested-feedback-tab-shell")),
                 "badge": requested_feedback_count,
             },
             {
                 "title": _("Anonymous Feedback"),
-                "url": with_query(reverse("anonymous-feedback-tab")),
+                "url": with_query(reverse("anonymous-feedback-tab-shell")),
                 "badge": anonymous_feedback_count,
-                "actions": [
-                    {
-                        "action": _("Add Anonymous"),
-                        "attrs": f"""
-                                data-toggle = "oh-modal-toggle"
-                                data-target = "#genericModal"
-                                hx-target="#genericModalBody"
-                                hx-get ="{reverse('add-anonymous-feedback')}"
-                                style="cursor: pointer;"
-                            """,
-                    }
-                ],
             },
         ]
         if self.request.user.has_perm("pms.view_feedback") or is_reportingmanager(
@@ -283,7 +277,7 @@ class FeedbackGenericTabView(HorillaTabView):
                 2,
                 {
                     "title": _("Feedbacks to Review"),
-                    "url": with_query(reverse("all-feedback-tab")),
+                    "url": with_query(reverse("all-feedback-tab-shell")),
                     "badge": all_feedback_count,
                 },
             )
@@ -436,16 +430,26 @@ class AnonymousFeedbackTab(HorillaListView):
                 """
 
 
-@method_decorator(login_required, name="dispatch")
-class FeedbacknavView(HorillaNavView):
+class _FeedbackTabNavBase(HorillaNavView):
     """
-    navbar
+    Shared Search/Filter/Create/Actions wiring for each 360 Feedback tab's
+    own, independent Nav - only search_url/search_swap_target differ per
+    tab.
     """
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.search_url = reverse("feedback-generic-tab")
         self.actions = [
+            {
+                "action": _("Add Anonymous"),
+                "attrs": f"""
+                    data-toggle = "oh-modal-toggle"
+                    data-target = "#genericModal"
+                    hx-target="#genericModalBody"
+                    hx-get ="{reverse('add-anonymous-feedback')}"
+                    style="cursor: pointer;"
+                """,
+            },
             {
                 "action": _("Archive"),
                 "attrs": """
@@ -501,7 +505,78 @@ class FeedbacknavView(HorillaNavView):
     filter_body_template = "cbv/360_feedback/feedback_filter.html"
     filter_instance = FeedbackFilter()
     filter_form_context_name = "feedback_filter_form"
-    search_swap_target = "#listContainer"
+
+
+@method_decorator(login_required, name="dispatch")
+class SelfFeedbackNav(_FeedbackTabNavBase):
+    """
+    Independent Nav for the Self Feedback tab.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("self-feedback-tab")
+        self.search_swap_target = "#selfFeedbackListContainer"
+
+
+@method_decorator(login_required, name="dispatch")
+class RequestedFeedbackNav(_FeedbackTabNavBase):
+    """
+    Independent Nav for the Requested Feedback tab.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("requested-feedback-tab")
+        self.search_swap_target = "#requestedFeedbackListContainer"
+
+
+@method_decorator(login_required, name="dispatch")
+class AllFeedbackNav(_FeedbackTabNavBase):
+    """
+    Independent Nav for the Feedbacks to Review tab.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("all-feedback-tab")
+        self.search_swap_target = "#allFeedbackListContainer"
+
+
+@method_decorator(login_required, name="dispatch")
+class AnonymousFeedbackNav(_FeedbackTabNavBase):
+    """
+    Independent Nav for the Anonymous Feedback tab.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("anonymous-feedback-tab")
+        self.search_swap_target = "#anonymousFeedbackListContainer"
+
+
+class SelfFeedbackTabShell(AttendanceTabContentShell):
+    nav_url_name = "self-feedback-nav"
+    container_id = "selfFeedbackListContainer"
+    tabs_root_id = "feedbackTabs"
+
+
+class RequestedFeedbackTabShell(AttendanceTabContentShell):
+    nav_url_name = "requested-feedback-nav"
+    container_id = "requestedFeedbackListContainer"
+    tabs_root_id = "feedbackTabs"
+
+
+class AllFeedbackTabShell(AttendanceTabContentShell):
+    nav_url_name = "all-feedback-nav"
+    container_id = "allFeedbackListContainer"
+    tabs_root_id = "feedbackTabs"
+
+
+class AnonymousFeedbackTabShell(AttendanceTabContentShell):
+    nav_url_name = "anonymous-feedback-nav"
+    container_id = "anonymousFeedbackListContainer"
+    tabs_root_id = "feedbackTabs"
 
     # Mirrors FeedbackListView.nested_group_by_fields
     nested_group_by_fields = [
@@ -673,6 +748,8 @@ class AnounyFeedbackDetailView(HorillaDetailedView):
     title = _("Details")
 
     header = {"title": "detail_view_subtitle", "subtitle": ""}
+
+    action_method = "anonymous_detail_action"
 
     body = [
         (_("Subject"), "feedback_subject"),

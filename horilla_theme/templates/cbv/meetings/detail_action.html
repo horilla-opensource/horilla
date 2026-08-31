@@ -1,39 +1,253 @@
-{% load i18n static %}
+{% load i18n horillafilters %}
+<div class="flex items-center gap-2 flex-wrap" onclick="event.stopPropagation()">
 
-{% if perms.pms.change_meetings or request.user.employee_get in instance.manager.all %}
-    <button
-        class="oh-btn oh-btn--light-bkg oh-btn--secondary w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-        hx-get="{% url 'update-meeting' instance.id %}"
-        type="submit"
-        title="{% trans 'Edit' %}"
-        data-toggle="oh-modal-toggle"
-        data-target="#genericModal"
-        hx-target="#genericModalBody"
-    >
-        <ion-icon name="create-outline"></ion-icon>
-        {% trans 'Edit' %}
-    </button>
-{% endif %}
-
-{% if perms.pms.delete_meetings %}
-    <form
-        action="{% url 'meetings-delete' instance.id %}"
-        onsubmit="return confirm(`{% trans 'Are you sure to delete this meeting?' %}`)"
-        method="post"
-    >
-        {% csrf_token %}
-        <button
-            onclick="event.stopPropagation()"
-            title="{% trans 'Delete' %}"
-            class="w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
-        >
-            <img
-                src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}"
-                alt="{% trans 'Delete' %}"
-                width="16"
-                class="mt-[-1px] filter brightness-0 invert"
+    {% if "horilla_meet"|app_installed and "horilla_meet"|integration_installed %}
+        {# Join Meeting #}
+        {% if instance.google_meeting.google_meeting.meet_url %}
+            <a
+                class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                href="{{instance.google_meeting.google_meeting.meet_url}}"
+                target="_blank"
+                title="{% trans 'Join Meeting' %}"
             >
-            {% trans 'Delete' %}
+                <ion-icon name="link-outline"></ion-icon>
+                {% trans "Join Meeting" %}
+            </a>
+        {% else %}
+            <button class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300" disabled title="{% trans 'Join Meeting' %}">
+                <ion-icon name="link-outline"></ion-icon>
+                {% trans "Join Meeting" %}
+            </button>
+        {% endif %}
+
+        {# Send Meeting Link #}
+        {% if perms.horilla_meet.add_googlemeeting and request.user.employee_get in instance.manager.all %}
+            <a
+                class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300 createMeetingDetail"
+                href="#"
+                title="{% trans 'Send Meeting Link' %}"
+                data-id="{{instance.id}}"
+                data-date="{{instance.date.date}}"
+                data-time="{{ instance.date|time }}"
+                data-employees="{{instance.employee_id.all|length}}"
+                data-manager="{{instance.manager.all|length}}"
+            >
+                <ion-icon name="share-outline"></ion-icon>
+                {% trans "Send Meeting Link" %}
+            </a>
+        {% else %}
+            <button class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300" disabled title="{% trans 'Send Meeting Link' %}">
+                <ion-icon name="share-outline"></ion-icon>
+                {% trans "Send Meeting Link" %}
+            </button>
+        {% endif %}
+    {% endif %}
+
+    {# Add MoM #}
+    {% if perms.pms.add_meetings or request.user.employee_get in instance.manager.all or request.user.employee_get in instance.answer_employees.all %}
+        <a
+            onclick="event.preventDefault(); event.stopPropagation()"
+            hx-get="{% url 'add-response' instance.id %}"
+            hx-target="#genericModalBody"
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Add MoM' %}"
+        >
+            <ion-icon name="add-outline"></ion-icon>
+            {% trans "Add MoM" %}
+        </a>
+    {% else %}
+        <button class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300" disabled title="{% trans 'Add MoM' %}">
+            <ion-icon name="add-outline"></ion-icon>
+            {% trans "Add MoM" %}
         </button>
-    </form>
+    {% endif %}
+
+    {# Answer #}
+    {% if request.user.employee_get in instance.answer_employees.all or request.user.employee_get in instance.manager.all %}
+        {% if instance.question_template %}
+            <a
+                hx-get="{% url 'meeting-question-template-view' instance.id %}"
+                hx-target="#answerContainer"
+                data-target="#activitySidebar"
+                class="oh-btn oh-btn--light-bkg oh-activity-sidebar__open px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                title="{% trans 'Answer' %}"
+            >
+                <i
+                    class="material-symbols-outlined fw-light"
+                    data-target="#activitySidebar"
+                    style="font-size: 14px"
+                >
+                    edit_document
+                </i>
+                {% trans "Answer" %}
+            </a>
+        {% else %}
+            <button class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300" disabled title="{% trans 'Answer' %}">
+                <i class="material-symbols-outlined fw-light" style="font-size: 14px">
+                    edit_document
+                </i>
+                {% trans "Answer" %}
+            </button>
+        {% endif %}
+    {% else %}
+        <button class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300" disabled title="{% trans 'Answer' %}">
+            <i class="material-symbols-outlined fw-light" style="font-size: 14px">
+                edit_document
+            </i>
+            {% trans "Answer" %}
+        </button>
+    {% endif %}
+
+    {# Edit #}
+    {% if perms.pms.change_meetings or request.user.employee_get in instance.manager.all %}
+        <a
+            onclick="event.preventDefault();event.stopPropagation()"
+            hx-get="{% url 'update-meeting' instance.id %}?instance_ids={{instance.ordered_ids}}"
+            hx-target="#genericModalBody"
+            hx-swap="innerHTML"
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Edit' %}"
+        >
+            <ion-icon name="create-outline"></ion-icon>
+            {% trans "Edit" %}
+        </a>
+    {% else %}
+        <button class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300" disabled title="{% trans 'Edit' %}">
+            <ion-icon name="create-outline"></ion-icon>
+            {% trans "Edit" %}
+        </button>
+    {% endif %}
+
+    {# Archive / Un-archive #}
+    {% if perms.pms.delete_meetings %}
+        {% if not instance.is_active %}
+            <form
+                hx-confirm="{% trans 'Do you want to unarchive this meeting?' %}"
+                hx-post="{% url 'archive-meeting' instance.id %}"
+                hx-target="#genericModalBody"
+                hx-on-htmx-after-request="reloadMessage(this);"
+                method="post"
+            >
+                {% csrf_token %}
+                <button
+                    onclick="event.stopPropagation()"
+                    class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                    title="{% trans 'Unarchive' %}"
+                >
+                    <ion-icon name="archive"></ion-icon>
+                    {% trans "Unarchive" %}
+                </button>
+            </form>
+        {% else %}
+            <form
+                hx-confirm="{% trans 'Do you want to archive this meeting?' %}"
+                hx-post="{% url 'archive-meeting' instance.id %}"
+                hx-target="#genericModalBody"
+                hx-on-htmx-after-request="reloadMessage(this);"
+                method="post"
+            >
+                {% csrf_token %}
+                <button
+                    onclick="event.stopPropagation()"
+                    class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                    title="{% trans 'Archive' %}"
+                >
+                    <ion-icon name="archive"></ion-icon>
+                    {% trans "Archive" %}
+                </button>
+            </form>
+        {% endif %}
+    {% else %}
+        <button
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            disabled="disabled"
+            title="{% trans 'Archive' %}"
+        >
+            <ion-icon name="archive"></ion-icon>
+            {% trans "Archive" %}
+        </button>
+    {% endif %}
+
+    {# Delete #}
+    {% if perms.pms.delete_meetings %}
+        <form
+            hx-confirm="{% trans 'Are you sure to delete this meeting?' %}"
+            hx-post="{% url 'meetings-delete' instance.id %}"
+            hx-target="#genericModalBody"
+            hx-on-htmx-after-request="reloadMessage(this);"
+            method="post"
+        >
+            {% csrf_token %}
+            <button
+                onclick="event.stopPropagation()"
+                class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                title="{% trans 'Delete' %}"
+            >
+                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
+                {% trans "Delete" %}
+            </button>
+        </form>
+    {% else %}
+        <button
+            class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            disabled="disabled"
+            title="{% trans 'Delete' %}"
+        >
+            <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
+            {% trans "Delete" %}
+        </button>
+    {% endif %}
+</div>
+
+{% if "horilla_meet"|app_installed and "horilla_meet"|integration_installed %}
+<script>
+    $(document).ready(function(){
+        $(".createMeetingDetail").on("click", function(){
+            var meetingID = $(this).data("id");
+            var meetingDate = $(this).data("date");
+            var meetingTime = $(this).data("time");
+            var meetingCount = $(this).data("employees") + $(this).data("manager");
+            var credential = "{{request.user.employee_get.google_credential}}";
+
+            var confirmationMessage = `Are you sure you want to send the meeting link to the  ${meetingCount} participants?\n\nDate: ${meetingDate}\nTime: ${meetingTime}`;
+            confirmationMessage = confirmationMessage.replace(/\n/g, '<br />');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                html: confirmationMessage,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: i18nMessages.confirm,
+                cancelButtonColor: "#6c757d",
+                confirmButtonColor: "#008000",
+                cancelButtonText: i18nMessages.cancel
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#loading-overlay").removeClass("d-none");
+                    if (credential) {
+                        var url = "{% url 'create-pms-google-meeting' %}";
+                        $.ajax({
+                            type: "GET",
+                            url: url,
+                            data: { id: meetingID },
+                            success: function(response) {
+                                window.location.reload();
+                            },
+                            error: function(error) {
+                                console.log(error);
+                            }
+                        });
+                    } else {
+                        var url = "{% url 'create-google-meet' %}";
+                        window.location.href = url;
+                    }
+                }
+            });
+        })
+    })
+</script>
 {% endif %}

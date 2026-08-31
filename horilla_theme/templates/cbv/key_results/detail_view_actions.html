@@ -13,6 +13,32 @@
     {% trans "Edit" %}
 </a>
 
+{% if not instance.is_active %}
+    <a
+        class="oh-btn oh-btn--light-bkg w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+        hx-confirm="{% trans 'Do you want to unarchive this key Result?' %}"
+        hx-post="{% url 'archive-key-result' instance.id %}"
+        hx-target="#genericModalBody"
+        method="post"
+        title="{% trans 'Unarchive' %}"
+    >
+        <ion-icon name="archive-outline"></ion-icon>
+        {% trans "Unarchive" %}
+    </a>
+{% else %}
+    <a
+        class="oh-btn oh-btn--light-bkg w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+        hx-confirm="{% trans 'Do you want to archive this key Result?' %}"
+        hx-post="{% url 'archive-key-result' instance.id %}"
+        hx-target="#genericModalBody"
+        method="post"
+        title="{% trans 'Archive' %}"
+    >
+        <ion-icon name="archive-outline"></ion-icon>
+        {% trans "Archive" %}
+    </a>
+{% endif %}
+
 <a
     class="w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
     onclick="event.preventDefault();event.stopPropagation()"

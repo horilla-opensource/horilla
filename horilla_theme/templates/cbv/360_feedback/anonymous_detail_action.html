@@ -1,0 +1,46 @@
+{% load i18n %}
+
+{% if request.user.id|stringformat:"d" == instance.anonymous_feedback_id or request.user.is_superuser %}
+    <div class="flex items-center gap-2 flex-wrap">
+        <button
+            type="button"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            hx-get="{% url 'edit-anonymous-feedback' instance.id %}?instance_ids={{instance.ordered_ids}}"
+            title="{% trans 'Edit' %}"
+            hx-target="#genericModalBody"
+        >
+            <ion-icon name="create-outline"></ion-icon>
+            {% trans "Edit" %}
+        </button>
+        <form
+            action="{% url 'archive-anonymous-feedback' obj_id=instance.id %}"
+            method="post"
+            onsubmit="return confirm('{% if instance.archive %}{% trans "Are you sure you want to Un-archive this feedback?" %}{% else %}{% trans "Are you sure you want to archive this feedback?" %}{% endif %}')"
+            style="display: contents"
+        >
+            {% csrf_token %}
+            <button
+                class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                title="{% if instance.archive == True %}{% trans 'Un-archive' %}{% else %}{% trans 'Archive' %}{% endif %}"
+                type="submit"
+            >
+                <ion-icon name="archive-sharp"></ion-icon>
+                {% if instance.archive == True %}{% trans "Un-archive" %}{% else %}{% trans "Archive" %}{% endif %}
+            </button>
+        </form>
+        <form
+            action="{% url 'delete-anonymous-feedback' obj_id=instance.id %}"
+            method="post"
+            onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')"
+            style="display: contents"
+        >
+            {% csrf_token %}
+            <button class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300" title="{% trans 'Delete' %}" type="submit">
+                <ion-icon name="trash-outline"></ion-icon>
+                {% trans "Delete" %}
+            </button>
+        </form>
+    </div>
+{% endif %}

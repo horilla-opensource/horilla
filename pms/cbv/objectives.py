@@ -8,6 +8,7 @@ from django.urls import resolve, reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from attendance.cbv.tab_shell import AttendanceTabContentShell
 from employee.cbv.employee_profile import EmployeeProfileView
 from employee.models import Employee
 from horilla.http.response import HorillaRedirect
@@ -269,22 +270,8 @@ class ObjectivesTab(HorillaTabView):
 
         all_objectives_tab = {
             "title": _("All Objectives"),
-            "url": with_query(reverse("all-objectives-view-tab")),
+            "url": with_query(reverse("all-objectives-tab-shell")),
             "badge": all_objectives_count,
-            "actions": [
-                {
-                    "action": "Create Objectives",
-                    "accessibility": "pms.cbv.accessibility.create_objective_accessibility",
-                    "attrs": f"""
-                        data-toggle="oh-modal-toggle"
-                        hx-get='{reverse_lazy('objective-creation')}'"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#genericModal"
-                        hx-target="#genericModalBody"
-                        style="cursor: pointer;"
-                        """,
-                }
-            ],
         }
 
         if template_mode:
@@ -293,7 +280,7 @@ class ObjectivesTab(HorillaTabView):
             self.tabs = [
                 {
                     "title": _("Assigned Objectives"),
-                    "url": with_query(reverse("my-objectives-view-tab")),
+                    "url": with_query(reverse("my-objectives-tab-shell")),
                     "badge": assigned_objectives_count,
                 },
             ]
@@ -304,27 +291,38 @@ class ObjectivesTab(HorillaTabView):
         return context
 
 
-@method_decorator(login_required, name="dispatch")
-class ObjectivesNav(HorillaNavView):
+class _ObjectivesTabNavBase(HorillaNavView):
     """
-    Nav bar
+    Shared Search/Filter/Create wiring for each Objectives tab's own,
+    independent Nav - only search_url/search_swap_target differ per tab.
     """
+
+    nav_title = _("Objectives")
+    filter_instance = ActualObjectiveFilter()
+    filter_form_context_name = "form"
+    filter_body_template = "cbv/objectives/filter.html"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.search_url = reverse("tab-objectives-view")
         self.create_attrs = f"""
                         hx-get='{reverse_lazy('create-employee-objective')}'"
                         data-toggle="oh-modal-toggle"
                         data-target="#genericModal"
                         hx-target="#genericModalBody"
                         """
-
-    nav_title = _("Objectives")
-    filter_instance = ActualObjectiveFilter()
-    filter_form_context_name = "form"
-    filter_body_template = "cbv/objectives/filter.html"
-    search_swap_target = "#listContainer"
+        if self.request.user.has_perm("pms.add_objective"):
+            self.actions = [
+                {
+                    "action": _("Create Objectives"),
+                    "attrs": f"""
+                        hx-get='{reverse_lazy('objective-creation')}'"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#genericModal"
+                        hx-target="#genericModalBody"
+                        style="cursor: pointer;"
+                        """,
+                }
+            ]
 
     # Mirrors ObjectivesList.nested_group_by_fields
     nested_group_by_fields = [
@@ -338,13 +336,50 @@ class ObjectivesNav(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
-class ObjectiveTemplateNav(ObjectivesNav):
+class MyObjectivesNav(_ObjectivesTabNavBase):
+    """
+    Independent Nav for the Assigned Objectives tab.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("my-objectives-view-tab")
+        self.search_swap_target = "#myObjectivesListContainer"
+
+
+@method_decorator(login_required, name="dispatch")
+class AllObjectivesNav(_ObjectivesTabNavBase):
+    """
+    Independent Nav for the All Objectives tab.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("all-objectives-view-tab")
+        self.search_swap_target = "#allObjectivesListContainer"
+
+
+class MyObjectivesTabShell(AttendanceTabContentShell):
+    nav_url_name = "my-objectives-nav"
+    container_id = "myObjectivesListContainer"
+    tabs_root_id = "objContainer"
+
+
+class AllObjectivesTabShell(AttendanceTabContentShell):
+    nav_url_name = "all-objectives-nav"
+    container_id = "allObjectivesListContainer"
+    tabs_root_id = "objContainer"
+
+
+@method_decorator(login_required, name="dispatch")
+class ObjectiveTemplateNav(_ObjectivesTabNavBase):
     """
     Nav bar for objective template list page
     """
 
     nav_title = _("Objective Templates")
     template_name = "generic/inline_nav.html"
+    search_swap_target = "#listContainer"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
