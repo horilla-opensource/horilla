@@ -1,20 +1,20 @@
 {% load i18n basefilters static %}
 
-{% if perms.base.change_multipleapprovalcondition or perms.base.delete_multipleapprovalcondition %}
+{% if perms.base.change_multipleapprovalcondition or perms.base.delete_multipleapprovalcondition or request.user|is_reportingmanager %}
     {% if request.user|is_reportingmanager or perms.base.change_multipleapprovalcondition %}
         <button
             title="{% trans 'Edit' %}"
             class="oh-btn oh-btn--light-bkg oh-btn--secondary w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
             data-toggle="oh-modal-toggle"
-            data-target="#objectUpdateModal"
-            hx-target="#objectUpdateModalTarget"
-            hx-get="{% url 'multiple-level-approval-edit' instance.id %}"
+            data-target="#genericModal"
+            hx-target="#genericModalBody"
+            hx-get="{% url 'multiple-level-approval-edit' instance.id %}?instance_ids={{ instance.ordered_ids }}"
         >
             <ion-icon name="create-outline"></ion-icon>
             {% trans 'Edit' %}
         </button>
     {% endif %}
-    {% if perms.base.delete_multipleapprovalcondition %}
+    {% if request.user|is_reportingmanager or perms.base.delete_multipleapprovalcondition %}
         <a
             hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
             hx-get="{% url 'multiple-level-approval-delete' instance.id %}?instances_ids={{ request.GET.instance_ids }}"

@@ -5,8 +5,68 @@
     }
 </style>
 {% is_manager_of request.user instance as can_manage %}
-{% if perms.base.change_worktyperequest or can_manage %}
-    <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
+{% with can_add=perms.base.add_worktyperequest can_change=perms.base.change_worktyperequest can_delete=perms.base.delete_worktyperequest %}
+<div class="flex items-center gap-2 flex-wrap" onclick="event.stopPropagation()">
+
+    {# Edit #}
+    {% if request.user.employee_get == instance.employee_id or can_change or can_manage %}
+        {% if instance.approved == False and not instance.canceled %}
+            <a
+                hx-get="{% url 'work-type-request-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
+                hx-target='#genericModalBody' data-toggle="oh-modal-toggle" data-target='#genericModal'
+                class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                title="{% trans 'Edit' %}"
+            >
+                <ion-icon name="create-outline"></ion-icon>
+                {% trans "Edit" %}
+            </a>
+        {% else %}
+            <button class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300" disabled title="{% trans 'Edit' %}">
+                <ion-icon name="create-outline"></ion-icon>
+                {% trans "Edit" %}
+            </button>
+        {% endif %}
+    {% endif %}
+
+    {# Duplicate #}
+    {% if request.user.employee_get == instance.employee_id or can_add or can_manage %}
+        <a
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            hx-get="{% url 'work-type-request-duplicate' instance.id %}?{{pg}}"
+            hx-target="#genericModalBody"
+            title="{% trans 'Duplicate' %}"
+            style="cursor: pointer;"
+        >
+            <ion-icon name="copy-outline"></ion-icon>
+            {% trans "Duplicate" %}
+        </a>
+    {% endif %}
+
+    {# Remove #}
+    {% if request.user.employee_get == instance.employee_id or can_delete or can_manage %}
+        {% if instance.approved == False and instance.canceled == False %}
+            <a
+                hx-confirm="{% trans 'Are you sure you want to delete this work type request?' %}"
+                hx-post="{% url 'work-type-request-delete' instance.id %}"
+                hx-target="#work-shift"
+                class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                title="{% trans 'Remove' %}"
+            >
+                <ion-icon name="trash-outline"></ion-icon>
+                {% trans "Remove" %}
+            </a>
+        {% else %}
+            <button class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300" disabled title="{% trans 'Remove' %}">
+                <ion-icon name="trash-outline"></ion-icon>
+                {% trans "Remove" %}
+            </button>
+        {% endif %}
+    {% endif %}
+
+    {# Approve / Reject #}
+    {% if perms.base.change_worktyperequest or can_manage %}
         {% if instance.approved or instance.canceled %}
             <a
                 type="submit"
@@ -70,5 +130,6 @@
                 >{% trans 'Reject' %}
             </a>
         {% endif %}
-    </div>
-{% endif %}
+    {% endif %}
+</div>
+{% endwith %}

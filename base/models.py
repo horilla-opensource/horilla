@@ -1773,6 +1773,18 @@ class ShiftRequest(HorillaModel):
             context={"instance": self},
         )
 
+    def allocated_detail_confirm_action(self):
+        """
+        Action buttons for the Allocated Shift Request detail modal - same
+        buttons, same order, same per-role conditions as
+        allocated_confirm_action_col's row actions.
+        """
+
+        return render_template(
+            path="cbv/shift_request/allocated_detail_confirm_action.html",
+            context={"instance": self},
+        )
+
     def user_availability(self):
         """
         This method for get custom column for HorillaUser availability.
@@ -1814,6 +1826,18 @@ class ShiftRequest(HorillaModel):
 
         return render_template(
             path="cbv/shift_request/actions_shift_requst.html",
+            context={"instance": self},
+        )
+
+    def shift_detail_confirm_action(self):
+        """
+        Action buttons for the Shift Request detail modal - same buttons,
+        same order, same per-role conditions as shift_actions's row
+        actions (Edit, Duplicate, Remove, Approve, Reject).
+        """
+
+        return render_template(
+            path="cbv/shift_request/shift_detail_confirm_action.html",
             context={"instance": self},
         )
 

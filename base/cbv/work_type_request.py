@@ -285,17 +285,10 @@ class WorkTypeDetailView(HorillaDetailedView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        # detail_confirmation.html carries the same per-role conditions as
+        # the row's confirmation() actions (Edit/Duplicate/Delete/Approve/
+        # Reject), so there's no need to swap templates by viewer role here.
         self.action_method = "detail_confirmation"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if (
-            self.request.user.employee_get == self.instance.employee_id
-            and not self.request.GET.get("dashboard")
-        ):
-            context["action_method"] = "detail_view_actions"
-
-        return context
 
 
 @method_decorator(login_required, name="dispatch")

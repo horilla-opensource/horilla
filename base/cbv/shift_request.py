@@ -407,17 +407,13 @@ class ShiftRequestDetailview(HorillaDetailedView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.action_method = "detail_confirmations"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if (
-            self.request.user.employee_get == self.instance.employee_id
-            and not self.request.GET.get("dashboard")
-        ):
-            context["action_method"] = "detail_actions"
-
-        return context
+        # shift_detail_confirm_action.html carries the same per-role
+        # conditions as the row's shift_actions() actions (Edit/Duplicate/
+        # Remove/Approve/Reject), so there's no need to swap templates by
+        # viewer role here - it was previously split into detail_confirmations
+        # (manager-only Approve/Reject) and detail_actions (owner-only Edit/
+        # Delete), which meant no viewer ever saw the full row button set.
+        self.action_method = "shift_detail_confirm_action"
 
 
 @method_decorator(login_required, name="dispatch")
@@ -435,6 +431,10 @@ class AllocatedShiftDetailView(ShiftRequestDetailview):
         (_("Requested Till"), "requested_till"),
         (_("Description"), "description"),
     ]
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.action_method = "allocated_detail_confirm_action"
 
 
 class ShiftTypeFormView(HorillaFormView):

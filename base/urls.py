@@ -284,9 +284,29 @@ urlpatterns = [
         name="employee-worktype-tab-list",
     ),
     path(
+        "employee-worktype-tab-shell/<int:pk>/",
+        work_shift_tab.WorkTypeIndividualTabShell.as_view(),
+        name="employee-worktype-tab-shell",
+    ),
+    path(
+        "employee-worktype-tab-nav/<int:pk>/",
+        work_shift_tab.WorkTypeIndividualNav.as_view(),
+        name="employee-worktype-tab-nav",
+    ),
+    path(
         "employee-rotating-work-tab-list/<int:pk>/",
         work_shift_tab.RotatingWorkIndividualTab.as_view(),
         name="employee-rotating-work-tab-list",
+    ),
+    path(
+        "employee-rotating-work-tab-shell/<int:pk>/",
+        work_shift_tab.RotatingWorkIndividualTabShell.as_view(),
+        name="employee-rotating-work-tab-shell",
+    ),
+    path(
+        "employee-rotating-work-tab-nav/<int:pk>/",
+        work_shift_tab.RotatingWorkIndividualNav.as_view(),
+        name="employee-rotating-work-tab-nav",
     ),
     path(
         "individual-work-rotating-detail-view/<int:pk>/",
@@ -1731,9 +1751,44 @@ urlpatterns = [
         name="shift-request-individual-tab-view",
     ),
     path(
+        "shift-request-individual-tab-shell/<int:pk>/",
+        work_shift_tab.ShiftRequestIndividualTabShell.as_view(),
+        name="shift-request-individual-tab-shell",
+    ),
+    path(
+        "shift-request-individual-tab-nav/<int:pk>/",
+        work_shift_tab.ShiftRequestIndividualNav.as_view(),
+        name="shift-request-individual-tab-nav",
+    ),
+    path(
+        "shift-allocation-individual-tab-view/<int:pk>/",
+        work_shift_tab.ShiftAllocationIndividualTabView.as_view(),
+        name="shift-allocation-individual-tab-view",
+    ),
+    path(
+        "shift-allocation-individual-tab-shell/<int:pk>/",
+        work_shift_tab.ShiftAllocationIndividualTabShell.as_view(),
+        name="shift-allocation-individual-tab-shell",
+    ),
+    path(
+        "shift-allocation-individual-tab-nav/<int:pk>/",
+        work_shift_tab.ShiftAllocationIndividualNav.as_view(),
+        name="shift-allocation-individual-tab-nav",
+    ),
+    path(
         "rotating-shift-individual-tab-view/<int:pk>/",
         work_shift_tab.RotatingShiftAssignIndividualView.as_view(),
         name="rotating-shift-individual-tab-view",
+    ),
+    path(
+        "rotating-shift-individual-tab-shell/<int:pk>/",
+        work_shift_tab.RotatingShiftIndividualTabShell.as_view(),
+        name="rotating-shift-individual-tab-shell",
+    ),
+    path(
+        "rotating-shift-individual-tab-nav/<int:pk>/",
+        work_shift_tab.RotatingShiftIndividualNav.as_view(),
+        name="rotating-shift-individual-tab-nav",
     ),
     path(
         "rotating-shift-individual-detail-view/<int:pk>/",
