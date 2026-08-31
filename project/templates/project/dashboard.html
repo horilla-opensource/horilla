@@ -5,7 +5,7 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
     :root {
-        --pr-indigo: #E54F38;
+        --pr-indigo: var(--primary-600, #E54F38);
         --pr-green: #22c55e;
         --pr-amber: #f59e0b;
         --pr-red: #ef4444;
@@ -41,9 +41,19 @@
     }
     .pr-period-picker input[type="date"] { border: none; font-size: 12px; background: transparent; color: inherit; outline: none; }
     .pr-period-picker__sep { opacity: 0.4; font-size: 11px; }
-    .pr-period-preset { padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.15); font-size: 11px; cursor: pointer; background: none; color: inherit; transition: all 0.15s; }
-    .pr-period-preset:hover { border-color: var(--pr-indigo); color: var(--pr-indigo); }
-    .pr-period-preset--active { background: var(--pr-indigo); color: #fff; border-color: var(--pr-indigo); }
+    .pr-period-preset {
+        padding: 4px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(128,128,128,0.15);
+        font-size: 11px;
+        cursor: pointer;
+        background: none;
+        color: inherit;
+        transition: all 0.15s;
+    }
+    .pr-period-preset:hover { border-color: var(--primary-600, #E54F38); color: var(--primary-600, #E54F38); }
+    .pr-period-preset--active,
+    .pr-period-preset--active:hover { background: var(--primary-600, #E54F38) !important; color: #ffffff !important; border-color: var(--primary-600, #E54F38) !important; }
 
     /* KPI grid — sizing/spacing ported from the Payroll dashboard's pd-kpi-* */
     .pr-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }

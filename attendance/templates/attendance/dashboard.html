@@ -5,7 +5,7 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         :root {
-            --am-indigo: #E54F38;
+            --am-indigo: var(--primary-600, #E54F38);
             --am-green: #22c55e;
             --am-amber: #f59e0b;
             --am-red: #ef4444;
@@ -489,6 +489,11 @@
             background: var(--am-indigo);
             color: #fff;
         }
+        .am-period-preset--active:hover {
+            border-color: var(--am-indigo);
+            background: var(--am-indigo);
+            color: #fff;
+        }
         .dark .am-period-picker input[type='date'] {
             color-scheme: dark;
         }
@@ -643,9 +648,6 @@
             transition: transform 0.2s;
         }
         .am-cust-item__toggle--on {
-            background-color: {{ theme_obj.primary_600|default:"#E54F38" }};
-        }
-        .dark .am-cust-item__toggle--on {
             background: var(--am-indigo);
         }
         .am-cust-item__toggle--on::after {

@@ -5,7 +5,7 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         :root {
-            --as-indigo: #E54F38;
+            --as-indigo: var(--primary-600, #E54F38);
             --as-green: #22c55e;
             --as-amber: #f59e0b;
             --as-red: #ef4444;
@@ -582,6 +582,11 @@
             color: var(--as-indigo);
         }
         .as-period-preset--active {
+            border-color: var(--as-indigo);
+            background: var(--as-indigo);
+            color: #fff;
+        }
+        .as-period-preset--active:hover {
             border-color: var(--as-indigo);
             background: var(--as-indigo);
             color: #fff;

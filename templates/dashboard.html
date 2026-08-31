@@ -5,7 +5,7 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         :root {
-            --md-indigo: #e54f38;
+            --md-indigo: var(--primary-600, #e54f38);
             --md-green: #22c55e;
             --md-amber: #f59e0b;
             --md-red: #ef4444;
@@ -931,10 +931,7 @@
             transition: transform 0.2s;
         }
         .md-cust-item__toggle--on {
-            background-color: {{ theme_obj.primary_600|default:"#E54F38" }};
-        }
-        .dark .md-cust-item__toggle--on {
-            background: var(--oh-primary, var(--md-indigo));
+            background: var(--md-indigo);
         }
         .md-cust-item__toggle--on::after {
             transform: translateX(16px);
@@ -1155,6 +1152,11 @@
             color: var(--md-indigo);
         }
         .md-period-preset--active {
+            border-color: var(--md-indigo);
+            background: var(--md-indigo);
+            color: #fff;
+        }
+        .md-period-preset--active:hover {
             border-color: var(--md-indigo);
             background: var(--md-indigo);
             color: #fff;

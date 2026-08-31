@@ -346,9 +346,7 @@ body.dark i {
   color: white;
 }
 body.dark ul.errorlist {
-  color: white;
-  background-color: #464646;
-  border: 1px solid #5d5d5d;
+  color: #ff8383;
 }
 
 body.dark .oh-alert--danger {

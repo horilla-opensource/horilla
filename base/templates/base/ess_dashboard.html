@@ -5,7 +5,7 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         :root {
-            --ess-indigo: #e54f38;
+            --ess-indigo: var(--primary-600, #e54f38);
             --ess-green: #22c55e;
             --ess-amber: #f59e0b;
             --ess-red: #ef4444;
@@ -92,6 +92,11 @@
             color: var(--ess-indigo);
         }
         .ess-period-preset--active {
+            border-color: var(--ess-indigo);
+            background: var(--ess-indigo);
+            color: #fff;
+        }
+        .ess-period-preset--active:hover {
             border-color: var(--ess-indigo);
             background: var(--ess-indigo);
             color: #fff;
@@ -367,8 +372,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            aspect-ratio: 1;
-            min-height: 32px;
+            aspect-ratio: 2.2 / 1;
+            min-height: 22px;
             border-radius: 6px;
             font-weight: 500;
             font-size: 11px;

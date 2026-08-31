@@ -4,7 +4,7 @@
 {% block content %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
-    :root { --hd-indigo: #E54F38; --hd-green: #22c55e; --hd-amber: #f59e0b; --hd-red: #ef4444; --hd-blue: #3b82f6; --hd-purple: #a855f7; }
+    :root { --hd-indigo: var(--primary-600, #E54F38); --hd-green: #22c55e; --hd-amber: #f59e0b; --hd-red: #ef4444; --hd-blue: #3b82f6; --hd-purple: #a855f7; }
     .hd-dashboard { font-family: inherit; background: #ffffff; margin: -24px; padding: 24px; min-height: calc(100vh - 80px); }
     .dark .hd-dashboard { background: #000000; }
     .hd-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -102,6 +102,7 @@
     .hd-period-preset { padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.15); font-size: 11px; cursor: pointer; background: none; color: inherit; transition: all 0.15s; }
     .hd-period-preset:hover { border-color: var(--hd-indigo); color: var(--hd-indigo); }
     .hd-period-preset--active { background: var(--hd-indigo); color: #fff; border-color: var(--hd-indigo); }
+    .hd-period-preset--active:hover { background: var(--hd-indigo); color: #fff; border-color: var(--hd-indigo); }
     .dark .hd-period-picker input[type="date"] { color-scheme: dark; }
 
     /* Auto-refresh */

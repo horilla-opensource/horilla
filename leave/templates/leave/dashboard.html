@@ -5,7 +5,7 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
     :root {
-        --ld-indigo: #E54F38;
+        --ld-indigo: var(--primary-600, #E54F38);
         --ld-green: #22c55e;
         --ld-amber: #f59e0b;
         --ld-red: #ef4444;
@@ -172,6 +172,7 @@
     .ld-period-preset { padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.15); font-size: 11px; cursor: pointer; background: none; color: inherit; transition: all 0.15s; }
     .ld-period-preset:hover { border-color: var(--ld-indigo); color: var(--ld-indigo); }
     .ld-period-preset--active { background: var(--ld-indigo); color: #fff; border-color: var(--ld-indigo); }
+    .ld-period-preset--active:hover { background: var(--ld-indigo); color: #fff; border-color: var(--ld-indigo); }
     .dark .ld-period-picker input[type="date"] { color-scheme: dark; }
 
     /* Auto-refresh */

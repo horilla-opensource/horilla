@@ -422,6 +422,28 @@ input[type="file"] {
   background-color: rgb(103, 171, 238);
 }
 
+.hired--dot {
+  background-color: green;
+}
+
+.cancelled--dot,
+.canceled--dot {
+  background-color: red;
+}
+
+.interview--dot {
+  background-color: rgb(103, 171, 238);
+}
+
+.test--dot {
+  background-color: orange;
+}
+
+.initial--dot,
+.applied--dot {
+  background-color: gray;
+}
+
 .row {
   --bs-gutter-x: 1.5rem;
   --bs-gutter-y: 0;
@@ -2369,31 +2391,40 @@ table .oh-btn-group a {
 
 ul.errorlist {
   color: #d9534f;
-  background-color: #f0d8d8;
-  border: 1px solid #d6e9c6;
-  font-size: 0.875rem;
-  list-style-type: disc;
-  padding: 1rem 1rem 1rem 2rem;
-  border-radius: 4px;
-  margin: 12px 0;
+  background-color: transparent;
+  border: none;
+  font-size: 0.75rem;
+  font-weight: 500;
+  list-style-type: none;
+  padding: 0;
+  margin: 4px 0 0;
+  line-height: 1.3;
+}
+
+/* .oh-input/.oh-select carry their own margin-bottom for spacing to the
+   next field when there's no error. When an errorlist follows directly,
+   that margin stacks with the errorlist's own margin-top, pushing the
+   error message down further than fields whose widget doesn't carry that
+   margin (e.g. a select2 container) - drop it so the gap is consistent. */
+.oh-input:has(+ ul.errorlist),
+.oh-select:has(+ ul.errorlist) {
+  margin-bottom: 0;
+  /* Inputs/textareas are inline-block by default, which leaves baseline
+     descender space below them that reads as extra gap once the
+     margin-bottom above is removed. */
+  display: block;
 }
 
 ul.errorlist li {
-  margin-bottom: 0.25rem;
-  padding-left: 0.25rem;
+  margin: 0;
+  padding: 0;
 }
 
 ul.errorlist ul.errorlist {
   list-style-type: none;
-  margin-left: 1rem;
-  margin-top: 0.25rem;
+  margin: 4px 0 0;
   padding: 0;
   border: none;
-}
-
-ul.errorlist ul.errorlist li {
-  margin-bottom: 0.125rem;
-  padding-left: 0;
 }
 
 .required-star::after {
@@ -2773,7 +2804,7 @@ ul.errorlist ul.errorlist li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid rgba(229.194, 79.4444, 56.406, 0.15);
+  border: 1px solid var(--primary-300, rgba(229.194, 79.4444, 56.406, 0.15));
   transition: background-color 0.3s ease-in-out;
 }
 
@@ -2783,7 +2814,7 @@ ul.errorlist ul.errorlist li {
 }
 
 .oh-titlebar__tag-close {
-  background-color: hsl(8, 77%, 56%);
+  background-color: var(--primary-600, hsl(8, 77%, 56%));
   color: hsl(0, 0%, 100%);
   width: 16px;
   height: 16px;
@@ -2798,7 +2829,7 @@ ul.errorlist ul.errorlist li {
 }
 
 .oh-titlebar__tag-close:hover {
-  background-color: hsl(8, 61%, 50%);
+  background-color: var(--primary-700, hsl(8, 61%, 50%));
 }
 
 .oh-titlebar__save {
@@ -2818,17 +2849,17 @@ ul.errorlist ul.errorlist li {
 }
 
 .oh-titlebar__tag.filter-field {
-  border: solid 1px #ff450033;
+  border: solid 1px var(--primary-300, #ff450033);
 }
 
 .oh-titlebar__tag--custom {
-  background-color: rgba(255, 68, 0, 0.543) !important;
+  background-color: var(--primary-600, rgba(255, 68, 0, 0.543)) !important;
   color: white;
   cursor: pointer;
 }
 
 .oh-titlebar__tag--custom:hover {
-  background-color: rgba(255, 68, 0, 0.75) !important;
+  background-color: var(--primary-700, rgba(255, 68, 0, 0.75)) !important;
   transition: background-color 0.3s ease-in-out;
 }
 
@@ -3051,7 +3082,7 @@ ul.errorlist ul.errorlist li {
 }
 
 .oh-dropdown__link:hover {
-  color: hsl(8, 77%, 56%) !important;
+  color: var(--primary-600, hsl(8, 77%, 56%)) !important;
   text-decoration: none !important;
 }
 
@@ -3915,6 +3946,42 @@ span.oh-activity-sidebar__a img {
   .select2-selection
   .select2-selection__arrow {
   display: none !important;
+}
+
+/* Some locked-but-still-relevant fields (e.g. the loan employee on edit)
+   need to keep looking like a normal boxed select instead of the bare-text
+   treatment above, while staying HTML-disabled. Opt in per-field via this
+   class; specificity (two classes) beats the .oh-select:disabled rule above. */
+.oh-select.oh-select--boxed-locked:disabled + .select2-container .select2-selection {
+  /* Same tint as disabled .form-control inputs below, so a locked select
+     reads as read-only instead of looking clickable. */
+  background-color: #f7f7f7 !important;
+  border: 1px solid #e6e6e6 !important;
+  cursor: not-allowed;
+}
+
+.oh-select.oh-select--boxed-locked:disabled
+  + .select2-container
+  .select2-selection
+  .select2-selection__rendered {
+  color: #6b7280 !important;
+}
+
+.oh-select.oh-select--boxed-locked:disabled
+  + .select2-container
+  .select2-selection
+  .select2-selection__arrow {
+  display: block !important;
+}
+
+/* Disabled text/number/date inputs and textareas otherwise look identical
+   to editable ones in this theme - tint them so locked fields (e.g. loan
+   amount/installments once an installment is paid) read as read-only. */
+input.form-control:disabled,
+textarea.form-control:disabled {
+  background-color: #f7f7f7;
+  color: #6b7280;
+  cursor: not-allowed;
 }
 
 .select2-container--open .select2-selection {

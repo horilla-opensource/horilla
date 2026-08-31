@@ -5,7 +5,7 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
     :root {
-        --pd-indigo: #E54F38;
+        --pd-indigo: var(--primary-600, #E54F38);
         --pd-green: #22c55e;
         --pd-amber: #f59e0b;
         --pd-red: #ef4444;
@@ -139,6 +139,7 @@
     .pd-period-preset { padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.15); font-size: 11px; cursor: pointer; background: none; color: inherit; transition: all 0.15s; }
     .pd-period-preset:hover { border-color: var(--pd-indigo); color: var(--pd-indigo); }
     .pd-period-preset--active { background: var(--pd-indigo); color: #fff; border-color: var(--pd-indigo); }
+    .pd-period-preset--active:hover { background: var(--pd-indigo); color: #fff; border-color: var(--pd-indigo); }
     .dark .pd-period-picker input[type="date"] { color-scheme: dark; }
 
     /* Auto-refresh */

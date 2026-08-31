@@ -7,7 +7,7 @@
                 hx-target="#taskContainer{{ task_id }}{{ instance.pk }}"
                 name="status"
                 class="w-100"
-                style="background-color: hsl(0, 75%, 97%); color: hsl(1, 100%, 61%); padding: 0.4rem 0.6rem; border-radius: 0.2rem; margin-right: 0.2rem; font-size: 0.8rem"
+                style="background-color: var(--primary-100, hsl(0, 75%, 97%)); color: var(--primary-600, hsl(1, 100%, 61%)); padding: 0.4rem 0.6rem; border-radius: 0.2rem; margin-right: 0.2rem; font-size: 0.8rem"
             >
                 {% for choice in task.choice %}
                     {% if choice.0 == task.status %}

@@ -5,7 +5,7 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         :root {
-            --rd-indigo: #E54F38;
+            --rd-indigo: var(--primary-600, #E54F38);
             --rd-green: #22c55e;
             --rd-amber: #f59e0b;
             --rd-red: #ef4444;
@@ -365,14 +365,15 @@
             min-width: 50px;
             padding: 6px 8px;
             border-radius: 8px;
-            background: #eef2ff;
-            color: var(--rd-indigo);
+            background: color-mix(in srgb, var(--primary-600, #E54F38) 12%, transparent);
+            color: var(--primary-600, #E54F38);
             font-weight: 700;
             font-size: 11px;
             text-align: center;
         }
         .dark .rd-interview-item__date {
-            background: #312e81;
+            background: color-mix(in srgb, var(--primary-600, #E54F38) 25%, transparent);
+            color: var(--primary-300, #fcedeb);
         }
         .rd-interview-item__info {
             flex: 1;
@@ -752,13 +753,14 @@
             transition: all 0.15s;
         }
         .rd-period-preset:hover {
-            border-color: var(--rd-indigo);
-            color: var(--rd-indigo);
+            border-color: var(--primary-600, #E54F38);
+            color: var(--primary-600, #E54F38);
         }
-        .rd-period-preset--active {
-            border-color: var(--rd-indigo);
-            background: var(--rd-indigo);
-            color: #fff;
+        .rd-period-preset--active,
+        .rd-period-preset--active:hover {
+            border-color: var(--primary-600, #E54F38) !important;
+            background: var(--primary-600, #E54F38) !important;
+            color: #ffffff !important;
         }
         .dark .rd-period-picker input[type='date'] {
             color-scheme: dark;

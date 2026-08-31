@@ -426,14 +426,15 @@
   font-size: 12px;
 }
 
+.select2-container--default .select2-results__option--highlighted[aria-selected],
 .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
-  background-color: #fff5f1;
-  color: #e54f38;
+  background-color: var(--primary-100, #fff5f1);
+  color: var(--primary-600, #e54f38);
 }
 
 .select2-container--default .select2-results__option--selected {
-  background-color: #fff5f1;
-  color: #e54f38;
+  background-color: var(--primary-100, #fff5f1);
+  color: var(--primary-600, #e54f38);
 }
 
 .select2-container--default.select2-container--focus .select2-selection--multiple {
