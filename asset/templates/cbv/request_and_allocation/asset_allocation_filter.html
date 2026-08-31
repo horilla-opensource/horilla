@@ -1,0 +1,63 @@
+{% load i18n %}
+{% load widget_tweaks %}
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+        <div class="oh-accordion-header">
+            {% trans "Asset Allocation" %}
+        </div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{form.assigned_to_employee_id.id_for_label}}"
+                        >{% trans "Allocated User" %}</label>
+                        {{ form.assigned_to_employee_id }}
+                    </div>
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{form.asset_id.id_for_label}}"
+                        >{% trans "Asset" %}</label>
+                        {{ form.asset_id }}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{form.assigned_date.id_for_label}}"
+                        >{% trans "Asset Allocated Date" %}</label>
+                        {{ form.assigned_date |attr:"type:date" }}
+                    </div>
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{form.return_status.id_for_label}}"
+                        >{% trans "Status" %}</label>
+                        {{ form.return_status }}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{form.return_date.id_for_label}}"
+                        >{% trans "Return Date" %}</label>
+                        {{ form.return_date|attr:"type:date" }}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{form.assigned_by_employee_id.id_for_label}}"
+                        >{% trans "Allocated By" %}</label>
+                        {{ form.assigned_by_employee_id }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

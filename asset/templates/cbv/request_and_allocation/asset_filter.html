@@ -1,0 +1,29 @@
+{% load i18n %}
+{% load widget_tweaks %}
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Asset" %}</div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{form.asset_id__asset_name.id_for_label}}"
+                        >{% trans "Asset Name" %}</label>
+                        {{ form.asset_id__asset_name }}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="oh-input-group">
+                        <label
+                            class="oh-label"
+                            for="{{form.asset_id__asset_status.id_for_label}}"
+                        >{% trans "Status" %}</label>
+                        {{ form.asset_id__asset_status }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
