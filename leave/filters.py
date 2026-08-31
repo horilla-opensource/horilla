@@ -504,10 +504,10 @@ if apps.is_installed("attendance"):
             field_name="leave_type_id__name", lookup_expr="icontains"
         )
         search = filters.CharFilter(method="filter_by_name")
-        created_by__employee_get = django_filters.CharFilter(
+        created_by__employee_get = django_filters.ModelMultipleChoiceFilter(
             field_name="created_by__employee_get",
-            lookup_expr="exact",
-            widget=forms.SelectMultiple(attrs={"class": "form-control"}),
+            queryset=Employee.objects.all(),
+            widget=forms.SelectMultiple(),
         )
         number_of_days_up_to = filters.NumberFilter(
             field_name="requested_days", lookup_expr="lte"
