@@ -23,7 +23,20 @@
         {# ── Group-by accordion view — matches recruitment pipeline / skill-zone style ── #}
         <div class="oh-card">
             {% for group in groups %}
-                <div class="oh-accordion border border-primary-300 rounded-md mb-1.5 {% if forloop.first %}oh-accordion--show{% endif %}">
+                <div
+                    id="accordion-group-{{ group.dynamic_name }}"
+                    class="oh-accordion border border-primary-300 rounded-md mb-1.5 {% if group.dynamic_name in request.GET or forloop.first and 'dynamic_page_' not in request.GET.urlencode %}oh-accordion--show{% endif %}"
+                >
+                    {% if group.dynamic_name in request.GET %}
+                        <script>
+                            (function() {
+                                var el = document.getElementById("accordion-group-{{ group.dynamic_name }}");
+                                if (el) {
+                                    el.scrollIntoView({ behavior: "instant", block: "center" });
+                                }
+                            })();
+                        </script>
+                    {% endif %}
                     <div
                         class="oh-accordion-header no-after w-full flex justify-between items-center px-4 py-2 bg-primary-100 text-primary-600 text-sm cursor-pointer transition-all"
                         data-group="{{ forloop.counter }}"
@@ -31,20 +44,96 @@
                         <div class="flex items-center gap-2">
                             <span
                                 class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs shrink-0"
-                                title="{{ group.list|length }} {% trans 'Records' %}"
-                            >{{ group.list|length }}</span>
+                                title="{% if group.list.paginator %}{{ group.list.paginator.count }}{% else %}{{ group.list|length }}{% endif %} {% trans 'Records' %}"
+                            >{% if group.list.paginator %}{{ group.list.paginator.count }}{% else %}{{ group.list|length }}{% endif %}</span>
                             <span class="font-semibold">{{ group.grouper|capfirst }}</span>
                         </div>
-                        <ion-icon name="{% if forloop.first %}chevron-up-outline{% else %}chevron-down-outline{% endif %}" class="icon text-lg"></ion-icon>
+                        <ion-icon name="{% if group.dynamic_name in request.GET or forloop.first and 'dynamic_page_' not in request.GET.urlencode %}chevron-up-outline{% else %}chevron-down-outline{% endif %}" class="icon text-lg"></ion-icon>
                     </div>
 
                     <div class="oh-accordion-body transition-all duration-300 bg-white px-4 text-sm text-gray-700">
                         <div class="py-3">
+                            {% if group.list.paginator.num_pages > 1 %}
+                                <div class="flex justify-end items-center mb-3">
+                                    <div class="hlv-pagination inline-flex items-center h-8 gap-0.5 bg-white border border-[#e6e6e6] rounded-md px-1 flex-shrink-0">
+                                        <button
+                                            type="button"
+                                            class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if group.list.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                                            {% if group.list.has_previous %}
+                                            hx-get="{{request.path}}?{{request.GET.urlencode}}&{{group.dynamic_name}}=1"
+                                            hx-target="#accordion-group-{{ group.dynamic_name }}"
+                                            hx-select="#accordion-group-{{ group.dynamic_name }}"
+                                            hx-swap="outerHTML"
+                                            hx-on:click="htmxLoadIndicator(this);"
+                                            {% endif %}
+                                        >
+                                            <i class="fa-solid fa-angles-left"></i>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if group.list.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                                            {% if group.list.has_previous %}
+                                            hx-get="{{request.path}}?{{request.GET.urlencode}}&{{group.dynamic_name}}={{ group.list.previous_page_number }}"
+                                            hx-target="#accordion-group-{{ group.dynamic_name }}"
+                                            hx-select="#accordion-group-{{ group.dynamic_name }}"
+                                            hx-swap="outerHTML"
+                                            hx-on:click="htmxLoadIndicator(this);"
+                                            {% endif %}
+                                        >
+                                            <i class="fa-solid fa-angle-left"></i>
+                                        </button>
+                                        <div class="flex items-center gap-1 px-1 h-7 text-xs text-[#666] leading-none">
+                                            <input
+                                                type="number"
+                                                name="{{ group.dynamic_name }}"
+                                                min="1"
+                                                max="{{ group.list.paginator.num_pages }}"
+                                                value="{{ group.list.number }}"
+                                                title="{% trans 'Enter a page number and press Enter' %}"
+                                                class="w-9 h-6 m-0 py-0 px-1 text-center text-xs leading-6 border border-[#e6e6e6] rounded outline-none focus:border-primary-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                                hx-target="#accordion-group-{{ group.dynamic_name }}"
+                                                hx-select="#accordion-group-{{ group.dynamic_name }}"
+                                                hx-swap="outerHTML"
+                                                hx-get="{{request.path}}?{{request.GET.urlencode}}"
+                                                hx-trigger="keyup[keyCode==13] changed, blur changed"
+                                                onclick="this.select()"
+                                            >
+                                            <span class="inline-flex items-center h-6 leading-none whitespace-nowrap">/ {{ group.list.paginator.num_pages }}</span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if group.list.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                                            {% if group.list.has_next %}
+                                            hx-get="{{request.path}}?{{request.GET.urlencode}}&{{group.dynamic_name}}={{ group.list.next_page_number }}"
+                                            hx-target="#accordion-group-{{ group.dynamic_name }}"
+                                            hx-select="#accordion-group-{{ group.dynamic_name }}"
+                                            hx-swap="outerHTML"
+                                            hx-on:click="htmxLoadIndicator(this);"
+                                            {% endif %}
+                                        >
+                                            <i class="fa-solid fa-angle-right"></i>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if group.list.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                                            {% if group.list.has_next %}
+                                            hx-get="{{request.path}}?{{request.GET.urlencode}}&{{group.dynamic_name}}={{ group.list.paginator.num_pages }}"
+                                            hx-target="#accordion-group-{{ group.dynamic_name }}"
+                                            hx-select="#accordion-group-{{ group.dynamic_name }}"
+                                            hx-swap="outerHTML"
+                                            hx-on:click="htmxLoadIndicator(this);"
+                                            {% endif %}
+                                        >
+                                            <i class="fa-solid fa-angles-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endif %}
                             {% if group.list %}
                                 <div class="grid grid-cols-4 gap-4">
                                     {% for instance in group.list %}
                                         <div
-                                            class="border border-[#ebebeb] p-4 rounded-md shadow-card cursor-pointer {{card_status_class|format:instance|safe}}"
+                                            class="border border-[#ebebeb] py-2 px-3.5 rounded-md shadow-card cursor-pointer {{card_status_class|format:instance|safe}}"
                                             {{card_attrs|format:instance|safe}}
                                         >
                                             {% if custom_body_template %}
@@ -78,7 +167,7 @@
                                                     {% include custom_body_template %}
                                                 </div>
                                             {% else %}
-                                                <div class="flex gap-5 relative">
+                                                <div class="flex gap-3 relative items-start">
                                                     <div
                                                         class="absolute inline-block right-0 -top-1"
                                                         onclick="event.stopPropagation()"
@@ -106,23 +195,23 @@
                                                         {% endif %}
                                                     </div>
                                                     {% if instance|getattribute:details.image_src %}
-                                                        <div class="relative flex items-center w-max shrink-0">
+                                                        <div class="relative flex items-center w-max shrink-0 mt-0.5">
                                                             <img
                                                                 src="{{instance|getattribute:details.image_src}}"
                                                                 data-src="{{instance|getattribute:details.image_src}}"
-                                                                class="w-11 h-11 rounded-full avatar-thumb shrink-0"
+                                                                class="w-9 h-9 rounded-full avatar-thumb shrink-0"
                                                                 alt="{% trans 'Username' %}"
                                                             >
                                                         </div>
                                                     {% endif %}
-                                                    <div>
-                                                        <h5 class="mb-1 font-medium text-sm">
-                                                            {{ details.title|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe }}
-                                                        </h5>
-                                                        <div class="text-xs text-[#565E6C] mb-1 grid">
-                                                            {{ details.subtitle|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe }}
-                                                        </div>
-                                                    </div>
+                                                     <div class="min-w-0 flex-1 pr-4">
+                                                         <h5 class="mb-1 font-semibold text-sm leading-tight text-dark-700">
+                                                             {{ details.title|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe }}
+                                                         </h5>
+                                                         <div class="text-xs text-[#565E6C] leading-normal block">
+                                                             {{ details.subtitle|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe }}
+                                                         </div>
+                                                     </div>
                                                 </div>
                                             {% endif %}
                                         </div>
@@ -160,7 +249,7 @@
                     <div class="grid grid-cols-4 gap-4">
                         {% for instance in queryset %}
                             <div
-                                class="border border-[#ebebeb] p-4 rounded-md shadow-card cursor-pointer {{card_status_class|format:instance|safe}}"
+                                class="border border-[#ebebeb] py-2 px-3.5 rounded-md shadow-card cursor-pointer {{card_status_class|format:instance|safe}}"
                                 {{card_attrs|format:instance|safe}}
                             >
                                 {% if custom_body_template %}
@@ -194,7 +283,7 @@
                                         {% include custom_body_template %}
                                     </div>
                                 {% else %}
-                                    <div class="flex gap-5 relative">
+                                    <div class="flex gap-3 relative items-start">
                                         <div
                                             class="absolute inline-block right-0 -top-1"
                                             onclick="event.stopPropagation()"
@@ -222,20 +311,20 @@
                                             {% endif %}
                                         </div>
                                         {% if instance|getattribute:details.image_src %}
-                                            <div class="relative flex items-center w-max shrink-0">
+                                            <div class="relative flex items-center w-max shrink-0 mt-0.5">
                                                 <img
                                                     src="{{instance|getattribute:details.image_src}}"
                                                     data-src="{{instance|getattribute:details.image_src}}"
-                                                    class="w-11 h-11 rounded-full avatar-thumb shrink-0"
+                                                    class="w-9 h-9 rounded-full avatar-thumb shrink-0"
                                                     alt="{% trans 'Username' %}"
                                                 >
                                             </div>
                                         {% endif %}
-                                        <div>
-                                            <h5 class="mb-1 font-medium text-sm">
+                                        <div class="min-w-0 flex-1 pr-4">
+                                            <h5 class="mb-1 font-semibold text-sm leading-tight text-dark-700">
                                                 {{ details.title|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe }}
                                             </h5>
-                                            <div class="text-xs text-[#565E6C] mb-1 grid">
+                                            <div class="text-xs text-[#565E6C] leading-normal block">
                                                 {{ details.subtitle|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe }}
                                             </div>
                                         </div>
@@ -245,7 +334,6 @@
                         {% endfor %}
                     </div>
                 </div>
-            </div>
         </div>
     {% else %}
         {% if custom_empty_template %}
