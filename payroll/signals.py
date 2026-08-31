@@ -87,6 +87,18 @@ def create_installments(sender, instance, created, **kwargs):
         installment_dict = instance.get_installments()
 
         if not payslips_with_deductions and not instance.settled:
+            # Nothing is paid yet, so the whole loan is still editable -
+            # keep the one-time payout allowance in sync with the (possibly
+            # changed) employee/amount/date/title before regenerating the
+            # installment deductions below, which already follow
+            # instance.employee_id via create_deductions().
+            if instance.allowance_id:
+                allowance = instance.allowance_id
+                allowance.title = instance.title
+                allowance.amount = instance.loan_amount
+                allowance.one_time_date = instance.provided_date
+                allowance.save()
+                allowance.specific_employees.set([instance.employee_id])
             Deduction.objects.filter(id__in=deductions).delete()
             for (
                 installment_date,

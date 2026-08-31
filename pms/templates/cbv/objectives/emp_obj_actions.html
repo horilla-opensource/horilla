@@ -1,57 +1,67 @@
-{% load i18n %}
-<div class="oh-btn-group w-100">
-    {% if perms.pms.change_employeeobjective or instance|is_manager:request.user %}
-        <a
-            class="oh-btn oh-btn--light-bkg oh-btn--secondary"
-            hx-get='{% url "update-employee-objective" instance.id %}'
-            hx-target="#genericModalBody"
-            data-toggle="oh-modal-toggle"
-            data-target="#genericModalBody"
-            style="width: 50%"
-        >
-            <ion-icon name="create-outline"> </ion-icon>{% trans "Edit" %}
-        </a>
-    {% endif %}
-    {% if perms.pms.delete_employeeobjective or instance|is_manager:request.user %}
-        {% if instance.archive %}
-            <form
-                class="oh-btn oh-btn--success"
-                onsubmit="return confirm('{% trans "Do you want to Unarchive this Employee objective?" %}')"
-                action='{% url "archive-employee-objective" instance.id %}'
-            >
-                <input type="hidden" name="archive" value="False" id="">
-                <input type="hidden" name="single_view" value="True">
-                <button style="background: none; color: inherit; border: none; padding: 0; font: inherit; cursor: pointer; outline: inherit; display: contents">
-                    <ion-icon name="archive-outline"></ion-icon>
-                    {% trans "Unarchive" %}
-                </button>
-            </form>
-        {% else %}
-            <form
-                class="oh-btn oh-btn--danger"
-                style="width: 50%"
-                onsubmit="return confirm('{% trans "Do you want to archive this Employee objective?" %}')"
-                action='{% url "archive-employee-objective" instance.id %}'
-            >
-                <input type="hidden" name="archive" value="False" id="">
-                <input type="hidden" name="single_view" value="True">
-                <button style="background: none; color: inherit; border: none; padding: 0; font: inherit; cursor: pointer; outline: inherit; display: contents">
-                    <ion-icon name="archive-outline"></ion-icon>
-                    {% trans "Archive" %}
-                </button>
-            </form>
-        {% endif %}
+{% load i18n static %}
+{% if perms.pms.change_employeeobjective or instance|is_manager:request.user %}
+    <a
+        class="oh-btn oh-btn--light-bkg oh-btn--secondary w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+        style="font-size: 0.75rem"
+        hx-get='{% url "update-employee-objective" instance.id %}'
+        hx-target="#genericModalBody"
+        data-toggle="oh-modal-toggle"
+        data-target="#genericModal"
+    >
+        <ion-icon name="create-outline"></ion-icon>
+        {% trans "Edit" %}
+    </a>
+{% endif %}
+{% if perms.pms.delete_employeeobjective or instance|is_manager:request.user %}
+    {% if instance.archive %}
         <form
-            class="oh-btn oh-btn--danger"
-            method="post"
-            style="width: 50%"
-            onsubmit="return confirm('{% trans "Do you Want to delete this employee objective?" %}')"
-            action='{% url "delete-employee-objective" instance.id %}'
+            class="w-24"
+            onsubmit="return confirm('{% trans "Do you want to Unarchive this Employee objective?" %}')"
+            action='{% url "archive-employee-objective" instance.id %}'
         >
-            {% csrf_token %}
-            <button style="background: none; color: inherit; border: none; padding: 0; font: inherit; cursor: pointer; outline: inherit; display: contents">
-                <ion-icon name="trash-outline"> </ion-icon>{% trans "Delete" %}
+            <input type="hidden" name="archive" value="False" id="">
+            <input type="hidden" name="single_view" value="True">
+            <button
+                type="submit"
+                class="w-full px-4 py-2 oh-btn oh-btn--light-bkg rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                style="font-size: 0.75rem"
+            >
+                <img src="{% static 'horilla_theme/assets/img/icons/archive.svg' %}" alt="" width="16" class="mt-[-1px]">
+                {% trans "Unarchive" %}
+            </button>
+        </form>
+    {% else %}
+        <form
+            class="w-24"
+            onsubmit="return confirm('{% trans "Do you want to archive this Employee objective?" %}')"
+            action='{% url "archive-employee-objective" instance.id %}'
+        >
+            <input type="hidden" name="archive" value="False" id="">
+            <input type="hidden" name="single_view" value="True">
+            <button
+                type="submit"
+                class="w-full px-4 py-2 oh-btn oh-btn--light-bkg rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                style="font-size: 0.75rem"
+            >
+                <img src="{% static 'horilla_theme/assets/img/icons/archive.svg' %}" alt="" width="16" class="mt-[-1px]">
+                {% trans "Archive" %}
             </button>
         </form>
     {% endif %}
-</div>
+    <form
+        class="w-24"
+        method="post"
+        onsubmit="return confirm('{% trans "Do you Want to delete this employee objective?" %}')"
+        action='{% url "delete-employee-objective" instance.id %}'
+    >
+        {% csrf_token %}
+        <button
+            type="submit"
+            class="w-full px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
+            style="font-size: 0.75rem"
+        >
+            <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" alt="" width="16" class="mt-[-1px] filter brightness-0 invert">
+            {% trans "Delete" %}
+        </button>
+    </form>
+{% endif %}

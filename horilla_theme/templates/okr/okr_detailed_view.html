@@ -74,7 +74,7 @@
 
         <!-- Content (HTMX) -->
         {% if objective.employee_objective.all %}
-        <div class="bg-white p-3 rounded-md shadow-card h-[calc(100vh_-_270px)] overflow-y-auto"
+        <div class="bg-white p-3 rounded-md shadow-card max-h-[calc(100vh_-_270px)] overflow-y-auto"
             id="emp_objective_card"
             hx-get="{% url 'emp-objective-search' objective.id %}?{{request.GET.urlencode}}"
             hx-trigger="load">
