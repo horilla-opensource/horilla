@@ -288,6 +288,16 @@ class OffboardingEmployee(HorillaModel):
             context={"employee": self, "stage": self.stage_id},
         )
 
+    def detail_action_col(self):
+        """
+        Action buttons for the exit process detail modal - same buttons,
+        same conditions, as get_action_col's pipeline card actions.
+        """
+        return render_template(
+            path="cbv/exit_process/detail_action_col.html",
+            context={"instance": self},
+        )
+
     def __getattribute__(self, name):
         if name.startswith("get_") and name.endswith("_task"):
             task_id = literal_eval(name[4:-5])

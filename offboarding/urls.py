@@ -75,6 +75,11 @@ urlpatterns = [
         name="get-offboarding-tab",
     ),
     path(
+        "offboarding-pipeline-shell/<int:pk>/",
+        exit_process.OffboardingPipelineContentShell.as_view(),
+        name="offboarding-pipeline-shell",
+    ),
+    path(
         "create-offboarding-stage/",
         exit_process.OffboardingStageFormView.as_view(),
         name="create-offboarding-stage",

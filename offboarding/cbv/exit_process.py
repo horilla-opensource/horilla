@@ -12,6 +12,7 @@ from django.apps import apps
 from django.contrib import messages
 from django.db.models import Count
 from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -34,6 +35,7 @@ from horilla_views.generic.cbv.views import (
     HorillaNavView,
     HorillaSectionView,
     HorillaTabView,
+    TemplateView,
 )
 from notifications.signals import notify
 from offboarding.cbv_decorators import (
@@ -288,6 +290,7 @@ class ExitProcessDetailView(HorillaDetailedView):
         "avatar": "employee_id__get_avatar",
     }
     empty_template = "cbv/exit_process/detailed_page_empty.html"
+    action_method = "detail_action_col"
     body = [
         (_("Email"), "employee_id__employee_work_info__email"),
         (_("Job Position"), "employee_id__employee_work_info__job_position_id"),
@@ -384,6 +387,76 @@ class OffboardingPipelineNav(HorillaNavView):
         return context
 
 
+def offboarding_pipeline_actions(request, offboarding):
+    """
+    Offboarding-level actions (Add Stage/Manage Stage Order/Edit/Delete)
+    for the given offboarding - shared between PipeLineTabView (which used
+    to put these in the tab bar's kebab) and OffboardingPipelineContentShell
+    (which renders them inline in the pipeline content's own header instead).
+    """
+    actions = []
+    if request.user.has_perm(
+        "offboarding.add_offboardingstage"
+    ) or is_offboarding_manager(request.user.employee_get):
+        actions.append(
+            {
+                "action": _("Add Stage"),
+                "attrs": f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{reverse("create-offboarding-stage")}?offboarding_id={offboarding.pk}"
+                    hx-target="#genericModalBody"
+                    style="cursor: pointer;"
+                """,
+            }
+        )
+        actions.append(
+            {
+                "action": _("Manage Stage Order"),
+                "attrs": f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{reverse("update-stage-sequence",kwargs={"pk": offboarding.pk})}"
+                    hx-target="#genericModalBody"
+                    style="cursor: pointer;"
+                """,
+            }
+        )
+    if request.user.has_perm(
+        "offboarding.change_offboarding"
+    ) or is_offboarding_manager(request.user.employee_get):
+        actions.append(
+            {
+                "action": _("Edit"),
+                "attrs": f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{reverse("update-offboarding", kwargs={"pk": offboarding.pk})}"
+                    hx-target="#genericModalBody"
+                    style="cursor: pointer;"
+                """,
+            }
+        )
+    if request.user.has_perm("offboarding.delete_offboarding"):
+        actions.append(
+            {
+                "action": _("Delete"),
+                "attrs": f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#deleteConfirmation"
+                    hx-get="{reverse('generic-delete')}?{urlencode({
+                        'model': 'offboarding.Offboarding',
+                        'pk': str(offboarding.pk),
+                        'reload_target': '#applyFilter',
+                    })}"
+                    hx-target="#deleteConfirmationBody"
+                    style="cursor: pointer;"
+                """,
+            }
+        )
+    return actions
+
+
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
     any_manager_can_enter(
@@ -401,22 +474,14 @@ class PipeLineTabView(HorillaTabView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         offboardings = self.filter_class(self.request.GET).qs.filter(is_active=True)
-        view_type = self.request.GET.get("view", "list")
         self.tabs = []
         for offboarding in offboardings:
             tab = {}
-            tab["actions"] = []
             tab["title"] = offboarding.title
-            url = reverse("get-offboarding-kanban-stage", kwargs={"pk": offboarding.pk})
-            if view_type == "list":
-                url = reverse(
-                    "get-offboarding-stage", kwargs={"offboarding_id": offboarding.pk}
-                )
+            url = reverse("offboarding-pipeline-shell", kwargs={"pk": offboarding.pk})
 
-            extra_params = self.request.GET.copy()
-            extra_params.pop("view", None)
-            if extra_params:
-                url = f"{url}?{extra_params.urlencode()}"
+            if self.request.GET:
+                url = f"{url}?{self.request.GET.urlencode()}"
 
             tab["url"] = url
 
@@ -424,69 +489,45 @@ class PipeLineTabView(HorillaTabView):
             tab["badge"] = offboarding.offboardingstage_set.filter(
                 is_active=True
             ).count()
-            if self.request.user.has_perm(
-                "offboarding.add_offboardingstage"
-            ) or is_offboarding_manager(self.request.user.employee_get):
-                tab["actions"].append(
-                    {
-                        "action": _("Add Stage"),
-                        "attrs": f"""
-                            data-toggle="oh-modal-toggle"
-                            data-target="#genericModal"
-                            hx-get="{reverse("create-offboarding-stage")}?offboarding_id={offboarding.pk}"
-                            hx-target="#genericModalBody"
-                            style="cursor: pointer;"
-                        """,
-                    }
-                )
-                tab["actions"].append(
-                    {
-                        "action": _("Manage Stage Order"),
-                        "attrs": f"""
-                            data-toggle="oh-modal-toggle"
-                            data-target="#genericModal"
-                            hx-get="{reverse("update-stage-sequence",kwargs={"pk": offboarding.pk})}"
-                            hx-target="#genericModalBody"
-                            style="cursor: pointer;"
-                        """,
-                    }
-                )
-            if self.request.user.has_perm(
-                "offboarding.change_offboarding"
-            ) or is_offboarding_manager(self.request.user.employee_get):
-                tab["actions"].append(
-                    {
-                        "action": _("Edit"),
-                        "attrs": f"""
-                            data-toggle="oh-modal-toggle"
-                            data-target="#genericModal"
-                            hx-get="{reverse("update-offboarding", kwargs={"pk": offboarding.pk})}"
-                            hx-target="#genericModalBody"
-                            style="cursor: pointer;"
-                        """,
-                    }
-                )
-            if self.request.user.has_perm("offboarding.delete_offboarding"):
-                tab["actions"].append(
-                    {
-                        "action": _("Delete"),
-                        "attrs": f"""
-                            data-toggle="oh-modal-toggle"
-                            data-target="#deleteConfirmation"
-                            hx-get="{reverse('generic-delete')}?{urlencode({
-                                'model': 'offboarding.Offboarding',
-                                'pk': str(offboarding.pk),
-                                'reload_target': '#applyFilter',
-                            })}"
-                            hx-target="#deleteConfirmationBody"
-                            style="cursor: pointer;"
-                        """,
-                    }
-                )
-
             self.tabs.append(tab)
 
         context["tabs"] = self.tabs
+        return context
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    any_manager_can_enter(
+        "offboarding.view_offboarding", offboarding_employee_can_enter=True
+    ),
+    name="dispatch",
+)
+class OffboardingPipelineContentShell(TemplateView):
+    """
+    Shell rendered for a single offboarding's pipeline tab - shows the
+    offboarding-level actions (previously the tab bar's own kebab) above
+    an htmx-loaded embed of the existing list/kanban content.
+    """
+
+    template_name = "cbv/exit_process/offboarding_pipeline_shell.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        offboarding = get_object_or_404(Offboarding, pk=self.kwargs.get("pk"))
+        view_type = self.request.GET.get("view", "list")
+        content_url = reverse(
+            "get-offboarding-stage", kwargs={"offboarding_id": offboarding.pk}
+        )
+        if view_type != "list":
+            content_url = reverse(
+                "get-offboarding-kanban-stage", kwargs={"pk": offboarding.pk}
+            )
+        extra_params = self.request.GET.copy()
+        extra_params.pop("view", None)
+        if extra_params:
+            content_url = f"{content_url}?{extra_params.urlencode()}"
+        context["actions"] = offboarding_pipeline_actions(self.request, offboarding)
+        context["content_url"] = content_url
         return context
 
 

@@ -1,0 +1,108 @@
+{% load static i18n offboarding_filter %}
+<div class="flex items-center gap-2 flex-wrap">
+    {% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or perms.offboarding.change_offboardingemployee %}
+        <button
+            type="button"
+            hx-get="{% url 'send-mail-employee' instance.employee_id.id %}"
+            title="{% trans 'Send Mail' %}"
+            hx-target="#mail-content"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            data-toggle="oh-modal-toggle"
+            data-target="#sendMailModal"
+        >
+            <ion-icon name="mail-open-outline"></ion-icon>
+            {% trans "Send Mail" %}
+        </button>
+        <button
+            type="button"
+            title="{% trans 'Notes' %}"
+            class="oh-btn oh-btn--light-bkg oh-activity-sidebar__open px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            data-target="#genericSidebar"
+            hx-get="{% url 'view-offboarding-note' instance.id %}"
+            hx-target="#genericOffCanvas"
+            onclick="$('#genericSidebar').addClass('oh-activity-sidebar--show')"
+        >
+            <ion-icon name="newspaper-outline"></ion-icon>
+            {% trans "Notes" %}
+        </button>
+        {% if instance.stage_id.type == "archived" %}
+            <a
+                type="button"
+                hx-get="{% url 'employee-archive' instance.employee_id.id %}"
+                hx-target="#objectDetailsModalTarget"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectDetailsModal"
+                title="{% if not instance.employee_id.is_active %}{% trans 'Un Archive' %}{% else %}{% trans 'Archive' %}{% endif %}"
+                class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            >
+                <ion-icon name="archive"></ion-icon>
+                {% if not instance.employee_id.is_active %}{% trans "Un Archive" %}{% else %}{% trans "Archive" %}{% endif %}
+            </a>
+        {% else %}
+            <a
+                type="button"
+                hx-get="{% url 'add-employee' instance.id %}?stage_id={{instance.stage_id.id}}"
+                hx-target="#objectDetailsModalTarget"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectDetailsModal"
+                title="{% trans 'Edit' %}"
+                class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            >
+                <ion-icon name="create-outline"></ion-icon>
+                {% trans "Edit" %}
+            </a>
+        {% endif %}
+        {% if instance.employee_id and instance.employee_id.get_archive_condition %}
+            <a
+                type="button"
+                title="{% trans 'Show managing records' %}"
+                hx-get="{% url 'get-manager-in' %}?employee_id={{instance.employee_id.id}}&offboarding=True"
+                hx-target="#objectDetailsModalTarget"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectDetailsModal"
+                class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            >
+                <ion-icon name="people-outline"></ion-icon>
+                {% trans "Show managing records" %}
+            </a>
+        {% else %}
+            <button
+                type="button"
+                title="{% trans 'Show managing records' %}"
+                class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300 opacity-40 cursor-not-allowed"
+                disabled
+                onclick="return false;"
+            >
+                <ion-icon name="people-outline"></ion-icon>
+                {% trans "Show managing records" %}
+            </button>
+        {% endif %}
+        {% if perms.offboarding.delete_offboardingemployee %}
+            <a
+                type="button"
+                hx-confirm="{% trans 'Do you want to delete this offboarding user?' %}"
+                hx-post="{% url 'delete-offboarding-employee' %}?employee_ids={{instance.id}}"
+                hx-swap="none"
+                hx-on-htmx-after-request="$(`#offboardingStageContainer{{instance.stage_id.pk}}`).find('.reload-record').click()"
+                title="{% trans 'Delete' %}"
+                class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            >
+                <ion-icon name="trash-outline"></ion-icon>
+                {% trans "Delete" %}
+            </a>
+        {% endif %}
+    {% else %}
+        <button
+            type="button"
+            title="{% trans 'Notes' %}"
+            class="oh-btn oh-btn--light-bkg oh-activity-sidebar__open px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            data-target="#genericSidebar"
+            hx-get="{% url 'view-offboarding-note' instance.id %}"
+            hx-target="#genericOffCanvas"
+            onclick="$('#genericSidebar').addClass('oh-activity-sidebar--show')"
+        >
+            <ion-icon name="newspaper-outline"></ion-icon>
+            {% trans "Notes" %}
+        </button>
+    {% endif %}
+</div>
