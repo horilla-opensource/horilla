@@ -97,46 +97,8 @@
                                 {% if tab.badge|default:0 > 999 %}999+{% else %}{{ tab.badge|default:0 }}{% endif %}
                             </span>
 
-                            {{ tab.title }} {% if tab.actions %}
-                                <span
-                                    class="ps-3 cursor-pointer w-[20px]"
-                                    onclick="actionClick(event)"
-                                    title="{% trans 'Actions' %}"
-                                >
-                                    <i class="fa-solid fa-ellipsis-vertical text-black mr-1"></i>
-                                </span>
-                            {% endif %}
+                            {{ tab.title }}
                         </button>
-
-                        {% if tab.actions %}
-                            <div class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200">
-                                <ul class="text-xs">
-                                    {% for action in tab.actions %}
-                                        {% if instance %}
-                                            {% if action.accessibility|accessibility:instance %}
-                                                <li>
-                                                    <a
-                                                        {{ action.attrs|safe }}
-                                                        class="block w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300 cursor-pointer"
-                                                    >
-                                                        {{ action.action }}
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                        {% else %}
-                                            <li>
-                                                <a
-                                                    {{ action.attrs|safe }}
-                                                    class="block w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300 cursor-pointer"
-                                                >
-                                                    {{ action.action }}
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        {% endif %}
                     </div>
                 {% endfor %}
             </div>
@@ -296,55 +258,5 @@
     	}
 
     	triggerInitialTabLoad();
-    });
-
-    function actionClick(event) {
-    	event.stopPropagation(); // Prevents closing when clicking inside
-    	const icon = event.currentTarget;
-    	const wrapper = $(icon).closest(".dropdown-wrapper-tab");
-    	const dropdownMenu = wrapper.find(".dropdown-menu");
-
-    	// Close all other dropdowns
-    	$(".dropdown-menu").not(dropdownMenu).addClass("hidden");
-
-    	// Always (re-)open this icon's own menu rather than toggling it shut —
-    	// closing is handled exclusively by the outside-click listener below.
-    	// A toggle here would close the menu right back if this handler ever
-    	// ran twice for what looks like one click (observed as the menu
-    	// opening and instantly closing again).
-    	const rect = wrapper[0].getBoundingClientRect();
-    	dropdownMenu.css({
-    		// The tab bar (.oh-tabs__tab-scroll) needs overflow-y: hidden so
-    		// its horizontal scrollbar doesn't grow a vertical one too, but
-    		// that same rule clips any absolutely-positioned dropdown that
-    		// opens below it. Escape the clip with viewport-fixed
-    		// positioning, anchored to the toggle icon's current location.
-    		position: "fixed",
-    		top: rect.bottom + "px",
-    		left: "auto",
-    		right: (window.innerWidth - rect.right) + "px",
-    	});
-    	dropdownMenu.removeClass("hidden");
-    }
-
-    document.addEventListener("click", function (e) {
-    	// Ignore synthetic clicks — triggerInitialTabLoad() above fires a
-    	// script-generated `.click()` on the preferred tab shortly after
-    	// page load to lazy-load its content (isTrusted: false). If a user's
-    	// first real click just opened a *different* tab's dropdown before
-    	// that delayed auto-click lands, treating it as a genuine outside
-    	// click here would immediately close the menu the user just opened.
-    	if (!e.isTrusted) {
-    		return;
-    	}
-
-    	const $clickedWrapper = $(e.target).closest(".dropdown-wrapper-tab");
-
-    	$(".dropdown-wrapper-tab").each(function () {
-    		const $wrapper = $(this);
-    		if (!$wrapper.is($clickedWrapper)) {
-    			$wrapper.find(".dropdown-menu").addClass("hidden");
-    		}
-    	});
     });
 </script>
