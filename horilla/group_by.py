@@ -6,6 +6,17 @@ from django.db.models.fields.related_descriptors import ForwardManyToOneDescript
 from horilla.horilla_middlewares import _thread_locals
 
 
+def _get_field_val(obj, field_path):
+    curr = obj
+    for p in field_path.split("__"):
+        if curr is None:
+            return None
+        curr = getattr(curr, p, None)
+    if curr is None:
+        return None
+    return getattr(curr, "pk", curr)
+
+
 def record_queryset_paginator(request, queryset, page_name, records_per_page=10):
     """
     Returns paginated results with safe ordering.
@@ -66,12 +77,12 @@ def generate_groups(
         if not grouper_ids:
             return groups
 
-        # Preserve select_related / prefetch_related from the parent queryset.
         rows = list(queryset.filter(**{f"{group_field}__in": grouper_ids}))
         grouped = defaultdict(list)
-        fk_attname = queryset.model._meta.get_field(group_field).attname
         for row in rows:
-            grouped[getattr(row, fk_attname)].append(row)
+            val = _get_field_val(row, group_field)
+            if val is not None:
+                grouped[val].append(row)
 
         for grouper in groupers:
             group_rows = grouped.get(grouper.id, [])
