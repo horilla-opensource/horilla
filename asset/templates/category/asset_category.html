@@ -141,61 +141,63 @@
                 </div>
             {% endfor %}
 
-            <!-- pagination start -->
-            <div class="oh-pagination">
-                <span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal"></span>
-                <nav class="oh-pagination__nav">
-                    <div class="oh-pagination__input-container me-3">
-                        <span class="oh-pagination__label me-1">{% trans "Page" %} </span>
-                        <input
-                            type="number"
-                            name="page"
-                            class="oh-pagination__input"
-                            value="{{asset_categories.number }}"
-                            min="1"
-                            hx-get="{% url 'asset-category-view-search-filter' %}"
-                            hx-target="#assetCategoryList"
-                        >
-                        <span class="oh-pagination__label">{% trans "of" %}
-                            {{ asset_categories.paginator.num_pages }}</span>
-                    </div>
-                    <ul class="oh-pagination__items">
-                        {% if asset_categories.has_previous %}
-                            <li class="oh-pagination__item oh-pagination__item--wide">
-                                <a
-                                    hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page=1"
-                                    class="oh-pagination__link"
-                                    hx-target="#assetCategoryList"
-                                >{% trans "First" %}</a>
-                            </li>
-                            <li class="oh-pagination__item oh-pagination__item--wide">
-                                <a
-                                    hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page={{ asset_categories.previous_page_number }}"
-                                    class="oh-pagination__link"
-                                    hx-target="#assetCategoryList"
-                                >{% trans "Previous" %}</a>
-                            </li>
-                        {% endif %}
-                        {% if asset_categories.has_next %}
-                            <li class="oh-pagination__item oh-pagination__item--wide">
-                                <a
-                                    hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page={{ asset_categories.next_page_number}}"
-                                    class="btn btn-outline-secondary"
-                                    hx-target="#assetCategoryList"
-                                >{% trans "Next" %}</a>
-                            </li>
-                            <li class="oh-pagination__item oh-pagination__item--wide">
-                                <a
-                                    hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page={{ asset_categories.paginator.num_pages }}"
-                                    hx-target="#assetCategoryList"
-                                    class="oh-pagination__link"
-                                >{% trans "Last" %}</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
-            <!-- end of pagination -->
+            {% if asset_categories.paginator.num_pages > 1 %}
+                <!-- pagination start -->
+                <div class="oh-pagination">
+                    <span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal"></span>
+                    <nav class="oh-pagination__nav">
+                        <div class="oh-pagination__input-container me-3">
+                            <span class="oh-pagination__label me-1">{% trans "Page" %} </span>
+                            <input
+                                type="number"
+                                name="page"
+                                class="oh-pagination__input"
+                                value="{{asset_categories.number }}"
+                                min="1"
+                                hx-get="{% url 'asset-category-view-search-filter' %}"
+                                hx-target="#assetCategoryList"
+                            >
+                            <span class="oh-pagination__label">{% trans "of" %}
+                                {{ asset_categories.paginator.num_pages }}</span>
+                        </div>
+                        <ul class="oh-pagination__items">
+                            {% if asset_categories.has_previous %}
+                                <li class="oh-pagination__item oh-pagination__item--wide">
+                                    <a
+                                        hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page=1"
+                                        class="oh-pagination__link"
+                                        hx-target="#assetCategoryList"
+                                    >{% trans "First" %}</a>
+                                </li>
+                                <li class="oh-pagination__item oh-pagination__item--wide">
+                                    <a
+                                        hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page={{ asset_categories.previous_page_number }}"
+                                        class="oh-pagination__link"
+                                        hx-target="#assetCategoryList"
+                                    >{% trans "Previous" %}</a>
+                                </li>
+                            {% endif %}
+                            {% if asset_categories.has_next %}
+                                <li class="oh-pagination__item oh-pagination__item--wide">
+                                    <a
+                                        hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page={{ asset_categories.next_page_number}}"
+                                        class="btn btn-outline-secondary"
+                                        hx-target="#assetCategoryList"
+                                    >{% trans "Next" %}</a>
+                                </li>
+                                <li class="oh-pagination__item oh-pagination__item--wide">
+                                    <a
+                                        hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page={{ asset_categories.paginator.num_pages }}"
+                                        hx-target="#assetCategoryList"
+                                        class="oh-pagination__link"
+                                    >{% trans "Last" %}</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                <!-- end of pagination -->
+            {% endif %}
         </div>
     </div>
 </div>
