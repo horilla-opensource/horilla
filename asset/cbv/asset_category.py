@@ -21,7 +21,11 @@ from horilla_views.cbv_methods import (
     login_required,
     permission_required,
 )
-from horilla_views.generic.cbv.views import HorillaFormView, HorillaNavView
+from horilla_views.generic.cbv.views import (
+    HorillaFormView,
+    HorillaListView,
+    HorillaNavView,
+)
 from horilla_views.views import HorillaDeleteConfirmationView
 
 
@@ -211,20 +215,113 @@ class AssetReportFormView(HorillaFormView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required("asset.view_asset"), name="dispatch")
+class AssetCategoryListView(HorillaListView):
+    """
+    Grouped list view for assets on the Asset Category page.
+
+    Lists every Asset (unlike asset.cbv.asset.AssetListView, which is
+    hard-filtered to one category for the per-category HTMX refresh used by
+    the asset CRUD forms) so the standard HorillaListView group-by engine can
+    group it by category.
+    """
+
+    model = Asset
+    filter_class = AssetFilter
+    view_id = "asset-category-grouped-list"
+    columns = [
+        (_("Asset Name"), "asset_name_display"),
+        (_("Status"), "asset_status_col"),
+        "asset_tracking_id",
+        "asset_lot_number_id",
+    ]
+    show_filter_tags = True
+    bulk_select_option = True
+    quick_export = True
+    action_method = "action_column"
+    accordian_action = "cbv/asset_category/accordion_actions.html"
+    header_attrs = {
+        "asset_name": "style='width:200px !important;'",
+        "action": "style='width:130px !important;'",
+    }
+
+    row_status_indications = [
+        (
+            "yellow--dot",
+            _("Available"),
+            """
+            onclick="
+                $('#applyFilter').closest('form').find('[name=expired]').val('');
+                $('#applyFilter').closest('form').find('[name=asset_status]').val('Available');
+                $('#applyFilter').click();
+            "
+            """,
+        ),
+        (
+            "blue--dot",
+            _("In Use"),
+            """
+            onclick="
+                $('#applyFilter').closest('form').find('[name=expired]').val('');
+                $('#applyFilter').closest('form').find('[name=asset_status]').val('In use');
+                $('#applyFilter').click();
+            "
+            """,
+        ),
+        (
+            "gray--dot",
+            _("Not Available"),
+            """
+            onclick="
+                $('#applyFilter').closest('form').find('[name=expired]').val('');
+                $('#applyFilter').closest('form').find('[name=asset_status]').val('Not-Available');
+                $('#applyFilter').click();
+            "
+            """,
+        ),
+        (
+            "red--dot",
+            _("Expired"),
+            """
+            onclick="
+                $('#applyFilter').closest('form').find('[name=asset_status]').val('');
+                $('#applyFilter').closest('form').find('[name=expired]').val('true');
+                $('#applyFilter').click();
+            "
+            """,
+        ),
+    ]
+    row_status_class = "{row_status_class}"
+
+    row_attrs = """
+        hx-get='{asset_detail}?instance_ids={ordered_ids}'
+        hx-target="#genericModalBody"
+        data-target="#genericModal"
+        data-toggle="oh-modal-toggle"
+    """
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("asset.view_asset"), name="dispatch")
 class AssetCategoryNav(HorillaNavView):
     """
     nav bar for asset category
     """
 
-    nav_title = _("Asset Category")
+    nav_title = _("Asset")
     filter_body_template = "cbv/asset_category/filter.html"
     filter_instance = AssetFilter()
     filter_form_context_name = "form"
     search_swap_target = "#assetCategoryList"
+    group_by_fields = [
+        ("asset_category_id", _("Category")),
+        ("asset_status", _("Status")),
+        ("asset_lot_number_id", _("Batch Number")),
+    ]
+    default_group_by = "asset_category_id"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.search_url = reverse("asset-category-view-search-filter")
+        self.search_url = reverse("asset-category-list")
         self.actions = []
         if self.request.user.has_perm("asset.add_assetcategory"):
             self.create_attrs = f"""

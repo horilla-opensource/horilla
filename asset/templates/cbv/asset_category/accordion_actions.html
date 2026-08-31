@@ -1,0 +1,49 @@
+{% load i18n %}
+{% if saved_filters.field == "asset_category_id" %}
+    <ul class="text-xs">
+        {% if perms.asset.add_asset %}
+            <li>
+                <a
+                    class="block w-full text-left px-3 py-1.5 text-dark-600 hover:text-primary-600 transition duration-300"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{% url 'asset-creation' asset_category_id=group.grouper.id %}"
+                    hx-target="#genericModalBody"
+                >{% trans "Create" %}</a>
+            </li>
+        {% endif %}
+        {% if perms.asset.add_assetcategory %}
+            <li>
+                <a
+                    class="block w-full text-left px-3 py-1.5 text-dark-600 hover:text-primary-600 transition duration-300"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{% url 'asset-category-duplicate' obj_id=group.grouper.id %}"
+                    hx-target="#genericModalBody"
+                >{% trans "Duplicate" %}</a>
+            </li>
+        {% endif %}
+        {% if perms.asset.change_assetcategory %}
+            <li>
+                <a
+                    class="block w-full text-left px-3 py-1.5 text-dark-600 hover:text-primary-600 transition duration-300"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{% url 'asset-category-update' pk=group.grouper.id %}"
+                    hx-target="#genericModalBody"
+                >{% trans "Edit" %}</a>
+            </li>
+        {% endif %}
+        {% if perms.asset.delete_assetcategory %}
+            <li>
+                <a
+                    class="block w-full text-left px-3 py-1.5 text-danger hover:text-danger-dark transition duration-300"
+                    hx-get="{% url 'generic-delete-asset-category' %}?model=asset.AssetCategory&pk={{ group.grouper.id }}"
+                    hx-target="#deleteConfirmationBody"
+                    data-target="#deleteConfirmation"
+                    data-toggle="oh-modal-toggle"
+                >{% trans "Delete" %}</a>
+            </li>
+        {% endif %}
+    </ul>
+{% endif %}
