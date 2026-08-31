@@ -1,6 +1,7 @@
 {% load i18n static %}
-{% if perms.leave.change_leavetype and perms.leave.add_availableleave and perms.leave.delete_leavetype %}
-    {% if compensatory %}
+<div class="flex items-center gap-2 flex-wrap">
+{% if compensatory %}
+    {% if perms.leave.change_leavetype and perms.leave.add_availableleave %}
         <a
             href="{% url 'type-update' instance.id %}?compensatory=True"
             class="oh-btn oh-btn--light-bkg oh-btn--secondary w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
@@ -8,7 +9,21 @@
             <ion-icon name="create-outline"></ion-icon>
             {% trans 'Edit' %}
         </a>
-    {% else %}
+    {% endif %}
+{% else %}
+    {% if not instance.is_compensatory_leave %}
+        <a
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            hx-get="{% url 'assign-one' instance.id %}"
+            hx-target="#genericModalBody"
+            class="oh-btn oh-btn--light-bkg text-success w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+        >
+            <ion-icon name="checkmark-done-outline"></ion-icon>
+            {% trans 'Assign' %}
+        </a>
+    {% endif %}
+    {% if perms.leave.change_leavetype and perms.leave.add_availableleave %}
         <a
             href="{% url 'type-update' instance.id %}"
             class="oh-btn oh-btn--light-bkg oh-btn--secondary w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
@@ -16,27 +31,17 @@
             <ion-icon name="create-outline"></ion-icon>
             {% trans 'Edit' %}
         </a>
-        {% if not instance.is_compensatory_leave %}
-            <a
-                data-toggle="oh-modal-toggle"
-                data-target="#genericModal"
-                hx-get="{% url 'assign-one' instance.id %}"
-                hx-target="#genericModalBody"
-                class="oh-btn oh-btn--light-bkg text-success w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-            >
-                <ion-icon name="checkmark-done-outline"></ion-icon>
-                {% trans 'Assign' %}
-            </a>
-        {% endif %}
+    {% endif %}
+    {% if perms.leave.delete_leavetype and perms.leave.add_availableleave %}
         <a
-            href="{% url 'type-delete' instance.id %}"
             hx-confirm="{% trans 'Are you sure you want to delete this leave type?' %}"
-            hx-post="true"
+            hx-post="{% url 'type-delete' instance.id %}"
             hx-target="#listContainer"
-            class="oh-btn oh-btn--danger w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            class="w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
         >
             <ion-icon name="trash-outline"></ion-icon>
             {% trans 'Delete' %}
         </a>
     {% endif %}
 {% endif %}
+</div>

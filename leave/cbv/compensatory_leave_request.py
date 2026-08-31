@@ -11,6 +11,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from attendance.cbv.tab_shell import AttendanceTabContentShell
 from base.methods import filtersubordinates, is_reportingmanager
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
@@ -128,16 +129,20 @@ class CompensatoryListView(HorillaListView):
     row_status_class = "status-{status}"
 
 
-@method_decorator(login_required, name="dispatch")
-@method_decorator(is_compensatory_leave_enabled(), name="dispatch")
-class CompensatoryNavView(HorillaNavView):
+class _CompensatoryTabNavBase(HorillaNavView):
     """
-    nav bar
+    Shared Search/Filter/Create wiring for each Compensatory Leave tab's
+    own, independent Nav - only search_url/search_swap_target differ per
+    tab.
     """
+
+    nav_title = _("Compensatory Leave Requests")
+    filter_body_template = "cbv/compensatory_leave/compensatory_leave_filter.html"
+    filter_instance = CompensatoryLeaveRequestFilter()
+    filter_form_context_name = "form"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.search_url = reverse("compensatory-tab-view")
         self.create_attrs = f"""
              hx-get="{reverse_lazy("create-compensatory-leave")}"
              hx-target="#genericModalBody"
@@ -145,11 +150,43 @@ class CompensatoryNavView(HorillaNavView):
              data-toggle="oh-modal-toggle"
          """
 
-    nav_title = _("Compensatory Leave Requests")
-    filter_body_template = "cbv/compensatory_leave/compensatory_leave_filter.html"
-    filter_instance = CompensatoryLeaveRequestFilter()
-    filter_form_context_name = "form"
-    search_swap_target = "#listContainer"
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(is_compensatory_leave_enabled(), name="dispatch")
+class MyCompensatoryLeaveNav(_CompensatoryTabNavBase):
+    """
+    Independent Nav for the My Compensatory Leave Requests tab.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("my-compensatory-tab")
+        self.search_swap_target = "#myCompensatoryListContainer"
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(is_compensatory_leave_enabled(), name="dispatch")
+class CompensatoryLeaveNav(_CompensatoryTabNavBase):
+    """
+    Independent Nav for the Compensatory Leave Requests tab.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("compensatory-tab")
+        self.search_swap_target = "#compensatoryListContainer"
+
+
+class MyCompensatoryTabShell(AttendanceTabContentShell):
+    nav_url_name = "my-compensatory-nav"
+    container_id = "myCompensatoryListContainer"
+    tabs_root_id = "compensatory-tab-view"
+
+
+class CompensatoryTabShell(AttendanceTabContentShell):
+    nav_url_name = "compensatory-nav"
+    container_id = "compensatoryListContainer"
+    tabs_root_id = "compensatory-tab-view"
 
 
 def _compensatory_tab_badge_count(request, view_cls):
@@ -173,10 +210,11 @@ class CompensatoryLeaveTabView(HorillaTabView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        self.view_id = "compensatory-tab-view"
         self.tabs = [
             {
                 "title": _("My Compensatory Leave Requests"),
-                "url": f"{reverse('my-compensatory-tab')}",
+                "url": f"{reverse('my-compensatory-tab-shell')}",
             }
         ]
 
@@ -186,7 +224,7 @@ class CompensatoryLeaveTabView(HorillaTabView):
             self.tabs.append(
                 {
                     "title": _("Compensatory Leave Requests"),
-                    "url": f"{reverse('compensatory-tab')}",
+                    "url": f"{reverse('compensatory-tab-shell')}",
                 }
             )
 
@@ -244,7 +282,7 @@ class CompensatoryLeaveTab(CompensatoryListView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.search_url = reverse("compensatory-list")
+        self.search_url = reverse("compensatory-tab")
         self.option_method = None
 
     def get_queryset(self):

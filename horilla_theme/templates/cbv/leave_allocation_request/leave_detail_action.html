@@ -1,50 +1,6 @@
 {% load i18n static basefilters %}
 {% is_manager_of request.user instance as can_manage %}
 <div class="flex items-center gap-2 flex-wrap">
-    {% if perms.leave.change_leaveallocationrequest or can_manage %}
-        {% if instance.status == 'requested' %}
-            <a
-                href="{% url 'leave-allocation-request-approve' instance.id %}"
-                class="oh-btn oh-btn--success px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-                title="{% trans 'Approve' %}"
-            >
-                <ion-icon name="checkmark-outline"></ion-icon>
-                {% trans "Approve" %}
-            </a>
-        {% else %}
-            <button
-                class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-                title="{% trans 'Approve' %}"
-                disabled
-            >
-                <ion-icon name="checkmark-outline"></ion-icon>
-                {% trans "Approve" %}
-            </button>
-        {% endif %}
-        {% if instance.status == 'requested' or instance.status == 'approved' %}
-            <a
-                hx-get="{% url 'leave-allocation-request-reject' instance.id %}"
-                data-target="{% if dashboard == 'true' %}#bigModal{% else %}#rejectModal{% endif %}"
-                hx-target="{% if dashboard == 'true' %}#bigModalTarget{% else %}#rejectTarget{% endif %}"
-                class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-                data-toggle="oh-modal-toggle"
-                title="{% trans 'Reject' %}"
-            >
-                <ion-icon name="close-circle-outline"></ion-icon>
-                {% trans "Reject" %}
-            </a>
-        {% else %}
-            <button
-                class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-                title="{% trans 'Reject' %}"
-                disabled
-            >
-                <ion-icon name="close-circle-outline"></ion-icon>
-                {% trans "Reject" %}
-            </button>
-        {% endif %}
-    {% endif %}
-
     {% if perms.leave.change_leaveallocationrequest or request.user.employee_get == instance.employee_id or can_manage %}
         {% if instance.status == 'requested' %}
             <button
@@ -91,6 +47,50 @@
             >
                 <ion-icon name="trash-outline"></ion-icon>
                 {% trans "Delete" %}
+            </button>
+        {% endif %}
+    {% endif %}
+
+    {% if perms.leave.change_leaveallocationrequest or can_manage %}
+        {% if instance.status == 'requested' %}
+            <a
+                href="{% url 'leave-allocation-request-approve' instance.id %}"
+                class="oh-btn oh-btn--success px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                title="{% trans 'Approve' %}"
+            >
+                <ion-icon name="checkmark-outline"></ion-icon>
+                {% trans "Approve" %}
+            </a>
+        {% else %}
+            <button
+                class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                title="{% trans 'Approve' %}"
+                disabled
+            >
+                <ion-icon name="checkmark-outline"></ion-icon>
+                {% trans "Approve" %}
+            </button>
+        {% endif %}
+        {% if instance.status == 'requested' or instance.status == 'approved' %}
+            <a
+                hx-get="{% url 'leave-allocation-request-reject' instance.id %}"
+                data-target="{% if dashboard == 'true' %}#bigModal{% else %}#rejectModal{% endif %}"
+                hx-target="{% if dashboard == 'true' %}#bigModalTarget{% else %}#rejectTarget{% endif %}"
+                class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                data-toggle="oh-modal-toggle"
+                title="{% trans 'Reject' %}"
+            >
+                <ion-icon name="close-circle-outline"></ion-icon>
+                {% trans "Reject" %}
+            </a>
+        {% else %}
+            <button
+                class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                title="{% trans 'Reject' %}"
+                disabled
+            >
+                <ion-icon name="close-circle-outline"></ion-icon>
+                {% trans "Reject" %}
             </button>
         {% endif %}
     {% endif %}

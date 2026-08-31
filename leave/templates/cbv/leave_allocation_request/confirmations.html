@@ -1,30 +1,28 @@
 {% load i18n %}{% load basefilters %}
 {% is_manager_of request.user instance as can_manage %}
 {% if perms.leave.change_leaveallocationrequest or can_manage %}
-<div onclick="event.stopPropagation()">
-    <div class="oh-btn-group">
-        {% if instance.status == 'requested' %}
-            <a type="submit" href="{% url 'leave-allocation-request-approve' instance.id %}"
-                onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
-                title="{% trans 'Approve' %}" class="oh-btn oh-btn--success w-100">
-                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-            </a>
-        {% else %}
-            <a type="submit" href="#" title="{% trans 'Approve' %}" class="oh-btn oh-btn--success oh-btn--disabled w-100">
-                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-            </a>
-        {% endif %}
-        {% if instance.status == 'requested' or instance.status == 'approved' %}
-            <a type="submit" data-toggle="oh-modal-toggle" data-target="#rejectModal"
-                hx-get="{% url 'leave-allocation-request-reject' instance.id %}" hx-target="#rejectTarget"
-                title="{% trans 'Reject' %}" class="oh-btn oh-btn--danger w-100">
-                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-            </a>
-        {% else %}
-            <a type="submit" href="#" title="{% trans 'Reject' %}" class="oh-btn oh-btn--danger oh-btn--disabled w-100">
-                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-            </a>
-        {% endif %}
-    </div>
+<div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
+    {% if instance.status == 'requested' %}
+        <a type="submit" href="{% url 'leave-allocation-request-approve' instance.id %}"
+            onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
+            title="{% trans 'Approve' %}" class="oh-btn oh-btn--success oh-btn--sq-sm">
+            <ion-icon name="checkmark-outline"></ion-icon>
+        </a>
+    {% else %}
+        <a type="submit" href="#" title="{% trans 'Approve' %}" class="oh-btn oh-btn--success oh-btn--disabled oh-btn--sq-sm">
+            <ion-icon name="checkmark-outline"></ion-icon>
+        </a>
+    {% endif %}
+    {% if instance.status == 'requested' or instance.status == 'approved' %}
+        <a type="submit" data-toggle="oh-modal-toggle" data-target="#rejectModal"
+            hx-get="{% url 'leave-allocation-request-reject' instance.id %}" hx-target="#rejectTarget"
+            title="{% trans 'Reject' %}" class="oh-btn oh-btn--danger oh-btn--sq-sm">
+            <ion-icon name="close-circle-outline"></ion-icon>
+        </a>
+    {% else %}
+        <a type="submit" href="#" title="{% trans 'Reject' %}" class="oh-btn oh-btn--danger oh-btn--disabled oh-btn--sq-sm">
+            <ion-icon name="close-circle-outline"></ion-icon>
+        </a>
+    {% endif %}
 </div>
 {% endif %}

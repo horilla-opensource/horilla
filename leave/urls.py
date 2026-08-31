@@ -647,9 +647,24 @@ urlpatterns = [
         name="leave-allocation-requests-tab-view",
     ),
     path(
-        "nav-leave-allocation-request/",
-        leave_allocation_request.LeaveAllocationRequestNav.as_view(),
-        name="nav-leave-allocation-request",
+        "my-leave-allocation-nav/",
+        leave_allocation_request.MyLeaveAllocationNav.as_view(),
+        name="my-leave-allocation-nav",
+    ),
+    path(
+        "leave-allocation-requests-nav/",
+        leave_allocation_request.LeaveAllocationRequestsNav.as_view(),
+        name="leave-allocation-requests-nav",
+    ),
+    path(
+        "my-leave-allocation-tab-shell/",
+        leave_allocation_request.MyLeaveAllocationTabShell.as_view(),
+        name="my-leave-allocation-tab-shell",
+    ),
+    path(
+        "leave-allocation-requests-tab-shell/",
+        leave_allocation_request.LeaveAllocationRequestsTabShell.as_view(),
+        name="leave-allocation-requests-tab-shell",
     ),
     path(
         "detail-leave-allocation-request/<int:pk>/",
@@ -811,8 +826,13 @@ if apps.is_installed("attendance"):
             ),
             path(
                 "compensatory-nav/",
-                compensatory_leave_request.CompensatoryNavView.as_view(),
+                compensatory_leave_request.CompensatoryLeaveNav.as_view(),
                 name="compensatory-nav",
+            ),
+            path(
+                "my-compensatory-nav/",
+                compensatory_leave_request.MyCompensatoryLeaveNav.as_view(),
+                name="my-compensatory-nav",
             ),
             path(
                 "compensatory-tab-view/",
@@ -825,9 +845,19 @@ if apps.is_installed("attendance"):
                 name="my-compensatory-tab",
             ),
             path(
+                "my-compensatory-tab-shell/",
+                compensatory_leave_request.MyCompensatoryTabShell.as_view(),
+                name="my-compensatory-tab-shell",
+            ),
+            path(
                 "compensatory-tab/",
                 compensatory_leave_request.CompensatoryLeaveTab.as_view(),
                 name="compensatory-tab",
+            ),
+            path(
+                "compensatory-tab-shell/",
+                compensatory_leave_request.CompensatoryTabShell.as_view(),
+                name="compensatory-tab-shell",
             ),
             path(
                 "my-compensatory-detail-view/<int:pk>/",

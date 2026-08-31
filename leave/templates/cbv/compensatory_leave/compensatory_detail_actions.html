@@ -3,6 +3,52 @@
 
 {% if perms.leave.change_compensatoryleaverequest or can_manage %}
 <div class="flex items-center gap-2 flex-wrap">
+    {% if instance.status == 'requested' %}
+        <button
+            class="oh-btn oh-btn--light-bkg flex-1 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Edit' %}"
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            hx-get="{% url 'update-compensatory-leave' instance.id %}?instance_ids={{instance.ordered_ids}}"
+            hx-target="#genericModalBody"
+        >
+            <ion-icon name="create-outline"></ion-icon>
+            {% trans "Edit" %}
+        </button>
+    {% else %}
+        <button
+            class="oh-btn oh-btn--light-bkg flex-1 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Edit' %}"
+            disabled
+        >
+            <ion-icon name="create-outline"></ion-icon>
+            {% trans "Edit" %}
+        </button>
+    {% endif %}
+
+    {% if instance.status != 'approved' %}
+        <button
+            class="oh-btn oh-btn--danger flex-1 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            id="delete-link"
+            hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
+            hx-post="{% url 'delete-compensatory-leave' instance.id %}?instances_ids={{request.GET.instance_ids}}"
+            hx-target="#genericModalBody"
+            title="{% trans 'Delete' %}"
+        >
+            <ion-icon name="trash-outline"></ion-icon>
+            {% trans "Delete" %}
+        </button>
+    {% else %}
+        <button
+            class="oh-btn oh-btn--light-bkg flex-1 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Delete' %}"
+            disabled
+        >
+            <ion-icon name="trash-outline"></ion-icon>
+            {% trans "Delete" %}
+        </button>
+    {% endif %}
+
 	{% if instance.status == 'requested' %}
         <a
             type="submit"
@@ -49,52 +95,6 @@
             {% trans "Reject" %}
         </button>
 	{% endif %}
-
-    {% if instance.status == 'requested' %}
-        <button
-            class="oh-btn oh-btn--light-bkg flex-1 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-            title="{% trans 'Edit' %}"
-            data-toggle="oh-modal-toggle"
-            data-target="#genericModal"
-            hx-get="{% url 'update-compensatory-leave' instance.id %}?instance_ids={{instance.ordered_ids}}"
-            hx-target="#genericModalBody"
-        >
-            <ion-icon name="create-outline"></ion-icon>
-            {% trans "Edit" %}
-        </button>
-    {% else %}
-        <button
-            class="oh-btn oh-btn--light-bkg flex-1 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-            title="{% trans 'Edit' %}"
-            disabled
-        >
-            <ion-icon name="create-outline"></ion-icon>
-            {% trans "Edit" %}
-        </button>
-    {% endif %}
-
-    {% if instance.status != 'approved' %}
-        <button
-            class="oh-btn oh-btn--danger flex-1 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-            id="delete-link"
-            hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
-            hx-post="{% url 'delete-compensatory-leave' instance.id %}?instances_ids={{request.GET.instance_ids}}"
-            hx-target="#genericModalBody"
-            title="{% trans 'Delete' %}"
-        >
-            <ion-icon name="trash-outline"></ion-icon>
-            {% trans "Delete" %}
-        </button>
-    {% else %}
-        <button
-            class="oh-btn oh-btn--light-bkg flex-1 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-            title="{% trans 'Delete' %}"
-            disabled
-        >
-            <ion-icon name="trash-outline"></ion-icon>
-            {% trans "Delete" %}
-        </button>
-    {% endif %}
 </div>
 {% endif %}
 

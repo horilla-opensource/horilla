@@ -33,13 +33,15 @@
 </style>
 <meta name="csrf-token" content="{{ csrf_token }}">
 
-<div hx-get="{% url "compensatory-nav" %}" hx-trigger="load">
-</div>
-
 {% include "generic/components.html" %}
-<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
 
-<div class="oh-wrapper" id="listContainer">
+<div
+    class="oh-wrapper"
+    id="listContainer"
+    hx-get="{% url "compensatory-tab-view" %}"
+    hx-trigger="load"
+>
+    <div class="animated-background"></div>
 </div>
 
 

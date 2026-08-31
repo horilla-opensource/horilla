@@ -12,6 +12,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from attendance.cbv.tab_shell import AttendanceTabContentShell
 from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
 from employee.cbv.employee_profile import EmployeeProfileView
 from employee.models import Employee
@@ -86,6 +87,8 @@ class LeaveAllocationRequestList(HorillaListView):
             """
             onclick="
             $('#applyFilter').closest('form').find('[name=status]').val('rejected');
+            $('[name=approved]').val('unknown').change();
+            $('[name=requested]').val('unknown').change();
             $('#applyFilter').click();
             "
 
@@ -97,6 +100,8 @@ class LeaveAllocationRequestList(HorillaListView):
             """
             onclick="
             $('#applyFilter').closest('form').find('[name=status]').val('requested');
+            $('[name=rejected]').val('unknown').change();
+            $('[name=approved]').val('unknown').change();
             $('#applyFilter').click();
             "
 
@@ -108,6 +113,8 @@ class LeaveAllocationRequestList(HorillaListView):
             """
             onclick="
             $('#applyFilter').closest('form').find('[name=status]').val('approved');
+            $('[name=rejected]').val('unknown').change();
+            $('[name=requested]').val('unknown').change();
             $('#applyFilter').click();
             "
 
@@ -116,7 +123,7 @@ class LeaveAllocationRequestList(HorillaListView):
     ]
 
     row_status_class = "status-{status}"
-    # Mirrors LeaveAllocationRequestNav.nested_group_by_fields -- needed
+    # Mirrors _LeaveAllocationTabNavBase.nested_group_by_fields -- needed
     # here too since this (List) and Nav are separate classes; see the
     # same split in employee/cbv/employees.py's EmployeesList/EmployeeNav.
     nested_group_by_fields = [
@@ -160,7 +167,7 @@ class LeaveAllocationRequestTab(HorillaTabView):
         self.tabs = [
             {
                 "title": _("My Leave allocation request"),
-                "url": f"{reverse('my-leave-allocation-request-tab')}",
+                "url": f"{reverse('my-leave-allocation-tab-shell')}",
             },
         ]
         if self.request.user.has_perm(
@@ -170,7 +177,7 @@ class LeaveAllocationRequestTab(HorillaTabView):
             self.tabs.append(
                 {
                     "title": _("Leave allocation requests"),
-                    "url": f"{reverse('leave-allocation-requests-tab-view')}",
+                    "url": f"{reverse('leave-allocation-requests-tab-shell')}",
                 },
             )
 
@@ -246,41 +253,17 @@ class LeaveAllocationRequests(LeaveAllocationRequestList):
                 """
 
 
-@method_decorator(login_required, name="dispatch")
-class LeaveAllocationRequestNav(HorillaNavView):
+class _LeaveAllocationTabNavBase(HorillaNavView):
     """
-    Nav bar
+    Shared Search/Filter/Create/Actions wiring for each Leave Allocation
+    Request tab's own, independent Nav - only search_url/search_swap_target
+    differ per tab.
     """
-
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.search_url = reverse("leave-allocation-request-filter")
-        self.create_attrs = f"""
-                            data-toggle="oh-modal-toggle"
-                            data-target="#objectCreateModal"
-                            hx-target="#objectCreateModalTarget"
-                            hx-get="{reverse_lazy('leave-allocation-request-create')}"
-                            """
-
-        if self.request.user.has_perm("leave.add_leaveallocationrequest"):
-            self.actions = [
-                {
-                    "action": _("Bulk Allocate Leave"),
-                    "attrs": f"""
-                            data-toggle="oh-modal-toggle"
-                            data-target="#genericModal"
-                            hx-target="#genericModalBody"
-                            hx-get="{reverse_lazy('leave-allocation-request-bulk-create')}"
-                            style="cursor: pointer;"
-                        """,
-                },
-            ]
 
     nav_title = _("Leave Allocation Requests")
     filter_instance = LeaveAllocationRequestFilter()
     filter_body_template = "cbv/leave_allocation_request/filter.html"
     filter_form_context_name = "form"
-    search_swap_target = "#listContainer"
 
     group_by_fields = [
         ("employee_id", _("Employee")),
@@ -306,23 +289,66 @@ class LeaveAllocationRequestNav(HorillaNavView):
     # by" breadcrumb (nested_group_by_table.html, rendered by the List
     # view) need this here too, not just the currently-active fields it
     # already had access to via nested_fields_active.
-    nested_group_by_fields = [
-        ("employee_id", _("Employee")),
-        ("leave_type_id", _("Leave Type")),
-        ("status", _("Status")),
-        ("requested_days", _("Requested Days")),
-        (
-            "employee_id__employee_work_info__reporting_manager_id",
-            _("Reporting Manager"),
-        ),
-        ("employee_id__employee_work_info__department_id", _("Department")),
-        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
-        (
-            "employee_id__employee_work_info__employee_type_id",
-            _("Employment Type"),
-        ),
-        ("employee_id__employee_work_info__company_id", _("Company")),
-    ]
+    nested_group_by_fields = group_by_fields
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.create_attrs = f"""
+                            data-toggle="oh-modal-toggle"
+                            data-target="#objectCreateModal"
+                            hx-target="#objectCreateModalTarget"
+                            hx-get="{reverse_lazy('leave-allocation-request-create')}"
+                            """
+
+        if self.request.user.has_perm("leave.add_leaveallocationrequest"):
+            self.actions = [
+                {
+                    "action": _("Bulk Allocate Leave"),
+                    "attrs": f"""
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModal"
+                            hx-target="#genericModalBody"
+                            hx-get="{reverse_lazy('leave-allocation-request-bulk-create')}"
+                            style="cursor: pointer;"
+                        """,
+                },
+            ]
+
+
+@method_decorator(login_required, name="dispatch")
+class MyLeaveAllocationNav(_LeaveAllocationTabNavBase):
+    """
+    Independent Nav for the My Leave Allocation Request tab.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("my-leave-allocation-request-tab")
+        self.search_swap_target = "#myLeaveAllocationListContainer"
+
+
+@method_decorator(login_required, name="dispatch")
+class LeaveAllocationRequestsNav(_LeaveAllocationTabNavBase):
+    """
+    Independent Nav for the Leave Allocation Requests tab.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("leave-allocation-requests-tab-view")
+        self.search_swap_target = "#allLeaveAllocationListContainer"
+
+
+class MyLeaveAllocationTabShell(AttendanceTabContentShell):
+    nav_url_name = "my-leave-allocation-nav"
+    container_id = "myLeaveAllocationListContainer"
+    tabs_root_id = "leave-allocation"
+
+
+class LeaveAllocationRequestsTabShell(AttendanceTabContentShell):
+    nav_url_name = "leave-allocation-requests-nav"
+    container_id = "allLeaveAllocationListContainer"
+    tabs_root_id = "leave-allocation"
 
 
 @method_decorator(login_required, name="dispatch")
