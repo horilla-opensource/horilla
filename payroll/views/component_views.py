@@ -1886,7 +1886,7 @@ def edit_installment_amount(request):
         value = loan.loan_amount - total_sum
         new_installment = 0
 
-    if not deduction.installment_payslip():
+    if not deduction.installment_payslip:
         deduction.amount = value
         deduction.save()
 
