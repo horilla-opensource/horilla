@@ -174,6 +174,12 @@ class HorillaListView(ListView):
     """
     actions: list = []
 
+    # Group-by accordion support: path to a template rendered behind a
+    # three-dot menu in each accordion header (generic/group_by_table.html).
+    # `group` is in scope, so the template can build group-scoped actions.
+    # Leave unset ("") to keep the accordion header as-is.
+    accordian_action: str = ""
+
     option_method: str = ""
     options: list = []
     row_attrs: str = """"""
@@ -316,6 +322,7 @@ class HorillaListView(ListView):
 
         context["action_method"] = self.action_method
         context["actions"] = self.actions
+        context["accordian_action"] = self.accordian_action
 
         context["option_method"] = self.option_method
         context["options"] = self.options
@@ -550,7 +557,13 @@ class HorillaListView(ListView):
                 context["nested_fields_active"] = HorillaNavView._resolve_field_labels(
                     nested_fields, self.model, self.model()._meta.get_field
                 )
-                context["nested_group_by_fields"] = self.nested_group_by_fields
+                context["nested_group_by_fields"] = (
+                    HorillaNavView._resolve_field_labels(
+                        self.nested_group_by_fields,
+                        self.model,
+                        self.model()._meta.get_field,
+                    )
+                )
             except Exception:
                 self.template_name = "generic/horilla_list_table.html"
                 context["queryset"] = paginator_qry(
@@ -2491,7 +2504,7 @@ class HorillaNavView(TemplateView):
             self.request.GET.getlist("nested_fields") if self.request else []
         )
         if not nested_selected:
-            nested_selected = [""]
+            nested_selected = [self.default_group_by] if self.default_group_by else [""]
         context["nested_fields_selected"] = nested_selected
         context["actions"] = self.actions
         context["filter_body_template"] = self.filter_body_template

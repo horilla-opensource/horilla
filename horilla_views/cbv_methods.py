@@ -386,11 +386,31 @@ def saved_filter_path_query(request):
     submits a "nav_url" field (the nav view's own, mode-independent path) -
     match on that too, in addition to the exact path, so a saved filter
     shows up regardless of which view mode it was saved from.
+
+    Tabs (HorillaTabView) and the List/Card/Kanban switch links also
+    propagate a "referrer" query param, meant to let a filter saved from one
+    tab/mode of a page show up on its sibling tabs/modes, which live at yet
+    other paths. An empty referrer isn't a real identifier though - most
+    saved filters are created with no referrer at all - so matching on ""
+    would pull in every such filter from every unrelated view a user
+    happens to visit. Only match a non-empty referrer, and additionally
+    require the saved filter's own path to share the current view's
+    top-level app segment, so two unrelated apps that happen to share an
+    entry point (e.g. both reached from the dashboard) can never leak into
+    each other.
     """
     path_query = models.Q(path=request.path)
     nav_url = request.GET.get("nav_url")
     if nav_url:
         path_query |= models.Q(path=nav_url)
+
+    referrer = request.GET.get("referrer", "")
+    if referrer:
+        referrer = "/" + "/".join(referrer.split("/")[3:])
+    if referrer:
+        app_prefix = "/" + request.path.strip("/").split("/")[0] + "/"
+        path_query |= models.Q(referrer=referrer, path__startswith=app_prefix)
+
     return path_query
 
 
