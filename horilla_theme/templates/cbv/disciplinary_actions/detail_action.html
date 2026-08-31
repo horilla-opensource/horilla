@@ -1,6 +1,6 @@
 {% load basefilters i18n static %}
 
-{% if perms.employee.change_disciplinaryaction or perms.employee.delete_disciplinaryaction %}
+{% if perms.employee.change_disciplinaryaction or perms.employee.delete_disciplinaryaction or perms.employee.add_disciplinaryaction %}
     {% if perms.employee.change_disciplinaryaction %}
         <a
             hx-get="{% url 'update-actions' instance.id %}"
@@ -12,6 +12,20 @@
         >
             <ion-icon name="create-outline"></ion-icon>
             {% trans "Edit" %}
+        </a>
+    {% endif %}
+
+    {% if perms.employee.add_disciplinaryaction %}
+        <a
+            hx-get="{% url 'duplicate-disciplinary-actions' instance.id %}?{{pg}}"
+            hx-target="#genericModalBody"
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            class="oh-btn oh-btn--light-bkg w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Duplicate' %}"
+        >
+            <ion-icon name="copy-outline"></ion-icon>
+            {% trans "Duplicate" %}
         </a>
     {% endif %}
 
