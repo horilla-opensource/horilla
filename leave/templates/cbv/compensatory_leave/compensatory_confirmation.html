@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load basefilters %}
 {% is_manager_of request.user instance as can_manage %}
-{% if perms.leave.change_leaveallocationrequest or can_manage %}
+{% if perms.leave.change_compensatoryleaverequest or can_manage %}
     <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation();">
         {% if instance.status == 'requested' %}
             <a type="submit"
