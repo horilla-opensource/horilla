@@ -455,6 +455,7 @@ class RosterEmployeeBulkPublishView(View):
             grid_params += f"&department={dept_id}"
         return HttpResponse(
             "<script>"
+            "$('#rosterEmployeeInstances').attr('data-ids', JSON.stringify([]));"
             f"htmx.ajax('GET', '{reverse('roster-grid')}?{grid_params}', "
             "{'target':'#rosterGridContainer','swap':'innerHTML'});"
             "$('#reloadMessagesButton').click();</script>"

@@ -23,23 +23,11 @@
 {% else %}
     {% now "Y-m-d" as today_str %}
 
-    <div class="flex justify-between items-center mb-2">
-        <div class="flex flex-wrap gap-1 items-center">
-            <button
-                class="quick-bulk-action px-4 py-2 bg-primary-600 text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
-                onclick="addToSelectedId({{ select_all_ids|safe }}, '{{ selected_instances_key_id }}');
-              selectSelected('#{{ view_id }}', '{{ selected_instances_key_id }}');
-              reloadSelectedCount($('#count_{{ view_id }}'), '{{ selected_instances_key_id }}');
-              reloadSelectedCount($('.count_{{ view_id }}'), '{{ selected_instances_key_id }}');
-              rosterUpdatePublishBtn()"
-            >
-                <span class="label">{% trans "Select" %}</span>
-                ({{ queryset.paginator.count }})
-            </button>
-
+    <div class="flex flex-wrap justify-between items-center gap-2 mb-2 ml-2 mr-2">
+        <div class="flex flex-nowrap gap-1 items-center flex-shrink-0">
             <button
                 id="unselect_{{ view_id }}"
-                class="d-none quick-bulk-action px-4 py-2 bg-[#720c80] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
+                class="d-none quick-bulk-action px-4 py-2 bg-transparent border border-primary-600 text-primary-600 rounded-md text-xs hover:bg-primary-600 hover:text-white transition duration-300"
                 onclick="$('#{{ selected_instances_key_id }}').attr('data-ids', JSON.stringify([]));
               selectSelected('#{{ view_id }}', '{{ selected_instances_key_id }}');
               reloadSelectedCount($('#count_{{ view_id }}'), '{{ selected_instances_key_id }}');
@@ -55,8 +43,20 @@
             </button>
 
             <button
+                class="quick-bulk-action px-4 py-2 bg-transparent border border-primary-600 text-primary-600 rounded-md text-xs hover:bg-primary-600 hover:text-white transition duration-300"
+                onclick="addToSelectedId({{ select_all_ids|safe }}, '{{ selected_instances_key_id }}');
+              selectSelected('#{{ view_id }}', '{{ selected_instances_key_id }}');
+              reloadSelectedCount($('#count_{{ view_id }}'), '{{ selected_instances_key_id }}');
+              reloadSelectedCount($('.count_{{ view_id }}'), '{{ selected_instances_key_id }}');
+              rosterUpdatePublishBtn()"
+            >
+                <span class="label">{% trans "Select" %}</span>
+                ({{ queryset.paginator.count }})
+            </button>
+
+            <button
                 id="rosterPublishBtn"
-                class="d-none quick-bulk-action px-4 py-2 bg-[#0f800f] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
+                class="d-none quick-bulk-action px-4 py-2 bg-transparent border border-success text-success rounded-md text-xs hover:bg-success hover:text-white transition duration-300"
                 onclick="rosterToggleDateForm()"
             >
                 <div class="flex items-center gap-1">
@@ -65,6 +65,69 @@
                     (<span class="count_{{ view_id }}">0</span>)
                 </div>
             </button>
+        </div>
+
+        <div class="flex flex-nowrap items-center gap-2 ml-auto flex-shrink-0 self-center">
+            {% if paginated_employees.has_previous or paginated_employees.has_next %}
+                <div class="hlv-pagination inline-flex items-center h-8 gap-0.5 bg-white border border-[#e6e6e6] rounded-md px-1 flex-shrink-0">
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if paginated_employees.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if paginated_employees.has_previous %}
+                        hx-target="#rosterGridContainer"
+                        hx-get="{% url 'roster-grid' %}?{{ roster_filter_params }}&page=1"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angles-left"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if paginated_employees.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if paginated_employees.has_previous %}
+                        hx-target="#rosterGridContainer"
+                        hx-get="{% url 'roster-grid' %}?{{ roster_filter_params }}&page={{ paginated_employees.previous_page_number }}"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angle-left"></i>
+                    </button>
+                    <div class="flex items-center gap-1 px-1 h-7 text-xs text-[#666] leading-none">
+                        <input
+                            type="number"
+                            name="page"
+                            min="1"
+                            max="{{ paginated_employees.paginator.num_pages }}"
+                            value="{{ paginated_employees.number }}"
+                            title="{% trans 'Enter a page number and press Enter' %}"
+                            class="w-9 h-6 m-0 py-0 px-1 text-center text-xs leading-6 border border-[#e6e6e6] rounded outline-none focus:border-primary-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                            hx-target="#rosterGridContainer"
+                            hx-get="{% url 'roster-grid' %}?{{ roster_filter_params }}"
+                            hx-trigger="keyup[keyCode==13] changed, blur changed"
+                            onclick="this.select()"
+                        >
+                        <span class="inline-flex items-center h-6 leading-none whitespace-nowrap">/ {{ paginated_employees.paginator.num_pages }}</span>
+                    </div>
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if paginated_employees.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if paginated_employees.has_next %}
+                        hx-target="#rosterGridContainer"
+                        hx-get="{% url 'roster-grid' %}?{{ roster_filter_params }}&page={{ paginated_employees.next_page_number }}"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if paginated_employees.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if paginated_employees.has_next %}
+                        hx-target="#rosterGridContainer"
+                        hx-get="{% url 'roster-grid' %}?{{ roster_filter_params }}&page={{ paginated_employees.paginator.num_pages }}"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angles-right"></i>
+                    </button>
+                </div>
+            {% endif %}
         </div>
     </div>
 
@@ -87,6 +150,7 @@
                 hx-post="{% url 'roster-employees-publish' %}"
                 hx-target="#rosterBulkResponse"
                 hx-swap="innerHTML"
+                hx-disabled-elt="find button[type='submit']"
             >
                 {% csrf_token %}
                 <div id="rosterBulkEmpIds"></div>
@@ -133,19 +197,13 @@
     </div>
     <div id="rosterBulkResponse"></div>
 
-    <div id="{{ view_id }}" class="bg-white p-0 rounded-md shadow-card relative">
-        <div class="max-h-[calc(100vh_-_380px)] overflow-hidden overflow-y-auto overflow-x-auto">
-            <table
-                class="border-collapse w-full"
-                style="table-layout: auto; border-spacing: 0"
-            >
-                <thead>
-                    <tr>
-                        <th
-                            class="sticky top-0 left-0 z-[5] text-left px-4 py-3 text-[11px] font-bold uppercase tracking-[.4px] text-[#4a5173] bg-[#f0f2f8] border-b-2 border-r border-[#d6dae8] whitespace-nowrap"
-                            style="min-width: 200px"
-                        >
-                            <div class="flex items-center gap-2">
+    <div id="{{ view_id }}" class="bg-white p-2 rounded-md shadow-card relative">
+        <div class="max-h-[calc(100vh_-_260px)] overflow-hidden overflow-y-auto overflow-x-auto">
+            <table class="fixed-table w-full border-separate">
+                <thead class="sticky top-0 bg-[white] z-[1]">
+                    <tr class="border-b border-[#ececec]">
+                        <th class="text-sm font-medium text-left p-1.5 w-[30px] stickyleft">
+                            <div class="flex items-center justify-center">
                                 <input
                                     type="checkbox"
                                     class="bulk-list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
@@ -156,29 +214,25 @@
 										.prop('checked', $(this).is(':checked'))
 										.change()"
                                 >
-                                {% trans "Employee" %}
                             </div>
                         </th>
-                        <th
-                            class="sticky top-0 z-[5] text-left px-3 py-3 text-[11px] font-bold uppercase tracking-[.4px] text-[#4a5173] bg-[#f0f2f8] border-b-2 border-r border-[#d6dae8] whitespace-nowrap"
-                            style="left: 200px; min-width: 130px"
-                        >
+                        <th class="text-sm font-medium text-left p-1.5 stickyleft-second" style="width: 200px; left: 34px">
+                            {% trans "Employee" %}
+                        </th>
+                        <th class="text-sm font-medium text-left p-1.5" style="width: 130px">
                             {% trans "Department" %}
                         </th>
                         {% for d in date_range %}
                             {% with d_str=d|date:"Y-m-d" %}
-                                <th
-                                    class="sticky top-0 z-[3] text-center px-1 py-2 text-[11px] font-bold uppercase tracking-[.4px] border-b-2 border-[#d6dae8] whitespace-nowrap bg-[#f0f2f8] text-[#4a5173]"
-                                    style="min-width: 80px; width: 80px"
-                                >
+                                <th class="text-sm font-medium text-center px-1 py-0.5 whitespace-nowrap" style="min-width: 80px">
                                     {% if d_str == today_str %}
-                                        <div class="inline-flex flex-col items-center bg-[#5c6bc0] rounded-lg px-2 py-1">
-                                            <span class="text-[12px] font-bold text-white">{{ d|date:"D" }}</span>
-                                            <span class="text-[11px] text-white/80">{{ d|date:"d M" }}</span>
+                                        <div class="inline-flex flex-col items-center bg-primary-600 rounded-lg px-2 py-0.5">
+                                            <span class="text-xs font-medium text-white leading-tight">{{ d|date:"D" }}</span>
+                                            <span class="text-xs text-white/80 leading-tight">{{ d|date:"d M" }}</span>
                                         </div>
                                     {% else %}
-                                        <span class="block text-[12px] font-bold">{{ d|date:"D" }}</span>
-                                        <span class="block text-[11px] text-[#8b91b0]">{{ d|date:"d M" }}</span>
+                                        <span class="block text-xs font-medium leading-tight">{{ d|date:"D" }}</span>
+                                        <span class="block text-xs text-[#8b91b0] leading-tight">{{ d|date:"d M" }}</span>
                                     {% endif %}
                                 </th>
                             {% endwith %}
@@ -188,12 +242,9 @@
 
                 <tbody>
                     {% for row in rows %}
-                        <tr class="group transition-colors duration-150">
-                            <td
-                                class="sticky left-0 z-[2] px-3 py-2 border-b border-r border-[#eef0f6] group-hover:bg-[#f5f6fc] bg-white"
-                                style="min-width: 200px; width: 200px"
-                            >
-                                <div class="flex items-center gap-2">
+                        <tr>
+                            <td class="text-sm text-left px-1 py-1 text-[#666] rounded-lg h-[30px] stickyleft">
+                                <div class="flex items-center justify-center">
                                     <input
                                         type="checkbox"
                                         class="list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
@@ -210,32 +261,34 @@
 										rosterUpdatePublishBtn();
 									})"
                                     >
-                                    <div class="w-8 h-8">
+                                </div>
+                            </td>
+
+                            <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px] max-w-0 stickyleft-second" style="left: 34px">
+                                <div class="oh-profile oh-profile--md w-full justify-normal">
+                                    <div class="oh-profile__avatar mr-1" style="width:22px;height:22px;">
                                         <img
                                             src="{{ row.employee.get_avatar }}"
                                             alt=""
-                                            class="oh-profile__image oh-table-img avatar-thumb rounded-full object-cover shrink-0"
-                                            width="30"
-                                            height="30"
+                                            class="oh-profile__image oh-table-img avatar-thumb"
+                                            width="22"
+                                            height="22"
                                         >
                                     </div>
-                                    <span class="text-[13px] font-medium text-[#333] truncate">
+                                    <span class="truncate flex-1 min-w-0" title="{{ row.employee.get_full_name }}">
                                         {{ row.employee.get_full_name }}
                                     </span>
                                 </div>
                             </td>
 
-                            <td
-                                class="sticky z-[2] px-3 py-2 border-b border-r border-[#eef0f6] text-[11px] text-[#7b82a6] group-hover:bg-[#f5f6fc] bg-white"
-                                style="left: 200px; min-width: 130px; width: 130px"
-                            >
-                                {{ row.employee.employee_work_info.department_id.department|default:"—" }}
+                            <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px] max-w-0">
+                                <div class="truncate" title="{{ row.employee.employee_work_info.department_id.department|default:'—' }}">{{ row.employee.employee_work_info.department_id.department|default:"—" }}</div>
                             </td>
 
                             {% for d, entry in row.cells %}
                                 <td
-                                    class="text-center px-1 py-2 border-b border-[#eef0f6] cursor-pointer transition-colors duration-100 group-hover:bg-[#f5f6fc] dark:group-hover:bg-white/5 hover:!bg-[#eef0fb] dark:hover:!bg-white/10 {% if d.weekday >= 5 %}bg-[#f4f5fb] dark:bg-white/[0.03]{% endif %}"
-                                    style="min-width: 80px; width: 80px"
+                                    class="text-center px-1 py-1 h-[30px] cursor-pointer transition-colors duration-100 hover:!bg-[#eef0fb] dark:hover:!bg-white/10 {% if d.weekday >= 5 %}bg-[#f4f5fb] dark:bg-white/[0.03]{% endif %}"
+                                    style="min-width: 80px"
                                     hx-get="{% url 'roster-cell-form' %}?employee={{ row.employee.pk }}&date={{ d|date:'Y-m-d' }}&department={{ row.employee.employee_work_info.department_id.pk }}"
                                     hx-target="#genericModalBody"
                                     data-toggle="oh-modal-toggle"
@@ -275,49 +328,6 @@
                 </tbody>
             </table>
         </div>
-
-        {% if paginated_employees.has_previous or paginated_employees.has_next %}
-            <div class="flex justify-between items-center mt-4 px-3 pb-3 w-full">
-                <p class="text-xs text-[#666]">
-                    {% trans "Page" %}
-                    {{ paginated_employees.number }}
-                    {% trans "of" %}
-                    {{ paginated_employees.paginator.num_pages }}
-                </p>
-                <div class="flex gap-3 text-[#666] items-center">
-                    {% if paginated_employees.has_previous %}
-                        <button
-                            class="text-xs hover:text-primary-600 transition duration-300"
-                            hx-target="#rosterGridContainer"
-                            hx-get="{% url 'roster-grid' %}?{{ roster_filter_params }}&page={{ paginated_employees.previous_page_number }}"
-                        >
-                            <i class="fa-solid fa-arrow-left"></i>
-                        </button>
-                    {% endif %}
-                    <div>
-                        <input
-                            type="number"
-                            name="page"
-                            class="w-[30px]"
-                            value="{{ paginated_employees.number }}"
-                            hx-get="{% url 'roster-grid' %}?{{ roster_filter_params }}"
-                            hx-target="#rosterGridContainer"
-                            min="1"
-                        >
-                        / {{ paginated_employees.paginator.num_pages }}
-                    </div>
-                    {% if paginated_employees.has_next %}
-                        <button
-                            class="text-xs hover:text-primary-600 transition duration-300"
-                            hx-target="#rosterGridContainer"
-                            hx-get="{% url 'roster-grid' %}?{{ roster_filter_params }}&page={{ paginated_employees.next_page_number }}"
-                        >
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                    {% endif %}
-                </div>
-            </div>
-        {% endif %}
     </div>
 
     <script>

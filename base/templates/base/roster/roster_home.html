@@ -13,4 +13,40 @@
 <div class="oh-wrapper mt-3" id="rosterGridContainer">
 </div>
 
+<script>
+  // The grid partial's own bottom <script> re-syncs checkboxes and shows/hides
+  // the Unselect/Publish buttons based on the current selection whenever it's
+  // reloaded (e.g. after a publish). That reload races with an unrelated
+  // concurrent htmx request the same publish response fires
+  // ($('#reloadMessagesButton').click()) - htmx settles both together and
+  // something in that shared settle batch re-applies "d-none" to the
+  // Unselect/Publish buttons shortly after, even though the selection itself
+  // (data-ids, checkboxes) is never touched. The exact delay varies with
+  // server load/data size, so a fixed setTimeout safety net isn't reliable -
+  // instead, reactively re-enforce the correct state on every class mutation
+  // of these two buttons, for as long as the roster grid is on the page.
+  (function () {
+    var enforcing = false;
+    function enforce() {
+      if (enforcing || typeof rosterUpdatePublishBtn !== "function") return;
+      enforcing = true;
+      rosterUpdatePublishBtn();
+      enforcing = false;
+    }
+    var observer = new MutationObserver(enforce);
+    function attach() {
+      observer.disconnect();
+      ["unselect_rosterGrid", "rosterPublishBtn"].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) observer.observe(el, { attributes: true, attributeFilter: ["class"] });
+      });
+    }
+    document.body.addEventListener("htmx:afterSettle", function (evt) {
+      if (!evt.target || evt.target.id !== "rosterGridContainer") return;
+      attach();
+      enforce();
+    });
+  })();
+</script>
+
 {% endblock %}
