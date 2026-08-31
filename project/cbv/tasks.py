@@ -184,7 +184,6 @@ class TaskListView(HorillaListView):
     # aggregate would fan out one row per related employee, double-
     # counting tasks with more than one manager/member assigned.
     nested_group_by_fields = [
-        "title",
         "project",
         "stage",
         "status",
@@ -205,11 +204,10 @@ class TasksNavBar(HorillaNavView):
         "stage",
         "status",
     ]
-    default_group_by = "project"
+    default_group_by = "status"
 
     # Mirrors TaskListView.nested_group_by_fields
     nested_group_by_fields = [
-        "title",
         "project",
         "stage",
         "status",
