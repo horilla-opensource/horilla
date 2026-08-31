@@ -57,9 +57,13 @@
             rel="stylesheet"
             href="{% static 'horilla_theme/assets/css/global.css' %}"
         >
+        {% comment %} ?v= busts browser caches when this stylesheet changes
+           (same trick as tourController.js in footer_scripts.html) - bump it
+           on edits, since whitenoise serves unhashed filenames browsers
+           happily cache. {% endcomment %}
         <link
             rel="stylesheet"
-            href="{% static 'horilla_theme/assets/css/v1_styles.css' %}"
+            href="{% static 'horilla_theme/assets/css/v1_styles.css' %}?v=3"
         >
         <link rel="stylesheet" href="{% static 'build/css/pivottable.min.css' %}">
         {% with theme=theme_obj %}
@@ -154,7 +158,6 @@
                 /* Text color */
                 .oh-tabs__movable-header,
                 .sidebox ul li a:hover,
-                .breadcrumb li:last-child,
                 .breadcrumb li a:hover {
                     color: {{ theme.primary_600|default:"#E54F38" }};
                 }

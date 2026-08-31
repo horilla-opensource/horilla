@@ -1094,8 +1094,12 @@
           bumpGrace(200);
           var info = evt && evt.detail;
           if (!info || info._crumbsUpdated) return;
-          var etc = info.etc;
-          if (!etc || !etc.headers || etc.headers["HX-Sidebar-Nav"] !== "true") return;
+          var reqHeaders = info.requestConfig && info.requestConfig.headers;
+          if (
+            !reqHeaders ||
+            (reqHeaders["HX-Sidebar-Nav"] !== "true" && reqHeaders["HX-Push-Nav"] !== "true")
+          )
+            return;
           info._crumbsUpdated = true;
           var xhr = info.xhr;
           if (!xhr || !xhr.responseText) return;

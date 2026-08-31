@@ -1,3 +1,4 @@
+import logging
 import re
 import uuid
 from urllib.parse import urlparse
@@ -12,6 +13,8 @@ from django.utils.translation import gettext_lazy as _
 from base.context_processors import white_labelling_company
 from employee.models import Employee
 from horilla.urls import urlpatterns
+
+logger = logging.getLogger(__name__)
 
 # Final path segment that looks like a file, e.g. "logo.png", "app.min.js.map".
 _FILE_SEGMENT = re.compile(r"\.[A-Za-z0-9]{1,5}$")
@@ -297,7 +300,16 @@ remove_urls = [
 user_breadcrumbs = {}
 
 
-def breadcrumbs(request):
+def breadcrumbs_legacy(request):
+    """
+    Legacy session-accumulated breadcrumb trail.
+
+    Superseded by build_breadcrumbs()/breadcrumbs() below, which recompute
+    the trail statelessly from the current request's path on every call
+    instead of accumulating it in the session across requests. Kept here
+    unused, for reference and as an easy rollback if the stateless version
+    needs to be reverted.
+    """
     base_url = request.build_absolute_uri("/")
     company = white_labelling_company(request)["white_label_company_name"]
 
@@ -538,6 +550,203 @@ def breadcrumbs(request):
             {"url": base_url, "name": company, "found": True}
         ]
     return {"breadcrumbs": request.session["breadcrumbs"]}
+
+
+def build_breadcrumbs(request):
+    """
+    Compute the breadcrumb trail for the current request's path alone,
+    independent of session state.
+    """
+    base_url = request.build_absolute_uri("/")
+    company = white_labelling_company(request)["white_label_company_name"]
+    root = {
+        "url": f"{base_url}?breadcrumb_nav=true",
+        "name": company,
+        "found": True,
+        "clickable": True,
+    }
+
+    if is_asset_request(request):
+        return [root]
+
+    parts = _split_path(request)
+    if not parts:
+        return [root]
+
+    menus = getattr(request, "MENUS", None)
+    if menus is None:
+        try:
+            from horilla.config import sidebar as _build_sidebar_menus
+
+            _build_sidebar_menus(request)
+            menus = getattr(request, "MENUS", [])
+        except Exception:
+            logger.exception("Failed building sidebar menus for breadcrumbs")
+            menus = []
+
+    current_section = _resolve_menu_section(request.path, menus)
+
+    section_override = None
+    referer = request.META.get("HTTP_REFERER")
+    if referer and parts[0] != "settings":
+        referer_path = urlparse(referer).path
+        try:
+            referer_url_name = resolve(referer_path).url_name or ""
+        except Resolver404:
+            referer_url_name = ""
+        if "dashboard" in referer_url_name:
+            referer_section = _resolve_menu_section(referer_path, menus)
+            if referer_section and referer_section != current_section:
+                section_override = {
+                    "name": referer_section[0],
+                    "url": referer_section[1],
+                }
+            elif referer_url_name == "dashboard" and current_section:
+                section_override = {"name": _trans("Dashboard"), "url": referer_path}
+
+    trail = [root]
+    path = base_url
+    for i, item in enumerate(parts):
+        path = path + item + "/"
+        check_path = urlparse(path).path
+        try:
+            resolver_match = resolve(check_path)
+            found = True
+        except Resolver404:
+            resolver_match = None
+            found = False
+
+        clickable = True
+        if found and not request.user.is_superuser:
+            view_func = resolver_match.func
+            required_perms = getattr(view_func, "_required_perms", [])
+            if not required_perms:
+                redirect_to = getattr(view_func, "_redirect_to", None)
+                if redirect_to:
+                    try:
+                        dest_match = resolve(reverse(redirect_to))
+                        required_perms = getattr(dest_match.func, "_required_perms", [])
+                    except Exception:
+                        pass
+            if required_perms:
+                clickable = all(request.user.has_perm(p) for p in required_perms)
+
+        crumb = {
+            "url": path,
+            "name": str(BREADCRUMB_URL_NAMES.get(item, item)),
+            "found": found,
+            "clickable": clickable,
+        }
+
+        if i == 0:
+            if section_override:
+                crumb["name"] = section_override["name"]
+                crumb["url"] = base_url.rstrip("/") + section_override["url"]
+                crumb["found"] = True
+            elif current_section:
+                crumb["name"] = current_section[0]
+
+            if found:
+                redirect_to = getattr(resolver_match.func, "_redirect_to", None)
+                if redirect_to:
+                    try:
+                        crumb["url"] = base_url.rstrip("/") + reverse(redirect_to)
+                    except Exception:
+                        pass
+
+        if item == "attendance":
+            from base.templatetags.basefilters import is_reportingmanager
+
+            crumb["clickable"] = (
+                request.user.is_superuser
+                or request.user.has_perm("attendance.view_attendance")
+                or is_reportingmanager(request.user)
+            )
+
+        if item.isdigit() or is_valid_uuid(item):
+            url_kwargs = resolve(request.path_info).kwargs
+            model_value = url_kwargs.get("model")
+            if model_value:
+                try:
+                    crumb["name"] = str(model_value.objects.get(id=item))
+                except Exception:
+                    pass
+
+        existing_names = [t["name"] for t in trail]
+        if (
+            crumb["name"] not in remove_urls + existing_names
+            and not crumb["name"].isdigit()
+        ):
+            trail.append(crumb)
+
+    # Preserve the current request's own (non-empty-valued) query string on
+    # its own trail entry, so reloading/clicking it keeps the same filters.
+    query_string = "breadcrumb_nav=true"
+    extra_query_string = "&".join(
+        pair
+        for pair in request.META.get("QUERY_STRING", "").split("&")
+        if "=" in pair and pair.split("=")[1] and pair.split("=")[0] != "breadcrumb_nav"
+    )
+    if extra_query_string:
+        query_string = f"{query_string}&{extra_query_string}"
+    if len(trail) > 1:
+        trail[-1]["url"] = f'{trail[-1]["url"].split("?")[0]}?{query_string}'
+
+    return trail
+
+
+def breadcrumbs(request):
+    """
+    Active breadcrumbs context processor.
+    """
+    try:
+        if is_asset_request(request):
+            return {"breadcrumbs": request.session.get("breadcrumbs", [])}
+
+        existing = request.session.get("breadcrumbs")
+        has_existing = isinstance(existing, list) and existing
+
+        if request.GET.get("breadcrumb_nav") == "true":
+            return {
+                "breadcrumbs": existing if has_existing else build_breadcrumbs(request)
+            }
+
+        local_trail = build_breadcrumbs(request)
+        is_htmx = "HTTP_HX_REQUEST" in request.META
+        is_sidebar_nav = request.META.get("HTTP_HX_SIDEBAR_NAV") == "true"
+        is_push_nav = request.META.get("HTTP_HX_PUSH_NAV") == "true"
+
+        if is_htmx and not is_sidebar_nav and not is_push_nav:
+            trail = existing if has_existing else local_trail
+            return {"breadcrumbs": trail}
+
+        referer_path = urlparse(request.META.get("HTTP_REFERER") or "").path
+
+        reset = (
+            (is_htmx and is_sidebar_nav)
+            or (not is_htmx and not referer_path)
+            or len(local_trail) <= 1
+        )
+
+        if reset:
+            trail = local_trail
+        else:
+            trail = existing if has_existing else local_trail
+            leaf = local_trail[-1]
+            if not trail or trail[-1].get("name") != leaf["name"]:
+                trail = trail + [leaf]
+
+        request.session["breadcrumbs"] = trail
+        return {"breadcrumbs": trail}
+    except Exception:
+        logger.exception("Failed building breadcrumbs for %s", request.path)
+        base_url = request.build_absolute_uri("/")
+        company = white_labelling_company(request)["white_label_company_name"]
+        fallback = [
+            {"url": base_url, "name": company, "found": True, "clickable": True}
+        ]
+        request.session["breadcrumbs"] = fallback
+        return {"breadcrumbs": fallback}
 
 
 def _section_redirect(url_name):

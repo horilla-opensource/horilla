@@ -488,14 +488,13 @@
         document.body.addEventListener("htmx:afterSettle", function (ev) {
         	var info = ev && ev.detail;
         	if (!info || info._settingsCrumbsUpdated) return;
-        	var etc = info.etc;
+        	var reqHeaders = info.requestConfig && info.requestConfig.headers;
         	var target = info.target;
         	var isSettingsSwap =
         		target && target.id === "settingsContainer";
         	var isSettingsNav =
-        		etc &&
-        		etc.headers &&
-        		etc.headers["HX-Sidebar-Nav"] === "true" &&
+        		reqHeaders &&
+        		(reqHeaders["HX-Sidebar-Nav"] === "true" || reqHeaders["HX-Push-Nav"] === "true") &&
         		info.pathInfo &&
         		info.pathInfo.requestPath &&
         		info.pathInfo.requestPath.indexOf("/settings") !== -1;

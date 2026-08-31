@@ -7,6 +7,9 @@
 <script>
     document.body.addEventListener('htmx:configRequest', (event) => {
       event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}'
+      if (event.detail.elt && event.detail.elt.closest && event.detail.elt.closest('[hx-push-url]')) {
+        event.detail.headers['HX-Push-Nav'] = 'true'
+      }
     })
 </script>
 <script src="{% static '/index/index.js' %}"></script>

@@ -224,7 +224,7 @@
   margin: auto;
 }
 
-.breadcrumb li:last-child {
+.breadcrumb li.oh-breadcrumb-current {
   color: #e54f38;
   font-weight: 500;
 }

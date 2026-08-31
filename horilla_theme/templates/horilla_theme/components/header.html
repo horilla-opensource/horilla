@@ -53,7 +53,15 @@
             </button>
             {% if show_section %}
                 <button class="md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 flex items-center justify-center">
-                    <a href="{% url 'settings' %}">
+                    <a
+                        href="{% url 'system-preferences-view' %}"
+                        hx-get="{% url 'system-preferences-view' %}"
+                        hx-headers='{"HX-Sidebar-Nav": "true"}'
+                        hx-target="#ohMainContent"
+                        hx-select="#ohMainContent > *"
+                        hx-swap="innerHTML show:window:top"
+                        hx-push-url="true"
+                    >
                         <i class="fas fa-cog transition duration-300 group-hover:text-white"></i>
                     </a>
                 </button>
