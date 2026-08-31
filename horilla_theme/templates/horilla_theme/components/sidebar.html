@@ -502,6 +502,29 @@
             </div>
         </div>
 
+        <script>
+            (function () {
+                // hlv row-selection state is cached in localStorage per URL path
+                // (see index.js getSelectionStorageKey) so it survives full page
+                // reloads. That cache has no idea which company it was built
+                // under, so switching companies on the same list URL (e.g.
+                // /employee/employee-view/) resurrected the previous company's
+                // selected ids/count. Wipe every cached selection the first
+                // time we notice the company changed.
+                var currentCompany = "{{ request.session.selected_company|default:''|escapejs }}";
+                var storageKey = "hlv_last_company";
+                var lastCompany = localStorage.getItem(storageKey);
+                if (lastCompany !== null && lastCompany !== currentCompany) {
+                    Object.keys(localStorage).forEach(function (key) {
+                        if (key.indexOf("hlv_selection:") === 0) {
+                            localStorage.removeItem(key);
+                        }
+                    });
+                }
+                localStorage.setItem(storageKey, currentCompany);
+            })();
+        </script>
+
         <nav
             class="space-y-1 overflow-hidden overflow-y-auto h-[calc(100vh_-_95px)] sidebar-scroll"
             role="navigation"

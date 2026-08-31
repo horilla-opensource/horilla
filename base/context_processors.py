@@ -156,6 +156,8 @@ def update_selected_company(request):
         getattr(user, "employee_work_info", None), "company_id", None
     )
     request.session["selected_company"] = company_id
+    request.session.pop("hlv_selected_ids", None)
+    request.session.pop("prev_path", None)
     scoped_all = (
         company_id == "all"
         and company_scoped_active()
