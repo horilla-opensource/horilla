@@ -86,7 +86,6 @@ class KeyResultNavView(HorillaNavView):
 
     # Mirrors KeyResultsListView.nested_group_by_fields
     nested_group_by_fields = [
-        ("title", _("Key Results")),
         ("progress_type", _("Progress Type")),
         ("target_value", _("Target Value")),
         ("duration", _("Duration")),
@@ -138,7 +137,6 @@ class KeyResultsListView(HorillaListView):
     # Nav are separate classes/templates (see employee/cbv/employees.py's
     # EmployeesList/EmployeeNav for the same split).
     nested_group_by_fields = [
-        ("title", _("Key Results")),
         ("progress_type", _("Progress Type")),
         ("target_value", _("Target Value")),
         ("duration", _("Duration")),
