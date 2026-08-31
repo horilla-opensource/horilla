@@ -343,6 +343,130 @@ def create_question_template(request):
     return render(request, "survey/template_form.html", {"form": form})
 
 
+# --- Restored: previous Survey Templates page implementation (function
+# views backing recruitment.cbv.recruitment_survey.SurveyTemplateTabView /
+# SurveyTemplateNavView / SurveyQuestionNavView). Kept side-by-side with the
+# newer shell-based list views rather than removed.
+
+
+@login_required
+@hx_request_required
+@is_recruitment_manager(perm="recruitment.view_recruitmentsurvey")
+def survey_template_tab(request):
+    """
+    Root of the Template tab: loads its own navbar, then its own list
+    container.
+    """
+    return render(request, "survey/template_tab_root.html", {})
+
+
+@login_required
+@hx_request_required
+@is_recruitment_manager(perm="recruitment.view_recruitmentsurvey")
+def survey_template_tab_list(request):
+    """
+    Template accordion content for the Template tab, and the hx-get target
+    for that tab's own navbar (recruitment.cbv.recruitment_survey.SurveyTemplateNavView)
+    search box and pagination.
+    """
+    survey_templates = SurveyTemplate.objects.all()
+    search = request.GET.get("search", "").strip()
+    if search:
+        survey_templates = survey_templates.filter(title__icontains=search)
+    questions = SurveyFilter(request.GET, RecruitmentSurvey.objects.all()).qs
+
+    previous_data = request.GET.urlencode()
+    templates = group_by_queryset(
+        questions.filter(template_id__isnull=False).distinct(),
+        "template_id__title",
+        page=1,
+        page_name="template_page",
+        records_per_page=1000000,
+    )
+    all_template_object_list = list(templates)
+
+    all_templates = survey_templates.values_list("title", flat=True)
+    used_templates = questions.values_list("template_id__title", flat=True)
+    unused_templates = list(set(all_templates) - set(used_templates))
+    for template_name in unused_templates:
+        all_template_object_list.append(
+            {"grouper": template_name, "list": [], "dynamic_name": ""}
+        )
+
+    templates = paginator_qry(
+        all_template_object_list, request.GET.get("template_page")
+    )
+    requests_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                questions, request.GET.get("page")
+            ).object_list
+        ]
+    )
+    return render(
+        request,
+        "survey/template_accordion.html",
+        {
+            "templates": templates,
+            "pd": previous_data,
+            "requests_ids": requests_ids,
+        },
+    )
+
+
+@login_required
+@hx_request_required
+@is_recruitment_manager(perm="recruitment.view_recruitmentsurvey")
+def survey_question_tab(request):
+    """
+    Root of the Questions tab: loads its own navbar, then its own list
+    container.
+    """
+    return render(request, "survey/question_tab_root.html", {})
+
+
+@login_required
+@hx_request_required
+@is_recruitment_manager(perm="recruitment.view_recruitmentsurvey")
+def survey_question_tab_list(request):
+    """
+    Question grid content for the Questions tab, and the hx-get target for
+    that tab's own navbar (recruitment.cbv.recruitment_survey.SurveyQuestionNavView)
+    search box and pagination.
+    """
+    if request.user.has_perm("recruitment.view_recruitmentsurvey"):
+        questions = RecruitmentSurvey.objects.all()
+    else:
+        ids = []
+        for recruitment in Recruitment.objects.all():
+            for manager in recruitment.recruitment_managers.all():
+                if request.user.employee_get == manager:
+                    ids.append(recruitment.id)
+        questions = RecruitmentSurvey.objects.filter(recruitment_ids__in=ids)
+
+    questions = SurveyFilter(request.GET, questions).qs
+
+    previous_data = request.GET.urlencode()
+    requests_ids = json.dumps(
+        [
+            instance.id
+            for instance in paginator_qry(
+                questions, request.GET.get("page")
+            ).object_list
+        ]
+    )
+    return render(
+        request,
+        "survey/question_card.html",
+        {
+            "questions": paginator_qry(questions, request.GET.get("page")),
+            "pd": previous_data,
+            "requests_ids": requests_ids,
+        },
+    )
+
+
 @login_required
 @permission_required(perm="recruitment.delete_recruitmentsurvey")
 def delete_survey_question(request, survey_id):
@@ -362,8 +486,14 @@ def delete_survey_question(request, survey_id):
         # question card on the Questions tab - each targeting its own list
         # container. Redirect back to whichever list actually asked, so
         # only that container is refreshed.
-        if request.META.get("HTTP_HX_TARGET") == "survey-templates-container":
+        hx_target = request.META.get("HTTP_HX_TARGET")
+        if hx_target == "survey-templates-container":
             return redirect(reverse("list-survey-templates"))
+        # Restored previous implementation's containers (view_question_templates.html)
+        if hx_target == "view-container":
+            return redirect(reverse("survey-template-tab-list"))
+        if hx_target == "questionViewContainer":
+            return redirect(reverse("survey-question-tab-list"))
         return redirect(reverse("list-survey-questions"))
     return redirect("recruitment-survey-question-template-view")
 
@@ -534,7 +664,9 @@ def delete_template(request):
         messages.success(request, _("Template group deleted"))
 
     if request.META.get("HTTP_HX_REQUEST") == "true":
-        return HttpResponse("<script>$('#filterSubmit').click();</script>")
+        return HttpResponse(
+            "<script>$('#templateTabRoot .filterButton').click();</script>"
+        )
     return HorillaRedirect(request)
 
 
@@ -553,6 +685,11 @@ def delete_survey_template(request, pk):
     else:
         template.delete()
         messages.success(request, _("Template group deleted"))
+
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        return HttpResponse(
+            "<script>$('#templateTabRoot .filterButton').click();</script>"
+        )
     return HorillaRedirect(request)
 
 

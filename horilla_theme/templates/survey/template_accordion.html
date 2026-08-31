@@ -150,9 +150,8 @@
                                             {% if perms.recruitment.delete_surveytemplate %}
                                                 <li>
                                                     <a
-                                                        hx-post="{% url 'survey-template-delete' %}?title={{grouper.grouper}}"
-                                                        hx-confirm="{% trans 'Do you want to delete this template' %}"
-                                                        hx-on-htmx-after-request="$('#reloadMessagesButton').click();"
+                                                        href="{% url 'survey-template-delete' %}?title={{grouper.grouper}}"
+                                                        onclick="return confirm('{% trans "Do you want to delete this template" %}')"
                                                         class="block w-full text-left px-3 py-2 text-danger cursor-pointer"
                                                     >
                                                         {% trans "Delete" %}
@@ -295,9 +294,10 @@
                                                         {% if perms.recruitment.delete_recruitmentsurvey %}
                                                             <form
                                                                 hx-post="{% url 'recruitment-survey-question-template-delete' question.id %}"
-                                                                hx-swap="none"
+                                                                hx-target="#view-container"
+                                                                hx-swap="innerHTML"
                                                                 hx-confirm="{% trans 'Do you want to delete this record?' %}"
-                                                                hx-on-htmx-after-request="$('#reloadMessagesButton').click(); $('#templateTabRoot .filterButton').click(); $('#questionTabRoot .filterButton').click();"
+                                                                hx-on-htmx-after-request="$('#reloadMessagesButton').click();"
                                                                 onsubmit="event.stopPropagation()"
                                                             >
                                                                 {% csrf_token %}

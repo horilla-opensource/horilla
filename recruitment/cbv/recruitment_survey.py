@@ -59,7 +59,9 @@ class QuestionFormView(HorillaFormView):
             instance.recruitment_ids.set(form.recruitment)
             instance.template_id.set(form.cleaned_data["template_id"])
             messages.success(self.request, _(message))
-            return self.HttpResponse()
+            return self.HttpResponse(
+                targets_to_reload=["#questionTabRoot .filterButton", ".reload-record"]
+            )
         return super().form_valid(form)
 
 
@@ -101,7 +103,9 @@ class QuestionDuplicateFormView(HorillaFormView):
             instance.recruitment_ids.set(form.recruitment)
             instance.template_id.set(form.cleaned_data["template_id"])
             messages.success(self.request, _(message))
-            return self.HttpResponse()
+            return self.HttpResponse(
+                targets_to_reload=["#questionTabRoot .filterButton", ".reload-record"]
+            )
         return super().form_valid(form)
 
 
@@ -140,7 +144,9 @@ class SurveyTemplateFormView(HorillaFormView):
             message = _("Template saved")
             form.save()
             messages.success(self.request, _(message))
-            return self.HttpResponse()
+            return self.HttpResponse(
+                targets_to_reload=["#templateTabRoot .filterButton", ".reload-record"]
+            )
         return super().form_valid(form)
 
 
@@ -189,15 +195,113 @@ class RecruitmentSurveyDetailView(HorillaDetailedView):
     # ]
 
 
+# --- Restored: previous Survey Templates page implementation. Kept
+# side-by-side with the newer shell-based views below (SurveyQuestionTemplateView
+# onward) rather than removed. Route names that would collide with the new
+# views use a "-legacy" suffix.
+
+
+@method_decorator(login_required, name="dispatch")
+class SurveyTemplateSettingsView(TemplateView):
+    """
+    page for survey templates (Template / Questions tabs)
+    """
+
+    template_name = "survey/view_question_templates.html"
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required(perm="recruitment.view_recruitmentsurvey"), name="dispatch"
+)
+class SurveyTemplateTabView(HorillaTabView):
+    """
+    tab view for survey templates, shows template and questions as tabs
+    """
+
+    view_id = "surveyTemplateSettingsTab"
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.tabs = [
+            {
+                "title": _("Template"),
+                "url": reverse("survey-template-tab"),
+                "badge": SurveyTemplate.objects.count(),
+            },
+            {
+                "title": _("Questions"),
+                "url": reverse("survey-question-tab"),
+                "badge": RecruitmentSurvey.objects.count(),
+            },
+        ]
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required(perm="recruitment.view_recruitmentsurvey"), name="dispatch"
+)
+class SurveyTemplateNavView(HorillaNavView):
+    """
+    navbar of the Template tab
+    """
+
+    template_name = "generic/inline_nav.html"
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("list-survey-templates")
+        if self.request.user.has_perm("recruitment.add_surveytemplate"):
+            self.create_attrs = f"""
+                                hx-get="{reverse('survey-template-create')}"
+                                hx-target="#genericModalBody"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#genericModal"
+                                """
+
+    nav_title = _(" Survey Template")
+    filter_instance = SurveyFilter()
+    filter_form_context_name = "form"
+    filter_body_template = "survey/filter.html"
+    search_swap_target = "#view-container"
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required(perm="recruitment.view_recruitmentsurvey"), name="dispatch"
+)
+class SurveyQuestionNavView(HorillaNavView):
+    """
+    navbar of the Questions tab
+    """
+
+    template_name = "generic/inline_nav.html"
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("list-survey-questions")
+        if self.request.user.has_perm("recruitment.add_recruitmentsurvey"):
+            self.create_attrs = f"""
+                                hx-get="{reverse('recruitment-survey-question-template-create')}"
+                                hx-target="#genericModalBody"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#genericModal"
+                                """
+
+    nav_title = _("Survey Questions")
+    filter_instance = SurveyFilter()
+    filter_form_context_name = "form"
+    filter_body_template = "survey/filter.html"
+    search_swap_target = "#questionViewContainer"
+
+
 @method_decorator(login_required, name="dispatch")
 class SurveyQuestionTemplateView(TemplateView):
     """
     Survey Templates page view
     """
 
-    template_name = (
-        "cbv/recruitment_survey_template/recruitment_survey_template_view.html"
-    )
+    template_name = "survey/view_question_templates.html"
 
 
 def _recruitment_survey_queryset_for(request):
@@ -287,6 +391,7 @@ class SurveyTemplateNav(HorillaNavView):
     filter_instance = SurveyTemplateFilter()
     filter_body_template = "cbv/recruitment_survey_template/filter.html"
     filter_form_context_name = "form"
+    template_name = "generic/inline_nav.html"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -310,6 +415,7 @@ class SurveyQuestionNav(HorillaNavView):
     filter_instance = SurveyFilter()
     filter_body_template = "cbv/recruitment_survey/filter.html"
     filter_form_context_name = "form"
+    template_name = "generic/inline_nav.html"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
