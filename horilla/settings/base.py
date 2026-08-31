@@ -524,6 +524,7 @@ AUTHENTICATION_BACKENDS = [
 
 AUTH_LDAP_ALWAYS_UPDATE_USER = True
 
+
 # ========================================
 # PRODUCTION SECURITY GATES
 # ========================================
