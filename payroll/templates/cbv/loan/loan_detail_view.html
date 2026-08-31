@@ -33,7 +33,7 @@
                     alt="{{ loan.employee_id }}"
                     class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm group-hover:scale-105 transition-transform duration-300"
                 >
-                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 {% if loan.employee_id.is_active %}bg-green-500{% else %}bg-gray-400{% endif %} border-2 border-white rounded-full"></span>
+                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 {% if loan.employee_id.is_active %}bg-success{% else %}bg-gray-400{% endif %} border-2 border-white rounded-full"></span>
             </div>
             <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
@@ -64,23 +64,23 @@
             </div>
 
             <div class="relative p-3 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                <div class="absolute top-2.5 right-2.5 p-1.5 bg-green-50 rounded-md">
-                    <svg class="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <div class="absolute top-2.5 right-2.5 p-1.5 bg-success/10 rounded-md">
+                    <svg class="w-3.5 h-3.5 text-success" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
                 <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">{% trans "Paid Amount" %}</p>
-                <p class="text-lg font-extrabold text-green-600 leading-tight">{{ installments|paid_amount }}</p>
+                <p class="text-lg font-extrabold text-success leading-tight">{{ installments|paid_amount }}</p>
             </div>
 
             <div class="relative p-3 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                <div class="absolute top-2.5 right-2.5 p-1.5 bg-orange-50 rounded-md">
-                    <svg class="w-3.5 h-3.5 text-orange-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <div class="absolute top-2.5 right-2.5 p-1.5 bg-warning/10 rounded-md">
+                    <svg class="w-3.5 h-3.5 text-warning" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
                 <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">{% trans "Balance" %}</p>
-                <p class="text-lg font-extrabold text-orange-600 leading-tight">{{ loan.loan_amount|balance_amount:installments }}</p>
+                <p class="text-lg font-extrabold text-warning leading-tight">{{ loan.loan_amount|balance_amount:installments }}</p>
             </div>
         </div>
 
@@ -131,9 +131,9 @@
                         data-target="#genericModal"
                         hx-get="{% url 'loan-edit-form' instance.id %}"
                         hx-target="#genericModalBody"
-                        class="oh-btn oh-btn--light-bkg oh-btn--secondary w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                        class="oh-btn oh-btn--light-bkg w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
                     >
-                        <ion-icon name="create-outline"></ion-icon>
+                        <ion-icon class="text-dark" name="create-outline"></ion-icon>
                         {% trans "Edit" %}
                     </button>
                 {% endif %}
