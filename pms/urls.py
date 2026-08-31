@@ -54,9 +54,44 @@ urlpatterns = [
         name="anonymous-feedback-tab",
     ),
     path(
-        "feedback-nav-view/",
-        feedback.FeedbacknavView.as_view(),
-        name="feedback-nav-view",
+        "self-feedback-nav/",
+        feedback.SelfFeedbackNav.as_view(),
+        name="self-feedback-nav",
+    ),
+    path(
+        "requested-feedback-nav/",
+        feedback.RequestedFeedbackNav.as_view(),
+        name="requested-feedback-nav",
+    ),
+    path(
+        "all-feedback-nav/",
+        feedback.AllFeedbackNav.as_view(),
+        name="all-feedback-nav",
+    ),
+    path(
+        "anonymous-feedback-nav/",
+        feedback.AnonymousFeedbackNav.as_view(),
+        name="anonymous-feedback-nav",
+    ),
+    path(
+        "self-feedback-tab-shell/",
+        feedback.SelfFeedbackTabShell.as_view(),
+        name="self-feedback-tab-shell",
+    ),
+    path(
+        "requested-feedback-tab-shell/",
+        feedback.RequestedFeedbackTabShell.as_view(),
+        name="requested-feedback-tab-shell",
+    ),
+    path(
+        "all-feedback-tab-shell/",
+        feedback.AllFeedbackTabShell.as_view(),
+        name="all-feedback-tab-shell",
+    ),
+    path(
+        "anonymous-feedback-tab-shell/",
+        feedback.AnonymousFeedbackTabShell.as_view(),
+        name="anonymous-feedback-tab-shell",
     ),
     # objectives
     # path("objective-list-view/", views.objective_list_view, name="objective-list-view"),
@@ -665,11 +700,6 @@ urlpatterns = [
         name="tab-objectives-view",
     ),
     path(
-        "nav-objectives-view/",
-        objectives.ObjectivesNav.as_view(),
-        name="nav-objectives-view",
-    ),
-    path(
         "nav-objective-templates-view/",
         objectives.ObjectiveTemplateNav.as_view(),
         name="nav-objective-templates-view",
@@ -683,6 +713,26 @@ urlpatterns = [
         "all-objectives-view-tab/",
         objectives.AllObjectives.as_view(),
         name="all-objectives-view-tab",
+    ),
+    path(
+        "my-objectives-nav/",
+        objectives.MyObjectivesNav.as_view(),
+        name="my-objectives-nav",
+    ),
+    path(
+        "all-objectives-nav/",
+        objectives.AllObjectivesNav.as_view(),
+        name="all-objectives-nav",
+    ),
+    path(
+        "my-objectives-tab-shell/",
+        objectives.MyObjectivesTabShell.as_view(),
+        name="my-objectives-tab-shell",
+    ),
+    path(
+        "all-objectives-tab-shell/",
+        objectives.AllObjectivesTabShell.as_view(),
+        name="all-objectives-tab-shell",
     ),
     path(
         "list-objective-templates-view/",

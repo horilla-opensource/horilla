@@ -41,10 +41,6 @@
             border-radius: 4px 0 0 4px;
         }
     </style>
-    <div id="feedbackNavBar">
-        <div hx-get='{% url "feedback-nav-view" %}?{{request.GET.urlencode}}' hx-trigger="load"></div>
-    </div>
-
     {% include "generic/components.html" %}
     <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none">
     </div>
@@ -60,7 +56,13 @@
     {% comment %} <div class="oh-checkpoint-badge mb-2" id="selectedAnonymous" data-ids="[]" data-clicked=""  data-anounymous = "true" style="display: none">
 </div> {% endcomment %}
     {% comment %} archive=false {% endcomment %}
-    <div class="oh-wrapper" id="listContainer">
+    <div
+        class="oh-wrapper"
+        id="listContainer"
+        hx-get="{% url 'feedback-generic-tab' %}"
+        hx-trigger="load"
+    >
+        <div class="animated-background"></div>
     </div>
 
     <div
@@ -151,14 +153,12 @@
           }
 
           function syncFeedbackNavVisibility() {
-            var nav = document.getElementById("feedbackNavBar");
             var listContainer = document.getElementById("listContainer");
-            if (!nav || !listContainer) {
+            if (!listContainer) {
               return;
             }
             var isCreateView = !!listContainer.querySelector("#feedbackCreationForm");
             var isDetailView = !!listContainer.querySelector("#feedbackDetailContainer");
-            nav.style.display = isCreateView || isDetailView ? "none" : "";
 
             // Keep URL aligned with what is currently rendered in the container.
             if (!isCreateView && !isDetailView && isCreateRoute()) {
