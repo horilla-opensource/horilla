@@ -23,6 +23,13 @@ class CustomModelChoiceWidget(forms.Select):
         super().__init__(*args, **kwargs)
 
     def render(self, name, value, attrs=None, renderer=None):
+        attrs = attrs.copy() if attrs else {}
+        # .oh-input/.oh-select carry a spacing margin-bottom (theme
+        # v1_styles.css) that skews this flex row's vertical centering
+        # against the delete button - the row spaces itself, so drop it.
+        style = attrs.get("style", "")
+        attrs["style"] = f"{style}; margin-bottom: 0" if style else "margin-bottom: 0"
+
         # Render the original widget
         original_html = super().render(name, value, attrs, renderer)
 
@@ -32,9 +39,9 @@ class CustomModelChoiceWidget(forms.Select):
         # Create the custom HTML including the delete button
         custom_html = f"""
         <div class="pt-2" id="{name}">
-            <div class="oh-input__group" style="display: flex">
-                {original_html}
-                {f'<button hx-get="{delete_url}" class="oh-btn oh-btn--danger oh-btn--sq-sm" hx-target="#{name}" hx-swap="outerHTML" id="delete-link"><ion-icon name="trash-outline"></ion-icon></button>' if delete_url else ''}
+            <div class="oh-input__group" style="display: flex; align-items: center; gap: 8px">
+                <div style="flex: 1">{original_html}</div>
+                {f'<button hx-get="{delete_url}" class="oh-btn oh-btn--danger oh-btn--sq-sm d-flex align-items-center justify-content-center flex-shrink-0" hx-target="#{name}" hx-swap="outerHTML" id="delete-link"><ion-icon name="trash-outline"></ion-icon></button>' if delete_url else ''}
             </div>
         </div>
         """
@@ -67,6 +74,13 @@ class CustomTextInputWidget(forms.TextInput):
         super().__init__(*args, **kwargs)
 
     def render(self, name, value, attrs=None, renderer=None):
+        attrs = attrs.copy() if attrs else {}
+        # .oh-input/.oh-select carry a spacing margin-bottom (theme
+        # v1_styles.css) that skews this flex row's vertical centering
+        # against the delete button - the row spaces itself, so drop it.
+        style = attrs.get("style", "")
+        attrs["style"] = f"{style}; margin-bottom: 0" if style else "margin-bottom: 0"
+
         # Render the original text input widget
         original_html = super().render(name, value, attrs, renderer)
 
@@ -76,9 +90,9 @@ class CustomTextInputWidget(forms.TextInput):
         # Create the custom HTML including the delete button
         custom_html = f"""
         <div class="pt-2" id="{name}">
-            <div class="oh-input__group" style="display: flex">
-                {original_html}
-                {f'<button hx-get="{delete_url}" class="oh-btn oh-btn--danger oh-btn--sq-sm" hx-target="#{name}" hx-swap="outerHTML" id="delete-link"><ion-icon name="trash-outline"></ion-icon></button>' if delete_url else ''}
+            <div class="oh-input__group" style="display: flex; align-items: center; gap: 8px">
+                <div style="flex: 1">{original_html}</div>
+                {f'<button hx-get="{delete_url}" class="oh-btn oh-btn--danger oh-btn--sq-sm d-flex align-items-center justify-content-center flex-shrink-0" hx-target="#{name}" hx-swap="outerHTML" id="delete-link"><ion-icon name="trash-outline"></ion-icon></button>' if delete_url else ''}
             </div>
         </div>
         """

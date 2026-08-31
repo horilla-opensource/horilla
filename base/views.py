@@ -1938,6 +1938,10 @@ def add_remove_dynamic_fields(request, **kwargs):
                             "class": "oh-input w-100",
                             "name": field_name,
                             "id": f"id_{field_name}",
+                            # .oh-input carries a spacing margin-bottom (theme
+                            # v1_styles.css) that skews the flex row's vertical
+                            # centering against the delete button beside it.
+                            "style": "margin-bottom: 0",
                         }
                     ),
                     required=False,
