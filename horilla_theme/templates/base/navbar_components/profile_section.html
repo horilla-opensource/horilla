@@ -44,12 +44,10 @@
                 <button class="py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-4 items-center flex w-full">
                     <a
                         class="text-[13px]"
-                        href="{% url 'employee-profile' %}"
-                        hx-get="{% url 'employee-profile' %}"
+                        hx-get="{% url 'employee-profile' request.user.employee_get.id %}"
                         hx-target="#ohMainContent"
-                        hx-select="#ohMainContent > *"
                         hx-swap="innerHTML show:window:top"
-                        hx-push-url="true"
+                        hx-push-url="{% url 'employee-profile' %}"
                     >{% trans "My Profile" %}</a>
                 </button>
             </li>
