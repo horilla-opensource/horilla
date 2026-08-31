@@ -72,7 +72,7 @@ pytz
 arabic-reshaper
 click
 phonenumbers==9.0.37
-pycountry==24.6.1
+pycountry==26.2.16
 python-bidi
 rapidfuzz==3.9.6
 spacy==3.7.5
