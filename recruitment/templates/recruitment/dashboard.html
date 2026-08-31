@@ -420,6 +420,7 @@
             display: flex;
             align-items: center;
             height: 28px;
+            min-width: 26px;
             padding: 0 10px;
             border-radius: 6px;
             color: #fff;
@@ -1313,7 +1314,13 @@
                     const funnelColors = { initial: '#94a3b8', test: '#3b82f6', interview: '#f59e0b', hired: '#22c55e', cancelled: '#ef4444' };
                     let html = '<div class="rd-funnel">';
                     data.conversions.forEach(c => {
-                        const pct = Math.max(20, (c.count / maxCount) * 100);
+                        // True-to-value width, not a fixed floor -- a 20%-min
+                        // floor made every small count (e.g. 0 vs 1 out of a
+                        // max of 7) render as the same-length bar. Only a
+                        // real zero collapses to 0; any actual count still
+                        // gets a thin sliver (via the CSS min-width) so it
+                        // stays visible instead of vanishing at very low %.
+                        const pct = c.count > 0 ? (c.count / maxCount) * 100 : 0;
                         const color = funnelColors[c.type] || '#E54F38';
                         const url = "{% url 'candidate-view' %}?stage_id__stage_type=" + encodeURIComponent(c.type);
                         html += `<div class="rd-funnel-step" onclick="window.location.href='${url}'" title="{% trans 'View ${c.stage} candidates' %}">
