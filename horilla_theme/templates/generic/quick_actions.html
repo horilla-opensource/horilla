@@ -119,6 +119,42 @@
     {% endif %}
 
     <div class="flex flex-nowrap items-center gap-2 ml-auto flex-shrink-0 self-center">
+    {% if stored_filters or row_status_indications %}
+        {# All saved quick filters live behind one "Filters" dropdown, so the toolbar's guaranteed-visible width stays small and constant no matter how many filters a user saves. row_status_indications (e.g. Online/Offline) are few and page-defined, so they stay directly visible. #}
+        <div class="flex flex-wrap gap-2 items-center">
+            {% if stored_filters %}
+                <div class="relative flex-shrink-0" x-data="{ open: false }">
+                    <button
+                        @click="open = !open"
+                        class="px-4 py-2 bg-white border border-[#e6e6e6] rounded-md text-xs flex gap-1 items-center whitespace-nowrap"
+                    >
+                        <ion-icon name="funnel-outline"></ion-icon>
+                        {% blocktrans with counter=stored_filters|length %}Filter ({{ counter }}){% endblocktrans %}
+                        <ion-icon name="chevron-down-outline"></ion-icon>
+                    </button>
+                    <div
+                        x-show="open"
+                        @click.outside="open = false"
+                        class="absolute right-0 mt-1 z-20 bg-white border border-[#e6e6e6] rounded-md shadow-lg p-2 flex flex-col gap-1 min-w-[200px] max-h-64 overflow-y-auto"
+                    >
+                        {% for filter in stored_filters %}
+                            {% include "generic/_saved_filter_chip.html" with filter=filter %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            {% if not hide_row_status_indications %}
+                {% for indication in row_status_indications %}
+                    <button
+                        class="px-4 py-2 bg-[white] border border-[#e6e6e6] rounded-md text-xs flex gap-2 items-center flex-shrink-0 whitespace-nowrap"
+                        {{ indication.2|safe }}
+                    >
+                        <span class="h-3 w-3 rounded-full flex {{ indication.0 }}"></span>{{ indication.1 }}
+                    </button>
+                {% endfor %}
+            {% endif %}
+        </div>
+    {% endif %}
         {% if queryset.has_previous or queryset.has_next %}
             <div class="hlv-pagination inline-flex items-center h-8 gap-0.5 bg-white border border-[#e6e6e6] rounded-md px-1 flex-shrink-0">
                 <button
@@ -188,41 +224,5 @@
                 </button>
             </div>
         {% endif %}
-    {% if stored_filters or row_status_indications %}
-        {# All saved quick filters live behind one "Filters" dropdown, so the toolbar's guaranteed-visible width stays small and constant no matter how many filters a user saves. row_status_indications (e.g. Online/Offline) are few and page-defined, so they stay directly visible. #}
-        <div class="flex flex-wrap gap-2 items-center">
-            {% if stored_filters %}
-                <div class="relative flex-shrink-0" x-data="{ open: false }">
-                    <button
-                        @click="open = !open"
-                        class="px-4 py-2 bg-white border border-[#e6e6e6] rounded-md text-xs flex gap-1 items-center whitespace-nowrap"
-                    >
-                        <ion-icon name="funnel-outline"></ion-icon>
-                        {% blocktrans with counter=stored_filters|length %}Filter ({{ counter }}){% endblocktrans %}
-                        <ion-icon name="chevron-down-outline"></ion-icon>
-                    </button>
-                    <div
-                        x-show="open"
-                        @click.outside="open = false"
-                        class="absolute right-0 mt-1 z-20 bg-white border border-[#e6e6e6] rounded-md shadow-lg p-2 flex flex-col gap-1 min-w-[200px] max-h-64 overflow-y-auto"
-                    >
-                        {% for filter in stored_filters %}
-                            {% include "generic/_saved_filter_chip.html" with filter=filter %}
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endif %}
-            {% if not hide_row_status_indications %}
-                {% for indication in row_status_indications %}
-                    <button
-                        class="px-4 py-2 bg-[white] border border-[#e6e6e6] rounded-md text-xs flex gap-2 items-center flex-shrink-0 whitespace-nowrap"
-                        {{ indication.2|safe }}
-                    >
-                        <span class="h-3 w-3 rounded-full flex {{ indication.0 }}"></span>{{ indication.1 }}
-                    </button>
-                {% endfor %}
-            {% endif %}
-        </div>
-    {% endif %}
     </div>
 </div>
