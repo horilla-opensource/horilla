@@ -1,45 +1,40 @@
 from typing import Any
 
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from attendance.cbv.tab_shell import AttendanceTabContentShell
 from base.methods import filtersubordinates, is_reportingmanager
-from helpdesk.filter import TicketFilter, TicketReGroup
-from helpdesk.models import TICKET_STATUS, Ticket
+from helpdesk.filter import TicketFilter
+from helpdesk.models import Ticket
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.kanban import HorillaKanbanView
-from horilla_views.generic.cbv.pipeline import Pipeline
 from horilla_views.generic.cbv.views import (
     HorillaListView,
     HorillaNavView,
-    HorillaSectionView,
     HorillaTabView,
+    TemplateView,
 )
 
 
 @method_decorator(login_required, name="dispatch")
-class TicketPipelineView(HorillaSectionView):
+class TicketPipelineView(TemplateView):
     """
-    Offboarding Pipeline View
+    Tickets page view
     """
 
-    nav_url = reverse_lazy("ticket-pipeline-nav")
-    view_url = reverse_lazy("get-ticket-tabs")
-    view_container_id = "pipelineContainer"
-    script_static_paths = ["tickets/action.js"]
     template_name = "cbv/pipeline/ticket_section_view.html"
 
 
-@method_decorator(login_required, name="dispatch")
-class TicketPipelineNav(HorillaNavView):
+class _TicketTabNavBase(HorillaNavView):
     """
-    Offboarding Pipeline Navigation View
+    Shared Filter/Group-by/Actions/Create wiring for each Tickets tab's own,
+    independent Nav - only search_url/search_swap_target/view_types differ
+    per tab.
     """
 
     nav_title = _("Tickets")
-    search_swap_target = "#pipelineContainer"
-    search_url = reverse_lazy("ticket-tab")
     filter_body_template = "cbv/pipeline/ticket_filter_form.html"
     filter_instance = TicketFilter()
     filter_form_context_name = "form"
@@ -94,24 +89,101 @@ class TicketPipelineNav(HorillaNavView):
             data-target="#objectCreateModal"
         """
 
+
+@method_decorator(login_required, name="dispatch")
+class MyTicketsNav(_TicketTabNavBase):
+    """
+    Independent Nav for the My Tickets tab.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.search_url = reverse("my-tickets-list")
+        self.search_swap_target = "#myTicketsListContainer"
         self.view_types = [
             {
                 "type": "list",
                 "icon": "list-outline",
-                "url": f'{reverse_lazy("ticket-tab")}?view_type=list',
-                "attrs": f"""
-                    title ='List'
-                """,
+                "url": f'{reverse("my-tickets-list")}?view_type=list',
+                "attrs": """ title='List' """,
             },
             {
                 "type": "card",
                 "icon": "grid-outline",
-                "url": f'{reverse_lazy("ticket-tab")}?view_type=card',
-                "attrs": f"""
-                    title ='Card'
-                """,
+                "url": f'{reverse("my-tickets-card")}?view_type=card',
+                "attrs": """ title='Card' """,
             },
         ]
+
+
+@method_decorator(login_required, name="dispatch")
+class SuggestedTicketsNav(_TicketTabNavBase):
+    """
+    Independent Nav for the Suggested Tickets tab.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.search_url = reverse("suggested-tickets-list")
+        self.search_swap_target = "#suggestedTicketsListContainer"
+        self.view_types = [
+            {
+                "type": "list",
+                "icon": "list-outline",
+                "url": f'{reverse("suggested-tickets-list")}?view_type=list',
+                "attrs": """ title='List' """,
+            },
+            {
+                "type": "card",
+                "icon": "grid-outline",
+                "url": f'{reverse("suggested-tickets-card")}?view_type=card',
+                "attrs": """ title='Card' """,
+            },
+        ]
+
+
+@method_decorator(login_required, name="dispatch")
+class AllTicketsNav(_TicketTabNavBase):
+    """
+    Independent Nav for the All Tickets tab.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.search_url = reverse("all-tickets-list")
+        self.search_swap_target = "#allTicketsListContainer"
+        self.view_types = [
+            {
+                "type": "list",
+                "icon": "list-outline",
+                "url": f'{reverse("all-tickets-list")}?view_type=list',
+                "attrs": """ title='List' """,
+            },
+            {
+                "type": "card",
+                "icon": "grid-outline",
+                "url": f'{reverse("all-tickets-card")}?view_type=card',
+                "attrs": """ title='Card' """,
+            },
+        ]
+
+
+class MyTicketsTabShell(AttendanceTabContentShell):
+    nav_url_name = "my-tickets-nav"
+    container_id = "myTicketsListContainer"
+    tabs_root_id = "ticketPipelineContainer"
+
+
+class SuggestedTicketsTabShell(AttendanceTabContentShell):
+    nav_url_name = "suggested-tickets-nav"
+    container_id = "suggestedTicketsListContainer"
+    tabs_root_id = "ticketPipelineContainer"
+
+
+class AllTicketsTabShell(AttendanceTabContentShell):
+    nav_url_name = "all-tickets-nav"
+    container_id = "allTicketsListContainer"
+    tabs_root_id = "ticketPipelineContainer"
 
 
 @method_decorator(login_required, name="dispatch")
@@ -124,10 +196,16 @@ class TicketTabView(HorillaTabView):
         super().__init__(**kwargs)
         self.view_id = "ticketPipelineContainer"
 
-        view_type = self.request.GET.get("view_type", "list")
-        url = reverse("ticket-tab-card")
-        if view_type == "list":
-            url = reverse("ticket-tab-list")
+        if not self.request or not self.request.user.is_authenticated:
+            self.tabs = []
+            return
+
+        extra_params = self.request.GET.copy()
+        extra_params.pop("view", None)
+        query_string = extra_params.urlencode()
+
+        def with_query(url):
+            return f"{url}?{query_string}" if query_string else url
 
         employee = self.request.user.employee_get
         base_qs = Ticket.objects.all()
@@ -164,14 +242,12 @@ class TicketTabView(HorillaTabView):
         self.tabs = [
             {
                 "title": _("My Tickets"),
-                # "url":f'{ reverse("ticket-pipeline-view")}?ticket_tab=my_tickets&',
-                "url": f"{url}?ticket_tab=my_tickets",
+                "url": with_query(reverse("my-tickets-tab-shell")),
                 "badge": my_tickets_count,
             },
             {
                 "title": _("Suggested Tickets"),
-                # "url":f'{ reverse("ticket-pipeline-view")}?ticket_tab=suggested_tickets&',
-                "url": f"{url}?ticket_tab=suggested_tickets",
+                "url": with_query(reverse("suggested-tickets-tab-shell")),
                 "badge": suggested_tickets_count,
             },
         ]
@@ -188,8 +264,7 @@ class TicketTabView(HorillaTabView):
             self.tabs.append(
                 {
                     "title": _("All Tickets"),
-                    # "url":f'{ reverse("ticket-pipeline-view")}?ticket_tab=all_tickets&',
-                    "url": f"{url}?ticket_tab=all_tickets",
+                    "url": with_query(reverse("all-tickets-tab-shell")),
                     "badge": all_tickets_count,
                 }
             )
@@ -200,42 +275,10 @@ class TicketTabView(HorillaTabView):
         return context
 
 
-# class TicketPipelineTabView(Pipeline):
-#     """
-#     Offboarding Pipeline View
-#     """
-#     grouper = "status"
-#     allowed_fields = [
-#         {
-#             "field" : "status",
-#             "model": Ticket,
-#             "url": reverse_lazy("ticket-tab-list"),
-#             "filter": TicketFilter,
-#             "parameters": [
-#                 "pipeline_status={status}",
-#             ],
-#             "actions": [],
-#         }
-#     ]
-#     def get_queryset(self):
-#         super().get_queryset()
-#         class Ticket():
-#             def __init__(self,status):
-#                 self.name = status
-#                 self.status = status[0]
-
-#             def __str__(self):
-#                 return self.name[1]
-
-#         status = [Ticket(status) for status in TICKET_STATUS]
-#         self.queryset = status
-#         return self.queryset
-
-
 @method_decorator(login_required, name="dispatch")
-class TicketListView(HorillaListView):
+class TicketListBase(HorillaListView):
     """
-    Pipeline List View
+    Shared columns/actions/queryset base for each Tickets tab's own list.
     """
 
     model = Ticket
@@ -349,63 +392,99 @@ class TicketListView(HorillaListView):
     ]
     row_status_class = "new-{new} in_progress-{in_progress} on_hold-{on_hold} resolved-{resolved} canceled-{canceled}"
 
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        if self.request.GET.get("ticket_tab") == "all_tickets":
-            if (
-                self.request.user.has_perm("helpdesk.view_claimrequest")
-                or self.request.user.has_perm("helpdesk.change_claimrequest")
-                or self.request.user.has_perm("helpdesk.change_ticket")
-                or self.request.user.has_perm("helpdesk.delete_ticket")
-            ):
-                self.action_method = "ticket_action_col"
-            else:
-                self.action_method = None
-
     def get_queryset(self):
         queryset = super().get_queryset()
         if self.request.GET.get("is_active") != "false":
-            self.queryset = self.queryset.filter(is_active=True)
-
-        ticket_tab = self.request.GET.get("ticket_tab", "my_tickets")
-        if ticket_tab == "my_tickets":
-            return queryset.filter(employee_id=self.request.user.employee_get)
-
-        elif ticket_tab == "suggested_tickets":
-            employee = self.request.user.employee_get
-            qs_cpy = queryset
-            queryset = queryset.none()
-            if hasattr(employee, "employee_work_info"):
-                work_info = employee.employee_work_info
-                department = work_info.department_id
-                job_position = work_info.job_position_id
-
-                if department:
-                    queryset |= qs_cpy.filter(
-                        raised_on=department.id, assigning_type="department"
-                    )
-
-                if job_position:
-                    queryset |= qs_cpy.filter(
-                        raised_on=job_position.id, assigning_type="job_position"
-                    )
-
-            queryset |= qs_cpy.filter(
-                raised_on=employee.id, assigning_type="individual"
-            )
-            return queryset.distinct()
-
-        elif ticket_tab == "all_tickets":
-            queryset = filtersubordinates(
-                self.request,
-                queryset,
-                "helpdesk.view_ticket",
-            )
-            return queryset
+            queryset = queryset.filter(is_active=True)
+        return queryset
 
 
 @method_decorator(login_required, name="dispatch")
-class TicketCardView(HorillaKanbanView):
+class MyTicketsList(TicketListBase):
+    """
+    List view of the My Tickets tab.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("my-tickets-list")
+        self.request.GET = self.request.GET.copy()
+        self.request.GET["ticket_tab"] = "my_tickets"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(employee_id=self.request.user.employee_get)
+
+
+@method_decorator(login_required, name="dispatch")
+class SuggestedTicketsList(TicketListBase):
+    """
+    List view of the Suggested Tickets tab.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("suggested-tickets-list")
+        self.request.GET = self.request.GET.copy()
+        self.request.GET["ticket_tab"] = "suggested_tickets"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        employee = self.request.user.employee_get
+        qs_cpy = queryset
+        queryset = queryset.none()
+        if hasattr(employee, "employee_work_info"):
+            work_info = employee.employee_work_info
+            department = work_info.department_id
+            job_position = work_info.job_position_id
+
+            if department:
+                queryset |= qs_cpy.filter(
+                    raised_on=department.id, assigning_type="department"
+                )
+
+            if job_position:
+                queryset |= qs_cpy.filter(
+                    raised_on=job_position.id, assigning_type="job_position"
+                )
+
+        queryset |= qs_cpy.filter(raised_on=employee.id, assigning_type="individual")
+        return queryset.distinct()
+
+
+@method_decorator(login_required, name="dispatch")
+class AllTicketsList(TicketListBase):
+    """
+    List view of the All Tickets tab.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("all-tickets-list")
+        self.request.GET = self.request.GET.copy()
+        self.request.GET["ticket_tab"] = "all_tickets"
+        if (
+            self.request.user.has_perm("helpdesk.view_claimrequest")
+            or self.request.user.has_perm("helpdesk.change_claimrequest")
+            or self.request.user.has_perm("helpdesk.change_ticket")
+            or self.request.user.has_perm("helpdesk.delete_ticket")
+        ):
+            self.action_method = "ticket_action_col"
+        else:
+            self.action_method = None
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return filtersubordinates(self.request, queryset, "helpdesk.view_ticket")
+
+
+@method_decorator(login_required, name="dispatch")
+class TicketCardBase(HorillaKanbanView):
+    """
+    Shared columns/actions/queryset base for each Tickets tab's own kanban
+    board.
+    """
+
     model = Ticket
     filter_class = TicketFilter
     group_key = "status"
@@ -427,38 +506,79 @@ class TicketCardView(HorillaKanbanView):
         self.queryset = super().get_queryset()
         if self.request.GET.get("is_active") != "false":
             self.queryset = self.queryset.filter(is_active=True)
+        return self.queryset
 
-        ticket_tab = self.request.GET.get("ticket_tab", "my_tickets")
 
-        if ticket_tab == "my_tickets":
-            self.queryset = self.queryset.filter(
-                employee_id=self.request.user.employee_get
-            )
-            return self.queryset
+@method_decorator(login_required, name="dispatch")
+class MyTicketsCard(TicketCardBase):
+    """
+    Kanban board of the My Tickets tab.
+    """
 
-        elif ticket_tab == "suggested_tickets":
-            employee = self.request.user.employee_get
-            qs_cpy = self.queryset
-            queryset = self.queryset.none()
-            if hasattr(employee, "employee_work_info"):
-                work_info = employee.employee_work_info
-                department = work_info.department_id
-                job_position = work_info.job_position_id
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("my-tickets-card")
+        self.request.GET = self.request.GET.copy()
+        self.request.GET["ticket_tab"] = "my_tickets"
 
-                if department:
-                    queryset |= qs_cpy.filter(
-                        raised_on=department.id, assigning_type="department"
-                    )
+    def get_queryset(self):
+        self.queryset = (
+            super().get_queryset().filter(employee_id=self.request.user.employee_get)
+        )
+        return self.queryset
 
-                if job_position:
-                    queryset |= qs_cpy.filter(
-                        raised_on=job_position.id, assigning_type="job_position"
-                    )
 
-            queryset |= qs_cpy.filter(
-                raised_on=employee.id, assigning_type="individual"
-            )
-            self.queryset = queryset.distinct()
-            return self.queryset
+@method_decorator(login_required, name="dispatch")
+class SuggestedTicketsCard(TicketCardBase):
+    """
+    Kanban board of the Suggested Tickets tab.
+    """
 
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("suggested-tickets-card")
+        self.request.GET = self.request.GET.copy()
+        self.request.GET["ticket_tab"] = "suggested_tickets"
+
+    def get_queryset(self):
+        base_qs = super().get_queryset()
+        employee = self.request.user.employee_get
+        queryset = base_qs.none()
+        if hasattr(employee, "employee_work_info"):
+            work_info = employee.employee_work_info
+            department = work_info.department_id
+            job_position = work_info.job_position_id
+
+            if department:
+                queryset |= base_qs.filter(
+                    raised_on=department.id, assigning_type="department"
+                )
+
+            if job_position:
+                queryset |= base_qs.filter(
+                    raised_on=job_position.id, assigning_type="job_position"
+                )
+
+        queryset |= base_qs.filter(raised_on=employee.id, assigning_type="individual")
+        self.queryset = queryset.distinct()
+        return self.queryset
+
+
+@method_decorator(login_required, name="dispatch")
+class AllTicketsCard(TicketCardBase):
+    """
+    Kanban board of the All Tickets tab.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("all-tickets-card")
+        self.request.GET = self.request.GET.copy()
+        self.request.GET["ticket_tab"] = "all_tickets"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.queryset = filtersubordinates(
+            self.request, queryset, "helpdesk.view_ticket"
+        )
         return self.queryset

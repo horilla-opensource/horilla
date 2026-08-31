@@ -26,9 +26,7 @@
 
     {% include "generic/components.html" %}
 
-    {% for path in script_static_paths %}
-        <script src="{% static path %}"></script>
-    {% endfor %}
+    <script src="{% static 'tickets/action.js' %}"></script>
 
     <div
         class="oh-checkpoint-badge mb-2"
@@ -38,15 +36,13 @@
         style="display: none"
     ></div>
 
-    {% if nav_url %}
-        <div hx-get="{{nav_url}}?{{request.GET.urlencode}}" hx-trigger="load">
-        </div>
-    {% endif %}
-
-    {% if view_url %}
-        <div class="oh-wrapper" id="pipelineContainer">
-        </div>
-    {% endif %}
-
+    <div
+        class="oh-wrapper"
+        id="listContainer"
+        hx-get="{% url 'ticket-tab' %}?{{request.GET.urlencode}}"
+        hx-trigger="load"
+    >
+        <div class="mt-4 animated-background" style="height: 600px"></div>
+    </div>
 
 {% endblock content %}

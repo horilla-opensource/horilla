@@ -102,16 +102,47 @@ urlpatterns = [
     ),
     # path("ticket-view/", views.ticket_view, name="ticket-view"),
     path("ticket-view/", pipeline.TicketPipelineView.as_view(), name="ticket-view"),
-    path(
-        "ticket-pipeline-nav/",
-        pipeline.TicketPipelineNav.as_view(),
-        name="ticket-pipeline-nav",
-    ),
-    path("get-ticket-tabs/", pipeline.TicketTabView.as_view(), name="get-ticket-tabs"),
     path("ticket-tab/", pipeline.TicketTabView.as_view(), name="ticket-tab"),
-    path("ticket-tab-list/", pipeline.TicketListView.as_view(), name="ticket-tab-list"),
-    path("ticket-tab-card/", pipeline.TicketCardView.as_view(), name="ticket-tab-card"),
-    # path("ticket-pipeline-view/", pipeline.TicketPipelineTabView.as_view(), name="ticket-pipeline-view"),
+    path("my-tickets-nav/", pipeline.MyTicketsNav.as_view(), name="my-tickets-nav"),
+    path(
+        "suggested-tickets-nav/",
+        pipeline.SuggestedTicketsNav.as_view(),
+        name="suggested-tickets-nav",
+    ),
+    path("all-tickets-nav/", pipeline.AllTicketsNav.as_view(), name="all-tickets-nav"),
+    path(
+        "my-tickets-tab-shell/",
+        pipeline.MyTicketsTabShell.as_view(),
+        name="my-tickets-tab-shell",
+    ),
+    path(
+        "suggested-tickets-tab-shell/",
+        pipeline.SuggestedTicketsTabShell.as_view(),
+        name="suggested-tickets-tab-shell",
+    ),
+    path(
+        "all-tickets-tab-shell/",
+        pipeline.AllTicketsTabShell.as_view(),
+        name="all-tickets-tab-shell",
+    ),
+    path("my-tickets-list/", pipeline.MyTicketsList.as_view(), name="my-tickets-list"),
+    path(
+        "suggested-tickets-list/",
+        pipeline.SuggestedTicketsList.as_view(),
+        name="suggested-tickets-list",
+    ),
+    path(
+        "all-tickets-list/", pipeline.AllTicketsList.as_view(), name="all-tickets-list"
+    ),
+    path("my-tickets-card/", pipeline.MyTicketsCard.as_view(), name="my-tickets-card"),
+    path(
+        "suggested-tickets-card/",
+        pipeline.SuggestedTicketsCard.as_view(),
+        name="suggested-tickets-card",
+    ),
+    path(
+        "all-tickets-card/", pipeline.AllTicketsCard.as_view(), name="all-tickets-card"
+    ),
     path(
         "ticket-create/",
         ticket_type.TicketsCreateFormView.as_view(),
