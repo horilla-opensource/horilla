@@ -138,6 +138,11 @@ urlpatterns = [
         asset_category.AssetCategoryNav.as_view(),
         name="asset-category-nav",
     ),
+    path(
+        "asset-category-list/",
+        asset_category.AssetCategoryListView.as_view(),
+        name="asset-category-list",
+    ),
     # path(
     #     "asset-category-creation",
     #     views.asset_category_creation,
@@ -393,9 +398,34 @@ urlpatterns = [
         name="list-asset-allocation",
     ),
     path(
-        "nav-asset-request-allocation/",
-        request_and_allocation.RequestAndAllocationNav.as_view(),
-        name="nav-asset-request-allocation",
+        "req-alloc-asset-nav/",
+        request_and_allocation.AssetNav.as_view(),
+        name="req-alloc-asset-nav",
+    ),
+    path(
+        "req-alloc-asset-request-nav/",
+        request_and_allocation.AssetRequestNav.as_view(),
+        name="req-alloc-asset-request-nav",
+    ),
+    path(
+        "req-alloc-asset-allocation-nav/",
+        request_and_allocation.AssetAllocationNav.as_view(),
+        name="req-alloc-asset-allocation-nav",
+    ),
+    path(
+        "req-alloc-asset-tab-shell/",
+        request_and_allocation.AssetTabShell.as_view(),
+        name="req-alloc-asset-tab-shell",
+    ),
+    path(
+        "req-alloc-asset-request-tab-shell/",
+        request_and_allocation.AssetRequestTabShell.as_view(),
+        name="req-alloc-asset-request-tab-shell",
+    ),
+    path(
+        "req-alloc-asset-allocation-tab-shell/",
+        request_and_allocation.AssetAllocationTabShell.as_view(),
+        name="req-alloc-asset-allocation-tab-shell",
     ),
     path(
         "asset-detail-view/<int:pk>/",
@@ -411,6 +441,16 @@ urlpatterns = [
         "asset-request-tab-list-view/<int:pk>/",
         asset_tab.AssetRequestTab.as_view(),
         name="asset-request-tab-list-view",
+    ),
+    path(
+        "asset-request-tab-shell/<int:pk>/",
+        asset_tab.AssetRequestIndividualTabShell.as_view(),
+        name="asset-request-tab-shell",
+    ),
+    path(
+        "asset-request-tab-nav/<int:pk>/",
+        asset_tab.AssetRequestIndividualNav.as_view(),
+        name="asset-request-tab-nav",
     ),
     path(
         "assets-tab-list-view/<int:pk>/",

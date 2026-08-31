@@ -10,12 +10,14 @@ from django.utils.translation import gettext_lazy as _
 
 from asset.cbv.request_and_allocation import AllocationList, AssetRequestList
 from asset.models import AssetAssignment, AssetRequest
+from base.cbv.work_shift_tab import ProfileTabShellView
 from employee.cbv.employee_profile import EmployeeProfileView
 from employee.models import Employee
-from horilla_views.cbv_methods import owner_can_enter
-from horilla_views.generic.cbv.views import HorillaTabView
+from horilla_views.cbv_methods import login_required, owner_can_enter
+from horilla_views.generic.cbv.views import HorillaNavView, HorillaTabView
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     owner_can_enter(
         "asset.view_assetassignment",
@@ -53,6 +55,7 @@ class AssetTabListView(AllocationList):
         return queryset
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     owner_can_enter(
         "asset.view_assetrequest", AssetRequest, employee_field="requested_employee_id"
@@ -79,6 +82,50 @@ class AssetRequestTab(AssetRequestList):
         pk = self.kwargs.get("pk")
         queryset = self.model.objects.filter(requested_employee_id=pk)
         return queryset
+
+
+class AssetRequestIndividualTabShell(ProfileTabShellView):
+    """
+    Shell for the Asset Request profile tab.
+    """
+
+    shell_target_id = "asset-request-shell"
+    nav_url_name = "asset-request-tab-nav"
+
+
+@method_decorator(
+    owner_can_enter(
+        "asset.view_assetrequest", AssetRequest, employee_field="requested_employee_id"
+    ),
+    name="dispatch",
+)
+class AssetRequestIndividualNav(HorillaNavView):
+    """
+    Minimal nav (Create button only) for the Asset Request profile tab -
+    matches the original create_asset_request_accessibility check (perm,
+    or viewing your own profile).
+    """
+
+    template_name = "generic/inline_nav.html"
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        pk = self.request.resolver_match.kwargs.get("pk")
+        self.search_url = reverse("asset-request-tab-list-view", kwargs={"pk": pk})
+        self.search_swap_target = "#asset-request-shell"
+        employee = Employee.objects.filter(pk=pk).first()
+        can_create = self.request.user.has_perm("asset.add_assetrequest") or (
+            employee and employee.employee_user_id == self.request.user
+        )
+        if can_create:
+            self.create_attrs = f"""
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-get="{reverse('asset-request-creation')}?pk={pk}"
+                hx-target="#genericModalBody"
+            """
+
+    nav_title = _("Asset Request")
 
 
 @method_decorator(
@@ -115,20 +162,7 @@ class AssetTabView(HorillaTabView):
             },
             {
                 "title": _("Asset Request"),
-                "url": f"{reverse('asset-request-tab-list-view',kwargs={'pk': pk})}",
-                "actions": [
-                    {
-                        "action": _("Create Request"),
-                        "accessibility": "asset.cbv.accessibility.create_asset_request_accessibility",
-                        "attrs": f"""
-                                data-toggle="oh-modal-toggle"
-                                data-target="#genericModal"
-                                hx-get="{reverse('asset-request-creation')}?pk={pk}"
-                                hx-target="#genericModalBody"
-                                style="cursor: pointer;"
-                                """,
-                    }
-                ],
+                "url": f"{reverse('asset-request-tab-shell',kwargs={'pk': pk})}",
             },
         ]
         return context
