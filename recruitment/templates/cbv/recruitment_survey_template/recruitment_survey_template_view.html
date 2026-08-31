@@ -1,0 +1,17 @@
+{% extends "index.html" %}
+{% load i18n static %}
+
+{% block content %}
+
+{% include "generic/components.html" %}
+
+<div
+	class="oh-wrapper"
+	id="listContainer"
+	hx-get="{% url 'survey-template-filter' %}"
+	hx-trigger="load"
+>
+	<div class="animated-background"></div>
+</div>
+
+{% endblock content %}

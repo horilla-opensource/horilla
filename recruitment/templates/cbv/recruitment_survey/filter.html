@@ -1,0 +1,39 @@
+{% load i18n %}
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+        <div
+            class="oh-accordion-header"
+            onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
+        >
+            {% trans "Survey Question" %}
+        </div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Question" %}</label>
+                        {{form.question}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Type" %}</label>
+                        {{form.type}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Recruitment" %}</label>
+                        {{form.recruitment_ids}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Options" %}</label>
+                        {{form.options}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

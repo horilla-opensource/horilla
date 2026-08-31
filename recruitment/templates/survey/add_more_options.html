@@ -3,12 +3,12 @@
   <div
     class="oh-input__group pt-2"
     id="{{ current_hx_target }}"
-    style="display: flex; padding-right: 0px;"
+    style="display: flex; align-items: center; gap: 8px; padding-right: 0px;"
   >
-    {{field_html}}
+    <div style="flex: 1">{{field_html}}</div>
     <a
       hx-get="{% url 'add-remove-options-field' %}"
-      class="oh-btn oh-btn--danger"
+      class="oh-btn oh-btn--danger oh-btn--sq-sm d-flex align-items-center justify-content-center flex-shrink-0"
       hx-target="#{{ current_hx_target }}"
       hx-swap="outerHTML"
       id="delete-link"

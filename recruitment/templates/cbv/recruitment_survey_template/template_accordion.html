@@ -1,0 +1,284 @@
+{% load i18n static %}
+<div id="{{ view_id }}">
+    <button
+        class="reload-record"
+        id="{{ view_id|safe }}Reload"
+        hidden
+        hx-get="{{ request.path }}?{{ saved_filters.urlencode }}"
+        hx-target="#{{ view_id|safe }}"
+        hx-swap="outerHTML"
+    ></button>
+    {% if show_filter_tags %}
+        {% include "generic/filter_tags.html" %}
+    {% endif %}
+
+    {% if queryset %}
+        {% if queryset.has_next or queryset.has_previous %}
+            <div class="flex flex-nowrap items-center justify-end gap-2 mb-2">
+                <div class="hlv-pagination inline-flex items-center h-8 gap-0.5 bg-white border border-[#e6e6e6] rounded-md px-1 flex-shrink-0">
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if queryset.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if queryset.has_previous %}
+                        hx-target="#{{ view_id }}"
+                        hx-get="{{ search_url }}?{{ request.GET.urlencode }}&page=1"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angles-left"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if queryset.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if queryset.has_previous %}
+                        hx-target="#{{ view_id }}"
+                        hx-get="{{ search_url }}?{{ request.GET.urlencode }}&page={{ queryset.previous_page_number }}"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angle-left"></i>
+                    </button>
+                    <div class="flex items-center gap-1 px-1 h-7 text-xs text-[#666] leading-none">
+                        <input
+                            type="number"
+                            name="page"
+                            min="1"
+                            max="{{ queryset.paginator.num_pages }}"
+                            value="{{ queryset.number }}"
+                            title="{% trans 'Enter a page number and press Enter' %}"
+                            class="w-9 h-6 m-0 py-0 px-1 text-center text-xs leading-6 border border-[#e6e6e6] rounded outline-none focus:border-primary-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                            hx-get="{{ search_url }}?{{ request.GET.urlencode }}"
+                            hx-target="#{{ view_id }}"
+                            hx-trigger="keyup[keyCode==13] changed, blur changed"
+                            onclick="this.select()"
+                        >
+                        <span class="inline-flex items-center h-6 leading-none whitespace-nowrap">/ {{ queryset.paginator.num_pages }}</span>
+                    </div>
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if queryset.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if queryset.has_next %}
+                        hx-target="#{{ view_id }}"
+                        hx-get="{{ search_url }}?{{ request.GET.urlencode }}&page={{ queryset.next_page_number }}"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if queryset.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if queryset.has_next %}
+                        hx-target="#{{ view_id }}"
+                        hx-get="{{ search_url }}?{{ request.GET.urlencode }}&page={{ queryset.paginator.num_pages }}"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angles-right"></i>
+                    </button>
+                </div>
+            </div>
+        {% endif %}
+        <div class="p-2 mt-2 shadow-card bg-white">
+            {% for instance in queryset %}
+                <div class="oh-accordion mb-3">
+                    <div class="oh-accordion-item">
+                        <div class="oh-accordion-header no-after d-flex justify-between align-center">
+                            <span class="oh-accordion-title text-sm d-flex items-center">
+                                {{ instance.title }}
+                                <div class="flex items-center">
+                                    <span
+                                        class="p-1 text-center w-[22px] h-[22px] text-xs flex justify-center items-center rounded-full bg-primary-600 text-primary-50 ms-2 mr-2"
+                                        title="{{ instance.recruitmentsurvey_set.count }} {% trans 'Questions' %}"
+                                        onclick="event.stopPropagation()"
+                                    >
+                                        {{ instance.recruitmentsurvey_set.count }}
+                                    </span>
+                                </div>
+                            </span>
+                            <div class="flex items-center gap-3">
+                                <ion-icon name="chevron-down-outline" class="accordion-chevron text-lg transition-transform duration-300"></ion-icon>
+                                <div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
+                                    <div class="oh-dropdown" x-data="{open: false}" @close-oh-dropdowns.window="open = false">
+                                        <button
+                                            class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
+                                            @click="const willOpen = !open; window.dispatchEvent(new CustomEvent('close-oh-dropdowns')); open = willOpen"
+                                            @click.outside="open = false"
+                                            title="{% trans 'Actions' %}"
+                                        >
+                                            <ion-icon
+                                                name="ellipsis-vertical"
+                                                role="img"
+                                                class="md hydrated"
+                                                aria-label="{% trans 'ellipsis vertical' %}"
+                                            ></ion-icon>
+                                        </button>
+                                        <div
+                                            class="oh-dropdown__menu oh-dropdown__menu--right"
+                                            x-show="open"
+                                            style="display: none"
+                                        >
+                                            <ul class="oh-dropdown__items">
+                                                <li class="oh-dropdown__item">
+                                                    <a
+                                                        hx-get="{% url 'survey-template-preview' %}?title={{ instance.title }}"
+                                                        hx-target="#survey-templates-container"
+                                                        hx-swap="outerHTML"
+                                                        class="oh-dropdown__link"
+                                                    >
+                                                        {% trans "Preview" %}
+                                                    </a>
+                                                </li>
+                                                {% if perms.recruitment.change_surveytemplate %}
+                                                    <li class="oh-dropdown__item">
+                                                        <a
+                                                            hx-get="{% url 'survey-template-question-add' %}?title={{ instance.title }}"
+                                                            hx-target="#genericModalBody"
+                                                            data-toggle="oh-modal-toggle"
+                                                            data-target="#genericModal"
+                                                            class="oh-dropdown__link"
+                                                        >
+                                                            {% trans "Add Questions" %}
+                                                        </a>
+                                                    </li>
+                                                    <li class="oh-dropdown__item">
+                                                        <a
+                                                            hx-get="{% url 'survey-template-create' %}?title={{ instance.title }}"
+                                                            hx-target="#genericModalBody"
+                                                            data-toggle="oh-modal-toggle"
+                                                            data-target="#genericModal"
+                                                            class="oh-dropdown__link"
+                                                        >
+                                                            {% trans "Edit" %}
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                {% if perms.recruitment.delete_surveytemplate and not instance.is_general_template %}
+                                                    <li class="oh-dropdown__item">
+                                                        <a
+                                                            href="{% url 'survey-template-delete' instance.pk %}"
+                                                            onclick="return confirm('{% trans "Do you want to delete this template" %}')"
+                                                            class="oh-dropdown__link text-danger"
+                                                        >
+                                                            {% trans "Delete" %}
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="oh-accordion-body d-none">
+                            {% with questions=instance.recruitmentsurvey_set.all %}
+                                {% if questions %}
+                                    <table class="w-full border border-[#ececec]">
+                                        <thead class="sticky top-0 bg-[white] z-[1]">
+                                            <tr class="border-b border-[#ececec]">
+                                                <th class="stickyleft size-1/2 text-sm font-medium text-left p-3">
+                                                    <div class="flex gap-3">
+                                                        <span>{% trans "Question" %}</span>
+                                                    </div>
+                                                </th>
+                                                <th class="text-sm font-medium text-left p-3 size-1/3">
+                                                    <div class="flex gap-3">
+                                                        <span>{% trans "Type" %}</span>
+                                                    </div>
+                                                </th>
+                                                {% if perms.recruitment.change_recruitmentsurvey or perms.recruitment.delete_recruitmentsurvey %}
+                                                    <th class="text-sm font-medium text-left p-3">
+                                                        <div class="flex gap-3 justify-center">
+                                                            <span>{% trans "Actions" %}</span>
+                                                        </div>
+                                                    </th>
+                                                {% endif %}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for question in questions %}
+                                                <tr class="border-b border-[#ebebeb]">
+                                                    <td
+                                                        class="stickyleft text-sm text-left p-3 text-[#666]"
+                                                        data-target="#genericModal"
+                                                        data-toggle="oh-modal-toggle"
+                                                        hx-get="{% url 'single-survey-view' question.id %}"
+                                                        hx-target="#genericModalBody"
+                                                    >
+                                                        <div class="flex gap-3 items-center">
+                                                            <img
+                                                                src="https://ui-avatars.com/api/?name={{ question.question }}&background=random"
+                                                                class="rounded-full"
+                                                                alt=""
+                                                                width="30"
+                                                            >
+                                                            <span>{{ question.question }}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-sm text-left p-3 text-[#666]">
+                                                        {{ question.get_type_display }}
+                                                    </td>
+                                                    {% if perms.recruitment.change_recruitmentsurvey or perms.recruitment.delete_recruitmentsurvey %}
+                                                        <td class="text-sm text-left p-3 text-[#666]">
+                                                            <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
+                                                                {% if perms.recruitment.change_recruitmentsurvey %}
+                                                                    <button
+                                                                        hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
+                                                                        data-toggle="oh-modal-toggle"
+                                                                        data-target="#genericModal"
+                                                                        hx-target="#genericModalBody"
+                                                                        class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
+                                                                        title="{% trans 'Edit' %}"
+                                                                    >
+                                                                        <ion-icon name="create-outline"></ion-icon>
+                                                                    </button>
+                                                                {% endif %}
+                                                                {% if perms.recruitment.delete_recruitmentsurvey %}
+                                                                    <form
+                                                                        hx-post="{% url 'recruitment-survey-question-template-delete' question.id %}"
+                                                                        hx-target="#{{ view_id }}"
+                                                                        hx-confirm="{% trans 'Do you want to delete this record?' %}"
+                                                                        onsubmit="event.stopPropagation()"
+                                                                    >
+                                                                        {% csrf_token %}
+                                                                        <button
+                                                                            type="submit"
+                                                                            class="oh-btn oh-btn--danger oh-btn--sq-sm"
+                                                                            title="{% trans 'Delete' %}"
+                                                                        >
+                                                                            <ion-icon name="trash-outline"></ion-icon>
+                                                                        </button>
+                                                                    </form>
+                                                                {% endif %}
+                                                            </div>
+                                                        </td>
+                                                    {% endif %}
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    <div class="oh-wrapper h-full" align="center">
+                                        <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
+                                            <div class="flex flex-col items-center justify-center h-full">
+                                                <img
+                                                    src="/static/horilla_theme/assets/img/no-records.svg"
+                                                    alt=""
+                                                    width="200"
+                                                    class="mb-4"
+                                                >
+                                                <p class="text-[#666] mb-5">{% trans "No records available at the moment" %}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="oh-empty">
+            <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}">
+            <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+            <p class="oh-empty__subtitle">{% trans "No template groups have been established yet." %}</p>
+        </div>
+    {% endif %}
+</div>

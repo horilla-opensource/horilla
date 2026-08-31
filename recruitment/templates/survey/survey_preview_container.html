@@ -1,13 +1,12 @@
 {% load i18n %}
-<div id="surveyTabsWrapper">
+<div id="survey-templates-container">
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h5 class="mb-0">{{template}} {% trans "Survey" %}</h5>
     <button
         type="button"
         class="oh-btn oh-btn--light-bkg"
-        hx-get="{% url 'recruitment-survey-question-template-view' %}"
-        hx-select="#surveyTabsWrapper"
-        hx-target="#surveyTabsWrapper"
+        hx-get="{% url 'list-survey-templates' %}"
+        hx-target="#survey-templates-container"
         hx-swap="outerHTML"
     >
         <ion-icon name="arrow-back-outline" class="me-1"></ion-icon>

@@ -1,0 +1,184 @@
+{% load i18n static %}
+<style>
+    .oh-kanban-card__title {
+        width: 280px;
+    }
+</style>
+<div id="{{ view_id }}">
+    <button
+        class="reload-record"
+        id="{{ view_id|safe }}Reload"
+        hidden
+        hx-get="{{ request.path }}?{{ saved_filters.urlencode }}"
+        hx-target="#{{ view_id|safe }}"
+        hx-swap="outerHTML"
+    ></button>
+    {% if show_filter_tags %}
+        {% include "generic/filter_tags.html" %}
+    {% endif %}
+
+    {% if queryset %}
+        {% if queryset.has_next or queryset.has_previous %}
+            <div class="flex flex-nowrap items-center justify-end gap-2 mb-2">
+                <div class="hlv-pagination inline-flex items-center h-8 gap-0.5 bg-white border border-[#e6e6e6] rounded-md px-1 flex-shrink-0">
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if queryset.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if queryset.has_previous %}
+                        hx-target="#{{ view_id }}"
+                        hx-get="{{ search_url }}?{{ request.GET.urlencode }}&page=1"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angles-left"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if queryset.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if queryset.has_previous %}
+                        hx-target="#{{ view_id }}"
+                        hx-get="{{ search_url }}?{{ request.GET.urlencode }}&page={{ queryset.previous_page_number }}"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angle-left"></i>
+                    </button>
+                    <div class="flex items-center gap-1 px-1 h-7 text-xs text-[#666] leading-none">
+                        <input
+                            type="number"
+                            name="page"
+                            min="1"
+                            max="{{ queryset.paginator.num_pages }}"
+                            value="{{ queryset.number }}"
+                            title="{% trans 'Enter a page number and press Enter' %}"
+                            class="w-9 h-6 m-0 py-0 px-1 text-center text-xs leading-6 border border-[#e6e6e6] rounded outline-none focus:border-primary-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                            hx-get="{{ search_url }}?{{ request.GET.urlencode }}"
+                            hx-target="#{{ view_id }}"
+                            hx-trigger="keyup[keyCode==13] changed, blur changed"
+                            onclick="this.select()"
+                        >
+                        <span class="inline-flex items-center h-6 leading-none whitespace-nowrap">/ {{ queryset.paginator.num_pages }}</span>
+                    </div>
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if queryset.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if queryset.has_next %}
+                        hx-target="#{{ view_id }}"
+                        hx-get="{{ search_url }}?{{ request.GET.urlencode }}&page={{ queryset.next_page_number }}"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if queryset.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
+                        {% if queryset.has_next %}
+                        hx-target="#{{ view_id }}"
+                        hx-get="{{ search_url }}?{{ request.GET.urlencode }}&page={{ queryset.paginator.num_pages }}"
+                        {% endif %}
+                    >
+                        <i class="fa-solid fa-angles-right"></i>
+                    </button>
+                </div>
+            </div>
+        {% endif %}
+        <div class="grid grid-cols-4 gap-4">
+            {% for question in queryset %}
+                <div
+                    class="border border-[#ebebeb] p-4 rounded-md shadow-card"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{% url 'single-survey-view' question.id %}"
+                    hx-target="#genericModalBody"
+                >
+                    <div class="flex gap-5 relative z-0">
+                        {% if perms.recruitment.delete_recruitmentsurvey or perms.recruitment.change_recruitmentsurvey or perms.recruitment.add_recruitmentsurvey %}
+                            <div
+                                class="absolute inline-block dropdown-wrapper right-0 -top-1"
+                                onclick="event.stopPropagation()"
+                            >
+                                <a
+                                    class="cursor-pointer dropdown-toggle"
+                                    role="button"
+                                >
+                                    <i class="fa-solid fa-ellipsis-vertical text-black"></i>
+                                </a>
+                                <div
+                                    class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200"
+                                    onclick="event.stopPropagation()"
+                                >
+                                    <ul class="text-xs">
+                                        {% if perms.recruitment.change_recruitmentsurvey %}
+                                            <li>
+                                                <button
+                                                    class="w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300"
+                                                    hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
+                                                    data-toggle="oh-modal-toggle"
+                                                    data-target="#genericModal"
+                                                    hx-target="#genericModalBody"
+                                                >
+                                                    {% trans "Edit" %}
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button
+                                                    class="w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300"
+                                                    hx-get="{% url 'recruitment-survey-question-template-duplicate' question.id %}"
+                                                    data-toggle="oh-modal-toggle"
+                                                    data-target="#genericModal"
+                                                    hx-target="#genericModalBody"
+                                                >
+                                                    {% trans "Duplicate" %}
+                                                </button>
+                                            </li>
+                                        {% endif %}
+                                        {% if perms.recruitment.delete_recruitmentsurvey %}
+                                            <li>
+                                                <form
+                                                    hx-post="{% url 'recruitment-survey-question-template-delete' question.id %}"
+                                                    hx-target="#{{ view_id }}"
+                                                    hx-confirm="{% trans 'Are you sure want to delete?' %}"
+                                                    onsubmit="event.stopPropagation()"
+                                                >
+                                                    {% csrf_token %}
+                                                    <button
+                                                        type="submit"
+                                                        class="text-danger w-full text-left px-3 py-1 hover:text-danger-dark transition duration-300"
+                                                    >
+                                                        {% trans "Delete" %}
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="mr-2">
+                            <h5 class="mb-1 font-medium text-sm">{{ question }}</h5>
+                            <p class="text-xs text-[#565E6C] mb-1">
+                                {% for rec in question.recruitment_ids.all %}
+                                    {{ rec }},&nbsp;
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="oh-empty">
+            <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}">
+            <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+            <p class="oh-empty__subtitle">{% trans "No records available at the moment" %}</p>
+        </div>
+    {% endif %}
+</div>
+<script>
+    $("#{{ view_id }} .dropdown-toggle").on("click", function () {
+        var dropdownMenu = $(this).next(".dropdown-menu");
+        var isOpen = !dropdownMenu.hasClass("hidden");
+        $("#{{ view_id }} .dropdown-menu").addClass("hidden");
+        if (!isOpen) {
+            dropdownMenu.removeClass("hidden");
+        }
+    });
+</script>
