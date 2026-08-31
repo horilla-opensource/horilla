@@ -151,20 +151,30 @@
 
 <script>
 	$(document).on("htmx:afterSettle", function (event) {
-		$(document).off("click.dropdown");
-		$(".dropdown-toggle").off("click.dropdown");
+		// Scoped to THIS kanban instance's own `.dropdown-toggle` elements
+		// (group-header and card actions) only: other components on the
+		// page — e.g. a pipeline shell's own "Actions" kebab rendered
+		// above this kanban board — reuse the same `dropdown-toggle`/
+		// `dropdown-menu` class names for an unrelated dropdown. A bare
+		// $(".dropdown-toggle") previously matched those too, so opening
+		// them immediately re-triggered this handler's rebind and closed
+		// them again on the same click. The document-level close handler
+		// is namespaced per kanban instance (view_id) rather than plain
+		// "click.dropdown" so re-registering it on the next afterSettle
+		// only replaces this instance's own handler, not every kanban
+		// board's.
+		var kanbanRoot = $("#{{ view_id|safe }}");
+		var closeNamespace = "click.dropdown-{{ view_id|safe }}";
+		var kanbanToggles = kanbanRoot.find(".dropdown-toggle");
 
-		// Scoped to `.dropdown-toggle`'s own menus only: other components on
-		// the page (e.g. the pipeline tab bar's "Actions" kebab) use the
-		// same `.dropdown-menu` class name for an unrelated dropdown, and
-		// this handler used to blindly hide every `.dropdown-menu` on the
-		// page — closing those unrelated menus too on any click, anywhere,
-		// including clicks that were opening them in the first place.
+		kanbanToggles.off("click.dropdown");
+		$(document).off(closeNamespace);
+
 		var kanbanMenus = function () {
-			return $(".dropdown-toggle").next(".dropdown-menu");
+			return kanbanRoot.find(".dropdown-toggle").next(".dropdown-menu");
 		};
 
-		$(".dropdown-toggle").on("click.dropdown", function (event) {
+		kanbanToggles.on("click.dropdown", function (event) {
 			event.stopPropagation();
 
 			const dropdownMenu = $(this).next(".dropdown-menu");
@@ -177,7 +187,7 @@
 			}
 		});
 
-		$(document).on("click.dropdown", function () {
+		$(document).on(closeNamespace, function () {
 			kanbanMenus().addClass("hidden");
 		});
 	});
