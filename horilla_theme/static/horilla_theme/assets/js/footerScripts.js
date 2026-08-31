@@ -567,18 +567,6 @@ function toggleAccordion(btn) {
     const icon = btn.querySelector(".icon");
     const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
 
-    // Collapse all other panels
-    document.querySelectorAll(".accordion-panel").forEach((p) => {
-        p.style.maxHeight = null;
-        const prevBtn = p.previousElementSibling;
-        if (!prevBtn) {
-            return;
-        }
-        setAccordionFoldIcon(prevBtn.querySelector(".icon"), false);
-        prevBtn.classList.remove("bg-primary-600", "text-white");
-        prevBtn.classList.add("bg-primary-100", "text-primary-600");
-    });
-
     // Toggle current panel
     if (!isOpen) {
         // Content for this panel arrives async via htmx (hx-get/hx-target),
@@ -709,17 +697,6 @@ document.querySelectorAll('.accordion-btn').forEach((btn) => {
         const panel = btn.nextElementSibling;
         const icon = btn.querySelector('.icon');
         const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
-
-        // Collapse all others (optional — comment this block if you want multiple open)
-        document.querySelectorAll('.accordion-panel').forEach(p => {
-            p.style.maxHeight = null;
-            const prevBtn = p.previousElementSibling;
-            if (prevBtn) {
-                setAccordionFoldIcon(prevBtn.querySelector('.icon'), false);
-                prevBtn.classList.remove("bg-primary-600", "text-white");
-                prevBtn.classList.add("bg-primary-100", "text-primary-600");
-            }
-        });
 
         // Toggle current
         if (!isOpen) {
