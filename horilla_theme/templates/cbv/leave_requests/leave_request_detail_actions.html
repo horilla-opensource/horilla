@@ -3,34 +3,6 @@
 {% with can_change=perms.leave.change_leaverequest can_delete=perms.leave.delete_leaverequest can_penalty=perms.base.change_penaltyaccounts leave_manager=request.user|is_leave_approval_manager %}
 <div class="flex items-center gap-2 flex-wrap">
 
-    {# Approve Button #}
-    {% if instance.is_approved and instance.status == 'requested' and can_change or can_manage or leave_manager %}
-        <a
-            href="#"
-            hx-get="{% url 'request-approve' instance.id %}"
-            hx-swap="none"
-            title="{% trans 'Approve' %}"
-            class="oh-btn oh-btn--success px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-            {% if instance.end_date.month > current_date.month %}
-                hx-confirm="{% trans "This leave request is for the month of" %} {{ instance.start_date|date:'F' }}. {% trans "Approval depends on the" %} {{ instance.employee_id.get_full_name }} {% trans "having available leave days for this month." %}"
-            {% else %}
-                hx-confirm='{% trans "Do you really want to approve this request?" %}'
-            {% endif %}
-        >
-            <ion-icon name="checkmark-outline"></ion-icon>
-            {% trans "Approve" %}
-        </a>
-    {% else %}
-        <button
-            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-            title="{% trans 'Approve' %}"
-            disabled
-        >
-            <ion-icon name="checkmark-outline"></ion-icon>
-            {% trans "Approve" %}
-        </button>
-    {% endif %}
-
     {# Penalty Button #}
     {% if can_manage or can_penalty or leave_manager %}
         <button
@@ -53,31 +25,6 @@
         >
             <ion-icon name="information-circle-outline"></ion-icon>
             {% trans "Penalty" %}
-        </button>
-    {% endif %}
-
-    {# Reject Button #}
-    {% if instance.status != 'rejected' and instance.end_date >= current_date and can_change or can_manage or leave_manager %}
-        <a
-            type="submit"
-            data-toggle="oh-modal-toggle"
-            data-target="#rejectModal"
-            hx-get="{% url 'request-cancel' instance.id %}"
-            hx-target="#rejectForm"
-            title="{% trans 'Reject' %}"
-            class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-        >
-            <ion-icon name="close-circle-outline"></ion-icon>
-            {% trans "Reject" %}
-        </a>
-    {% else %}
-        <button
-            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-            title="{% trans 'Reject' %}"
-            disabled
-        >
-            <ion-icon name="close-circle-outline"></ion-icon>
-            {% trans "Reject" %}
         </button>
     {% endif %}
 
@@ -134,6 +81,59 @@
         >
             <ion-icon name="trash-outline"></ion-icon>
             {% trans "Delete" %}
+        </button>
+    {% endif %}
+
+    {# Approve Button #}
+    {% if instance.is_approved and instance.status == 'requested' and can_change or can_manage or leave_manager %}
+        <a
+            href="#"
+            hx-get="{% url 'request-approve' instance.id %}"
+            hx-swap="none"
+            title="{% trans 'Approve' %}"
+            class="oh-btn oh-btn--success px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            {% if instance.end_date.month > current_date.month %}
+                hx-confirm="{% trans "This leave request is for the month of" %} {{ instance.start_date|date:'F' }}. {% trans "Approval depends on the" %} {{ instance.employee_id.get_full_name }} {% trans "having available leave days for this month." %}"
+            {% else %}
+                hx-confirm='{% trans "Do you really want to approve this request?" %}'
+            {% endif %}
+        >
+            <ion-icon name="checkmark-outline"></ion-icon>
+            {% trans "Approve" %}
+        </a>
+    {% else %}
+        <button
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Approve' %}"
+            disabled
+        >
+            <ion-icon name="checkmark-outline"></ion-icon>
+            {% trans "Approve" %}
+        </button>
+    {% endif %}
+
+    {# Reject Button #}
+    {% if instance.status != 'rejected' and instance.end_date >= current_date and can_change or can_manage or leave_manager %}
+        <a
+            type="submit"
+            data-toggle="oh-modal-toggle"
+            data-target="#rejectModal"
+            hx-get="{% url 'request-cancel' instance.id %}"
+            hx-target="#rejectForm"
+            title="{% trans 'Reject' %}"
+            class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+        >
+            <ion-icon name="close-circle-outline"></ion-icon>
+            {% trans "Reject" %}
+        </a>
+    {% else %}
+        <button
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Reject' %}"
+            disabled
+        >
+            <ion-icon name="close-circle-outline"></ion-icon>
+            {% trans "Reject" %}
         </button>
     {% endif %}
 </div>
