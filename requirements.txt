@@ -75,7 +75,7 @@ phonenumbers==9.0.37
 pycountry==24.6.1
 python-bidi
 rapidfuzz==3.9.6
-spacy==3.7.5
+spacy==3.8.16
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
 
 # Misc
