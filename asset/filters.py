@@ -7,6 +7,7 @@ import uuid
 import django_filters
 from django import forms
 from django.db.models import Q
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_filters import FilterSet
 
@@ -96,16 +97,7 @@ class AssetFilter(CustomFilterSet):
 
     search = django_filters.CharFilter(method="search_method")
     category = django_filters.CharFilter(field_name="asset_category_id")
-    asset_purchase_date_from = django_filters.DateFilter(
-        field_name="asset_purchase_date",
-        lookup_expr="gte",
-        widget=forms.DateInput(attrs={"type": "date"}),
-    )
-    asset_purchase_date_till = django_filters.DateFilter(
-        field_name="asset_purchase_date",
-        lookup_expr="lte",
-        widget=forms.DateInput(attrs={"type": "date"}),
-    )
+    expired = django_filters.BooleanFilter(method="filter_expired")
 
     class Meta:
         """
@@ -132,6 +124,16 @@ class AssetFilter(CustomFilterSet):
             | queryset.filter(asset_name__icontains=value)
             | queryset.filter(asset_category_id__asset_category_name__icontains=value)
         ).distinct()
+
+    def filter_expired(self, queryset, _, value):
+        """
+        Filters by Asset.is_expired, which is a derived property (an expiry
+        date in the past) rather than a stored field the ORM can filter on.
+        """
+        today = timezone.now().date()
+        if value:
+            return queryset.filter(expiry_date__lt=today)
+        return queryset.filter(Q(expiry_date__isnull=True) | Q(expiry_date__gte=today))
 
 
 class CustomAssetFilter(CustomFilterSet):

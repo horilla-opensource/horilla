@@ -633,43 +633,28 @@ def filter_pagination_asset_category(request):
 @permission_required(perm="asset.view_assetcategory")
 def asset_category_view(request):
     """
-    View function for rendering a paginated list of asset categories.
+    View function for rendering the Asset Category page shell.
+
+    The grouped-by-category asset list itself is rendered through the
+    standard HorillaViews nav/list pair (asset.cbv.asset_category
+    AssetCategoryNav / AssetCategoryListView), loaded via HTMX from the
+    page shell template.
     Args:
         request (HttpRequest): A Django HttpRequest object that contains information
         about the current request.
     Returns:
-        A rendered HTML template that displays a paginated list of asset categories.
+        A rendered HTML template that displays the Asset Category page.
     Raises:
         None
     """
 
-    # Deep-link support for e.g. the dashboard's "Total Value" card:
-    # ?asset_purchase_date_from=...&asset_purchase_date_till=.... The query
-    # string can't be relied on to survive down to each category's own
-    # nested asset list fetch - this page auto-submits its own (category-
-    # level) filter form on load, which htmx rebuilds the request URL
-    # from, dropping any param that isn't one of that form's own fields.
-    # Stash it in the session instead, which AssetListView.get_queryset
-    # picks up as a fallback, immune to that. A plain (non-deep-link)
-    # visit to this page clears any stale value instead of letting it
-    # linger indefinitely.
-    date_from = request.GET.get("asset_purchase_date_from")
-    date_till = request.GET.get("asset_purchase_date_till")
-    if date_from or date_till:
-        request.session["asset_purchase_date_deep_link"] = {
-            "from": date_from,
-            "till": date_till,
-        }
-    else:
-        request.session.pop("asset_purchase_date_deep_link", None)
-
-    queryset = AssetCategory.objects.all()
-    if queryset.exists():
-        template = "category/asset_category_view.html"
-    else:
-        template = "category/asset_empty.html"
-    context = filter_pagination_asset_category(request)
-    return render(request, template, context)
+    if not AssetCategory.objects.exists():
+        return render(request, "category/asset_empty.html")
+    return render(
+        request,
+        "category/asset_category_view.html",
+        {"dashboard": request.GET.get("dashboard")},
+    )
 
 
 @login_required

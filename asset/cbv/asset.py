@@ -25,14 +25,7 @@ class AssetListView(HorillaListView):
         (_("Status"), "asset_status_col"),
         "asset_lot_number_id",
     ]
-    # False: this view renders once per expanded category on the same
-    # page, and filter_tags.html's chip container/handlers use a fixed,
-    # non-unique id (#filterTagContainerSectionNav) -- with it True,
-    # expanding more than one category creates duplicate ids and
-    # duplicate handlers all fighting over the same (wrong) container.
-    # The top-level "Filters:" row (see asset_category_view.html) covers
-    # this instead.
-    show_filter_tags = False
+    show_filter_tags = True
     bulk_select_option = True
     quick_export = True
     action_method = "action_column"
