@@ -1,0 +1,28 @@
+{% load i18n basefilters %}
+<div class="flex items-center gap-2 flex-wrap">
+
+    {# Edit - same accessibility rule as AttendanceListTab.actions' Edit action #}
+    {% if perms.attendance.change_attendance or request.user|is_reportingmanager or request.user == instance.employee_id.employee_user_id %}
+        <a
+            onclick="event.stopPropagation();"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Edit' %}"
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModalEdit"
+            hx-get="{% url 'update-attendance-request' instance.id %}?all_attendance=true"
+            hx-target="#genericModalEditBody"
+        >
+            <ion-icon name="create-outline"></ion-icon>
+            {% trans "Edit" %}
+        </a>
+    {% else %}
+        <button
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Edit' %}"
+            disabled
+        >
+            <ion-icon name="create-outline"></ion-icon>
+            {% trans "Edit" %}
+        </button>
+    {% endif %}
+</div>

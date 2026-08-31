@@ -1,38 +1,60 @@
 {% load i18n basefilters static %}
-
-<div class="oh-btn-group">
-    {% if perms.instance.change_attendance or perms.instance.delete_attendance or request.user|is_reportingmanager %}
+{% is_manager_of request.user instance as can_manage %}
+{% with can_change=perms.attendance.change_attendance can_delete=perms.attendance.delete_attendance %}
+<div class="flex items-center justify-center gap-1 flex-wrap">
+    {% if can_change or can_manage %}
         <a
-            class="oh-btn oh-btn--light-bkg oh-btn--secondary w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-            hx-get="{% url 'attendance-update' instance.id %}?dashboard={{dashboard}}"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            hx-get="{% url 'attendance-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
+            onclick="event.stopPropagation()"
             hx-target="#genericModalBody"
             hx-swap="innerHTML"
             data-toggle="oh-modal-toggle"
             data-target="#genericModal"
+            title="{% trans 'Edit' %}"
         >
             <ion-icon name="create-outline"></ion-icon>
             {% trans "Edit" %}
         </a>
+    {% else %}
+        <button
+            type="button"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Edit' %}"
+            disabled
+        >
+            <ion-icon name="create-outline"></ion-icon>
+            {% trans "Edit" %}
+        </button>
+    {% endif %}
 
+    {% if can_delete or can_manage %}
         <form
-            hx-post="{% url 'attendance-delete' instance.id  %}"
+            hx-post="{% url 'attendance-delete' instance.id %}"
+            onclick="event.stopPropagation()"
             hx-swap="none"
-            onsubmit="return confirm(`{% trans 'Are you sure want to delete this attendance?' %}`)"
-            method="post"
         >
             {% csrf_token %}
             <button
                 type="submit"
-                class="w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
+                class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                title="{% trans 'Remove' %}"
+                onclick="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
             >
-                <img
-                    src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}"
-                    alt="{% trans 'Delete' %}"
-                    width="16"
-                    class="mt-[-1px] filter brightness-0 invert"
-                >
+                <ion-icon name="trash-outline"></ion-icon>
                 {% trans 'Delete' %}
             </button>
         </form>
+    {% else %}
+        <button
+            type="button"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Delete' %}"
+            disabled
+        >
+            <ion-icon name="trash-outline"></ion-icon>
+            {% trans 'Delete' %}
+        </button>
     {% endif %}
 </div>
+{% endwith %}

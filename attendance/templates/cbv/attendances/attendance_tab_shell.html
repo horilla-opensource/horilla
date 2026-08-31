@@ -1,0 +1,39 @@
+{% load i18n %}
+<div hx-get="{% url nav_url_name %}" hx-trigger="load"></div>
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="{{ selected_instances_key_id }}"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+>
+</div>
+<div class="oh-wrapper" id="{{ container_id }}">
+    <div class="animated-background"></div>
+</div>
+<script>
+    (function () {
+        // Each Attendances tab now carries its own full Nav (its own
+        // #filterForm/#applyFilter, from the shared horilla_nav.html
+        // toolbar template) instead of one shared above all three. That
+        // template assumes exactly one live instance per page - if a
+        // second tab's Nav loads while a previously-visited tab's Nav is
+        // still sitting in the DOM, their duplicate ids collide and
+        // horilla_nav.html's own setup script (bare $("#filterForm"),
+        // $("#applyFilter")) can bind to the wrong one. Keep at most one
+        // tab's content alive at a time: whenever this tab (re)loads,
+        // clear every sibling tab's content and drop its "loaded" flag so
+        // horilla_tabs.html's own click handler re-fetches it fresh next
+        // time it's opened, rather than reusing a stale, ID-colliding copy.
+        var myContent = document.currentScript.closest(".oh-tabs__content");
+        var contents = myContent && myContent.closest(".oh-tabs__contents");
+        if (!contents) return;
+        var tabsRoot = contents.closest("#{{ tabs_root_id }}") || contents.parentElement;
+        contents.querySelectorAll(".oh-tabs__content").forEach(function (el) {
+            if (el === myContent || !el.innerHTML.trim()) return;
+            el.innerHTML = "";
+            var btn = tabsRoot && tabsRoot.querySelector('[data-target="#' + el.id + '"]');
+            if (btn) btn.removeAttribute("data-loaded");
+        });
+    })();
+</script>

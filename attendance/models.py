@@ -450,6 +450,20 @@ class Attendance(HorillaModel):
             context={"instance": self},
         )
 
+    def detail_actions(self):
+        """
+        This method is used to render the action buttons shown in the
+        attendance detail view modal (All Attendances tab). Mirrors the
+        row's Edit action (see AttendanceListTab.actions in
+        attendance/cbv/attendance_request.py) using the modal's labeled
+        pill-button convention.
+        """
+
+        return render_template(
+            path="cbv/attendance_request/detail_actions.html",
+            context={"instance": self},
+        )
+
     def request_options(self):
         """
         This method for get custom options for request.

@@ -1,86 +1,132 @@
 {% load i18n basefilters static %}
-
-{% if perms.instance.change_attendance or perms.instance.delete_attendance or request.user|is_reportingmanager %}
-    <div class="flex items-center justify-center gap-1">
+{% is_manager_of request.user instance as can_manage %}
+{% with can_change=perms.attendance.change_attendance can_delete=perms.attendance.delete_attendance %}
+<div class="flex items-center justify-center gap-1 flex-wrap">
+    {% if can_change or can_manage %}
         <a
-            class="oh-btn oh-btn--light-bkg oh-btn--secondary h-8 w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
             data-toggle="oh-modal-toggle"
             data-target="#genericModal"
-            hx-get="{% url 'attendance-update' instance.id %}?instances_ids={{ instance.ordered_ids }}"
+            hx-get="{% url 'attendance-update' instance.id %}?instance_ids={{ instance.ordered_ids }}"
+            onclick="event.stopPropagation()"
             hx-swap="innerHTML"
             hx-target="#genericModalBody"
         >
-            <ion-icon name="create-outline"></ion-icon>{% trans "Edit" %}
+            <ion-icon name="create-outline"></ion-icon>
+            {% trans "Edit" %}
         </a>
+    {% else %}
+        <button
+            type="button"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Edit' %}"
+            disabled
+        >
+            <ion-icon name="create-outline"></ion-icon>
+            {% trans "Edit" %}
+        </button>
+    {% endif %}
 
-        {% if instance.attendance_overtime_approve %}
-            <a
-                href="#"
-                onclick="event.stopPropagation()"
-                class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300 oh-btn--disabled"
+    {% if can_delete or can_manage %}
+        <form
+            hx-post="{% url 'attendance-delete' instance.id %}"
+            onclick="event.stopPropagation()"
+            hx-swap="none"
+        >
+            {% csrf_token %}
+            <button
+                type="submit"
+                class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                title="{% trans 'Remove' %}"
+                onclick="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
             >
-                <img
-                    src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
-                    alt="{% trans 'Approve' %}"
-                    width="13"
-                    class="filter brightness-0 invert"
-                >
-                {% trans 'Approve' %}
-            </a>
+                <ion-icon name="trash-outline"></ion-icon>
+                {% trans "Delete" %}
+            </button>
+        </form>
+    {% else %}
+        <button
+            type="button"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Delete' %}"
+            disabled
+        >
+            <ion-icon name="trash-outline"></ion-icon>
+            {% trans "Delete" %}
+        </button>
+    {% endif %}
+
+    {% if can_change or can_manage %}
+        {% if instance.attendance_overtime_approve %}
+            <button
+                type="button"
+                class="oh-btn oh-btn--success px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300 oh-btn--disabled"
+                title="{% trans 'Approved' %}"
+                onclick="event.stopPropagation()"
+            >
+                <ion-icon name="checkmark-done-outline"></ion-icon>
+                {% trans 'Approved' %}
+            </button>
         {% elif minot <= instance.overtime_second %}
+            <button
+                type="button"
+                class="oh-btn oh-btn--success px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                title="{% trans 'Approve Overtime' %}"
+                onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
+                    Swal.fire({
+                        title: '{% trans 'Are you sure?' %}',
+                        text: '{% trans 'Do you want to approve this overtime?' %}',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#008000',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: '{% trans 'Confirm' %}',
+                        cancelButtonText: '{% trans 'Cancel' %}'
+                    }).then(function(result) {
+                        if (result.isConfirmed) {
+                            var f = document.getElementById('ot-approve-tab-' + pk);
+                            if (f && f.requestSubmit) f.requestSubmit();
+                        }
+                    });
+                })({{ instance.id }}); return false"
+            >
+                <ion-icon name="checkmark-done-outline"></ion-icon>
+                {% trans "Approve" %}
+            </button>
             <form
+                id="ot-approve-tab-{{ instance.id }}"
                 hx-post="{% url 'approve-overtime' instance.id %}"
                 hx-swap="none"
-                hx-confirm="{% trans 'Do you want to approve this overtime?' %}"
-                style="display: inline; margin: 0; padding: 0; border: none; background: none"
-                onclick="event.stopPropagation()"
+                hidden
             >
                 {% csrf_token %}
-                <button
-                    type="submit"
-                    title="{% trans 'Approve Overtime' %}"
-                    class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300"
-                >
-                    <img
-                        src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
-                        alt="{% trans 'Approve' %}"
-                        width="13"
-                        class="filter brightness-0 invert"
-                    >
-                    {% trans "Approve" %}
-                </button>
             </form>
         {% elif instance.overtime_second >= 60 %}
-            <a
-                href="#"
+            <button
+                type="button"
+                class="oh-btn oh-btn--warning px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
                 title="{% trans 'Approve Overtime (OT < min.OT)' %}"
-                class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300"
                 onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
-					Swal.fire({
-						title: '{% trans 'Are you sure?' %}',
-						text: '{% trans 'This does not satisfy the minimum OT requirement!' %}',
-						icon: 'warning',
-						showCancelButton: true,
-						confirmButtonColor: '#008000',
-						cancelButtonColor: '#6c757d',
-						confirmButtonText: 'Approve',
-						cancelButtonText: i18nMessages.cancel
-					}).then(function(result) {
-						if (result.isConfirmed) {
-							var f = document.getElementById('ot-approve-tab-' + pk);
-							if (f && f.requestSubmit) f.requestSubmit();
-						}
-					});
-				})({{ instance.id }}); return false"
+                    Swal.fire({
+                        title: '{% trans 'Are you sure?' %}',
+                        text: '{% trans 'This does not satisfy the minimum OT requirement!' %}',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#008000',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: '{% trans 'Approve' %}',
+                        cancelButtonText: '{% trans 'Cancel' %}'
+                    }).then(function(result) {
+                        if (result.isConfirmed) {
+                            var f = document.getElementById('ot-approve-tab-' + pk);
+                            if (f && f.requestSubmit) f.requestSubmit();
+                        }
+                    });
+                })({{ instance.id }}); return false"
             >
-                <img
-                    src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
-                    alt="{% trans 'Approve' %}"
-                    width="13"
-                    class="filter brightness-0 invert"
-                >
+                <ion-icon name="checkmark-done-outline"></ion-icon>
                 {% trans "Approve" %}
-            </a>
+            </button>
             <form
                 id="ot-approve-tab-{{ instance.id }}"
                 hx-post="{% url 'approve-overtime' instance.id %}"
@@ -90,31 +136,6 @@
                 {% csrf_token %}
             </form>
         {% endif %}
-
-        {% comment %} <form
-			action="{% url 'attendance-delete' instance.id  %}"
-			onsubmit="return confirm(`{% trans 'Are you sure you want to delete this attendance?' %}`)"
-			method="post"
-			class="oh-btn oh-btn--danger"
-		>
-			{% csrf_token %}
-			<button type="submit">
-				<ion-icon name="trash-outline"></ion-icon>{% trans 'Delete' %}
-			</button>
-		</form> {% endcomment %}
-        <a
-            hx-confirm="{% trans 'Are you sure you want to delete this attendance?' %}"
-            hx-post="{% url 'attendance-delete' instance.id  %}?instances_ids={{ instance.ordered_ids }}"
-            hx-swap="none"
-            class="h-8 w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
-        >
-            <img
-                src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}"
-                alt="{% trans 'Delete' %}"
-                width="16"
-                class="filter brightness-0 invert"
-            >
-            {% trans "Delete" %}
-        </a>
-    </div>
-{% endif %}
+    {% endif %}
+</div>
+{% endwith %}

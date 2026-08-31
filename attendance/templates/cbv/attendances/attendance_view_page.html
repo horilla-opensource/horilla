@@ -6,8 +6,6 @@
     <meta name="csrf-token" content="{{ csrf_token }}">
     {# Panel sizing for the tabs on this page is handled by the site-wide #}
     {# script in horilla_theme/components/header_scripts.html. #}
-    <div hx-get="{% url 'attendances-navbar-view' %}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
-
     {% include "generic/components.html" %}
     <button
         type="button"
@@ -21,30 +19,12 @@
     <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none">
     </div>
     <div
-        class="oh-checkpoint-badge mb-2"
-        id="validateselectedInstances"
-        data-ids="[]"
-        data-clicked=""
-        style="display: none"
+        class="oh-wrapper"
+        id="listContainer"
+        hx-get="{% url 'attendances-tab-view' %}"
+        hx-trigger="load"
     >
-    </div>
-    <div
-        class="oh-checkpoint-badge mb-2"
-        id="overtimeselectedInstances"
-        data-ids="[]"
-        data-clicked=""
-        style="display: none"
-    >
-    </div>
-    <div
-        class="oh-checkpoint-badge mb-2"
-        id="validatedselectedInstances"
-        data-ids="[]"
-        data-clicked=""
-        style="display: none"
-    >
-    </div>
-    <div class="oh-wrapper" id="listContainer">
+        <div class="animated-background"></div>
     </div>
 
     <!--import attendances-->

@@ -1,63 +1,110 @@
 {% load i18n basefilters static %}
-
-<div class="flex items-center justify-center gap-1">
-    {% if perms.attendance.change_attendance or perms.attendance.delete_attendance or request.user|is_reportingmanager %}
+{% is_manager_of request.user instance as can_manage %}
+{% with can_change=perms.attendance.change_attendance can_delete=perms.attendance.delete_attendance %}
+<div class="flex items-center justify-center gap-1 flex-wrap">
+    {% if can_change or can_manage %}
         <a
-            class="oh-btn oh-btn--light-bkg oh-btn--secondary w-24 h-8 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-            hx-get="{% url 'attendance-update' instance.id %}"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            hx-get="{% url 'attendance-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
             onclick="event.stopPropagation()"
             hx-target="#genericModalBody"
             hx-swap="innerHTML"
             data-toggle="oh-modal-toggle"
             data-target="#genericModal"
+            title="{% trans 'Edit' %}"
         >
             <ion-icon name="create-outline"></ion-icon>
             {% trans 'Edit' %}
         </a>
+    {% else %}
+        <button
+            type="button"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Edit' %}"
+            disabled
+        >
+            <ion-icon name="create-outline"></ion-icon>
+            {% trans 'Edit' %}
+        </button>
+    {% endif %}
 
-        {% if instance.is_validate_request %}
-            <a
-                href="#"
-                data-req="/attendance/request-attendance-view/?id={{instance.id}}"
-                onclick="event.preventDefault(); event.stopPropagation(); showApproveAlert($(this).data('req'))"
-                class="w-24 h-8 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300"
-            >
-                <ion-icon name="checkmark-done-outline"></ion-icon>
-                {% trans 'Validate' %}
-            </a>
-        {% else %}
-            <a
-                href="#"
-                hx-get="{% url 'validate-this-attendance' instance.id %}"
-                hx-swap="none"
-                onclick="event.preventDefault(); event.stopPropagation()"
-                class="w-24 h-8 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300"
-            >
-                <ion-icon name="checkmark-done-outline"></ion-icon>
-                {% trans 'Validate' %}
-            </a>
-        {% endif %}
-
+    {% if can_delete or can_manage %}
         <form
             hx-post="{% url 'attendance-delete' instance.id %}"
-            hx-swap="none"
             onclick="event.stopPropagation()"
-            onsubmit="return confirm(`{% trans 'Are you sure want to delete this attendance?' %}`)"
-            method="post"
+            hx-swap="none"
         >
             {% csrf_token %}
             <button
                 type="submit"
-                class="w-24 h-8 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
+                class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                title="{% trans 'Remove' %}"
+                onclick="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
             >
-                <img
-                    src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}"
-                    alt="{% trans 'Delete' %}"
-                    width="16"
-                    class="filter brightness-0 invert"
-                >
+                <ion-icon name="trash-outline"></ion-icon>
                 {% trans 'Delete' %}
             </button>
         </form>
+    {% else %}
+        <button
+            type="button"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Delete' %}"
+            disabled
+        >
+            <ion-icon name="trash-outline"></ion-icon>
+            {% trans 'Delete' %}
+        </button>
+    {% endif %}
+
+    {% if can_change or can_manage %}
+        {% if instance.is_validate_request %}
+            <button
+                type="button"
+                class="oh-btn oh-btn--success px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                title="{% trans 'Validate' %}"
+                onclick="event.preventDefault(); event.stopPropagation(); showApproveAlert($(this).data('req'))"
+                data-req="/attendance/request-attendance-view/?id={{ instance.id }}"
+            >
+                <ion-icon name="checkmark-done-outline"></ion-icon>
+                {% trans 'Validate' %}
+            </button>
+        {% else %}
+            <button
+                type="button"
+                class="oh-btn oh-btn--success px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                title="{% trans 'Validate' %}"
+                onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
+                    Swal.fire({
+                        title: '{% trans 'Are you sure?' %}',
+                        text: '{% trans 'Do you want to validate this attendance?' %}',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#008000',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: '{% trans 'Confirm' %}',
+                        cancelButtonText: '{% trans 'Cancel' %}'
+                    }).then(function(result) {
+                        if (result.isConfirmed) {
+                            htmx.ajax('GET', '{% url 'validate-this-attendance' instance.id %}', {swap: 'none'});
+                        }
+                    });
+                })({{ instance.id }}); return false"
+            >
+                <ion-icon name="checkmark-done-outline"></ion-icon>
+                {% trans 'Validate' %}
+            </button>
+        {% endif %}
+    {% else %}
+        <button
+            type="button"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            title="{% trans 'Validate' %}"
+            disabled
+        >
+            <ion-icon name="checkmark-done-outline"></ion-icon>
+            {% trans 'Validate' %}
+        </button>
     {% endif %}
 </div>
+{% endwith %}

@@ -84,11 +84,6 @@ urlpatterns = [
         name="attendances-tab-view",
     ),
     path(
-        "attendances-navbar-view/",
-        attendances.AttendancesNavView.as_view(),
-        name="attendances-navbar-view",
-    ),
-    path(
         "attendences-navbar-export/",
         attendances.AttendancesExportNav.as_view(),
         name="attendences-navbar-export",
@@ -97,6 +92,16 @@ urlpatterns = [
         "validate-attendance-tab/",
         attendances.ValidateAttendancesList.as_view(),
         name="validate-attendance-tab",
+    ),
+    path(
+        "validate-attendance-tab-shell/",
+        attendances.ValidateAttendanceTabShell.as_view(),
+        name="validate-attendance-tab-shell",
+    ),
+    path(
+        "validate-attendance-nav/",
+        attendances.ValidateAttendanceNav.as_view(),
+        name="validate-attendance-nav",
     ),
     path(
         "validate-attendance-individual-tab/<int:pk>/",
@@ -109,9 +114,29 @@ urlpatterns = [
         name="ot-attendance-tab",
     ),
     path(
+        "ot-attendance-tab-shell/",
+        attendances.OTAttendanceTabShell.as_view(),
+        name="ot-attendance-tab-shell",
+    ),
+    path(
+        "ot-attendance-nav/",
+        attendances.OTAttendanceNav.as_view(),
+        name="ot-attendance-nav",
+    ),
+    path(
         "validated-attendance-tab/",
         attendances.ValidatedAttendancesList.as_view(),
         name="validated-attendance-tab",
+    ),
+    path(
+        "validated-attendance-tab-shell/",
+        attendances.ValidatedAttendanceTabShell.as_view(),
+        name="validated-attendance-tab-shell",
+    ),
+    path(
+        "validated-attendance-nav/",
+        attendances.ValidatedAttendanceNav.as_view(),
+        name="validated-attendance-nav",
     ),
     path(
         "validate-detail-view/<int:pk>/",
@@ -887,9 +912,29 @@ urlpatterns = [
         name="attendance-request-list-tab",
     ),
     path(
+        "requested-attendance-tab-shell/",
+        attendance_request.RequestedAttendanceTabShell.as_view(),
+        name="requested-attendance-tab-shell",
+    ),
+    path(
+        "requested-attendance-nav/",
+        attendance_request.RequestedAttendanceNav.as_view(),
+        name="requested-attendance-nav",
+    ),
+    path(
         "attendance-request-individual-tab/<int:pk>/",
         attendance_tab.RequestedAttendanceIndividualView.as_view(),
         name="attendance-request-individual-tab",
+    ),
+    path(
+        "attendance-request-individual-tab-shell/<int:pk>/",
+        attendance_tab.RequestedAttendanceIndividualTabShell.as_view(),
+        name="attendance-request-individual-tab-shell",
+    ),
+    path(
+        "attendance-request-individual-tab-nav/<int:pk>/",
+        attendance_tab.RequestedAttendanceIndividualNav.as_view(),
+        name="attendance-request-individual-tab-nav",
     ),
     path(
         "attendance-list-tab/",
@@ -897,9 +942,14 @@ urlpatterns = [
         name="attendance-list-tab",
     ),
     path(
-        "attendance-request-nav/",
-        attendance_request.AttendanceRequestNav.as_view(),
-        name="attendance-request-nav",
+        "all-attendance-tab-shell/",
+        attendance_request.AllAttendanceTabShell.as_view(),
+        name="all-attendance-tab-shell",
+    ),
+    path(
+        "all-attendance-request-nav/",
+        attendance_request.AllAttendanceRequestNav.as_view(),
+        name="all-attendance-request-nav",
     ),
     path(
         "attendances-tab-detail-view/<int:pk>/",
