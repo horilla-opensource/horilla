@@ -438,9 +438,20 @@ class TimeSheetCardView(HorillaCardView):
 
     model = TimeSheet
     filter_class = TimeSheetFilter
+    records_per_page = 20
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = (
+            super()
+            .get_queryset()
+            .select_related(
+                "employee_id",
+                "employee_id__employee_work_info",
+                "employee_id__employee_work_info__company_id",
+                "project_id",
+                "task_id",
+            )
+        )
         if not self.request.user.has_perm("project.view_timesheet"):
             employee = self.request.user.employee_get
             queryset = queryset.filter(
