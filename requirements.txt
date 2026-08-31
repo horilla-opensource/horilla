@@ -53,7 +53,7 @@ pyzk==0.9
 pillow
 
 # Security & encryption
-cryptography==44.0.2
+cryptography==50.0.1
 
 # Notifications
 swapper
