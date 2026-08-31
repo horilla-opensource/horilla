@@ -7,6 +7,7 @@ from typing import Any
 from django.contrib import messages
 from django.core.cache import cache as CACHE
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.http import urlencode
@@ -42,6 +43,123 @@ class PipelineView(TemplateView):
     """
 
     template_name = "cbv/pipeline/pipeline.html"
+
+
+def recruitment_pipeline_actions(request, rec):
+    """
+    Recruitment-level actions (Add Stage/Edit/Resume Shortlisting/Manage
+    Stage Order/Close-Reopen/Delete) for the given recruitment - shared
+    between RecruitmentTabView (which used to put these in the tab bar's
+    kebab) and RecruitmentPipelineContentShell (which renders them inline
+    in the pipeline content's own header instead). Each RecruitmentTabView
+    tab is a distinct recruitment record, so these are naturally scoped to
+    that specific record, not to "whichever tab happens to be open" - there
+    is no page-level Actions button that could mean that.
+    """
+    change_perm = request.user.has_perm("recruitment.change_recruitment")
+    add_cand_perm = request.user.has_perm("recruitment.add_candidate")
+    delete_perm = request.user.has_perm("recruitment.delete_recruitment")
+    add_stage_perm = request.user.has_perm("recruitment.add_stage")
+    rec_manager_perm = recruitment_manages(request.user, rec)
+
+    actions = []
+    if not (rec_manager_perm or change_perm):
+        return actions
+
+    if add_stage_perm or rec_manager_perm or change_perm:
+        actions.append(
+            {
+                "action": _("Add Stage"),
+                "attrs": f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{reverse('rec-stage-create')}?recruitment_id={rec.pk}"
+                    hx-target="#genericModalBody"
+                    style="cursor: pointer;"
+                """,
+            },
+        )
+
+    if change_perm or rec_manager_perm:
+        actions.append(
+            {
+                "action": _("Edit"),
+                "attrs": f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{reverse("recruitment-update-pipeline", kwargs={"pk": rec.pk})}"
+                    hx-target="#genericModalBody"
+                    style="cursor: pointer;"
+                """,
+            },
+        )
+
+    if add_cand_perm or rec_manager_perm or change_perm:
+        actions.append(
+            {
+                "action": _("Resume Shortlisting"),
+                "attrs": f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#bulkResumeUpload"
+                    hx-get="{reverse('view-bulk-resume')}?rec_id={rec.pk}"
+                    hx-target="#bulkResumeUploadBody"
+                    style="cursor: pointer;"
+                """,
+            },
+        )
+
+    if add_stage_perm or rec_manager_perm or change_perm:
+        actions.append(
+            {
+                "action": _("Manage Stage Order"),
+                "attrs": f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{reverse("rec-update-stage-seq", kwargs={"pk": rec.pk})}"
+                    hx-target="#genericModalBody"
+                    style="cursor: pointer;"
+                """,
+            }
+        )
+
+    if change_perm or rec_manager_perm:
+        if rec.closed:
+            actions.append(
+                {
+                    "action": _("Reopen"),
+                    "attrs": f"""
+                        href="{reverse("recruitment-reopen-pipeline", kwargs={"rec_id": rec.pk})}"
+                        style="cursor: pointer;"
+                        onclick="return confirm('Are you sure you want to reopen this recruitment?');"
+                    """,
+                },
+            )
+        else:
+            actions.append(
+                {
+                    "action": _("Close"),
+                    "attrs": f"""
+                        href="{reverse("recruitment-close-pipeline", kwargs={"rec_id": rec.pk})}"
+                        style="cursor: pointer;"
+                        onclick="return confirm('Are you sure you want to close this recruitment?');"
+                    """,
+                },
+            )
+
+    if delete_perm:
+        actions.append(
+            {
+                "action": _("Delete"),
+                "attrs": f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#deleteConfirmation"
+                    hx-get="{reverse('generic-delete')}?model=recruitment.Recruitment&pk={rec.pk}"
+                    hx-target="#deleteConfirmationBody"
+                    style="cursor: pointer;"
+                """,
+            }
+        )
+    return actions
 
 
 @method_decorator(login_required, name="dispatch")
@@ -84,122 +202,20 @@ class RecruitmentTabView(HorillaTabView):
         )
         self.tabs = []
         view_perm = self.request.user.has_perm("recruitment.view_recruitment")
-        change_perm = self.request.user.has_perm("recruitment.change_recruitment")
-        add_cand_perm = self.request.user.has_perm("recruitment.add_candidate")
-        delete_perm = self.request.user.has_perm("recruitment.delete_recruitment")
-        add_stage_perm = self.request.user.has_perm("recruitment.add_stage")
         stage_qs = GetStages.filter_class(self.request.GET).qs
         for rec in recruitments:
-            rec_manager_perm = recruitment_manages(self.request.user, rec)
             stage_manage_perm = stage_manages(self.request.user, rec)
             tab = {}
             tab["title"] = rec
-            url = reverse("candidate-card-cbv", kwargs={"pk": rec.pk})
+            url = reverse("recruitment-pipeline-shell", kwargs={"rec_id": rec.pk})
 
             if view_type == "list":
-                url = (
-                    reverse("get-stages-recruitment", kwargs={"rec_id": rec.pk})
-                    + f"?view={view_type}"
-                )
+                url += f"?view={view_type}"
             tab["url"] = url
 
             self.query_params["view"] = view_type
             tab["badge_label"] = _("Stages")
             tab["badge"] = stage_qs.filter(recruitment_id=rec.pk).count()
-            tab["actions"] = []
-            if rec_manager_perm or change_perm:
-                if add_stage_perm or rec_manager_perm or change_perm:
-                    tab["actions"].append(
-                        {
-                            "action": _("Add Stage"),
-                            "attrs": f"""
-                                data-toggle="oh-modal-toggle"
-                                data-target="#genericModal"
-                                hx-get="{reverse('rec-stage-create')}?recruitment_id={rec.pk}"
-                                hx-target="#genericModalBody"
-                                style="cursor: pointer;"
-                            """,
-                        },
-                    )
-
-                if change_perm or rec_manager_perm:
-                    tab["actions"].append(
-                        {
-                            "action": _("Edit"),
-                            "attrs": f"""
-                                data-toggle="oh-modal-toggle"
-                                data-target="#genericModal"
-                                hx-get="{reverse("recruitment-update-pipeline", kwargs={"pk": rec.pk})}"
-                                hx-target="#genericModalBody"
-                                style="cursor: pointer;"
-                            """,
-                        },
-                    )
-
-                if add_cand_perm or rec_manager_perm or change_perm:
-                    tab["actions"].append(
-                        {
-                            "action": _("Resume Shortlisting"),
-                            "attrs": f"""
-                                data-toggle="oh-modal-toggle"
-                                data-target="#bulkResumeUpload"
-                                hx-get="{reverse('view-bulk-resume')}?rec_id={rec.pk}"
-                                hx-target="#bulkResumeUploadBody"
-                                style="cursor: pointer;"
-                            """,
-                        },
-                    )
-
-                if add_stage_perm or rec_manager_perm or change_perm:
-                    tab["actions"].append(
-                        {
-                            "action": _("Manage Stage Order"),
-                            "attrs": f"""
-                                data-toggle="oh-modal-toggle"
-                                data-target="#genericModal"
-                                hx-get="{reverse("rec-update-stage-seq", kwargs={"pk": rec.pk})}"
-                                hx-target="#genericModalBody"
-                                style="cursor: pointer;"
-                            """,
-                        }
-                    )
-
-                if change_perm or rec_manager_perm:
-                    if rec.closed:
-                        tab["actions"].append(
-                            {
-                                "action": _("Reopen"),
-                                "attrs": f"""
-                                    href="{reverse("recruitment-reopen-pipeline", kwargs={"rec_id": rec.pk})}"
-                                    style="cursor: pointer;"
-                                    onclick="return confirm('Are you sure you want to reopen this recruitment?');"
-                                """,
-                            },
-                        )
-                    else:
-                        tab["actions"].append(
-                            {
-                                "action": _("Close"),
-                                "attrs": f"""
-                                    href="{reverse("recruitment-close-pipeline", kwargs={"rec_id": rec.pk})}"
-                                    style="cursor: pointer;"
-                                    onclick="return confirm('Are you sure you want to close this recruitment?');"
-                                """,
-                            },
-                        )
-                if delete_perm:
-                    tab["actions"].append(
-                        {
-                            "action": _("Delete"),
-                            "attrs": f"""
-                                data-toggle="oh-modal-toggle"
-                                data-target="#deleteConfirmation"
-                                hx-get="{reverse('generic-delete')}?model=recruitment.Recruitment&pk={rec.pk}"
-                                hx-target="#deleteConfirmationBody"
-                                style="cursor: pointer;"
-                            """,
-                        }
-                    )
             if stage_manage_perm or view_perm:
                 self.tabs.append(tab)
 
@@ -207,6 +223,35 @@ class RecruitmentTabView(HorillaTabView):
         context = super().get_context_data(**kwargs)
         context["show_filter_tags"] = True
 
+        return context
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
+)
+class RecruitmentPipelineContentShell(TemplateView):
+    """
+    Shell rendered for a single recruitment's pipeline tab - shows the
+    recruitment-level actions (previously the tab bar's own kebab) above
+    an htmx-loaded embed of the existing list/kanban content, so the tab
+    bar itself can drop its per-tab actions dropdown.
+    """
+
+    template_name = "cbv/pipeline/recruitment_pipeline_shell.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        rec = get_object_or_404(models.Recruitment, pk=self.kwargs.get("rec_id"))
+        view_type = self.request.GET.get("view")
+        content_url = reverse("candidate-card-cbv", kwargs={"pk": rec.pk})
+        if view_type == "list":
+            content_url = (
+                reverse("get-stages-recruitment", kwargs={"rec_id": rec.pk})
+                + f"?view={view_type}"
+            )
+        context["actions"] = recruitment_pipeline_actions(self.request, rec)
+        context["content_url"] = content_url
         return context
 
 

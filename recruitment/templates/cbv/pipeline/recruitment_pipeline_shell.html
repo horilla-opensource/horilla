@@ -1,0 +1,20 @@
+{% load i18n %}
+<div class="d-flex justify-content-end align-items-center mb-2">
+  {% if actions %}
+  <div class="oh-dropdown" x-data="{open: false}">
+    <button class="oh-btn oh-btn--transparent oh-accordion-meta__btn" @click="open = !open" @click.outside="open = false" title="{% trans 'Actions' %}">
+      <ion-icon name="ellipsis-vertical" role="img" class="md hydrated" aria-label="{% trans 'ellipsis vertical' %}"></ion-icon>
+    </button>
+    <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open">
+      <ul class="oh-dropdown__items">
+        {% for action in actions %}
+        <li class="oh-dropdown__item" style="cursor: pointer;">
+          <a {{ action.attrs|safe }} class="oh-dropdown__link">{{ action.action }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+</div>
+<div hx-get="{{ content_url }}" hx-trigger="load"></div>

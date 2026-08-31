@@ -1,7 +1,7 @@
 {% load basefilters i18n static %}
 {% if perms.recruitment.change_stage %}
     <a
-        class="oh-btn oh-btn--light-bkg oh-btn--secondary w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+        class="oh-btn oh-btn--light-bkg w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
         data-toggle="oh-modal-toggle"
         data-target="#genericModal"
         hx-get="{% url 'rec-stage-update' instance.id %}?instances_ids={{ instance.ordered_ids }}"
@@ -9,6 +9,19 @@
         hx-target="#genericModalBody"
     >
         <ion-icon name="create-outline"></ion-icon>{% trans "Edit" %}
+    </a>
+{% endif %}
+
+{% if perms.recruitment.change_stage %}
+    <a
+        class="oh-btn oh-btn--light-bkg w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+        data-toggle="oh-modal-toggle"
+        data-target="#genericModal"
+        hx-get="{% url 'rec-stage-duplicate' instance.id %}"
+        hx-swap="innerHTML"
+        hx-target="#genericModalBody"
+    >
+        <ion-icon name="copy-outline"></ion-icon>{% trans "Duplicate" %}
     </a>
 {% endif %}
 
