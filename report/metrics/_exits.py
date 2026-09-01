@@ -64,7 +64,13 @@ def _offboarding_archived_exits(
         notice_period_ends__gte=start,
         notice_period_ends__lte=end,
         notice_period_ends__isnull=False,
-    ).select_related("employee_id", "employee_id__employee_work_info")
+    ).select_related(
+        "employee_id",
+        "employee_id__employee_work_info",
+        # Callers read work_info.department_id.department for their
+        # breakdowns; without this that is a query per exit row.
+        "employee_id__employee_work_info__department_id",
+    )
     qs = apply_org_filters(
         qs,
         filters,
@@ -99,7 +105,13 @@ def _resignation_exits(
         planned_to_leave_on__gte=start,
         planned_to_leave_on__lte=end,
         planned_to_leave_on__isnull=False,
-    ).select_related("employee_id", "employee_id__employee_work_info")
+    ).select_related(
+        "employee_id",
+        "employee_id__employee_work_info",
+        # Callers read work_info.department_id.department for their
+        # breakdowns; without this that is a query per exit row.
+        "employee_id__employee_work_info__department_id",
+    )
     qs = apply_org_filters(
         qs,
         filters,
@@ -130,7 +142,10 @@ def _inactive_contract_exits(
             Q(employee_work_info__contract_end_date__gte=start)
             & Q(employee_work_info__contract_end_date__lte=end)
         )
-        .select_related("employee_work_info")
+        .select_related(
+            "employee_work_info",
+            "employee_work_info__department_id",
+        )
     )
     qs = apply_org_filters(
         qs,

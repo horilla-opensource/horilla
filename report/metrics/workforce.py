@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from collections import Counter
 from datetime import date
 
@@ -15,6 +16,8 @@ from report.engine import (
     iter_months,
     month_offset,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def _work_info(filters: ReportFilters):
@@ -461,37 +464,48 @@ def turnover_attrition(filters: ReportFilters) -> dict:
     )
     rate = formula_turnover(total_hires, total_exits, avg_headcount)
 
+    # One pass for both the first-year count and the department breakdown.
+    # These were two loops over the same list running identical work-info
+    # lookups. Measured: this does not change the query count (iter_exits
+    # already select_relates work_info, so the per-row fallback almost never
+    # fired) -- it is a readability change, plus a bulk fetch instead of a
+    # per-row one on the rare path where the relation really is missing.
+    missing = [
+        row["employee_id"]
+        for row in period_exits
+        if getattr(row.get("employee"), "employee_work_info", None) is None
+    ]
+    fallback_wi = {}
+    if missing:
+        try:
+            fallback_wi = {
+                wi.employee_id_id: wi
+                for wi in EmployeeWorkInformation.objects.filter(
+                    employee_id__in=missing
+                ).select_related("department_id")
+            }
+        except Exception:
+            logger.exception("Could not backfill work info for exit rows")
+
     first_year = 0
-    for row in period_exits:
-        emp = row.get("employee")
-        wi = getattr(emp, "employee_work_info", None) if emp else None
-        if wi is None and emp is not None:
-            try:
-                wi = EmployeeWorkInformation.objects.filter(employee_id=emp).first()
-            except Exception:
-                wi = None
-        joining = getattr(wi, "date_joining", None) if wi else None
-        if joining and row["exit_date"] and (row["exit_date"] - joining).days <= 365:
-            first_year += 1
-
-    # Dept breakdown from exit list
-    from collections import Counter
-
     dept_counter = Counter()
     for row in period_exits:
         emp = row.get("employee")
         wi = getattr(emp, "employee_work_info", None) if emp else None
-        if wi is None and emp is not None:
-            try:
-                wi = EmployeeWorkInformation.objects.filter(employee_id=emp).first()
-            except Exception:
-                wi = None
+        if wi is None:
+            wi = fallback_wi.get(row["employee_id"])
+
+        joining = getattr(wi, "date_joining", None) if wi else None
+        if joining and row["exit_date"] and (row["exit_date"] - joining).days <= 365:
+            first_year += 1
+
         dept = (
             getattr(getattr(wi, "department_id", None), "department", None)
             if wi
             else None
         )
         dept_counter[dept or str(_("Unassigned"))] += 1
+
     by_dept = [{"department": k, "count": v} for k, v in dept_counter.most_common()]
 
     return {
