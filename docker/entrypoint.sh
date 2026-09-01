@@ -42,6 +42,22 @@ case "${SECRET_KEY:-}" in
     ;;
 esac
 
+# Compile translation catalogs when they are missing.
+#
+# The image compiles .po -> .mo at build time, but the dev compose stack
+# bind-mounts the source tree over /app and .mo files are not in git -- so the
+# compiled catalogs are hidden and every non-English locale silently falls back
+# to English. Only runs when a .po has no .mo beside it, so in the normal image
+# path (already compiled) this does nothing.
+if command -v msgfmt >/dev/null 2>&1; then
+  if [ -n "$(find . -name '*.po' -not -path './node_modules/*' \
+       -exec sh -c '[ -f "${1%.po}.mo" ] || echo x' _ {} \; 2>/dev/null | head -1)" ]; then
+    echo "Compiling translation catalogs (.po -> .mo)..."
+    find . -name '*.po' -not -path './node_modules/*' \
+      -execdir sh -c '[ -f "${1%.po}.mo" ] || msgfmt "$1" -o "${1%.po}.mo"' _ {} \; 2>/dev/null || true
+  fi
+fi
+
 # Run migrations
 python manage.py migrate --noinput
 

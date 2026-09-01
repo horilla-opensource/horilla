@@ -28,10 +28,23 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 # Install Python dependencies
 COPY requirements.txt .
+
+# The spaCy model wheel is fetched from a GitHub release rather than PyPI, so
+# pip has no name-based integrity check for it. Assert the installed version
+# after the fact instead of using --hash in requirements.txt: one --hash there
+# flips pip into --require-hashes mode and then all 50 requirements need one.
+ARG SPACY_MODEL_VERSION=3.8.0
+
 # gunicorn and psycopg2-binary are pinned in requirements.txt -- do not repeat
 # them here, an unpinned CLI copy silently overrides the pin.
 RUN pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
+
+# Separate step on purpose: chaining this onto the install with || would report
+# a failed pip run as a version mismatch and send the next person the wrong way.
+RUN pip show en_core_web_sm | grep -qx "Version: ${SPACY_MODEL_VERSION}" \
+    || { echo "ERROR: expected en_core_web_sm ${SPACY_MODEL_VERSION}, got:"; \
+         pip show en_core_web_sm | grep -i version; exit 1; }
 
 # Production stage - minimal runtime image
 FROM python:3.12-slim AS production

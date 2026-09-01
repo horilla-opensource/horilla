@@ -194,7 +194,12 @@ jobs:
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: horilla-hr:smoketest
-          severity: CRITICAL
+          # HIGH included: this gate already caught a CRITICAL Django SQL
+          # injection before it shipped, and a HIGH in an HR app handling
+          # payroll and personal data is not a "publish anyway" finding.
+          # ignore-unfixed keeps it actionable -- it only fails on things
+          # that have a fix available.
+          severity: CRITICAL,HIGH
           exit-code: "1"
           ignore-unfixed: true
 

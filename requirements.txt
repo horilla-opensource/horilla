@@ -1,87 +1,87 @@
 # Core Django
 Django~=5.2.17  # ~= keeps 5.2.x security patches (CVE-2025-64459 fixed in 5.2.8)
-django-environ
+django-environ==0.14.0
 psycopg2-binary==2.9.10
 
 # Django extensions
-django-apscheduler
-django-auditlog
-django-cors-headers
-django-filter
-django-import-export
-django-mathfilters
-django-model-utils
+django-apscheduler==0.7.0
+django-auditlog==3.4.1
+django-cors-headers==4.9.0
+django-filter==26.1
+django-import-export==4.4.1
+django-mathfilters==1.0.0
+django-model-utils==5.0.0
 django-redis==5.4.0
-django-simple-history
-django-storages
-django-widget-tweaks
+django-simple-history==3.13.0
+django-storages==1.14.6
+django-widget-tweaks==1.5.1
 
 # REST API
 djangorestframework==3.16.0
 djangorestframework-simplejwt==5.5.0
-drf-yasg
+drf-yasg==1.21.15
 
 # Data processing
-numpy
-openpyxl
-pandas
-XlsxWriter
+numpy==1.26.4
+openpyxl==3.1.5
+pandas==3.0.5
+XlsxWriter==3.2.9
 
 # PDF handling
-pdfkit
-PyMuPDF
+pdfkit==1.0.0
+PyMuPDF==1.28.2
 reportlab==4.0.9
-xhtml2pdf
+xhtml2pdf==0.2.17
 
 # Web scraping & HTML
-beautifulsoup4
-requests
-requests-oauthlib
+beautifulsoup4==4.15.0
+requests==2.34.2
+requests-oauthlib==2.0.0
 
 # Google integration
-google-api-python-client
-google-auth-oauthlib
+google-api-python-client==2.199.0
+google-auth-oauthlib==1.4.1
 google-cloud-storage==3.0.0
 
 # Geolocation
-geopy
+geopy==2.5.0
 
 # Biometric device integration
 pyzk==0.9
 
 # Image handling
-pillow
+pillow==12.3.0
 
 # Security & encryption
 cryptography==44.0.2
 
 # Notifications
-swapper
+swapper==1.4.0
 
 # Static files
 whitenoise==6.9.0
 
 # Background tasks
-APScheduler
+APScheduler==3.11.3
 
 # Date & time
-python-dateutil
-pytz
+python-dateutil==2.9.0.post0
+pytz==2026.3.post1
 
 # Internationalization & NLP
-arabic-reshaper
-click
+arabic-reshaper==3.0.1
+click==8.5.0
 phonenumbers==9.0.37
 pycountry==24.6.1
-python-bidi
+python-bidi==0.6.11
 rapidfuzz==3.9.6
-spacy==3.7.5
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+spacy==3.8.16
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 
 # Misc
 bleach==6.2.0
 gunicorn==23.0.0
-packaging
+packaging==26.3
 
 # Testing
 coverage>=7.0
