@@ -993,14 +993,41 @@ class CalendarExpectedDaysTests(SimpleTestCase):
             "report.metrics._calendar._holiday_dates",
             return_value={date(2026, 1, 7)},
         ), patch(
-            "report.metrics._calendar._is_company_leave",
-            return_value=False,
+            # Company-leave rules are now fetched once per call rather than
+            # queried per day; patch that seam, not the old per-day helper.
+            "report.metrics._calendar._company_leave_rules",
+            return_value=set(),
         ):
             # Mon–Fri minus Wed holiday → 4
             self.assertEqual(
                 count_expected_working_days(date(2026, 1, 5), date(2026, 1, 9)),
                 4,
             )
+
+    def test_company_leave_rule_matching_matches_legacy_arithmetic(self):
+        """The prefetched rule check must agree with base.methods.
+
+        _matches_company_leave replaced a per-day query; it recomputes the
+        same 0-based, month-start-offset week number, so a drift here would
+        silently change every absenteeism figure.
+        """
+        from report.metrics._calendar import _matches_company_leave
+
+        # 2026-01-05 is a Monday in the second week block of January 2026.
+        monday = date(2026, 1, 5)
+        first = monday.replace(day=1)
+        week_no = (monday.day + first.weekday() - 1) // 7
+
+        # A week-independent Monday rule matches any Monday.
+        self.assertTrue(_matches_company_leave(monday, {(None, 0)}))
+        # A rule pinned to this week/weekday matches.
+        self.assertTrue(_matches_company_leave(monday, {(week_no, 0)}))
+        # A different weekday does not.
+        self.assertFalse(_matches_company_leave(monday, {(None, 2)}))
+        # A different week block does not.
+        self.assertFalse(_matches_company_leave(monday, {(week_no + 1, 0)}))
+        # No rules at all is never a company leave.
+        self.assertFalse(_matches_company_leave(monday, set()))
 
 
 class NamedOtPrivacyTests(SimpleTestCase):

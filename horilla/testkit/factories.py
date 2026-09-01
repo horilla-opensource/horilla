@@ -79,3 +79,219 @@ def make_employee(
         EmployeeWorkInformation.objects.create(employee_id=emp, **updates)
     # Avoid stale reverse OneToOne cache from create().
     return Employee.objects.select_related("employee_work_info").get(pk=emp.pk)
+
+
+# ---------------------------------------------------------------------------
+# Domain factories for report/analytics suites.
+#
+# Imports are deferred into each function so this module keeps importing when
+# an optional app is not installed -- callers guard with apps.is_installed().
+# Each factory takes the smallest set of arguments that produces a row the
+# metric queries will actually pick up (dates inside the period, a status the
+# filters accept), and leaves everything else on model defaults.
+# ---------------------------------------------------------------------------
+
+
+def make_attendance(
+    *,
+    employee,
+    attendance_date,
+    at_work_second: int = 8 * 3600,
+    overtime_second: int = 0,
+    minimum_hour: str = "08:00",
+    validated: bool = True,
+    clock_in="09:00:00",
+    clock_out="18:00:00",
+):
+    """One validated Attendance row with explicit worked/overtime seconds."""
+    from attendance.models import Attendance
+
+    return Attendance.objects.create(
+        employee_id=employee,
+        attendance_date=attendance_date,
+        attendance_clock_in_date=attendance_date,
+        attendance_clock_in=clock_in,
+        attendance_clock_out_date=attendance_date,
+        attendance_clock_out=clock_out,
+        attendance_worked_hour=minimum_hour,
+        minimum_hour=minimum_hour,
+        at_work_second=at_work_second,
+        overtime_second=overtime_second,
+        attendance_validated=validated,
+    )
+
+
+def make_leave_type(name: str = "Annual", total_days: float = 20):
+    from leave.models import LeaveType
+
+    return LeaveType.objects.create(name=name, total_days=total_days)
+
+
+def make_leave_request(
+    *,
+    employee,
+    leave_type,
+    start_date,
+    end_date,
+    status: str = "approved",
+    requested_days: float = 1,
+):
+    """A leave request. ``status`` matters: several metrics count only
+    approved rows, so tests need to be able to seed both sides."""
+    from leave.models import LeaveRequest
+
+    return LeaveRequest.objects.create(
+        employee_id=employee,
+        leave_type_id=leave_type,
+        start_date=start_date,
+        end_date=end_date,
+        requested_days=requested_days,
+        description="Test leave",
+        status=status,
+    )
+
+
+def make_available_leave(*, employee, leave_type, available: float = 10):
+    from leave.models import AvailableLeave
+
+    return AvailableLeave.objects.create(
+        employee_id=employee,
+        leave_type_id=leave_type,
+        available_days=available,
+    )
+
+
+def make_payslip(
+    *,
+    employee,
+    start_date,
+    end_date,
+    gross_pay: float = 5000,
+    net_pay: float = 4000,
+    status: str = "paid",
+):
+    from payroll.models.models import Payslip
+
+    return Payslip.objects.create(
+        employee_id=employee,
+        start_date=start_date,
+        end_date=end_date,
+        basic_pay=gross_pay,
+        gross_pay=gross_pay,
+        deduction=gross_pay - net_pay,
+        net_pay=net_pay,
+        status=status,
+        pay_head_data={},
+    )
+
+
+def make_contract(
+    *,
+    employee,
+    start_date,
+    wage: float = 60000,
+    name: str = "Test Contract",
+    end_date=None,
+):
+    from payroll.models.models import Contract
+
+    return Contract.objects.create(
+        contract_name=name,
+        employee_id=employee,
+        contract_start_date=start_date,
+        contract_end_date=end_date,
+        wage=wage,
+    )
+
+
+def make_job_position(
+    *, title: str = "Test Position", department: Department | None = None
+):
+    from base.models import JobPosition
+
+    if department is None:
+        department, _created = Department.objects.get_or_create(
+            department="Test Department"
+        )
+    position, _created = JobPosition.objects.get_or_create(
+        job_position=title, department_id=department
+    )
+    return position
+
+
+def make_recruitment(
+    *,
+    company=None,
+    title: str = "Test Opening",
+    closed=False,
+    job_position=None,
+    vacancy: int = 2,
+):
+    """A recruitment with a usable job position.
+
+    Candidate.save() falls back to the recruitment's ``job_position_id`` when
+    the candidate leaves it blank, then rejects it unless it is also in
+    ``open_positions`` -- so both have to be set here or every candidate
+    insert raises ValidationError({"job_position_id": "Choose valid choice"}).
+    """
+    from recruitment.models import Recruitment
+
+    if job_position is None:
+        job_position = make_job_position()
+
+    rec = Recruitment.objects.create(
+        title=title,
+        closed=closed,
+        job_position_id=job_position,
+        vacancy=vacancy,
+    )
+    rec.open_positions.add(job_position)
+    if company is not None:
+        rec.company_id = company
+        rec.save(update_fields=["company_id"])
+    return rec
+
+
+def make_stage(*, recruitment, stage: str = "Initial", stage_type: str = "initial"):
+    """A stage on ``recruitment``.
+
+    Recruitment has a post_save signal that seeds its own default stages
+    ("Initial", plus a hired stage), and (recruitment, stage) is unique --
+    so get_or_create, not create, or the common case collides.
+    """
+    from recruitment.models import Stage
+
+    obj, _created = Stage.objects.get_or_create(
+        recruitment_id=recruitment,
+        stage=stage,
+        defaults={"stage_type": stage_type},
+    )
+    return obj
+
+
+def get_hired_stage(*, recruitment):
+    """The hired stage the Recruitment signal creates, if present."""
+    from recruitment.models import Stage
+
+    return Stage.objects.filter(
+        recruitment_id=recruitment, stage_type="hired"
+    ).first()
+
+
+def make_candidate(
+    *,
+    recruitment,
+    email: str,
+    stage=None,
+    name: str = "Test Candidate",
+    hired: bool = False,
+):
+    from recruitment.models import Candidate
+
+    return Candidate.objects.create(
+        name=name,
+        email=email,
+        recruitment_id=recruitment,
+        stage_id=stage,
+        hired=hired,
+    )
