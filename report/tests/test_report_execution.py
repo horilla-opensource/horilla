@@ -669,14 +669,28 @@ class SharedFormulaGuardTests(TestCase):
         )
 
     def test_other_writers_guard_their_cells(self):
-        """The three generators that previously wrote cells unguarded."""
+        """All four spreadsheet writers, not just report/export.py."""
         import inspect
 
         from base import methods as base_methods
+        from horilla_views import cbv_methods as hv_cbv
         from horilla_views import views as hv_views
 
         self.assertIn("safe_cell", inspect.getsource(base_methods.export_data))
         self.assertIn("safe_cell", inspect.getsource(hv_views))
+        self.assertIn("safe_cell", inspect.getsource(hv_cbv))
+
+    def test_no_unguarded_worksheet_writes_remain(self):
+        """A regression fence: a new ws.append(row) without the guard is the
+        easiest way to reintroduce the sink."""
+        import inspect
+
+        from horilla_views import cbv_methods as hv_cbv
+
+        source = inspect.getsource(hv_cbv)
+        # Header rows are literals built in-module, not user data; the two
+        # data-row writes must both be wrapped.
+        self.assertNotIn("ws.append(row)", source)
 
     def test_client_side_export_guard_mirrors_python(self):
         """The explorer builds xlsx in the browser from the DOM, bypassing
@@ -785,3 +799,181 @@ class PeriodNoteDisclosureTests(TestCase):
             / "standard_report.html"
         ).read_text(encoding="utf-8")
         self.assertIn("usesOwnWindow", markup)
+
+
+class AuditActivityScopingTests(TestCase):
+    """
+    auditlog.LogEntry is third-party: no company column, no
+    HorillaCompanyManager. Unlike every other model the metrics layer
+    touches, it returned every tenant's activity to any viewer.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        import report.metrics  # noqa: F401
+
+        cls.today = date.today()
+        cls.company_a = make_company("Audit A")
+        cls.company_b = make_company("Audit B", hq=False)
+        cls.user_a = make_user("audit-a")
+        cls.user_b = make_user("audit-b")
+        cls.emp_a = make_employee(
+            company=cls.company_a,
+            email="aa@test.horilla",
+            first_name="AuditA",
+            user=cls.user_a,
+        )
+        cls.emp_b = make_employee(
+            company=cls.company_b,
+            email="bb@test.horilla",
+            first_name="AuditB",
+            user=cls.user_b,
+        )
+
+    def setUp(self):
+        clear_selected_company()
+
+    def _entries(self):
+        """One log entry per company, attributed to that company's user."""
+        from auditlog.models import LogEntry
+        from django.contrib.contenttypes.models import ContentType
+
+        ct = ContentType.objects.get_for_model(type(self.emp_a))
+        for actor, obj in ((self.user_a, self.emp_a), (self.user_b, self.emp_b)):
+            LogEntry.objects.create(
+                content_type=ct,
+                object_pk=str(obj.pk),
+                object_repr=str(obj),
+                action=1,
+                actor=actor,
+            )
+
+    def test_scoped_to_the_selected_company(self):
+        from report.engine import ReportFilters, resolve_period_preset
+        from report.metrics.compliance import audit_activity
+
+        self._entries()
+        from_date, to_date = resolve_period_preset("all_time", self.today)
+        scoped = audit_activity(
+            ReportFilters(
+                from_date=from_date,
+                to_date=to_date,
+                period_preset="all_time",
+                company_id=self.company_a.id,
+            )
+        )
+        kpis = {str(k["label"]): k["value"] for k in scoped["kpis"]}
+        # Company A's single entry, not both companies'.
+        self.assertEqual(kpis.get("Log entries"), 1)
+
+    def test_unscoped_request_still_returns_everything(self):
+        """No company selected (superuser 'all') keeps tenant-wide view."""
+        from report.engine import ReportFilters, resolve_period_preset
+        from report.metrics.compliance import audit_activity
+
+        self._entries()
+        from_date, to_date = resolve_period_preset("all_time", self.today)
+
+        def entries(**kw):
+            payload = audit_activity(
+                ReportFilters(
+                    from_date=from_date,
+                    to_date=to_date,
+                    period_preset="all_time",
+                    **kw,
+                )
+            )
+            return {str(k["label"]): k["value"] for k in payload["kpis"]}[
+                "Log entries"
+            ]
+
+        # Fixture setup itself writes audit rows, so compare the scoped and
+        # unscoped views rather than asserting an absolute count.
+        unscoped = entries()
+        scoped_a = entries(company_id=self.company_a.id)
+        scoped_b = entries(company_id=self.company_b.id)
+        self.assertGreater(unscoped, scoped_a)
+        self.assertGreater(unscoped, scoped_b)
+        # Neither tenant sees the other's activity.
+        self.assertGreaterEqual(scoped_a, 1)
+        self.assertGreaterEqual(scoped_b, 1)
+
+
+class MetricTruncationDisclosureTests(TestCase):
+    """A KPI counting every match above a capped row list has to say so."""
+
+    def test_table_carries_truncation_flags(self):
+        import inspect
+
+        from report.metrics import compliance, packs
+
+        # The registered report is packs.document_expiry_aging;
+        # compliance.document_expiry serves the retired slug.
+        for fn in (packs.document_expiry_aging, compliance.document_expiry):
+            source = inspect.getsource(fn)
+            self.assertIn('"truncated"', source, fn.__name__)
+            self.assertIn('"total_rows"', source, fn.__name__)
+
+    def test_aging_buckets_count_every_match_not_just_listed_rows(self):
+        """The buckets were built inside the row slice, so past the cap the
+        KPI totals were wrong, not just the table."""
+        import inspect
+
+        from report.metrics import packs
+
+        source = inspect.getsource(packs.document_expiry_aging)
+        # Bucketing runs over a values_list of the full queryset, separate
+        # from the capped select_related loop that builds rows.
+        self.assertIn("values_list(\"expiry_date\"", source)
+        self.assertIn("[:ROW_CAP]", source)
+
+    def test_exports_and_ui_honour_the_flag(self):
+        import inspect
+        from pathlib import Path
+
+        from django.conf import settings
+
+        from report import export
+
+        # PDF path escalates its own cap with the metric's flag.
+        self.assertIn(
+            'table_meta.get("truncated")',
+            inspect.getsource(export._render_pdf_context)
+            if hasattr(export, "_render_pdf_context")
+            else inspect.getsource(export),
+        )
+        # Excel data sheet reports a sample rather than a total.
+        self.assertIn("(sample)", inspect.getsource(export._write_data_sheet))
+        markup = (
+            Path(settings.BASE_DIR)
+            / "horilla_theme"
+            / "templates"
+            / "report"
+            / "standard_report.html"
+        ).read_text(encoding="utf-8")
+        self.assertIn("table.truncated", markup)
+
+
+class SilentMetricFailureTests(TestCase):
+    """A data source that fails silently shrinks the report into a smaller,
+    apparently valid number with nothing logged."""
+
+    def test_no_bare_pass_handlers_remain_in_metrics(self):
+        from pathlib import Path
+
+        from django.conf import settings
+
+        metrics_dir = Path(settings.BASE_DIR) / "report" / "metrics"
+        offenders = []
+        for path in sorted(metrics_dir.glob("*.py")):
+            lines = path.read_text(encoding="utf-8").splitlines()
+            for idx, line in enumerate(lines[:-1]):
+                if line.strip() == "except Exception:" and (
+                    lines[idx + 1].strip() == "pass"
+                ):
+                    offenders.append(f"{path.name}:{idx + 1}")
+        self.assertFalse(
+            offenders,
+            "silent exception handlers drop whole data sources: "
+            + ", ".join(offenders),
+        )

@@ -128,6 +128,10 @@
       line-height: 1.2;
     }
     .period { color: #555555; font-size: 9px; margin: 0; }
+    .period-note {
+      color: #5C4413; background: #FFF8E8; border-left: 2px solid #E8B84B;
+      font-size: 8.5px; margin: 3px 0 0; padding: 3px 6px; line-height: 1.35;
+    }
 
     /* ---- Document control strip ---- */
     .doc-control {
@@ -244,6 +248,10 @@
           <div class="report-title">{{ report_title }}</div>
           {% if period_label %}<p class="period">{% trans "Reporting period" %}: {{ period_label }}</p>{% endif %}
           {% if compare_label %}<p class="period">{{ compare_label }}</p>{% endif %}
+          {# Reports analysing a fixed window rather than the selected period
+             carry the reason here. This is the copy that gets circulated, so
+             the caveat matters more here than on screen. #}
+          {% if period_note %}<p class="period-note">{{ period_note }}</p>{% endif %}
         </td>
       </tr>
     </table>

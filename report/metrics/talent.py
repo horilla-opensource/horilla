@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+import logging
+
 from django.db.models import Count, Q
 from django.utils.translation import gettext as _
 
 from report.engine import ReportFilters, apply_org_filters, empty_report
+
+logger = logging.getLogger(__name__)
 
 
 def _candidates_in_period(filters: ReportFilters):
@@ -177,7 +181,9 @@ def time_to_hire(filters: ReportFilters) -> dict:
                         days_list.append(delta)
                         all_days.append(delta)
                 except Exception:
-                    pass
+                    logger.exception(
+                        "Report metric source unavailable"
+                    )
         if not days_list:
             continue
         data.append(

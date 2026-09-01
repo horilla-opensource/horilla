@@ -964,9 +964,17 @@
             return;
         }
         tableSection.hidden = false;
-        tableMeta.textContent = rows.length === 1
+        let metaText = rows.length === 1
             ? "1 {% trans 'row' %}"
             : rows.length + " {% trans 'rows' %}";
+        // A metric whose KPI counts every match but whose list is capped has
+        // to say so, or the card reads "347" above a table of 100.
+        if (table && table.truncated) {
+            metaText += table.total_rows
+                ? "  ·  {% trans 'sample of' %} " + table.total_rows
+                : "  ·  {% trans 'partial list' %}";
+        }
+        tableMeta.textContent = metaText;
 
         const numericCols = {};
         columns.forEach((col) => {
