@@ -2,6 +2,7 @@ import ast
 import calendar
 import contextlib
 import json
+import logging
 import os
 import random
 import re
@@ -23,6 +24,10 @@ from django.forms.models import ModelChoiceField
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
+
+from horilla.models import has_xss
+
+logger = logging.getLogger(__name__)
 
 from base.models import (
     Company,
@@ -1163,12 +1168,39 @@ def link_callback(uri, rel):
 
 
 def generate_pdf(template_path, context, path=True, title=None, html=True):
+    """
+    Render HTML to a PDF response.
+
+    The rendered body is XSS-checked before it reaches pdfkit. wkhtmltopdf
+    executes scripts in the document, and every call site here passes
+    `enable-local-file-access` (see template_pdf's pdf_options, where it is
+    needed to load local CSS and images). pdfkit 1.0.0 has a known,
+    currently-unfixed advisory for exactly that combination -- PYSEC-2026-2860:
+    `from_string` allows script execution and local-file exfiltration -- so a
+    template carrying an injected payload could read files off the server and
+    post them out.
+
+    horilla_automations/signals.py already did this check at its own call site.
+    Four other callers (recruitment, attendance API, employee dashboard,
+    onboarding) did not, so the guard belongs here, where all five route
+    through, rather than repeated at each one.
+    """
     title = "Document" if not title else title
 
     if html:
         html = template_path
     else:
         html = render_to_string(template_path, context)
+
+    if has_xss(html):
+        logger.error(
+            "generate_pdf: rendered body failed the XSS check; refusing to "
+            "hand it to wkhtmltopdf (title=%s).",
+            title,
+        )
+        return HttpResponse(
+            _("This document could not be generated safely."), status=400
+        )
 
     response = template_pdf(template=html, html=True, filename=title)
 
