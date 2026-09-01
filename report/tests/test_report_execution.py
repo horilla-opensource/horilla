@@ -712,3 +712,76 @@ class SharedFormulaGuardTests(TestCase):
                 markup,
                 f"{name} pivot export writes cells unguarded",
             )
+
+
+class PeriodNoteDisclosureTests(TestCase):
+    """
+    turnover-attrition deliberately analyses a fixed rolling 6-month window
+    and explains that in payload["period_note"]. The note was produced and
+    never rendered -- one producer, zero consumers repo-wide -- so the number
+    looked as though it had ignored the selected period for no reason.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        import report.metrics  # noqa: F401
+
+        cls.today = date.today()
+        cls.company = make_company("Note Corp")
+        make_employee(
+            company=cls.company, email="note@test.horilla", first_name="Note"
+        )
+
+    def setUp(self):
+        clear_selected_company()
+
+    def test_turnover_declares_its_own_window(self):
+        from report.engine import ReportFilters, resolve_period_preset
+        from report.registry import run_report
+
+        # Ask for a single month; the report answers with its own window.
+        from_date, to_date = resolve_period_preset("this_month", self.today)
+        payload = run_report(
+            "turnover-attrition",
+            ReportFilters(
+                from_date=from_date, to_date=to_date, period_preset="this_month"
+            ),
+        )
+        self.assertEqual(payload["period"]["preset"], "rolling_6m")
+        self.assertTrue(payload.get("period_note"))
+        # The declared window must be wider than the month that was asked
+        # for, or the override is not actually taking effect.
+        self.assertLess(payload["period"]["from_date"], from_date.isoformat())
+
+    def test_ui_renders_the_note(self):
+        from pathlib import Path
+
+        from django.conf import settings
+
+        markup = (
+            Path(settings.BASE_DIR)
+            / "horilla_theme"
+            / "templates"
+            / "report"
+            / "standard_report.html"
+        ).read_text(encoding="utf-8")
+        self.assertIn("sr-period-note", markup)
+        self.assertIn("setPeriodNote", markup)
+        self.assertIn("data.period_note", markup)
+
+    def test_ui_does_not_overwrite_the_user_date_inputs(self):
+        """A report reporting its own window must not rewrite the filter
+        inputs to dates the user never picked -- the next report opened would
+        otherwise inherit them."""
+        from pathlib import Path
+
+        from django.conf import settings
+
+        markup = (
+            Path(settings.BASE_DIR)
+            / "horilla_theme"
+            / "templates"
+            / "report"
+            / "standard_report.html"
+        ).read_text(encoding="utf-8")
+        self.assertIn("usesOwnWindow", markup)
