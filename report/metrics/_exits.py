@@ -229,6 +229,7 @@ def exit_drilldown(
 
     # Optional narrowing by the clicked dimension.
     if value:
+
         def _dept(row):
             emp = row.get("employee")
             wi = getattr(emp, "employee_work_info", None) if emp else None
@@ -241,9 +242,7 @@ def exit_drilldown(
         elif dimension in ("source",):
             rows_in = [r for r in rows_in if r.get("source") == value]
         elif dimension in ("month",):
-            rows_in = [
-                r for r in rows_in if r["exit_date"].strftime("%b %Y") == value
-            ]
+            rows_in = [r for r in rows_in if r["exit_date"].strftime("%b %Y") == value]
 
     if not rows_in:
         return empty_drilldown(title, dimension, value)

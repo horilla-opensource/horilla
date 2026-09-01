@@ -828,9 +828,7 @@ def leave_liability_drilldown(
         qs = qs.filter(leave_type_id__name=value)
         dimension = "leave_type"
     elif value and dimension in ("department", "dept"):
-        qs = qs.filter(
-            employee_id__employee_work_info__department_id__department=value
-        )
+        qs = qs.filter(employee_id__employee_work_info__department_id__department=value)
         dimension = "department"
 
     title = (
@@ -924,22 +922,16 @@ def overtime_analysis_drilldown(
         request, qs, perm="attendance.view_attendance", field="employee_id"
     )
     if value and dimension in ("department", "dept", "by_dept"):
-        qs = qs.filter(
-            employee_id__employee_work_info__department_id__department=value
-        )
+        qs = qs.filter(employee_id__employee_work_info__department_id__department=value)
         dimension = "department"
 
     named = allow_named_ot_rows(filters)
-    title = (
-        _("Overtime · %(dept)s") % {"dept": value} if value else _("Overtime")
-    )
+    title = _("Overtime · %(dept)s") % {"dept": value} if value else _("Overtime")
 
     if not named:
         # Aggregate-only view: same shape, no identities.
         grouped = (
-            qs.values(
-                "employee_id__employee_work_info__department_id__department"
-            )
+            qs.values("employee_id__employee_work_info__department_id__department")
             .annotate(seconds=_Sum("overtime_second"))
             .order_by("-seconds")
         )

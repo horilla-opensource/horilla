@@ -67,9 +67,7 @@ def queue_export_email(
                 logger.warning("Async export: unknown report %s", slug)
                 return
 
-            filters = filters_from_dict(
-                filters_dict, default_company_id=company_id
-            )
+            filters = filters_from_dict(filters_dict, default_company_id=company_id)
             filters.extra["row_limit"] = 5000
             payload = run_report(slug, filters)
             safe = slug.replace("/", "-")

@@ -13,7 +13,6 @@ from report.engine import ReportFilters, apply_org_filters, empty_report
 logger = logging.getLogger(__name__)
 
 
-
 def _session_company_id(filters: ReportFilters):
     """Selected company from the request on ``filters``, when there is one."""
     request = getattr(filters, "request", None)

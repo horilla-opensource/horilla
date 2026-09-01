@@ -1161,14 +1161,10 @@ def turnover_attrition_drilldown(
     )
 
 
-def exit_analysis_drilldown(
-    filters: ReportFilters, params: dict, request=None
-) -> dict:
+def exit_analysis_drilldown(filters: ReportFilters, params: dict, request=None) -> dict:
     from report.metrics._exits import exit_drilldown
 
-    return exit_drilldown(
-        filters, params, request, title=_("Exits in period")
-    )
+    return exit_drilldown(filters, params, request, title=_("Exits in period"))
 
 
 def joiners_leavers_drilldown(
@@ -1190,9 +1186,7 @@ def joiners_leavers_drilldown(
     # The chart plots hires and exits side by side, so the series decides
     # which population to list.
     if dimension in ("exits", "leavers", "exit"):
-        return exit_drilldown(
-            filters, params, request, title=_("Leavers in period")
-        )
+        return exit_drilldown(filters, params, request, title=_("Leavers in period"))
 
     qs = EmployeeWorkInformation.objects.filter(
         date_joining__gte=filters.from_date,
@@ -1226,9 +1220,7 @@ def joiners_leavers_drilldown(
             {
                 "employee": str(emp) if emp else "",
                 "department": getattr(wi.department_id, "department", "") or "",
-                "date_joining": wi.date_joining.isoformat()
-                if wi.date_joining
-                else "",
+                "date_joining": wi.date_joining.isoformat() if wi.date_joining else "",
                 "url": employee_link(getattr(emp, "id", None)),
             }
         )

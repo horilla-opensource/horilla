@@ -49,9 +49,7 @@ def _company_leave_rules() -> set[tuple[Optional[int], int]]:
         from base.models import CompanyLeaves
 
         rules: set[tuple[Optional[int], int]] = set()
-        for row in CompanyLeaves.objects.values(
-            "based_on_week", "based_on_week_day"
-        ):
+        for row in CompanyLeaves.objects.values("based_on_week", "based_on_week_day"):
             weekday = row["based_on_week_day"]
             if weekday in (None, ""):
                 continue
@@ -72,9 +70,7 @@ def _company_leave_rules() -> set[tuple[Optional[int], int]]:
         return set()
 
 
-def _matches_company_leave(
-    day: date, rules: set[tuple[Optional[int], int]]
-) -> bool:
+def _matches_company_leave(day: date, rules: set[tuple[Optional[int], int]]) -> bool:
     """Whether ``day`` falls on a company leave, per the prefetched rules.
 
     Week number is 0-based within the month and offset by the weekday the

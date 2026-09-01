@@ -120,9 +120,7 @@ class ReportFilters:
         ]
         for label, pk, app_label, model_name in fk_specs:
             if pk:
-                pairs.append(
-                    (str(label), _resolve_display(app_label, model_name, pk))
-                )
+                pairs.append((str(label), _resolve_display(app_label, model_name, pk)))
         if self.location:
             pairs.append((str(_("Location")), self.location))
         if self.gender:
@@ -136,9 +134,7 @@ class ReportFilters:
                 (str(_("Offer letter status")), self.offer_letter_status.capitalize())
             )
         if self.payslip_status:
-            pairs.append(
-                (str(_("Payslip status")), self.payslip_status.capitalize())
-            )
+            pairs.append((str(_("Payslip status")), self.payslip_status.capitalize()))
         return pairs
 
     def summary_labels(self) -> list[str]:

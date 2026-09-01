@@ -67,7 +67,6 @@ def _period_label(period: dict) -> str:
     return start or end or "—"
 
 
-
 def _local_stamp(value=None, fmt: str = "%Y-%m-%d %H:%M") -> str:
     """Format a timestamp in the project timezone.
 
@@ -1148,7 +1147,6 @@ def export_xlsx(
     return response
 
 
-
 # Static/media URI resolution for xhtml2pdf. The bundled Poppins face covers
 # Latin, Latin-ext, Devanagari and the rupee sign; CJK, Arabic, Hebrew and
 # Cyrillic are still not covered and need an additional font shipped before
@@ -1410,9 +1408,7 @@ def export_pdf(
         # URI in the template and silently falls back to Helvetica -- a
         # base-14 face with no coverage outside Latin, so non-Latin employee
         # names render as black boxes.
-        result = pisa.CreatePDF(
-            src=html, dest=buf, link_callback=_pdf_link_callback
-        )
+        result = pisa.CreatePDF(src=html, dest=buf, link_callback=_pdf_link_callback)
         if result.err:
             raise RuntimeError(f"PDF generation failed ({result.err})")
     finally:

@@ -20,6 +20,7 @@ from django.test import TestCase
 
 from horilla.testkit.company import clear_selected_company
 from horilla.testkit.factories import (
+    get_hired_stage,
     make_attendance,
     make_available_leave,
     make_candidate,
@@ -34,7 +35,6 @@ from horilla.testkit.factories import (
     make_stage,
     make_user,
 )
-from horilla.testkit.factories import get_hired_stage
 
 # Reports are executed across this grid; each combination is a distinct set of
 # date-boundary and queryset-filter paths.
@@ -589,9 +589,7 @@ class SubscriptionClaimTests(TestCase):
         with self._mail_configured(), patch(
             "report.delivery.run_report", side_effect=RuntimeError("boom")
         ):
-            result = deliver_subscription(
-                ReportSubscription.objects.get(pk=sub.pk)
-            )
+            result = deliver_subscription(ReportSubscription.objects.get(pk=sub.pk))
         self.assertFalse(result.ok)
         sub.refresh_from_db()
         # Back to unclaimed, so the next poll retries.
@@ -730,9 +728,7 @@ class SharedFormulaGuardTests(TestCase):
             "–=1",
         ):
             guarded = neutralize_formula(payload)
-            self.assertTrue(
-                guarded.startswith("'"), f"not neutralized: {payload!r}"
-            )
+            self.assertTrue(guarded.startswith("'"), f"not neutralized: {payload!r}")
 
     def test_ordinary_text_and_numbers_pass_through(self):
         from horilla.export_safety import neutralize_formula, safe_cell
@@ -750,9 +746,7 @@ class SharedFormulaGuardTests(TestCase):
         from horilla.export_safety import neutralize_formula
         from report.export import _neutralize_formula
 
-        self.assertEqual(
-            _neutralize_formula("=cmd"), neutralize_formula("=cmd")
-        )
+        self.assertEqual(_neutralize_formula("=cmd"), neutralize_formula("=cmd"))
 
     def test_other_writers_guard_their_cells(self):
         """All four spreadsheet writers, not just report/export.py."""
@@ -801,11 +795,7 @@ class SharedFormulaGuardTests(TestCase):
             "recruitment",
         ):
             markup = (
-                base
-                / "horilla_theme"
-                / "templates"
-                / "report"
-                / f"{name}_report.html"
+                base / "horilla_theme" / "templates" / "report" / f"{name}_report.html"
             ).read_text(encoding="utf-8")
             self.assertIn(
                 "horillaSafeCell",
@@ -828,9 +818,7 @@ class PeriodNoteDisclosureTests(TestCase):
 
         cls.today = date.today()
         cls.company = make_company("Note Corp")
-        make_employee(
-            company=cls.company, email="note@test.horilla", first_name="Note"
-        )
+        make_employee(company=cls.company, email="note@test.horilla", first_name="Note")
 
     def setUp(self):
         clear_selected_company()
@@ -969,9 +957,7 @@ class AuditActivityScopingTests(TestCase):
                     **kw,
                 )
             )
-            return {str(k["label"]): k["value"] for k in payload["kpis"]}[
-                "Log entries"
-            ]
+            return {str(k["label"]): k["value"] for k in payload["kpis"]}["Log entries"]
 
         # Fixture setup itself writes audit rows, so compare the scoped and
         # unscoped views rather than asserting an absolute count.
@@ -1010,7 +996,7 @@ class MetricTruncationDisclosureTests(TestCase):
         source = inspect.getsource(packs.document_expiry_aging)
         # Bucketing runs over a values_list of the full queryset, separate
         # from the capped select_related loop that builds rows.
-        self.assertIn("values_list(\"expiry_date\"", source)
+        self.assertIn('values_list("expiry_date"', source)
         self.assertIn("[:ROW_CAP]", source)
 
     def test_exports_and_ui_honour_the_flag(self):
@@ -1024,9 +1010,11 @@ class MetricTruncationDisclosureTests(TestCase):
         # PDF path escalates its own cap with the metric's flag.
         self.assertIn(
             'table_meta.get("truncated")',
-            inspect.getsource(export._render_pdf_context)
-            if hasattr(export, "_render_pdf_context")
-            else inspect.getsource(export),
+            (
+                inspect.getsource(export._render_pdf_context)
+                if hasattr(export, "_render_pdf_context")
+                else inspect.getsource(export)
+            ),
         )
         # Excel data sheet reports a sample rather than a total.
         self.assertIn("(sample)", inspect.getsource(export._write_data_sheet))
@@ -1324,9 +1312,9 @@ class PdfFontEmbeddingTests(TestCase):
     def test_link_callback_resolves_the_bundled_font(self):
         import os
 
-        from report.export import PDF_FONT_STATIC_PATH, _pdf_link_callback
-
         from django.conf import settings
+
+        from report.export import PDF_FONT_STATIC_PATH, _pdf_link_callback
 
         uri = f"{settings.STATIC_URL}{PDF_FONT_STATIC_PATH}"
         resolved = _pdf_link_callback(uri, "")

@@ -181,9 +181,7 @@ def time_to_hire(filters: ReportFilters) -> dict:
                         days_list.append(delta)
                         all_days.append(delta)
                 except Exception:
-                    logger.exception(
-                        "Report metric source unavailable"
-                    )
+                    logger.exception("Report metric source unavailable")
         if not days_list:
             continue
         data.append(

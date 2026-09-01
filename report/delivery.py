@@ -171,9 +171,7 @@ def deliver_subscription(
             pk=subscription.pk, last_run_at=claimed_from
         ).update(last_run_at=now)
         if not rows:
-            return DeliveryResult(
-                False, "skipped", "Already claimed by another worker"
-            )
+            return DeliveryResult(False, "skipped", "Already claimed by another worker")
         subscription.last_run_at = now
         claimed = True
 

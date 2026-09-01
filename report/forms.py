@@ -87,8 +87,7 @@ class ReportSubscriptionForm(ModelForm):
                 invalid.append(email)
         if invalid:
             raise forms.ValidationError(
-                _("Not a valid email address: %(bad)s")
-                % {"bad": ", ".join(invalid)}
+                _("Not a valid email address: %(bad)s") % {"bad": ", ".join(invalid)}
             )
         # Normalize to a de-duplicated comma-separated list, preserving order.
         return ", ".join(dict.fromkeys(emails))

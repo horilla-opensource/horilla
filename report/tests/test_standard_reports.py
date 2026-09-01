@@ -424,7 +424,7 @@ class ExportTests(SimpleTestCase):
         self.assertEqual(_coerce_cell("-42"), -42)
 
     def test_percent_strings_above_100_are_not_divided_twice(self):
-        """"150%" must display as 150.0%, not 1.5%.
+        """ "150%" must display as 150.0%, not 1.5%.
 
         _coerce_cell already turns "150%" into 1.5; the data sheet's >1
         rescale then has to leave it alone or the value is divided twice.

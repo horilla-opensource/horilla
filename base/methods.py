@@ -36,8 +36,8 @@ from base.models import (
     DynamicPagination,
     Holidays,
 )
-from horilla.export_safety import safe_cell
 from employee.models import Employee, EmployeeWorkInformation
+from horilla.export_safety import safe_cell
 from horilla.horilla_middlewares import _thread_locals
 
 CHART_CONFIG = {
