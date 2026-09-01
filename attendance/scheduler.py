@@ -89,7 +89,13 @@ def create_work_record():
             )
             records_to_create.append(record)
         except Exception as e:
-            logger.error(f"Error preparing work record for {employee}: {e}")
+            # Employee.__str__ is "Name (BADGE)", so interpolating the
+            # object writes a real name into the log. The id is enough to
+            # find the row, and logger.exception keeps the traceback.
+            logger.exception(
+                "Error preparing work record for employee_id=%s",
+                getattr(employee, "pk", employee),
+            )
 
     if records_to_create:
         try:
