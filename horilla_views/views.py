@@ -33,6 +33,7 @@ from xhtml2pdf import pisa
 
 from base.methods import eval_validate, has_export_access
 from horilla.decorators import login_required as func_login_required
+from horilla.export_safety import safe_cell
 from horilla.http.response import HorillaRedirect
 from horilla.signals import post_generic_delete, pre_generic_delete
 from horilla_views import models
@@ -1181,7 +1182,9 @@ def export_data(request, *args, **kwargs):
 
         for r_idx, row in enumerate(final_rows, start=HEADER_ROW + 1):
             for c_idx, val in enumerate(row, start=1):
-                ws.cell(row=r_idx, column=c_idx).value = val
+                # Text carried through from user-entered data can execute when
+                # the workbook is opened, so guard it on the way in.
+                ws.cell(row=r_idx, column=c_idx).value = safe_cell(val)
 
         buf = BytesIO()
         wb.save(buf)

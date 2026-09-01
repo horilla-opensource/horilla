@@ -36,6 +36,7 @@ from base.models import (
     DynamicPagination,
     Holidays,
 )
+from horilla.export_safety import safe_cell
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.horilla_middlewares import _thread_locals
 
@@ -992,7 +993,11 @@ def export_data(request, model, form_class, filter_class, file_name, perm=None):
 
                 # Check if the type of 'value' is time
                 value = format_export_value(value, employee)
-                data_export[verbose_name].append(value)
+                # Employee-entered text reaching a spreadsheet cell can
+                # execute when the file is opened (=HYPERLINK(...) will
+                # exfiltrate neighbouring cells), so guard every value at the
+                # one point they all pass through.
+                data_export[verbose_name].append(safe_cell(value))
 
     data_frame = pd.DataFrame(data=data_export)
 
