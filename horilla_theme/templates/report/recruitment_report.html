@@ -830,7 +830,6 @@
     // selected, and picking one switches the page to match -- which reads
     // as more useful than hiding templates saved under a different tab.
     // ------------------------------------------------------------------
-    var REPORT_SLUG = "recruitment_report";
 
     function currentReportSlug() {
         return "recruitment_report_" + $("#model-select").val();
@@ -838,7 +837,6 @@
 
     // Per-model export permission, computed server-side via the
     // centralized has_export_access() check.
-    const exportAccessMap = JSON.parse(document.getElementById("export-access-map").textContent);
     const modelPathMap = {
         candidate: "recruitment.Candidate",
         recruitment: "recruitment.Recruitment",

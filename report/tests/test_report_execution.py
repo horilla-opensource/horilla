@@ -1148,3 +1148,67 @@ class CohortActiveFilterTests(TestCase):
         # toward 100% no matter how many new hires leave.
         source = inspect.getsource(talent.quality_of_hire)
         self.assertIn("apply_employment_status=False", source)
+
+
+class TemplateShadowingTests(TestCase):
+    """
+    horilla/settings/base.py puts the theme filesystem loader ahead of
+    app_directories, so report/templates/report/*.html could never render --
+    4,165 lines of it were being maintained alongside the live theme copies
+    that actually shadow them.
+    """
+
+    EXPLORERS = (
+        "asset",
+        "attendance",
+        "employee",
+        "leave",
+        "payroll",
+        "pms",
+        "recruitment",
+    )
+
+    def test_explorer_templates_resolve_to_the_theme(self):
+        """Let Django resolve them rather than reasoning about loader order."""
+        from django.template.loader import get_template
+
+        for name in self.EXPLORERS:
+            with self.subTest(explorer=name):
+                origin = get_template(f"report/{name}_report.html").origin.name or ""
+                self.assertIn(
+                    "horilla_theme",
+                    origin,
+                    f"{name} no longer resolves to the theme copy: {origin}",
+                )
+
+    def test_no_shadowed_copies_reappear(self):
+        """A re-added app-level copy would be silently unreachable."""
+        from pathlib import Path
+
+        from django.conf import settings
+
+        shadowed = Path(settings.BASE_DIR) / "report" / "templates" / "report"
+        self.assertFalse(
+            shadowed.exists(),
+            "report/templates/report/ is shadowed by the theme loader and can "
+            "never render; put explorer templates in horilla_theme instead.",
+        )
+
+    def test_dead_export_helper_stays_deleted(self):
+        """report_export.js defined five helpers and nothing called any of
+        them -- the residue of an abandoned dedup attempt."""
+        from pathlib import Path
+
+        from django.conf import settings
+
+        base = Path(settings.BASE_DIR)
+        self.assertFalse(
+            (base / "report" / "static" / "report" / "js" / "report_export.js").exists()
+        )
+        theme = base / "horilla_theme" / "templates" / "report"
+        for path in theme.glob("*_report.html"):
+            self.assertNotIn(
+                "report_export.js",
+                path.read_text(encoding="utf-8"),
+                f"{path.name} still loads the deleted helper",
+            )
