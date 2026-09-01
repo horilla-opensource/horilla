@@ -264,8 +264,15 @@ class RotatingWorkDetailView(HorillaDetailedView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        instance = context["object"]
-        instance.ordered_ids = context["instance_ids"]
+        instance = context.get("object")
+        if instance is None:
+            # No matching row (e.g. a stale/invalid pk) -- the parent's own
+            # get_context_data already skips setting instance_ids for this
+            # case, and its get() renders empty_template / redirects with
+            # "No record found" once this returns, so there's nothing to
+            # attach ordered_ids to here.
+            return context
+        instance.ordered_ids = context.get("instance_ids", [])
         return context
 
 
