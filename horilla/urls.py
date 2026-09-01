@@ -18,7 +18,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.core.cache import cache
 from django.db import connection
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.urls import include, path, re_path
 from django.views.generic import RedirectView
 from django.views.i18n import JavaScriptCatalog
@@ -62,6 +62,24 @@ def readiness_check(request):
     return JsonResponse({"status": "ok", **checks}, status=200)
 
 
+def metrics(request):
+    """
+    Prometheus scrape endpoint for the background job runner.
+
+    Staff-only. nginx also denies it from outside (see docker/nginx.conf) -- job
+    counts and failure rates are operational detail, not public information, and
+    `location /` would otherwise proxy this straight through.
+    """
+    from django.http import HttpResponse
+
+    from horilla.observability import scheduler_metrics
+
+    if not (request.user.is_authenticated and request.user.is_staff):
+        raise Http404
+
+    return HttpResponse(scheduler_metrics(), content_type="text/plain; version=0.0.4")
+
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     # django.contrib.auth.urls is here for the password_reset_* routes its forms
@@ -88,6 +106,7 @@ urlpatterns = [
     path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
     path("health/", health_check),
     path("ready/", readiness_check),
+    path("metrics/", metrics),
 ]
 
 # if settings.DEBUG:
