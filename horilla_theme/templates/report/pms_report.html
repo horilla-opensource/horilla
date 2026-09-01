@@ -1559,7 +1559,9 @@
                             const cellValue = cell.textContent.trim();
 
                             const excelCell = worksheet.getCell(currentRow + rowIndex, colIndex);
-                            excelCell.value = cellValue;
+                            excelCell.value = window.horillaSafeCell
+                        ? window.horillaSafeCell(cellValue)
+                        : cellValue;
 
                             excelCell.font = {
                                 bold: isHeader,

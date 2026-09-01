@@ -1423,7 +1423,9 @@
                     const cellValue = cell.textContent.trim();
 
                     const excelCell = worksheet.getCell(currentRow + rowIndex, colIndex);
-                    excelCell.value = cellValue;
+                    excelCell.value = window.horillaSafeCell
+                        ? window.horillaSafeCell(cellValue)
+                        : cellValue;
 
                     // A pivot table can have MORE than one header row (e.g. when a
                         // Columns grouping is used, the field's name like "Gender" gets

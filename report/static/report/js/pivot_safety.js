@@ -92,3 +92,32 @@
         }
     });
 })();
+
+/*
+ * Spreadsheet formula guard for the client-side pivot exports.
+ *
+ * The explorer pages build their .xlsx in the browser from the rendered DOM
+ * (exportTableToExcel, copied into all seven templates), so cell text goes
+ * straight from user-entered data into a workbook with no server involved.
+ * report/export.py guards its cells; this is the same guard for that path.
+ *
+ * Mirrors horilla/export_safety.py -- keep the trigger lists in step.
+ */
+window.horillaSafeCell = (function () {
+    "use strict";
+
+    var TRIGGERS = ["=", "+", "-", "@", "\t", "\r", "\n", "−", "–", "—"];
+
+    return function safeCell(value) {
+        if (typeof value !== "string" || !value.length) {
+            return value;
+        }
+        for (var i = 0; i < TRIGGERS.length; i++) {
+            if (value.charAt(0) === TRIGGERS[i]) {
+                // The apostrophe forces literal text and is not displayed.
+                return "'" + value;
+            }
+        }
+        return value;
+    };
+})();

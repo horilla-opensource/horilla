@@ -18,6 +18,8 @@ from typing import Any, Optional
 from django.http import HttpResponse
 from django.utils import timezone
 
+from horilla.export_safety import FORMULA_TRIGGERS, neutralize_formula
+
 # ---------------------------------------------------------------------------
 # Style tokens — Horilla primary (coral / #E54F38)
 # ---------------------------------------------------------------------------
@@ -93,19 +95,16 @@ def _company_from_meta(meta: Optional[dict]) -> dict[str, Any]:
     }
 
 
-# Excel and Calc evaluate any cell whose text begins with one of these, so a
-# value carried through from user-entered data (an employee name, a request
-# description) can execute on open -- =HYPERLINK(...) will happily exfiltrate
-# to a remote host. Prefixing with an apostrophe forces literal text; the
-# apostrophe itself is not displayed by the spreadsheet.
-_FORMULA_TRIGGERS = ("=", "+", "-", "@", "\t", "\r")
+# The guard lives in horilla.export_safety so the repo's other spreadsheet
+# writers share one definition instead of each growing its own copy (or, as
+# was the case, going without). Re-exported under the old private names so
+# existing call sites in this module keep reading naturally.
+_FORMULA_TRIGGERS = FORMULA_TRIGGERS
 
 
 def _neutralize_formula(text: str) -> str:
     """Stop a spreadsheet treating exported text as a formula."""
-    if text and text.startswith(_FORMULA_TRIGGERS):
-        return "'" + text
-    return text
+    return neutralize_formula(text)
 
 
 def _coerce_cell(value: Any) -> Any:

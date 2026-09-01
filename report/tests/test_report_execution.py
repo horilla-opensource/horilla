@@ -601,7 +601,7 @@ class PivotTruncationDisclosureTests(TestCase):
 
         index = Path(settings.BASE_DIR) / "templates" / "index.html"
         markup = index.read_text(encoding="utf-8")
-        self.assertIn("report/js/pivot_truncation.js", markup)
+        self.assertIn("report/js/pivot_safety.js", markup)
 
     def test_notice_script_reads_the_documented_headers(self):
         from pathlib import Path
@@ -614,8 +614,101 @@ class PivotTruncationDisclosureTests(TestCase):
             / "static"
             / "report"
             / "js"
-            / "pivot_truncation.js"
+            / "pivot_safety.js"
         )
         source = script.read_text(encoding="utf-8")
         self.assertIn("X-Horilla-Pivot-Truncated", source)
         self.assertIn("X-Horilla-Pivot-Limit", source)
+
+
+class SharedFormulaGuardTests(TestCase):
+    """
+    Four separate spreadsheet writers exist in this repo and only
+    report/export.py guarded its cells. They now share one guard.
+    """
+
+    def test_triggers_are_neutralized(self):
+        from horilla.export_safety import neutralize_formula
+
+        for payload in (
+            '=HYPERLINK("http://evil.test","x")',
+            "+1+1",
+            "-1-1",
+            "@SUM(A1:A9)",
+            "\tinjected",
+            "\rinjected",
+            "\ninjected",
+            # Unicode minus and dashes: rendered like a hyphen, and some
+            # importers normalize them before evaluating.
+            "−=1",
+            "–=1",
+        ):
+            guarded = neutralize_formula(payload)
+            self.assertTrue(
+                guarded.startswith("'"), f"not neutralized: {payload!r}"
+            )
+
+    def test_ordinary_text_and_numbers_pass_through(self):
+        from horilla.export_safety import neutralize_formula, safe_cell
+
+        self.assertEqual(neutralize_formula("Ann Smith"), "Ann Smith")
+        self.assertEqual(neutralize_formula(""), "")
+        # Real numeric types must keep their cell type, or the column loses
+        # its number formatting and its totals.
+        self.assertEqual(safe_cell(42), 42)
+        self.assertEqual(safe_cell(3.5), 3.5)
+        self.assertIs(safe_cell(True), True)
+        self.assertEqual(safe_cell(None), "")
+
+    def test_report_export_uses_the_shared_guard(self):
+        from horilla.export_safety import neutralize_formula
+        from report.export import _neutralize_formula
+
+        self.assertEqual(
+            _neutralize_formula("=cmd"), neutralize_formula("=cmd")
+        )
+
+    def test_other_writers_guard_their_cells(self):
+        """The three generators that previously wrote cells unguarded."""
+        import inspect
+
+        from base import methods as base_methods
+        from horilla_views import views as hv_views
+
+        self.assertIn("safe_cell", inspect.getsource(base_methods.export_data))
+        self.assertIn("safe_cell", inspect.getsource(hv_views))
+
+    def test_client_side_export_guard_mirrors_python(self):
+        """The explorer builds xlsx in the browser from the DOM, bypassing
+        every server-side guard."""
+        from pathlib import Path
+
+        from django.conf import settings
+
+        base = Path(settings.BASE_DIR)
+        script = (
+            base / "report" / "static" / "report" / "js" / "pivot_safety.js"
+        ).read_text(encoding="utf-8")
+        self.assertIn("horillaSafeCell", script)
+
+        for name in (
+            "employee",
+            "asset",
+            "attendance",
+            "leave",
+            "payroll",
+            "pms",
+            "recruitment",
+        ):
+            markup = (
+                base
+                / "horilla_theme"
+                / "templates"
+                / "report"
+                / f"{name}_report.html"
+            ).read_text(encoding="utf-8")
+            self.assertIn(
+                "horillaSafeCell",
+                markup,
+                f"{name} pivot export writes cells unguarded",
+            )
