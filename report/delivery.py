@@ -150,10 +150,17 @@ def deliver_subscription(
     # stay unclaimed so it is re-evaluated next poll rather than looking as
     # though it had already been delivered.
     #
-    # report/scheduler.py starts an in-process BackgroundScheduler, so with N
-    # gunicorn workers there are N pollers. last_run_at used to be written
-    # only *after* the mail was sent, so every worker passed the due check
-    # and each one sent -- subscribers got duplicates.
+    # Duplicate execution across workers is now prevented upstream: jobs
+    # register with horilla.scheduling and exactly one process
+    # (manage.py run_scheduler) owns execution, rather than every gunicorn
+    # worker starting its own BackgroundScheduler at import.
+    #
+    # This claim is kept as defence in depth, not as that fix. last_run_at
+    # was written only *after* the mail was sent, so any second poller --
+    # a stray scheduler, an operator running the management command by hand
+    # while the service is up, a retry -- would pass the due check above and
+    # send again. Claiming first makes delivery idempotent regardless of how
+    # many pollers exist.
     #
     # A conditional UPDATE guarded on the value just read: exactly one
     # racer's write matches and the rest see 0 rows affected.
