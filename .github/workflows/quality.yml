@@ -58,6 +58,56 @@ jobs:
           ALLOWED_HOSTS: localhost,127.0.0.1
         run: python manage.py check
 
+  dependency-audit:
+    # Dependency CVEs were only ever caught by the container image scan, which
+    # is advisory on PRs -- so a vulnerable pin could merge and only surface at
+    # release. This checks requirements.txt directly.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pip-audit
+        run: python -m pip install --upgrade pip pip-audit
+
+      - name: Audit pinned dependencies
+        # Blocking. The 21 pre-existing CVEs are cleared (008386444c); the only
+        # remaining finding is pdfkit PYSEC-2026-2860, which has no upstream fix
+        # and is mitigated in base.methods.generate_pdf instead. It is ignored
+        # by ID rather than by disabling the gate, so a NEW vulnerable pin still
+        # fails the build -- and if pdfkit ever ships a fix, dropping this line
+        # is the reminder to take it.
+        run: >-
+          pip-audit --requirement requirements.txt --desc
+          --ignore-vuln PYSEC-2026-2860
+
+  secret-scan:
+    # AWS and WhatsApp credentials have reached this repo's git history before
+    # (see the July 2026 audit), so this is a re-occurrence guard, not a
+    # hypothetical.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # gitleaks diffs commit ranges; a shallow clone gives it nothing to
+          # compare against.
+          fetch-depth: 0
+
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   production-settings-gate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
