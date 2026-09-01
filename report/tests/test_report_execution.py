@@ -1397,3 +1397,68 @@ class ExportLabelTranslationTests(TestCase):
 
         source = inspect.getsource(company_context)
         self.assertIn('_("All companies")', source)
+
+
+class ExportPolishTests(TestCase):
+    """Smaller export defects: inconsistent timestamps, duplicated palettes,
+    and chart failures indistinguishable from empty charts."""
+
+    def test_all_export_paths_share_one_local_timestamp_helper(self):
+        """The Excel footer and cover used naive timezone.now() while the PDF
+        used localtime(), so one report exported twice carried two different
+        times -- UTC on one document, local on the other."""
+        import inspect
+
+        from report import export
+
+        source = inspect.getsource(export)
+        self.assertNotIn('timezone.now().strftime("%Y-%m-%d %H:%M")', source)
+        # Every timestamp goes through the one helper.
+        self.assertIn("def _local_stamp(", source)
+
+    def test_local_stamp_converts_aware_datetimes(self):
+        from django.utils import timezone
+
+        from report.export import _local_stamp
+
+        aware = timezone.now()
+        self.assertEqual(
+            _local_stamp(aware), timezone.localtime(aware).strftime("%Y-%m-%d %H:%M")
+        )
+        # Non-datetimes pass through as text rather than raising.
+        self.assertEqual(_local_stamp("2026-01-01"), "2026-01-01")
+
+    def test_chart_palette_has_one_definition(self):
+        """The PDF and Excel palettes were duplicated literals in separate
+        files, linked only by a comment."""
+        from report.chart_render import PALETTE_HEX
+        from report.export import _chart_palette_hex
+
+        self.assertEqual(_chart_palette_hex(), list(PALETTE_HEX))
+        self.assertIn("E54F38", PALETTE_HEX)  # brand coral
+
+    def test_chart_render_failure_is_logged_not_silent(self):
+        """A failing chart returned None, which callers treat as "no data" --
+        so a real failure printed "No data for the selected period"."""
+        from unittest.mock import patch
+
+        from report.chart_render import render_chart_png
+
+        chart = {
+            "id": "c1",
+            "type": "bar",
+            "categories": ["A", "B"],
+            "series": [{"name": "n", "data": [1, 2]}],
+        }
+        with patch(
+            "report.chart_render._bar_drawing", side_effect=RuntimeError("boom")
+        ):
+            with self.assertLogs("report.chart_render", level="ERROR") as logs:
+                self.assertIsNone(render_chart_png(chart))
+        self.assertTrue(any("Chart render failed" in line for line in logs.output))
+
+    def test_chart_render_still_returns_none_for_empty_data(self):
+        """The genuine no-data case must stay quiet."""
+        from report.chart_render import render_chart_png
+
+        self.assertIsNone(render_chart_png({"categories": [], "series": []}))

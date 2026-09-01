@@ -67,6 +67,26 @@ def _period_label(period: dict) -> str:
     return start or end or "—"
 
 
+
+def _local_stamp(value=None, fmt: str = "%Y-%m-%d %H:%M") -> str:
+    """Format a timestamp in the project timezone.
+
+    The Excel footer and cover used naive timezone.now() while the PDF used
+    timezone.localtime(), so the same report exported twice carried two
+    different times -- UTC on one document, local on the other. Everything
+    goes through here now.
+    """
+    moment = value or timezone.now()
+    if not hasattr(moment, "strftime"):
+        return str(moment)
+    try:
+        if timezone.is_aware(moment):
+            moment = timezone.localtime(moment)
+    except (ValueError, TypeError):
+        pass
+    return moment.strftime(fmt)
+
+
 def _company_from_meta(meta: Optional[dict]) -> dict[str, Any]:
     meta = meta or {}
     company = meta.get("company") or {}
@@ -312,8 +332,7 @@ def export_csv(
     writer.writerow(
         [
             "Generated",
-            timezone.now().strftime("%Y-%m-%d %H:%M:%S %Z")
-            or timezone.now().isoformat(),
+            _local_stamp(fmt="%Y-%m-%d %H:%M:%S %Z"),
         ]
     )
     if meta.get("user"):
@@ -411,7 +430,7 @@ def _apply_print_setup(ws, meta: Optional[dict] = None, landscape: bool = False)
     ws.sheet_properties.pageSetUpPr = PageSetupProperties(fitToPage=True)
 
     product = meta.get("product_name") or "Horilla HR"
-    generated = timezone.now().strftime("%Y-%m-%d %H:%M")
+    generated = _local_stamp()
     ws.oddFooter.left.text = f"{product}"
     ws.oddFooter.left.size = 8
     ws.oddFooter.left.color = "808080"
@@ -559,11 +578,7 @@ def _write_cover(wb, payload: dict[str, Any], meta: Optional[dict] = None):
     company = _company_from_meta(meta)
     title = str(payload.get("title") or "Standard Report")
     period = payload.get("period") or {}
-    generated = meta.get("generated_at") or timezone.now()
-    if hasattr(generated, "strftime"):
-        generated_str = generated.strftime("%d %b %Y, %H:%M")
-    else:
-        generated_str = str(generated)
+    generated_str = _local_stamp(meta.get("generated_at"), fmt="%d %b %Y, %H:%M")
 
     row = _write_letterhead(ws, company, styles, meta, col_span=6)
 
@@ -967,7 +982,18 @@ def _write_data_sheet(wb, payload: dict[str, Any], meta: Optional[dict] = None):
 
 # Same brand hues as report/chart_render.py's PALETTE (plain hex — openpyxl
 # graphicalProperties.solidFill wants strings, not reportlab Color objects).
-_CHART_PALETTE_HEX = ["E54F38", "2563EB", "15803D", "7C3AED", "0D9488", "F59E0B"]
+def _chart_palette_hex() -> list[str]:
+    """Chart colours, shared with the PDF chart renderer.
+
+    Imported lazily so this module keeps working if reportlab is absent --
+    the Excel path does not otherwise need it.
+    """
+    try:
+        from report.chart_render import PALETTE_HEX
+
+        return list(PALETTE_HEX)
+    except Exception:
+        return ["E54F38", "2563EB", "15803D", "7C3AED", "0D9488", "F59E0B"]
 
 
 def _add_native_chart(
@@ -1001,7 +1027,8 @@ def _add_native_chart(
     obj.set_categories(cats_ref)
 
     for i, series in enumerate(obj.series):
-        color = _CHART_PALETTE_HEX[i % len(_CHART_PALETTE_HEX)]
+        palette = _chart_palette_hex()
+        color = palette[i % len(palette)]
         series.graphicalProperties.solidFill = color
         if chart_type == "line":
             series.graphicalProperties.line.solidFill = color
@@ -1294,11 +1321,7 @@ def export_pdf(
     # "Attendance rate: 93.4%", not the raw "0.934" stored in the payload.
     narrative = build_narrative({**payload, "kpis": formatted_kpis})
 
-    generated_at = meta.get("generated_at")
-    if generated_at and hasattr(generated_at, "strftime"):
-        generated_str = timezone.localtime(generated_at).strftime("%Y-%m-%d %H:%M")
-    else:
-        generated_str = timezone.localtime(timezone.now()).strftime("%Y-%m-%d %H:%M")
+    generated_str = _local_stamp(meta.get("generated_at"))
 
     # Structured (label, value) filter rows preferred; chip list is the
     # legacy fallback for callers that never built summary_pairs.
