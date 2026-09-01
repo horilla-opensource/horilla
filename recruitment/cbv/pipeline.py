@@ -286,7 +286,9 @@ class GetStages(TemplateView):
             cache["candidates"] = CandidateList.filter_class(
                 self.request.GET
             ).qs.filter(is_active=True)
-            CACHE.set(request.session.session_key + "pipeline", cache)
+            # Same 600s as the write above: re-setting without it made the
+            # entry immortal.
+            CACHE.set(request.session.session_key + "pipeline", cache, timeout=600)
 
         self.stages = cache["stages"].filter(recruitment_id=rec_id)
         return super().get(request, *args, **kwargs)

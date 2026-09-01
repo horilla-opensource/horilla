@@ -2631,10 +2631,14 @@ class EmailLog(models.Model):
     to = models.EmailField()
     status = models.CharField(max_length=6, choices=statuses)
     created_at = models.DateTimeField(auto_now_add=True)
-    objects = models.Manager()
     company_id = models.ForeignKey(
         Company, on_delete=models.CASCADE, null=True, editable=False
     )
+    # Was a plain Manager(), so the company_id below was never filtered on and
+    # the mail-log views -- which match only on recipient address -- could show
+    # one tenant's mail to another. Bodies are redacted on write; see
+    # base/email_redaction.py.
+    objects = HorillaCompanyManager()
 
     def __str__(self) -> str:
         return f"{self.subject} {self.to}"

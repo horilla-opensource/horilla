@@ -2069,6 +2069,11 @@ class LinkedInAccount(HorillaModel):
     company_id = models.ForeignKey(
         Company, on_delete=models.CASCADE, null=True, verbose_name=_("Company")
     )
+    # This row holds an api_token, and the detail/delete views fetch it by raw
+    # pk (recruitment/cbvs.py, recruitment/views/linkedin.py) with no company
+    # check of their own -- an IDOR on a credential. Scoping the manager fixes
+    # every one of those call sites at once.
+    objects = HorillaCompanyManager()
 
     class Meta:
         verbose_name = _("LinkedIn Account")

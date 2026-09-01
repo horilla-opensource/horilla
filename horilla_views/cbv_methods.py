@@ -422,12 +422,18 @@ def get_short_uuid(length: int, prefix: str = "hlv"):
     return prefix + str(uuid_str[:length]).replace("-", "")
 
 
+# Session-scoped cache entries. Written with no timeout they lived until Redis
+# evicted them, so every visitor's view state accumulated forever; the natural
+# lifetime is the session that keyed them.
+SESSION_CACHE_TIMEOUT = getattr(settings, "SESSION_COOKIE_AGE", 1209600)
+
+
 def update_initial_cache(request: object, cache: dict, view: object):
 
     if cache.get(request.session.session_key + "cbv"):
         cache.get(request.session.session_key + "cbv").update({view: {}})
         return
-    cache.set(request.session.session_key + "cbv", {view: {}})
+    cache.set(request.session.session_key + "cbv", {view: {}}, SESSION_CACHE_TIMEOUT)
     return
 
 
@@ -535,7 +541,7 @@ def update_saved_filter_cache(request, cache):
                 # "request": request,
             }
         )
-        cache.set(key, existing)
+        cache.set(key, existing, SESSION_CACHE_TIMEOUT)
         return cache
     cache.set(
         key,
@@ -544,6 +550,7 @@ def update_saved_filter_cache(request, cache):
             "query_dict": request.GET,
             # "request": request,
         },
+        SESSION_CACHE_TIMEOUT,
     )
     return cache
 
