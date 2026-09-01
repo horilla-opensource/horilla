@@ -343,12 +343,6 @@ def create_question_template(request):
     return render(request, "survey/template_form.html", {"form": form})
 
 
-# --- Restored: previous Survey Templates page implementation (function
-# views backing recruitment.cbv.recruitment_survey.SurveyTemplateTabView /
-# SurveyTemplateNavView / SurveyQuestionNavView). Kept side-by-side with the
-# newer shell-based list views rather than removed.
-
-
 @login_required
 @hx_request_required
 @is_recruitment_manager(perm="recruitment.view_recruitmentsurvey")
