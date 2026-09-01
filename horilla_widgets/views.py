@@ -30,5 +30,7 @@ def get_filter_form(request):
     widget_instance = ALL_INSTANCES.get(str(request.user.id))
     if widget_instance is None:
         return HttpResponse()
-    template_path = request.GET["template_path"]
+    template_path = request.GET.get("template_path")
+    if not template_path:
+        return HttpResponse()
     return render(request, template_path, {"f": widget_instance.filter_class()})
