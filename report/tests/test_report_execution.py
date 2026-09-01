@@ -569,3 +569,53 @@ class AsyncExportScopingTests(TestCase):
 
         source = inspect.getsource(standard_reports.standard_report_export)
         self.assertIn("company_id=company_id", source)
+
+
+class PivotTruncationDisclosureTests(TestCase):
+    """
+    pivot_limits caps a payload and reports it in a response header, but the
+    explorer templates fetch with $.getJSON, which discards headers -- so a
+    truncated pivot used to present a partial total as a complete one.
+    """
+
+    def test_response_carries_truncation_headers(self):
+        from report.pivot_limits import pivot_json_with_meta
+
+        rows = [{"n": i} for i in range(12)]
+        response = pivot_json_with_meta(rows, limit=5)
+        self.assertEqual(response["X-Horilla-Pivot-Truncated"], "1")
+        self.assertEqual(response["X-Horilla-Pivot-Limit"], "5")
+
+    def test_untruncated_response_sets_no_flag(self):
+        from report.pivot_limits import pivot_json_with_meta
+
+        response = pivot_json_with_meta([{"n": 1}], limit=5)
+        self.assertIsNone(response.get("X-Horilla-Pivot-Truncated"))
+
+    def test_notice_script_is_loaded_for_pivot_pages(self):
+        """The banner is installed once in the shared base template rather
+        than at each of the ~10 fetch sites across 7 near-identical pages."""
+        from pathlib import Path
+
+        from django.conf import settings
+
+        index = Path(settings.BASE_DIR) / "templates" / "index.html"
+        markup = index.read_text(encoding="utf-8")
+        self.assertIn("report/js/pivot_truncation.js", markup)
+
+    def test_notice_script_reads_the_documented_headers(self):
+        from pathlib import Path
+
+        from django.conf import settings
+
+        script = (
+            Path(settings.BASE_DIR)
+            / "report"
+            / "static"
+            / "report"
+            / "js"
+            / "pivot_truncation.js"
+        )
+        source = script.read_text(encoding="utf-8")
+        self.assertIn("X-Horilla-Pivot-Truncated", source)
+        self.assertIn("X-Horilla-Pivot-Limit", source)
