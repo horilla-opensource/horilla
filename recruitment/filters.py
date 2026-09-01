@@ -634,7 +634,7 @@ class SurveyTemplateFilter(django_filters.FilterSet):
     SurveyTemplateFilter
     """
 
-    question = django_filters.CharFilter(
+    search = django_filters.CharFilter(
         lookup_expr="icontains",
         label="Title",
         field_name="title",
