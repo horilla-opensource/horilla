@@ -3,8 +3,11 @@
 [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1)
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Django](https://img.shields.io/badge/django-5.0+-green.svg)](https://www.djangoproject.com/)
-[![Stars](https://img.shields.io/github/stars/horilla-opensource/horilla)](https://github.com/horilla-opensource/horilla/stargazers)
-[![Forks](https://img.shields.io/github/forks/horilla-opensource/horilla)](https://github.com/horilla-opensource/horilla/network/members)
+[![Stars](https://img.shields.io/github/stars/horilla/horilla-hr)](https://github.com/horilla/horilla-hr/stargazers)
+[![Forks](https://img.shields.io/github/forks/horilla/horilla-hr)](https://github.com/horilla/horilla-hr/network/members)
+
+> [!IMPORTANT]
+> **`2.0` is now this repository’s default branch.** Use it to run or deploy Horilla (a plain `git clone` checks it out). To contribute code, branch from and open PRs against `dev/v2.0` — GitHub still pre-selects `2.0` as the PR base, so switch it manually. v1 (`1.0`/`master`) is deprioritized, with fixes considered case-by-case rather than on a guaranteed schedule. Full details → [Discussion #1127](https://github.com/horilla/horilla-hr/discussions/1127).
 
 > **A comprehensive, free, and open-source Human Resource Management System (HRMS) designed to streamline HR operations and enhance organizational efficiency.**
 
@@ -24,6 +27,7 @@
 
 ## 📋 Table of Contents
 
+- [Which Branch Do I Want?](#-which-branch-do-i-want)
 - [Quick Start](#-quick-start)
 - [Installation](#-installation)
 - [Deployment](#-deployment)
@@ -31,6 +35,14 @@
 - [Security](#-security)
 - [Support](#-support)
 - [License](#-license)
+
+## 🌳 Which Branch Do I Want?
+
+- **`2.0`** (default) — the latest stable v2 snapshot. This is what a plain `git clone` gives you. Use it to run or deploy Horilla.
+- **`dev/v2.0`** — the active integration branch. If you want to contribute code, branch from and open PRs against this, not `2.0`.
+- **`1.0`/`master`** — v1, now deprioritized (fixes considered case-by-case, no guaranteed schedule). Not deleted, but no longer where active development happens.
+
+See [Discussion #1127](https://github.com/horilla/horilla-hr/discussions/1127) for full background on this transition.
 
 ## ⚡ Quick Start
 
@@ -54,9 +66,9 @@ takes a few minutes on an empty database.
 ### Building from source with Docker
 
 ```bash
-# Clone the repository
-git clone -b dev/v2.0 https://github.com/horilla-opensource/horilla.git
-cd horilla
+# Clone the repository (defaults to the stable 2.0 branch)
+git clone https://github.com/horilla/horilla-hr.git
+cd horilla-hr
 
 # Start with Docker Compose
 docker compose up -d
@@ -70,9 +82,9 @@ Full Docker guide, including production deployment: [docker/README.md](docker/RE
 ### Manual Installation
 
 ```bash
-# Clone and setup
-git clone -b dev/v2.0 https://github.com/horilla-opensource/horilla.git
-cd horilla
+# Clone and setup (defaults to the stable 2.0 branch)
+git clone https://github.com/horilla/horilla-hr.git
+cd horilla-hr
 
 # Create virtual environment
 python3 -m venv venv
@@ -125,11 +137,11 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ```bash
 # Fork and clone your fork
-git clone -b dev/v2.0 https://github.com/YOUR_USERNAME/horilla.git
-cd horilla
+git clone -b dev/v2.0 https://github.com/YOUR_USERNAME/horilla-hr.git
+cd horilla-hr
 
 # Add upstream remote
-git remote add upstream https://github.com/horilla-opensource/horilla.git
+git remote add upstream https://github.com/horilla/horilla-hr.git
 
 # Create feature branch
 git checkout -b feature/your-feature-name
@@ -139,6 +151,8 @@ pip install -r requirements.txt
 
 # Submit pull request
 ```
+
+> **Note:** `2.0` is the repo default, so GitHub pre-selects it as your PR base. Before submitting, change the base branch to `dev/v2.0` — that's where active development and reviews happen, not `2.0`.
 
 ### Code Standards
 
@@ -159,7 +173,7 @@ pip install -r requirements.txt
 
 ### Reporting Security Issues
 
-Do **not** create public GitHub issues for security vulnerabilities. Report privately via [GitHub Private Vulnerability Reporting](https://github.com/horilla/horilla-hr/security/advisories/new) only — see [SECURITY.md](SECURITY.md). We do not triage security reports by email.
+Please report security vulnerabilities via [GitHub Private Vulnerability Reporting](https://github.com/horilla/horilla-hr/security/advisories/new), not email. Do not create public GitHub issues for security vulnerabilities. See [SECURITY.md](SECURITY.md) for full details.
 
 ### Security Best Practices
 
@@ -173,9 +187,9 @@ Do **not** create public GitHub issues for security vulnerabilities. Report priv
 ### Community Support
 
 - 📖 **Documentation**: [docs.horilla.com](https://docs.horilla.com)
-- 💬 **GitHub Discussions**: [GitHub Discussions](https://github.com/horilla-opensource/horilla/discussions)
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/horilla-opensource/horilla/issues)
-- ✨ **Feature Requests**: [GitHub Issues](https://github.com/horilla-opensource/horilla/issues)
+- 💬 **GitHub Discussions**: [GitHub Discussions](https://github.com/horilla/horilla-hr/discussions)
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/horilla/horilla-hr/issues)
+- ✨ **Feature Requests**: [GitHub Issues](https://github.com/horilla/horilla-hr/issues)
 
 ### Professional Support
 
@@ -192,6 +206,6 @@ This project is licensed under the [LGPL-2.1 License](LICENSE) - see the LICENSE
 
 **Made with ❤️ by the Horilla Team**
 
-[⭐ Star us on GitHub](https://github.com/horilla-opensource/horilla) | [🐛 Report Bug](https://github.com/horilla-opensource/horilla/issues) | [💡 Request Feature](https://github.com/horilla-opensource/horilla/issues)
+[⭐ Star us on GitHub](https://github.com/horilla/horilla-hr) | [🐛 Report Bug](https://github.com/horilla/horilla-hr/issues) | [💡 Request Feature](https://github.com/horilla/horilla-hr/issues)
 
 </div>
