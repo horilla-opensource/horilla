@@ -131,6 +131,12 @@ def _coerce_cell(value: Any) -> Any:
             except ValueError:
                 return _neutralize_formula(text)
         if re.fullmatch(r"-?\d+", text):
+            # A zero-padded run of digits is an identifier, not a quantity --
+            # badge ids, employee codes, phone numbers. int() would eat the
+            # padding ("00042" -> 42) and silently corrupt it, so keep the
+            # text verbatim. Single "0" is a real number and stays one.
+            if len(text.lstrip("-")) > 1 and text.lstrip("-").startswith("0"):
+                return _neutralize_formula(text)
             try:
                 return int(text)
             except ValueError:
@@ -857,6 +863,14 @@ def _write_data_sheet(wb, payload: dict[str, Any], meta: Optional[dict] = None):
         alt = r_idx % 2 == 1
         for c_idx, raw in enumerate(data_row):
             header = headers[c_idx] if c_idx < len(headers) else ""
+            # A source string that already carries a "%" was divided by 100 in
+            # _coerce_cell, so it is a true fraction and must not be scaled
+            # again -- the >1 re-divide below can't tell 1.5 (="150%") from a
+            # literal 150 meant as a percentage. Same guard the PDF path
+            # applies in _format_table_cell.
+            raw_is_percent = bool(
+                isinstance(raw, str) and re.fullmatch(r"-?\d+(\.\d+)?%", raw.strip())
+            )
             value = _coerce_cell(raw)
             cell = ws.cell(row=excel_row, column=c_idx + 1, value=value)
             cell.font = styles["cell_font"]
@@ -865,8 +879,14 @@ def _write_data_sheet(wb, payload: dict[str, Any], meta: Optional[dict] = None):
             if alt:
                 cell.fill = styles["alt_fill"]
 
-            if isinstance(value, float) and _looks_percent_header(header):
-                if value > 1:
+            if (
+                isinstance(value, (int, float))
+                and not isinstance(value, bool)
+                and _looks_percent_header(header)
+            ):
+                # Excel's percent format multiplies by 100 on display, so the
+                # stored value has to be the fraction.
+                if not raw_is_percent and value > 1:
                     cell.value = value / 100.0
                 cell.number_format = "0.0%"
                 cell.alignment = styles["right"]

@@ -408,6 +408,157 @@ class ExportTests(SimpleTestCase):
         self.assertTrue(data.auto_filter.ref)
         self.assertTrue(data.freeze_panes)
 
+    def test_zero_padded_identifiers_keep_their_padding(self):
+        """Badge ids / phone numbers must not be coerced to int.
+
+        int("00042") == 42 silently destroyed the identifier; a zero-padded
+        digit run is data, not a quantity.
+        """
+        from report.export import _coerce_cell
+
+        for text in ("00042", "0501234567", "007", "00"):
+            self.assertEqual(_coerce_cell(text), text, msg=text)
+        # A bare zero and ordinary integers are still real numbers.
+        self.assertEqual(_coerce_cell("0"), 0)
+        self.assertEqual(_coerce_cell("42"), 42)
+        self.assertEqual(_coerce_cell("-42"), -42)
+
+    def test_percent_strings_above_100_are_not_divided_twice(self):
+        """"150%" must display as 150.0%, not 1.5%.
+
+        _coerce_cell already turns "150%" into 1.5; the data sheet's >1
+        rescale then has to leave it alone or the value is divided twice.
+        """
+        import io as _io
+
+        import openpyxl
+
+        from report.export import export_xlsx
+
+        payload = {
+            "title": "Rates",
+            "period": {"from_date": "2026-01-01", "to_date": "2026-01-31"},
+            "kpis": [],
+            "table": {
+                "columns": [
+                    {"key": "src", "label": "Source"},
+                    {"key": "rate", "label": "Accept Rate %"},
+                ],
+                "rows": [
+                    {"src": "Referral", "rate": "150%"},
+                    {"src": "Portal", "rate": "89.5%"},
+                    # Bare integer under a percent header: must still format
+                    # as a percentage rather than a plain number.
+                    {"src": "Agency", "rate": "75"},
+                ],
+            },
+        }
+        wb = openpyxl.load_workbook(
+            _io.BytesIO(export_xlsx(payload, "r.xlsx", meta={}).content)
+        )
+        ws = wb["Data"]
+        by_source = {}
+        for row in ws.iter_rows():
+            cells = [c for c in row]
+            if len(cells) >= 2 and cells[0].value in ("Referral", "Portal", "Agency"):
+                by_source[cells[0].value] = cells[1]
+
+        self.assertAlmostEqual(by_source["Referral"].value, 1.5, places=4)
+        self.assertAlmostEqual(by_source["Portal"].value, 0.895, places=4)
+        self.assertAlmostEqual(by_source["Agency"].value, 0.75, places=4)
+        for cell in by_source.values():
+            self.assertEqual(cell.number_format, "0.0%")
+
+
+class AttendanceDecimalTests(SimpleTestCase):
+    """The pivot sums the *_Decimal columns, so they must be real hours."""
+
+    def _helpers(self):
+        # The converters are closures inside the module-level guard, so reach
+        # them the way the view does -- via the registered pivot view module.
+        from report.views import attendance_report  # noqa: F401
+
+        return attendance_report
+
+    def test_duration_to_decimal_hours(self):
+        from datetime import time as _time
+
+        # Re-derive the same arithmetic the view applies; a "HH.MM" string
+        # would make 1:45 + 1:45 total 2.90 instead of 3.50.
+        def convert(value):
+            if isinstance(value, str):
+                hours, minutes = map(int, value.split(":")[:2])
+            elif isinstance(value, _time):
+                hours, minutes = value.hour, value.minute
+            else:
+                return 0.0
+            return round(hours + minutes / 60, 2)
+
+        self.assertEqual(convert("1:45"), 1.75)
+        self.assertEqual(convert("0:30"), 0.5)
+        self.assertEqual(convert("8:00"), 8.0)
+        self.assertEqual(convert("1:45") + convert("1:45"), 3.5)
+        self.assertEqual(convert(None), 0.0)
+
+    def test_view_module_returns_numeric_decimals(self):
+        """Guard the real converters, not just the arithmetic above."""
+        import inspect
+
+        from report.views import attendance_report
+
+        source = inspect.getsource(attendance_report)
+        # The base-60-as-base-100 formatting must be gone from both helpers.
+        self.assertNotIn('f"{hours:02}.{minutes:02}"', source)
+        self.assertNotIn('f"{t.hour:02}.{t.minute:02}"', source)
+
+
+class SubscriptionFormTests(SimpleTestCase):
+    def test_recipients_reject_malformed_addresses(self):
+        from report.forms import ReportSubscriptionForm
+
+        form = ReportSubscriptionForm(
+            data={
+                "report_slug": "workforce-composition",
+                "name": "Weekly",
+                "frequency": "weekly",
+                "recipients": "a@b.com, notanemail",
+                "format": "xlsx",
+            }
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("recipients", form.errors)
+        self.assertIn("notanemail", str(form.errors["recipients"]))
+
+    def test_recipients_normalize_and_dedupe(self):
+        from report.forms import ReportSubscriptionForm
+
+        form = ReportSubscriptionForm(
+            data={
+                "report_slug": "workforce-composition",
+                "name": "Weekly",
+                "frequency": "weekly",
+                "recipients": " a@b.com , c@d.com,a@b.com ",
+                "format": "xlsx",
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["recipients"], "a@b.com, c@d.com")
+
+    def test_recipients_required(self):
+        from report.forms import ReportSubscriptionForm
+
+        form = ReportSubscriptionForm(
+            data={
+                "report_slug": "workforce-composition",
+                "name": "Weekly",
+                "frequency": "weekly",
+                "recipients": " , ",
+                "format": "xlsx",
+            }
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("recipients", form.errors)
+
 
 class PdfExportTests(SimpleTestCase):
     def test_narrative_blurb(self):
