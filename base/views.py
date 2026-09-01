@@ -179,9 +179,11 @@ from employee.models import (
 )
 from horilla.decorators import (
     any_permission_required,
+    database_init_required,
     delete_permission,
     duplicate_permission,
     hx_request_required,
+    initialize_database_required,
     login_required,
     manager_can_enter,
     permission_required,
@@ -509,12 +511,11 @@ def initialize_database(request):
     Returns:
         HttpResponse: The rendered HTML template or a redirect response.
     """
-    if not settings.DEBUG:
-        raise Http404
     if initialize_database_condition():
         if request.method == "POST":
-            password = request._post.get("password")
+            password = request.POST.get("password")
             if settings.DB_INIT_PASSWORD == password:
+                request.session["db_init_verified"] = True
                 return redirect(initialize_database_user)
             else:
                 messages.warning(
@@ -524,10 +525,12 @@ def initialize_database(request):
                 return HorillaRedirect(request)
         return render(request, "initialize_database/horilla_user.html")
     else:
-        return redirect("/")
+        return redirect("login")
 
 
+@database_init_required
 @hx_request_required
+@initialize_database_required
 def initialize_database_user(request):
     """
     Handles the user creation step during database initialization.
@@ -539,7 +542,7 @@ def initialize_database_user(request):
         HttpResponse: The rendered HTML template for company creation or user signup.
     """
     if request.method == "POST":
-        form_data = request.__dict__.get("_post")
+        form_data = request.POST
         username = form_data.get("username")
         password = form_data.get("password")
         confirm_password = form_data.get("confirm_password")
@@ -564,6 +567,7 @@ def initialize_database_user(request):
         employee.email = email
         employee.phone = phone
         employee.save()
+        request.session.pop("db_init_verified", None)
         user = authenticate(request, username=username, password=password)
         login(request, user)
         return render(
@@ -574,7 +578,9 @@ def initialize_database_user(request):
     return render(request, "initialize_database/horilla_user_signup.html")
 
 
+@superuser_required
 @hx_request_required
+@initialize_database_required
 def initialize_database_company(request):
     """
     Handles the company creation step during database initialization.
@@ -604,7 +610,9 @@ def initialize_database_company(request):
     return render(request, "initialize_database/horilla_company.html", {"form": form})
 
 
+@superuser_required
 @hx_request_required
+@initialize_database_required
 def initialize_database_department(request):
     """
     Handles the department creation step during database initialization.
@@ -630,7 +638,9 @@ def initialize_database_department(request):
     )
 
 
+@superuser_required
 @hx_request_required
+@initialize_database_required
 def initialize_department_edit(request, obj_id):
     """
     Handles editing of an existing department during database initialization.
@@ -668,7 +678,9 @@ def initialize_department_edit(request, obj_id):
     )
 
 
+@superuser_required
 @hx_request_required
+@initialize_database_required
 def initialize_department_delete(request, obj_id):
     """
     Handles the deletion of an existing department during database initialization.
@@ -685,7 +697,9 @@ def initialize_department_delete(request, obj_id):
     return redirect(initialize_database_department)
 
 
+@superuser_required
 @hx_request_required
+@initialize_database_required
 def initialize_database_job_position(request):
     """
     Handles the job position creation step during database initialization.
@@ -719,7 +733,9 @@ def initialize_database_job_position(request):
     )
 
 
+@superuser_required
 @hx_request_required
+@initialize_database_required
 def initialize_job_position_edit(request, obj_id):
     """
     Handles editing of an existing job position during database initialization.
@@ -759,7 +775,9 @@ def initialize_job_position_edit(request, obj_id):
     )
 
 
+@superuser_required
 @hx_request_required
+@initialize_database_required
 def initialize_job_position_delete(request, obj_id):
     """
     Handles the deletion of an existing job position during database initialization.
@@ -802,11 +820,12 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
 
         if not user:
-            user_object = HorillaUser.objects.filter(username=username).first()
-            if user_object and not user_object.is_active:
-                messages.warning(request, _("Access Denied: Your account is blocked."))
-            else:
-                messages.error(request, _("Invalid username or password."))
+            # One message for every failure mode. Distinguishing "blocked" from
+            # "invalid" told an unauthenticated caller which usernames exist,
+            # which is what turns a password-guessing attempt into a targeted
+            # one. Blocked users are told to contact their administrator via
+            # the same text rather than being confirmed as real accounts.
+            messages.error(request, _("Invalid username or password."))
             return redirect("login")
 
         employee = getattr(user, "employee_get", None)
@@ -2201,7 +2220,10 @@ def view_mail_template(request, obj_id):
     """
     This method is used to display the template/form to edit
     """
-    template = HorillaMailTemplate.objects.get(id=obj_id)
+    template = HorillaMailTemplate.objects.filter(id=obj_id).first()
+    if not template:
+        messages.error(request, _("Template not found."))
+        return HorillaRedirect(request)
     form = MailTemplateForm(instance=template)
     searchWords = form.get_template_language()
     if request.method == "POST":
