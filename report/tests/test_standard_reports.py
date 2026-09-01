@@ -593,21 +593,21 @@ class SubscriptionDeliveryTests(SimpleTestCase):
         )
         self.assertTrue(subscription_is_due(daily_ok, now))
 
-    def test_scheduler_skips_migrate_argv(self):
-        import sys
+    def test_subscription_job_is_registered_not_started(self):
+        # Replaces an argv-guard test: the module used to start its own
+        # BackgroundScheduler at import and skip it for migrate/test argv.
+        # Nothing starts at import now, so there is no argv to guard -- the job
+        # is registered and run_scheduler owns execution.
+        import report.scheduler  # noqa: F401
+        from horilla.scheduling import get_registered_jobs
 
-        from report import scheduler as sched
-
-        original = list(sys.argv)
-        try:
-            sys.argv = ["manage.py", "migrate"]
-            self.assertFalse(sched._should_start_scheduler())
-            sys.argv = ["manage.py", "test", "report.tests"]
-            self.assertFalse(sched._should_start_scheduler())
-            sys.argv = ["manage.py", "runserver"]
-            self.assertTrue(sched._should_start_scheduler())
-        finally:
-            sys.argv = original
+        job = next(
+            (j for j in get_registered_jobs() if j.job_id == "report_subscriptions"),
+            None,
+        )
+        self.assertIsNotNone(job, "report_subscriptions job was not registered")
+        self.assertEqual(job.trigger, "interval")
+        self.assertEqual(job.kwargs, {"hours": 1})
 
 
 class PeriodCompareTests(SimpleTestCase):
