@@ -1362,7 +1362,7 @@ class ScheduleInterviewForm(BaseModelForm):
                 )
 
         if managers and apps.is_installed("leave"):
-            from leave.models import LeaveRequest
+            LeaveRequest = apps.get_model("leave", "LeaveRequest")
 
             leave_employees = LeaveRequest.objects.filter(
                 employee_id__in=managers, status="approved"
