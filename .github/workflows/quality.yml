@@ -89,9 +89,8 @@ jobs:
           --ignore-vuln PYSEC-2026-2860
 
   secret-scan:
-    # AWS and WhatsApp credentials have reached this repo's git history before
-    # (see the July 2026 audit), so this is a re-occurrence guard, not a
-    # hypothetical.
+    # AWS and WhatsApp credentials have reached this repo's git history before,
+    # so this is a re-occurrence guard, not a hypothetical.
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -99,14 +98,51 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # gitleaks diffs commit ranges; a shallow clone gives it nothing to
-          # compare against.
+          # Need both sides of the range to diff a push or PR against its base.
           fetch-depth: 0
 
-      - name: gitleaks
-        uses: gitleaks/gitleaks-action@v2
+      # The gitleaks BINARY is MIT-licensed and free; it is the
+      # gitleaks-action wrapper that requires a paid key for organization repos
+      # ("[horilla] is an organization. License key is required."), which is
+      # what failed the first time this job ran. Running the binary directly
+      # keeps the scan, and pinning the version means a new upstream release
+      # cannot change what blocks a PR without us choosing it.
+      - name: Install gitleaks
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_VERSION: 8.28.0
+        run: |
+          curl -sSfL \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar -xz gitleaks
+          ./gitleaks version
+
+      # Scans only what this push or PR ADDS.
+      #
+      # Scanning full history would fail every run forever: there are 161
+      # findings across 21,741 commits, dominated by high-entropy strings in a
+      # vendored ionicons bundle and a committed SQL dump, and history is
+      # immutable -- no author can clear them from within their own change. A
+      # gate nobody can pass gets disabled, which is worse than no gate.
+      #
+      # --redact so a finding never prints the secret into a public build log.
+      - name: Scan for new secrets
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            RANGE="origin/${{ github.base_ref }}..HEAD"
+          else
+            RANGE="${{ github.event.before }}..HEAD"
+            # A new branch reports an all-zero "before"; fall back to the last
+            # commit rather than scanning from the beginning of time.
+            case "${{ github.event.before }}" in
+              0000000*|"") RANGE="HEAD~1..HEAD" ;;
+            esac
+          fi
+          echo "Scanning $RANGE"
+          ./gitleaks git --redact --no-banner --exit-code 1 \
+            --config .gitleaks.toml --log-opts "$RANGE" . || {
+              echo "::error::gitleaks found a secret in the commits this push adds."
+              exit 1
+            }
 
   production-settings-gate:
     runs-on: ubuntu-latest
