@@ -31,6 +31,7 @@ from horilla.testkit.factories import (
     make_payslip,
     make_recruitment,
     make_stage,
+    make_user,
 )
 from horilla.testkit.factories import get_hired_stage
 
@@ -415,3 +416,156 @@ class ReportQueryBudgetTests(TestCase):
             "Reports exceeded their query budget (likely a new N+1):\n"
             + "\n".join(overruns),
         )
+
+
+class SubscriptionClaimTests(TestCase):
+    """
+    report/scheduler.py runs an in-process scheduler, so with N gunicorn
+    workers there are N pollers. Delivery has to be claimed atomically or
+    every worker sends the same subscription.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        import report.metrics  # noqa: F401
+
+        cls.company = make_company("Claim Corp")
+        cls.employee = make_employee(
+            company=cls.company, email="claim@test.horilla", first_name="Claim"
+        )
+        # The owner has to clear both the view and export permission gates,
+        # or delivery exits before ever reaching the claim.
+        cls.owner = make_user("claim-owner", is_superuser=True)
+
+    def setUp(self):
+        clear_selected_company()
+
+    def _mail_configured(self):
+        """Delivery bails at mail_unconfigured before reaching the claim when
+        no SMTP sender is set, which is the case in tests."""
+        from unittest.mock import patch
+
+        return patch(
+            "report.delivery.ConfiguredEmailBackend.dynamic_from_email_with_display_name",
+            new_callable=lambda: property(lambda self: "reports@test.horilla"),
+            create=True,
+        )
+
+    def _subscription(self, **overrides):
+        from report.models import ReportSubscription
+
+        defaults = {
+            "report_slug": "workforce-composition",
+            "name": "Weekly workforce",
+            "frequency": "weekly",
+            "recipients": "boss@test.horilla",
+            "last_run_at": None,
+            "owner": self.owner,
+        }
+        defaults.update(overrides)
+        return ReportSubscription.objects.create(**defaults)
+
+    def test_second_worker_does_not_resend(self):
+        """Two pollers, one due subscription -> one claim wins."""
+        from unittest.mock import patch
+
+        from report.delivery import deliver_subscription
+        from report.models import ReportSubscription
+
+        sub = self._subscription()
+        # Two in-memory handles on the same row, as two worker processes
+        # would each have after their own queryset read.
+        first = ReportSubscription.objects.get(pk=sub.pk)
+        second = ReportSubscription.objects.get(pk=sub.pk)
+
+        # A successful send is required for the claim to stick: a failed
+        # delivery deliberately releases it so the next poll retries.
+        with self._mail_configured(), patch(
+            "report.delivery.EmailMessage.send", return_value=1
+        ):
+            result_a = deliver_subscription(first)
+            result_b = deliver_subscription(second)
+
+        # Exactly one worker delivers; the loser is turned away by the claim.
+        self.assertTrue(result_a.ok, result_a.detail)
+        self.assertFalse(result_b.ok)
+        self.assertEqual(result_b.status, "skipped")
+        self.assertIn("claimed", result_b.detail.lower())
+
+    def test_claim_is_released_when_delivery_fails(self):
+        """A failed send must not consume the whole interval."""
+        from unittest.mock import patch
+
+        from report.delivery import deliver_subscription
+        from report.models import ReportSubscription
+
+        sub = self._subscription()
+        with self._mail_configured(), patch(
+            "report.delivery.run_report", side_effect=RuntimeError("boom")
+        ):
+            result = deliver_subscription(
+                ReportSubscription.objects.get(pk=sub.pk)
+            )
+        self.assertFalse(result.ok)
+        sub.refresh_from_db()
+        # Back to unclaimed, so the next poll retries.
+        self.assertIsNone(sub.last_run_at)
+
+    def test_forced_run_bypasses_the_claim(self):
+        """Run-now from the UI must work even when not due."""
+        from django.utils import timezone
+
+        from report.delivery import deliver_subscription
+        from report.models import ReportSubscription
+
+        sub = self._subscription(last_run_at=timezone.now())
+        with self._mail_configured():
+            result = deliver_subscription(
+                ReportSubscription.objects.get(pk=sub.pk), force=True
+            )
+        # Not "skipped": force skips both the due check and the claim.
+        self.assertNotEqual(result.status, "skipped")
+
+
+class AsyncExportScopingTests(TestCase):
+    """The export worker runs outside the request, so tenant scope and the
+    concurrency ceiling both have to be explicit."""
+
+    def test_queue_refuses_beyond_the_concurrency_limit(self):
+        from report import async_export
+
+        acquired = []
+        try:
+            for _ in range(async_export.MAX_CONCURRENT_EXPORTS):
+                self.assertTrue(async_export._export_slots.acquire(blocking=False))
+                acquired.append(True)
+            with self.assertRaises(async_export.ExportQueueFull):
+                async_export.queue_export_email(
+                    user_id=1,
+                    to_email="x@test.horilla",
+                    slug="workforce-composition",
+                    fmt="xlsx",
+                    filters_dict={},
+                    meta={},
+                )
+        finally:
+            for _ in acquired:
+                async_export._export_slots.release()
+
+    def test_queue_accepts_company_id(self):
+        """The signature has to carry company_id: without it the worker has
+        no session and no ContextVar, so the workbook spans every company."""
+        import inspect
+
+        from report.async_export import queue_export_email
+
+        params = inspect.signature(queue_export_email).parameters
+        self.assertIn("company_id", params)
+
+    def test_view_passes_selected_company_to_the_worker(self):
+        import inspect
+
+        from report.views import standard_reports
+
+        source = inspect.getsource(standard_reports.standard_report_export)
+        self.assertIn("company_id=company_id", source)
