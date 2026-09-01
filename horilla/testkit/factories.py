@@ -49,6 +49,7 @@ def make_employee(
     shift: EmployeeShift | None = None,
     work_type: WorkType | None = None,
     department: Department | None = None,
+    date_joining=None,
 ) -> Employee:
     """
     Create an Employee and attach work-info to ``company``.
@@ -68,6 +69,10 @@ def make_employee(
         emp.employee_user_id = user
     emp.save()
     updates = {"company_id": company}
+    # joiners/leavers and tenure metrics all read date_joining; leaving it
+    # null makes an employee invisible to them.
+    if date_joining is not None:
+        updates["date_joining"] = date_joining
     if shift is not None:
         updates["shift_id"] = shift
     if work_type is not None:
@@ -103,9 +108,31 @@ def make_attendance(
     clock_in="09:00:00",
     clock_out="18:00:00",
 ):
-    """One validated Attendance row with explicit worked/overtime seconds."""
+    """One validated Attendance row with explicit worked/overtime seconds.
+
+    Attendance.save() derives everything from the "HH:MM" strings:
+
+        attendance_overtime = attendance_worked_hour - minimum_hour
+        overtime_second     = strtime_seconds(attendance_overtime)
+        at_work_second      = strtime_seconds(attendance_worked_hour)
+
+    so passing overtime_second (or at_work_second) directly is silently
+    discarded. To get the requested overtime, worked_hour is set to
+    minimum_hour plus that many seconds.
+    """
     from attendance.models import Attendance
 
+    def _to_seconds(text: str) -> int:
+        parts = [int(p) for p in str(text).split(":")[:2]]
+        while len(parts) < 2:
+            parts.append(0)
+        return parts[0] * 3600 + parts[1] * 60
+
+    def _to_hhmm(seconds: int) -> str:
+        hours, minutes = divmod(max(0, int(seconds)) // 60, 60)
+        return f"{hours:02d}:{minutes:02d}"
+
+    worked_seconds = _to_seconds(minimum_hour) + max(0, int(overtime_second))
     return Attendance.objects.create(
         employee_id=employee,
         attendance_date=attendance_date,
@@ -113,10 +140,9 @@ def make_attendance(
         attendance_clock_in=clock_in,
         attendance_clock_out_date=attendance_date,
         attendance_clock_out=clock_out,
-        attendance_worked_hour=minimum_hour,
+        attendance_worked_hour=_to_hhmm(worked_seconds),
         minimum_hour=minimum_hour,
-        at_work_second=at_work_second,
-        overtime_second=overtime_second,
+        attendance_overtime_approve=bool(overtime_second),
         attendance_validated=validated,
     )
 
@@ -294,4 +320,27 @@ def make_candidate(
         recruitment_id=recruitment,
         stage_id=stage,
         hired=hired,
+    )
+
+
+def make_resignation(
+    *,
+    employee,
+    planned_to_leave_on,
+    status: str = "approved",
+    title: str = "Resignation",
+):
+    """An approved resignation, which report.metrics._exits counts as an exit.
+
+    Only ``status="approved"`` rows are treated as exits, so the default
+    matches what the reports actually read.
+    """
+    from offboarding.models import ResignationLetter
+
+    return ResignationLetter.objects.create(
+        employee_id=employee,
+        title=title,
+        description="Test resignation",
+        planned_to_leave_on=planned_to_leave_on,
+        status=status,
     )

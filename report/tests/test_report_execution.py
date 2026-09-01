@@ -30,6 +30,7 @@ from horilla.testkit.factories import (
     make_leave_type,
     make_payslip,
     make_recruitment,
+    make_resignation,
     make_stage,
     make_user,
 )
@@ -54,14 +55,26 @@ class StandardReportExecutionTests(TestCase):
 
         # Two active employees in the primary company, one terminated, and one
         # in a second company so cross-tenant leakage is detectable.
+        # date_joining matters: joiners/leavers, tenure and the 90-day
+        # attrition cohort all read it, and a null makes an employee
+        # invisible to them.
         cls.emp_a = make_employee(
-            company=cls.company, email="a@test.horilla", first_name="Ann"
+            company=cls.company,
+            email="a@test.horilla",
+            first_name="Ann",
+            date_joining=cls.today - timedelta(days=400),
         )
         cls.emp_b = make_employee(
-            company=cls.company, email="b@test.horilla", first_name="Bob"
+            company=cls.company,
+            email="b@test.horilla",
+            first_name="Bob",
+            date_joining=cls.today - timedelta(days=20),
         )
         cls.emp_left = make_employee(
-            company=cls.company, email="c@test.horilla", first_name="Cara"
+            company=cls.company,
+            email="c@test.horilla",
+            first_name="Cara",
+            date_joining=cls.today - timedelta(days=40),
         )
         cls.emp_left.is_active = False
         cls.emp_left.save(update_fields=["is_active"])
@@ -69,9 +82,24 @@ class StandardReportExecutionTests(TestCase):
             company=cls.other_company, email="d@test.horilla", first_name="Dan"
         )
 
+        cls._seed_exits()
         cls._seed_time_and_leave()
         cls._seed_payroll()
         cls._seed_talent()
+
+    @classmethod
+    def _seed_exits(cls):
+        """An approved resignation -- the source report.metrics._exits reads.
+
+        Without this every exit-shaped report and drill-down runs against an
+        empty population and their assertions pass vacuously.
+        """
+        if not apps.is_installed("offboarding"):
+            return
+        make_resignation(
+            employee=cls.emp_left,
+            planned_to_leave_on=cls.today - timedelta(days=5),
+        )
 
     @classmethod
     def _seed_time_and_leave(cls):
@@ -258,6 +286,64 @@ class StandardReportExecutionTests(TestCase):
                 self.assertIsInstance(result["rows"], list)
                 checked += 1
         self.assertGreater(checked, 0, "no drilldowns exercised")
+
+    # Drill-downs that need no dimension argument to return their population.
+    # The dimension-keyed ones (workforce-composition, payslip-register,
+    # recruitment-funnel) correctly answer "Missing dimension value." when
+    # called bare, so they are exercised separately below.
+    UNKEYED_DRILLDOWNS = (
+        "exit-analysis",
+        "joiners-leavers",
+        "new-hire-90-day-attrition",
+        "turnover-attrition",
+        "leave-liability",
+        "overtime-analysis",
+    )
+
+    def test_drilldowns_actually_return_rows(self):
+        """The shape assertions above pass just as happily on empty payloads.
+
+        Every drill-down in this suite returned zero rows once while the test
+        stayed green -- the fixture simply had no exits, no joining dates and
+        no overtime. Assert real rows so a drill-down that silently stops
+        matching is caught.
+        """
+        from report.registry import get_report, run_drilldown
+
+        for slug in self.UNKEYED_DRILLDOWNS:
+            if get_report(slug) is None:
+                continue
+            with self.subTest(slug=slug):
+                result = run_drilldown(slug, self._filters(preset="all_time"), {})
+                self.assertTrue(
+                    result.get("rows"),
+                    f"{slug} drill-down returned no rows: "
+                    f"{result.get('message') or 'no message'}",
+                )
+                self.assertTrue(
+                    result.get("columns"), f"{slug} returned rows but no columns"
+                )
+                # Every row must carry all declared column keys, same
+                # contract the report tables hold to.
+                keys = {c["key"] for c in result["columns"]}
+                for row in result["rows"]:
+                    missing = keys - set(row.keys())
+                    self.assertFalse(
+                        missing, f"{slug} row missing keys {sorted(missing)}"
+                    )
+
+    def test_named_overtime_rows_stay_behind_the_privacy_gate(self):
+        """Drilling in must not become a way to rebuild the named breakdown
+        the report deliberately withholds (report/metrics/_privacy.py)."""
+        from report.registry import run_drilldown
+
+        result = run_drilldown(
+            "overtime-analysis", self._filters(preset="all_time"), {}
+        )
+        # No request on the filters -> no include_names flag -> aggregates.
+        column_keys = {c["key"] for c in result.get("columns") or []}
+        self.assertNotIn("employee", column_keys)
+        self.assertIn("department", column_keys)
 
     def test_reports_export_to_xlsx_and_csv(self):
         """Export the real payloads, not hand-written fixtures."""
@@ -977,3 +1063,88 @@ class SilentMetricFailureTests(TestCase):
             "silent exception handlers drop whole data sources: "
             + ", ".join(offenders),
         )
+
+
+class CohortActiveFilterTests(TestCase):
+    """
+    Reports measuring what happened to leavers must not filter the cohort to
+    active employees -- that removes exactly the population being counted.
+
+    new-hire-90-day-attrition's numerator was structurally zero (its joiner
+    cohort excluded anyone who had left), and quality-of-hire's retention
+    rate was biased toward 100% for the same reason.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        import report.metrics  # noqa: F401
+
+        cls.today = date.today()
+        cls.company = make_company("Cohort Corp")
+        # Joined 40 days ago, left 5 days ago -> a 35-day tenure, squarely
+        # inside the 90-day window.
+        cls.early_leaver = make_employee(
+            company=cls.company,
+            email="leaver@test.horilla",
+            first_name="Early",
+            date_joining=cls.today - timedelta(days=40),
+        )
+        cls.stayer = make_employee(
+            company=cls.company,
+            email="stayer@test.horilla",
+            first_name="Stayer",
+            date_joining=cls.today - timedelta(days=40),
+        )
+        if apps.is_installed("offboarding"):
+            make_resignation(
+                employee=cls.early_leaver,
+                planned_to_leave_on=cls.today - timedelta(days=5),
+            )
+        cls.early_leaver.is_active = False
+        cls.early_leaver.save(update_fields=["is_active"])
+
+    def setUp(self):
+        clear_selected_company()
+
+    def _filters(self):
+        from report.engine import ReportFilters, resolve_period_preset
+
+        from_date, to_date = resolve_period_preset("all_time", self.today)
+        return ReportFilters(
+            from_date=from_date, to_date=to_date, period_preset="all_time"
+        )
+
+    def test_90_day_attrition_counts_the_leaver(self):
+        from report.registry import run_report
+
+        payload = run_report("new-hire-90-day-attrition", self._filters())
+        kpis = {str(k["label"]): k["value"] for k in payload["kpis"]}
+        # The cohort has to include the inactive early leaver, so neither the
+        # cohort size nor the early-exit count can be zero.
+        self.assertGreaterEqual(
+            kpis.get("Cohort joiners", 0), 2, f"cohort excluded the leaver: {kpis}"
+        )
+        self.assertGreaterEqual(
+            kpis.get("Early exits", 0),
+            1,
+            f"early exits should count the leaver: {kpis}",
+        )
+        # And the headline rate must therefore be non-zero.
+        self.assertNotEqual(kpis.get("90-day attrition"), "0.0%", kpis)
+
+    def test_90_day_attrition_drilldown_lists_the_leaver(self):
+        from report.registry import run_drilldown
+
+        result = run_drilldown("new-hire-90-day-attrition", self._filters(), {})
+        names = " ".join(str(r.get("employee", "")) for r in result.get("rows") or [])
+        self.assertIn("Early", names, f"leaver missing from drill-down: {result}")
+
+    def test_quality_of_hire_cohort_includes_leavers(self):
+        import inspect
+
+        from report.metrics import talent
+
+        # The denominator must not be active-filtered, or retention trends
+        # toward 100% no matter how many new hires leave.
+        source = inspect.getsource(talent.quality_of_hire)
+        self.assertIn("apply_employment_status=False", source)
