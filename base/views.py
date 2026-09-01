@@ -183,7 +183,6 @@ from horilla.decorators import (
     delete_permission,
     duplicate_permission,
     hx_request_required,
-    initialize_database_required,
     login_required,
     manager_can_enter,
     permission_required,
@@ -530,7 +529,6 @@ def initialize_database(request):
 
 @database_init_required
 @hx_request_required
-@initialize_database_required
 def initialize_database_user(request):
     """
     Handles the user creation step during database initialization.
@@ -580,7 +578,6 @@ def initialize_database_user(request):
 
 @superuser_required
 @hx_request_required
-@initialize_database_required
 def initialize_database_company(request):
     """
     Handles the company creation step during database initialization.
@@ -612,7 +609,6 @@ def initialize_database_company(request):
 
 @superuser_required
 @hx_request_required
-@initialize_database_required
 def initialize_database_department(request):
     """
     Handles the department creation step during database initialization.
@@ -640,7 +636,6 @@ def initialize_database_department(request):
 
 @superuser_required
 @hx_request_required
-@initialize_database_required
 def initialize_department_edit(request, obj_id):
     """
     Handles editing of an existing department during database initialization.
@@ -680,7 +675,6 @@ def initialize_department_edit(request, obj_id):
 
 @superuser_required
 @hx_request_required
-@initialize_database_required
 def initialize_department_delete(request, obj_id):
     """
     Handles the deletion of an existing department during database initialization.
@@ -699,7 +693,6 @@ def initialize_department_delete(request, obj_id):
 
 @superuser_required
 @hx_request_required
-@initialize_database_required
 def initialize_database_job_position(request):
     """
     Handles the job position creation step during database initialization.
@@ -735,7 +728,6 @@ def initialize_database_job_position(request):
 
 @superuser_required
 @hx_request_required
-@initialize_database_required
 def initialize_job_position_edit(request, obj_id):
     """
     Handles editing of an existing job position during database initialization.
@@ -777,7 +769,6 @@ def initialize_job_position_edit(request, obj_id):
 
 @superuser_required
 @hx_request_required
-@initialize_database_required
 def initialize_job_position_delete(request, obj_id):
     """
     Handles the deletion of an existing job position during database initialization.

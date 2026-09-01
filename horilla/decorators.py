@@ -531,34 +531,3 @@ def check_integration_enabled(func, app_name):
         return func(request, *args, **kwargs)
 
     return wrapper
-
-
-def initialize_database_required(function):
-    """
-    Gate a database-initialization step view.
-
-    The entry view (``base.views.initialize_database``) checks three things
-    before letting anyone in: DEBUG must be on, the database must actually be
-    uninitialized, and the caller must know DB_INIT_PASSWORD. The per-step views
-    that follow it carried only ``@hx_request_required``, which just asserts an
-    HX-Request header -- trivially forged with curl and not an authorization
-    check.
-
-    ``initialize_database_user`` calls ``create_superuser()`` and then
-    ``login()``, so on a provisioned instance an unauthenticated caller could
-    create a superuser under a novel username and be logged in as them. This
-    decorator re-applies the entry view's own preconditions to every step.
-    """
-    from django.http import Http404
-
-    @wraps(function)
-    def wrapper(request, *args, **kwargs):
-        from base.views import initialize_database_condition
-
-        if not settings.DEBUG:
-            raise Http404
-        if not initialize_database_condition():
-            raise Http404
-        return function(request, *args, **kwargs)
-
-    return wrapper
