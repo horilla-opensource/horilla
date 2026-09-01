@@ -18,7 +18,15 @@ django-widget-tweaks==1.5.1
 
 # REST API
 djangorestframework==3.16.0
-djangorestframework-simplejwt==5.5.0
+# 5.5.1, not 5.5.0: 5.5.0 caps pyjwt<2.10.0, which pins the JWT library to
+# a version with the advisories below. 5.5.1 drops the cap (pyjwt>=1.7.1).
+djangorestframework-simplejwt==5.5.1
+# Transitive via simplejwt, pinned explicitly because the 2.9.0 that resolves
+# by default carries a verifier-side algorithm allow-list bypass
+# (PYSEC-2026-176) and skips RFC 7515 crit-header validation
+# (PYSEC-2026-120). Both sit directly on the JWT verification path this
+# project authenticates API clients with. 2.13.0 clears all six.
+PyJWT==2.13.0
 drf-yasg==1.21.15
 
 # Data processing
@@ -28,6 +36,9 @@ pandas==3.0.5
 XlsxWriter==3.2.9
 
 # PDF handling
+# PYSEC-2026-2860 (from_string allows script execution and local-file
+# exfiltration) has no upstream fix. Mitigated in base.methods.generate_pdf,
+# which XSS-checks the rendered body before wkhtmltopdf sees it.
 pdfkit==1.0.0
 PyMuPDF==1.28.2
 reportlab==4.0.9
@@ -53,7 +64,13 @@ pyzk==0.9
 pillow==12.3.0
 
 # Security & encryption
-cryptography==44.0.2
+# 50.0.0 clears all five known advisories against 44.0.2; 46.x and 49.x each
+# leave some open (PYSEC-2026-3552 needs 50.0.0).
+cryptography==50.0.0
+# Brute-force protection on login (lockout by username+IP).
+django-axes[ipware]==8.0.0
+# Error tracking. Inert unless SENTRY_DSN is set.
+sentry-sdk[django]==2.20.0
 
 # Notifications
 swapper==1.4.0
@@ -79,7 +96,9 @@ spacy==3.8.16
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 
 # Misc
-bleach==6.2.0
+# 6.4.0 fixes two clean() XSS bypasses (GHSA-gj48-438w-jh9v via formaction,
+# GHSA-8rfp-98v4-mmr6 via href).
+bleach==6.4.0
 gunicorn==23.0.0
 packaging==26.3
 

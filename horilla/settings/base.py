@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "widget_tweaks",
     "auditlog",
     "django_apscheduler",
+    "axes",
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_yasg",
@@ -137,6 +138,9 @@ APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 # MIDDLEWARE
 # ========================================
 MIDDLEWARE = [
+    # First, so every log line emitted while handling the request -- including
+    # ones from middleware below -- carries the correlation id.
+    "horilla.observability.RequestIDMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -158,6 +162,10 @@ MIDDLEWARE = [
     "horilla.horilla_middlewares.SVGSecurityMiddleware",
     "horilla.horilla_middlewares.MissingParameterMiddleware",
     "auditlog.middleware.AuditlogMiddleware",
+    # Last: needs request.user from AuthenticationMiddleware, and
+    # converts a PermissionDenied from the Axes backend into the
+    # lockout response.
+    "axes.middleware.AxesMiddleware",
 ]
 
 ROOT_URLCONF = "horilla.urls"
@@ -222,7 +230,11 @@ if REDIS_URL:
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
+}
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
@@ -327,6 +339,31 @@ LOCALE_PATHS = [join(BASE_DIR, "horilla", "locale")]
 # ========================================
 # LOGGING, MESSAGES, OTHER GLOBALS
 # ========================================
+# There are ~79 getLogger() call sites and, until now, no LOGGING config, so all
+# of them fell through to Django's defaults: unstructured, uncorrelated, and in
+# production nothing but gunicorn's access log. JSON when DEBUG is off so log
+# aggregators can parse it; human-readable locally.
+from horilla.observability import build_logging_config  # noqa: E402
+
+LOGGING = build_logging_config(
+    debug=DEBUG, level=env("DJANGO_LOG_LEVEL", default="INFO")
+)
+
+# Error tracking. Does nothing unless SENTRY_DSN is set, so an open-source
+# install sends nothing anywhere by default. PII is scrubbed in before_send
+# rather than trusting the receiving project's config -- a stack trace here can
+# hold salaries, bank details and reset tokens.
+from horilla.__version__ import __version__ as _horilla_version  # noqa: E402
+from horilla.observability import init_sentry  # noqa: E402
+
+SENTRY_DSN = env("SENTRY_DSN", default="")
+init_sentry(
+    dsn=SENTRY_DSN,
+    environment=HORILLA_ENV or ("development" if DEBUG else "production"),
+    release=_horilla_version,
+    traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=0.0),
+)
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MESSAGE_TAGS = {
@@ -518,11 +555,40 @@ DEFAULT_LDAP_CONFIG = {
 # COMPANY_SCOPED_PERMISSIONS is False. It must REPLACE ModelBackend (Django
 # unions grants across backends, so listing both would keep global perms).
 AUTHENTICATION_BACKENDS = [
+    # MUST be first: AxesStandaloneBackend short-circuits authenticate() for a
+    # locked-out user, so any backend listed ahead of it would still verify the
+    # password and let an attacker keep testing credentials.
+    "axes.backends.AxesStandaloneBackend",
     "base.auth_backends.CompanyScopedBackend",
     # "django_auth_ldap.backend.LDAPBackend",
 ]
 
 AUTH_LDAP_ALWAYS_UPDATE_USER = True
+
+# ========================================
+# BRUTE-FORCE PROTECTION (django-axes)
+# ========================================
+# The login view previously accepted unlimited attempts: no counter, no
+# lockout, no delay, and no rate limiting at the proxy either.
+#
+# Lock on the (username, IP) pair rather than IP alone -- IP-only locks out
+# everyone behind a shared NAT when one account is attacked, and username-only
+# lets an attacker lock a known user out on purpose (a denial-of-service).
+AXES_FAILURE_LIMIT = env.int("AXES_FAILURE_LIMIT", default=5)
+AXES_COOLOFF_TIME = timedelta(minutes=env.int("AXES_COOLOFF_MINUTES", default=30))
+AXES_LOCKOUT_PARAMETERS = [["username", "ip_address"]]
+AXES_RESET_ON_SUCCESS = True
+# Count only real failures; a lockout response is not itself a new attempt.
+AXES_LOCKOUT_TEMPLATE = None
+AXES_ENABLE_ADMIN = True
+# Behind nginx/ELB the client IP is in X-Forwarded-For. Only trust it when the
+# deployment actually sets a proxy count, otherwise a client can spoof the
+# header and dodge the IP half of the lock.
+AXES_IPWARE_PROXY_COUNT = env.int("AXES_PROXY_COUNT", default=None)
+AXES_IPWARE_META_PRECEDENCE_ORDER = [
+    "HTTP_X_FORWARDED_FOR",
+    "REMOTE_ADDR",
+]
 
 
 # ========================================

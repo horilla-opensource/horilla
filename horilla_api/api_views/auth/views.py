@@ -1,3 +1,4 @@
+from axes.handlers.proxy import AxesProxyHandler
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from drf_yasg import openapi
@@ -58,7 +59,11 @@ class LoginAPIView(APIView):
         if "username" and "password" in request.data.keys():
             username = request.data.get("username")
             password = request.data.get("password")
-            user = authenticate(username=username, password=password)
+            # Pass `request`: django-axes needs it to attribute the attempt to
+            # a client and enforce the lockout. Without it the API login is
+            # exempt from the brute-force protection the HTML login has --
+            # and axes raises rather than silently allowing it.
+            user = authenticate(request, username=username, password=password)
             if user:
                 refresh = RefreshToken.for_user(user)
                 employee = user.employee_get
@@ -92,6 +97,22 @@ class LoginAPIView(APIView):
                 }
                 return Response(result, status=200)
             else:
+                # A locked-out caller must be told so, not handed another 401.
+                # AxesStandaloneBackend returns None rather than raising, so
+                # without this check axes counts the failures but never blocks
+                # -- the API would keep accepting guesses past the limit while
+                # the HTML login stops at five.
+                if AxesProxyHandler.is_locked(
+                    request, credentials={"username": username}
+                ):
+                    return Response(
+                        {
+                            "error": _(
+                                "Too many failed login attempts. Try again later."
+                            )
+                        },
+                        status=429,
+                    )
                 return Response({"error": _("Invalid credentials")}, status=401)
         else:
             return Response({"error": _("Please provide Username and Password")})
