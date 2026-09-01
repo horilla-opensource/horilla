@@ -17,7 +17,14 @@ django-storages==1.14.6
 django-widget-tweaks==1.5.1
 
 # REST API
-djangorestframework==3.16.0
+# 3.17.2 clears CVE-2026-73228 (request.data bypasses Django's
+# DATA_UPLOAD_MAX_MEMORY_SIZE for JSON and urlencoded bodies, so an
+# oversized payload is parsed instead of rejected) and CVE-2026-73229
+# (AdminRenderer invokes a view's GET handler while rendering a 400 on an
+# invalid write, disclosing data the caller's permissions deny on GET --
+# not reachable here, since no view sets AdminRenderer, but pinned past it
+# anyway rather than relying on that staying true).
+djangorestframework==3.17.2
 # 5.5.1, not 5.5.0: 5.5.0 caps pyjwt<2.10.0, which pins the JWT library to
 # a version with the advisories below. 5.5.1 drops the cap (pyjwt>=1.7.1).
 djangorestframework-simplejwt==5.5.1
