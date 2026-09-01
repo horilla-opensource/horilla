@@ -1212,3 +1212,78 @@ class TemplateShadowingTests(TestCase):
                 path.read_text(encoding="utf-8"),
                 f"{path.name} still loads the deleted helper",
             )
+
+
+class ExplorerStylesheetTests(TestCase):
+    """
+    The explorer <style> block was inlined in all seven templates at 97-100%
+    identity -- ~4,050 lines where ~600 do. Only two selectors ever differed,
+    both splitting single-model against multi-model explorers.
+    """
+
+    SINGLE_MODEL = ("asset", "attendance", "employee")
+    MULTI_MODEL = ("leave", "payroll", "pms", "recruitment")
+
+    def _template_text(self, name):
+        from pathlib import Path
+
+        from django.conf import settings
+
+        return (
+            Path(settings.BASE_DIR)
+            / "horilla_theme"
+            / "templates"
+            / "report"
+            / f"{name}_report.html"
+        ).read_text(encoding="utf-8")
+
+    def test_shared_stylesheet_exists(self):
+        from pathlib import Path
+
+        from django.conf import settings
+
+        css = (
+            Path(settings.BASE_DIR)
+            / "report"
+            / "static"
+            / "report"
+            / "css"
+            / "pivot_explorer.css"
+        )
+        self.assertTrue(css.exists())
+        body = css.read_text(encoding="utf-8")
+        # The two genuine per-page variants live here, not forked per file.
+        self.assertIn(".oh-report--multi-model .oh-report-view-slot", body)
+
+    def test_no_template_reinlines_the_block(self):
+        """A re-added inline <style> would start the drift over again."""
+        for name in self.SINGLE_MODEL + self.MULTI_MODEL:
+            with self.subTest(explorer=name):
+                text = self._template_text(name)
+                self.assertNotIn(
+                    "<style>",
+                    text,
+                    f"{name} re-inlined styles instead of using the shared file",
+                )
+                self.assertIn("report/css/pivot_explorer.css", text)
+
+    def test_all_explorer_templates_still_compile(self):
+        """A template syntax error introduced by the extraction would not show
+        up in a file-content assertion -- compile each one."""
+        from django.template.loader import get_template
+
+        for name in self.SINGLE_MODEL + self.MULTI_MODEL:
+            with self.subTest(explorer=name):
+                template = get_template(f"report/{name}_report.html")
+                self.assertTrue(template.template.nodelist)
+
+    def test_only_multi_model_pages_carry_the_variant_class(self):
+        """The variant supplies the "Choose Report" label typography, which
+        the single-model explorers must not pick up."""
+        marker = 'class="oh-report-view-slot oh-report--multi-model"'
+        for name in self.MULTI_MODEL:
+            with self.subTest(explorer=name, expected=True):
+                self.assertIn(marker, self._template_text(name))
+        for name in self.SINGLE_MODEL:
+            with self.subTest(explorer=name, expected=False):
+                self.assertNotIn(marker, self._template_text(name))
