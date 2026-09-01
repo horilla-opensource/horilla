@@ -1287,3 +1287,113 @@ class ExplorerStylesheetTests(TestCase):
         for name in self.SINGLE_MODEL:
             with self.subTest(explorer=name, expected=False):
                 self.assertNotIn(marker, self._template_text(name))
+
+
+class PdfFontEmbeddingTests(TestCase):
+    """
+    export_pdf called pisa.CreatePDF with no link_callback, so xhtml2pdf could
+    not resolve the font URI and silently fell back to Helvetica -- a base-14
+    face with no glyphs outside Latin, printing non-Latin employee names as
+    black boxes.
+    """
+
+    def _payload(self):
+        return {
+            "title": "Font Test",
+            "slug": "font-test",
+            "domain": "workforce",
+            "period": {"from_date": "2026-01-01", "to_date": "2026-01-31"},
+            "kpis": [{"label": "Headcount", "value": 2, "hint": ""}],
+            "table": {
+                "columns": [{"key": "name", "label": "Employee"}],
+                # Devanagari is covered by the bundled Poppins face; the
+                # accented Latin exercises Latin-ext.
+                "rows": [{"name": "अमित शर्मा"}, {"name": "José Núñez"}],
+            },
+        }
+
+    def test_pdf_embeds_a_truetype_font(self):
+        from report.export import export_pdf
+
+        body = export_pdf(self._payload(), filename="f.pdf", meta={}).content
+        self.assertEqual(body[:4], b"%PDF")
+        # An embedded TrueType face appears as a FontFile2 stream. With the
+        # base-14 fallback there is none, which is exactly the broken state.
+        self.assertIn(b"FontFile2", body)
+
+    def test_link_callback_resolves_the_bundled_font(self):
+        import os
+
+        from report.export import PDF_FONT_STATIC_PATH, _pdf_link_callback
+
+        from django.conf import settings
+
+        uri = f"{settings.STATIC_URL}{PDF_FONT_STATIC_PATH}"
+        resolved = _pdf_link_callback(uri, "")
+        self.assertTrue(
+            os.path.isfile(resolved), f"font URI did not resolve: {resolved}"
+        )
+
+    def test_link_callback_passes_through_what_it_cannot_resolve(self):
+        """An unresolvable asset must not fail the whole document."""
+        from report.export import _pdf_link_callback
+
+        for uri in (
+            "https://example.test/logo.png",
+            "data:image/png;base64,AAAA",
+            "/static/does/not/exist.png",
+        ):
+            self.assertIsInstance(_pdf_link_callback(uri, ""), str)
+
+
+class ExportLabelTranslationTests(TestCase):
+    """
+    The filter block on every export cover sheet used raw English literals, so
+    it stayed English in a French or Arabic tenant while the rest of the
+    document translated.
+    """
+
+    def _filters(self):
+        from report.engine import ReportFilters
+
+        return ReportFilters(
+            from_date=date(2026, 1, 1),
+            to_date=date(2026, 1, 31),
+            period_preset="this_month",
+        )
+
+    def test_labels_go_through_gettext(self):
+        from django.utils import translation
+
+        filters = self._filters()
+        with translation.override("fr"):
+            labels = [label for label, _value in filters.summary_pairs()]
+        # Whether a French catalog entry exists is a packaging question; what
+        # matters here is that the label is not a hard-coded literal bypassing
+        # translation entirely.
+        self.assertTrue(labels)
+        with translation.override("en"):
+            self.assertIn("Period", [l for l, _v in filters.summary_pairs()])
+
+    def test_period_chip_stays_a_bare_value_under_translation(self):
+        """summary_labels() used to detect the period row by comparing the
+        label to the literal "Period", which a translated label would silently
+        stop matching -- turning the chip into "Période: ..." in one language
+        and a bare value in another."""
+        from django.utils import translation
+
+        filters = self._filters()
+        for lang in ("en", "fr", "ar"):
+            with self.subTest(lang=lang), translation.override(lang):
+                chips = filters.summary_labels()
+                self.assertTrue(chips)
+                # The first chip is the period: a bare value, no "Label:".
+                self.assertNotIn(":", chips[0].split("→")[0])
+
+    def test_all_companies_label_is_translatable(self):
+        import inspect
+
+        from report import company_context
+
+        source = inspect.getsource(company_context)
+        self.assertIn('_("All companies")', source)

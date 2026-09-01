@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,8 +19,18 @@
         height: 12mm;
       }
     }
+    /* Helvetica is a base-14 face with no glyphs outside Latin, so non-Latin
+       employee names printed as black boxes. Poppins ships with the repo and
+       adds Latin-ext, Devanagari and the rupee sign; CJK, Arabic, Hebrew and
+       Cyrillic still need a further font bundled. Resolved by
+       report.export._pdf_link_callback -- without a link_callback xhtml2pdf
+       silently ignores this and falls back to Helvetica. */
+    @font-face {
+      font-family: "ReportSans";
+      src: url("{% static 'payroll/fonts/Poppins_Regular.ttf' %}");
+    }
     body {
-      font-family: Helvetica, Arial, sans-serif;
+      font-family: "ReportSans", Helvetica, Arial, sans-serif;
       font-size: 10px;
       color: #333333;
       line-height: 1.35;

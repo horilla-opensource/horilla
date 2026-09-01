@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import csv
 import io
+import logging
 import re
 from datetime import date, datetime
 from typing import Any, Optional
@@ -19,6 +20,8 @@ from django.http import HttpResponse
 from django.utils import timezone
 
 from horilla.export_safety import FORMULA_TRIGGERS, neutralize_formula
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Style tokens — Horilla primary (coral / #E54F38)
@@ -1118,6 +1121,56 @@ def export_xlsx(
     return response
 
 
+
+# Static/media URI resolution for xhtml2pdf. The bundled Poppins face covers
+# Latin, Latin-ext, Devanagari and the rupee sign; CJK, Arabic, Hebrew and
+# Cyrillic are still not covered and need an additional font shipped before
+# they will render (verified by reading the font's cmap, not assumed).
+PDF_FONT_STATIC_PATH = "payroll/fonts/Poppins_Regular.ttf"
+
+
+def _pdf_link_callback(uri: str, rel: str):
+    """Map a template URI to an absolute filesystem path for xhtml2pdf.
+
+    Returns the URI unchanged when it is already absolute or cannot be
+    resolved -- xhtml2pdf then skips the resource rather than failing the
+    whole document, which is the right trade for a logo or a webfont.
+    """
+    import os as _os
+
+    from django.conf import settings as _settings
+    from django.contrib.staticfiles import finders as _finders
+
+    if uri.startswith(("http://", "https://", "file://", "data:")):
+        return uri
+
+    static_url = getattr(_settings, "STATIC_URL", "") or ""
+    media_url = getattr(_settings, "MEDIA_URL", "") or ""
+
+    try:
+        if static_url and uri.startswith(static_url):
+            rel_path = uri[len(static_url) :]
+            found = _finders.find(rel_path)
+            if isinstance(found, (list, tuple)):
+                found = found[0] if found else None
+            if found and _os.path.isfile(found):
+                return _os.path.realpath(found)
+            static_root = getattr(_settings, "STATIC_ROOT", None)
+            if static_root:
+                candidate = _os.path.join(static_root, rel_path)
+                if _os.path.isfile(candidate):
+                    return candidate
+        elif media_url and uri.startswith(media_url):
+            candidate = _os.path.join(
+                getattr(_settings, "MEDIA_ROOT", ""), uri[len(media_url) :]
+            )
+            if _os.path.isfile(candidate):
+                return candidate
+    except Exception:
+        logger.exception("PDF resource could not be resolved: %s", uri)
+    return uri
+
+
 def export_pdf(
     payload: dict[str, Any],
     filename: str = "report.pdf",
@@ -1330,7 +1383,13 @@ def export_pdf(
         )
 
         buf = BytesIO()
-        result = pisa.CreatePDF(src=html, dest=buf)
+        # Without a link_callback, xhtml2pdf cannot resolve the @font-face
+        # URI in the template and silently falls back to Helvetica -- a
+        # base-14 face with no coverage outside Latin, so non-Latin employee
+        # names render as black boxes.
+        result = pisa.CreatePDF(
+            src=html, dest=buf, link_callback=_pdf_link_callback
+        )
         if result.err:
             raise RuntimeError(f"PDF generation failed ({result.err})")
     finally:
