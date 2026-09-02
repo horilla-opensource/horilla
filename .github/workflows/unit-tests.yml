@@ -88,4 +88,7 @@ jobs:
           # Takes the env.db() branch in settings/base.py, which avoids the
           # sqlite-only OPTIONS.timeout that Postgres rejects.
           DATABASE_URL: postgres://horilla_ci:horilla_ci@localhost:5432/horilla_ci
-        run: make test-cov COV_FAIL_UNDER=5
+        # No COV_FAIL_UNDER override: the Makefile's value is the gate, and
+        # its comment explains why a floor below real coverage is worse than
+        # none. Passing 5 here re-created exactly that.
+        run: make test-cov

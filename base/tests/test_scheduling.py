@@ -122,3 +122,84 @@ class NoSchedulerStartsAtImportTests(SimpleTestCase):
     def test_run_scheduler_list_does_not_start_anything(self):
         # --list must be safe to run anywhere, including a deploy shell.
         call_command("run_scheduler", "--list")
+
+
+class DeploymentWiringTests(SimpleTestCase):
+    """
+    The scheduler refactor moved jobs out of gunicorn workers into one
+    process, but nothing started that process: run_scheduler appeared in no
+    compose file, so every registered job ran zero times on the shipped
+    stack. These pin the wiring, since a correct runner nothing launches is
+    indistinguishable from no runner.
+    """
+
+    def _compose(self, name):
+        from pathlib import Path
+
+        from django.conf import settings
+
+        return (Path(settings.BASE_DIR) / name).read_text(encoding="utf-8")
+
+    def test_dev_compose_defines_a_scheduler_service(self):
+        body = self._compose("docker-compose.yml")
+        self.assertIn("scheduler:", body)
+        self.assertIn("run_scheduler", body)
+
+    def test_prod_compose_defines_a_scheduler_service(self):
+        body = self._compose("docker-compose.prod.yml")
+        self.assertIn("scheduler:", body)
+
+    def test_scheduler_skips_release_tasks(self):
+        """Both containers would otherwise race migrate, and
+        collectstatic --clear would wipe STATIC_ROOT under the live web
+        container."""
+        for name in ("docker-compose.yml", "docker-compose.prod.yml"):
+            with self.subTest(compose=name):
+                self.assertIn("HORILLA_SKIP_RELEASE_TASKS", self._compose(name))
+
+    def test_prod_scheduler_is_single_replica(self):
+        """Two schedulers reintroduce the duplicate-run problem."""
+        self.assertIn("replicas: 1", self._compose("docker-compose.prod.yml"))
+
+    def test_ci_does_not_override_the_coverage_floor(self):
+        """The Makefile's floor is the gate; passing a lower value at the
+        call site re-created the very anti-pattern its comment condemns."""
+        from pathlib import Path
+
+        from django.conf import settings
+
+        workflow = (
+            Path(settings.BASE_DIR) / ".github/workflows/unit-tests.yml"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("COV_FAIL_UNDER=5", workflow)
+
+    def test_runner_reports_job_failures(self):
+        """APScheduler swallows job exceptions into its own logger, so a
+        failing job paged nobody."""
+        import inspect
+
+        from base.management.commands import run_scheduler
+
+        source = inspect.getsource(run_scheduler)
+        self.assertIn("EVENT_JOB_ERROR", source)
+        self.assertIn("add_listener", source)
+
+    def test_biometric_does_not_start_a_scheduler_at_import(self):
+        """Import runs once per gunicorn worker, so a scheduler started here
+        polled every device once per worker."""
+        import inspect
+
+        from biometric import views
+
+        source = inspect.getsource(views)
+        module_level = [
+            line
+            for line in source.splitlines()
+            if line.startswith("    scheduler.start()")
+            or line == "scheduler.start()"
+        ]
+        self.assertFalse(
+            module_level,
+            "biometric/views.py starts a scheduler outside a function",
+        )
+        self.assertIn("register_job(", source)
