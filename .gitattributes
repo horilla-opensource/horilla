@@ -1,0 +1,42 @@
+# Line-ending policy: LF in the repository, for every text file.
+#
+# Without this, whether a file lands as CRLF or LF depends on the
+# contributor's platform and their core.autocrlf setting. The result was 92
+# files stored with CRLF while the other 8,483 used LF -- and any tool that
+# normalises endings (a formatter, an editor's save hook, a scripted edit)
+# rewrites every line of one of those files. That turns a 13-line change into
+# a 5,000-line diff, which buries the real change in review and makes
+# git blame useless for that file.
+#
+# `text=auto eol=lf` tells git to normalise on commit and check out LF
+# everywhere, including on Windows. Modern Windows tooling -- VS Code, PyCharm,
+# Notepad, PowerShell -- all handle LF, so there is no reason to keep CRLF in
+# the tree.
+* text=auto eol=lf
+
+# Binary files: never touch these. Listing them explicitly avoids relying on
+# git's heuristic, which can misread a file as text and corrupt it.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.svg   text eol=lf
+*.pdf   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.eot   binary
+*.mo    binary
+*.zip   binary
+*.gz    binary
+*.xlsx  binary
+*.xls   binary
+*.db    binary
+*.sqlite3 binary
+
+# Windows-only scripts genuinely need CRLF to run.
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
