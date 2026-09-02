@@ -383,7 +383,10 @@ def comment_view(request, anoun_id):
     """
     This method is used to view all comments in the announcements
     """
-    announcement = Announcement.objects.get(id=anoun_id)
+    announcement = Announcement.objects.filter(id=anoun_id).first()
+    if not announcement:
+        messages.error(request, _("Announcement not found."))
+        return HorillaRedirect(request)
     comments = AnnouncementComment.objects.filter(announcement_id=anoun_id).order_by(
         "-created_at"
     )
@@ -429,6 +432,14 @@ def announcement_single_view(request, anoun_id=None):
     This method is used to render single announcements.
     """
     announcement_instance = Announcement.find(anoun_id)
+    if not announcement_instance:
+        # No id in the URL (the bare "announcement-single-view/" pattern)
+        # or an id that doesn't match any record -- the template assumes a
+        # real announcement (e.g. {% url 'update-announcement'
+        # announcement.id %}), which fails with NoReverseMatch on an empty
+        # id rather than rendering blank.
+        messages.error(request, _("Announcement not found."))
+        return HorillaRedirect(request)
     instance_ids = request.GET.get("instance_ids")
     instance_ids_list = json.loads(instance_ids) if instance_ids else []
     previous_instance_id, next_instance_id = (
@@ -437,7 +448,7 @@ def announcement_single_view(request, anoun_id=None):
         else (None, None)
     )
     if announcement_instance:
-        announcement_view_obj, _ = AnnouncementView.objects.get_or_create(
+        announcement_view_obj, _created = AnnouncementView.objects.get_or_create(
             user=request.user, announcement=announcement_instance
         )
         announcement_view_obj.viewed = True

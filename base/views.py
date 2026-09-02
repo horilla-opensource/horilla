@@ -2315,7 +2315,10 @@ def company_update(request, id, **kwargs):
         id : company instance id
 
     """
-    company = Company.objects.get(id=id)
+    company = Company.objects.filter(id=id).first()
+    if not company:
+        messages.error(request, _("Company not found."))
+        return HorillaRedirect(request)
     form = CompanyForm(instance=company)
     if request.method == "POST":
         form = CompanyForm(request.POST, request.FILES, instance=company)
@@ -6853,7 +6856,10 @@ def tag_update(request, tag_id):
     """
     This method renders form and template to create Ticket type
     """
-    tag = Tags.objects.get(id=tag_id)
+    tag = Tags.objects.filter(id=tag_id).first()
+    if not tag:
+        messages.error(request, _("Tag not found."))
+        return HorillaRedirect(request)
     form = TagsForm(instance=tag)
     if request.method == "POST":
         form = TagsForm(request.POST, instance=tag)
@@ -6900,7 +6906,10 @@ def audit_tag_update(request, tag_id):
     """
     This method renders form and template to create Ticket type
     """
-    tag = AuditTag.objects.get(id=tag_id)
+    tag = AuditTag.objects.filter(id=tag_id).first()
+    if not tag:
+        messages.error(request, _("Tag not found."))
+        return HorillaRedirect(request)
     form = AuditTagForm(instance=tag)
     if request.method == "POST":
         form = AuditTagForm(request.POST, instance=tag)
@@ -6976,8 +6985,15 @@ def get_condition_value_fields(request):
 @permission_required("base.add_multipleapprovalcondition")
 def add_more_approval_managers(request):
     current_hx_target = request.META.get("HTTP_HX_TARGET")
+    if not current_hx_target:
+        return HttpResponse()
     hx_target_split = current_hx_target.split("_")
-    next_hx_target = "_".join([hx_target_split[0], str(int(hx_target_split[-1]) + 1)])
+    try:
+        next_hx_target = "_".join(
+            [hx_target_split[0], str(int(hx_target_split[-1]) + 1)]
+        )
+    except (IndexError, ValueError):
+        return HttpResponse()
 
     form = MultipleApproveConditionForm()
     managers_count = request.GET.get("managers_count")
@@ -7724,7 +7740,10 @@ def action_type_update(request, act_id):
     """
     This method renders form and template to update Action type
     """
-    action = Actiontype.objects.get(id=act_id)
+    action = Actiontype.objects.filter(id=act_id).first()
+    if not action:
+        messages.error(request, _("Action type not found."))
+        return HorillaRedirect(request)
     form = ActiontypeForm(instance=action)
 
     if action.action_type == "warning":

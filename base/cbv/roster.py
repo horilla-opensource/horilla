@@ -6,8 +6,8 @@ Provides roster grid, cell editing, publish, my roster, and import/export.
 """
 
 import json
-from urllib.parse import urlencode
 from datetime import date, timedelta
+from urllib.parse import urlencode
 
 import openpyxl
 from django.contrib import messages
