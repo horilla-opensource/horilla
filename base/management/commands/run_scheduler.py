@@ -16,6 +16,7 @@ import logging
 import signal
 
 import pytz
+from apscheduler.events import EVENT_JOB_ERROR, EVENT_JOB_MISSED
 from apscheduler.schedulers.blocking import BlockingScheduler
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -71,6 +72,36 @@ class Command(BaseCommand):
                 **job.kwargs,
             )
             logger.info("Scheduled %s (%s, %s)", job.job_id, job.trigger, job.kwargs)
+
+        # APScheduler catches per-job exceptions and logs them to its own
+        # `apscheduler.executors` logger, so a failing job did not surface
+        # anywhere a person or Sentry would see. Re-raise it through our
+        # logger instead: logger.exception is what the Sentry integration
+        # reports on, and it names the job so the alert is actionable.
+        def _on_job_error(event):
+            logger.error(
+                "Scheduled job %s raised %s",
+                event.job_id,
+                type(event.exception).__name__,
+                exc_info=(
+                    type(event.exception),
+                    event.exception,
+                    event.traceback,
+                ),
+            )
+
+        def _on_job_missed(event):
+            # A missed run means the scheduler was busy or down past the
+            # grace time; silent misses are how "payroll did not run" goes
+            # unnoticed until someone asks.
+            logger.warning(
+                "Scheduled job %s missed its run time (%s)",
+                event.job_id,
+                event.scheduled_run_time,
+            )
+
+        scheduler.add_listener(_on_job_error, EVENT_JOB_ERROR)
+        scheduler.add_listener(_on_job_missed, EVENT_JOB_MISSED)
 
         self.stdout.write(self.style.SUCCESS(f"Running {len(jobs)} scheduled job(s)."))
 
