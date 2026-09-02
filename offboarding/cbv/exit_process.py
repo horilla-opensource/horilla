@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from urllib.parse import urlencode, urlparse
 
 from django import forms
+from django.utils.html import escapejs
 from django.apps import apps
 from django.contrib import messages
 from django.db.models import Count
@@ -79,7 +80,10 @@ def offboarding_pipeline_modal_success_response(request) -> HttpResponse:
     if qs:
         tab_url = f"{tab_url}?{qs}"
 
-    tab_url_lit = json.dumps(tab_url)
+    # json.dumps escapes quotes but NOT "</script>", so a crafted value
+    # could close the script block that this literal is embedded in.
+    # escapejs encodes angle brackets as \u003C/\u003E.
+    tab_url_lit = f'"{escapejs(tab_url)}"'
 
     snippet = rf"""
 <script>

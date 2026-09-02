@@ -21,6 +21,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.encoding import force_str
+from django.utils.html import format_html
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
@@ -4670,9 +4671,12 @@ def delete_allocation_comment_file(request):
         messages.success(request, _("File deleted successfully"))
     else:
         messages.warning(request, _("You don't have permission"))
-        script = f"""
-                <span hx-get='/leave/allocation-request-view-comment/{leave_id}/' hx-target='#commentContainer' hx-trigger='load'></span>
-                """
+        # Same unescaped-interpolation issue as delete_leave_comment_file.
+        script = format_html(
+            "<span hx-get='/leave/allocation-request-view-comment/{}/' "
+            "hx-target='#commentContainer' hx-trigger='load'></span>",
+            leave_id,
+        )
     return HttpResponse(script)
 
 
@@ -4913,9 +4917,16 @@ def delete_leave_comment_file(request):
         messages.success(request, _("File deleted successfully"))
     else:
         messages.warning(request, _("You don't have permission"))
-        script = f"""
-            <span hx-get="/leave/leave-request-view-comment/{leave_id}/?&amp;target=leaveRequest" hx-target="#commentContainer" hx-trigger="load"></span>
-        """
+        # leave_id comes straight from the query string and is interpolated
+        # into hand-built HTML, where Django's template autoescaping does not
+        # apply. format_html escapes the value; this branch is reachable by
+        # any authenticated user, since the view is @login_required only.
+        script = format_html(
+            '<span hx-get="/leave/leave-request-view-comment/{}/'
+            '?&amp;target=leaveRequest" hx-target="#commentContainer" '
+            'hx-trigger="load"></span>',
+            leave_id,
+        )
     return HttpResponse(script)
 
 

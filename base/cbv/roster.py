@@ -6,6 +6,7 @@ Provides roster grid, cell editing, publish, my roster, and import/export.
 """
 
 import json
+from urllib.parse import urlencode
 from datetime import date, timedelta
 
 import openpyxl
@@ -447,12 +448,18 @@ class RosterEmployeeBulkPublishView(View):
             request,
             _("Roster published for %(count)s employee(s).") % {"count": count},
         )
-        grid_params = f"from_date={from_date}"
+        # These params are interpolated into a <script> block below, where
+        # neither template autoescaping nor HTML escaping applies -- a raw
+        # department value could close the string and inject JS. urlencode
+        # percent-encodes quotes and angle brackets, which both fixes that
+        # and produces a correctly-formed query string.
+        params = {"from_date": from_date}
         if to_date:
-            grid_params += f"&to_date={to_date}"
+            params["to_date"] = to_date
         dept_id = request.POST.get("department")
         if dept_id:
-            grid_params += f"&department={dept_id}"
+            params["department"] = dept_id
+        grid_params = urlencode(params)
         return HttpResponse(
             "<script>"
             "$('#rosterEmployeeInstances').attr('data-ids', JSON.stringify([]));"

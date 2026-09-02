@@ -21,6 +21,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.utils import timezone as django_timezone
+from django.utils.html import format_html
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from zk import ZK
@@ -1967,12 +1968,15 @@ def delete_dahua_user(request, obj_id=None):
             user_ids = request.GET.getlist("ids")
             device_id = request.GET.get("device_id")
             if device_id:
-                script = f"""
-                            <span hx-get="/biometric/biometric-device-employees/{device_id}/"
-                                hx-target="#dahuUsersList" hx-select="#dahuUsersList" hx-trigger="load delay:200ms"
-                                hx-swap="outerHTML" hx-on-htmx-before-request="reloadMessage();">
-                            </span>
-                        """
+                # device_id is request-controlled and interpolated into
+                # hand-built HTML, where autoescaping does not apply.
+                script = format_html(
+                    '<span hx-get="/biometric/biometric-device-employees/{}/" '
+                    'hx-target="#dahuUsersList" hx-select="#dahuUsersList" '
+                    'hx-trigger="load delay:200ms" hx-swap="outerHTML" '
+                    'hx-on-htmx-before-request="reloadMessage();"></span>',
+                    device_id,
+                )
             if user_ids:
                 users = BiometricEmployees.objects.filter(user_id__in=user_ids)
                 if users:
@@ -2012,12 +2016,15 @@ def delete_etimeoffice_user(request, obj_id=None):
         user_ids = request.GET.getlist("ids")
         device_id = request.GET.get("device_id")
         if device_id:
-            script = f"""
-                            <span hx-get="/biometric/biometric-device-employees/{device_id}/"
-                                hx-target="#eTimeOfficeUsersList" hx-select="#eTimeOfficeUsersList" hx-trigger="load delay:200ms"
-                                hx-swap="outerHTML" hx-on-htmx-before-request="reloadMessage();">
-                            </span>
-                        """
+                # device_id is request-controlled and interpolated into
+                # hand-built HTML, where autoescaping does not apply.
+            script = format_html(
+                '<span hx-get="/biometric/biometric-device-employees/{}/" '
+                'hx-target="#eTimeOfficeUsersList" hx-select="#eTimeOfficeUsersList" '
+                'hx-trigger="load delay:200ms" hx-swap="outerHTML" '
+                'hx-on-htmx-before-request="reloadMessage();"></span>',
+                device_id,
+                )
         if user_ids:
             users = BiometricEmployees.objects.filter(user_id__in=user_ids)
             if users:
