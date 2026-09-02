@@ -10,10 +10,10 @@ later well-meaning "add everything" change has to argue with a test rather than
 silently double the write volume.
 """
 
-from django.test import TestCase
-
 from auditlog.models import LogEntry
 from auditlog.registry import auditlog
+from django.test import TestCase
+
 from horilla_audit.registry import (
     DEFAULT_TRACKED_MODELS,
     _resolve_model,

@@ -2016,15 +2016,15 @@ def delete_etimeoffice_user(request, obj_id=None):
         user_ids = request.GET.getlist("ids")
         device_id = request.GET.get("device_id")
         if device_id:
-                # device_id is request-controlled and interpolated into
-                # hand-built HTML, where autoescaping does not apply.
+            # device_id is request-controlled and interpolated into
+            # hand-built HTML, where autoescaping does not apply.
             script = format_html(
                 '<span hx-get="/biometric/biometric-device-employees/{}/" '
                 'hx-target="#eTimeOfficeUsersList" hx-select="#eTimeOfficeUsersList" '
                 'hx-trigger="load delay:200ms" hx-swap="outerHTML" '
                 'hx-on-htmx-before-request="reloadMessage();"></span>',
                 device_id,
-                )
+            )
         if user_ids:
             users = BiometricEmployees.objects.filter(user_id__in=user_ids)
             if users:
