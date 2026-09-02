@@ -105,7 +105,12 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # Subclasses JWTAuthentication to also set the company ContextVar that
+        # HorillaCompanyManager scopes on. CompanyMiddleware cannot do it for
+        # API calls: middleware runs before DRF resolves the token, so it sees
+        # AnonymousUser and returns early, leaving queries unscoped. See
+        # horilla_api/authentication.py.
+        "horilla_api.authentication.TenantScopedJWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
