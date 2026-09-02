@@ -1045,16 +1045,16 @@ def document_approve(request, id):
         return refreshed
 
     if refresh_url:
-        span = f"""
-        <span
-            hx-trigger="load"
-            hx-get="{refresh_url}"
-            hx-target="#requestDocument{id}"
-            hx-select="#requestDocument{id}"
-            hx-swap="outerHTML"
-            ">
-        </span>
-        """
+        # refresh_url comes from the request and is interpolated into
+        # hand-built HTML, so autoescaping does not apply. format_html
+        # escapes it.
+        span = format_html(
+            '<span hx-trigger="load" hx-get="{}" hx-target="#requestDocument{}" '
+            'hx-select="#requestDocument{}" hx-swap="outerHTML"></span>',
+            refresh_url,
+            id,
+            id,
+        )
         return HttpResponse(span)
 
     return HorillaRedirect(request)
