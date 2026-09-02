@@ -987,6 +987,19 @@ class LeaveRequest(HorillaModel):
         verbose_name = _("Leave Request")
         verbose_name_plural = _("Leave Requests")
         permissions = (("can_view_on_leave", "Can View On Leave"),)
+        # Leave is queried as "who is off between these dates" and "what is
+        # pending", both across all employees -- neither of which the FK
+        # indexes Django creates can serve.
+        indexes = [
+            models.Index(
+                fields=["start_date", "end_date"],
+                name="leaverequest_dates_idx",
+            ),
+            models.Index(
+                fields=["status", "start_date"],
+                name="leaverequest_status_date_idx",
+            ),
+        ]
 
     def comment_action(self):
         """

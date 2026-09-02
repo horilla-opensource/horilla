@@ -327,6 +327,24 @@ def get_month_start_end_dates(year_month):
     return start_date, end_date
 
 
+def month_date_range(year, month):
+    """Return (first_day, last_day) for a month as real dates.
+
+    Exists so queries can say ``attendance_date__range=(...)`` instead of
+    ``attendance_date__month=`` / ``__year=``. Those two wrap the column in a
+    database function, which makes a plain B-tree index on the column
+    unusable -- so the range form is what lets an index be used at all.
+
+    ``get_month_start_end_dates`` above does the same thing from a "YYYY-MM"
+    string; this takes the parts separately, which is what the model methods
+    have to hand.
+    """
+    year = int(year)
+    month = int(month)
+    _, last_day = calendar.monthrange(year, month)
+    return date(year, month, 1), date(year, month, last_day)
+
+
 def worked_hour_data(labels, records):
     """
     To find all the worked hours
