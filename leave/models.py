@@ -702,26 +702,6 @@ class AvailableLeave(HorillaModel):
         """
         return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
-    def forcasted_leaves(self):
-        forecasted_leave = {}
-        if self.leave_type_id.reset_based == "monthly":
-            today = datetime.now()
-            for i in range(1, 7):  # Calculate for the next 6 months
-                next_month = today + relativedelta(months=i)
-                if self.leave_type_id.carryforward_max:
-                    forecasted_leave[next_month.strftime("%Y-%m")] = (
-                        self.available_days
-                        + min(
-                            self.leave_type_id.carryforward_max,
-                            (self.leave_type_id.total_days * i),
-                        )
-                    )
-                else:
-                    forecasted_leave[next_month.strftime("%Y-%m")] = (
-                        self.available_days + (self.leave_type_id.total_days * i)
-                    )
-        return forecasted_leave
-
     def forcasted_leaves(self, date):
         if isinstance(date, str):
             date = datetime.strptime(date, "%Y-%m-%d").date()

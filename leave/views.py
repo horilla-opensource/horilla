@@ -3436,10 +3436,27 @@ def employee_leave_details(request):
         for i in balance:
             balance_count = i.available_days
         if date:
-            try:
-                balance_count += balance.first().forcasted_leaves()[date[:7]]
-            except:
-                pass
+            # forcasted_leaves takes the date being requested and returns the
+            # days that will have been granted by then. This previously called
+            # a no-argument overload that returned a {"YYYY-MM": days} dict and
+            # subscripted it with date[:7]; that definition was shadowed by
+            # this one further down leave/models.py, so the call raised
+            # TypeError and the bare except dropped the forecast from the
+            # reported balance entirely.
+            #
+            # `date` is unvalidated POST input and forcasted_leaves parses it
+            # with strptime, so a malformed value raises ValueError. Caught
+            # narrowly rather than with the previous bare except, which also
+            # hid the TypeError above.
+            first_balance = balance.first()
+            if first_balance:
+                try:
+                    balance_count += first_balance.forcasted_leaves(date)
+                except (ValueError, TypeError):
+                    logger.warning(
+                        "employee_leave_details: ignoring unparseable date %r",
+                        date,
+                    )
     return JsonResponse({"leave_count": balance_count, "employee": employee})
 
 
