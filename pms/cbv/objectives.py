@@ -867,6 +867,7 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
     ]
     filter_selected = False
     show_filter_tags = False
+    custom_empty_template = "cbv/objectives/compact_empty.html"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
