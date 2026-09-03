@@ -322,7 +322,7 @@
 								{% endif %}
 							/>
 						</div>
-						{% if "attendance"|app_installed %}
+						{% if "attendance"|app_installed and request|is_check_in_enabled %}
 							{% if employee.check_online %}
 								<span
 									class="oh-profile__active-badge oh-profile__active-badge--secondary" style="background-color: yellowgreen;"
