@@ -6,13 +6,12 @@ horilla_automation/signals.py
 import copy
 import logging
 import threading
-import time
 import types
 
 from bs4 import BeautifulSoup
 from django import template
 from django.core.mail import EmailMessage
-from django.db import models
+from django.db import models, transaction
 from django.db.models.query import QuerySet
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
@@ -104,11 +103,14 @@ def start_automation():
                 previous_queryset = previous_bulk_record.get("queryset", None)
                 previous_queryset_copy = previous_bulk_record.get("queryset_copy", [])
 
-            bulk_thread = threading.Thread(
-                target=_bulk_update_thread_handler,
-                args=(queryset, previous_queryset_copy, automation),
+            # Deferred for the same reason as the post_save handler above:
+            # the thread reads the rows back on its own connection.
+            transaction.on_commit(
+                lambda: threading.Thread(
+                    target=_bulk_update_thread_handler,
+                    args=(queryset, previous_queryset_copy, automation),
+                ).start()
             )
-            bulk_thread.start()
 
         func_name = f"{automation.method_title}_post_bulk_signal_handler"
 
@@ -170,10 +172,21 @@ def start_automation():
                         instance,
                         previous_instance,
                     )
-                    thread = threading.Thread(
-                        target=lambda: send_automated_mail(*args),
+                    # Deferred to on_commit rather than started here: the
+                    # thread gets its own DB connection, so if this save is
+                    # inside an open transaction (fixture loads and the demo
+                    # data backfills wrap large batches in transaction.atomic)
+                    # the row is not visible to it yet and send_mail's
+                    # re-read raises DoesNotExist. on_commit runs the thread
+                    # once the row is durable, and never runs at all if the
+                    # transaction rolls back -- which is also correct, since
+                    # a mail should not go out for a save that was undone.
+                    # Outside a transaction on_commit runs immediately.
+                    transaction.on_commit(
+                        lambda: threading.Thread(
+                            target=lambda: send_automated_mail(*args),
+                        ).start()
                     )
-                    thread.start()
 
                 signal_handler.__name__ = name
                 signal_handler.model_class = model_class
@@ -372,9 +385,26 @@ def send_mail(request, automation, instance):
     to_emails = []
 
     if instance.pk:
-        # refreshing instance due to m2m fields are not loading here some times
-        time.sleep(0.1)
-        instance = instance._meta.model.objects.get(pk=instance.pk)
+        # Re-read so m2m fields are populated -- they are not yet attached on
+        # the instance the post_save signal hands over.
+        #
+        # filter().first() rather than get(): the row can legitimately be
+        # gone by the time this runs, because the caller is a thread with its
+        # own DB connection. A row created and then deleted inside the same
+        # transaction, or an object deleted between the save and this read,
+        # both land here. get() raised DoesNotExist into a bare thread, which
+        # printed a traceback nobody could act on and sent no mail either
+        # way; returning quietly has the same effect without the noise.
+        refreshed = instance._meta.model.objects.filter(pk=instance.pk).first()
+        if refreshed is None:
+            logger.debug(
+                "Skipping automation %s: %s pk=%s no longer exists",
+                automation.method_title,
+                instance._meta.label,
+                instance.pk,
+            )
+            return
+        instance = refreshed
 
     pk_or_text = getattribute(instance, automation.mail_details)
     model_class = get_model_class(automation.model)
