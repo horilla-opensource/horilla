@@ -180,3 +180,33 @@ class ApiTenantScopingTests(TestCase):
             seen["tenant_b_user"],
             "both tenants received identical payloads -- scoping is not applied",
         )
+
+
+class UnplaceableApiUserTests(TestCase):
+    """A valid token with no company must 403, not run unscoped querysets."""
+
+    def tearDown(self):
+        set_selected_company(None)
+
+    def test_unplaceable_user_is_refused_not_unscoped(self):
+        from rest_framework.exceptions import PermissionDenied
+        from rest_framework.test import APIRequestFactory
+        from rest_framework_simplejwt.tokens import RefreshToken
+
+        from horilla_api.authentication import TenantScopedJWTAuthentication
+
+        stray = make_user("no_company_user", password="secret123")
+        token = str(RefreshToken.for_user(stray).access_token)
+        request = APIRequestFactory().get(
+            EMPLOYEE_LIST_URL, HTTP_AUTHORIZATION=f"Bearer {token}"
+        )
+        set_selected_company(None)
+
+        with self.assertRaises(PermissionDenied):
+            TenantScopedJWTAuthentication().authenticate(request)
+        self.assertIsNone(get_selected_company())
+
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+        response = client.get(EMPLOYEE_LIST_URL)
+        self.assertEqual(response.status_code, 403)

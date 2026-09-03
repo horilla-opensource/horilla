@@ -145,9 +145,12 @@ make logs
 | Service | Image | Purpose |
 |---------|-------|---------|
 | **web** | Custom (Dockerfile) | Django application with Gunicorn WSGI server |
+| **scheduler** | Custom (Dockerfile) | Single process running `manage.py run_scheduler`. Payroll, leave resets, backups and report subscriptions do **not** run inside gunicorn workers. |
 | **db** | `postgres:16-alpine` | Primary database for all application data |
 | **redis** | `redis:7-alpine` | Caching, session storage (password-protected, AOF persistence) |
 | **nginx** | `nginx:alpine` | Reverse proxy and static file serving (production only). Does **not** serve `/media/` directly — that path is proxied to Django so `protected_media()` can enforce auth and content-type gates. |
+
+> **Upgrade:** if you deploy without this Compose file, start **exactly one** `python manage.py run_scheduler` process. Missing it is silent — those jobs simply never fire. `GET /ready/` includes `"scheduler": "ok"|"missing"`. Production compose sets `HORILLA_REQUIRE_SCHEDULER=1` so `/ready/` is 503 until jobs are registered.
 
 ### Volumes
 
@@ -348,7 +351,7 @@ make status
 
 # Liveness
 curl http://localhost:8000/health/
-# Readiness (DB + Redis when REDIS_URL set)
+# Readiness (DB + Redis when REDIS_URL set; includes scheduler status)
 curl http://localhost:8000/ready/
 
 # Check logs for errors
@@ -531,6 +534,9 @@ make status
 # Manual health check
 curl -f http://localhost:8000/health/
 # Returns: {"status": "ok"}
+
+# Readiness includes scheduler: "ok" or "missing"
+curl -f http://localhost:8000/ready/
 ```
 
 ### Service Health Checks

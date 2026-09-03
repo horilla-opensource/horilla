@@ -396,6 +396,9 @@ DJANGO_NOTIFICATIONS_CONFIG = {
 WHITE_LABELLING = False
 NESTED_SUBORDINATE_VISIBILITY = False
 TWO_FACTORS_AUTHENTICATION = False
+# When True, /ready/ returns 503 until run_scheduler has registered jobs.
+# Off by default so Docker CI (web without the scheduler service) still passes.
+HORILLA_REQUIRE_SCHEDULER = env.bool("HORILLA_REQUIRE_SCHEDULER", default=False)
 
 SIDEBARS = [
     "employee",
