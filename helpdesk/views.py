@@ -409,7 +409,7 @@ def faq_delete(request, id):
         message = _("No FAQ found matching the query.")
 
     except ProtectedError:
-        messages = _("You cannot delete this FAQ.")
+        message = _("You cannot delete this FAQ.")
 
     return HorillaRedirect(request, message=message)
 

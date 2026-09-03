@@ -151,7 +151,7 @@ def start_automation():
 
             post_bulk_update.connect(handler, sender=model_class)
 
-            def create_signal_handler(name, automation, query_strings):
+            def create_signal_handler(name, automation, query_strings, model_class):
                 def signal_handler(sender, instance, created, **kwargs):
                     """
                     Signal handler for post-save events of the model instances.
@@ -182,8 +182,11 @@ def start_automation():
 
             # Create and connect the signal handler
             handler_name = f"{automation.method_title}_signal_handler"
+            # model_class is passed in rather than read from the enclosing
+            # loop: the handler outlives the iteration, so a closure over the
+            # loop variable would make every handler use the last model.
             dynamic_signal_handler = create_signal_handler(
-                handler_name, automation, query_strings
+                handler_name, automation, query_strings, model_class
             )
             SIGNAL_HANDLERS.append(dynamic_signal_handler)
             post_save.connect(
@@ -245,8 +248,14 @@ def start_automation():
             INSTANCE_HANDLERS.append(handler)
             pre_bulk_update.connect(handler, sender=model_class)
 
+            # _model/_automation are bound as defaults rather than read from
+            # the enclosing loop: the handler stays connected after the loop
+            # ends, so a closure would make every handler use the last
+            # iteration's values. Django only passes sender/instance/**kwargs.
             @receiver(pre_save, sender=model_class)
-            def instance_handler(sender, instance, **kwargs):
+            def instance_handler(
+                sender, instance, _model=model_class, _automation=automation, **kwargs
+            ):
                 """
                 Signal handler for pres-save events of the model instances.
                 """
@@ -254,17 +263,14 @@ def start_automation():
                 request = getattr(_thread_locals, "request", None)
                 if instance.pk:
                     # to get the previous instance
-                    instance = model_class.objects.filter(id=instance.pk).first()
+                    instance = _model.objects.filter(id=instance.pk).first()
                 if request:
                     _thread_locals.previous_record = {
-                        "automation": automation,
+                        "automation": _automation,
                         "instance": instance,
                     }
-                instance_handler.__name__ = (
-                    f"{automation.method_title}_instance_handler"
-                )
-                return instance_handler
 
+            instance_handler.__name__ = f"{automation.method_title}_instance_handler"
             instance_handler.model_class = model_class
             instance_handler.automation = automation
 

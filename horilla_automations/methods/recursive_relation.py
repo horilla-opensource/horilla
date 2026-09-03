@@ -5,6 +5,7 @@ horilla_automation/recursive_relation.py
 from django.apps import apps
 from django.db.models.fields.related import ForeignKey, ManyToManyField, OneToOneField
 from django.db.models.fields.reverse_related import (
+    ForeignObjectRel,
     ManyToManyRel,
     ManyToOneRel,
     OneToOneRel,

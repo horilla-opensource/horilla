@@ -1894,7 +1894,9 @@ def add_dahua_biometric_user(request, device_id):
             except Employee.DoesNotExist:
                 messages.error(request, _("Employee not found."))
                 return render(
-                    request, "biometric_users/dahua/add_dahua_user.html", context
+                    request,
+                    "biometric_users/dahua/add_dahua_user.html",
+                    {"form": form, "device_id": device_id},
                 )
 
             dahua = DahuaAPI(

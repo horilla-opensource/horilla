@@ -166,8 +166,13 @@ def employee_exists(request):
     try:
         employee = request.user.employee_get
         employee_work_info = employee.employee_work_info
-    finally:
-        return (employee, employee_work_info)
+    except Exception:
+        # Either attribute is absent for an AnonymousUser or a user with no
+        # Employee/EmployeeWorkInformation row; callers expect None rather
+        # than an exception. `except Exception` instead of a bare `finally`
+        # so KeyboardInterrupt and SystemExit still propagate.
+        pass
+    return (employee, employee_work_info)
 
 
 def shift_schedule_today(day, shift):

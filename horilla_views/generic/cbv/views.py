@@ -765,7 +765,9 @@ class HorillaListView(ListView):
 
             serialized = []
             field_column_mapping_values = {}
-            for _, row in df.iterrows():
+            # not `_`: that would make the gettext alias a local for this
+            # whole method, so the _() call above raises UnboundLocalError.
+            for _index, row in df.iterrows():
                 record = {}
                 for model_field, excel_col in field_column_mapping.items():
                     if excel_col in row:
