@@ -7,13 +7,13 @@ from typing import Any
 from django.contrib import messages
 from django.core.cache import cache as CACHE
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.http import urlencode
 from django.utils.translation import gettext_lazy as _
 
 from horilla.decorators import hx_request_required
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.kanban import HorillaKanbanView
 from horilla_views.generic.cbv.views import (
@@ -240,9 +240,17 @@ class RecruitmentPipelineContentShell(TemplateView):
 
     template_name = "cbv/pipeline/recruitment_pipeline_shell.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        rec_id = kwargs.get("rec_id")
+        if not models.Recruitment.objects.entire().filter(id=rec_id).exists():
+            return HorillaRedirect(
+                request, message=_("No recruitment found matching the query.")
+            )
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        rec = get_object_or_404(models.Recruitment, pk=self.kwargs.get("rec_id"))
+        rec = models.Recruitment.objects.entire().get(pk=self.kwargs.get("rec_id"))
         view_type = self.request.GET.get("view")
         content_url = reverse("candidate-card-cbv", kwargs={"pk": rec.pk})
         if view_type == "list":
