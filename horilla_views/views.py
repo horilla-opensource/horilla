@@ -1036,7 +1036,10 @@ def export_data(request, *args, **kwargs):
         return HorillaRedirect(request, message=_("No matching query found."))
     app_label = model_path.split(".")[0]
     model_name = model_path.split(".")[-1]
-    model = apps.get_model(app_label, model_name)
+    try:
+        model = apps.get_model(app_label, model_name)
+    except LookupError:
+        return HorillaRedirect(request, message=_("No matching query found."))
     base_table = model._meta.db_table
 
     # =====================================================
@@ -1089,7 +1092,18 @@ def export_data(request, *args, **kwargs):
     if not ids:
         return HttpResponse("No IDs provided")
 
-    placeholders = ", ".join(["%s"] * len(ids))
+    # Re-derive the id list through the model's own manager instead of
+    # trusting the client-supplied `ids` as-is: `model.objects` applies
+    # this app's company/permission scoping (HorillaCompanyManager), the
+    # same scoping the originating list view relies on, while the raw SQL
+    # below has no access control of its own and would otherwise return
+    # rows for any id an authenticated user cares to submit, including
+    # records outside their company.
+    authorized_ids = list(model.objects.filter(id__in=ids).values_list("id", flat=True))
+    if not authorized_ids:
+        return HttpResponse("No IDs provided")
+
+    placeholders = ", ".join(["%s"] * len(authorized_ids))
 
     query = f"""
         SELECT {", ".join(select_sql)}
@@ -1098,13 +1112,13 @@ def export_data(request, *args, **kwargs):
     """
 
     with connection.cursor() as cursor:
-        cursor.execute(query, ids)
+        cursor.execute(query, authorized_ids)
         rows = cursor.fetchall()
 
     # =====================================================
     # ORM CACHE
     # =====================================================
-    objs = {o.id: o for o in model.objects.filter(id__in=ids)}
+    objs = {o.id: o for o in model.objects.filter(id__in=authorized_ids)}
 
     method_maps = {}
     for idx, attr in method_columns.items():
@@ -1116,7 +1130,14 @@ def export_data(request, *args, **kwargs):
                     break
                 value = getattr(value, part, None)
                 if callable(value):
-                    value = value()
+                    # Client-supplied column paths can name any attribute,
+                    # so only ever invoke this codebase's own read-only
+                    # accessor convention (get_full_name, get_avatar,
+                    # get_<field>_display, ...). Calling anything else
+                    # would let an export column trigger an arbitrary
+                    # zero-arg instance method, including mutating ones
+                    # like delete()/save().
+                    value = value() if part.startswith("get_") else None
             method_maps[idx][obj_id] = str(value) if value is not None else ""
 
     # =====================================================

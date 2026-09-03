@@ -86,7 +86,10 @@ class AllocationView(HorillaDetailedView):
             # Only for recruitment and onboarding process
             # expecting model-> recruitment.models.Candidate
             model = get_model_class(model)
-            candidate = model.objects.get(pk=pk)
+            candidate = model.objects.filter(pk=pk).first()
+            if not candidate:
+                messages.error(request, _("Record not found."))
+                return HorillaFormView.HttpResponse()
             # set candidate to request for accessing inside work info signal
             request.employee_candidate = candidate
             instance = candidate.converted_employee_id
@@ -118,7 +121,10 @@ class AllocationView(HorillaDetailedView):
                 )
                 return HorillaFormView.HttpResponse()
         else:
-            instance = Employee.objects.get(pk=pk)
+            instance = Employee.objects.filter(pk=pk).first()
+            if not instance:
+                messages.error(request, _("Employee not found."))
+                return HorillaFormView.HttpResponse()
 
         self.instance = instance
 

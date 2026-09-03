@@ -2149,7 +2149,10 @@ def employee_update(request, obj_id):
     args:
         obj_id : employee id
     """
-    employee = Employee.objects.get(id=obj_id)
+    employee = Employee.objects.filter(id=obj_id).first()
+    if not employee:
+        messages.error(request, _("Employee not found."))
+        return HorillaRedirect(request)
     form = EmployeeForm(instance=employee)
     work_info = EmployeeWorkInformation.objects.filter(employee_id=employee).first()
     bank_info = EmployeeBankDetails.objects.filter(employee_id=employee).first()
@@ -2301,7 +2304,10 @@ def employee_archive(request, obj_id):
     Args:
             obj_id : Employee instance id
     """
-    employee = Employee.objects.get(id=obj_id)
+    employee = Employee.objects.filter(id=obj_id).first()
+    if not employee:
+        messages.error(request, _("Employee not found."))
+        return HorillaRedirect(request)
     employee.is_active = not employee.is_active
     employee.employee_user_id.is_active = not employee.is_active
     save = True
@@ -3328,7 +3334,10 @@ def note_tab(request, pk):
     Returns: return note-tab template
 
     """
-    employee_obj = Employee.objects.get(id=pk)
+    employee_obj = Employee.objects.filter(id=pk).first()
+    if not employee_obj:
+        messages.error(request, _("Employee not found."))
+        return HorillaRedirect(request)
     notes = EmployeeNote.objects.filter(employee_id=pk).order_by("-id")
     notes = paginator_qry(notes, request.GET.get("page"))
 
@@ -3363,7 +3372,10 @@ def employee_history_sidebar(request, pk):
     same way HorillaModel-based lists open their auto-added History column
     (see generic/history_col.html / horilla_history_view.html).
     """
-    employee_obj = Employee.objects.get(id=pk)
+    employee_obj = Employee.objects.filter(id=pk).first()
+    if not employee_obj:
+        messages.error(request, _("Employee not found."))
+        return HorillaRedirect(request)
     return render(
         request,
         "employee/history_sidebar.html",
@@ -3380,6 +3392,11 @@ def add_note(request, emp_id=None):
     Saves the note and redirects to the employee's note tab upon successful submission.
     """
 
+    employee_obj = Employee.objects.filter(id=emp_id).first()
+    if not employee_obj:
+        messages.error(request, _("Employee not found."))
+        return HorillaRedirect(request)
+
     form = EmployeeNoteForm(initial={"employee_id": emp_id})
     if request.method == "POST":
         form = EmployeeNoteForm(
@@ -3389,15 +3406,13 @@ def add_note(request, emp_id=None):
 
         if form.is_valid():
             note, attachment_ids = form.save(commit=False)
-            employee = Employee.objects.get(id=emp_id)
-            note.employee_id = employee
+            note.employee_id = employee_obj
             note.updated_by = request.user.employee_get
             note.save()
             note.note_files.set(attachment_ids)
             messages.success(request, _("Note added successfully.."))
             return redirect(f"/employee/note-tab/{emp_id}")
 
-    employee_obj = Employee.objects.get(id=emp_id)
     return render(
         request,
         "tabs/add_note.html",
@@ -3474,7 +3489,10 @@ def add_more_employee_files(request, note_id):
     Args:
         id : stage note instance id
     """
-    note = EmployeeNote.objects.get(id=note_id)
+    note = EmployeeNote.objects.filter(id=note_id).first()
+    if not note:
+        messages.error(request, _("Note not found."))
+        return HorillaRedirect(request)
     employee_id = note.employee_id.id
 
     if request.method == "POST":

@@ -866,16 +866,51 @@ def format_export_value(value, employee):
     return value
 
 
+# Apps whose models make up the HR data surface this app is meant to
+# export. Mirrors base.signals._ALL_HRMS_APP_LABELS minus "auth" -- "auth"
+# is kept out on purpose so credential/ACL tables (User, Group, Permission)
+# can never be pulled through a generic export path, even by a superuser
+# or a company-wide "Default Export Access" toggle.
+_EXPORTABLE_APP_LABELS = {
+    "base",
+    "employee",
+    "leave",
+    "attendance",
+    "payroll",
+    "recruitment",
+    "onboarding",
+    "offboarding",
+    "asset",
+    "helpdesk",
+    "project",
+    "pms",
+    "biometric",
+    "horilla_documents",
+    "horilla_automations",
+    "horilla_audit",
+    "accessibility",
+}
+
+
 def has_export_access(request, model):
     """
     Centralized export-access check reused by every export endpoint.
 
-    Superusers always have access. When the "Default Export Access"
-    setting is enabled for the requesting user's current company (or not
-    yet configured for that company), every user of that company may
-    export data. Otherwise access falls back to the per-module
-    ``export_<model>`` permission.
+    A model must first belong to ``_EXPORTABLE_APP_LABELS`` -- this is
+    checked unconditionally, before any role/permission bypass, so an
+    endpoint that resolves ``model`` from client-supplied input can't be
+    pointed at an arbitrary Django model (e.g. ``auth.User``) outside the
+    app's own HR data surface.
+
+    Superusers always have access to whitelisted models. When the
+    "Default Export Access" setting is enabled for the requesting user's
+    current company (or not yet configured for that company), every user
+    of that company may export data. Otherwise access falls back to the
+    per-module ``export_<model>`` permission.
     """
+    if model._meta.app_label not in _EXPORTABLE_APP_LABELS:
+        return False
+
     user = request.user
     if user.is_superuser:
         return True

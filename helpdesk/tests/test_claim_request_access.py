@@ -67,9 +67,7 @@ class ClaimRequestAccessControlTests(TestCase):
         )
 
     def setUp(self):
-        self.url = reverse(
-            "approve-claim-request", kwargs={"req_id": self.claim.pk}
-        )
+        self.url = reverse("approve-claim-request", kwargs={"req_id": self.claim.pk})
 
     def test_unrelated_caller_cannot_approve_a_claim_request(self):
         """Someone with no relationship to the ticket must be refused.

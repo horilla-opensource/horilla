@@ -195,8 +195,7 @@ class DeploymentWiringTests(SimpleTestCase):
         module_level = [
             line
             for line in source.splitlines()
-            if line.startswith("    scheduler.start()")
-            or line == "scheduler.start()"
+            if line.startswith("    scheduler.start()") or line == "scheduler.start()"
         ]
         self.assertFalse(
             module_level,
@@ -223,9 +222,7 @@ class RuffConfigTests(SimpleTestCase):
 
         from django.conf import settings
 
-        return (Path(settings.BASE_DIR) / "pyproject.toml").read_text(
-            encoding="utf-8"
-        )
+        return (Path(settings.BASE_DIR) / "pyproject.toml").read_text(encoding="utf-8")
 
     def test_ruff_is_configured(self):
         body = self._pyproject()
@@ -258,9 +255,9 @@ class RuffConfigTests(SimpleTestCase):
 
         from django.conf import settings
 
-        config = (
-            Path(settings.BASE_DIR) / ".pre-commit-config.yaml"
-        ).read_text(encoding="utf-8")
+        config = (Path(settings.BASE_DIR) / ".pre-commit-config.yaml").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("ruff-pre-commit", config)
 
     def test_followup_rules_are_still_documented(self):
