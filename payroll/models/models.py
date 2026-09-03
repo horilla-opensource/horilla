@@ -2268,9 +2268,7 @@ class Payslip(HorillaModel):
         # period.
         indexes = [
             models.Index(fields=["-end_date"], name="payslip_end_date_idx"),
-            models.Index(
-                fields=["status", "end_date"], name="payslip_status_date_idx"
-            ),
+            models.Index(fields=["status", "end_date"], name="payslip_status_date_idx"),
         ]
         constraints = [
             models.UniqueConstraint(

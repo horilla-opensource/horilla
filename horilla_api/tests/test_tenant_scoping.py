@@ -152,9 +152,7 @@ class ApiTenantScopingTests(TestCase):
 
         body = str(response.data)
         self.assertIn("Alice", body, "own tenant's employee should be visible")
-        self.assertNotIn(
-            "Bob", body, "other tenant's employee must not be returned"
-        )
+        self.assertNotIn("Bob", body, "other tenant's employee must not be returned")
 
     def test_each_tenant_sees_a_disjoint_employee_set(self):
         """Symmetric check, so a filter that always returns A would fail."""
@@ -170,9 +168,7 @@ class ApiTenantScopingTests(TestCase):
                 format="json",
             )
             self.assertEqual(response.status_code, 200, response.data)
-            client.credentials(
-                HTTP_AUTHORIZATION=f"Bearer {response.data['access']}"
-            )
+            client.credentials(HTTP_AUTHORIZATION=f"Bearer {response.data['access']}")
             listing = client.get(EMPLOYEE_LIST_URL)
             self.assertEqual(listing.status_code, 200, listing.data)
             body = str(listing.data)
