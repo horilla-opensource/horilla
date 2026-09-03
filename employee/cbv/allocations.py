@@ -489,10 +489,13 @@ if app_installed("leave"):
         Leave type assign toggle allocation
         """
         request = getattr(_thread_locals, "request")
+        instance_id = request.GET.get("instance_id")
 
-        available_leave = self.employee_available_leave.filter(
-            employee_id__id=request.GET["instance_id"]
-        ).first()
+        available_leave = (
+            self.employee_available_leave.filter(employee_id__id=instance_id).first()
+            if instance_id
+            else None
+        )
         return render_template(
             "cbv/allocations/leave/toggle_type.html",
             {"instance": self, "available_leave": available_leave},
@@ -532,9 +535,14 @@ if app_installed("leave"):
 
         def get_context_data(self, **kwargs):
             context = super().get_context_data(**kwargs)
-            context["assigned_types"] = AvailableLeave.objects.filter(
-                employee_id__id=self.request.GET["instance_id"],
-                leave_type_id__in=self.queryset,
+            instance_id = self.request.GET.get("instance_id")
+            context["assigned_types"] = (
+                AvailableLeave.objects.filter(
+                    employee_id__id=instance_id,
+                    leave_type_id__in=self.queryset,
+                )
+                if instance_id
+                else AvailableLeave.objects.none()
             )
 
             return context
@@ -543,6 +551,14 @@ if app_installed("leave"):
             """
             To avoide parent permissions
             """
+            # This is a fragment meant to be loaded via htmx inside the
+            # "Add types" modal (see leave/types.html), always carrying the
+            # employee's instance_id. Visited directly/standalone without
+            # it, there's no employee context to show assigned types
+            # against, so render nothing rather than the raw, unstyled
+            # list+export+column-picker fragment.
+            if not request.GET.get("instance_id"):
+                return HttpResponse()
             return super(LeaveTypeListView, self).dispatch(request, *args, **kwargs)
 
         def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
@@ -1149,7 +1165,11 @@ if app_installed("payroll"):
             )
 
         def get(self, request, *args, **kwargs):
-            self.instance = Employee.objects.get(pk=request.GET["instance_id"])
+            self.instance = Employee.objects.filter(
+                pk=request.GET.get("instance_id")
+            ).first()
+            if not self.instance:
+                return HttpResponse()
 
             return super().get(request, *args, **kwargs)
 
@@ -1267,7 +1287,11 @@ if app_installed("payroll"):
             )
 
         def get(self, request, *args, **kwargs):
-            self.instance = Employee.objects.get(pk=request.GET["instance_id"])
+            self.instance = Employee.objects.filter(
+                pk=request.GET.get("instance_id")
+            ).first()
+            if not self.instance:
+                return HttpResponse()
 
             return super().get(request, *args, **kwargs)
 
