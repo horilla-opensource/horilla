@@ -60,11 +60,11 @@ select = [
 #   E722  bare except            148  -- swallows KeyboardInterrupt/SystemExit
 #   B006  mutable default arg     80
 #   B904  raise without from      71  -- loses the original traceback
-#   F841  unused variable        168
-#   F401  unused import          500  -- mostly auto-fixable
+#   F841  unused variable        167
+#   F401  unused import          494  -- mostly auto-fixable
 #   E712/E711  == True / == None  71
-#   E501  line too long        1,797  -- needs a formatting decision first
-#   F403/F405 star imports     1,141  -- needs real import work
+#   E501  line too long        1,791  -- needs a formatting decision first
+#   F403/F405 star imports     1,138  -- needs real import work
 
 [tool.ruff.lint.per-file-ignores]
 # Settings modules legitimately re-export via star imports.
