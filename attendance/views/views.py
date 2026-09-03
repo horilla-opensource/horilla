@@ -1783,41 +1783,6 @@ def update_worked_hour_field(request):
     specified HTML template.
     """
     clock_in = parse_datetime(
-        request.GET.get("attendance_clock_in_date"),
-        request.GET.get("attendance_clock_in"),
-    )
-    clock_out = parse_datetime(
-        request.GET.get("attendance_clock_out_date"),
-        request.GET.get("attendance_clock_out"),
-    )
-
-    total_seconds = (
-        (clock_out - clock_in).total_seconds() if clock_in and clock_out else -1
-    )
-    hours, minutes = divmod(max(total_seconds, 0), 3600)
-    worked_hours_str = f"{int(hours):02}:{int(minutes // 60):02}"
-    form = AttendanceForm(initial={"attendance_worked_hour": worked_hours_str})
-    return render(
-        request,
-        "attendance/attendance/update_hx_form.html",
-        {"request": request, "form": form},
-    )
-
-
-@login_required
-@hx_request_required
-def update_worked_hour_field(request):
-    """
-    Update the worked hour field based on clock-in and clock-out times.
-
-    This view function calculates the total worked hours for an employee
-    by parsing the clock-in and clock-out dates and times from the request
-    parameters. It computes the duration between the two times and formats
-    the result as a string in the "HH:MM" format. The computed worked hours
-    are then initialized in an AttendanceForm, which is rendered in the
-    specified HTML template.
-    """
-    clock_in = parse_datetime(
         (
             now().strftime("%Y-%m-%d")
             if request.GET.get("create_bulk")
