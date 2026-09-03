@@ -1461,7 +1461,7 @@ def claim_ticket(request, id):
 
 
 @login_required
-@ticket_owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
+@ticket_owner_can_enter(perm="helpdesk.change_ticket", model=ClaimRequest)
 def approve_claim_request(request, req_id):
     """
     Function for approve claim request and send notifications to the responsibles.
@@ -1470,19 +1470,20 @@ def approve_claim_request(request, req_id):
     if not claim_request:
         return HttpResponse("Invalid claim request", status=404)
 
+    ticket = claim_request.ticket_id
+    employee = claim_request.employee_id
+
     if not (
         request.user.has_perm("helpdesk.change_claimrequest")
         or request.user.has_perm("helpdesk.change_ticket")
         or is_department_manager(request, ticket)
     ):
-        handle_no_permission(request)
+        return handle_no_permission(request)
 
     approve = strtobool(
         request.GET.get("approve", "False")
     )  # Safely convert to boolean
 
-    ticket = claim_request.ticket_id
-    employee = claim_request.employee_id
     refresh = False
     if approve:
         # message
@@ -1505,8 +1506,13 @@ def approve_claim_request(request, req_id):
                 )
             except Exception as e:
                 logger.error(e)
-            if not ticket.employee_id == ticket.created_by.employee_get:
-                for emp in [ticket.created_by.employee_get, ticket.employee_id]:
+            # created_by is null=True with on_delete=SET_NULL, so it is None
+            # for tickets not created through a request (fixtures, imports,
+            # the shell) and for any ticket whose creator has since been
+            # deleted. Notify the raiser alone in that case.
+            raiser = ticket.created_by.employee_get if ticket.created_by else None
+            if raiser is not None and raiser != ticket.employee_id:
+                for emp in [raiser, ticket.employee_id]:
                     try:
                         notify.send(
                             request.user.employee_get,
