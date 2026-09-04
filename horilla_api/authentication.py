@@ -114,7 +114,5 @@ class TenantScopedJWTAuthentication(JWTAuthentication):
                 "API request from user_id=%s has no resolvable company; refusing",
                 getattr(user, "pk", None),
             )
-            raise PermissionDenied(
-                _("This account is not assigned to a company.")
-            )
+            raise PermissionDenied(_("This account is not assigned to a company."))
         return user, validated_token
