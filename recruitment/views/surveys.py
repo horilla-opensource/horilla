@@ -212,7 +212,11 @@ def candidate_survey(request):
         answer.answer_json = json.dumps(answer_data)
         answer.save()
         messages.success(request, _("Your answers are submitted."))
-        return render(request, "candidate/success.html")
+        return render(
+            request,
+            "candidate/success.html",
+            {"candidate": candidate, "recruitment": recruitment},
+        )
     return render(
         request,
         "survey/candidate_survey_form.html",
@@ -559,7 +563,11 @@ def application_form(request):
                 resume_obj.is_candidate = True
                 resume_obj.save()
 
-            return render(request, "candidate/success.html")
+            return render(
+                request,
+                "candidate/success.html",
+                {"candidate": candidate_obj, "recruitment": recruitment_obj},
+            )
         for field_name, field_errors in form.errors.items():
             if field_name == "__all__":
                 for error in field_errors:

@@ -436,6 +436,18 @@ def get_company(context):
 
 
 @register.simple_tag
+def get_hq_company():
+    """
+    Returns the Company flagged as headquarters (Company.hq=True), for
+    public-facing pages (open recruitments, application form, candidate
+    survey) that need to show a real company identity regardless of the
+    WHITE_LABELLING setting or the viewer's session (these pages are reached
+    by anonymous candidates, who have no selected_company/employee context).
+    """
+    return Company.objects.filter(hq=True).order_by("id").first()
+
+
+@register.simple_tag
 def remove_item_at(obj, idx):
     try:
         idx = int(idx)

@@ -3194,11 +3194,15 @@ def open_recruitments(request):
     return response
 
 
-@login_required
 @hx_request_required
 def recruitment_details(request, id):
     """
-    This method is used to render the recruitment details page
+    This method is used to render the recruitment details page.
+
+    Public/unauthenticated visitors can view this (it's reached from the
+    public open-recruitments page); recruitment_details.html itself gates
+    the sensitive applied/capacity numbers behind
+    perms.recruitment.view_recruitment.
     """
     recruitment = Recruitment.default.filter(id=id).first()
     if not recruitment:
