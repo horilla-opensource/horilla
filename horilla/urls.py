@@ -49,9 +49,13 @@ def readiness_check(request):
     Readiness probe — verifies database (and Redis cache when REDIS_URL is set).
 
     Also reports whether the dedicated scheduler process has registered jobs.
-    ``/health/`` stays a cheap liveness check (Docker HEALTHCHECK). ``/ready/``
-    returns 503 for a missing scheduler only when HORILLA_REQUIRE_SCHEDULER=1,
-    so Compose CI that starts web without the scheduler service still passes.
+    ``/health/`` stays a cheap liveness check (Docker HEALTHCHECK).
+
+    The scheduler status is reported but does not fail the probe unless
+    HORILLA_REQUIRE_SCHEDULER=1, which is off by default: a stopped scheduler
+    delays background jobs, while a 503 here can remove web from the load
+    balancer and stop the app serving requests entirely. Monitor the field;
+    opt in to failing only where that trade-off is right.
     """
     checks = {}
     try:
