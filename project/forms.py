@@ -128,19 +128,15 @@ class ProjectTimeSheetForm(ModelForm):
     Form for Project model in Time sheet form
     """
 
-    def __init__(self, *args, **kwargs):
-        super(ProjectTimeSheetForm, self).__init__(*args, **kwargs)
-        self.fields["status"].widget.attrs.update(
-            {
-                "style": "width: 100%; height: 47px;",
-                "class": "oh-select",
-            }
-        )
-
     def __init__(self, *args, request=None, **kwargs):
         super(ProjectTimeSheetForm, self).__init__(*args, **kwargs)
         self.fields["managers"].widget.attrs.update({"id": "managers_id"})
-        self.fields["status"].widget.attrs.update({"id": "status_id"})
+        # `style` is carried over from a second, shadowed __init__ that also
+        # set class="oh-select"; base.forms.ModelForm already applies that
+        # class to every select, so only the sizing needed keeping.
+        self.fields["status"].widget.attrs.update(
+            {"id": "status_id", "style": "width: 100%; height: 47px;"}
+        )
         self.fields["title"].widget.attrs.update({"id": "id_project"})
 
     class Meta:

@@ -3000,34 +3000,6 @@ def skill_zone_cand_edit(request, sz_cand_id):
 
 
 @login_required
-@manager_can_enter(perm="recruitment.delete_skillzonecandidate")
-def skill_zone_cand_delete(request, sz_cand_id):
-    """
-    function used to delete Talent pool candidate.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-    sz_cand_id : Talent pool candidate id
-
-    Returns:
-    GET : return Talent pool view template
-    """
-
-    try:
-        SkillZoneCandidate.objects.get(id=sz_cand_id).delete()
-        messages.success(request, _("Talent pool deleted successfully."))
-    except SkillZoneCandidate.DoesNotExist:
-        messages.error(request, _("Talent pool not found."))
-    except ProtectedError:
-        messages.error(request, _("Related entries exists"))
-    if request.META.get("HTTP_HX_REQUEST") == "true":
-        response = HttpResponse(status=204)
-        response["HX-Trigger"] = "skillZoneContainerReload"
-        return response
-    return redirect(skill_zone_view)
-
-
-@login_required
 @hx_request_required
 @manager_can_enter(perm="recruitment.view_skillzonecandidate")
 def skill_zone_cand_filter(request):

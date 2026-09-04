@@ -2327,14 +2327,6 @@ if apps.is_installed("attendance"):
                     f"onmouseout=\"this.style.backgroundColor='rgba(255, 166, 0, 0.158)';\""
                 )
 
-        def assign_compensatory_leave_type(self):
-            available_leave, created = AvailableLeave.objects.get_or_create(
-                employee_id=self.employee_id,
-                leave_type_id=self.leave_type_id,
-            )
-            available_leave.available_days += self.requested_days
-            available_leave.save()
-
         def __str__(self):
             return f"{self.employee_id}| {self.leave_type_id}| {self.id}"
 
