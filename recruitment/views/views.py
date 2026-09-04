@@ -982,7 +982,10 @@ def view_note(request, cand_id):
     Args:
         id : candidate instance id
     """
-    candidate_obj = Candidate.objects.get(id=cand_id)
+    candidate_obj = Candidate.objects.filter(id=cand_id).first()
+    if not candidate_obj:
+        messages.error(request, _("Candidate not found."))
+        return HorillaRedirect(request)
     notes = candidate_obj.stagenote_set.all().order_by("-id")
     return render(
         request,
@@ -998,6 +1001,11 @@ def add_note(request, pk=None):
     """
     This method renders template component to add candidate remark
     """
+    candidate_obj = Candidate.objects.filter(id=pk).first()
+    if not candidate_obj:
+        messages.error(request, _("Candidate not found."))
+        return HorillaRedirect(request)
+
     form = StageNoteForm(initial={"candidate_id": pk})
     if request.method == "POST":
         form = StageNoteForm(
@@ -1006,14 +1014,12 @@ def add_note(request, pk=None):
         )
         if form.is_valid():
             note, attachment_ids = form.save(commit=False)
-            candidate = Candidate.objects.get(id=pk)
-            note.candidate_id = candidate
-            note.stage_id = candidate.stage_id
+            note.candidate_id = candidate_obj
+            note.stage_id = candidate_obj.stage_id
             note.updated_by = request.user.employee_get
             note.save()
             note.stage_files.set(attachment_ids)
             messages.success(request, _("Note added successfully.."))
-    candidate_obj = Candidate.objects.get(id=pk)
     notes = candidate_obj.stagenote_set.all().order_by("-id")
     notes = paginator_qry(notes, request.GET.get("page"))
     return render(
@@ -1034,20 +1040,23 @@ def create_note(request, cand_id=None):
     """
     This method renders template component to add candidate remark
     """
+    candidate_obj = Candidate.objects.filter(id=cand_id).first()
+    if not candidate_obj:
+        messages.error(request, _("Candidate not found."))
+        return HorillaRedirect(request)
+
     form = StageNoteForm(initial={"candidate_id": cand_id})
     if request.method == "POST":
         form = StageNoteForm(request.POST, request.FILES)
         if form.is_valid():
             note, attachment_ids = form.save(commit=False)
-            candidate = Candidate.objects.get(id=cand_id)
-            note.candidate_id = candidate
-            note.stage_id = candidate.stage_id
+            note.candidate_id = candidate_obj
+            note.stage_id = candidate_obj.stage_id
             note.updated_by = request.user.employee_get
             note.save()
             note.stage_files.set(attachment_ids)
             messages.success(request, _("Note added successfully.."))
             return redirect("view-note", cand_id=cand_id)
-    candidate_obj = Candidate.objects.get(id=cand_id)
     notes = candidate_obj.stagenote_set.all().order_by("-id")
     return render(
         request,
@@ -1122,7 +1131,10 @@ def add_more_files(request, id):
     Args:
         id : stage note instance id
     """
-    note = StageNote.objects.get(id=id)
+    note = StageNote.objects.filter(id=id).first()
+    if not note:
+        messages.error(request, _("Note not found."))
+        return HorillaRedirect(request)
     if request.method == "POST":
         files = request.FILES.getlist("files")
         files_ids = []
@@ -1142,7 +1154,10 @@ def add_more_individual_files(request, id):
     Args:
         id : stage note instance id
     """
-    note = StageNote.objects.get(id=id)
+    note = StageNote.objects.filter(id=id).first()
+    if not note:
+        messages.error(request, _("Note not found."))
+        return HorillaRedirect(request)
     if request.method == "POST":
         files = request.FILES.getlist("files")
         files_ids = []
@@ -1180,10 +1195,10 @@ def delete_individual_note_file(request, id):
         id : stage file instance id
     """
     script = ""
-    file = StageFiles.objects.get(id=id)
-    cand_id = file.stagenote_set.all().first().candidate_id.id
-    file.delete()
-    messages.success(request, _("File deleted successfully"))
+    file = StageFiles.objects.filter(id=id).first()
+    if file:
+        file.delete()
+        messages.success(request, _("File deleted successfully"))
     return HttpResponse(script)
 
 
@@ -2235,7 +2250,9 @@ def form_send_mail(request, cand_id=None):
     if request.GET.get("stage_id"):
         stage_id = eval_validate(request.GET.get("stage_id"))
     if cand_id:
-        candidate_obj = Candidate.objects.get(id=cand_id)
+        candidate_obj = Candidate.objects.filter(id=cand_id).first()
+        if not candidate_obj:
+            return HttpResponse()
     candidates = Candidate.objects.all()
     if stage_id and isinstance(stage_id, int):
         candidates = candidates.filter(stage_id__id=stage_id)
@@ -3183,7 +3200,10 @@ def recruitment_details(request, id):
     """
     This method is used to render the recruitment details page
     """
-    recruitment = Recruitment.default.get(id=id)
+    recruitment = Recruitment.default.filter(id=id).first()
+    if not recruitment:
+        messages.error(request, _("Recruitment not found."))
+        return HorillaRedirect(request)
     context = {
         "recruitment": recruitment,
     }
@@ -3857,6 +3877,8 @@ def view_bulk_resumes(request):
     This function returns the bulk_resume.html page to the modal
     """
     rec_id = eval_validate(str(request.GET.get("rec_id")))
+    if not rec_id:
+        return HttpResponse()
     resumes = Resume.objects.filter(recruitment_id=rec_id)
 
     return render(
@@ -3872,7 +3894,9 @@ def add_bulk_resumes(request):
     This function is used to create bulk resume
     """
     rec_id = eval_validate(str(request.GET.get("rec_id")))
-    recruitment = Recruitment.objects.get(id=rec_id)
+    recruitment = Recruitment.objects.filter(id=rec_id).first()
+    if not recruitment:
+        return HttpResponse()
     if request.method == "POST":
         files = request.FILES.getlist("files")
         for file in files:
@@ -3983,6 +4007,8 @@ def matching_resumes(request, rec_id):
     ranked_resumes = CACHE.get(cache_key)
     if ranked_resumes is None:
         recruitment = Recruitment.objects.filter(id=rec_id).first()
+        if not recruitment:
+            return HttpResponse()
         skills = recruitment.skills.values_list("title", flat=True)
         resumes = recruitment.resume.all()
         is_candidate = resumes.filter(is_candidate=True)
@@ -4138,7 +4164,9 @@ def document_create(request, id):
 
     Returns: return document_tab template
     """
-    candidate_id = Candidate.objects.get(id=id)
+    candidate_id = Candidate.objects.filter(id=id).first()
+    if not candidate_id:
+        return HttpResponse()
     form = CandidateDocumentForm(initial={"candidate_id": candidate_id})
     form.fields["candidate_id"].queryset = Candidate.objects.filter(id=id)
     if request.method == "POST":
@@ -4230,7 +4258,9 @@ def file_upload(request, id):
 
     Returns: return document_form template
     """
-    document_item = CandidateDocument.objects.get(id=id)
+    document_item = CandidateDocument.objects.filter(id=id).first()
+    if not document_item:
+        return HttpResponse()
     form = CandidateDocumentUpdateForm(instance=document_item)
     if request.method == "POST":
         form = CandidateDocumentUpdateForm(
@@ -4261,6 +4291,8 @@ def view_file(request, id):
     Returns: return view_file template
     """
     document_obj = CandidateDocument.objects.filter(id=id).first()
+    if not document_obj:
+        return HttpResponse()
     context = {
         "document": document_obj,
     }

@@ -928,6 +928,11 @@ class ToSkillZoneFormView(HorillaFormView):
     form_class = ToSkillZoneForm
     new_display_title = _("Add to Talent Pool")
 
+    def dispatch(self, request, *args, **kwargs):
+        if not Candidate.objects.filter(id=kwargs.get("cand_id")).exists():
+            return HttpResponse()
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         """
         Returns context with form and candidate data.

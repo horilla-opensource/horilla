@@ -351,6 +351,15 @@ class AddCandidateFormView(HorillaFormView):
     model = Candidate
     new_display_title = _("Add Candidate")
 
+    def dispatch(self, request, *args, **kwargs):
+        # This is a fragment meant to be loaded via htmx into the "Add
+        # Candidate" modal from a specific pipeline stage, always carrying
+        # stage_id. Visited directly/standalone without it, render nothing
+        # rather than the raw, unstyled form fragment.
+        if request.method == "GET" and not request.GET.get("stage_id"):
+            return HttpResponse()
+        return super().dispatch(request, *args, **kwargs)
+
     def get_initial(self) -> dict:
         initial = super().get_initial()
         stage_id = self.request.GET.get("stage_id")

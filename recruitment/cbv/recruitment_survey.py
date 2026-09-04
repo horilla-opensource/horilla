@@ -79,6 +79,11 @@ class QuestionDuplicateFormView(HorillaFormView):
     new_display_title = _("Duplicate Survey Questions")
     template_name = "cbv/recruitment_survey/survey_form.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        if not RecruitmentSurvey.objects.filter(id=kwargs.get("obj_id")).exists():
+            return HttpResponse()
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         original_object = RecruitmentSurvey.objects.get(id=self.kwargs["obj_id"])
