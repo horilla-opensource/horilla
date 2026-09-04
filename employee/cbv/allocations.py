@@ -8,6 +8,7 @@ import ast
 import logging
 from datetime import datetime
 
+from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.db.models import Q
@@ -24,7 +25,6 @@ from base.forms import AddToUserGroupForm, ModelForm, forms
 from base.methods import paginator_qry
 from base.templatetags.horillafilters import app_installed
 from base.views import get_models_in_app
-from employee.methods.methods import get_model_class
 from employee.models import Employee, EmployeeBankDetails, EmployeeWorkInformation
 from employee.models import models as django_models
 from horilla.horilla_middlewares import _thread_locals
@@ -85,8 +85,8 @@ class AllocationView(HorillaDetailedView):
         if model:
             # Only for recruitment and onboarding process
             # expecting model-> recruitment.models.Candidate
-            model = get_model_class(model)
-            candidate = model.objects.filter(pk=pk).first()
+            Candidate = apps.get_model("recruitment", "Candidate")
+            candidate = Candidate.objects.filter(pk=pk).first()
             if not candidate:
                 messages.error(request, _("Record not found."))
                 return HorillaFormView.HttpResponse()
@@ -94,7 +94,7 @@ class AllocationView(HorillaDetailedView):
             request.employee_candidate = candidate
             instance = candidate.converted_employee_id
             if instance is None and (candidate.hired or candidate.onboarding_stage):
-                instance = Employee.objects.get_or_create(
+                instance, _created = Employee.objects.get_or_create(
                     employee_first_name=candidate.name,
                     email=candidate.email,
                     phone=candidate.mobile,
@@ -105,13 +105,12 @@ class AllocationView(HorillaDetailedView):
                     zip=candidate.zip,
                     dob=candidate.dob,
                     gender=candidate.gender,
-                )[0]
+                )
                 # Candidate may fail business validation on unrelated fields
                 # during allocation, so only persist the link directly.
-                model.objects.filter(pk=candidate.pk).update(
+                Candidate.objects.filter(pk=candidate.pk).update(
                     converted_employee_id=instance
                 )
-                candidate.converted_employee_id = instance
                 instance.employee_user_id.is_active = False
                 instance.employee_user_id.save()
 
@@ -579,14 +578,15 @@ if app_installed("leave"):
             """
             post
             """
+            AvailableLeave = apps.get_model("leave", "AvailableLeave")
+            LeaveType = apps.get_model("leave", "LeaveType")
+
             ids = ast.literal_eval(self.request.POST["ids"])
             employee_id = self.request.POST["instance_id"]
-            avaiable_model = get_model_class("leave.models.AvailableLeave")
-            type_model = get_model_class("leave.models.LeaveType")
-            types = type_model.objects.filter(id__in=ids)
+            types = LeaveType.objects.filter(id__in=ids)
             instance = Employee.objects.get(pk=employee_id)
             for leave_type in types:
-                avaiable_instance = avaiable_model()
+                avaiable_instance = AvailableLeave()
                 avaiable_instance.employee_id = instance
                 avaiable_instance.leave_type_id = leave_type
                 avaiable_instance.available_days = leave_type.total_days

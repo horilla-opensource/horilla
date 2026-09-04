@@ -12,9 +12,9 @@ from unittest.mock import MagicMock, patch
 
 from django.test import TestCase
 
+from horilla.testkit import make_company, make_employee
 from horilla_automations.signals import send_mail
 from leave.models import LeaveRequest, LeaveType
-from horilla.testkit import make_company, make_employee
 
 
 class SendMailMissingInstanceTests(TestCase):
