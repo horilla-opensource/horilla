@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from django.conf import settings as django_settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.core.cache import cache
@@ -33,9 +34,28 @@ def health_check(request):
     return JsonResponse({"status": "ok"}, status=200)
 
 
+def _scheduler_status():
+    """ok if run_scheduler has written jobs; missing if that process never ran."""
+    try:
+        from django_apscheduler.models import DjangoJob
+
+        return "ok" if DjangoJob.objects.exists() else "missing"
+    except Exception:
+        return "missing"
+
+
 def readiness_check(request):
     """
     Readiness probe — verifies database (and Redis cache when REDIS_URL is set).
+
+    Also reports whether the dedicated scheduler process has registered jobs.
+    ``/health/`` stays a cheap liveness check (Docker HEALTHCHECK).
+
+    The scheduler status is reported but does not fail the probe unless
+    HORILLA_REQUIRE_SCHEDULER=1, which is off by default: a stopped scheduler
+    delays background jobs, while a 503 here can remove web from the load
+    balancer and stop the app serving requests entirely. Monitor the field;
+    opt in to failing only where that trade-off is right.
     """
     checks = {}
     try:
@@ -58,6 +78,16 @@ def readiness_check(request):
                 {"status": "unavailable", "cache": str(exc), **checks},
                 status=503,
             )
+
+    checks["scheduler"] = _scheduler_status()
+    if (
+        getattr(django_settings, "HORILLA_REQUIRE_SCHEDULER", False)
+        and checks["scheduler"] != "ok"
+    ):
+        return JsonResponse(
+            {"status": "unavailable", **checks},
+            status=503,
+        )
 
     return JsonResponse({"status": "ok", **checks}, status=200)
 

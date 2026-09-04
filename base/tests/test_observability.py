@@ -9,7 +9,7 @@ the only production telemetry and nothing tying a log line to its request.
 import json
 import logging
 
-from django.test import RequestFactory, SimpleTestCase, TestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
 from horilla.observability import (
@@ -307,3 +307,20 @@ class MetricsEndpointTests(TestCase):
 
         # A broken metric must not take down the scrape target.
         self.assertEqual(response.status_code, 200)
+
+
+class ReadinessSchedulerTests(TestCase):
+    """/ready/ reports the scheduler; it only 503s when required."""
+
+    def test_ready_reports_missing_scheduler_without_failing(self):
+        response = self.client.get("/ready/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["scheduler"], "missing")
+
+    @override_settings(HORILLA_REQUIRE_SCHEDULER=True)
+    def test_ready_fails_when_scheduler_is_required_and_missing(self):
+        response = self.client.get("/ready/")
+
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json()["scheduler"], "missing")

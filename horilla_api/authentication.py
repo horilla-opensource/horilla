@@ -35,6 +35,8 @@ from __future__ import annotations
 
 import logging
 
+from django.utils.translation import gettext_lazy as _
+from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from horilla.horilla_middlewares import set_selected_company
@@ -106,12 +108,13 @@ class TenantScopedJWTAuthentication(JWTAuthentication):
         if company_id is not None:
             set_selected_company(company_id)
         elif not user.is_superuser:
-            # An authenticated non-superuser we cannot place in a company.
-            # Log it rather than silently proceeding without a company
-            # predicate, so the condition is visible in operations.
+            # None means "cannot place this user", never "no restriction".
+            # Proceeding would run HorillaCompanyManager with no predicate.
             logger.warning(
-                "API request from user_id=%s has no resolvable company; "
-                "queries will not be company-scoped",
+                "API request from user_id=%s has no resolvable company; refusing",
                 getattr(user, "pk", None),
+            )
+            raise PermissionDenied(
+                _("This account is not assigned to a company.")
             )
         return user, validated_token

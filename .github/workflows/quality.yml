@@ -63,7 +63,9 @@ jobs:
           DEBUG: "True"
           SECRET_KEY: ci-dev-not-for-production
           ALLOWED_HOSTS: localhost,127.0.0.1
-        run: python manage.py check
+        run: |
+          python manage.py check
+          python manage.py check --fail-level WARNING --tag horilla.tenancy
 
   dependency-audit:
     # Dependency CVEs were only ever caught by the container image scan, which

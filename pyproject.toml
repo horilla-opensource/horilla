@@ -32,29 +32,23 @@ select = [
     "F706",  # return outside a function
     "F707",  # except: not last
     "E902",  # I/O or tokenize error
+    # Locked after the 2026-09-03 runtime-defect pass (06087b691a).
+    "F821",  # undefined name
+    "B023",  # closure over loop variable
+    "B012",  # return inside finally
+    "F823",  # referenced before assignment
 ]
 
-# Not yet enabled. The first block below is the immediate follow-up: 93
-# findings that are genuine defects rather than style, small enough to fix in
-# one pass. Enabling them here before that pass would ship a red gate.
+# Not yet enabled. Genuine defects still present in the tree; enabling them
+# here before they are cleaned would ship a red gate.
 #
-#   F811  redefined-while-unused  51  -- duplicate imports, but also
-#                                        duplicate methods where the first is
-#                                        dead code (see leave/forms.py:835,
-#                                        where a stray `def save` sits inside
-#                                        clean() and orphans its validation)
-#   B023  closure over loop var    9  -- late-binding; the closure sees the
-#                                        last value, not the one it was made
-#                                        with
-#   F601  repeated dict key        7  -- one value silently wins
+#   F811  redefined-while-unused  49
+#   F601  repeated dict key        7
 #   F402  import shadowed by loop  5
-#   F821  undefined name           5  -- NameError at runtime
 #   E721  type comparison          4
 #   E101  mixed tabs and spaces    3
 #   B035  static key in dict comp  3
-#   B012  return inside finally    2  -- silences the exception
 #   B026  star-arg after keyword   2
-#   F823  referenced before assign 2
 #
 # Then, in rough order of value per effort:
 #   E722  bare except            148  -- swallows KeyboardInterrupt/SystemExit
