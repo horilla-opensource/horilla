@@ -1358,7 +1358,9 @@ def user_leave_cancel(request, id):
     GET :  it returns to the default my leave request view template.
 
     """
-    leave_request = LeaveRequest.objects.get(id=id)
+    leave_request = LeaveRequest.objects.filter(id=id).first()
+    if not leave_request:
+        return HttpResponse()
     employee_id = leave_request.employee_id
     if employee_id.employee_user_id.id == request.user.id:
         current_date = date.today()
@@ -1406,7 +1408,9 @@ def one_request_view(request, id):
     Returns:
     GET : return one leave request view template
     """
-    leave_request = LeaveRequest.objects.get(id=id)
+    leave_request = LeaveRequest.objects.filter(id=id).first()
+    if not leave_request:
+        return HttpResponse()
     context = {
         "leave_request": leave_request,
         "current_date": date.today(),
@@ -1810,7 +1814,9 @@ def available_leave_update(request, id):
     GET : return available leave update form template
     POST : return leave type assigned  view
     """
-    leave_assign = AvailableLeave.objects.get(id=id)
+    leave_assign = AvailableLeave.objects.filter(id=id).first()
+    if not leave_assign:
+        return HttpResponse()
     form = AvailableLeaveUpdateForm(instance=leave_assign)
     previous_data = request.GET.urlencode() or "field=leave_type_id"
     if request.method == "POST":
@@ -2845,7 +2851,9 @@ def user_request_one(request, id):
     Returns:
     GET : return one user leave request view template
     """
-    leave_request = LeaveRequest.objects.get(id=id)
+    leave_request = LeaveRequest.objects.filter(id=id).first()
+    if not leave_request:
+        return HttpResponse()
     try:
         requests_ids_json = request.GET.get("instances_ids")
         if requests_ids_json:
@@ -3533,10 +3541,13 @@ def leave_allocation_request_single_view(request, req_id):
     if request.GET.get("my_request") == "True":
         my_request = True
     requests_ids_json = request.GET.get("instances_ids")
+    previous_id = next_id = None
     if requests_ids_json:
         requests_ids = json.loads(requests_ids_json)
         previous_id, next_id = closest_numbers(requests_ids, req_id)
     leave_allocation_request = LeaveAllocationRequest.find(req_id)
+    if not leave_allocation_request:
+        return HttpResponse()
     context = {
         "leave_allocation_request": leave_allocation_request,
         "my_request": my_request,
@@ -4148,7 +4159,7 @@ def employee_available_leave_count(request):
         if request.GET.getlist("employee_id")
         else None
     )
-    referer = request.headers.get("Referer")
+    referer = request.headers.get("Referer") or ""
 
     if not employee_id and "user-request-view" in referer:
         employee_id = request.user.employee_get
@@ -4273,7 +4284,9 @@ def cut_available_leave(request, instance_id):
     This method is used to create the penalties
     """
     previous_data = request.GET.urlencode()
-    instance = LeaveRequest.objects.get(id=instance_id)
+    instance = LeaveRequest.objects.filter(id=instance_id).first()
+    if not instance:
+        return HttpResponse()
     form = PenaltyAccountForm(employee=instance.employee_id)
     available = AvailableLeave.objects.filter(employee_id=instance.employee_id)
     if request.method == "POST":
@@ -4436,6 +4449,8 @@ def view_leaverequest_comment(request, leave_id):
     This method is used to show Leave request comments
     """
     leave_request = LeaveRequest.find(leave_id)
+    if not leave_request:
+        return HttpResponse()
     if not (
         request.user.employee_get == leave_request.employee_id
         or request.user.has_perm("leave.view_leaverequestcomment")
@@ -4603,6 +4618,8 @@ def view_allocationrequest_comment(request, leave_id):
     This method is used to show Allocation request comments
     """
     leave_alloc_request = LeaveAllocationRequest.find(leave_id)
+    if not leave_alloc_request:
+        return HttpResponse()
     if not (
         request.user.employee_get == leave_alloc_request.employee_id
         or request.user.has_perm("leave.view_leaveallocationrequestcomment")
@@ -4649,6 +4666,8 @@ def delete_allocationrequest_comment(request, comment_id):
     """
     script = ""
     comment = LeaveallocationrequestComment.find(comment_id)
+    if not comment:
+        return HttpResponse(script)
     request_id = comment.request_id.id
     if (
         request.user.employee_get == comment.employee_id
@@ -4898,6 +4917,8 @@ def delete_leaverequest_comment(request, comment_id):
     """
     script = ""
     comment = LeaverequestComment.find(comment_id)
+    if not comment:
+        return HttpResponse(script)
     if (
         request.user.employee_get == comment.employee_id
         or request.user.has_perm("leave.delete_leaverequestcomment")
@@ -5029,6 +5050,8 @@ if apps.is_installed("attendance"):
             if not request.user.has_perm("leave.delete_leaverequestcomment"):
                 comment = comment.filter(employee_id__employee_user_id=request.user)
             redirect_url = "leave-request-view-comment"
+        if not comment.exists():
+            return HttpResponse()
         leave_id = comment.first().request_id.id
         comment.delete()
         messages.success(request, _("Comment deleted successfully!"))

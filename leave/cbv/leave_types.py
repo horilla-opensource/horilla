@@ -192,6 +192,8 @@ class LeaveTypeDetailView(HorillaDetailedView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         instance = self.instance
+        if not instance:
+            return context
         body = list(self.body)
 
         # Function to insert item after a specific key

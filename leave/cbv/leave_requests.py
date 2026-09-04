@@ -400,6 +400,8 @@ class LeaveRequestsDetailView(HorillaDetailedView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        if not self.instance:
+            return context
         body = list(self.body)
 
         if self.instance.multiple_approvals:
@@ -628,10 +630,17 @@ class LeaveClashListView(LeaveRequestsListView):
     list view of leave clash col
     """
 
+    def dispatch(self, request, *args, **kwargs):
+        if not LeaveRequest.objects.filter(id=kwargs.get("pk")).exists():
+            return HttpResponse()
+        return super().dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
         queryset = HorillaListView.get_queryset(self)
         pk = self.kwargs.get("pk")
-        record = LeaveRequest.objects.get(id=pk)
+        record = LeaveRequest.objects.filter(id=pk).first()
+        if not record:
+            return queryset.none()
         if record.status != "rejected" or record.status != "cancelled":
             queryset = (
                 queryset.filter(
