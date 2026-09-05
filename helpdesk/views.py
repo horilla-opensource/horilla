@@ -1188,7 +1188,11 @@ def remove_tag(request):
         # message = messages.success(request,_("Success"))
         message = _("success")
         type = "success"
-    except:
+    except (Ticket.DoesNotExist, Tags.DoesNotExist):
+        # An unknown ticket or tag id. Narrowed from a bare except, which
+        # also reported a genuine failure in tags.remove() as "Failed" with
+        # nothing logged.
+        logger.warning("tag removal failed: ticket_id=%r tag_id=%r", ticket_id, tag_id)
         message = messages.error(request, _("Failed"))
         type = "failed"
 
@@ -1881,7 +1885,8 @@ def ticket_type_delete(request, t_type_id):
                 return HttpResponse(
                     "<script>$('#reloadMessagesButton').click()</script>"
                 )
-        except:
+        except ProtectedError:
+            # Related tickets still reference this type.
             messages.error(request, _("Ticket type can not delete"))
             return HttpResponse("<script>$('.reload-record').click()</script>")
     return HttpResponse("<script>$('#reloadMessagesButton').click()</script>")

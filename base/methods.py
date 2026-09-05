@@ -825,8 +825,11 @@ def closest_numbers(numbers: list, input_number: int) -> tuple:
             next_number = numbers[index + 1]
         else:
             next_number = numbers[0]
-    except:
-        pass
+    except (ValueError, TypeError):
+        # A non-numeric id in the list, or input_number not present in it.
+        # Both mean there is no previous/next to report, which the None
+        # defaults already express.
+        logger.debug("neighbour lookup skipped for %r", input_number, exc_info=True)
     return (previous_number, next_number)
 
 

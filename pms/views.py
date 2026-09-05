@@ -2297,7 +2297,18 @@ def get_collegues(request):
         context = {"employees": employees}
         employee_html = render_to_string("employee/employees_select.html", context)
         return HttpResponse(employee_html)
-    except:
+    except (ValueError, TypeError, Employee.DoesNotExist):
+        # A non-numeric or unknown employee_id in the query string. Rendering
+        # an empty list is the right response to that, but it was previously
+        # a bare except covering all forty lines above -- so any genuine
+        # error in the colleague/manager/subordinate branches produced the
+        # same empty list with nothing logged, and looked to the user like an
+        # employee with no colleagues.
+        logger.warning(
+            "employee select: no employees for employee_id=%r data=%r",
+            request.GET.get("employee_id"),
+            request.GET.get("data"),
+        )
         context = {"employees": []}
         employee_html = render_to_string("employee/employees_select.html", context)
         return HttpResponse(employee_html)

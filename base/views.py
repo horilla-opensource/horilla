@@ -5903,7 +5903,14 @@ def mark_as_read_notification_json(request):
         notification = Notification.objects.get(id=notification_id)
         notification.mark_as_read()
         return JsonResponse({"success": True})
-    except:
+    except (KeyError, ValueError, TypeError, Notification.DoesNotExist):
+        # Missing or non-numeric notification_id, or no such notification.
+        # Narrowed from a bare except so a genuine failure in mark_as_read
+        # is no longer reported to the client as "Invalid request".
+        logger.warning(
+            "mark_as_read failed for notification_id=%r",
+            request.POST.get("notification_id"),
+        )
         return JsonResponse({"success": False, "error": "Invalid request"})
 
 
