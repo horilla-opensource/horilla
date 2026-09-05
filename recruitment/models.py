@@ -112,6 +112,9 @@ class SurveyTemplate(HorillaModel):
 class Skill(HorillaModel):
     title = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.title
+
     def save(self, *args, **kwargs):
         title = self.title
         self.title = title.capitalize()

@@ -296,6 +296,11 @@ class LeaveRequestsNavView(HorillaNavView):
     filter_body_template = "cbv/leave_requests/filter.html"
     filter_form_context_name = "form"
     search_swap_target = "#listContainer"
+    # Modern slide-over filter panel (horilla_nav.html's .oh-filter-modern
+    # styles) -- same treatment as every other panel this session.
+    # LeaveRequestFilter.ajax_fields carries the AJAX-loaded comboboxes
+    # this needs.
+    modern_filter = True
 
     group_by_fields = [
         ("employee_id", _("Employee")),

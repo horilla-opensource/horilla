@@ -579,6 +579,9 @@ class TimeSheet(HorillaModel):
     description = models.TextField(blank=True, null=True, verbose_name=_("Description"))
     objects = HorillaCompanyManager("project_id__company_id")
 
+    class Meta:
+        ordering = ("-id",)
+
     def clean(self):
         if self.project_id is None:
             raise ValidationError({"project_id": "Project name is Required."})
@@ -672,10 +675,5 @@ class TimeSheet(HorillaModel):
         return url
 
     class Meta:
-        # ordering was previously declared in a second Meta earlier in this
-        # class, which Python discarded in favour of this one, so timesheets
-        # came back unordered. Merged here; matches Project and Task, whose
-        # ordering is recorded in project/migrations/0002.
-        ordering = ("-id",)
         verbose_name = _("Timesheet")
         verbose_name_plural = _("Timesheets")

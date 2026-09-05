@@ -172,6 +172,11 @@ class RecruitmentNav(HorillaNavView):
     filter_form_context_name = "form"
     search_swap_target = "#listContainer"
     filter_body_template = "cbv/recruitment/filters.html"
+    # Modern slide-over filter panel (generic/horilla_nav.html's own
+    # {% if modern_filter %} branch) -- same treatment as every other
+    # panel this session. RecruitmentFilter.ajax_fields (Managers,
+    # Company) already exists from the Pipeline panel work.
+    modern_filter = True
 
     # Mirrors RecruitmentList.nested_group_by_fields
     nested_group_by_fields = [

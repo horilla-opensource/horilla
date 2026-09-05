@@ -280,6 +280,22 @@ def get_action_type_delete(action_id):
     return action.action_type
 
 
+def get_action_type(action_id):
+    """
+    This function is used to get the action type by the selection of title in the form.
+    """
+    action = Actiontype.objects.get(title=action_id["action"])
+    return action.action_type
+
+
+def get_action_type_delete(action_id):
+    """
+    This function is used to get the action type by the selection of title in the form.
+    """
+    action = Actiontype.objects.get(title=action_id)
+    return action.action_type
+
+
 @login_required
 @hx_request_required
 @permission_required("employee.add_disciplinaryaction")

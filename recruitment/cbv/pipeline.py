@@ -733,6 +733,12 @@ class PipelineNav(HorillaNavView):
     filter_instance = filters.RecruitmentFilter()
     filter_form_context_name = "form"
     apply_first_filter = False
+    # Modern slide-over filter panel (generic/horilla_nav.html's own
+    # {% if modern_filter %} branch) -- same treatment as every other
+    # panel this session. The three underlying filters
+    # (RecruitmentFilter/StageFilter/CandidateFilter) each carry their own
+    # ajax_fields for the FK/M2M pickers this combined panel renders.
+    modern_filter = True
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
