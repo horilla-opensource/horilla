@@ -120,6 +120,20 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    # Only ACCESS_TOKEN_LIFETIME was set, so this inherited SimpleJWT's
+    # default of one day by accident rather than by choice. Nothing can
+    # present a refresh token today -- the login endpoint returns only the
+    # access token and there is no refresh route -- so this bounds a token
+    # that is created and discarded. Stated explicitly so that adding a
+    # refresh flow later is a deliberate decision about its lifetime.
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    # Embeds a hash of the user's password in each token and rejects the
+    # token once the stored hash no longer matches, so changing or resetting
+    # a password revokes every token issued before it. Without this an
+    # access token stays valid for its full hour after a password reset,
+    # which is the one window a compromised account cannot be closed --
+    # there is no blacklist for access tokens, and no logout endpoint.
+    "CHECK_REVOKE_TOKEN": True,
 }
 
 SWAGGER_SETTINGS = {

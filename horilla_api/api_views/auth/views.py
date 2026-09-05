@@ -1,5 +1,6 @@
 from axes.handlers.proxy import AxesProxyHandler
 from django.contrib.auth import authenticate
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 from drf_yasg import openapi
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -71,21 +72,26 @@ class LoginAPIView(APIView):
                 face_detection_image = None
                 geo_fencing = False
                 company_id = None
-                try:
-                    face_detection = employee.get_company().face_detection.start
-                except:
-                    pass
-                try:
-                    geo_fencing = employee.get_company().geo_fencing.start
-                except:
-                    pass
+                # Each of these is optional configuration: get_company() can
+                # return None, the face_detection and geo_fencing reverse
+                # one-to-ones need not exist, and an ImageField with no file
+                # raises on .url. Narrowed from bare excepts so a genuine
+                # failure in this block is logged instead of silently
+                # degrading the login response.
+                company = employee.get_company()
+                if company is not None:
+                    company_id = company.id
+                    try:
+                        face_detection = company.face_detection.start
+                    except (ObjectDoesNotExist, AttributeError):
+                        pass
+                    try:
+                        geo_fencing = company.geo_fencing.start
+                    except (ObjectDoesNotExist, AttributeError):
+                        pass
                 try:
                     face_detection_image = employee.face_detection.image.url
-                except:
-                    pass
-                try:
-                    company_id = employee.get_company().id
-                except:
+                except (ObjectDoesNotExist, AttributeError, ValueError):
                     pass
                 result = {
                     "employee": GetEmployeeSerializer(employee).data,
