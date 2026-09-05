@@ -14,6 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+import logging
+
 from django.conf import settings as django_settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -27,6 +29,8 @@ from django.views.i18n import JavaScriptCatalog
 import notifications.urls
 
 from . import settings
+
+logger = logging.getLogger(__name__)
 
 
 def health_check(request):
@@ -61,9 +65,10 @@ def readiness_check(request):
     try:
         connection.ensure_connection()
         checks["database"] = "ok"
-    except Exception as exc:
+    except Exception:
+        logger.exception("readiness probe: database unavailable")
         return JsonResponse(
-            {"status": "unavailable", "database": str(exc)},
+            {"status": "unavailable", "database": "error"},
             status=503,
         )
 

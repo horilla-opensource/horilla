@@ -286,6 +286,8 @@ def self_info_update(request):
     )
 
 
+@login_required
+@permission_required("accessibility.change_defaultaccessibility")
 def profile_edit_access(request, emp_id):
     feature = request.GET.get("feature", None)
     accessibility = DefaultAccessibility.objects.filter(feature=feature).first()
@@ -392,6 +394,7 @@ def employee_view_individual(request, obj_id, **kwargs):
 
 @login_required
 @hx_request_required
+@owner_can_enter("employee.view_employee", Employee)
 def about_tab(request, pk, **kwargs):
     """
     This method is used to view profile of an employee.
@@ -421,6 +424,7 @@ def about_tab(request, pk, **kwargs):
 
 @login_required
 @hx_request_required
+@owner_can_enter("employee.view_employee", Employee)
 def allowances_deductions_tab(request, pk):
     """
     Retrieve and render the allowances and deductions applicable to an employee.

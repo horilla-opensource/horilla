@@ -203,6 +203,7 @@ def create_announcement(request):
 
 @login_required
 @hx_request_required
+@permission_required("base.delete_announcement")
 def delete_announcement(request, anoun_id):
     """
     This method is used to delete announcements.
@@ -320,6 +321,7 @@ def update_announcement(request, anoun_id):
 
 @login_required
 @hx_request_required
+@permission_required("base.change_announcement")
 def remove_announcement_file(request, obj_id, attachment_id):
     announcement = get_object_or_404(Announcement, id=obj_id)
     attachment = get_object_or_404(Attachment, id=attachment_id)

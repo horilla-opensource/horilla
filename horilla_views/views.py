@@ -776,6 +776,22 @@ def reshape_text(text):
         return text
 
 
+# Attribute names a client-supplied export column path may never traverse.
+_EXPORT_FORBIDDEN_PARTS = frozenset(
+    {
+        "password",
+        "employee_user_id",
+        "user",
+        "session",
+        "token",
+        "secret",
+        "api_key",
+        "api_secret",
+        "otp",
+    }
+)
+
+
 @func_login_required
 def export_data(request, *args, **kwargs):
 
@@ -901,6 +917,12 @@ def export_data(request, *args, **kwargs):
             value = obj
             for part in attr.split("__"):
                 if value is None:
+                    break
+                # The path is client-supplied. Refuse private attributes and
+                # the handful of names that would turn a quick export into a
+                # credential dump (employee_user_id__password, tokens, OTPs).
+                if part.startswith("_") or part in _EXPORT_FORBIDDEN_PARTS:
+                    value = None
                     break
                 value = getattr(value, part, None)
                 if callable(value):

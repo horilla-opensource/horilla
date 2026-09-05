@@ -28,7 +28,6 @@ import pymupdf  # type: ignore
 import spacy
 from dateutil import parser as dateutil_parser
 from django import template
-from django.conf import settings
 from django.contrib import messages
 from django.core import serializers
 from django.core.cache import cache as CACHE
@@ -49,10 +48,12 @@ from base.context_processors import check_candidate_self_tracking
 from base.countries import country_arr, s_a, states
 from base.forms import MailTemplateForm
 from base.methods import (
+    build_safe_template_request,
     eval_validate,
     export_data,
     generate_pdf,
     get_key_instances,
+    sanitize_mail_template_body,
     sortby,
 )
 from base.models import EmailLog, HorillaMailTemplate, JobPosition, clear_messages
@@ -2546,12 +2547,12 @@ def send_acknowledgement(request):
         )
         for html in bodys:
             # due to not having solid template we first need to pass the context
-            template_bdy = template.Template(html)
+            template_bdy = template.Template(sanitize_mail_template_body(html))
             context = template.Context(
                 {
                     "instance": candidate,
                     "self": request.user.employee_get,
-                    "request": request,
+                    "request": build_safe_template_request(request),
                 }
             )
             render_bdy = template_bdy.render(context)
@@ -2563,12 +2564,12 @@ def send_acknowledgement(request):
                 )
             )
 
-        template_bdy = template.Template(bdy)
+        template_bdy = template.Template(sanitize_mail_template_body(bdy))
         context = template.Context(
             {
                 "instance": candidate,
                 "self": request.user.employee_get,
-                "request": request,
+                "request": build_safe_template_request(request),
             }
         )
         render_bdy = template_bdy.render(context)
@@ -2999,36 +3000,6 @@ def skill_zone_cand_edit(request, sz_cand_id):
     return render(request, template, {"form": form, "sz_cand_id": sz_cand_id})
 
 
-@login_required
-@manager_can_enter(perm="recruitment.delete_skillzonecandidate")
-def skill_zone_cand_delete(request, sz_cand_id):
-    """
-    function used to delete Talent pool candidate.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-    sz_cand_id : Talent pool candidate id
-
-    Returns:
-    GET : return Talent pool view template
-    """
-
-    try:
-        SkillZoneCandidate.objects.get(id=sz_cand_id).delete()
-        messages.success(request, _("Talent pool deleted successfully."))
-    except SkillZoneCandidate.DoesNotExist:
-        messages.error(request, _("Talent pool not found."))
-    except ProtectedError:
-        messages.error(request, _("Related entries exists"))
-    if request.META.get("HTTP_HX_REQUEST") == "true":
-        response = HttpResponse(status=204)
-        response["HX-Trigger"] = "skillZoneContainerReload"
-        return response
-    return redirect(skill_zone_view)
-
-
-@login_required
-@hx_request_required
 @manager_can_enter(perm="recruitment.view_skillzonecandidate")
 def skill_zone_cand_filter(request):
     """

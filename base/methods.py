@@ -142,7 +142,21 @@ CHART_CONFIG = {
 
 # Tokens that must never resolve in a user-supplied mail-template body —
 # they would leak password hashes, session metadata, or full request state.
-_FORBIDDEN_TEMPLATE_ATTRS = ("password", "username", "META", "session", "_state")
+_FORBIDDEN_TEMPLATE_ATTRS = (
+    "password",
+    "username",
+    "META",
+    "COOKIES",
+    "session",
+    "_state",
+    "is_superuser",
+    "is_staff",
+    "user_permissions",
+    "groups",
+    "token",
+    "secret",
+    "api_key",
+)
 _FORBIDDEN_TEMPLATE_TAGS = ("debug", "load")
 
 
@@ -855,7 +869,7 @@ def format_export_value(value, employee):
             if format_name == time_format:
                 value = check_in_time.strftime(format_string)
 
-    elif type(value) == date:
+    elif type(value) is date:
         # Convert the string to a datetime.date object
         start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
         # Print the formatted date for each format
@@ -947,7 +961,6 @@ def export_data(request, model, form_class, filter_class, file_name, perm=None):
         "semi_monthly": _("Semi-Monthly"),
         "hourly": _("Hourly"),
         "daily": _("Daily"),
-        "monthly": _("Monthly"),
         "full_day": _("Full Day"),
         "first_half": _("First Half"),
         "second_half": _("Second Half"),

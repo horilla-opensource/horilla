@@ -63,7 +63,7 @@ class LoginAPIView(APIView):
         tags=["auth"],
     )
     def post(self, request):
-        if "username" and "password" in request.data.keys():
+        if "username" in request.data and "password" in request.data:
             username = request.data.get("username")
             password = request.data.get("password")
             # Pass `request`: django-axes needs it to attribute the attempt to
@@ -127,7 +127,9 @@ class LoginAPIView(APIView):
                     )
                 return Response({"error": _("Invalid credentials")}, status=401)
         else:
-            return Response({"error": _("Please provide Username and Password")})
+            return Response(
+                {"error": _("Please provide Username and Password")}, status=400
+            )
 
 
 class PasswordResetAPIView(APIView):
@@ -139,6 +141,7 @@ class PasswordResetAPIView(APIView):
     """
 
     permission_classes = [IsAuthenticated]
+    throttle_scope = "login"
 
     def get(self, _request):
         return Response(

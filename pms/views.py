@@ -38,6 +38,7 @@ from base.methods import (
 from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import (
+    check_manager,
     hx_request_required,
     login_required,
     manager_can_enter,
@@ -959,6 +960,7 @@ def kr_table_view(request, emp_objective_id):
 
 @login_required
 @hx_request_required
+@owner_can_enter("pms.change_employeeobjective", EmployeeObjective)
 def objective_detailed_view_objective_status(request, id):
     """
     This view is used to  update status of objective in objective detailed view,
@@ -983,6 +985,7 @@ def objective_detailed_view_objective_status(request, id):
 
 @login_required
 @hx_request_required
+@owner_can_enter("pms.change_employeekeyresult", EmployeeObjective)
 def objective_detailed_view_key_result_status(request, obj_id, kr_id):
     """
     This view is used to  update status of key result in objective detailed view,
@@ -1026,6 +1029,14 @@ def objective_detailed_view_current_value(request, kr_id):
     if request.method == "POST":
         current_value = request.POST.get("current_value")
         employee_key_result = EmployeeKeyResult.objects.get(id=kr_id)
+        objective = employee_key_result.employee_objective_id
+        employee = request.user.employee_get
+        if not (
+            request.user.has_perm("pms.change_employeekeyresult")
+            or objective.employee_id == employee
+            or check_manager(employee, objective.employee_id)
+        ):
+            return render(request, "no_perm.html")
         target_value = employee_key_result.target_value
         objective_id = employee_key_result.employee_objective_id.id
         if int(current_value) < target_value:
@@ -1061,6 +1072,7 @@ def objective_detailed_view_current_value(request, kr_id):
 
 
 @login_required
+@owner_can_enter("pms.change_employeeobjective", EmployeeObjective)
 def objective_archive(request, id):
     """
     this function is used to archive the objective

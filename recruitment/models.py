@@ -112,9 +112,6 @@ class SurveyTemplate(HorillaModel):
 class Skill(HorillaModel):
     title = models.CharField(max_length=100)
 
-    def __str__(self):
-        return self.title
-
     def save(self, *args, **kwargs):
         title = self.title
         self.title = title.capitalize()
@@ -2087,7 +2084,7 @@ class LinkedInAccount(HorillaModel):
         url = "https://api.linkedin.com/v2/userinfo"
         headers = {"Authorization": f"Bearer {self.api_token}"}
 
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=30)
 
         if response.status_code == 200:
             data = response.json()

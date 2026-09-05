@@ -632,10 +632,13 @@ AXES_ENABLE_ADMIN = True
 # deployment actually sets a proxy count, otherwise a client can spoof the
 # header and dodge the IP half of the lock.
 AXES_IPWARE_PROXY_COUNT = env.int("AXES_PROXY_COUNT", default=None)
-AXES_IPWARE_META_PRECEDENCE_ORDER = [
-    "HTTP_X_FORWARDED_FOR",
-    "REMOTE_ADDR",
-]
+# With no proxy count declared, ipware takes the first X-Forwarded-For value
+# as-is, so a client could send a fresh header per attempt and the IP half of
+# the lock never matches. Read the header only when AXES_PROXY_COUNT is set;
+# the shipped compose sets it to 1 for its nginx.
+AXES_IPWARE_META_PRECEDENCE_ORDER = (
+    ["HTTP_X_FORWARDED_FOR"] if AXES_IPWARE_PROXY_COUNT else []
+) + ["REMOTE_ADDR"]
 
 
 # ========================================
@@ -654,8 +657,17 @@ IS_PRODUCTION = is_production_mode(DEBUG, HORILLA_ENV)
 if IS_PRODUCTION:
     validate_production_secrets(SECRET_KEY, ALLOWED_HOSTS, DB_INIT_PASSWORD)
 
-if not DEBUG:
+if IS_PRODUCTION:
+    # Same switch as the secrets gate above: HORILLA_ENV=production must not
+    # pass secret validation and then ship insecure cookies because DEBUG was
+    # left on.
     globals().update(apply_secure_defaults(env, DEBUG))
+
+# Idle-session timeout. Django's default is a fixed two weeks from login;
+# saving the session on every request turns SESSION_COOKIE_AGE into an
+# inactivity window instead, which is what access-control audits ask for.
+SESSION_COOKIE_AGE = env.int("SESSION_COOKIE_AGE", default=12 * 60 * 60)
+SESSION_SAVE_EVERY_REQUEST = True
 
 # Rate limiting is production protection, not behaviour the rest of the suite
 # should have to work around. Throttle counters live in the cache keyed by

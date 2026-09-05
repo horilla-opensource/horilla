@@ -5,6 +5,7 @@ This module is used to map url pattens with django views or methods
 """
 
 import csv
+import hmac
 import json
 import logging
 import mimetypes
@@ -597,8 +598,10 @@ def initialize_database_company(request):
                 employee = request.user.employee_get
                 employee.employee_work_info.company_id = company
                 employee.employee_work_info.save()
-            except:
-                pass
+            except Exception:
+                logger.exception(
+                    "initialize database: could not attach creator to company"
+                )
             return render(
                 request,
                 "initialize_database/horilla_department.html",
@@ -1040,14 +1043,16 @@ def two_factor_auth(request):
     # request.session["otp_code"] = None
     try:
         otp = get_otp(request)
-    except:
+    except Exception:
+        logger.exception("two_factor_auth: could not read OTP from session")
         otp = None
 
     if request.method == "POST":
-        user_otp = request.POST.get("otp")
-        if user_otp == otp:
+        user_otp = request.POST.get("otp") or ""
+        if otp is not None and hmac.compare_digest(str(user_otp), str(otp)):
             request.session["otp_code"] = None
             request.session["otp_code_timestamp"] = None
+            request.session["otp_attempts"] = 0
             request.session["otp_code_verified"] = True
             request.session.save()
             messages.success(request, _("OTP verified successfully."))
@@ -1056,7 +1061,20 @@ def two_factor_auth(request):
             messages.error(request, _("OTP expired. Please request a new one."))
             return render(request, "base/auth/two_factor_auth.html")
         else:
-            messages.error(request, _("Invalid OTP."))
+            # A six-digit code with a ten-minute life is guessable at network
+            # speed; a handful of misses burns the code and forces a resend.
+            attempts = request.session.get("otp_attempts", 0) + 1
+            request.session["otp_attempts"] = attempts
+            if attempts >= 5:
+                request.session["otp_code"] = None
+                request.session["otp_code_timestamp"] = None
+                request.session["otp_attempts"] = 0
+                request.session.save()
+                messages.error(
+                    request, _("Too many incorrect attempts. Request a new OTP.")
+                )
+            else:
+                messages.error(request, _("Invalid OTP."))
             return render(request, "base/auth/two_factor_auth.html")
 
     if not settings.TWO_FACTORS_AUTHENTICATION:
@@ -5888,7 +5906,9 @@ def mark_as_read_notification(request, notification_id):
         return HorillaRedirect(
             request, message=_("No notification found matching the query.")
         )
-    notification = Notification.objects.get(id=notification_id)
+    notification = get_object_or_404(
+        Notification, id=notification_id, recipient=request.user
+    )
     notification.mark_as_read()
     if not request.user.notifications.unread():
         script = """<span hx-get='/notifications' hx-target='#notificationContainer' hx-trigger='load'></span>"""
@@ -5900,7 +5920,9 @@ def mark_as_read_notification_json(request):
     try:
         notification_id = request.POST["notification_id"]
         notification_id = int(notification_id)
-        notification = Notification.objects.get(id=notification_id)
+        notification = Notification.objects.get(
+            id=notification_id, recipient=request.user
+        )
         notification.mark_as_read()
         return JsonResponse({"success": True})
     except (KeyError, ValueError, TypeError, Notification.DoesNotExist):
@@ -6244,7 +6266,7 @@ def save_date_format(request):
                 return JsonResponse({"success": True})
 
     # Return a JSON response for unsupported methods
-    return JsonResponse({"error": False, "error": "Unsupported method"}, status=405)
+    return JsonResponse({"error": "Unsupported method"}, status=405)
 
 
 @login_required
@@ -6338,7 +6360,7 @@ def save_time_format(request):
                 return JsonResponse({"success": True})
 
     # Return a JSON response for unsupported methods
-    return JsonResponse({"error": False, "error": "Unsupported method"}, status=405)
+    return JsonResponse({"error": "Unsupported method"}, status=405)
 
 
 @login_required
@@ -8733,6 +8755,13 @@ def protected_media(request, path):
         raise Http404("Invalid file path")
 
     if not os.path.exists(media_path) or not os.path.isfile(media_path):
+        raise Http404("File not found")
+
+    # Uploads never produce dot-files or dot-directories, but the Docker
+    # entrypoint persists the generated SECRET_KEY at media/.generated_secret_key
+    # so it survives restarts. Serving it would let any logged-in user forge
+    # sessions and JWTs, so refuse every hidden path outright.
+    if any(part.startswith(".") for part in path.split("/")):
         raise Http404("File not found")
 
     is_public_asset = any(path.startswith(prefix) for prefix in public_media_prefixes)

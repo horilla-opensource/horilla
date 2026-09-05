@@ -320,9 +320,10 @@ class ReimbursementView(APIView):
         return pagination.get_paginated_response(serializer.data)
 
     def post(self, request):
-        serializer = self.serializer_class(
-            data=request.data, context={"request": request}
-        )
+        data = request.data.copy()
+        if not request.user.has_perm("payroll.add_reimbursement"):
+            data["employee_id"] = request.user.employee_get.id
+        serializer = self.serializer_class(data=data, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -347,6 +348,7 @@ class ReimbursementView(APIView):
 class ReimbusementApproveRejectView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @method_decorator(permission_required("payroll.change_reimbursement"))
     def post(self, request, pk):
         status = request.data.get("status", None)
         amount = request.data.get("amount", None)
@@ -364,7 +366,9 @@ class ReimbusementApproveRejectView(APIView):
 
 
 class TaxBracketView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    @method_decorator(permission_required("payroll.view_taxbracket"))
     def get(self, request, pk=None):
         if pk:
             tax_bracket = TaxBracket.find(pk)
@@ -374,6 +378,7 @@ class TaxBracketView(APIView):
         serializer = TaxBracketSerializer(instance=tax_brackets, many=True)
         return Response(serializer.data, status=200)
 
+    @method_decorator(permission_required("payroll.add_taxbracket"))
     def post(self, request):
         serializer = TaxBracketSerializer(data=request.data)
         if serializer.is_valid():
@@ -381,6 +386,7 @@ class TaxBracketView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
+    @method_decorator(permission_required("payroll.change_taxbracket"))
     def put(self, request, pk):
         tax_bracket = TaxBracket.objects.get(id=pk)
         serializer = TaxBracketSerializer(
@@ -391,6 +397,7 @@ class TaxBracketView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
+    @method_decorator(permission_required("payroll.delete_taxbracket"))
     def delete(self, request, pk):
         tax_bracket = TaxBracket.objects.get(id=pk)
         tax_bracket.delete()
@@ -408,12 +415,12 @@ from rest_framework.authentication import SessionAuthentication
 
 # DRF / Simple JWT imports
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.authentication import JWTAuthentication
+
+from horilla_api.authentication import TenantScopedJWTAuthentication
 
 # Your models / helpers
-from payroll.models.models import Company, EmployeeWorkInformation, Payslip
+from payroll.models.models import Company, EmployeeWorkInformation
 from payroll.models.tax_models import PayrollSettings
 from payroll.views.component_views import filter_payslip
 from payroll.views.views import equalize_lists_length
@@ -434,7 +441,7 @@ class PayslipPDFAPIView(APIView):
       - Also accepts session auth (browser) when available
     """
 
-    authentication_classes = (JWTAuthentication, SessionAuthentication)
+    authentication_classes = (TenantScopedJWTAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, id, format=None):
