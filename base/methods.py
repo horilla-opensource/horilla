@@ -921,9 +921,16 @@ def has_export_access(request, model):
 
     Superusers always have access to whitelisted models. When the
     "Default Export Access" setting is enabled for the requesting user's
-    current company (or not yet configured for that company), every user
-    of that company may export data. Otherwise access falls back to the
-    per-module ``export_<model>`` permission.
+    current company, every user of that company may export data.
+    Otherwise access falls back to the per-module ``export_<model>``
+    permission.
+
+    A missing row still reads as enabled, for backwards compatibility.
+    That fallback should now be unreachable: migration
+    ``base.0003_seed_default_export_permission`` seeds a row per company
+    and ``create_default_export_permission`` adds one for each new
+    company, so the setting is an explicit, visible value rather than
+    permissive-by-absence.
     """
     if model._meta.app_label not in _EXPORTABLE_APP_LABELS:
         return False

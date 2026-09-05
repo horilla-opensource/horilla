@@ -1,7 +1,9 @@
 import json
 
+import bleach
 from django import template
 from django.core.paginator import Page, Paginator
+from django.utils.safestring import mark_safe
 
 from base.methods import get_pagination
 from base.models import MultipleApprovalManagers
@@ -9,6 +11,77 @@ from employee.models import Employee, EmployeeWorkInformation
 from horilla.menu.settings_menu import get_settings_menu
 
 register = template.Library()
+
+# Tags and attributes the rich-text editors in this app legitimately produce.
+# Deliberately excludes script/style/iframe/object/embed and every event
+# handler, so stored markup cannot execute.
+_ALLOWED_HTML_TAGS = {
+    "a",
+    "b",
+    "blockquote",
+    "br",
+    "code",
+    "div",
+    "em",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "hr",
+    "i",
+    "li",
+    "ol",
+    "p",
+    "pre",
+    "s",
+    "span",
+    "strong",
+    "sub",
+    "sup",
+    "table",
+    "tbody",
+    "td",
+    "tfoot",
+    "th",
+    "thead",
+    "tr",
+    "u",
+    "ul",
+}
+_ALLOWED_HTML_ATTRS = {
+    "a": ["href", "title", "target", "rel"],
+    "td": ["colspan", "rowspan"],
+    "th": ["colspan", "rowspan"],
+    "*": ["class"],
+}
+
+
+@register.filter(name="sanitize_html")
+def sanitize_html(value):
+    """
+    Render user-authored rich text without trusting it.
+
+    These fields (ticket descriptions and comments, recruitment
+    descriptions, policy bodies, OKR comments) were previously rendered
+    with ``|safe``. The only thing standing between a user and stored XSS
+    was the ``has_xss`` regex applied at write time, which is a blocklist
+    and not a parser -- anything it fails to match became executable HTML
+    in every viewer's session. This strips to an allow-list instead, so a
+    gap in that regex is no longer exploitable.
+    """
+    if not value:
+        return ""
+    return mark_safe(
+        bleach.clean(
+            str(value),
+            tags=_ALLOWED_HTML_TAGS,
+            attributes=_ALLOWED_HTML_ATTRS,
+            protocols=["http", "https", "mailto"],
+            strip=True,
+        )
+    )
 
 
 @register.filter
