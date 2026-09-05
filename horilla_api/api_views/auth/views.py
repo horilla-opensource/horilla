@@ -19,6 +19,12 @@ from ...api_serializers.auth.serializers import (
 
 class LoginAPIView(APIView):
     permission_classes = [AllowAny]
+    # The only unauthenticated write path in the API. django-axes locks an
+    # account after repeated *failed* passwords, but counts nothing when the
+    # credentials are valid -- so a leaked password can be replayed to mint
+    # tokens as fast as the server answers. ScopedRateThrottle bounds that
+    # by IP, on top of the axes lockout.
+    throttle_scope = "login"
 
     @document_api(
         operation_description="Authenticate user and return JWT access token with employee info",

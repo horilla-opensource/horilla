@@ -3,6 +3,7 @@ base.py — Main Django settings for Horilla
 """
 
 import os
+import sys
 from datetime import timedelta
 from os.path import join
 from pathlib import Path
@@ -116,6 +117,30 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
     "PAGE_SIZE": 20,
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+        "rest_framework.throttling.ScopedRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        # django-axes already locks an account after AXES_FAILURE_LIMIT bad
+        # passwords, but it counts failures only: a caller can hammer the
+        # login endpoint with valid credentials, or any authenticated
+        # endpoint at any rate, without tripping it. These bound that.
+        #
+        # Deliberately generous. The point is to stop enumeration and
+        # runaway clients, not to police normal use -- the HR UI itself is
+        # a heavy API consumer, and a limit that fires during ordinary work
+        # gets raised until it is meaningless.
+        "anon": env("THROTTLE_ANON", default="60/min"),
+        "user": env("THROTTLE_USER", default="600/min"),
+        # Login is the one unauthenticated write path. Tighter, because a
+        # successful-login flood is how you mint tokens in bulk.
+        "login": env("THROTTLE_LOGIN", default="12/min"),
+        # Export and import walk whole tables and build files; a handful a
+        # minute is well past what a person does.
+        "bulk": env("THROTTLE_BULK", default="6/min"),
+    },
 }
 
 SIMPLE_JWT = {
@@ -631,3 +656,20 @@ if IS_PRODUCTION:
 
 if not DEBUG:
     globals().update(apply_secure_defaults(env, DEBUG))
+
+# Rate limiting is production protection, not behaviour the rest of the suite
+# should have to work around. Throttle counters live in the cache keyed by
+# client IP, and the test client always presents the same one, so every login
+# the suite makes accumulates into a single bucket: with six API test modules
+# logging in, later tests fail with 429 for reasons unrelated to what they
+# assert.
+#
+# Disabling the rates here rather than clearing the cache per test keeps the
+# mechanism in one place. horilla_api/tests/test_throttling.py still proves
+# the throttles work, because it sets its own rate on
+# SimpleRateThrottle.THROTTLE_RATES -- the class attribute the throttle
+# actually reads -- rather than relying on these settings.
+if "test" in sys.argv:
+    REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
+        scope: None for scope in REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]
+    }
