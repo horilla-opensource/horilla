@@ -3854,7 +3854,13 @@ def view_bulk_resumes(request):
     rec_id = eval_validate(str(request.GET.get("rec_id")))
     if not rec_id:
         return HttpResponse()
-    resumes = Resume.objects.filter(recruitment_id=rec_id)
+    # Recruitment.objects is company-scoped; Resume is not (it has no
+    # company_id of its own), so resolving the recruitment first is what
+    # keeps another company's resumes out of this list.
+    recruitment = Recruitment.objects.filter(id=rec_id).first()
+    if not recruitment:
+        return HttpResponse()
+    resumes = Resume.objects.filter(recruitment_id=recruitment)
 
     return render(
         request, "pipeline/bulk_resume.html", {"resumes": resumes, "rec_id": rec_id}
@@ -3896,7 +3902,14 @@ def delete_resume_file(request):
     """
     ids = request.GET.getlist("ids")
     rec_id = request.GET.get("rec_id")
-    Resume.objects.filter(id__in=ids).delete()
+    # Scope the delete to a recruitment this user can actually reach.
+    # manager_can_enter admits any reporting manager, and Resume is not
+    # company-scoped, so an unscoped filter let a manager in one company
+    # delete another company's resumes by passing their ids.
+    recruitment = Recruitment.objects.filter(id=rec_id).first()
+    if not recruitment:
+        return HttpResponse(status=404)
+    Resume.objects.filter(id__in=ids, recruitment_id=recruitment).delete()
     CACHE.delete(f"matching_resumes_{rec_id}")
 
     url = reverse("view-bulk-resume")
@@ -4017,7 +4030,10 @@ def matching_resumes(request, rec_id):
         )
 
         ranked_resumes = non_candidate_resumes + candidate_resumes
-        CACHE.set(cache_key, ranked_resumes, timeout=None)
+        # A finite TTL, not timeout=None: the ranking is derived from resume
+        # files and the recruitment's skill list, both of which change without
+        # every edit path remembering to invalidate this key.
+        CACHE.set(cache_key, ranked_resumes, timeout=900)
 
     return render(
         request,

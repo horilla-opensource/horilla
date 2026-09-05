@@ -503,7 +503,17 @@ def application_form(request):
     recruitment = None
     recruitment_id = request.GET.get("recruitmentId")
     resume_id = request.GET.get("resumeId")
-    resume_obj = Resume.objects.filter(id=resume_id).first()
+    # Scoped to the recruitment being applied to. This page is public and
+    # unauthenticated, and the POST branch below reads this file and attaches
+    # it to the submitted application -- so an unscoped lookup let anyone
+    # harvest any CV in the database, in any company, by walking sequential
+    # ids. Resume has no company_id of its own, so the recruitment is what
+    # scopes it.
+    resume_obj = (
+        Resume.objects.filter(id=resume_id, recruitment_id=recruitment_id).first()
+        if resume_id and recruitment_id
+        else None
+    )
 
     if request.method == "GET" and not recruitment_id:
         messages.error(request, _("Recruitment ID is missing"))
