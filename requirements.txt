@@ -106,6 +106,12 @@ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0
 # 6.4.0 fixes two clean() XSS bypasses (GHSA-gj48-438w-jh9v via formaction,
 # GHSA-8rfp-98v4-mmr6 via href).
 bleach==6.4.0
+# bleach's CSS sanitizer (used by base.templatetags.basefilters.sanitize_html to
+# keep inline colour in rich text) imports tinycss2, which bleach does not
+# require -- it is the `bleach[css]` extra. It currently arrives only as a
+# transitive dependency of svglib, which is itself not pinned here, so without
+# this line the filter breaks at import on a clean install.
+tinycss2==1.5.1
 gunicorn==23.0.0
 packaging==26.3
 

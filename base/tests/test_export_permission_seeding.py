@@ -20,7 +20,9 @@ class ExportPermissionSeedingTests(TestCase):
         company = Company.objects.create(company="Seeded Co", hq=False)
         setting = DefaultExportPermission.objects.filter(company_id=company).first()
         self.assertIsNotNone(setting, "new company has no export-access row")
-        self.assertTrue(setting.is_enabled, "seeded row must preserve current behaviour")
+        self.assertTrue(
+            setting.is_enabled, "seeded row must preserve current behaviour"
+        )
 
     def test_seeding_does_not_overwrite_an_admin_choice(self):
         company = Company.objects.create(company="Opinionated Co", hq=False)

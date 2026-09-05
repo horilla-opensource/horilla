@@ -27,8 +27,12 @@ PAYLOAD = {
                         "metadata": {},
                         "contacts": [{"profile": {"name": "Mallory"}}],
                         "messages": [
-                            {"id": "wamid.1", "from": "919999999999",
-                             "type": "text", "text": {"body": "leave"}},
+                            {
+                                "id": "wamid.1",
+                                "from": "919999999999",
+                                "type": "text",
+                                "text": {"body": "leave"},
+                            },
                         ],
                     }
                 }
@@ -64,15 +68,18 @@ class WebhookSignatureTests(TestCase):
         )
 
     def _sign(self, body, secret=SECRET):
-        return "sha256=" + hmac.new(
-            secret.encode(), body.encode(), hashlib.sha256
-        ).hexdigest()
+        return (
+            "sha256="
+            + hmac.new(secret.encode(), body.encode(), hashlib.sha256).hexdigest()
+        )
 
     def test_unsigned_payload_rejected(self):
         self.assertEqual(self._post().status_code, 403)
 
     def test_wrong_signature_rejected(self):
-        self.assertEqual(self._post(self._sign(self.body, "wrong-secret")).status_code, 403)
+        self.assertEqual(
+            self._post(self._sign(self.body, "wrong-secret")).status_code, 403
+        )
 
     def test_tampered_body_rejected(self):
         """Signature valid for the original body must not validate a changed one."""
