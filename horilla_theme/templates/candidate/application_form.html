@@ -2,6 +2,7 @@
 {% block content %}
 {% load static %} {% load i18n horillafilters recruitmentfilters %}
 
+{% load basefilters %}
 {% get_company as theme_obj %}
 {% get_hq_company as hq_company %}
 <head>
@@ -226,7 +227,7 @@
                     {% else %}
                         <h4 class="font-bold text-base mb-3">{% trans "About the role" %}</h4>
                         {% if recruitment.description %}
-                            <div class="text-sm text-dark-200 leading-relaxed">{{ recruitment.description|safe }}</div>
+                            <div class="text-sm text-dark-200 leading-relaxed">{{ recruitment.description|sanitize_html }}</div>
                         {% else %}
                             <p class="text-sm text-dark-100 italic">{% trans "No description provided for this role." %}</p>
                         {% endif %}
