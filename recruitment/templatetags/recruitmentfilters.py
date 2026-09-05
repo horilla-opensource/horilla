@@ -12,7 +12,6 @@ import uuid
 
 from django import template
 from django.apps import apps
-from django.template.defaultfilters import register
 
 from horilla_auth.models import HorillaUser
 from recruitment.models import CandidateRating

@@ -2413,7 +2413,7 @@ class LoanAccount(HorillaModel):
 
         installment_date = installment_start_date
         installment_schedule = {}
-        for _ in range(total_installments):
+        for _unused in range(total_installments):
             installment_schedule[str(installment_date)] = installment_amount
             installment_date = get_next_month_same_date(installment_date)
 

@@ -203,7 +203,7 @@ class LeaveTypeDetailView(HorillaDetailedView):
 
         # Function to insert item after a specific key
         def insert_after(target_key, item):
-            for i, (_, key) in enumerate(body):
+            for i, (_label, key) in enumerate(body):
                 if key == target_key:
                     body.insert(i + 1, item)
                     break

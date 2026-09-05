@@ -58,14 +58,6 @@ def get_all_relation_paths(source_model, target_model, max_depth=5):
     return relation_paths
 
 
-def is_history_model(model):
-    return (
-        model._meta.model_name.endswith("_history")
-        or model._meta.app_label == "simple_history"
-        or model.__name__.lower().endswith("history")
-    )
-
-
 def get_simple_relation_paths(source_model, target_model, max_depth=5):
     results = []
     all_paths = set()

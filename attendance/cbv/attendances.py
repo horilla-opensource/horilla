@@ -2,7 +2,6 @@
 this page is handling the cbv methods of  attendances page
 """
 
-import datetime
 from datetime import datetime, timedelta
 from typing import Any
 

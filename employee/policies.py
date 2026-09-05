@@ -22,7 +22,6 @@ from base.methods import (
     get_key_instances,
     paginator_qry,
 )
-from base.views import paginator_qry
 from employee.filters import DisciplinaryActionFilter, PolicyFilter
 from employee.forms import DisciplinaryActionForm, PolicyForm
 from employee.models import (
@@ -262,22 +261,6 @@ def disciplinary_actions(request):
             "f": form,
         },
     )
-
-
-def get_action_type(action_id):
-    """
-    This function is used to get the action type by the selection of title in the form.
-    """
-    action = Actiontype.objects.get(title=action_id["action"])
-    return action.action_type
-
-
-def get_action_type_delete(action_id):
-    """
-    This function is used to get the action type by the selection of title in the form.
-    """
-    action = Actiontype.objects.get(title=action_id)
-    return action.action_type
 
 
 def get_action_type(action_id):

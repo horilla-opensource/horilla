@@ -560,7 +560,6 @@ def project_bulk_export(request):
         {
             "bg_color": "#ffd0cc",
             "bold": True,
-            "font_size": 14,
             "align": "center",
             "valign": "vcenter",
             "font_size": 20,

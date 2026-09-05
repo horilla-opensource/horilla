@@ -2,7 +2,6 @@ import json
 
 from django import template
 from django.core.paginator import Page, Paginator
-from django.template.defaultfilters import register
 
 from base.methods import get_pagination
 from base.models import MultipleApprovalManagers

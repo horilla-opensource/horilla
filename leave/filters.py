@@ -16,7 +16,7 @@ from django.db.models.functions import Coalesce, Concat, TruncYear
 from django.utils.timezone import now
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
-from django_filters import DateFilter, FilterSet, NumberFilter, filters
+from django_filters import DateFilter, NumberFilter, filters
 
 from base.models import (
     Company,

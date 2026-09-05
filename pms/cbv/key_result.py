@@ -209,9 +209,9 @@ class KeyResultCardView(HorillaCardView):
             "attrs": """
                     class="oh-dropdown__link"
                     hx-get='{get_update_url}?instance_ids={ordered_ids}'
-			        hx-target="#genericModalBody"
-			        data-toggle="oh-modal-toggle"
-			        data-target="#genericModal"
+                    hx-target="#genericModalBody"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
             """,
         },
         {

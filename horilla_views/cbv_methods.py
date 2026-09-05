@@ -556,21 +556,6 @@ def update_saved_filter_cache(request, cache):
     return cache
 
 
-def get_nested_field(model_class: models.Model, field_name: str) -> object:
-    """
-    Recursion function to execute nested field logic
-    """
-    if "__" in field_name:
-        splits = field_name.split("__", 1)
-        related_model_class = getmodelattribute(
-            model_class,
-            splits[0],
-        ).related.related_model
-        return get_nested_field(related_model_class, splits[1])
-    field = getattribute(model_class, field_name)
-    return field
-
-
 def get_field_class_map(model_class: models.Model, bulk_update_fields: list) -> dict:
     """
     Returns a dictionary mapping field names to their corresponding field classes
@@ -894,7 +879,7 @@ def generate_import_excel(
     ws.append(headers)
 
     # Apply styles to header row
-    for col_num, _ in enumerate(headers, 1):
+    for col_num, _unused in enumerate(headers, 1):
         cell = ws.cell(row=1, column=col_num)
         cell.font = bold_font
         cell.fill = header_fill

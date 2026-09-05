@@ -2873,4 +2873,4 @@ def dispatch_profile_tab(request, tab_key: str, pk: int, *args, **kwargs):
     view_func = HorillaProfileView._tab_view_registry.get(tab_key)
     if view_func is None:
         raise Http404(f"No profile tab registered for '{tab_key}'")
-    return view_func(request, pk=pk, *args, **kwargs)
+    return view_func(request, *args, pk=pk, **kwargs)
