@@ -992,7 +992,16 @@ def view_file(request, id):
     Returns: return view_file template
     """
 
-    document_obj = Document.objects.filter(id=id).first()
+    # Scoped to the owner unless the caller may view documents generally.
+    # @login_required alone meant any authenticated employee could read any
+    # colleague's uploads -- resumes, identity documents, certificates -- by
+    # incrementing the id. This is the employee-side twin of the candidate
+    # portal issue reported as GHSA-p745-9729-g8jw, and it mirrors the scoping
+    # document_delete above already applies.
+    document_qs = Document.objects.filter(id=id)
+    if not request.user.has_perm("horilla_documents.view_document"):
+        document_qs = document_qs.filter(employee_id__employee_user_id=request.user)
+    document_obj = document_qs.first()
     if document_obj is None:
         return HorillaRedirect(
             request, message=_("No Document found matching the query.")

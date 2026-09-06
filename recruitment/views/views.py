@@ -4237,6 +4237,32 @@ def document_delete(request, id):
         return HorillaRedirect(request)
 
 
+def candidate_documents_visible_to(request):
+    """CandidateDocument rows the current requester is allowed to touch.
+
+    `candidate_login_required` only asserts that *some* candidate is logged in
+    (`"candidate_id" in request.session`), so a view resolving a document by
+    client-supplied id alone serves any candidate's file to any other -- the
+    ids are sequential, so one self-registered account can harvest every
+    applicant's resume and identity documents. Reported as
+    GHSA-p745-9729-g8jw.
+
+    Recruiters keep full access through the model permission; a candidate is
+    scoped to their own session id. Mirrors the scoping employee/views.py
+    already applies to document_delete.
+    """
+    queryset = CandidateDocument.objects.all()
+    if request.user.is_authenticated and request.user.has_perm(
+        "recruitment.view_candidatedocument"
+    ):
+        return queryset
+
+    candidate_id = request.session.get("candidate_id")
+    if candidate_id is None:
+        return queryset.none()
+    return queryset.filter(candidate_id__id=candidate_id)
+
+
 @candidate_login_required
 @hx_request_required
 def file_upload(request, id):
@@ -4249,7 +4275,7 @@ def file_upload(request, id):
 
     Returns: return document_form template
     """
-    document_item = CandidateDocument.objects.filter(id=id).first()
+    document_item = candidate_documents_visible_to(request).filter(id=id).first()
     if not document_item:
         return HttpResponse()
     form = CandidateDocumentUpdateForm(instance=document_item)
@@ -4281,7 +4307,7 @@ def view_file(request, id):
 
     Returns: return view_file template
     """
-    document_obj = CandidateDocument.objects.filter(id=id).first()
+    document_obj = candidate_documents_visible_to(request).filter(id=id).first()
     if not document_obj:
         return HttpResponse()
     context = {
