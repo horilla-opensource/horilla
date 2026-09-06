@@ -107,8 +107,15 @@ jobs:
             VERSION=${{ steps.v.outputs.version }}
             VCS_REF=${{ github.sha }}
             BUILD_DATE=${{ steps.v.outputs.build_date }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # no-cache on purpose. A release build must install from
+          # requirements.txt as written, not from a layer another run
+          # populated: the 2.1.0 publish scanned an image whose entire venv
+          # layer was CACHED from before the msgpack/setuptools pins landed,
+          # so the scan correctly reported versions the current
+          # requirements.txt does not ask for. Reusing layers saves a few
+          # minutes once per release and can silently ship a different image
+          # than the one the tag describes.
+          no-cache: true
 
       - name: Smoke test — version, migrations, health, readiness
         run: |
@@ -202,14 +209,6 @@ jobs:
           severity: CRITICAL,HIGH
           exit-code: "1"
           ignore-unfixed: true
-          # The image is always built and scanned under the same fixed tag
-          # (horilla-hr:smoketest), so the action's result cache can serve a
-          # previous run's findings for a different image. That happened on
-          # the 2.1.0 release: the build log shows msgpack 1.2.2 and
-          # setuptools 84.0.0 installed, and the scan still reported the
-          # 1.1.2 / 70.3.0 versions from the run before the pins landed.
-          # Only the vulnerability DB is worth caching here, not the results.
-          cache: false
 
       # ---- Publish. Everything below is skipped on a dry run. ----
 
@@ -260,8 +259,9 @@ jobs:
             BUILD_DATE=${{ steps.v.outputs.build_date }}
           provenance: true
           sbom: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Same reasoning as the smoke build above: the published image must
+          # come from the requirements the tag actually carries.
+          no-cache: true
 
       - name: Verify published manifest
         if: steps.v.outputs.dry_run != 'true'
