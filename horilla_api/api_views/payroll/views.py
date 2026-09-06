@@ -350,19 +350,48 @@ class ReimbusementApproveRejectView(APIView):
 
     @method_decorator(permission_required("payroll.change_reimbursement"))
     def post(self, request, pk):
-        status = request.data.get("status", None)
-        amount = request.data.get("amount", None)
-        amount = (
-            eval_validate(request.data.get("amount"))
-            if request.data.get("amount")
-            else 0
-        )
-        amount = max(0, amount)
-        reimbursement = Reimbursement.objects.filter(id=pk)
-        if amount:
-            reimbursement.update(amount=amount)
-        reimbursement.update(status=status)
-        return Response({"status": reimbursement.first().status}, status=200)
+        reimbursement = Reimbursement.objects.filter(id=pk).first()
+        if reimbursement is None:
+            return Response({"error": "Not found"}, status=404)
+
+        # Validated against the model's own choices. The previous version wrote
+        # request.data["status"] through queryset.update(), which skips model
+        # validation entirely, so any string could be stored in the status
+        # column -- including one no view knows how to display. Read off the
+        # field rather than a constant so this cannot drift from the model.
+        status = request.data.get("status")
+        valid_statuses = dict(Reimbursement._meta.get_field("status").choices)
+        if status not in valid_statuses:
+            return Response(
+                {"error": f"status must be one of {sorted(valid_statuses)}"},
+                status=400,
+            )
+
+        # The claimed amount is NOT taken from the approval request for an
+        # ordinary reimbursement. It is set when the claim is filed and is what
+        # the approver is reviewing; letting the approve call rewrite it means
+        # an approved claim need not resemble the one submitted, and nothing
+        # records the original figure. Reported alongside GHSA-56x4-6268-vg4f,
+        # whose primary finding -- no permission check here at all -- was fixed
+        # separately.
+        #
+        # Encashments are the deliberate exception: their payout is computed at
+        # approval time rather than claimed up front. This mirrors
+        # payroll.views.component_views.approve_reimbursements, which applies
+        # the same rule to the web flow.
+        if reimbursement.type in ("leave_encashment", "bonus_encashment"):
+            raw_amount = request.data.get("amount")
+            if raw_amount:
+                try:
+                    reimbursement.amount = max(0, eval_validate(raw_amount))
+                except (ValueError, SyntaxError):
+                    return Response({"error": "amount must be a number"}, status=400)
+
+        reimbursement.status = status
+        # save(), not queryset.update(): update() bypasses model validation and
+        # the modified_by bookkeeping in HorillaModel.save().
+        reimbursement.save()
+        return Response({"status": reimbursement.status}, status=200)
 
 
 class TaxBracketView(APIView):
