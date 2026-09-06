@@ -2839,6 +2839,25 @@ def user_request_filter(request):
         return redirect("/")
 
 
+def can_view_leave_request(request, leave_request):
+    """Whether the requester may see this leave request.
+
+    `@login_required` alone means a view resolving a request by client-supplied
+    id serves any employee's leave to any other. Leave records carry the reason
+    for absence, so cross-employee reads can expose medical information --
+    special-category data under GDPR Art. 9. Reported as GHSA-mpw3-7c6v-vfjp.
+
+    The rule is the one view_leaverequest_comment already applied inline: the
+    owner, anyone holding the model permission, or a reporting manager. It is a
+    function here so the four sites that need it cannot drift apart.
+    """
+    return (
+        request.user.employee_get == leave_request.employee_id
+        or request.user.has_perm("leave.view_leaverequest")
+        or is_reportingmanager(request)
+    )
+
+
 @login_required
 @hx_request_required
 def user_request_one(request, id):
@@ -2854,6 +2873,9 @@ def user_request_one(request, id):
     leave_request = LeaveRequest.objects.filter(id=id).first()
     if not leave_request:
         return HttpResponse()
+    if not can_view_leave_request(request, leave_request):
+        messages.warning(request, _("You don't have permission"))
+        return render(request, "decorator_404.html")
     try:
         requests_ids_json = request.GET.get("instances_ids")
         if requests_ids_json:
@@ -4326,6 +4348,11 @@ def create_leaverequest_comment(request, leave_id):
     leave = LeaveRequest.objects.filter(id=leave_id).first()
     if not leave:
         return HorillaRedirect(request, message=_("Leave request not found."))
+    # Same visibility rule as reading: commenting on a request you cannot see
+    # both writes to another employee's record and confirms the id exists.
+    if not can_view_leave_request(request, leave):
+        messages.warning(request, _("You don't have permission"))
+        return render(request, "decorator_404.html")
 
     emp = request.user.employee_get
     form = LeaverequestcommentForm(
