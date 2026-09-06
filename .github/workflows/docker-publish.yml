@@ -209,6 +209,14 @@ jobs:
           severity: CRITICAL,HIGH
           exit-code: "1"
           ignore-unfixed: true
+          # The image is always built under the same fixed tag
+          # (horilla-hr:smoketest), and trivy-action caches scan results in
+          # its cache-dir keyed on that. With both the layer cache and this
+          # one live, the 2.1.0 release kept being told about setuptools
+          # 70.3.0 and msgpack 1.1.2 -- versions that appear nowhere in the
+          # image's file listing, only in the findings table. Cache the
+          # vulnerability DB, never the results.
+          cache: false
 
       # ---- Publish. Everything below is skipped on a dry run. ----
 
