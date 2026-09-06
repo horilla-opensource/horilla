@@ -202,6 +202,14 @@ jobs:
           severity: CRITICAL,HIGH
           exit-code: "1"
           ignore-unfixed: true
+          # The image is always built and scanned under the same fixed tag
+          # (horilla-hr:smoketest), so the action's result cache can serve a
+          # previous run's findings for a different image. That happened on
+          # the 2.1.0 release: the build log shows msgpack 1.2.2 and
+          # setuptools 84.0.0 installed, and the scan still reported the
+          # 1.1.2 / 70.3.0 versions from the run before the pins landed.
+          # Only the vulnerability DB is worth caching here, not the results.
+          cache: false
 
       # ---- Publish. Everything below is skipped on a dry run. ----
 
