@@ -18,6 +18,12 @@
                 {{template}} {% trans "Survey" %}
             </h1>
         </section>
+        {# the template's description is written in its form but was rendered nowhere #}
+        {% if template.description %}
+            <section class="oh-wrapper">
+                <p class="mb-3" style="color:#565E6C">{{ template.description }}</p>
+            </section>
+        {% endif %}
         {{form}}
     </form>
 </div>
