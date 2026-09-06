@@ -71,6 +71,19 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
+# The base image ships its own setuptools (and pip's vendored msgpack) in
+# /usr/local/lib/python3.12/site-packages, outside the /opt/venv this app
+# runs from. Pinning them in requirements.txt only fixes the venv copy, so
+# the image scan kept failing on the system copy: setuptools 70.3.0
+# (CVE-2025-47273, path traversal) and msgpack 1.1.2
+# (GHSA-6v7p-g79w-8964, out-of-bounds read). Nothing in the app imports
+# them from there, but they are in the image, so they are the image's
+# problem.
+# /usr/local/bin/python explicitly: ENV PATH above already points at
+# /opt/venv/bin, which does not exist yet at this layer.
+RUN /usr/local/bin/python -m pip install --no-cache-dir --upgrade \
+        "setuptools>=78.1.1" "msgpack>=1.2.1"
+
 # Create non-root user FIRST
 RUN useradd --create-home --uid 1000 appuser
 
