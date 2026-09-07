@@ -4263,6 +4263,53 @@ def candidate_documents_visible_to(request):
     return queryset.filter(candidate_id__id=candidate_id)
 
 
+def candidate_reachable_by(request, cand_id):
+    """The Candidate the requester may act on, or None.
+
+    `candidate_login_required` asserts only that *some* candidate session
+    exists (`"candidate_id" in request.session`), never that it is the
+    candidate named in the URL. A view that resolves its target from `cand_id`
+    alone therefore lets any logged-in candidate act on any other candidate's
+    record. Reported as GHSA-v963-hrfx-34mw.
+
+    The portal request carries no authenticated employee, so no company scoping
+    applies to it either, and the write crosses tenants: a candidate registered
+    under one company can reach a candidate belonging to another. Self
+    registration through `application-form/` is open, so the privilege needed
+    is nil.
+
+    Staff access is unchanged -- the three staff tests below are the ones
+    `candidate_login_required` already performs, repeated here rather than
+    tightened, so recruiters and stage/recruitment managers keep the access
+    they have. Only the candidate branch is narrowed, from "any candidate" to
+    "this candidate".
+
+    Companion to `candidate_documents_visible_to`, which scoped the document
+    views for GHSA-p745-9729-g8jw. `candidate_add_notes` is the third view on
+    the same decorator and was missed by that fix.
+    """
+    candidate = Candidate.find(cand_id)
+    if candidate is None:
+        return None
+
+    user = request.user
+    if user.is_authenticated:
+        if user.has_perm("recruitment.view_candidate"):
+            return candidate
+        employee = getattr(user, "employee_get", None)
+        if employee is not None and (
+            employee.stage_set.exists() or employee.recruitment_set.exists()
+        ):
+            return candidate
+
+    session_candidate_id = request.session.get("candidate_id")
+    if session_candidate_id is not None and str(session_candidate_id) == str(
+        candidate.pk
+    ):
+        return candidate
+    return None
+
+
 @candidate_login_required
 @hx_request_required
 def file_upload(request, id):
@@ -4399,7 +4446,9 @@ def candidate_add_notes(request, cand_id):
     This method renders template component to add candidate remark
     """
 
-    candidate = Candidate.find(cand_id)
+    # Same message whether the candidate does not exist or is not the caller's:
+    # a distinct "not yours" would confirm which sequential ids are real.
+    candidate = candidate_reachable_by(request, cand_id)
     if not candidate:
         return HorillaRedirect(
             request, message=_("No Candidate found matching the query.")
