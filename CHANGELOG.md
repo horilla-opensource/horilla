@@ -32,6 +32,10 @@ date and open a fresh Unreleased above it.
 ### Security      — vulnerabilities fixed; link the advisory and credit the reporter
 -->
 
+## [2.1.2] — 2026-09-07
+
+Security patch release. **Upgrading is recommended for all installations.**
+
 ### Security
 
 Three access-control issues, all exploitable by an ordinary low-privilege
@@ -60,6 +64,18 @@ the same way.
 - `DELETE /api/employee/employee-bank-details/<pk>/` now also admits the record's
   owner, and restricts managers to their own reports rather than any manager of
   anyone.
+
+### Upgrading
+
+No migration or configuration change is required.
+
+If you drive Horilla through the REST API, check the two permission changes
+above before upgrading — an integration that wrote documents using only
+`horilla_documents.view_document` will start receiving 403.
+
+```bash
+docker pull horilla/horilla-hr:2.1.2
+```
 
 ## [2.1.1] — 2026-09-06
 
@@ -99,5 +115,6 @@ Secret — message delivery stops until it is set.
 docker pull horilla/horilla-hr:2.1.1
 ```
 
-[Unreleased]: https://github.com/horilla/horilla-hr/compare/2.1.1...HEAD
+[Unreleased]: https://github.com/horilla/horilla-hr/compare/2.1.2...HEAD
+[2.1.2]: https://github.com/horilla/horilla-hr/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/horilla/horilla-hr/releases/tag/2.1.1
