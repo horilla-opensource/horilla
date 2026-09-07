@@ -416,7 +416,8 @@ class CandidateOnboardingDetail(CandidateDetail):
 
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
-        self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}{instance.onboarding_stage.onboarding_stage_id.pk}"
+        if instance and instance.onboarding_stage:
+            self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}{instance.onboarding_stage.onboarding_stage_id.pk}"
         response = super().get(request, *args, **kwargs)
         return response
 

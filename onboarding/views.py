@@ -288,7 +288,9 @@ def task_creation(request):
     POST : return onboarding view
     """
     stage_id = request.GET.get("stage_id")
-    stage = OnboardingStage.objects.get(id=stage_id)
+    stage = OnboardingStage.objects.filter(id=stage_id).first()
+    if not stage:
+        return HttpResponse()
     form = OnboardingViewTaskForm(initial={"stage_id": stage})
 
     if request.method == "POST":
@@ -1903,7 +1905,9 @@ def onboarding_send_mail(request, candidate_id):
     """
     This method is used to send mail to the candidate from onboarding view
     """
-    candidate = Candidate.objects.get(id=candidate_id)
+    candidate = Candidate.objects.filter(id=candidate_id).first()
+    if not candidate:
+        return HttpResponse()
     candidate_mail = candidate.email
     response = render(
         request, "onboarding/send_mail_form.html", {"candidate": candidate}
