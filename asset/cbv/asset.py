@@ -126,6 +126,8 @@ class AssetInformationView(HorillaDetailedView):
         """
 
         context = super().get_context_data(**kwargs)
+        if not self.instance:
+            return context
         context["title"] = context["asset"].asset_tracking_id
 
         body = list(self.body)

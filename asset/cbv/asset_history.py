@@ -207,6 +207,8 @@ class AssetHistoryDetailView(HorillaDetailedView):
     def get_context_data(self, **kwargs: Any) -> dict:
         context = super().get_context_data(**kwargs)
         instance = self.get_object()
+        if not instance:
+            return context
         if instance.assign_images.all():
             self.body.append(
                 (
