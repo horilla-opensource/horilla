@@ -139,7 +139,13 @@ def candidate_survey(request):
     rec_id = candidate_dict[0]["fields"]["recruitment_id"]
     job_id = candidate_dict[0]["fields"]["job_position_id"]
     job = JobPosition.objects.get(id=job_id)
-    recruitment = Recruitment.objects.get(id=rec_id)
+    # Public/unauthenticated flow (candidate just applied) -- Recruitment.objects
+    # is company-scoped to whatever company is "selected" in this browser's
+    # session, which for a public visitor has nothing to do with the
+    # recruitment's own company and would raise DoesNotExist for a valid
+    # recruitment. Use the unscoped manager, same as open_recruitments/
+    # recruitment_details/application_form.
+    recruitment = Recruitment.default.get(id=rec_id)
     stage_id = candidate_dict[0]["fields"]["stage_id"]
     created_by = candidate_dict[0]["fields"].get("created_by")
     modified_by = candidate_dict[0]["fields"].get("modified_by")
@@ -520,7 +526,12 @@ def application_form(request):
         return redirect("open-recruitments")
 
     try:
-        recruitment = Recruitment.objects.filter(
+        # Unscoped manager: this page is public/unauthenticated, and
+        # Recruitment.objects is company-scoped to the session's "selected
+        # company", which has no relation to a public visitor's session --
+        # scoping here would 404 valid recruitments from any company other
+        # than whichever one happens to be selected.
+        recruitment = Recruitment.default.filter(
             id=recruitment_id, is_published=True
         ).first()  # Only create applications for published recruitments.
         if not recruitment:
@@ -596,7 +607,7 @@ def application_form(request):
                     )
         recruitment_for_job_position = form.data.get("recruitment_id") or recruitment_id
         if recruitment_for_job_position:
-            recruitment_for_job_position = Recruitment.objects.filter(
+            recruitment_for_job_position = Recruitment.default.filter(
                 id=recruitment_for_job_position
             ).first()
             if recruitment_for_job_position:
