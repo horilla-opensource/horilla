@@ -2081,7 +2081,6 @@ def latecome_attendance_select_filter(request):
 
 
 @login_required
-@hx_request_required
 @permission_required("attendance.add_gracetime")
 def create_grace_time(request):
     """
@@ -2093,7 +2092,20 @@ def create_grace_time(request):
     Returns:
     GET : return grace time form template
     """
-    is_default = eval_validate(request.GET.get("default"))
+    # This endpoint returns only the modal form fragment; a genuine
+    # top-level browser navigation/reload should land on the real Grace
+    # Time settings page instead of showing the raw, unstyled fragment.
+    # Sec-Fetch-Mode is set by the browser itself for a real navigation
+    # and can't be spoofed by an htmx fetch() call, unlike HX-Request alone.
+    if request.headers.get("Sec-Fetch-Mode") == "navigate":
+        redirect_url = reverse("grace-time-view")
+        query_string = request.GET.urlencode()
+        if query_string:
+            redirect_url = f"{redirect_url}?{query_string}"
+        return redirect(redirect_url)
+    is_default = False
+    if request.GET.get("default"):
+        is_default = eval_validate(request.GET.get("default"))
     form = GraceTimeForm(initial={"is_default": is_default})
     if request.method == "POST":
         form = GraceTimeForm(request.POST)
@@ -2153,7 +2165,9 @@ def update_grace_time(request, grace_id):
     Returns:
     GET : return grace time form template
     """
-    grace_time = GraceTime.objects.get(id=grace_id)
+    grace_time = GraceTime.objects.filter(id=grace_id).first()
+    if not grace_time:
+        return HttpResponse()
     form = GraceTimeForm(instance=grace_time)
     if request.method == "POST":
         form = GraceTimeForm(request.POST, instance=grace_time)
@@ -3231,7 +3245,9 @@ def validation_condition_update(request, obj_id):
     Args:
         obj_id : validation condition instance id
     """
-    condition = AttendanceValidationCondition.objects.get(id=obj_id)
+    condition = AttendanceValidationCondition.objects.filter(id=obj_id).first()
+    if not condition:
+        return HttpResponse()
     form = AttendanceValidationConditionForm(instance=condition)
     if request.method == "POST":
         form = AttendanceValidationConditionForm(request.POST, instance=condition)
