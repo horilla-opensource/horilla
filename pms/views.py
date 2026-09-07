@@ -828,7 +828,9 @@ def objective_detailed_view_activity(request, id):
         it will return history,comment object to objective_detailed_view_activity.
     """
 
-    objective = EmployeeObjective.objects.get(id=id)
+    objective = EmployeeObjective.objects.filter(id=id).first()
+    if not objective:
+        return HttpResponse()
     if (
         request.user.employee_get == objective.employee_id
         or request.user.employee_get in objective.objective_id.managers.all()
@@ -901,7 +903,9 @@ def emp_objective_search(request, obj_id):
     Returns:
         All the filtered and searched object will based on userlevel.
     """
-    objective = Objective.objects.get(id=obj_id)
+    objective = Objective.objects.filter(id=obj_id).first()
+    if not objective:
+        return HttpResponse()
     emp_objectives = objective.employee_objective.all()
     search_val = request.GET.get("search")
     if search_val is None:
@@ -971,7 +975,10 @@ def objective_detailed_view_objective_status(request, id):
         All the filtered and searched object will based on userlevel.
     """
 
-    objective = EmployeeObjective.objects.get(id=id)
+    objective = EmployeeObjective.objects.filter(id=id).first()
+    if not objective:
+        messages.error(request, _("Objective not found."))
+        return HorillaRedirect(request)
     status = request.POST.get("objective_status")
     objective.status = status
     objective.save()
@@ -998,7 +1005,10 @@ def objective_detailed_view_key_result_status(request, obj_id, kr_id):
     """
 
     status = request.POST.get("key_result_status")
-    employee_key_result = EmployeeKeyResult.objects.get(id=kr_id)
+    employee_key_result = EmployeeKeyResult.objects.filter(id=kr_id).first()
+    if not employee_key_result:
+        messages.error(request, _("Key result not found."))
+        return HorillaRedirect(request)
 
     current_value = employee_key_result.current_value
     target_value = employee_key_result.target_value
@@ -1069,6 +1079,7 @@ def objective_detailed_view_current_value(request, kr_id):
             return redirect(objective_detailed_view_activity, objective_id)
         messages.error(request, _("Error occurred during current value updation"))
         return redirect(objective_detailed_view_activity, objective_id)
+    return HttpResponse()
 
 
 @login_required
@@ -1482,7 +1493,9 @@ def key_result_creation_htmx(request, id):
         initial={"start_date": start_date, "end_date": end_date}
     )
     context = {"key_result_form": key_result_form, "objecitve_id": id}
-    objective = EmployeeObjective.objects.get(id=id)
+    objective = EmployeeObjective.objects.filter(id=id).first()
+    if not objective:
+        return HttpResponse()
     if request.method == "POST":
         initial_data = {"employee_objective_id": objective}
         form_key_result = KeyResultForm(request.POST, initial=initial_data)
@@ -1509,7 +1522,9 @@ def key_result_update(request, id):
         success or errors message.
     """
 
-    key_result = EmployeeKeyResult.objects.get(id=id)
+    key_result = EmployeeKeyResult.objects.filter(id=id).first()
+    if not key_result:
+        return HttpResponse()
     key_result_form = KeyResultForm(instance=key_result)
     context = {"key_result_form": key_result_form, "key_result_id": key_result.id}
     if request.method == "POST":
@@ -3920,7 +3935,9 @@ def meeting_answer_get(request, id, **kwargs):
     employee = request.user.employee_get
     if employee_id := request.GET.get("emp_id"):
         employee = Employee.objects.filter(id=employee_id).first()
-    meeting = Meetings.objects.get(id=id)
+    meeting = Meetings.objects.filter(id=id).first()
+    if not meeting:
+        return HttpResponse()
     answer = MeetingsAnswer.objects.filter(meeting_id=meeting, employee_id=employee)
     questions = meeting.question_template.question.all()
     options = QuestionOptions.objects.all()
@@ -4022,7 +4039,9 @@ def meeting_question_template_view(request, meet_id):
         it will return meeting answer object to meeting_question_template_view.
     """
     employee = request.user.employee_get
-    meeting = Meetings.objects.get(id=meet_id)
+    meeting = Meetings.objects.filter(id=meet_id).first()
+    if not meeting:
+        return HttpResponse()
     answer = MeetingsAnswer.objects.filter(meeting_id=meeting, employee_id=employee)
     is_answered = False
     if answer:
