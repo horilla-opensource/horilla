@@ -53,12 +53,20 @@ class CandidateNoteScopingTests(TestCase):
         cls.stage = Stage.objects.filter(recruitment_id=recruitment).first()
 
         cls.attacker = cls._candidate(
-            "Attacker", "attacker@example.com", "2000000000", recruitment,
-            job_position, cls.stage,
+            "Attacker",
+            "attacker@example.com",
+            "2000000000",
+            recruitment,
+            job_position,
+            cls.stage,
         )
         cls.victim = cls._candidate(
-            "Victim", "victim@example.com", "1000000000", recruitment,
-            job_position, cls.stage,
+            "Victim",
+            "victim@example.com",
+            "1000000000",
+            recruitment,
+            job_position,
+            cls.stage,
         )
 
     @staticmethod

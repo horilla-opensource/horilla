@@ -32,6 +32,35 @@ date and open a fresh Unreleased above it.
 ### Security      — vulnerabilities fixed; link the advisory and credit the reporter
 -->
 
+### Security
+
+Three access-control issues, all exploitable by an ordinary low-privilege
+account and none dependent on `DEBUG` or any operator setting.
+
+| Advisory | Severity | Issue |
+|---|---|---|
+| [GHSA-39gq-9wwx-p8hx](https://github.com/horilla/horilla-hr/security/advisories/GHSA-39gq-9wwx-p8hx) | High | Any employee who managed one person could overwrite — or delete — any other employee's bank account details, redirecting salary payments |
+| [GHSA-x72c-5gf7-97g3](https://github.com/horilla/horilla-hr/security/advisories/GHSA-x72c-5gf7-97g3) | Medium | Any authenticated employee could delete any other employee's documents, including contracts and identity documents |
+| [GHSA-v963-hrfx-34mw](https://github.com/horilla/horilla-hr/security/advisories/GHSA-v963-hrfx-34mw) | Medium | Any candidate could write notes onto any other candidate's hiring record, across companies, and read that candidate's tracking page |
+
+With thanks to **@je-lv** for reporting all three responsibly.
+
+Each fix was made at the shared authorization gate rather than the reported
+endpoint, so sibling endpoints on the same gate are covered too. The bank-detail
+`DELETE` and the document `GET`/`PUT` were not in the reports and were reachable
+the same way.
+
+### Changed
+
+- Editing a document through `PUT /api/employee/documents/<pk>/` now authorizes
+  against `horilla_documents.change_document` rather than
+  `horilla_documents.view_document`. Owners and reporting managers are
+  unaffected; an integration that held only the view permission and relied on it
+  to write will now be refused.
+- `DELETE /api/employee/employee-bank-details/<pk>/` now also admits the record's
+  owner, and restricts managers to their own reports rather than any manager of
+  anyone.
+
 ## [2.1.1] — 2026-09-06
 
 Security patch release. **Upgrading is recommended for all installations.**

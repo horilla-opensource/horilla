@@ -26,6 +26,7 @@ from django.core.files.base import ContentFile
 from django.test import TestCase
 from rest_framework.test import APIClient
 
+from employee.models import Employee
 from horilla.testkit import make_company, make_employee, make_user
 from horilla_documents.models import Document, DocumentRequest
 
@@ -78,13 +79,29 @@ class DocumentApiAuthorizationTests(TestCase):
     def test_stranger_cannot_delete_even_when_id_is_past_the_employee_range(self):
         """
         The original exploit needed a document id higher than every employee id,
-        which is the steady state once an install has more documents than
-        people. Create enough documents to reach that range and confirm the
-        delete is refused there too.
+        which is the steady state once an install holds more documents than
+        people. Confirm the delete is refused in that range too.
         """
-        docs = [self._document() for _ in range(6)]
-        target = docs[-1]
-        self.assertGreater(target.pk, self.victim.pk)
+        # Pin the id above every employee instead of creating documents and
+        # assuming the two independent sequences land in that order. Postgres
+        # sequences are not rolled back with the test transaction, so a module
+        # that creates many employees first -- test_manager_target_scoping does
+        # -- leaves employee ids above the document ids. This test passed on its
+        # own and failed in a full run, which is the worst way for a security
+        # test to behave: green in isolation, red in CI for a reason that has
+        # nothing to do with the fix it guards.
+        highest_employee_id = Employee.objects.order_by("-id").first().id
+        newest_document = Document.objects.order_by("-id").first()
+        target = Document.objects.create(
+            id=max(highest_employee_id, newest_document.id if newest_document else 0)
+            + 1,
+            title="contract",
+            employee_id=self.victim,
+            document_request_id=self.request,
+        )
+        target.document.save("contract.txt", ContentFile(b"x"), save=True)
+        self.assertGreater(target.pk, highest_employee_id)
+
         self._auth(self.attacker_user)
         response = self.client.delete(ENDPOINT.format(target.pk))
         self.assertEqual(response.status_code, 403)
