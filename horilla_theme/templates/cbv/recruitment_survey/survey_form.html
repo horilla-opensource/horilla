@@ -81,8 +81,36 @@
       });
 
         $(document).ready(function () {
-            $("#{{ view_id }}Form").find("select").select2({
-                width: '100%'
+            // Excludes [name=type]: on a failed-submit re-render it carries
+            // required/aria-invalid/aria-describedby attributes, and this
+            // vendored select2 build's constructor throws inside
+            // _syncAttributes() when it tries to process them -- late
+            // enough that it has already added the select2-hidden-
+            // accessible class (and rendered its own dropdown UI) but
+            // before it stores the internal select2 instance data. That
+            // leaves the native <select> fully visible and clickable right
+            // alongside select2's own (semi-broken) widget: two stacked
+            // dropdowns for one field. Type is a plain ~10-option static
+            // choice field -- it gets no benefit from select2's search/
+            // pagination, so the robust fix is to just not select2-ify it;
+            // its existing server-rendered class/style already style it
+            // reasonably as a native select.
+            //
+            // Guard against a double-init on the remaining fields (e.g.
+            // this modal reopened without the previous select2 instance
+            // being torn down first): calling .select2() again on an
+            // already-initialized <select> without destroying it first
+            // leaves the old UI in place and stacks a second one next to
+            // it -- same guard used by history_tracking_fields_content.html
+            // and the report templates.
+            $("#{{ view_id }}Form").find("select").not("[name=type]").each(function () {
+                var $select = $(this);
+                if ($select.hasClass("select2-hidden-accessible")) {
+                    $select.select2("destroy");
+                }
+                $select.select2({
+                    width: '100%'
+                });
             });
         });
 </script>
