@@ -744,7 +744,9 @@ def task_view(request, project_id, **kwargs):
 @login_required
 @hx_request_required
 def quick_create_task(request, stage_id):
-    project_stage = ProjectStage.objects.get(id=stage_id)
+    project_stage = ProjectStage.objects.filter(id=stage_id).first()
+    if not project_stage:
+        return HttpResponse()
     hx_target = request.META.get("HTTP_HX_TARGET")
     if (
         request.user.employee_get in project_stage.project.managers.all()

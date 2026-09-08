@@ -8,7 +8,7 @@ from django import forms
 from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import resolve, reverse
 from django.utils.decorators import method_decorator
 from django.utils.formats import localize
@@ -323,6 +323,14 @@ class TimeSheetFormView(HorillaFormView):
     model = TimeSheet
     new_display_title = _("Create") + " " + model._meta.verbose_name
 
+    def dispatch(self, request, *args, **kwargs):
+        # This endpoint returns only the modal form fragment; a genuine
+        # top-level browser navigation/reload should land on the real
+        # Timesheet page instead of showing the raw, unstyled fragment.
+        if request.headers.get("Sec-Fetch-Mode") == "navigate":
+            return redirect(reverse("view-time-sheet"))
+        return super().dispatch(request, *args, **kwargs)
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.dynamic_create_fields = [
@@ -356,9 +364,10 @@ class TimeSheetFormView(HorillaFormView):
         user_employee_id = self.request.user.employee_get.id
         project = None
         if task_id:
-            task = Task.objects.get(id=task_id)
-            project = task.project
-            employee = Employee.objects.filter(id=user_employee_id)
+            task = Task.objects.filter(id=task_id).first()
+            if task:
+                project = task.project
+                employee = Employee.objects.filter(id=user_employee_id)
 
         if self.form.instance.pk:
             task_id = self.form.instance.task_id.id
