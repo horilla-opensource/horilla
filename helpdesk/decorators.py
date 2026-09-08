@@ -23,7 +23,13 @@ def ticket_owner_can_enter(function, perm: str, model: object, manager_access=Fa
     """
 
     def _function(request, *args, **kwargs):
-        instance_id = kwargs[list(kwargs.keys())[0]]
+        if kwargs:
+            instance_id = kwargs[list(kwargs.keys())[0]]
+        else:
+            # Some routes (e.g. comment-edit/) carry no URL kwargs and pass
+            # the instance id as a GET param instead, following the
+            # <model>_id naming convention.
+            instance_id = request.GET.get(f"{model.__name__.lower()}_id")
         if model == Employee:
             employee = Employee.objects.get(id=instance_id)
         else:

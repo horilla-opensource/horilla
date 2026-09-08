@@ -308,7 +308,6 @@ def faq_update(request, obj_id):
 
 
 @login_required
-@hx_request_required
 def faq_search(request):
     """
     This function is responsible for search and filter the FAQ.
@@ -320,7 +319,16 @@ def faq_search(request):
     GET : return faq filter form template
     POST : return faq view
     """
-    id = request.GET.get("cat_id", "")
+    # This endpoint returns only the list/filter fragment; a genuine
+    # top-level browser navigation/reload should land on the real FAQ page
+    # instead of showing the raw, unstyled fragment.
+    if request.headers.get("Sec-Fetch-Mode") == "navigate":
+        redirect_url = reverse("faq-category-view")
+        query_string = request.GET.urlencode()
+        if query_string:
+            redirect_url = f"{redirect_url}?{query_string}"
+        return redirect(redirect_url)
+    id = request.GET.get("cat_id") or 0
     category = request.GET.get("category", "")
     previous_data = request.GET.urlencode()
     query = request.GET.get("search", "")
@@ -1078,7 +1086,9 @@ def ticket_update_tag(request):
 @login_required
 @hx_request_required
 def ticket_change_raised_on(request, ticket_id):
-    ticket = Ticket.objects.get(id=ticket_id)
+    ticket = Ticket.objects.filter(id=ticket_id).first()
+    if not ticket:
+        return HttpResponse()
     if (
         request.user.has_perm("helpdesk.view_ticket")
         or request.user.employee_get == ticket.employee_id
@@ -1102,7 +1112,9 @@ def ticket_change_raised_on(request, ticket_id):
 @login_required
 @hx_request_required
 def ticket_change_assignees(request, ticket_id):
-    ticket = Ticket.objects.get(id=ticket_id)
+    ticket = Ticket.objects.filter(id=ticket_id).first()
+    if not ticket:
+        return HttpResponse()
     if request.user.has_perm("helpdesk.change_ticket") or is_department_manager(
         request, ticket
     ):
@@ -1724,7 +1736,9 @@ def create_department_manager(request):
 @hx_request_required
 @permission_required("helpdesk.change_departmentmanager")
 def update_department_manager(request, dep_id):
-    department_manager = DepartmentManager.objects.get(id=dep_id)
+    department_manager = DepartmentManager.objects.filter(id=dep_id).first()
+    if not department_manager:
+        return HttpResponse()
     form = DepartmentManagerCreateForm(instance=department_manager)
     if request.method == "POST":
         form = DepartmentManagerCreateForm(request.POST, instance=department_manager)
@@ -1853,7 +1867,9 @@ def ticket_type_update(request, t_type_id):
     """
     This method renders form and template to create Ticket type
     """
-    ticket_type = TicketType.objects.get(id=t_type_id)
+    ticket_type = TicketType.objects.filter(id=t_type_id).first()
+    if not ticket_type:
+        return HttpResponse()
     form = TicketTypeForm(instance=ticket_type)
     if request.method == "POST":
         form = TicketTypeForm(request.POST, instance=ticket_type)
