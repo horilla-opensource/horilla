@@ -57,7 +57,7 @@
                                         {% trans "In Date" %}</div>
                                     <div data-cell-index="6" data-cell-title='{% trans "Check-Out" %}'
                                         class="oh-sticky-table__th">{% trans "Check-Out" %}</div>
-                                    <div data-cell-index="7" data-cell-title='{% trans "Out Date" %}'
+                                    <div data-cell-index="7" data-cell-title="{% trans 'Out Date' %}"
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_out_date' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_out_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                         hx-target='#view-container'
                                         hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=attendance_clock_out_date">
@@ -293,7 +293,7 @@
                                         {% trans "In Date" %}</div>
                                     <div data-cell-index="26" data-cell-title='{% trans "Check-Out" %}'
                                         class="oh-sticky-table__th">{% trans "Check-Out" %}</div>
-                                    <div data-cell-index="27" data-cell-title='{% trans "Out Date" %}'
+                                    <div data-cell-index="27" data-cell-title="{% trans 'Out Date' %}"
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_out_date' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_out_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                         hx-target='#view-container'
                                         hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=attendance_clock_out_date">

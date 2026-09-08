@@ -210,8 +210,8 @@
                                 class="oh-btn oh-btn--warning w-50"
                                 onclick="event.stopPropagation();
                                     Swal.fire({
-                                            title: '{% trans 'Are you sure?' %}',
-                                            text: '{% trans 'This does not satisfy the minimum OT requirement!' %}',
+                                            title: '{% trans 'Are you sure?'|escapejs %}',
+                                            text: '{% trans 'This does not satisfy the minimum OT requirement!'|escapejs %}',
                                             icon: 'warning',
                                             showCancelButton: true,
                                             confirmButtonColor: '#008000',
@@ -221,8 +221,8 @@
                                         }).then((result) => {
                                             if (result.isConfirmed) {
                                             Swal.fire(
-                                                '{% trans 'Approved!' %}',
-                                                '{% trans 'Your action has been approved.' %}',
+                                                '{% trans 'Approved!'|escapejs %}',
+                                                '{% trans 'Your action has been approved.'|escapejs %}',
                                                 'success'
                                             );
                                             $('[data-ot-approve-id={{attendance_request.id}}]').click();
@@ -245,7 +245,7 @@
                         {% endif %}
                         <form
                             action="{% url 'attendance-delete' attendance_request.id  %}"
-                            onsubmit="return confirm('{% trans " Are you sure want to delete this attendance?" %}')"
+                            onsubmit="return confirm('{% trans " Are you sure want to delete this attendance?"|escapejs %}')"
                             hx-target="#tab_contents"
                             method="post"
                             style="width: 50%"
@@ -299,7 +299,7 @@
                             action="{% url 'attendance-delete' attendance_request.id  %}"
                             method="post"
                             style="width: 50%"
-                            onsubmit="return confirm('{% trans " Are you sure want to delete this attendance?" %}')"
+                            onsubmit="return confirm('{% trans " Are you sure want to delete this attendance?"|escapejs %}')"
                         >
                             {% csrf_token %}
                             <button
@@ -338,7 +338,7 @@
                         </a>
                         <form
                             action="{% url 'attendance-delete' attendance_request.id  %}"
-                            onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
+                            onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?"|escapejs %}')"
                             hx-target="#tab_contents"
                             method="post"
                             style="width: 50%"

@@ -66,8 +66,8 @@
             class="oh-btn oh-btn-group oh-btn--warning w-50"
             onclick="event.stopPropagation(); (function(pk){
                 Swal.fire({
-                    title: '{% trans 'Are you sure?' %}',
-                    text: '{% trans 'This does not satisfy the minimum OT requirement!' %}',
+                    title: '{% trans 'Are you sure?'|escapejs %}',
+                    text: '{% trans 'This does not satisfy the minimum OT requirement!'|escapejs %}',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#008000',
@@ -117,7 +117,7 @@
     <form
         hx-post="{% url 'attendance-delete' instance.id  %}"
         hx-swap="none"
-        onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
+        hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
         method="post"
         style="width: 50%"
         class="oh-btn oh-btn-group oh-btn--danger"

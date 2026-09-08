@@ -48,12 +48,12 @@
 <script>
     $(document).ready(function () {
         Swal.fire({
-            text: "{% trans 'Do you want to download the template?' %}",
+            text: "{% trans 'Do you want to download the template?'|escapejs %}",
             icon: "question",
             showCancelButton: true,
             confirmButtonColor: "#008000",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "{% trans 'Confirm' %}"
+            confirmButtonText: "{% trans 'Confirm'|escapejs %}"
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
@@ -70,7 +70,7 @@
                         URL.revokeObjectURL(url);
                     },
                     error: function () {
-                        console.error("{% trans 'Error downloading file' %}");
+                        console.error("{% trans 'Error downloading file'|escapejs %}");
                     }
                 });
             }

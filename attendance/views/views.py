@@ -307,6 +307,7 @@ def attendance_import(request):
 
 
 @login_required
+@hx_request_required
 def attendance_export(request):
     resolver_match = request.resolver_match
     if (
@@ -1093,6 +1094,7 @@ def handle_activity_import_error(error_data):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.add_attendanceactivity")
 def attendance_activity_import(request):
     if request.method == "POST":
@@ -3038,6 +3040,7 @@ def work_record_export(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.add_attendancegeneralsetting")
 def enable_timerunner(request):
     """
@@ -3182,6 +3185,7 @@ def grace_time_page_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.view_attendancevalidationcondition")
 def grace_time_list_tab(request):
     """
@@ -3191,6 +3195,7 @@ def grace_time_list_tab(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.view_attendancevalidationcondition")
 def grace_time_validation_condition_tab(request):
     """

@@ -19,7 +19,7 @@
 	<form
 		action="{% url 'delete-allowed-ip' %}?id={{instance.pk}}"
 		class="w-50"
-		onsubmit="return confirm('{% trans "Are you sure you want to delete this IP ?" %}');"
+		onsubmit="return confirm('{% trans "Are you sure you want to delete this IP ?"|escapejs %}');"
 		method="post"
 	>
 		{% csrf_token %}
@@ -42,13 +42,13 @@
 		var form = btn.closest("form");
 		Swal.fire({
 			{% comment %} title: "{% trans 'Are you sure?' %}", {% endcomment %}
-			text: "{% trans 'Are you sure you want to delete this IP ?' %}",
+			text: "{% trans 'Are you sure you want to delete this IP ?'|escapejs %}",
 			icon: "warning",
 			showCancelButton: true,
 			confirmButtonColor: "#d33",
 			cancelButtonColor: "#6c757d",
-			confirmButtonText: "{% trans 'Delete' %}",
-			cancelButtonText: "{% trans 'Cancel' %}",
+			confirmButtonText: "{% trans 'Delete'|escapejs %}",
+			cancelButtonText: "{% trans 'Cancel'|escapejs %}",
 		}).then(function (result) {
 			if (result.isConfirmed) {
 				if (form.requestSubmit) {

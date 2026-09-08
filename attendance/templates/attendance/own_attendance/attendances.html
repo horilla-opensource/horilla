@@ -145,7 +145,7 @@
                         </div>
                         <div
                             data-cell-index="6"
-                            data-cell-title='{% trans "Out Date" %}'
+                            data-cell-title="{% trans 'Out Date' %}"
                             class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_out_date' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_out_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
                             hx-target="#attendance-container"
                             hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=attendance_clock_out_date"

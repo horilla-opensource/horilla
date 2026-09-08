@@ -145,7 +145,7 @@
                             {% if perms.attendance.delete_attendance %}
                                 <form
                                     action="{% url 'attendance-delete' attendance.id  %}"
-                                    onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
+                                    onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?"|escapejs %}')"
                                     hx-target="#tab_contents"
                                     method="post"
                                     class="w-50"

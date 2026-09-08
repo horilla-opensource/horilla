@@ -11,11 +11,13 @@ from typing import Any
 
 from django.utils.decorators import method_decorator
 
+from horilla.decorators import hx_request_required
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import TemplateView
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class AttendanceTabContentShell(TemplateView):
     """
     Base shell: subclasses set nav_url_name/container_id/tabs_root_id

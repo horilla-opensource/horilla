@@ -28,7 +28,7 @@
                         type="submit"
                         class="oh-btn oh-btn--danger oh-btn--sq-sm"
                         title="{% trans 'Remove' %}"
-                        onclick="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
+                        onclick="return confirm('{% trans "Are you sure want to delete this attendance?"|escapejs %}')"
                     >
                         <ion-icon name="trash-outline"></ion-icon>
                     </button>
@@ -51,14 +51,14 @@
                         title="{% trans 'Approve Overtime' %}"
                         onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                             Swal.fire({
-                                title: '{% trans 'Are you sure?' %}',
-                                text: '{% trans 'Do you want to approve this overtime?' %}',
+                                title: '{% trans 'Are you sure?'|escapejs %}',
+                                text: '{% trans 'Do you want to approve this overtime?'|escapejs %}',
                                 icon: 'question',
                                 showCancelButton: true,
                                 confirmButtonColor: '#008000',
                                 cancelButtonColor: '#6c757d',
-                                confirmButtonText: '{% trans 'Confirm' %}',
-                                cancelButtonText: '{% trans 'Cancel' %}'
+                                confirmButtonText: '{% trans 'Confirm'|escapejs %}',
+                                cancelButtonText: '{% trans 'Cancel'|escapejs %}'
                             }).then(function(result) {
                                 if (result.isConfirmed) {
                                     var f = document.getElementById('ot-approve-confirm-' + pk);
@@ -84,14 +84,14 @@
                         title="{% trans 'Approve Overtime (OT < min.OT)' %}"
                         onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                             Swal.fire({
-                                title: '{% trans 'Are you sure?' %}',
-                                text: '{% trans 'This does not satisfy the minimum OT requirement!' %}',
+                                title: '{% trans 'Are you sure?'|escapejs %}',
+                                text: '{% trans 'This does not satisfy the minimum OT requirement!'|escapejs %}',
                                 icon: 'warning',
                                 showCancelButton: true,
                                 confirmButtonColor: '#008000',
                                 cancelButtonColor: '#6c757d',
-                                confirmButtonText: '{% trans 'Approve' %}',
-                                cancelButtonText: '{% trans 'Cancel' %}'
+                                confirmButtonText: '{% trans 'Approve'|escapejs %}',
+                                cancelButtonText: '{% trans 'Cancel'|escapejs %}'
                             }).then(function(result) {
                                 if (result.isConfirmed) {
                                     var f = document.getElementById('ot-approve-confirm-' + pk);

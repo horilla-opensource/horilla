@@ -150,7 +150,7 @@
                                     <form
                                         action="{% url 'attendance-delete' attendance.id %}"
                                         onclick="event.stopPropagation()"
-                                        onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
+                                        onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?"|escapejs %}')"
                                         hx-target="#tab_contents"
                                         method="post"
                                         class="w-50"

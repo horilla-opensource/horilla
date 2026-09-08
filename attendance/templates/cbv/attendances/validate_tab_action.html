@@ -55,7 +55,7 @@
                 hx-post="{% url 'attendance-delete' instance.id %}"
                 hx-swap="none"
                 onclick="event.stopPropagation()"
-                onsubmit="return confirm('{% trans " Are you sure want to delete this attendance?" %}')"
+                hx-confirm="{% trans ' Are you sure want to delete this attendance?' %}"
                 method="post"
                 style="width: 50%"
                 class="oh-btn oh-btn-group oh-btn--danger"

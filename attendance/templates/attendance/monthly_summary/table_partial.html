@@ -1117,7 +1117,7 @@ reloadSelectedCount($('.count_msAttendance'),'selectedInstances');">
       '<span style="flex:1;"><strong>' + count + '</strong> record' + (count !== 1 ? 's' : '') + ' updated</span>' +
       '<button id="ms-undo-btn" style="background:#6366f1;color:#fff;border:none;border-radius:6px;' +
               'padding:4px 13px;font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap;">' +
-        '{% trans "Undo" %}' +
+        '{% trans "Undo"|escapejs %}' +
       '</button>' +
       '<button onclick="document.getElementById(\'ms-undo-bar\').remove()" ' +
               'style="background:none;color:#64748b;border:none;cursor:pointer;font-size:1.05rem;padding:0 3px;line-height:1;">âœ•</button>';
@@ -1173,7 +1173,7 @@ reloadSelectedCount($('.count_msAttendance'),'selectedInstances');">
     })
     .catch(function () {
       var btn = document.getElementById('ms-undo-btn');
-      if (btn) { btn.disabled = false; btn.textContent = '{% trans "Undo" %}'; }
+      if (btn) { btn.disabled = false; btn.textContent = '{% trans "Undo"|escapejs %}'; }
     });
   };
 

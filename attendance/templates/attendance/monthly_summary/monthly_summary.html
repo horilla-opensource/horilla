@@ -1,13 +1,6 @@
 {% extends 'index.html' %}
 {% load i18n %}
 {% block content %}
-{% comment %}
-    Content outside {% block %} in a template that {% extends %} another is
-    discarded entirely -- this include has to live in here, not above, or
-    toggleModernFilterPanel/filterModernPanelFields never get defined on
-    this page at all (same gotcha documented in work_record_view.html,
-    where this same offcanvas panel was first ported to a plain FBV page).
-{% endcomment %}
 {% include 'generic/modern_filter_panel.html' %}
 
 <style>
@@ -350,21 +343,21 @@ function msRenderFilterTags() {
 
   var searchVal = (document.getElementById('ms-search-input') || {}).value;
   if (searchVal) {
-    chips.push({ key: 'search', label: "{% trans 'Search' %}", value: searchVal });
+    chips.push({ key: 'search', label: "{% trans 'Search'|escapejs %}", value: searchVal });
   }
   var nameOrBadgeVal = (document.getElementById('ms-name-or-badge-input') || {}).value;
   if (nameOrBadgeVal) {
-    chips.push({ key: 'name_or_badge', label: "{% trans 'Name or Badge ID' %}", value: nameOrBadgeVal });
+    chips.push({ key: 'name_or_badge', label: "{% trans 'Name or Badge ID'|escapejs %}", value: nameOrBadgeVal });
   }
   var multiFields = [
-    { name: 'employee_id', label: "{% trans 'Employee' %}" },
-    { name: 'department_id', label: "{% trans 'Department' %}" },
-    { name: 'job_position_id', label: "{% trans 'Job Position' %}" },
-    { name: 'shift_id', label: "{% trans 'Shift' %}" },
-    { name: 'work_type_id', label: "{% trans 'Work Type' %}" },
-    { name: 'employee_work_info__company_id', label: "{% trans 'Company' %}" },
-    { name: 'employee_work_info__reporting_manager_id', label: "{% trans 'Reporting Manager' %}" },
-    { name: 'employee_work_info__tags', label: "{% trans 'Employee Tag' %}" },
+    { name: 'employee_id', label: "{% trans 'Employee'|escapejs %}" },
+    { name: 'department_id', label: "{% trans 'Department'|escapejs %}" },
+    { name: 'job_position_id', label: "{% trans 'Job Position'|escapejs %}" },
+    { name: 'shift_id', label: "{% trans 'Shift'|escapejs %}" },
+    { name: 'work_type_id', label: "{% trans 'Work Type'|escapejs %}" },
+    { name: 'employee_work_info__company_id', label: "{% trans 'Company'|escapejs %}" },
+    { name: 'employee_work_info__reporting_manager_id', label: "{% trans 'Reporting Manager'|escapejs %}" },
+    { name: 'employee_work_info__tags', label: "{% trans 'Employee Tag'|escapejs %}" },
   ];
   multiFields.forEach(function (f) {
     var select = document.querySelector('[name="' + f.name + '"]');
@@ -381,12 +374,12 @@ function msRenderFilterTags() {
   if (activeEl && activeEl.value) {
     chips.push({
       key: 'is_active',
-      label: "{% trans 'Is Active' %}",
-      value: activeEl.value === 'True' ? "{% trans 'Yes' %}" : "{% trans 'No' %}",
+      label: "{% trans 'Is Active'|escapejs %}",
+      value: activeEl.value === 'True' ? "{% trans 'Yes'|escapejs %}" : "{% trans 'No'|escapejs %}",
     });
   }
 
-  wrap.innerHTML = '<span class="oh-titlebar__tag oh-titlebar__tag--custom">{% trans "Filters" %}:</span>';
+  wrap.innerHTML = '<span class="oh-titlebar__tag oh-titlebar__tag--custom">{% trans "Filters"|escapejs %}:</span>';
   if (!chips.length) {
     wrap.style.display = 'none';
     return;
@@ -402,7 +395,7 @@ function msRenderFilterTags() {
   var clearAll = document.createElement('span');
   clearAll.className = 'oh-titlebar__tag oh-titlebar__tag--custom';
   clearAll.style.cursor = 'pointer';
-  clearAll.title = "{% trans 'Clear All' %}";
+  clearAll.title = "{% trans 'Clear All'|escapejs %}";
   clearAll.onclick = function () { window.location.href = "{% url 'attendance-monthly-summary' %}"; };
   clearAll.innerHTML = '<ion-icon name="close-outline"></ion-icon>';
   wrap.appendChild(clearAll);
@@ -453,9 +446,9 @@ function msSyncExportLink() {
     // comment in attendance_monthly_summary_export().
     params.delete('employee_ids');
     selectedIds.forEach(id => params.append('employee_ids', id));
-    if (label) label.textContent = "{% trans 'Export Selected' %} (" + selectedIds.length + ")";
+    if (label) label.textContent = "{% trans 'Export Selected'|escapejs %} (" + selectedIds.length + ")";
   } else if (label) {
-    label.textContent = "{% trans 'Export XLSX' %}";
+    label.textContent = "{% trans 'Export XLSX'|escapejs %}";
   }
   document.getElementById('export-btn').href =
     "{% url 'attendance-monthly-summary-export' %}?" + params.toString();

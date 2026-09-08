@@ -116,7 +116,7 @@
                             </div>
                             <div
                                 data-cell-index="7"
-                                data-cell-title='{% trans "Out Date" %}'
+                                data-cell-title="{% trans 'Out Date' %}"
                                 class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_out_date' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_out_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                 hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=attendance_clock_out_date"
                                 hx-target="#tab_contents"
@@ -257,7 +257,7 @@
                                             <form
                                                 action="{% url 'attendance-delete' attendance.id %}"
                                                 onclick="event.stopPropagation()"
-                                                onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
+                                                onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?"|escapejs %}')"
                                                 hx-target="#tab_contents"
                                                 method="post"
                                                 class="w-50"
@@ -452,7 +452,7 @@
                                 </div>
                                 <div
                                     data-cell-index="27"
-                                    data-cell-title='{% trans "Out Date" %}'
+                                    data-cell-title="{% trans 'Out Date' %}"
                                     class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_out_date' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_out_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                     hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=attendance_clock_out_date"
                                     hx-target="#tab_contents"
@@ -599,7 +599,7 @@
                                                 <form
                                                     action="{% url 'attendance-delete' attendance.id %}"
                                                     onclick="event.stopPropagation()"
-                                                    onsubmit="return confirm('{%trans "Are you sure want to delete this attendance?" %}')"
+                                                    onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?"|escapejs %}')"
                                                     method="post"
                                                     class="w-50"
                                                 >
@@ -802,7 +802,7 @@
                                 </div>
                                 <div
                                     data-cell-index="47"
-                                    data-cell-title='{% trans "Out Date" %}'
+                                    data-cell-title="{% trans 'Out Date' %}"
                                     class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_out_date' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_out_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                     hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=attendance_clock_out_date"
                                     hx-target="#tab_contents"
@@ -951,7 +951,7 @@
                                                 <form
                                                     action="{% url 'attendance-delete' attendance.id %}"
                                                     onclick="event.stopPropagation()"
-                                                    onsubmit="return confirm('{%trans "Are you sure want to delete this attendance?" %}')"
+                                                    onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?"|escapejs %}')"
                                                     method="post"
                                                     class="w-50"
                                                 >
@@ -999,8 +999,8 @@
                                                 class="oh-btn oh-btn--warning w-100"
                                                 onclick="event.stopPropagation();
                                         Swal.fire({
-                                              title: '{% trans 'Are you sure?' %}',
-                                              text: '{% trans 'This does not satisfy the minimum OT requirement!' %}',
+                                              title: '{% trans 'Are you sure?'|escapejs %}',
+                                              text: '{% trans 'This does not satisfy the minimum OT requirement!'|escapejs %}',
                                               icon: 'warning',
                                               showCancelButton: true,
                                               confirmButtonColor: '#008000',
@@ -1011,8 +1011,8 @@
                                               if (result.isConfirmed) {
                                                 // Your approve action logic here
                                                 Swal.fire(
-                                                  '{% trans 'Approved!' %}',
-                                                  '{% trans 'Your action has been approved.' %}',
+                                                  '{% trans 'Approved!'|escapejs %}',
+                                                  '{% trans 'Your action has been approved.'|escapejs %}',
                                                   'success'
                                                 );
                                                 $('[data-ot-approve-id={{attendance.id}}]').click();
