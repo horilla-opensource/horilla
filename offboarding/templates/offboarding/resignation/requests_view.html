@@ -69,9 +69,9 @@
                     <div class='row' style='overflow-x:hidden;'>
                         <div class="col-12">
                             <div class="oh-label__info">
-                                <label class="oh-label" for="offboardingSelect">{% trans "Add to" %}</label>
+                                <label class="oh-label" for="offboardingSelect">{% trans "Add to"|escapejs %}</label>
                             </div>
-                            <select id="offboardingSelect" class="oh-select oh-select2 w-100" name="reason" title="{% trans 'Add to offboarding' %}">
+                            <select id="offboardingSelect" class="oh-select oh-select2 w-100" name="reason" title="{% trans 'Add to offboarding'|escapejs %}">
                                 {% for offboarding in offboardings %}
                                     <option value="{{offboarding.id}}">{{offboarding.title}}</option>
                                 {% endfor %}
@@ -79,7 +79,7 @@
                         </div>
                         <div class="col-6 col-md-6">
                             <div class="oh-label__info">
-                                <label class="oh-label" for="notice_period_starts">{% trans "Planned to leave on" %}</label>
+                                <label class="oh-label" for="notice_period_starts">{% trans "Planned to leave on"|escapejs %}</label>
                             </div>
                             <input type="date" name="notice_period_starts"
                                 class="oh-input w-100 form-control"
@@ -93,7 +93,7 @@
                         </div>
                         <div class="col-6 col-md-6">
                             <div class="oh-label__info">
-                                <label class="oh-label" for="notice_period_ends">{% trans "Notice period end" %}</label>
+                                <label class="oh-label" for="notice_period_ends">{% trans "Notice period end"|escapejs %}</label>
                             </div>
                             <input type="date"
                                 name="notice_period_ends"

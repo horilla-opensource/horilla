@@ -78,7 +78,7 @@
                         class="oh-btn oh-btn--light"
                         style="flex: 1 0 auto; width: 40px; height: 40.68px; padding: 0"
                         title='{% trans "Delete" %}'
-                        onclick="return confirm('{% trans 'Do you want to delete this letter' %}?')"
+                        onclick="return confirm('{% trans 'Do you want to delete this letter'|escapejs %}?')"
                     ><ion-icon
                             class="text-danger md hydrated"
                             name="trash-outline"
@@ -119,7 +119,7 @@
                     <button
                         title="{% trans 'By approving the request employee will added to the offboarding pipeline' %}"
                         type="button"
-                        onclick="$(this).closest('form').find('input[name=status]').val('approved');resignLetterConfirmation('{% trans 'Do You really want to approve the request' %}?',$(this).closest('form').find('[type=submit]'),true)"
+                        onclick="$(this).closest('form').find('input[name=status]').val('approved');resignLetterConfirmation('{% trans 'Do You really want to approve the request'|escapejs %}?',$(this).closest('form').find('[type=submit]'),true)"
                         class="oh-btn oh-btn--success w-100 oh-btn--block w-100"
                     >
                         <ion-icon
@@ -144,7 +144,7 @@
                 {% endif %}
                 <button
                     type="button"
-                    onclick="$(this).closest('form').find('input[name=status]').val('rejected');resignLetterConfirmation('{% trans 'Do You really want to reject the request?' %}',$(this).closest('form').find('[type=submit]'))"
+                    onclick="$(this).closest('form').find('input[name=status]').val('rejected');resignLetterConfirmation('{% trans 'Do You really want to reject the request?'|escapejs %}',$(this).closest('form').find('[type=submit]'))"
                     class="oh-btn oh-btn--danger oh-btn--block w-100"
                 >
                     <ion-icon

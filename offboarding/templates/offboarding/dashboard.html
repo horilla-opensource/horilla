@@ -358,7 +358,7 @@
 
     function updateRefreshText() {
         const mins = Math.floor((Date.now() - lastRefresh) / 60000);
-        refreshText.textContent = mins < 1 ? '{% trans "Just now" %}' : mins + '{% trans "m ago" %}';
+        refreshText.textContent = mins < 1 ? '{% trans "Just now"|escapejs %}' : mins + '{% trans "m ago"|escapejs %}';
     }
     registerAutoRefresh(setInterval(updateRefreshText, 30000));
 
@@ -367,7 +367,7 @@
         localStorage.setItem(REFRESH_KEY, 'on');
         refreshDot.classList.add('ob-refresh__dot--pulse');
         refreshToggle.textContent = '⟳';
-        refreshToggle.title = '{% trans "Auto-refresh ON (5 min)" %}';
+        refreshToggle.title = '{% trans "Auto-refresh ON (5 min)"|escapejs %}';
         // Wrapped so a hidden tab does not keep fetching; refreshes once on return.
         const refreshTick = autoRefreshWhenVisible(() => {
             lastRefresh = Date.now();
@@ -382,7 +382,7 @@
         localStorage.setItem(REFRESH_KEY, 'off');
         refreshDot.classList.remove('ob-refresh__dot--pulse');
         refreshToggle.textContent = '⏸';
-        refreshToggle.title = '{% trans "Auto-refresh OFF" %}';
+        refreshToggle.title = '{% trans "Auto-refresh OFF"|escapejs %}';
         if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
     }
     refreshToggle.addEventListener('click', () => { if (autoRefreshOn) stopAutoRefresh(); else startAutoRefresh(); });
@@ -396,27 +396,27 @@
             document.getElementById('ob-kpi-grid').innerHTML = `
                 <a href="{% url 'offboarding-pipeline' %}" class="ob-kpi-card">
                     <div class="ob-kpi-card__icon ob-kpi-card__icon--red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
-                    <div class="ob-kpi-card__label">{% trans "Active Offboarding" %}</div>
+                    <div class="ob-kpi-card__label">{% trans "Active Offboarding"|escapejs %}</div>
                     <div class="ob-kpi-card__value">${data.active_offboarding}</div>
-                    <div class="ob-kpi-card__sub"><span class="ob-badge ob-badge--red">${data.exit_ratio}% {% trans "exit rate" %}</span></div>
+                    <div class="ob-kpi-card__sub"><span class="ob-badge ob-badge--red">${data.exit_ratio}% {% trans "exit rate"|escapejs %}</span></div>
                 </a>
                 <a href="{% url 'resignation-request-view' %}" class="ob-kpi-card">
                     <div class="ob-kpi-card__icon ob-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
-                    <div class="ob-kpi-card__label">{% trans "Resignations" %}</div>
+                    <div class="ob-kpi-card__label">{% trans "Resignations"|escapejs %}</div>
                     <div class="ob-kpi-card__value">${data.pending_resignations}</div>
-                    <div class="ob-kpi-card__sub">${data.approved_resignations > 0 ? '<span class="ob-badge ob-badge--green">' + data.approved_resignations + ' {% trans "approved" %}</span>' : '{% trans "Pending review" %}'}</div>
+                    <div class="ob-kpi-card__sub">${data.approved_resignations > 0 ? '<span class="ob-badge ob-badge--green">' + data.approved_resignations + ' {% trans "approved"|escapejs %}</span>' : '{% trans "Pending review"|escapejs %}'}</div>
                 </a>
                 <div class="ob-kpi-card ob-kpi-card--static" title="${'Task Completion = Completed Tasks (' + data.completed_tasks + ') / Total Tasks (' + data.total_tasks + ') × 100 = ' + data.task_completion + '%'}">
                     <div class="ob-kpi-card__icon ob-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-                    <div class="ob-kpi-card__label">{% trans "Task Completion" %}</div>
+                    <div class="ob-kpi-card__label">{% trans "Task Completion"|escapejs %}</div>
                     <div class="ob-kpi-card__value">${data.task_completion}%</div>
-                    <div class="ob-kpi-card__sub">${data.completed_tasks}/${data.total_tasks} {% trans "tasks done" %}</div>
+                    <div class="ob-kpi-card__sub">${data.completed_tasks}/${data.total_tasks} {% trans "tasks done"|escapejs %}</div>
                 </div>
                 <a href="{% url 'offboarding-pipeline' %}?type=archived" class="ob-kpi-card">
                     <div class="ob-kpi-card__icon ob-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
-                    <div class="ob-kpi-card__label">{% trans "Archived" %}</div>
+                    <div class="ob-kpi-card__label">{% trans "Archived"|escapejs %}</div>
                     <div class="ob-kpi-card__value">${data.archived}</div>
-                    <div class="ob-kpi-card__sub">${data.notice_ending_soon > 0 ? '<span class="ob-badge ob-badge--amber">' + data.notice_ending_soon + ' {% trans "notice ending" %}</span>' : '<span id="ob-avg-duration">{% trans "Completed offboarding" %}</span>'}</div>
+                    <div class="ob-kpi-card__sub">${data.notice_ending_soon > 0 ? '<span class="ob-badge ob-badge--amber">' + data.notice_ending_soon + ' {% trans "notice ending"|escapejs %}</span>' : '<span id="ob-avg-duration">{% trans "Completed offboarding"|escapejs %}</span>'}</div>
                 </a>`;
         });
     }
@@ -439,7 +439,7 @@
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ob-pipeline');
-            if (!data.stages.length) { el.innerHTML = emptyHtml('{% trans "No offboarding stages" %}'); return; }
+            if (!data.stages.length) { el.innerHTML = emptyHtml('{% trans "No offboarding stages"|escapejs %}'); return; }
             const stageColors = { notice_period: 'rgba(245,158,11,0.15)', interview: 'rgba(99,102,241,0.15)', handover: 'rgba(59,130,246,0.15)', fnf: 'rgba(168,85,247,0.15)', other: 'rgba(148,163,184,0.15)', archived: 'rgba(34,197,94,0.15)' };
             const stageTextColors = { notice_period: '#d97706', interview: '#4f46e5', handover: '#2563eb', fnf: '#7c3aed', other: '#64748b', archived: '#16a34a' };
             el.innerHTML = '<div class="ob-pipeline">' + data.stages.map(s =>
@@ -458,7 +458,7 @@
         .then(r => r.json())
         .then(data => {
             const total = data.statuses.reduce((a, s) => a + s.count, 0);
-            if (!total) { document.querySelector("#chart-resignation").innerHTML = emptyHtml('{% trans "No resignations" %}'); return; }
+            if (!total) { document.querySelector("#chart-resignation").innerHTML = emptyHtml('{% trans "No resignations"|escapejs %}'); return; }
             renderChart('resignation', document.querySelector("#chart-resignation"), {
                 series: data.statuses.map(s => s.count),
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
@@ -469,7 +469,7 @@
                 },
                 labels: data.statuses.map(s => s.label),
                 colors: ['#f59e0b', '#22c55e', '#ef4444'],
-                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total"|escapejs %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
                 stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
@@ -484,7 +484,7 @@
         .then(r => r.json())
         .then(data => {
             const total = data.statuses.reduce((a, s) => a + s.count, 0);
-            if (!total) { document.querySelector("#chart-tasks").innerHTML = emptyHtml('{% trans "No tasks" %}'); return; }
+            if (!total) { document.querySelector("#chart-tasks").innerHTML = emptyHtml('{% trans "No tasks"|escapejs %}'); return; }
             const taskColors = { todo: '#94a3b8', in_progress: '#3b82f6', stuck: '#ef4444', completed: '#22c55e' };
             renderChart('tasks', document.querySelector("#chart-tasks"), {
                 series: data.statuses.map(s => s.count),
@@ -495,7 +495,7 @@
                 },
                 labels: data.statuses.map(s => s.label),
                 colors: data.statuses.map(s => taskColors[s.status] || '#94a3b8'),
-                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total"|escapejs %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
                 stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
@@ -509,9 +509,9 @@
     fetchP("{% url 'offboarding-dashboard-dept' %}")
         .then(r => r.json())
         .then(data => {
-            if (!data.departments.length) { document.querySelector("#chart-dept-attrition").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            if (!data.departments.length) { document.querySelector("#chart-dept-attrition").innerHTML = emptyHtml('{% trans "No data"|escapejs %}'); return; }
             renderChart('dept-attrition', document.querySelector("#chart-dept-attrition"), {
-                series: [{ name: '{% trans "Exits" %}', data: data.departments.map(d => d.count) }],
+                series: [{ name: '{% trans "Exits"|escapejs %}', data: data.departments.map(d => d.count) }],
                 chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
                         const d = data.departments[config.dataPointIndex];
@@ -541,9 +541,9 @@
     fetchP("{% url 'offboarding-dashboard-reasons' %}")
         .then(r => r.json())
         .then(data => {
-            if (!data.reasons.length) { document.querySelector("#chart-exit-reasons").innerHTML = emptyHtml('{% trans "No exit reasons recorded" %}'); return; }
+            if (!data.reasons.length) { document.querySelector("#chart-exit-reasons").innerHTML = emptyHtml('{% trans "No exit reasons recorded"|escapejs %}'); return; }
             renderChart('exit-reasons', document.querySelector("#chart-exit-reasons"), {
-                series: [{ name: '{% trans "Count" %}', data: data.reasons.map(r => r.count) }],
+                series: [{ name: '{% trans "Count"|escapejs %}', data: data.reasons.map(r => r.count) }],
                 chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: () => {
                         window.location.href = "{% url 'resignation-request-view' %}";
@@ -567,11 +567,11 @@
     fetchP("{% url 'offboarding-dashboard-join-exit' %}")
         .then(r => r.json())
         .then(data => {
-            if (!data.months.length) { document.querySelector("#chart-join-exit").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            if (!data.months.length) { document.querySelector("#chart-join-exit").innerHTML = emptyHtml('{% trans "No data"|escapejs %}'); return; }
             renderChart('join-exit', document.querySelector("#chart-join-exit"), {
                 series: [
-                    { name: '{% trans "Joining" %}', data: data.months.map(m => m.joining) },
-                    { name: '{% trans "Exiting" %}', data: data.months.map(m => m.exiting) },
+                    { name: '{% trans "Joining"|escapejs %}', data: data.months.map(m => m.joining) },
+                    { name: '{% trans "Exiting"|escapejs %}', data: data.months.map(m => m.exiting) },
                 ],
                 chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
@@ -605,12 +605,12 @@
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ob-notice');
-            if (!data.employees.length) { el.innerHTML = '<div class="ob-info-panel__empty">{% trans "No active notice periods" %}</div>'; return; }
+            if (!data.employees.length) { el.innerHTML = '<div class="ob-info-panel__empty">{% trans "No active notice periods"|escapejs %}</div>'; return; }
             el.innerHTML = data.employees.map(e => {
                 const initials = e.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                 const avatarInner = e.avatar ? `<img src="${e.avatar}" alt="">` : initials;
                 let badge = '';
-                if (e.status === 'ended') badge = '<span class="ob-badge ob-badge--red">{% trans "Ended" %}</span>';
+                if (e.status === 'ended') badge = '<span class="ob-badge ob-badge--red">{% trans "Ended"|escapejs %}</span>';
                 else if (e.status === 'ending') badge = `<span class="ob-badge ob-badge--amber">${e.days_left}d</span>`;
                 else badge = `<span class="ob-badge ob-badge--green">${e.days_left}d</span>`;
                 return `<a href="/employee/employee-view/${e.id}/" class="ob-list-item">
@@ -622,7 +622,7 @@
                     <div class="ob-list-item__badge">${badge}</div>
                 </a>`;
             }).join('');
-        }).catch(() => { document.getElementById('ob-notice').innerHTML = '<div class="ob-info-panel__empty">{% trans "No data" %}</div>'; });
+        }).catch(() => { document.getElementById('ob-notice').innerHTML = '<div class="ob-info-panel__empty">{% trans "No data"|escapejs %}</div>'; });
     }
     loadNoticeTracker();
 
@@ -632,17 +632,17 @@
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ob-assets');
-            if (!data.assets.length) { el.innerHTML = '<div class="ob-info-panel__empty">{% trans "All assets returned" %}</div>'; return; }
+            if (!data.assets.length) { el.innerHTML = '<div class="ob-info-panel__empty">{% trans "All assets returned"|escapejs %}</div>'; return; }
             el.innerHTML = data.assets.map(a => {
                 return `<a href="/employee/employee-view/${a.id}/" class="ob-list-item">
                     <div class="ob-list-item__info">
                         <div class="ob-list-item__name">${a.employee}</div>
                         <div class="ob-list-item__detail">${a.asset} · ${a.category}</div>
                     </div>
-                    <span class="ob-badge ob-badge--red">{% trans "Not returned" %}</span>
+                    <span class="ob-badge ob-badge--red">{% trans "Not returned"|escapejs %}</span>
                 </a>`;
             }).join('');
-        }).catch(() => { document.getElementById('ob-assets').innerHTML = '<div class="ob-info-panel__empty">{% trans "No data" %}</div>'; });
+        }).catch(() => { document.getElementById('ob-assets').innerHTML = '<div class="ob-info-panel__empty">{% trans "No data"|escapejs %}</div>'; });
     }
     loadUnreturnedAssets();
 

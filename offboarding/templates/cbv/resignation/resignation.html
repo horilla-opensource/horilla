@@ -75,9 +75,9 @@
           function resignLetterConfirmation(params, target, approve = false) {
             // Define the select box options
             var selectOptions = ``;
-          var dateFields = '<label style="display:block;" for="notice_period_starts">{% trans "Start Date:" %}</label>' +
+          var dateFields = '<label style="display:block;" for="notice_period_starts">{% trans "Start Date:"|escapejs %}</label>' +
             `<input style="display:block;" onchange="$('#${target.siblings("input[name=notice_period_starts]").first().attr("id")}').val(this.value)" class="oh-input" type="date" id="notice_period_starts" name="notice_period_starts">` +
-            '<label style="display:block;" for="notice_period_ends">{% trans "End Date:" %}</label>' +
+            '<label style="display:block;" for="notice_period_ends">{% trans "End Date:"|escapejs %}</label>' +
             `<input style="display:block;" onchange="$('#${target.siblings("input[name=notice_period_ends]").first().attr("id")}').val(this.value)" class="oh-input" type="date" id="notice_period_ends" name="notice_period_ends">`;
 
           html = '<p>' + params + '</p>'
@@ -85,9 +85,9 @@
       <div class='row' style='overflow-x:hidden;'>
         <div class="col-12">
           <div class="oh-label__info" for="offboardingSelect">
-            <label class="oh-label" for="offboardingSelect">{% trans "Add to" %}</label>
+            <label class="oh-label" for="offboardingSelect">{% trans "Add to"|escapejs %}</label>
           </div>
-            <select id="offboardingSelect" class="oh-select oh-select2 w-100" name="reason" title="{% trans "Add to offboarding" %}">
+            <select id="offboardingSelect" class="oh-select oh-select2 w-100" name="reason" title="{% trans "Add to offboarding"|escapejs %}">
               // {% for offboarding in offboardings %}
                 <option value="{{offboarding.id}}">{{offboarding.title}}</option>
               // {% endfor %}
@@ -95,13 +95,13 @@
         </div>
         <div class="col-6 col-md-6">
           <div class="oh-label__info" for="notice_period_starts">
-            <label class="oh-label" for="notice_period_starts">{% trans "Planned to leave on" %}</label>
+            <label class="oh-label" for="notice_period_starts">{% trans "Planned to leave on"|escapejs %}</label>
           </div>
             <input type="date" onchange="$('#${target.siblings("input[name=notice_period_starts]").first().attr("id")}').val(this.value);" name="notice_period_starts" value="{% now "Y-m-d" %}"  class="oh-input w-100 form-control" required id="notice_period_starts">
         </div>
         <div class="col-6 col-md-6">
           <div class="oh-label__info" for="notice_period_ends">
-            <label class="oh-label" for="notice_period_ends">{% trans "Notice period end" %}</label>
+            <label class="oh-label" for="notice_period_ends">{% trans "Notice period end"|escapejs %}</label>
           </div>
             <input type="date" onchange="$('#${target.siblings("input[name=notice_period_ends]").first().attr("id")}').val(this.value);" name="notice_period_ends"  class="oh-input w-100 form-control" required id="notice_period_ends">
         </div>
