@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -153,15 +153,25 @@ class CredentialForm(HorillaFormView):
 
 
 @func_login_required
-@permission_required("whatsapp.delete_whatsappcredientials")
-@check_integration_enabled(app_name="whatsapp")
 def delete_credentials(request):
     """
     delete for Whatsapp credential settings view
     """
+    # This endpoint is a delete action with no content of its own to show; a
+    # genuine top-level browser navigation/reload should land on the real
+    # WhatsApp credentials page instead of a bare permission/error page.
+    if request.headers.get("Sec-Fetch-Mode") == "navigate":
+        return redirect(reverse("whatsapp-credential-view"))
+    return _delete_credentials(request)
 
-    id = request.GET["id"]
+
+@permission_required("whatsapp.delete_whatsappcredientials")
+@check_integration_enabled(app_name="whatsapp")
+def _delete_credentials(request):
+    id = request.GET.get("id")
     crediential = WhatsappCredientials.objects.filter(id=id).first()
+    if not crediential:
+        return HttpResponse()
     count = WhatsappCredientials.objects.count()
     crediential.delete()
     messages.success(request, _("Crediential deleted."))
