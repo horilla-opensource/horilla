@@ -1160,6 +1160,7 @@ def logout_user(request):
 
 
 @login_required
+# @hx_request_required
 def toggle_theme(request):
     if request.method == "POST":
         current = request.session.get("theme")
@@ -2914,6 +2915,7 @@ def rotating_work_type_assign_update(request, id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("base.change_rotatingworktypeassign")
 def rotating_work_type_assign_export(request):
     if request.META.get("HTTP_HX_REQUEST") == "true":
@@ -3607,6 +3609,7 @@ def rotating_shift_assign_update(request, id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("base.change_rotatingshiftassign")
 def rotating_shift_assign_export(request):
     if request.META.get("HTTP_HX_REQUEST"):
@@ -3633,6 +3636,7 @@ def normalize_list(lst):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("base.add_rotatingworktypeassign")
 def rotating_shift_assign_import(request):
     if request.method == "POST":
@@ -6497,6 +6501,7 @@ def history_field_settings(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("horilla_audit.change_accountblockunblock")
 def enable_account_block_unblock(request):
     if request.method == "POST":
@@ -6520,6 +6525,7 @@ def enable_account_block_unblock(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("employee.change_employee")
 def enable_profile_edit_feature(request):
 
@@ -6579,6 +6585,7 @@ def default_export_access_settings_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.change_defaultexportpermission")
 def enable_default_export_access(request):
     if request.method == "POST":

@@ -20,11 +20,12 @@ from base.cbv.work_type_request import WorkRequestListView
 from base.methods import filtersubordinates, is_reportingmanager
 from base.models import WorkTypeRequest
 from employee.models import Employee
-from horilla_views.cbv_methods import login_required
+from horilla_views.cbv_methods import hx_request_required, login_required
 from horilla_views.generic.cbv.views import HorillaNavView, HorillaTabView
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class ProfileTabShellView(TemplateView):
     """
     Minimal placeholder shown when a profile-nested sub-tab is first
@@ -114,6 +115,8 @@ class WorkTypeIndividualTabList(WorkRequestListView):
     ] + [(_("Status"), "request_status")]
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class WorkTypeIndividualTabShell(ProfileTabShellView):
     """
     Shell for the Work type request profile tab.
@@ -357,6 +360,8 @@ class RotatingWorkIndividualTab(GeneralParent):
                 """
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class RotatingWorkIndividualTabShell(ProfileTabShellView):
     """
     Shell for the Rotating work type profile tab.
