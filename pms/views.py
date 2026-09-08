@@ -2278,6 +2278,7 @@ def feedback_archive(request, id):
 
 
 @login_required
+@hx_request_required
 def get_collegues(request):
     """
     Get collegues and subordinates for the manager.
@@ -3614,6 +3615,7 @@ def key_result_current_value_update(request):
 
 
 @login_required
+@hx_request_required
 def get_keyresult_data(request):
     """
     Function to get the data of keyresult and return to the form.
