@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-18 13:57+0530\n"
+"POT-Creation-Date: 2026-09-08 09:16+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,8 @@ msgid "No rows are selected from Validate Attendances."
 msgstr "لم يتم تحديد أي صفوف من التحقق من الحضور."
 
 msgid "Do you really want to approve OT for all the selected attendances?"
-msgstr "هل تريد حقًا الموافقة على ساعات العمل الإضافية لجميع سجلات الحضور المحددة؟"
+msgstr ""
+"هل تريد حقًا الموافقة على ساعات العمل الإضافية لجميع سجلات الحضور المحددة؟"
 
 msgid "No rows are selected from OT Attendances."
 msgstr "لم يتم تحديد أي صفوف في سجلات حضور العمل الإضافي."
@@ -48,11 +49,25 @@ msgstr "يوجد طلب حضور لتحديث هذا الحضور قبل الت�
 msgid "View Request"
 msgstr "عرض الطلب"
 
-msgid "Some selected requests have already been approved."
-msgstr "لقد تمت الموافقة بالفعل على بعض الطلبات المحددة."
+msgid "Stage updated"
+msgstr "تم تحديث المرحلة"
 
-msgid "Some selected requests have already been rejected."
-msgstr "لقد تم رفض بعض الطلبات المحددة بالفعل."
+msgid "Confirm Stage Change"
+msgstr "تأكيد تغيير المرحلة"
+
+msgid ""
+"The candidate is being moved from %(from)s to the %(to)s stage. Do you want "
+"to proceed?"
+msgstr "يتم نقل المرشح من %(from)s إلى %(to)s. هل تريد المتابعة؟"
+
+msgid "Don't show this again in this session"
+msgstr "لا تظهر هذا مرة أخرى في هذه الجلسة"
+
+msgid "Cannot Change Stage"
+msgstr "لا يمكن تغيير المرحلة"
+
+msgid "This move is not allowed."
+msgstr "هذه الخطوة غير مسموح بها."
 
 msgid "Do you wish to create a Leave Report?"
 msgstr "هل ترغب في إنشاء تقرير إجازة؟"
@@ -77,6 +92,168 @@ msgstr "تم الاستيراد بنجاح!"
 
 msgid "Please upload a file with the .xlsx extension only."
 msgstr "يرجى تحميل الملف بامتداد .xlsx فقط."
+
+msgid "Dashboard"
+msgstr "لوحة التحكم"
+
+msgid "Horilla dashboard section"
+msgstr "قسم لوحة تحكم Horilla"
+
+msgid "Mark Attendance"
+msgstr "تسجيل الحضور"
+
+msgid "Used to mark your attendance"
+msgstr "يُستخدم لتسجيل حضورك"
+
+msgid "Settings"
+msgstr "الإعدادات"
+
+msgid "Settings configurations"
+msgstr "تكوينات الإعدادات"
+
+msgid "Notification"
+msgstr "إشعار"
+
+msgid "Notifications section"
+msgstr "قسم الإشعارات"
+
+msgid "Language"
+msgstr "اللغة"
+
+msgid "Multi-Language options"
+msgstr "خيارات تعدد اللغات"
+
+msgid "Multi-Company"
+msgstr "متعدد الشركات"
+
+msgid "Multi-Company options"
+msgstr "خيارات تعدد الشركات"
+
+msgid "Profile"
+msgstr "الملف الشخصي"
+
+msgid "Profile and change password options"
+msgstr "خيارات الملف الشخصي وتغيير كلمة المرور"
+
+msgid "Dashboard Tiles"
+msgstr "بلاطات لوحة التحكم"
+
+msgid "Horilla Dashboard Tiles"
+msgstr "بلاطات لوحة تحكم Horilla"
+
+msgid "Dashboard Actions"
+msgstr "إجراءات لوحة التحكم"
+
+msgid "Approve or Reject Options"
+msgstr "الموافقة على الخيارات أو رفضها"
+
+msgid "Add announcement"
+msgstr "إضافة إعلان"
+
+msgid "Create announcement from dashboard"
+msgstr "إنشاء إعلان من لوحة التحكم"
+
+msgid "Quick Actions"
+msgstr "إجراءات سريعة"
+
+msgid "Create Quick Requests"
+msgstr "إنشاء طلبات سريعة"
+
+msgid "Company"
+msgstr "الشركة"
+
+msgid "Your current company access"
+msgstr "وصولك الحالي للشركة"
+
+msgid "App"
+msgstr "برنامج"
+
+msgid "Horilla Hr Apps. eg Dashboard"
+msgstr "تطبيقات Horilla HR مثل لوحة التحكم"
+
+msgid "Pipeline"
+msgstr "خط الأنابيب"
+
+msgid "Recruitment pipeline management"
+msgstr "إدارة خط أنابيب التوظيف"
+
+msgid "New Recruitment"
+msgstr "توظيف جديد"
+
+msgid "Add new recruitment"
+msgstr "إضافة توظيف جديد"
+
+msgid "Filter"
+msgstr "تصفية"
+
+msgid "Pipeline filter option"
+msgstr "خيار تصفية خط الأنابيب"
+
+msgid "Toggle View"
+msgstr "تبديل العرض"
+
+msgid "Toggle view type"
+msgstr "تبديل نوع العرض"
+
+msgid "Search"
+msgstr "بحث"
+
+msgid "Search in candidate, recruitment and stage"
+msgstr "البحث في المرشح والتوظيف والمرحلة"
+
+msgid "Filter Tag"
+msgstr "وسم التصفية"
+
+msgid "Filter tag option"
+msgstr "خيار وسم التصفية"
+
+msgid "Quick Filters"
+msgstr "تصفية سريعة"
+
+msgid "Recruitment"
+msgstr "التوظيف"
+
+msgid "Add Stage"
+msgstr "أضف مرحلة"
+
+msgid "Add new stage to recruitment"
+msgstr "إضافة مرحلة جديدة للتوظيف"
+
+msgid "Stage"
+msgstr "المرحلة"
+
+msgid "Recruitment stage"
+msgstr "مرحلة التوظيف"
+
+msgid "Add candidate"
+msgstr "إضافة مرشح"
+
+msgid "Add candidate to stage option"
+msgstr "إضافة مرشح إلى خيار المرحلة"
+
+msgid "Candidate"
+msgstr "مُرَشَّح"
+
+msgid "Candidate record"
+msgstr "سجل المرشح"
+
+msgid "Rating"
+msgstr "التقييم"
+
+msgid "Candidate rating option"
+msgstr "خيار تصنيف المرشح"
+
+msgid "Change Stage"
+msgstr "مرحلة التغيير"
+
+msgid "Candidate change stage option"
+msgstr "خيار مرحلة تغيير المرشح"
+
+msgid "Options"
+msgstr "خيارات"
+
+msgid "Candidate management options"
+msgstr "خيارات إدارة المرشحين"
 
 msgid "visible"
 msgstr ""
@@ -144,6 +321,39 @@ msgstr ""
 msgid "customdata"
 msgstr ""
 
+msgid "All your company and base configurations"
+msgstr "جميع تكوينات شركتك وقاعدتك"
+
+msgid "Settings Options"
+msgstr "خيارات الإعدادات"
+
+msgid "Settings menu bar"
+msgstr "شريط قائمة الإعدادات"
+
+msgid "Settings View"
+msgstr "عرض الإعدادات"
+
+msgid "Selected settings view"
+msgstr "عرض الإعدادات المحدد"
+
+msgid "Project: "
+msgstr ""
+
+msgid "watchFile"
+msgstr ""
+
+msgid "watchDirectory"
+msgstr ""
+
+msgid "getCompletionsAtPosition: getCompletionEntriesFromSymbols: "
+msgstr ""
+
+msgid "placeOpenBraceOnNewLineForControlBlocks"
+msgstr ""
+
+msgid "placeOpenBraceOnNewLineForFunctions"
+msgstr ""
+
 msgid "punc"
 msgstr ""
 
@@ -157,6 +367,66 @@ msgid "arrow"
 msgstr ""
 
 msgid "operator"
+msgstr ""
+
+msgid "Expected "
+msgstr ""
+
+msgid "I"
+msgstr ""
+
+msgid "E"
+msgstr ""
+
+msgid "X"
+msgstr ""
+
+msgid "B"
+msgstr ""
+
+msgid "Invalid generatedCharacter found"
+msgstr ""
+
+msgid "Invalid sourceIndex found"
+msgstr ""
+
+msgid "Unsupported Format: No entries after sourceIndex"
+msgstr ""
+
+msgid "Invalid sourceLine found"
+msgstr ""
+
+msgid "Unsupported Format: No entries after sourceLine"
+msgstr ""
+
+msgid "Invalid sourceCharacter found"
+msgstr ""
+
+msgid "Invalid nameIndex found"
+msgstr ""
+
+msgid "Unsupported Error Format: Entries after nameIndex"
+msgstr ""
+
+msgid "collectAutoImports"
+msgstr ""
+
+msgid "continuePreviousIncompleteResponse"
+msgstr ""
+
+msgid "TypeRoots version has changed; provide new program"
+msgstr ""
+
+msgid "getIndentationAtPosition: getCurrentSourceFile: "
+msgstr ""
+
+msgid "getIndentationAtPosition: computeIndentation  : "
+msgstr ""
+
+msgid "Program"
+msgstr ""
+
+msgid "BlockStatement"
 msgstr ""
 
 msgid "close"
@@ -180,6 +450,9 @@ msgstr "جارٍ التحميل..."
 msgid "No Records found"
 msgstr "لم يتم العثور على سجلات"
 
+msgid "Ok"
+msgstr "نعم"
+
 msgid "Do you want to download the excel file?"
 msgstr "هل تريد تحميل ملف الاكسل؟"
 
@@ -201,156 +474,36 @@ msgstr "هل تريد حقًا الموافقة على جميع الطلبات �
 msgid "Do you really want to unarchive all the selected records?"
 msgstr "هل تريد حقًا إلغاء أرشفة كافة السجلات المحددة؟"
 
-msgid "Ok"
-msgstr "نعم"
-
 msgid "Total vacancy is %(vacancy)s."
 msgstr "إجمالي الشواغر هو %(vacancy)s."
 
-msgid "Are you sure to change the candidate from %(from)s stage to %(to)s stage"
+msgid ""
+"Are you sure to change the candidate from %(from)s stage to %(to)s stage"
 msgstr "هل أنت متأكد من تغيير المرشح من مرحلة %(from)s إلى مرحلة %(to)s"
 
-msgid "Stage updated"
-msgstr "تم تحديث المرحلة"
+msgid "Retry"
+msgstr "إعادة المحاولة"
 
-msgid "Confirm Stage Change"
-msgstr "تأكيد تغيير المرحلة"
+msgid "Something went wrong while loading this data."
+msgstr "حدث خطأ أثناء تحميل هذه البيانات."
 
-msgid "The candidate is being moved from %(from)s to the %(to)s stage. Do you want to proceed?"
-msgstr "يتم نقل المرشح من %(from)s إلى %(to)s. هل تريد المتابعة؟"
+msgid "Request failed (status %(status)s)."
+msgstr "فشل الطلب (الحالة %(status)s)."
 
-msgid "Don't show this again in this session"
-msgstr "لا تظهر هذا مرة أخرى في هذه الجلسة"
+msgid "The request took too long to respond."
+msgstr "استغرق الطلب وقتًا طويلاً للاستجابة."
 
-msgid "Cannot Change Stage"
-msgstr "لا يمكن تغيير المرحلة"
+#~ msgid "Some selected requests have already been approved."
+#~ msgstr "لقد تمت الموافقة بالفعل على بعض الطلبات المحددة."
 
-msgid "This move is not allowed."
-msgstr "هذه الخطوة غير مسموح بها."
+#~ msgid "Some selected requests have already been rejected."
+#~ msgstr "لقد تم رفض بعض الطلبات المحددة بالفعل."
 
-msgid "Do you really want to delete all the selected attendances?"
-msgstr "هل تريد حقًا حذف كافة الحضور المحدد؟"
-msgid "Do you really want to delete this employee?"
-msgstr "هل تريد حقًا حذف هذا الموظف؟"
-msgid "No rows are selected for deleting attendances."
-msgstr "لم يتم تحديد أي صفوف لحذف الحضور."
+#~ msgid "Do you really want to delete all the selected attendances?"
+#~ msgstr "هل تريد حقًا حذف كافة الحضور المحدد؟"
 
+#~ msgid "Do you really want to delete this employee?"
+#~ msgstr "هل تريد حقًا حذف هذا الموظف؟"
 
-msgid "Add Stage"
-msgstr "أضف مرحلة"
-msgid "Add announcement"
-msgstr "إضافة إعلان"
-msgid "Add candidate"
-msgstr "إضافة مرشح"
-msgid "Add candidate to stage option"
-msgstr "إضافة مرشح إلى خيار المرحلة"
-msgid "Add new recruitment"
-msgstr "إضافة توظيف جديد"
-msgid "Add new stage to recruitment"
-msgstr "إضافة مرحلة جديدة للتوظيف"
-msgid "All your company and base configurations"
-msgstr "جميع تكوينات شركتك وقاعدتك"
-msgid "App"
-msgstr "برنامج"
-msgid "Approve or Reject Options"
-msgstr "الموافقة على الخيارات أو رفضها"
-msgid "Candidate"
-msgstr "مُرَشَّح"
-msgid "Candidate change stage option"
-msgstr "خيار مرحلة تغيير المرشح"
-msgid "Candidate management options"
-msgstr "خيارات إدارة المرشحين"
-msgid "Candidate rating option"
-msgstr "خيار تصنيف المرشح"
-msgid "Candidate record"
-msgstr "سجل المرشح"
-msgid "Change Stage"
-msgstr "مرحلة التغيير"
-msgid "Company"
-msgstr "الشركة"
-msgid "Create Quick Requests"
-msgstr "إنشاء طلبات سريعة"
-msgid "Create announcement from dashboard"
-msgstr "إنشاء إعلان من لوحة التحكم"
-msgid "Dashboard"
-msgstr "لوحة التحكم"
-msgid "Dashboard Actions"
-msgstr "إجراءات لوحة التحكم"
-msgid "Dashboard Tiles"
-msgstr "بلاطات لوحة التحكم"
-msgid "Filter"
-msgstr "تصفية"
-msgid "Filter Tag"
-msgstr "وسم التصفية"
-msgid "Filter tag option"
-msgstr "خيار وسم التصفية"
-msgid "Horilla Dashboard Tiles"
-msgstr "بلاطات لوحة تحكم Horilla"
-msgid "Horilla Hr Apps. eg Dashboard"
-msgstr "تطبيقات Horilla HR مثل لوحة التحكم"
-msgid "Horilla dashboard section"
-msgstr "قسم لوحة تحكم Horilla"
-msgid "Language"
-msgstr "اللغة"
-msgid "Mark Attendance"
-msgstr "تسجيل الحضور"
-msgid "Multi-Company"
-msgstr "متعدد الشركات"
-msgid "Multi-Company options"
-msgstr "خيارات تعدد الشركات"
-msgid "Multi-Language options"
-msgstr "خيارات تعدد اللغات"
-msgid "New Recruitment"
-msgstr "توظيف جديد"
-msgid "Notification"
-msgstr "إشعار"
-msgid "Notifications section"
-msgstr "قسم الإشعارات"
-msgid "Options"
-msgstr "خيارات"
-msgid "Pipeline"
-msgstr "خط الأنابيب"
-msgid "Pipeline filter option"
-msgstr "خيار تصفية خط الأنابيب"
-msgid "Profile"
-msgstr "الملف الشخصي"
-msgid "Profile and change password options"
-msgstr "خيارات الملف الشخصي وتغيير كلمة المرور"
-msgid "Quick Actions"
-msgstr "إجراءات سريعة"
-msgid "Quick Filters"
-msgstr "تصفية سريعة"
-msgid "Rating"
-msgstr "التقييم"
-msgid "Recruitment"
-msgstr "التوظيف"
-msgid "Recruitment pipeline management"
-msgstr "إدارة خط أنابيب التوظيف"
-msgid "Recruitment stage"
-msgstr "مرحلة التوظيف"
-msgid "Search"
-msgstr "بحث"
-msgid "Search in candidate, recruitment and stage"
-msgstr "البحث في المرشح والتوظيف والمرحلة"
-msgid "Selected settings view"
-msgstr "عرض الإعدادات المحدد"
-msgid "Settings"
-msgstr "الإعدادات"
-msgid "Settings Options"
-msgstr "خيارات الإعدادات"
-msgid "Settings View"
-msgstr "عرض الإعدادات"
-msgid "Settings configurations"
-msgstr "تكوينات الإعدادات"
-msgid "Settings menu bar"
-msgstr "شريط قائمة الإعدادات"
-msgid "Stage"
-msgstr "المرحلة"
-msgid "Toggle View"
-msgstr "تبديل العرض"
-msgid "Toggle view type"
-msgstr "تبديل نوع العرض"
-msgid "Used to mark your attendance"
-msgstr "يُستخدم لتسجيل حضورك"
-msgid "Your current company access"
-msgstr "وصولك الحالي للشركة"
+#~ msgid "No rows are selected for deleting attendances."
+#~ msgstr "لم يتم تحديد أي صفوف لحذف الحضور."

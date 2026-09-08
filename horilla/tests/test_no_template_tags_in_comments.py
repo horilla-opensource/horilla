@@ -107,8 +107,7 @@ class TemplateTagsInCommentsTests(unittest.TestCase):
             "Django parses these tags even though they sit in a CSS/JS comment, "
             "so they run on every render and raise when what they resolve is "
             "missing. Reword the comment so it does not contain template "
-            "syntax (or wrap it in {% verbatim %}):\n  "
-            + "\n  ".join(offences),
+            "syntax (or wrap it in {% verbatim %}):\n  " + "\n  ".join(offences),
         )
 
     def test_detects_a_planted_offence(self):

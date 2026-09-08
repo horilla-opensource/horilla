@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-18 13:57+0530\n"
+"POT-Creation-Date: 2026-09-08 09:16+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,11 +52,27 @@ msgstr ""
 msgid "View Request"
 msgstr "Afficher la demande"
 
-msgid "Some selected requests have already been approved."
-msgstr "Certaines demandes sélectionnées ont déjà été approuvées."
+msgid "Stage updated"
+msgstr "Étape mise à jour"
 
-msgid "Some selected requests have already been rejected."
-msgstr "Certaines demandes sélectionnées ont déjà été rejetées."
+msgid "Confirm Stage Change"
+msgstr "Confirmer le changement d'étape"
+
+msgid ""
+"The candidate is being moved from %(from)s to the %(to)s stage. Do you want "
+"to proceed?"
+msgstr ""
+"Le candidat passe de l'étape %(from)s à l'étape %(to)s. Voulez-vous "
+"continuer ?"
+
+msgid "Don't show this again in this session"
+msgstr "Ne plus montrer cela dans cette session"
+
+msgid "Cannot Change Stage"
+msgstr "Impossible de changer d'étape"
+
+msgid "This move is not allowed."
+msgstr "Ce déplacement n'est pas autorisé."
 
 msgid "Do you wish to create a Leave Report?"
 msgstr "Souhaitez-vous créer un rapport de congé ?"
@@ -81,6 +97,168 @@ msgstr "Importé avec succès !"
 
 msgid "Please upload a file with the .xlsx extension only."
 msgstr "Veuillez télécharger un fichier avec l'extension .xlsx uniquement."
+
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+msgid "Horilla dashboard section"
+msgstr "Section du tableau de bord Horilla"
+
+msgid "Mark Attendance"
+msgstr "Pointer la présence"
+
+msgid "Used to mark your attendance"
+msgstr "Utilisé pour pointer votre présence"
+
+msgid "Settings"
+msgstr "Paramètres"
+
+msgid "Settings configurations"
+msgstr "Configurations des paramètres"
+
+msgid "Notification"
+msgstr "Notification"
+
+msgid "Notifications section"
+msgstr "Section des notifications"
+
+msgid "Language"
+msgstr "Langue"
+
+msgid "Multi-Language options"
+msgstr "Options multilingues"
+
+msgid "Multi-Company"
+msgstr "Multi-entreprise"
+
+msgid "Multi-Company options"
+msgstr "Options multi-entreprise"
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Profile and change password options"
+msgstr "Options de profil et de changement de mot de passe"
+
+msgid "Dashboard Tiles"
+msgstr "Tuiles du tableau de bord"
+
+msgid "Horilla Dashboard Tiles"
+msgstr "Tuiles du tableau de bord Horilla"
+
+msgid "Dashboard Actions"
+msgstr "Actions du tableau de bord"
+
+msgid "Approve or Reject Options"
+msgstr "Options d'approbation ou de rejet"
+
+msgid "Add announcement"
+msgstr "Ajouter une annonce"
+
+msgid "Create announcement from dashboard"
+msgstr "Créer une annonce depuis le tableau de bord"
+
+msgid "Quick Actions"
+msgstr "Actions rapides"
+
+msgid "Create Quick Requests"
+msgstr "Créer des demandes rapides"
+
+msgid "Company"
+msgstr "Entreprise"
+
+msgid "Your current company access"
+msgstr "Votre accès actuel à l'entreprise"
+
+msgid "App"
+msgstr "Application"
+
+msgid "Horilla Hr Apps. eg Dashboard"
+msgstr "Applications Horilla RH, p. ex. Tableau de bord"
+
+msgid "Pipeline"
+msgstr "Pipeline"
+
+msgid "Recruitment pipeline management"
+msgstr "Gestion du pipeline de recrutement"
+
+msgid "New Recruitment"
+msgstr "Nouveau recrutement"
+
+msgid "Add new recruitment"
+msgstr "Ajouter un nouveau recrutement"
+
+msgid "Filter"
+msgstr "Filtrer"
+
+msgid "Pipeline filter option"
+msgstr "Option de filtre du pipeline"
+
+msgid "Toggle View"
+msgstr "Basculer l'affichage"
+
+msgid "Toggle view type"
+msgstr "Basculer le type d'affichage"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Search in candidate, recruitment and stage"
+msgstr "Rechercher dans candidat, recrutement et étape"
+
+msgid "Filter Tag"
+msgstr "Balise de filtre"
+
+msgid "Filter tag option"
+msgstr "Option de balise de filtre"
+
+msgid "Quick Filters"
+msgstr "Filtres rapides"
+
+msgid "Recruitment"
+msgstr "Recrutement"
+
+msgid "Add Stage"
+msgstr "Ajouter une étape"
+
+msgid "Add new stage to recruitment"
+msgstr "Ajouter une nouvelle étape au recrutement"
+
+msgid "Stage"
+msgstr "Étape"
+
+msgid "Recruitment stage"
+msgstr "Étape de recrutement"
+
+msgid "Add candidate"
+msgstr "Ajouter un candidat"
+
+msgid "Add candidate to stage option"
+msgstr "Option pour ajouter un candidat à l'étape"
+
+msgid "Candidate"
+msgstr "Candidat"
+
+msgid "Candidate record"
+msgstr "Fiche candidat"
+
+msgid "Rating"
+msgstr "Note"
+
+msgid "Candidate rating option"
+msgstr "Option de notation du candidat"
+
+msgid "Change Stage"
+msgstr "Changer d'étape"
+
+msgid "Candidate change stage option"
+msgstr "Option de changement d'étape du candidat"
+
+msgid "Options"
+msgstr "Options"
+
+msgid "Candidate management options"
+msgstr "Options de gestion des candidats"
 
 msgid "visible"
 msgstr ""
@@ -148,6 +326,39 @@ msgstr ""
 msgid "customdata"
 msgstr ""
 
+msgid "All your company and base configurations"
+msgstr "Toutes vos configurations d'entreprise et de base"
+
+msgid "Settings Options"
+msgstr "Options des paramètres"
+
+msgid "Settings menu bar"
+msgstr "Barre de menu des paramètres"
+
+msgid "Settings View"
+msgstr "Vue des paramètres"
+
+msgid "Selected settings view"
+msgstr "Vue des paramètres sélectionnée"
+
+msgid "Project: "
+msgstr ""
+
+msgid "watchFile"
+msgstr ""
+
+msgid "watchDirectory"
+msgstr ""
+
+msgid "getCompletionsAtPosition: getCompletionEntriesFromSymbols: "
+msgstr ""
+
+msgid "placeOpenBraceOnNewLineForControlBlocks"
+msgstr ""
+
+msgid "placeOpenBraceOnNewLineForFunctions"
+msgstr ""
+
 msgid "punc"
 msgstr ""
 
@@ -161,6 +372,66 @@ msgid "arrow"
 msgstr ""
 
 msgid "operator"
+msgstr ""
+
+msgid "Expected "
+msgstr ""
+
+msgid "I"
+msgstr ""
+
+msgid "E"
+msgstr ""
+
+msgid "X"
+msgstr ""
+
+msgid "B"
+msgstr ""
+
+msgid "Invalid generatedCharacter found"
+msgstr ""
+
+msgid "Invalid sourceIndex found"
+msgstr ""
+
+msgid "Unsupported Format: No entries after sourceIndex"
+msgstr ""
+
+msgid "Invalid sourceLine found"
+msgstr ""
+
+msgid "Unsupported Format: No entries after sourceLine"
+msgstr ""
+
+msgid "Invalid sourceCharacter found"
+msgstr ""
+
+msgid "Invalid nameIndex found"
+msgstr ""
+
+msgid "Unsupported Error Format: Entries after nameIndex"
+msgstr ""
+
+msgid "collectAutoImports"
+msgstr ""
+
+msgid "continuePreviousIncompleteResponse"
+msgstr ""
+
+msgid "TypeRoots version has changed; provide new program"
+msgstr ""
+
+msgid "getIndentationAtPosition: getCurrentSourceFile: "
+msgstr ""
+
+msgid "getIndentationAtPosition: computeIndentation  : "
+msgstr ""
+
+msgid "Program"
+msgstr ""
+
+msgid "BlockStatement"
 msgstr ""
 
 msgid "close"
@@ -184,6 +455,9 @@ msgstr "Téléversement en cours..."
 msgid "No Records found"
 msgstr "Aucun enregistrement trouvé"
 
+msgid "Ok"
+msgstr "D'accord"
+
 msgid "Do you want to download the excel file?"
 msgstr "Voulez-vous télécharger le fichier Excel ?"
 
@@ -206,156 +480,38 @@ msgid "Do you really want to unarchive all the selected records?"
 msgstr ""
 "Voulez-vous vraiment désarchiver tous les enregistrements sélectionnés ?"
 
-msgid "Ok"
-msgstr "D'accord"
-
 msgid "Total vacancy is %(vacancy)s."
 msgstr "Le poste vacant total est de %(vacancy)s."
 
-msgid "Are you sure to change the candidate from %(from)s stage to %(to)s stage"
-msgstr "Êtes-vous sûr de faire passer le candidat de l'étape %(from)s à l'étape %(to)s"
+msgid ""
+"Are you sure to change the candidate from %(from)s stage to %(to)s stage"
+msgstr ""
+"Êtes-vous sûr de faire passer le candidat de l'étape %(from)s à l'étape %"
+"(to)s"
 
-msgid "Stage updated"
-msgstr "Étape mise à jour"
+msgid "Retry"
+msgstr ""
 
-msgid "Confirm Stage Change"
-msgstr "Confirmer le changement d'étape"
+msgid "Something went wrong while loading this data."
+msgstr ""
 
-msgid "The candidate is being moved from %(from)s to the %(to)s stage. Do you want to proceed?"
-msgstr "Le candidat passe de l'étape %(from)s à l'étape %(to)s. Voulez-vous continuer ?"
+msgid "Request failed (status %(status)s)."
+msgstr ""
 
-msgid "Don't show this again in this session"
-msgstr "Ne plus montrer cela dans cette session"
+msgid "The request took too long to respond."
+msgstr ""
 
-msgid "Cannot Change Stage"
-msgstr "Impossible de changer d'étape"
+#~ msgid "Some selected requests have already been approved."
+#~ msgstr "Certaines demandes sélectionnées ont déjà été approuvées."
 
-msgid "This move is not allowed."
-msgstr "Ce déplacement n'est pas autorisé."
+#~ msgid "Some selected requests have already been rejected."
+#~ msgstr "Certaines demandes sélectionnées ont déjà été rejetées."
 
-msgid "Do you really want to delete all the selected attendances?"
-msgstr "Voulez-vous vraiment supprimer toutes les présences sélectionnées ?"
-msgid "Do you really want to delete this employee?"
-msgstr "Voulez-vous vraiment supprimer cet employé ?"
-msgid "No rows are selected for deleting attendances."
-msgstr "Aucune ligne n'est sélectionnée pour supprimer les présences."
+#~ msgid "Do you really want to delete all the selected attendances?"
+#~ msgstr "Voulez-vous vraiment supprimer toutes les présences sélectionnées ?"
 
+#~ msgid "Do you really want to delete this employee?"
+#~ msgstr "Voulez-vous vraiment supprimer cet employé ?"
 
-msgid "Add Stage"
-msgstr "Ajouter une étape"
-msgid "Add announcement"
-msgstr "Ajouter une annonce"
-msgid "Add candidate"
-msgstr "Ajouter un candidat"
-msgid "Add candidate to stage option"
-msgstr "Option pour ajouter un candidat à l'étape"
-msgid "Add new recruitment"
-msgstr "Ajouter un nouveau recrutement"
-msgid "Add new stage to recruitment"
-msgstr "Ajouter une nouvelle étape au recrutement"
-msgid "All your company and base configurations"
-msgstr "Toutes vos configurations d'entreprise et de base"
-msgid "App"
-msgstr "Application"
-msgid "Approve or Reject Options"
-msgstr "Options d'approbation ou de rejet"
-msgid "Candidate"
-msgstr "Candidat"
-msgid "Candidate change stage option"
-msgstr "Option de changement d'étape du candidat"
-msgid "Candidate management options"
-msgstr "Options de gestion des candidats"
-msgid "Candidate rating option"
-msgstr "Option de notation du candidat"
-msgid "Candidate record"
-msgstr "Fiche candidat"
-msgid "Change Stage"
-msgstr "Changer d'étape"
-msgid "Company"
-msgstr "Entreprise"
-msgid "Create Quick Requests"
-msgstr "Créer des demandes rapides"
-msgid "Create announcement from dashboard"
-msgstr "Créer une annonce depuis le tableau de bord"
-msgid "Dashboard"
-msgstr "Tableau de bord"
-msgid "Dashboard Actions"
-msgstr "Actions du tableau de bord"
-msgid "Dashboard Tiles"
-msgstr "Tuiles du tableau de bord"
-msgid "Filter"
-msgstr "Filtrer"
-msgid "Filter Tag"
-msgstr "Balise de filtre"
-msgid "Filter tag option"
-msgstr "Option de balise de filtre"
-msgid "Horilla Dashboard Tiles"
-msgstr "Tuiles du tableau de bord Horilla"
-msgid "Horilla Hr Apps. eg Dashboard"
-msgstr "Applications Horilla RH, p. ex. Tableau de bord"
-msgid "Horilla dashboard section"
-msgstr "Section du tableau de bord Horilla"
-msgid "Language"
-msgstr "Langue"
-msgid "Mark Attendance"
-msgstr "Pointer la présence"
-msgid "Multi-Company"
-msgstr "Multi-entreprise"
-msgid "Multi-Company options"
-msgstr "Options multi-entreprise"
-msgid "Multi-Language options"
-msgstr "Options multilingues"
-msgid "New Recruitment"
-msgstr "Nouveau recrutement"
-msgid "Notification"
-msgstr "Notification"
-msgid "Notifications section"
-msgstr "Section des notifications"
-msgid "Options"
-msgstr "Options"
-msgid "Pipeline"
-msgstr "Pipeline"
-msgid "Pipeline filter option"
-msgstr "Option de filtre du pipeline"
-msgid "Profile"
-msgstr "Profil"
-msgid "Profile and change password options"
-msgstr "Options de profil et de changement de mot de passe"
-msgid "Quick Actions"
-msgstr "Actions rapides"
-msgid "Quick Filters"
-msgstr "Filtres rapides"
-msgid "Rating"
-msgstr "Note"
-msgid "Recruitment"
-msgstr "Recrutement"
-msgid "Recruitment pipeline management"
-msgstr "Gestion du pipeline de recrutement"
-msgid "Recruitment stage"
-msgstr "Étape de recrutement"
-msgid "Search"
-msgstr "Rechercher"
-msgid "Search in candidate, recruitment and stage"
-msgstr "Rechercher dans candidat, recrutement et étape"
-msgid "Selected settings view"
-msgstr "Vue des paramètres sélectionnée"
-msgid "Settings"
-msgstr "Paramètres"
-msgid "Settings Options"
-msgstr "Options des paramètres"
-msgid "Settings View"
-msgstr "Vue des paramètres"
-msgid "Settings configurations"
-msgstr "Configurations des paramètres"
-msgid "Settings menu bar"
-msgstr "Barre de menu des paramètres"
-msgid "Stage"
-msgstr "Étape"
-msgid "Toggle View"
-msgstr "Basculer l'affichage"
-msgid "Toggle view type"
-msgstr "Basculer le type d'affichage"
-msgid "Used to mark your attendance"
-msgstr "Utilisé pour pointer votre présence"
-msgid "Your current company access"
-msgstr "Votre accès actuel à l'entreprise"
+#~ msgid "No rows are selected for deleting attendances."
+#~ msgstr "Aucune ligne n'est sélectionnée pour supprimer les présences."
