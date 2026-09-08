@@ -32,7 +32,7 @@
                                         hx-get="{%url 'asset-import' %}"
                                         hx-target="#objectCreateModalTarget"
                                         class="button-link"
-                                        onclick="return confirm('{% trans "Do you want to download template ?" %}')"
+                                        onclick="return confirm('{% trans "Do you want to download template ?"|escapejs %}')"
                                     >
                                         {% trans "Import" %}
                                     </a>

@@ -97,7 +97,7 @@
         var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
         var $hint = $("#assetExportSelectedHint");
         if (ids.length) {
-            $hint.text(ids.length + " {% trans 'selected record(s) will be exported' %}").show();
+            $hint.text(ids.length + " {% trans 'selected record(s) will be exported'|escapejs %}").show();
         } else {
             $hint.hide();
         }

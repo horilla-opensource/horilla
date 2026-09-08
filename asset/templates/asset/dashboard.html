@@ -961,7 +961,7 @@
 
             function updateRefreshText() {
                 const mins = Math.floor((Date.now() - lastRefresh) / 60000);
-                refreshText.textContent = mins < 1 ? '{% trans "Just now" %}' : mins + '{% trans "m ago" %}';
+                refreshText.textContent = mins < 1 ? '{% trans "Just now"|escapejs %}' : mins + '{% trans "m ago"|escapejs %}';
             }
             registerAutoRefresh(setInterval(updateRefreshText, 30000));
 
@@ -970,7 +970,7 @@
                 localStorage.setItem(REFRESH_KEY, 'on');
                 refreshDot.classList.add('as-refresh__dot--pulse');
                 refreshToggle.textContent = '⟳';
-                refreshToggle.title = '{% trans "Auto-refresh ON (5 min)" %}';
+                refreshToggle.title = '{% trans "Auto-refresh ON (5 min)"|escapejs %}';
                 // Wrapped so a hidden tab does not keep fetching; refreshes once on return.
                 const refreshTick = autoRefreshWhenVisible(() => {
                     lastRefresh = Date.now();
@@ -985,7 +985,7 @@
                 localStorage.setItem(REFRESH_KEY, 'off');
                 refreshDot.classList.remove('as-refresh__dot--pulse');
                 refreshToggle.textContent = '⏸';
-                refreshToggle.title = '{% trans "Auto-refresh OFF" %}';
+                refreshToggle.title = '{% trans "Auto-refresh OFF"|escapejs %}';
                 if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
             }
             refreshToggle.addEventListener('click', () => { if (autoRefreshOn) stopAutoRefresh(); else startAutoRefresh(); });
@@ -999,30 +999,30 @@
                     document.getElementById('as-kpi-grid').innerHTML = `
                 <a href="{% url 'asset-category-view' %}" class="as-kpi-card">
                     <div class="as-kpi-card__icon as-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
-                    <div class="as-kpi-card__label">{% trans "Total Assets" %}</div>
+                    <div class="as-kpi-card__label">{% trans "Total Assets"|escapejs %}</div>
                     <div class="as-kpi-card__value">${data.total_assets}</div>
-                    <div class="as-kpi-card__sub"><span class="as-badge as-badge--green">${data.in_use} {% trans "in use" %}</span> <span class="as-badge as-badge--amber">${data.available} {% trans "available" %}</span></div>
+                    <div class="as-kpi-card__sub"><span class="as-badge as-badge--green">${data.in_use} {% trans "in use"|escapejs %}</span> <span class="as-badge as-badge--amber">${data.available} {% trans "available"|escapejs %}</span></div>
                 </a>
                 <a href="{% url 'asset-request-allocation-view' %}?open_tab=2&asset_request_status=Requested" class="as-kpi-card">
                     <div class="as-kpi-card__icon as-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></div>
-                    <div class="as-kpi-card__label">{% trans "Pending Requests" %}</div>
+                    <div class="as-kpi-card__label">{% trans "Pending Requests"|escapejs %}</div>
                     <div class="as-kpi-card__value">${data.pending_requests}</div>
-                    <div class="as-kpi-card__sub">${data.return_requests > 0 ? '<span class="as-badge as-badge--red">' + data.return_requests + ' {% trans "return req" %}</span>' : '{% trans "Awaiting approval" %}'}</div>
+                    <div class="as-kpi-card__sub">${data.return_requests > 0 ? '<span class="as-badge as-badge--red">' + data.return_requests + ' {% trans "return req"|escapejs %}</span>' : '{% trans "Awaiting approval"|escapejs %}'}</div>
                 </a>
                 <a href="{% url 'asset-category-view' %}?asset_purchase_date_from=${data.period_from_date}&asset_purchase_date_till=${data.period_to_date}&filter_applied=1" class="as-kpi-card">
                     <div class="as-kpi-card__icon as-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-                    <div class="as-kpi-card__label">{% trans "Total Value" %}</div>
+                    <div class="as-kpi-card__label">{% trans "Total Value"|escapejs %}</div>
                     <div class="as-kpi-card__value">${fmt(data.total_value)}</div>
-                    <div class="as-kpi-card__sub">{% trans "Purchase cost" %}</div>
+                    <div class="as-kpi-card__sub">{% trans "Purchase cost"|escapejs %}</div>
                 </a>
                 <a href="{% url 'asset-renewal' %}" class="as-kpi-card">
                     <div class="as-kpi-card__icon as-kpi-card__icon--red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-                    <div class="as-kpi-card__label">{% trans "Expiring Soon" %}</div>
+                    <div class="as-kpi-card__label">{% trans "Expiring Soon"|escapejs %}</div>
                     <div class="as-kpi-card__value">${data.expiring_soon}</div>
-                    <div class="as-kpi-card__sub">{% trans "Next 30 days" %}</div>
+                    <div class="as-kpi-card__sub">{% trans "Next 30 days"|escapejs %}</div>
                 </a>`;
                 })
-                .catch(() => { document.getElementById('as-kpi-grid').innerHTML = emptyHtml('{% trans "Could not load KPIs" %}'); });
+                .catch(() => { document.getElementById('as-kpi-grid').innerHTML = emptyHtml('{% trans "Could not load KPIs"|escapejs %}'); });
             }
             loadKpiCards();
 
@@ -1032,7 +1032,7 @@
                 .then(r => r.json())
                 .then(data => {
                     const total = data.statuses.reduce((a, s) => a + s.count, 0);
-                    if (!total) { document.querySelector("#chart-asset-status").innerHTML = emptyHtml('{% trans "No assets" %}'); return; }
+                    if (!total) { document.querySelector("#chart-asset-status").innerHTML = emptyHtml('{% trans "No assets"|escapejs %}'); return; }
                     renderChart('asset-status', document.querySelector("#chart-asset-status"), {
                         series: data.statuses.map(s => s.count),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
@@ -1043,13 +1043,13 @@
                         },
                         labels: data.statuses.map(s => s.label),
                         colors: ['#3b82f6', '#22c55e', '#94a3b8'],
-                        plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                        plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total"|escapejs %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
                         stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                         legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light' },
                     });
                 })
-                .catch(() => { document.querySelector("#chart-asset-status").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
+                .catch(() => { document.querySelector("#chart-asset-status").innerHTML = emptyHtml('{% trans "Could not load data"|escapejs %}'); });
             }
             loadAssetStatus();
 
@@ -1059,7 +1059,7 @@
                 .then(r => r.json())
                 .then(data => {
                     const total = data.statuses.reduce((a, s) => a + s.count, 0);
-                    if (!total) { document.querySelector("#chart-request-status").innerHTML = emptyHtml('{% trans "No requests" %}'); return; }
+                    if (!total) { document.querySelector("#chart-request-status").innerHTML = emptyHtml('{% trans "No requests"|escapejs %}'); return; }
                     renderChart('request-status', document.querySelector("#chart-request-status"), {
                         series: data.statuses.map(s => s.count),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
@@ -1070,13 +1070,13 @@
                         },
                         labels: data.statuses.map(s => s.label),
                         colors: ['#f59e0b', '#22c55e', '#ef4444'],
-                        plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                        plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total"|escapejs %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
                         stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                         legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light' },
                     });
                 })
-                .catch(() => { document.querySelector("#chart-request-status").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
+                .catch(() => { document.querySelector("#chart-request-status").innerHTML = emptyHtml('{% trans "Could not load data"|escapejs %}'); });
             }
             loadRequestStatus();
 
@@ -1085,11 +1085,11 @@
             fetchP("{% url 'asset-dashboard-category' %}")
                 .then(r => r.json())
                 .then(data => {
-                    if (!data.categories.length) { document.querySelector("#chart-by-category").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+                    if (!data.categories.length) { document.querySelector("#chart-by-category").innerHTML = emptyHtml('{% trans "No data"|escapejs %}'); return; }
                     renderChart('by-category', document.querySelector("#chart-by-category"), {
                         series: [
-                            { name: '{% trans "In Use" %}', data: data.categories.map(c => c.in_use) },
-                            { name: '{% trans "Available" %}', data: data.categories.map(c => c.available) },
+                            { name: '{% trans "In Use"|escapejs %}', data: data.categories.map(c => c.in_use) },
+                            { name: '{% trans "Available"|escapejs %}', data: data.categories.map(c => c.available) },
                         ],
                         chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: true,
                             events: { dataPointSelection: (e, ctx, config) => {
@@ -1108,7 +1108,7 @@
                         tooltip: { theme: isDark ? 'dark' : 'light' },
                     });
                 })
-                .catch(() => { document.querySelector("#chart-by-category").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
+                .catch(() => { document.querySelector("#chart-by-category").innerHTML = emptyHtml('{% trans "Could not load data"|escapejs %}'); });
             }
             loadByCategory();
 
@@ -1117,7 +1117,7 @@
             fetchP("{% url 'asset-dashboard-value' %}")
                 .then(r => r.json())
                 .then(data => {
-                    if (!data.categories.length) { document.querySelector("#chart-value-category").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+                    if (!data.categories.length) { document.querySelector("#chart-value-category").innerHTML = emptyHtml('{% trans "No data"|escapejs %}'); return; }
                     renderChart('value-category', document.querySelector("#chart-value-category"), {
                         series: data.categories.map(c => c.value),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
@@ -1129,13 +1129,13 @@
                         },
                         labels: data.categories.map(c => c.category),
                         colors: COLORS.slice(0, data.categories.length),
-                        plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '12px', fontWeight: 600, formatter: w => fmt(w.globals.seriesTotals.reduce((a,b)=>a+b,0)) } } } } },
+                        plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total"|escapejs %}', color: textColor, fontSize: '12px', fontWeight: 600, formatter: w => fmt(w.globals.seriesTotals.reduce((a,b)=>a+b,0)) } } } } },
                         stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                         legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { seriesIndex: i }) => `${fmt(v)} (${data.categories[i].count} assets)` } },
                     });
                 })
-                .catch(() => { document.querySelector("#chart-value-category").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
+                .catch(() => { document.querySelector("#chart-value-category").innerHTML = emptyHtml('{% trans "Could not load data"|escapejs %}'); });
             }
             loadValueCategory();
 
@@ -1144,9 +1144,9 @@
             fetchP("{% url 'asset-dashboard-dept' %}")
                 .then(r => r.json())
                 .then(data => {
-                    if (!data.departments.length) { document.querySelector("#chart-dept-assets").innerHTML = emptyHtml('{% trans "No allocated assets" %}'); return; }
+                    if (!data.departments.length) { document.querySelector("#chart-dept-assets").innerHTML = emptyHtml('{% trans "No allocated assets"|escapejs %}'); return; }
                     renderChart('dept-assets', document.querySelector("#chart-dept-assets"), {
-                        series: [{ name: '{% trans "Assets" %}', data: data.departments.map(d => d.count) }],
+                        series: [{ name: '{% trans "Assets"|escapejs %}', data: data.departments.map(d => d.count) }],
                         chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
                                 const deptId = data.departments[config.dataPointIndex] && data.departments[config.dataPointIndex].department_id;
@@ -1161,10 +1161,10 @@
                         grid: { borderColor: gridColor },
                         dataLabels: { enabled: true, style: { fontSize: '11px' } },
                         legend: { show: false },
-                        tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' {% trans "asset(s)" %}' } },
+                        tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' {% trans "asset(s)"|escapejs %}' } },
                     });
                 })
-                .catch(() => { document.querySelector("#chart-dept-assets").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
+                .catch(() => { document.querySelector("#chart-dept-assets").innerHTML = emptyHtml('{% trans "Could not load data"|escapejs %}'); });
             }
             loadDeptAssets();
 
@@ -1173,10 +1173,10 @@
             fetchP("{% url 'asset-dashboard-age' %}")
                 .then(r => r.json())
                 .then(data => {
-                    if (!data.brackets.length) { document.querySelector("#chart-age-dist").innerHTML = emptyHtml('{% trans "No purchase date data" %}'); return; }
+                    if (!data.brackets.length) { document.querySelector("#chart-age-dist").innerHTML = emptyHtml('{% trans "No purchase date data"|escapejs %}'); return; }
                     const ageColors = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#94a3b8'];
                     renderChart('age-dist', document.querySelector("#chart-age-dist"), {
-                        series: [{ name: '{% trans "Assets" %}', data: data.brackets.map(b => b.count) }],
+                        series: [{ name: '{% trans "Assets"|escapejs %}', data: data.brackets.map(b => b.count) }],
                         chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
                                 window.location.href = "{% url 'asset-category-view' %}";
@@ -1192,7 +1192,7 @@
                         tooltip: { theme: isDark ? 'dark' : 'light' },
                     });
                 })
-                .catch(() => { document.querySelector("#chart-age-dist").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
+                .catch(() => { document.querySelector("#chart-age-dist").innerHTML = emptyHtml('{% trans "Could not load data"|escapejs %}'); });
             }
             loadAgeDist();
 
@@ -1202,7 +1202,7 @@
                 .then(r => r.json())
                 .then(data => {
                     const el = document.getElementById('as-expiring');
-                    if (!data.assets.length) { el.innerHTML = '<div class="as-info-panel__empty">{% trans "No assets expiring soon" %}</div>'; return; }
+                    if (!data.assets.length) { el.innerHTML = '<div class="as-info-panel__empty">{% trans "No assets expiring soon"|escapejs %}</div>'; return; }
                     el.innerHTML = data.assets.map(a => {
                         let badge = '';
                         if (a.days_left <= 7) badge = `<span class="as-badge as-badge--red">${a.days_left}d</span>`;
@@ -1216,7 +1216,7 @@
                     <div class="as-list-item__badge">${badge}</div>
                 </a>`;
                     }).join('');
-                }).catch(() => { document.getElementById('as-expiring').innerHTML = '<div class="as-info-panel__empty">{% trans "No data" %}</div>'; });
+                }).catch(() => { document.getElementById('as-expiring').innerHTML = '<div class="as-info-panel__empty">{% trans "No data"|escapejs %}</div>'; });
             }
             loadExpiring();
 
@@ -1226,7 +1226,7 @@
                 .then(r => r.json())
                 .then(data => {
                     const el = document.getElementById('as-allocations');
-                    if (!data.allocations.length) { el.innerHTML = '<div class="as-info-panel__empty">{% trans "No recent allocations" %}</div>'; return; }
+                    if (!data.allocations.length) { el.innerHTML = '<div class="as-info-panel__empty">{% trans "No recent allocations"|escapejs %}</div>'; return; }
                     el.innerHTML = data.allocations.map(a => {
                         const initials = a.employee.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                         const avatarInner = a.avatar ? `<img src="${a.avatar}" alt="">` : initials;
@@ -1238,7 +1238,7 @@
                     </div>
                 </a>`;
                     }).join('');
-                }).catch(() => { document.getElementById('as-allocations').innerHTML = '<div class="as-info-panel__empty">{% trans "No data" %}</div>'; });
+                }).catch(() => { document.getElementById('as-allocations').innerHTML = '<div class="as-info-panel__empty">{% trans "No data"|escapejs %}</div>'; });
             }
             loadAllocations();
 

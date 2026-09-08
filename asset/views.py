@@ -299,6 +299,7 @@ def asset_item_bulk_edit(request, asset_id):
 
 
 @login_required
+@hx_request_required
 def get_asset_items_hx(request):
     """
     Returns the "Asset Item" field of the asset allocation form, populated
@@ -1504,6 +1505,7 @@ def asset_excel(_request):
 
 
 @login_required
+@hx_request_required
 @permission_required("asset.view_assetcategory")
 def asset_export_excel(request):
     """asset export view"""

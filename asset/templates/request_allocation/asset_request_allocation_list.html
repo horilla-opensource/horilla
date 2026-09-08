@@ -247,7 +247,7 @@
                                     hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&request_sortby=asset_category_id__asset_category_name"
                                     hx-target="#asset_request_allocation_list"
                                     data-cell-index="101"
-                                    data-cell-title='{% trans "Asset Category" %}'
+                                    data-cell-title="{% trans 'Asset Category' %}"
                                 >
                                     {% trans "Asset Category" %}
                                 </div>
@@ -500,7 +500,7 @@
                                 <div
                                     class="oh-sticky-table__th {% if request.sort_option.order == '-assigned_date' %}arrow-up {% elif request.sort_option.order == 'assigned_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                     data-cell-index="202"
-                                    data-cell-title='{% trans "Assigned Date" %}'
+                                    data-cell-title="{% trans 'Assigned Date' %}"
                                     hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&assign_sortby=assigned_date"
                                     hx-target="#asset_request_allocation_list"
                                 >

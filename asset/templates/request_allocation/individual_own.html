@@ -122,7 +122,7 @@
                             <form
                                 class="w-100"
                                 action="{% url 'asset-allocate-return-request' asset_id=asset_assignment.id %}"
-                                onsubmit="return confirm('{% trans "Are you sure you want to return this asset?" %}')"
+                                onsubmit="return confirm('{% trans "Are you sure you want to return this asset?"|escapejs %}')"
                             >
                                 {% csrf_token %}
                                 <button type="submit" class="oh-btn oh-btn--secondary w-100">

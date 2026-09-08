@@ -2,7 +2,7 @@
 {% load static %}
 <script>
     $("#asset-count{{asset_category_id}}").html("{{assets.paginator.count}}");
-    $("#asset-count{{asset_category_id}}").attr("title","{{assets.paginator.count}} {% trans 'Assets' %}");
+    $("#asset-count{{asset_category_id}}").attr("title","{{assets.paginator.count}} {% trans 'Assets'|escapejs %}");
 </script>
 <!-- start of messages -->
 {% if messages %}
@@ -156,7 +156,7 @@
                                     {% if asset_under == 'asset_filter' %}
                                         <form
                                             action="{% url 'asset-delete' asset.id %}?asset_list=asset_filter&{{request.GET.urlencode}}"
-                                            onsubmit="return confirm('{% trans "Do you want to delete this asset?" %}')"
+                                            onsubmit="return confirm('{% trans "Do you want to delete this asset?"|escapejs %}')"
                                             method="post"
                                             style="width: 100%"
                                         >

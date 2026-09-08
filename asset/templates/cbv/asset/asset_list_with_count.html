@@ -15,7 +15,7 @@
         var $badge = $("#asset-count{{ asset_category_id }}");
         if ($badge.length) {
             $badge.html(Number(count) > 999 ? "999+" : count);
-            $badge.attr("title", count + " {% trans 'Assets' %}");
+            $badge.attr("title", count + " {% trans 'Assets'|escapejs %}");
         }
     })();
 </script>
