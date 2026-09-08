@@ -275,6 +275,8 @@ class ContractsDetailView(HorillaDetailedView):
         Return context data with the title set to the contract's name.
         """
         context = super().get_context_data(**kwargs)
+        if not self.instance:
+            return context
         contract_name = context["contract"].contract_name
         context["title"] = contract_name
         return context

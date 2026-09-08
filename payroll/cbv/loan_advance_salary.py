@@ -330,7 +330,9 @@ class LoanDetailView(HorillaDetailedView):
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)
         pk = self.kwargs.get("pk")
-        loan = LoanAccount.objects.get(id=pk)
+        loan = LoanAccount.objects.filter(id=pk).first()
+        if not loan:
+            return context
         installments = list(loan.deduction_ids.all())
         self._attach_installment_payslips(installments)
         loan_id = self.request.GET.get("loan_id")
@@ -385,10 +387,11 @@ class LoanFormView(HorillaFormView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        if not form.instance.pk:
+        if not getattr(form.instance, "pk", None):
             # Each tab only ever creates its own type, so there's nothing
             # for the user to choose here.
-            form.instance.type = self.loan_type
+            if form.instance is not None:
+                form.instance.type = self.loan_type
         form.fields.pop("type", None)
         return form
 

@@ -363,7 +363,9 @@ def allowances_deductions_tab(request, emp_id):
     user = request.user
     employee_deductions = []
     employee_allowances = []
-    employee = Employee.objects.get(id=emp_id)
+    employee = Employee.objects.filter(id=emp_id).first()
+    if not employee:
+        return HttpResponse()
     if getattr(user, "employee_get", None) != employee and not (
         user.has_perm("payroll.view_allowance")
         and user.has_perm("payroll.view_deduction")

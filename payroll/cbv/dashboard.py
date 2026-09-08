@@ -6,6 +6,7 @@ import calendar
 from typing import Any
 
 from django.db.models import F, Sum, Value
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -35,9 +36,20 @@ class DashboardDepartmentPayslip(HorillaListView):
         self.search_url = reverse("dashboard-department-chart")
         self.view_id = "dashboadDepartment"
 
+    def dispatch(self, request, *args, **kwargs):
+        # This endpoint returns only the chart's list/export fragment; a
+        # genuine top-level browser navigation/reload should land on the
+        # real Payroll Dashboard page instead of showing the raw fragment.
+        if request.headers.get("Sec-Fetch-Mode") == "navigate":
+            return redirect(reverse("view-payroll-dashboard"))
+        return super().dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
 
         month_year = self.request.GET.get("monthYearField")
+        if not month_year:
+            today = timezone.now()
+            month_year = f"{today.year}-{today.month}"
         current_year = month_year.split("-")[0]
         current_month = month_year.split("-")[1]
 
@@ -79,6 +91,14 @@ class DashboardContractList(HorillaListView):
         super().__init__(**kwargs)
         self.search_url = reverse("dashboard-contract-ending")
 
+    def dispatch(self, request, *args, **kwargs):
+        # This endpoint returns only the chart's list/export fragment; a
+        # genuine top-level browser navigation/reload should land on the
+        # real Payroll Dashboard page instead of showing the raw fragment.
+        if request.headers.get("Sec-Fetch-Mode") == "navigate":
+            return redirect(reverse("view-payroll-dashboard"))
+        return super().dispatch(request, *args, **kwargs)
+
     model = Contract
     filter_class = ContractFilter
     show_filter_tags = None
@@ -92,6 +112,8 @@ class DashboardContractList(HorillaListView):
         current_date = timezone.now()
         current_year = current_date.year
         current_month = current_date.month
+        if not month_year:
+            month_year = f"{current_year}-{current_month}"
         year = month_year.split("-")[0]
         month = month_year.split("-")[1]
         input_month_year = (int(year), int(month))
@@ -133,6 +155,14 @@ class DashboardContractListExpired(HorillaListView):
         super().__init__(**kwargs)
         self.search_url = reverse("dashboard-contract-expired")
 
+    def dispatch(self, request, *args, **kwargs):
+        # This endpoint returns only the chart's list/export fragment; a
+        # genuine top-level browser navigation/reload should land on the
+        # real Payroll Dashboard page instead of showing the raw fragment.
+        if request.headers.get("Sec-Fetch-Mode") == "navigate":
+            return redirect(reverse("view-payroll-dashboard"))
+        return super().dispatch(request, *args, **kwargs)
+
     model = Contract
     filter_class = ContractFilter
     show_filter_tags = None
@@ -146,6 +176,8 @@ class DashboardContractListExpired(HorillaListView):
         current_date = timezone.now()
         current_year = current_date.year
         current_month = current_date.month
+        if not month_year:
+            month_year = f"{current_year}-{current_month}"
         year = month_year.split("-")[0]
         month = month_year.split("-")[1]
         input_month_year = (int(year), int(month))

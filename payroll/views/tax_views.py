@@ -180,7 +180,9 @@ def tax_bracket_list(request, filing_status_id):
         The rendered "tax_bracket_view.html" template with the tax brackets for the
         specified filing status.
     """
-    filing_status = FilingStatus.objects.get(id=filing_status_id)
+    filing_status = FilingStatus.objects.filter(id=filing_status_id).first()
+    if not filing_status:
+        return HttpResponse()
     tax_brackets = TaxBracket.objects.filter(
         filing_status_id=filing_status_id
     ).order_by("max_income")

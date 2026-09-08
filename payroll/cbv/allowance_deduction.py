@@ -6,6 +6,7 @@ import operator
 from typing import Any
 
 from django.apps import apps
+from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -40,6 +41,11 @@ class AllowanceDeductionTabView(HorillaTabView):
     """
     generic tab view for allowance and deduction
     """
+
+    def dispatch(self, request, *args, **kwargs):
+        if not Employee.objects.filter(id=kwargs.get("pk")).exists():
+            return HttpResponse()
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """
@@ -126,8 +132,10 @@ class AllowanceTabList(AllowanceListView):
     row_status_indications = None
 
     @method_decorator(login_required, name="dispatch")
-    def dispatch(self, *args, **kwargs):
-        return super(AllowanceListView, self).dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        if not Employee.objects.filter(id=kwargs.get("pk")).exists():
+            return HttpResponse()
+        return super(AllowanceListView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: Any):
         """
@@ -220,8 +228,10 @@ class DeductionTab(DeductionListView):
     """
 
     @method_decorator(login_required, name="dispatch")
-    def dispatch(self, *args, **kwargs):
-        return super(DeductionListView, self).dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        if not Employee.objects.filter(id=kwargs.get("pk")).exists():
+            return HttpResponse()
+        return super(DeductionListView, self).dispatch(request, *args, **kwargs)
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
