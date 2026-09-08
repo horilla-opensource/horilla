@@ -17,7 +17,7 @@
 			</a>
 		{% else %}
 			<a
-				onclick="shiftRequestRowApprove('{% url 'shift-request-approve' instance.id %}', '{% trans 'Do you want to approve this request?' %}')"
+				onclick="shiftRequestRowApprove('{% url 'shift-request-approve' instance.id %}', '{% trans 'Do you want to approve this request?'|escapejs %}')"
 				class="oh-btn oh-btn--success w-100"
 				style="cursor:pointer;"
 			>
@@ -36,7 +36,7 @@
 			</a>
 		{% else %}
 			<a
-				onclick="shiftRequestRowApprove('{% url 'shift-request-cancel' instance.id %}', '{% trans 'Do you want to reject this request?' %}')"
+				onclick="shiftRequestRowApprove('{% url 'shift-request-cancel' instance.id %}', '{% trans 'Do you want to reject this request?'|escapejs %}')"
 				class="oh-btn oh-btn--danger w-100"
 				style="cursor:pointer;"
 			>

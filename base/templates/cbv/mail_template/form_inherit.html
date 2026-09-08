@@ -22,7 +22,7 @@
             if ($("#dynamic_field_body").next(".form-hint").length === 0) {
                 var hintHtml = `
                     <div class="form-hint" style="margin-top: 10px; font-size: 14px; color: #888;">
-                        {% trans "Hint: Type '{' to get sender or receiver data" %}
+                        {% trans "Hint: Type '{' to get sender or receiver data"|escapejs %}
                     </div>`;
                 $("#dynamic_field_body").after(hintHtml);
             }

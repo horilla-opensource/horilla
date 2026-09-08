@@ -175,7 +175,7 @@
                     counter--;
                     if (counter <= 0) {
                         clearInterval(interval);
-                        $timeSpan.html(`<a href='${resendUrl}' class="oh-text--secondary">{% trans "Resend" %}`);
+                        $timeSpan.html(`<a href='${resendUrl}' class="oh-text--secondary">{% trans "Resend"|escapejs %}`);
                     } else {
                         $timeSpan.text(`${counter}`);
                     }

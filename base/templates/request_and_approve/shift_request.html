@@ -43,7 +43,7 @@
                     <div class="oh-btn-group float-end">
                         <a
                             href="/shift-request-approve/{{shift_request.id}}/"
-							onclick="return confirm('{% trans "Do you want to approve this shift request?" %}')"
+							onclick="return confirm('{% trans "Do you want to approve this shift request?"|escapejs %}')"
                             class="oh-btn oh-btn--success"
                             title="{% trans 'Approve' %}"
                             ><ion-icon name="checkmark-outline"></ion-icon
@@ -51,7 +51,7 @@
 
                         <a
                             href="/shift-request-cancel/{{shift_request.id}}/"
-							onclick="return confirm('{% trans "Do you want to cancel this request?" %}')"
+							onclick="return confirm('{% trans "Do you want to cancel this request?"|escapejs %}')"
                             class="oh-btn oh-btn--danger"
                             title="{% trans 'cancel' %}"
                             ><ion-icon name="close-circle-outline"></ion-icon

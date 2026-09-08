@@ -137,7 +137,7 @@
                 }
                 $select.select2({
                     width: "100%",
-                    placeholder: "{% trans 'Select languages…' %}",
+                    placeholder: "{% trans 'Select languages…'|escapejs %}",
                     closeOnSelect: false,
                 });
                 $select.on("change", refreshUnsaved);

@@ -51,7 +51,7 @@
 
                         <a
                             href="/work-type-request-cancel/{{work_type.id}}/"
-							onclick="return confirm('{% trans "Do you want to cancel this request?" %}')"
+							onclick="return confirm('{% trans "Do you want to cancel this request?"|escapejs %}')"
                             class="oh-btn oh-btn--danger"
                             ><ion-icon name="close-circle-outline"></ion-icon
                         ></a>

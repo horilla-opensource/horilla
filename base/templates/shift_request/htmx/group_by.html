@@ -179,7 +179,7 @@
                                                                     <form
                                                                         class="w-75"
                                                                         action="{% url 'shift-request-delete' shift_request.id  %}"
-                                                                        onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}')"
+                                                                        onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?"|escapejs %}')"
                                                                         method="post"
                                                                     >
                                                                         {% csrf_token %}
@@ -211,7 +211,7 @@
                                                                         <a
                                                                             href="{% url 'shift-request-approve' shift_request.id %}"
                                                                             title="{% trans 'Approve' %}"
-                                                                            onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
+                                                                            onclick="return confirm('{% trans "Do you want to approve this request?"|escapejs %}')"
                                                                             class="oh-btn oh-btn--success w-100"
                                                                         >
                                                                             <ion-icon
@@ -236,7 +236,7 @@
                                                                         <a
                                                                             href="{% url 'shift-request-cancel' shift_request.id %}"
                                                                             title="{% trans 'Reject' %}"
-                                                                            onclick="return confirm('{% trans "Do you want to reject this request?" %}')"
+                                                                            onclick="return confirm('{% trans "Do you want to reject this request?"|escapejs %}')"
                                                                             class="oh-btn oh-btn--danger w-100"
                                                                         >
                                                                             <ion-icon
@@ -613,7 +613,7 @@
                                                                     {% if shift_request.approved == False and shift_request.canceled == False %}
                                                                         <form
                                                                             action="{% url 'shift-request-delete' shift_request.id  %}"
-                                                                            onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}')"
+                                                                            onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?"|escapejs %}')"
                                                                             method="post"
                                                                             class="w-50"
                                                                         >
@@ -631,7 +631,7 @@
                                                                     {% elif perms.base.change_shiftrequest or request.user|is_reportingmanager %}
                                                                         <form
                                                                             action="{% url 'shift-request-delete' shift_request.id  %}"
-                                                                            onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}')"
+                                                                            onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?"|escapejs %}')"
                                                                             method="post"
                                                                             class="w-50"
                                                                         >
@@ -676,7 +676,7 @@
                                                                     {% else %}
                                                                         <a
                                                                             href="/shift-allocation-request-approve/{{shift_request.id}}/"
-                                                                            onclick="return confirm('{% trans "Are you available for this shift reallocation?" %}')"
+                                                                            onclick="return confirm('{% trans "Are you available for this shift reallocation?"|escapejs %}')"
                                                                             class="oh-btn oh-btn--success w-100"
                                                                             title='{% trans "Available" %}'
                                                                         >
@@ -691,7 +691,7 @@
                                                                     {% if shift_request.approved == False and shift_request.canceled == False %}
                                                                         <a
                                                                             href="/shift-request-approve/{{shift_request.id}}/"
-                                                                            onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
+                                                                            onclick="return confirm('{% trans "Do you want to approve this request?"|escapejs %}')"
                                                                             class="oh-btn oh-btn--success w-100"
                                                                             title='{% trans "Approve" %}'
                                                                         >
@@ -726,7 +726,7 @@
                                                                     {% else %}
                                                                         <a
                                                                             href="/shift-allocation-request-cancel/{{shift_request.id}}/"
-                                                                            onclick="return confirm('{% trans "Are you not available for this shift reallocation?" %}')"
+                                                                            onclick="return confirm('{% trans "Are you not available for this shift reallocation?"|escapejs %}')"
                                                                             class="oh-btn oh-btn--danger w-100"
                                                                             title='{% trans "Not available" %}'
                                                                         >
@@ -758,7 +758,7 @@
                                                                     {% if shift_request.approved == False and shift_request.canceled == False %}
                                                                         <form
                                                                             action="{% url 'shift-request-delete' shift_request.id  %}"
-                                                                            onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}')"
+                                                                            onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?"|escapejs %}')"
                                                                             method="post"
                                                                             class="w-50"
                                                                         >
@@ -776,7 +776,7 @@
                                                                     {% elif perms.base.change_shiftrequest or request.user|is_reportingmanager %}
                                                                         <form
                                                                             action="{% url 'shift-request-delete' shift_request.id  %}"
-                                                                            onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}')"
+                                                                            onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?"|escapejs %}')"
                                                                             method="post"
                                                                             class="w-50"
                                                                         >
@@ -815,7 +815,7 @@
                                                                     {% else %}
                                                                         <a
                                                                             href="/shift-allocation-request-cancel/{{shift_request.id}}/"
-                                                                            onclick="return confirm('{% trans "Do you want to cancel this request?" %}')"
+                                                                            onclick="return confirm('{% trans "Do you want to cancel this request?"|escapejs %}')"
                                                                             class="oh-btn oh-btn--danger w-100"
                                                                             title='{% trans "Reject" %}'
                                                                         >

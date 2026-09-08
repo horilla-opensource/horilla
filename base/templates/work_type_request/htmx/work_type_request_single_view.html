@@ -129,7 +129,7 @@
                                 </a>
                                 <a
                                     href="/work-type-request-cancel/{{work_type_request.id}}/"
-                                    onclick="return confirm('{% trans 'Do you want to cancel this request?' %}')"
+                                    onclick="return confirm('{% trans 'Do you want to cancel this request?'|escapejs %}')"
                                     class="oh-btn oh-btn--danger w-50"
                                     title="{% trans 'Reject' %}"
                                 >
