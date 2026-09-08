@@ -25,12 +25,14 @@ from employee.models import (
     Policy,
 )
 from employee.views import can_access_document, work_info_export, work_info_import
+from horilla.decorators import check_manager
 from horilla_api.api_decorators.base.decorators import permission_required
 from horilla_api.api_methods.employee.methods import get_next_badge_id
 from horilla_documents.models import Document, DocumentRequest
 from notifications.signals import notify
 
 from ...api_decorators.base.decorators import (
+    approver_permission_required,
     manager_or_owner_permission_required,
     manager_permission_required,
 )
@@ -795,6 +797,26 @@ class DocumentRequestAPIView(APIView):
     @manager_permission_required("horilla_documents.change_documentrequests")
     def put(self, request, pk):
         document_request = self.get_object(pk)
+        # A document request is addressed to a set of employees, so the generic
+        # target-scoped decorators -- which resolve one `employee_id` -- do not
+        # apply. Editing it means editing what every addressee is being asked
+        # for, so the caller must hold the permission or manage all of them
+        # (GHSA-97wm-28fj-g4pj). `manager_permission_required` above only
+        # established that somebody, somewhere, reports to the caller.
+        if not request.user.has_perm("horilla_documents.change_documentrequests"):
+            employee = request.user.employee_get
+            addressees = document_request.employee_id.all()
+            if not addressees or any(
+                not check_manager(employee, addressee) for addressee in addressees
+            ):
+                return Response(
+                    {
+                        "error": _(
+                            "You do not have permission to edit this document request."
+                        )
+                    },
+                    status=status.HTTP_403_FORBIDDEN,
+                )
         serializer = DocumentRequestSerializer(document_request, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -907,7 +929,9 @@ class DocumentAPIView(APIView):
 class DocumentRequestApproveRejectView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @manager_permission_required("horilla_documents.add_document")
+    @approver_permission_required(
+        Document, "horilla_documents.add_document", pk_kwarg="id"
+    )
     def post(self, request, id, status):
         document = Document.objects.filter(id=id).first()
         document.status = status
@@ -926,6 +950,20 @@ class DocumentBulkApproveRejectAPIView(APIView):
 
         if ids:
             documents = Document.objects.filter(id__in=ids)
+            if not request.user.has_perm("horilla_documents.add_document"):
+                # Same rule as the single-record approve/reject endpoint: never
+                # your own, and only for employees you manage. Without this the
+                # bulk route is the unscoped version of the one next door
+                # (GHSA-97wm-28fj-g4pj).
+                employee = request.user.employee_get
+                documents = documents.exclude(employee_id=employee)
+                documents = documents.filter(
+                    pk__in=[
+                        document.pk
+                        for document in documents
+                        if check_manager(employee, document)
+                    ]
+                )
             response = []
             for document in documents:
                 if not document.document:

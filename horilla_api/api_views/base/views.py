@@ -550,19 +550,9 @@ class RotatingWorkTypeAssignView(APIView):
     permission_classes = [IsAuthenticated]
     queryset = RotatingWorkTypeAssign.objects.none()  # For drf-yasg schema generation
 
-    def _permission_check(self, request, obj=None, pk=None):
-        if pk:
-            employee = request.user.employee_get
-            manager = obj.employee_id.get_reporting_manager()
-            if (
-                employee == obj.employee_id
-                or manager == employee
-                or request.user.has_perm("base.view_rotatingworktypeassign")
-            ):
-                return True
-            return False
-
-    @manager_permission_required("base.view_rotatingworktypeassign")
+    @manager_or_owner_permission_required(
+        RotatingWorkTypeAssign, "base.view_rotatingworktypeassign"
+    )
     def get(self, request, pk=None):
 
         if pk:
@@ -617,7 +607,9 @@ class RotatingWorkTypeAssignView(APIView):
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
-    @manager_permission_required("base.change_rotatingworktypeassign")
+    @manager_or_owner_permission_required(
+        RotatingWorkTypeAssign, "base.change_rotatingworktypeassign"
+    )
     def put(self, request, pk):
         rotating_work_type_assign = object_check(RotatingWorkTypeAssign, pk)
         if rotating_work_type_assign is None:
@@ -630,7 +622,9 @@ class RotatingWorkTypeAssignView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @manager_permission_required("base.delete_rotatingworktypeassign")
+    @manager_or_owner_permission_required(
+        RotatingWorkTypeAssign, "base.delete_rotatingworktypeassign"
+    )
     def delete(self, request, pk):
         rotating_work_type_assign = object_check(RotatingWorkTypeAssign, pk)
         if rotating_work_type_assign is None:
@@ -850,7 +844,9 @@ class RotatingShiftAssignView(APIView):
     permission_classes = [IsAuthenticated]
     queryset = RotatingShiftAssign.objects.none()  # For drf-yasg schema generation
 
-    @manager_permission_required("base.view_rotatingshiftassign")
+    @manager_or_owner_permission_required(
+        RotatingShiftAssign, "base.view_rotatingshiftassign"
+    )
     def get(self, request, pk=None):
         if pk:
             rotating_shift_assign = object_check(RotatingShiftAssign, pk)
@@ -888,7 +884,9 @@ class RotatingShiftAssignView(APIView):
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
-    @manager_permission_required("base.change_rotatingshiftassign")
+    @manager_or_owner_permission_required(
+        RotatingShiftAssign, "base.change_rotatingshiftassign"
+    )
     def put(self, request, pk):
         rotating_shift_assign = object_check(RotatingShiftAssign, pk)
         if rotating_shift_assign is None:
@@ -899,7 +897,9 @@ class RotatingShiftAssignView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @manager_permission_required("base.delete_rotatingshiftassign")
+    @manager_or_owner_permission_required(
+        RotatingShiftAssign, "base.delete_rotatingshiftassign"
+    )
     def delete(self, request, pk):
         rotating_shift_assign = object_check(RotatingShiftAssign, pk)
         if rotating_shift_assign is None:

@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from base.methods import filtersubordinates
+from horilla.decorators import check_manager
 from horilla_api.api_serializers.leave.serializers import *
 from leave.filters import *
 from leave.methods import filter_conditional_leave_request
@@ -540,7 +541,7 @@ class LeaveRequestGetUpdateDeleteAPIView(APIView):
         except LeaveRequest.DoesNotExist as e:
             raise serializers.ValidationError(e)
 
-    @manager_permission_required("leave.view_leaverequest")
+    @manager_or_owner_permission_required(LeaveRequest, "leave.view_leaverequest")
     def get(self, request, pk):
         leave_request = self.get_leave_request(pk)
         serializer = LeaveRequestGetSerilaizer(
@@ -548,7 +549,7 @@ class LeaveRequestGetUpdateDeleteAPIView(APIView):
         )
         return Response(serializer.data, status=200)
 
-    @manager_permission_required("leave.change_leaverequest")
+    @manager_or_owner_permission_required(LeaveRequest, "leave.change_leaverequest")
     def put(self, request, pk):
         leave_request = self.get_leave_request(pk)
         if leave_request.status == "requested":
@@ -585,7 +586,7 @@ class LeaveRequestGetUpdateDeleteAPIView(APIView):
             return Response(serializer.errors, status=400)
         raise serializers.ValidationError({"error": _("Access Denied..")})
 
-    @manager_permission_required("leave.delete_leaverequest")
+    @manager_or_owner_permission_required(LeaveRequest, "leave.delete_leaverequest")
     def delete(self, request, pk):
         leave_request = self.get_leave_request(pk)
         if leave_request.status == "requested":
@@ -722,6 +723,18 @@ class HolidayGetUpdateDeleteAPIView(APIView):
         return Response(status=200)
 
 
+def _leave_condition_approvers(leave_request):
+    """
+    The managers a multiple-approval condition nominated for this request.
+
+    They approve in sequence and are frequently neither the requester's
+    reporting manager nor holders of ``leave.change_leaverequest``, so the
+    scoped manager test on its own would shut the chain out.
+    """
+    conditional = leave_request.multiple_approvals()
+    return conditional["managers"] if conditional else []
+
+
 class LeaveRequestApproveAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -772,7 +785,11 @@ class LeaveRequestApproveAPIView(APIView):
                 leave_request.status = "approved"
                 leave_request.save()
 
-    @manager_permission_required("leave.change_leaverequest")
+    @approver_permission_required(
+        LeaveRequest,
+        "leave.change_leaverequest",
+        designated_approvers=_leave_condition_approvers,
+    )
     def put(self, request, pk):
         leave_request = self.get_leave_request(pk)
         serializer = LeaveRequestApproveSerializer(leave_request, data=request.data)
@@ -823,7 +840,11 @@ class LeaveRequestRejectAPIView(APIView):
         leave_request.status = "rejected"
         leave_request.save()
 
-    @manager_permission_required("leave.change_leaverequest")
+    @approver_permission_required(
+        LeaveRequest,
+        "leave.change_leaverequest",
+        designated_approvers=_leave_condition_approvers,
+    )
     def put(self, request, pk):
         leave_request = self.get_leave_request(pk)
         employee_id = request.user.employee_get
@@ -960,6 +981,35 @@ class LeaveRequestBulkApproveDeleteAPIview(APIView):
             return leave_requests
         raise serializers.ValidationError(_("Nothing to approve"))
 
+    def scoped_to_caller(self, request, leave_requests, approving):
+        """
+        Narrow a bulk action to the requests this caller may actually act on.
+
+        The by-pk approve and reject endpoints name their target and are scoped
+        by decorator; this one takes a list of ids from the body, so the same
+        rule has to be applied per record or the bulk route is simply the
+        unscoped version of the endpoint next door (GHSA-97wm-28fj-g4pj).
+        """
+        employee = request.user.employee_get
+        perm = "leave.change_leaverequest" if approving else "leave.delete_leaverequest"
+        if request.user.has_perm(perm):
+            return leave_requests
+
+        allowed = []
+        for leave_request in leave_requests:
+            own = leave_request.employee_id == employee
+            if approving:
+                # Never your own, exactly as the single-record endpoint.
+                if own:
+                    continue
+                if check_manager(
+                    employee, leave_request
+                ) or employee in _leave_condition_approvers(leave_request):
+                    allowed.append(leave_request.pk)
+            elif own or check_manager(employee, leave_request):
+                allowed.append(leave_request.pk)
+        return leave_requests.filter(pk__in=allowed)
+
     def leave_approve_calculation(self, leave_request, available_leave):
         if leave_request.requested_days > available_leave.available_days:
             leave = leave_request.requested_days - available_leave.available_days
@@ -977,7 +1027,9 @@ class LeaveRequestBulkApproveDeleteAPIview(APIView):
 
     @manager_permission_required("leave.change_leaverequest")
     def put(self, request):
-        leave_requests = self.get_leave_requests(request)
+        leave_requests = self.scoped_to_caller(
+            request, self.get_leave_requests(request), approving=True
+        )
         for leave_request in leave_requests:
             employee_id = leave_request.employee_id
             leave_type_id = leave_request.leave_type_id
@@ -995,7 +1047,9 @@ class LeaveRequestBulkApproveDeleteAPIview(APIView):
 
     @manager_permission_required("leave.delete_leaverequest")
     def delete(self, request):
-        leave_requests = self.get_leave_requests(request)
+        leave_requests = self.scoped_to_caller(
+            request, self.get_leave_requests(request), approving=False
+        )
         leave_requests.delete()
         return Response(status=200)
 
