@@ -32,6 +32,63 @@ date and open a fresh Unreleased above it.
 ### Security      — vulnerabilities fixed; link the advisory and credit the reporter
 -->
 
+## [2.1.3] — 2026-09-07
+
+Bug-fix and security release. **Upgrade if you are on 2.1.0, 2.1.1 or 2.1.2** —
+three pages return a server error on all three, and the leave-allocation
+authorization flaw below affects every 2.x release.
+
+### Security
+
+| Advisory | Severity | Issue |
+|---|---|---|
+| [GHSA-gc35-jfv9-r3cm](https://github.com/horilla/horilla-hr/security/advisories/GHSA-gc35-jfv9-r3cm) | Medium | Any employee who was the reporting manager of one person could approve their own leave allocation and credit an arbitrary number of days to their own balance |
+
+With thanks to **@je-lv** for reporting it responsibly.
+
+Approval now requires a second person who actually manages the requester, and
+the approver may never be the requester — the two checks are independent, since
+an employee can be recorded as their own reporting manager. The fix is at the
+shared authorization gate, so the reject, read, edit and delete endpoints on the
+same model are covered too: rejecting an approved allocation subtracts the days
+again, and the edit endpoint accepts `requested_days`. Neither was in the report.
+
+### Fixed
+
+- **Attendance work records, the skill zone view and the attendance monthly
+  summary returned a 500.** A documentation comment in the modern filter panel
+  described where the filter body is included, and wrote that description using
+  real template syntax. Django's lexer does not recognise CSS comments, so the
+  `{% include %}` inside the comment was executed on every render; on the pages
+  that include the panel directly — rather than through the generic nav, where
+  the list views supply `filter_body_template` — the variable resolved empty and
+  the include raised `TemplateDoesNotExist: No template names provided`.
+
+  Reported by **@owino600** in
+  [#1216](https://github.com/horilla/horilla-hr/issues/1216), with an accurate
+  diagnosis of the cause.
+
+- Two `{% url %}` tags in a disabled block of jQuery in the grace-time template
+  were being resolved on every render for the same reason. They resolved, so
+  nothing broke, but removing the routes they name would have 500ed the page
+  from inside a comment. The block was already marked unused and has been
+  removed.
+
+### Added
+
+- A test that fails the build if `{% include %}`, `{% extends %}`, `{% url %}` or
+  `{% ssi %}` appears inside a CSS or JavaScript comment in any template. The
+  defect above shipped in three consecutive releases without being noticed, so
+  the class is now checked rather than the instance.
+
+### Upgrading
+
+No migration or configuration change is required.
+
+```bash
+docker pull horilla/horilla-hr:2.1.3
+```
+
 ## [2.1.2] — 2026-09-07
 
 Security patch release. **Upgrading is recommended for all installations.**
@@ -115,6 +172,7 @@ Secret — message delivery stops until it is set.
 docker pull horilla/horilla-hr:2.1.1
 ```
 
-[Unreleased]: https://github.com/horilla/horilla-hr/compare/2.1.2...HEAD
+[Unreleased]: https://github.com/horilla/horilla-hr/compare/2.1.3...HEAD
+[2.1.3]: https://github.com/horilla/horilla-hr/compare/2.1.2...2.1.3
 [2.1.2]: https://github.com/horilla/horilla-hr/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/horilla/horilla-hr/releases/tag/2.1.1
