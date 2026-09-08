@@ -737,6 +737,18 @@ class CompanyForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["icon"].required = False
+        if not self.fields.get("country") or not str(self.fields["country"].initial or "").strip():
+            instance_country = None
+            if getattr(self, "instance", None) is not None and self.instance.pk:
+                instance_country = getattr(self.instance, "country", None)
+            if not str(instance_country or "").strip():
+                self.fields["country"].initial = "Botswana"
+        if not self.fields.get("state") or not str(self.fields["state"].initial or "").strip():
+            instance_state = None
+            if getattr(self, "instance", None) is not None and self.instance.pk:
+                instance_state = getattr(self.instance, "state", None)
+            if not str(instance_state or "").strip():
+                self.fields["state"].initial = "Gaborone"
 
     def validate_image(self, file):
         max_size = 5 * 1024 * 1024

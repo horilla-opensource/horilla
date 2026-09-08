@@ -569,7 +569,7 @@ def initialize_database_user(request):
         return render(
             request,
             "initialize_database/horilla_company.html",
-            {"form": CompanyForm(initial={"hq": True})},
+            {"form": CompanyForm(initial={"hq": True, "country": "Botswana", "state": "Gaborone"})},
         )
     return render(request, "initialize_database/horilla_user_signup.html")
 
@@ -585,7 +585,7 @@ def initialize_database_company(request):
     Returns:
         HttpResponse: The rendered HTML template for department creation or company creation.
     """
-    form = CompanyForm()
+    form = CompanyForm(initial={"hq": True, "country": "Botswana", "state": "Gaborone"})
     if request.method == "POST":
         form = CompanyForm(request.POST, request.FILES)
         if form.is_valid():
