@@ -65,12 +65,31 @@
 </style>
 
 <div class="oh-sidebar" style="position: -webkit-sticky; position: sticky; top: 0; height: 100vh; overflow-x: hidden">
+    <div style="padding: 20px 14px 6px 14px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <img
+            src="https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Official%20Coat%20of%20arms%20of%20Botswana%20Ministry%20for%20State%20President%20Defence%20and%20Security%2C%20transparent%20background%2C%20flat%20vector%20style%2C%20official%20government%20logo%2C%20zebras%20pula%20ribbon%20blue%20brown%20with%20REPUBLIC%20OF%20BOTSWANA%20MINISTRY%20text%20underneath%2C%20high%20resolution%2C%20no%20extra%20objects%2C%20clean%20white%20background%20suitable%20for%20HRMS%20welcome%20page%20login%20header&image_size=square_hd"
+            alt="Botswana Ministry for State President, Defence and Security"
+            style="width: 96px; height: 96px; object-fit: contain; display: block; margin: 0 auto 8px auto;"
+        >
+        <div style="font-weight: 700; font-size: 15px; color: #fff; line-height: 1.2;">
+            Welcome to HRMS
+        </div>
+        <div style="font-size: 10px; color: rgba(255,255,255,0.65); margin-top: 4px; line-height: 1.3;">
+            Republic of Botswana<br/>
+            Ministry for State President, Defence and Security
+        </div>
+    </div>
     <div class="oh-sidebar__company" style="padding: 14px">
         {% if request.session.selected_company_instance %}
             <span class="mr-3">
                 {% if not request.session.selected_company_instance %}
                     <img
-                        src="https://ui-avatars.com/api/?name=C&background=random"
+                        src="https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Official%20Coat%20of%20arms%20of%20Botswana%20Ministry%20for%20State%20President%20Defence%20and%20Security%2C%20transparent%20background%2C%20flat%20vector%20style%2C%20official%20government%20logo%2C%20zebras%20pula%20ribbon%20blue%20brown%20with%20REPUBLIC%20OF%20BOTSWANA%20MINISTRY%20text%20underneath%2C%20high%20resolution%2C%20no%20extra%20objects%2C%20clean%20white%20background%20suitable%20for%20HRMS%20welcome%20page%20login%20header&image_size=square"
+                        style="width: 34px; border-radius: 3px"
+                    >
+                {% elif not request.session.selected_company_instance.icon %}
+                    <img
+                        src="https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Official%20Coat%20of%20arms%20of%20Botswana%20Ministry%20for%20State%20President%20Defence%20and%20Security%2C%20transparent%20background%2C%20flat%20vector%20style%2C%20official%20government%20logo%2C%20zebras%20pula%20ribbon%20blue%20brown%20with%20REPUBLIC%20OF%20BOTSWANA%20MINISTRY%20text%20underneath%2C%20high%20resolution%2C%20no%20extra%20objects%2C%20clean%20white%20background%20suitable%20for%20HRMS%20welcome%20page%20login%20header&image_size=square"
                         style="width: 34px; border-radius: 3px"
                     >
                 {% else %}
@@ -93,7 +112,7 @@
             <span class="mr-3">
                 {% if request.user.employee_get.employee_work_info.company_id.icon == None %}
                     <img
-                        src="https://ui-avatars.com/api/?name=C&background=random"
+                        src="https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Official%20Coat%20of%20arms%20of%20Botswana%20Ministry%20for%20State%20President%20Defence%20and%20Security%2C%20transparent%20background%2C%20flat%20vector%20style%2C%20official%20government%20logo%2C%20zebras%20pula%20ribbon%20blue%20brown%20with%20REPUBLIC%20OF%20BOTSWANA%20MINISTRY%20text%20underneath%2C%20high%20resolution%2C%20no%20extra%20objects%2C%20clean%20white%20background%20suitable%20for%20HRMS%20welcome%20page%20login%20header&image_size=square"
                         style="width: 34px; border-radius: 3px"
                     >
                 {% else %}

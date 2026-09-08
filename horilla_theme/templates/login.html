@@ -7,26 +7,23 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="{% static 'horilla_theme/assets/css/tailwind.css' %}" rel="stylesheet">
-        <title>
-            {% blocktrans with company_name=white_label_company_name %}Login - {{ company_name }}
-                Dashboard{% endblocktrans %}
-        </title>
+        <title>Welcome to HRMS - Login Dashboard</title>
         <link
             rel="apple-touch-icon"
             sizes="180x180"
-            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}"
+            href="{% static 'horilla_theme/assets/img/botswana_coa_180.png' %}"
         >
         <link
             rel="icon"
             type="image/png"
             sizes="32x32"
-            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}"
+            href="{% static 'horilla_theme/assets/img/botswana_coa_32.png' %}"
         >
         <link
             rel="icon"
             type="image/png"
             sizes="16x16"
-            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}"
+            href="{% static 'horilla_theme/assets/img/botswana_coa_16.png' %}"
         >
         <link
             rel="stylesheet"
@@ -116,15 +113,14 @@
         <div class="h-screen w-full flex items-center justify-center">
             <div class="bg-[{{theme_obj.primary_200}}] p-[50px] rounded-2xl [box-shadow:0px_0px_25px_#a1a1a1] w-[450px]">
                 <img
-                    src="{% if white_label_company.icon %}{{white_label_company.icon.url}}{% else %}{% static 'horilla_theme/assets/img/logo.svg' %}{% endif %}"
-                    alt=""
-                    class="m-auto mb-4"
-                    width="80"
+                    src="{% static 'horilla_theme/assets/img/botswana_coat_of_arms.png' %}"
+                    alt="Botswana Coat of Arms"
+                    class="m-auto mb-2"
+                    style="width: 200px; height: auto; max-height: 200px; object-fit: contain; display: block;"
+                    onerror="this.onerror=null;this.src='{% static 'horilla_theme/assets/img/botswana_coa_180.png' %}';"
                 >
-                <h1 class="text-3xl font-bold mb-2 text-center">
-                    {% trans "Welcome to" %}
-                    {{ white_label_company_name }}
-                    {% trans "HR" %}
+                <h1 class="text-3xl font-bold mb-2 text-center mt-2">
+                    Welcome to HRMS
                 </h1>
                 <p class="mb-5 text-center text-sm text-color-600">
                     {% trans "Please login to access the dashboard." %}

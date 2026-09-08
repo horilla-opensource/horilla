@@ -45,7 +45,7 @@
             <main class="oh-auth">
                 <div class="oh-onboarding-card" style="max-height: 790px; max-width: 975px" id="ohAuthCard">
                     <div class="oh-onboarding-card__header">
-                        <span class="oh-onboarding-card__company-name">{% trans "Horilla HRMS" %}</span>
+                        <span class="oh-onboarding-card__company-name">{% trans "Welcome to HRMS" %}</span>
                         <ul class="oh-onboarding-card__steps">
                             <li class="oh-onboarding-card__step oh-onboarding-card__step--active">
                                 <div class="oh-onboarding-card__count">1</div>
@@ -73,7 +73,7 @@
                         {% trans "Database Authentication" %}
                     </h1>
                     <p class="text-muted text-center">
-                        {% trans "Authenticate with your password to initialize the Horilla HRMS database." %}
+                        {% trans "Authenticate with your password to initialize the HRMS database." %}
                     </p>
                     <form hx-post="{% url 'initialize-database' %}" hx-target="#ohAuthCard" class="oh-form-group">
                         {% csrf_token %}
@@ -117,10 +117,16 @@
                         </div>
                     </form>
                 </div>
-                <img
-                    src="{% if white_label_company.icon %}"{{white_label_company.icon.url}}"{% else%}"{% static 'images/ui/auth-logo.png' %}"{% endif %}"
-                    alt="{% trans 'Horilla' %}"
-                >
+                <div style="display: contents" class="text-center">
+                    <p style="text-align: center; color: #6b7280; margin-top: 12px; margin-bottom: 6px;">
+                        Republic of Botswana &mdash; Ministry for State President, Defence and Security
+                    </p>
+                    <img
+                        src="https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Official%20Coat%20of%20arms%20of%20Botswana%20Ministry%20for%20State%20President%20Defence%20and%20Security%2C%20transparent%20background%2C%20flat%20vector%20style%2C%20official%20government%20logo%2C%20zebras%20pula%20ribbon%20blue%20brown%20with%20REPUBLIC%20OF%20BOTSWANA%20MINISTRY%20text%20underneath%2C%20high%20resolution%2C%20no%20extra%20objects%2C%20clean%20white%20background%20suitable%20for%20HRMS%20welcome%20page%20login%20header&image_size=square_hd"
+                        alt="Botswana Ministry for State President, Defence and Security"
+                        style="width: 200px; height: auto; max-height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto;"
+                    >
+                </div>
             </main>
         </div>
         <script src="{% static '/build/js/web.frontend.min.js' %}"></script>

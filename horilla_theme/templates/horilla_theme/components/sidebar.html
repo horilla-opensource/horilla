@@ -425,6 +425,18 @@
 </style>
 <div id="sidebar" class="fixed inset-y-0 left-0 bg-white border-r border-r-dark-50 z-50">
     <div class="p-4">
+        <div style="text-align: center; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid #e5e7eb;">
+            <img
+                src="{% static 'horilla_theme/assets/img/botswana_coat_of_arms.png' %}"
+                alt="Botswana Coat of Arms"
+                class="oh-sidebar-label"
+                style="width: 80px; height: 80px; object-fit: contain; display: block; margin: 0 auto 8px auto;"
+                onerror="this.onerror=null;this.src='{% static 'horilla_theme/assets/img/botswana_coa_180.png' %}';"
+            >
+            <div class="oh-sidebar-label" style="font-weight: 700; font-size: 14px; color: #111827; line-height: 1.2;">
+                Welcome to HRMS
+            </div>
+        </div>
         <!-- Header: hamburger pin toggle + company logo -->
         <div class="flex items-center gap-3 mb-6">
             <button
@@ -485,7 +497,7 @@
                     </div>
                 {% else %}
                     <img
-                        src="{% if request.user.employee_get.employee_work_info.company_id.icon %}{{ request.user.employee_get.employee_work_info.company_id.icon.url }}{% else %}/static/horilla_theme/assets/img/horilla-logo.png{% endif %}"
+                        src="{% if request.user.employee_get.employee_work_info.company_id.icon %}{{ request.user.employee_get.employee_work_info.company_id.icon.url }}{% else %}{% static 'horilla_theme/assets/img/botswana_coa_64.png' %}{% endif %}"
                         alt="{% trans 'Company logo' %}"
                         class="oh-sidebar-label w-7 h-7 rounded-full flex-shrink-0"
                     >
