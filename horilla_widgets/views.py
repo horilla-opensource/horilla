@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
-from horilla.decorators import login_required
+from horilla.decorators import hx_request_required, login_required
 from horilla_widgets.generic_ajax import (
     build_ajax_choices_response,
     get_ajax_field_config,
@@ -27,6 +27,7 @@ from horilla_widgets.widgets.select_widgets import (
 
 
 @login_required
+@hx_request_required
 def get_filter_form(request):
     """
     This method will return filtering from
