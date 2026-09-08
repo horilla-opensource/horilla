@@ -206,12 +206,15 @@ class TaskForm(ModelForm):
         self.fields["stage_id"].empty_label = "All Stages in Offboarding"
         self.fields["managers"].empty_label = None
         if not self.instance.pk:
-            queryset = OffboardingEmployee.objects.filter(
-                stage_id__offboarding_id=OffboardingStage.objects.filter(
-                    id=self.initial.get("stage_id")
+            stage = OffboardingStage.objects.filter(
+                id=self.initial.get("stage_id")
+            ).first()
+            queryset = (
+                OffboardingEmployee.objects.filter(
+                    stage_id__offboarding_id=stage.offboarding_id
                 )
-                .first()
-                .offboarding_id
+                if stage
+                else OffboardingEmployee.objects.none()
             )
             self.fields["tasks_to"].queryset = queryset
 

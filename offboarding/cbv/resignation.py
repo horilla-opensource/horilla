@@ -304,7 +304,9 @@ class ResignationLetterDetailView(HorillaDetailedView):
         """
         context = super().get_context_data(**kwargs)
         pk = self.kwargs.get("pk")
-        letter = ResignationLetter.objects.get(id=pk)
+        letter = ResignationLetter.objects.filter(id=pk).first()
+        if not letter:
+            return context
         title = context["resignationletter"].title
         context["title"] = title
         context["letter"] = letter

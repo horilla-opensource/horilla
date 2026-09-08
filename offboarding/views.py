@@ -498,9 +498,13 @@ def change_stage(request):
     This method is used to update the stages of the employee
     """
     employee_ids = request.GET.getlist("employee_ids")
-    stage_id = request.GET["stage_id"]
+    stage_id = request.GET.get("stage_id")
+    if not stage_id:
+        return HttpResponse()
     employees = OffboardingEmployee.objects.filter(id__in=employee_ids)
-    stage = OffboardingStage.objects.get(id=stage_id)
+    stage = OffboardingStage.objects.filter(id=stage_id).first()
+    if not stage:
+        return HttpResponse()
 
     blocked_message = _blocked_required_tasks_message(employees, stage)
     if blocked_message:
@@ -576,9 +580,13 @@ def change_offboarding_stage(request):
     This method is used to update the stages of the employee
     """
     employee_ids = request.GET.getlist("employee_ids")
-    stage_id = request.GET["stage_id"]
+    stage_id = request.GET.get("stage_id")
+    if not stage_id:
+        return HttpResponse()
     employees = OffboardingEmployee.objects.filter(id__in=employee_ids)
-    stage = OffboardingStage.objects.get(id=stage_id)
+    stage = OffboardingStage.objects.filter(id=stage_id).first()
+    if not stage:
+        return HttpResponse()
 
     blocked_message = _blocked_required_tasks_message(employees, stage)
     if blocked_message:
@@ -646,7 +654,9 @@ def view_notes(request, employee_id=None):
             attachments.append(attachment)
         note.attachments.add(*attachments)
     offboarding_employee_id = employee_id
-    employee = OffboardingEmployee.objects.get(id=offboarding_employee_id)
+    employee = OffboardingEmployee.objects.filter(id=offboarding_employee_id).first()
+    if not employee:
+        return HttpResponse()
 
     return render(
         request,
@@ -966,12 +976,20 @@ def request_single_view(request, id):
 
 
 @login_required
-@hx_request_required
 @check_feature_enabled("resignation_request")
 def search_resignation_request(request):
     """
     This method is used to search/filter the letter
     """
+    # This endpoint returns only the list/filter fragment; a genuine
+    # top-level browser navigation/reload should land on the real
+    # Resignation Requests page instead of showing the raw fragment.
+    if request.headers.get("Sec-Fetch-Mode") == "navigate":
+        redirect_url = reverse("resignation-request-view")
+        query_string = request.GET.urlencode()
+        if query_string:
+            redirect_url = f"{redirect_url}?{query_string}"
+        return redirect(redirect_url)
     if request.user.has_perm("offboarding.view_resignationletter"):
         letters = LetterFilter(request.GET).qs
     else:

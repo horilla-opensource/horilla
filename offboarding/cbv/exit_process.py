@@ -12,7 +12,7 @@ from django.apps import apps
 from django.contrib import messages
 from django.db.models import Count
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.html import escapejs
@@ -123,10 +123,23 @@ class OffboardingStageFormView(HorillaFormView):
     model = OffboardingStage
     new_display_title = _("Create Offboarding Stage")
 
+    def dispatch(self, request, *args, **kwargs):
+        # Creating a new stage requires knowing which offboarding process it
+        # belongs to; with no pk (editing an existing stage) and no
+        # offboarding_id, there's nothing sensible to show.
+        if (
+            request.method == "GET"
+            and not kwargs.get("pk")
+            and not request.GET.get("offboarding_id")
+        ):
+            return HttpResponse()
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        offboarding_id = self.request.GET["offboarding_id"]
-        self.form.fields["offboarding_id"].initial = offboarding_id
+        offboarding_id = self.request.GET.get("offboarding_id")
+        if offboarding_id:
+            self.form.fields["offboarding_id"].initial = offboarding_id
         self.form.fields["offboarding_id"].widget = forms.HiddenInput()
         if self.form.instance.pk:
             self.form_class.verbose_name = _("Update Offboarding Stage")
@@ -158,6 +171,18 @@ class OffboardingStageAddEmployeeForm(HorillaFormView):
     form_class = OffboardingEmployeeForm
     model = OffboardingEmployee
     new_display_title = _("Add Employee")
+
+    def dispatch(self, request, *args, **kwargs):
+        # Adding a new employee requires knowing which stage to add them to;
+        # with no pk (editing an existing entry) and no stage_id, there's
+        # nothing sensible to show.
+        if (
+            request.method == "GET"
+            and not kwargs.get("pk")
+            and not request.GET.get("stage_id")
+        ):
+            return HttpResponse()
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -244,6 +269,14 @@ class OffboardingTaskFormView(HorillaFormView):
     model = OffboardingTask
     form_class = TaskForm
     new_display_title = _("Create Task")
+
+    def dispatch(self, request, *args, **kwargs):
+        # This endpoint returns only the modal form fragment; a genuine
+        # top-level browser navigation/reload should land on the real
+        # Offboarding Pipeline page instead of showing the raw fragment.
+        if request.headers.get("Sec-Fetch-Mode") == "navigate":
+            return redirect(reverse("offboarding-pipeline"))
+        return super().dispatch(request, *args, **kwargs)
 
     def get_initial(self) -> dict:
         initial = super().get_initial()
@@ -860,6 +893,14 @@ class OffboardingEmployeeList(HorillaListView):
     """
     bulk_update_fields = ["stage_id"]
 
+    def dispatch(self, request, *args, **kwargs):
+        # This endpoint returns only the pipeline's list/export fragment; a
+        # genuine top-level browser navigation/reload should land on the
+        # real Offboarding Pipeline page instead of showing the raw fragment.
+        if request.headers.get("Sec-Fetch-Mode") == "navigate":
+            return redirect(reverse("offboarding-pipeline"))
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request, *args, **kwargs):
         self.selected_instances_key_id = (
             f"OffboardingEmployeeRecords{self.request.GET.get('offboarding_stage_id')}"
@@ -902,8 +943,12 @@ class OffboardingEmployeeList(HorillaListView):
         ).values_list("pk", flat=True)
         self.request.managing_offboardings = self.managing_offboardings
 
-        stage_id = self.request.GET["offboarding_stage_id"]
-        tasks = OffboardingTask.objects.filter(stage_id=stage_id)
+        stage_id = self.request.GET.get("offboarding_stage_id")
+        tasks = (
+            OffboardingTask.objects.filter(stage_id=stage_id)
+            if stage_id
+            else OffboardingTask.objects.none()
+        )
         for task in tasks:
             context["columns"].append(
                 (
