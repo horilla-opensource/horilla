@@ -7,6 +7,8 @@ Work Schedules landing page with tabbed rotating shift, work type, and roster se
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
+from horilla.decorators import hx_request_required
+
 
 @login_required
 def work_schedules_view(request):
@@ -17,6 +19,7 @@ def work_schedules_view(request):
 
 
 @login_required
+@hx_request_required
 def work_schedules_rotating_shift_tab(request):
     """
     HTMX tab body for rotating shift assign under work schedules.
@@ -25,6 +28,7 @@ def work_schedules_rotating_shift_tab(request):
 
 
 @login_required
+@hx_request_required
 def work_schedules_rotating_work_type_tab(request):
     """
     HTMX tab body for rotating work type assign under work schedules.
@@ -33,6 +37,7 @@ def work_schedules_rotating_work_type_tab(request):
 
 
 @login_required
+@hx_request_required
 def work_schedules_shift_roster_tab(request):
     """
     HTMX tab body for shift roster under work schedules.

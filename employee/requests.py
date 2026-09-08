@@ -7,6 +7,8 @@ Requests landing page with tabbed shift, inbox, work type, and document sections
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
+from horilla.decorators import hx_request_required
+
 
 @login_required
 def requests_view(request):
@@ -17,6 +19,7 @@ def requests_view(request):
 
 
 @login_required
+@hx_request_required
 def requests_shift_request_tab(request):
     """
     HTMX tab body for shift requests under requests.
@@ -25,6 +28,7 @@ def requests_shift_request_tab(request):
 
 
 @login_required
+@hx_request_required
 def requests_shift_inbox_tab(request):
     """
     HTMX tab body for shift inbox (allocated shifts) under requests.
@@ -33,6 +37,7 @@ def requests_shift_inbox_tab(request):
 
 
 @login_required
+@hx_request_required
 def requests_work_type_tab(request):
     """
     HTMX tab body for work type requests under requests.
@@ -41,6 +46,7 @@ def requests_work_type_tab(request):
 
 
 @login_required
+@hx_request_required
 def requests_document_tab(request):
     """
     HTMX tab body for document requests under requests.

@@ -381,6 +381,7 @@ class DynamiListView(HorillaListView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class HorillaDeleteConfirmationView(View):
     """
     Generic Delete Confirmation View
@@ -1060,6 +1061,7 @@ def export_data(request, *args, **kwargs):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class DynamicView(View):
     """
     DynamicView

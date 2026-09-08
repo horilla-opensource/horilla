@@ -61,6 +61,7 @@ def policies_discipline_view(request):
 
 
 @login_required
+@hx_request_required
 def policies_discipline_disciplinary_tab(request):
     """
     HTMX tab body for disciplinary actions under policies & discipline.
@@ -69,6 +70,7 @@ def policies_discipline_disciplinary_tab(request):
 
 
 @login_required
+@hx_request_required
 def policies_discipline_policies_tab(request):
     """
     HTMX tab body for policies under policies & discipline.
@@ -77,6 +79,7 @@ def policies_discipline_policies_tab(request):
 
 
 @login_required
+@hx_request_required
 def policies_discipline_action_type_tab(request):
     """
     HTMX tab body for disciplinary action types under policies & discipline.
