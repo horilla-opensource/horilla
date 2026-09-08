@@ -30,14 +30,15 @@ if (-not (git remote get-url upstream 2>$null)) {
 }
 
 # 2. Activate venv (also used to sanity-check dir)
-$py = ".\.venv\Scripts\python.exe"
-if (-not (Test-Path $py)) {
+$script:pyPath = ".\.venv\Scripts\python.exe"
+if (-not (Test-Path $script:pyPath)) {
   Write-Host "[WARN] .venv missing — skipping Django check, git-only sync." -ForegroundColor Yellow
   $haveVenv = $false
 } else {
   $haveVenv = $true
   & .\.venv\Scripts\Activate.ps1
   $env:PYTHONIOENCODING = "UTF-8"
+  $script:pyPath = Resolve-Path $script:pyPath -ErrorAction Stop
 }
 
 Write-Host "[1/7] Fetching upstream 2.0..." -ForegroundColor Cyan
@@ -104,9 +105,11 @@ if ($stashNeeded) {
 # 7. Post-rebase: Django sanity check (migration/model integrity)
 if ($haveVenv) {
   Write-Host "[7/7] Post-sync Django check..." -ForegroundColor Cyan
-  & $py manage.py check
+  # Run via cmd /c so Python stderr (RuntimeWarning) doesn't kill PS ErrorActionPreference=Stop
+  $cmd = "`"$script:pyPath`" manage.py check 2>&1"
+  & cmd /c $cmd
   if ($LASTEXITCODE -ne 0) {
-    Write-Host "[WARN] Django check FAILED after rebase. Upstream likely changed imports/models. Inspect diffs." -ForegroundColor Yellow
+    Write-Host "[WARN] Django check FAILED after rebase ($LASTEXITCODE). Upstream likely changed imports/models. Inspect diffs." -ForegroundColor Yellow
   } else {
     Write-Host "   Post-rebase Django check OK." -ForegroundColor Green
   }
