@@ -14,7 +14,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from attendance.models import Attendance, AttendanceActivity, EmployeeShiftDay
+from attendance.models import (
+    Attendance,
+    AttendanceActivity,
+    AttendanceOverTime,
+    EmployeeShiftDay,
+)
 from attendance.views.clock_in_out import *
 from attendance.views.clock_in_out import clock_out
 from attendance.views.dashboard import (
@@ -29,6 +34,8 @@ from base.models import HorillaMailTemplate
 from employee.filters import EmployeeFilter
 
 from ...api_decorators.base.decorators import (
+    approver_permission_required,
+    manager_or_owner_permission_required,
     manager_permission_required,
     permission_required,
 )
@@ -112,9 +119,11 @@ class ClockInAPIView(APIView):
                         date_yesterday = date_today - timedelta(days=1)
                         day_yesterday = date_yesterday.strftime("%A").lower()
                         day_yesterday = EmployeeShiftDay.objects.get(day=day_yesterday)
-                        minimum_hour, start_time_sec, end_time_sec = (
-                            shift_schedule_today(day=day_yesterday, shift=shift)
-                        )
+                        (
+                            minimum_hour,
+                            start_time_sec,
+                            end_time_sec,
+                        ) = shift_schedule_today(day=day_yesterday, shift=shift)
                         attendance_date = date_yesterday
                         day = day_yesterday
                 clock_in_attendance_and_activity(
@@ -151,7 +160,6 @@ class ClockOutAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-
         try:
             if request.user.employee_get.get_company().geo_fencing.start:
                 from geofencing.views import GeoFencingEmployeeLocationCheckAPIView
@@ -205,7 +213,6 @@ class AttendanceView(APIView):
         if getattr(self, "swagger_fake_view", False) or request is None:
             return Attendance.objects.none()
         if type == "ot":
-
             condition = AttendanceValidationCondition.objects.first()
             minot = strtime_seconds("00:30")
             if condition is not None:
@@ -358,7 +365,7 @@ class ValidateAttendanceView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    @manager_permission_required("attendance.change_attendance")
+    @approver_permission_required(Attendance, "attendance.change_attendance")
     def put(self, request, pk):
         attendance = Attendance.objects.filter(id=pk).update(attendance_validated=True)
         attendance = Attendance.objects.filter(id=pk).first()
@@ -390,7 +397,7 @@ class OvertimeApproveView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    @manager_permission_required("attendance.change_attendance")
+    @approver_permission_required(Attendance, "attendance.change_attendance")
     def put(self, request, pk):
         try:
             attendance = Attendance.objects.filter(id=pk).update(
@@ -536,7 +543,7 @@ class AttendanceRequestApproveView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    @manager_permission_required("attendance.change_attendance")
+    @approver_permission_required(Attendance, "attendance.change_attendance")
     def put(self, request, pk):
         try:
             attendance = Attendance.objects.get(id=pk)
@@ -686,7 +693,9 @@ class AttendanceOverTimeView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @manager_permission_required("attendance.change_attendanceovertime")
+    @manager_or_owner_permission_required(
+        AttendanceOverTime, "attendance.change_attendanceovertime"
+    )
     def put(self, request, pk):
         attendance_ot = get_object_or_404(AttendanceOverTime, pk=pk)
         serializer = AttendanceOverTimeSerializer(
@@ -757,7 +766,6 @@ class TodayAttendance(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-
         today = datetime.today()
         week_day = today.strftime("%A").lower()
 
@@ -854,7 +862,6 @@ class OfflineEmployeesListView(APIView):
         return pagenation.get_paginated_response(page)
 
     def get_leave_status(self, queryset):
-
         today = date.today()
         queryset = queryset.distinct()
         # Annotate each employee with their leave status
@@ -895,7 +902,6 @@ class OfflineEmployeesListView(APIView):
         )
 
         for employee in employees_with_leave_status:
-
             if employee["employee_profile"]:
                 employee["employee_profile"] = (
                     settings.MEDIA_URL + employee["employee_profile"]
@@ -1001,6 +1007,11 @@ class ConvertedMailTemplateConvert(APIView):
         employee_id = request.data.get("employee_id", None)
         employee = Employee.objects.filter(id=employee_id).first()
         bdy = HorillaMailTemplate.objects.filter(id=template_id).first()
+        if bdy is None:
+            return Response(
+                {"error": _("Mail template not found.")},
+                status=status.HTTP_404_NOT_FOUND,
+            )
         template_bdy = template.Template(sanitize_mail_template_body(bdy.body))
         context = template.Context(
             {"instance": employee, "self": request.user.employee_get}
@@ -1030,7 +1041,12 @@ class OfflineEmployeeMailsend(APIView):
         ]
         email_backend = ConfiguredEmailBackend()
         host = email_backend.dynamic_username
-        employee = Employee.objects.get(id=employee_id)
+        employee = Employee.objects.filter(id=employee_id).first()
+        if employee is None:
+            return Response(
+                {"error": _("Employee not found.")},
+                status=status.HTTP_404_NOT_FOUND,
+            )
         template_attachment_ids = request.POST.getlist("template_attachments")
         bodys = list(
             HorillaMailTemplate.objects.filter(

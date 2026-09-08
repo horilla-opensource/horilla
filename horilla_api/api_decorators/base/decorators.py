@@ -86,12 +86,25 @@ def manager_or_owner_permission_required(model_class, perm):
             employee = request.user.employee_get
 
             if pk:
-                try:
-                    target = model_class.objects.get(pk=pk)
-                except model_class.DoesNotExist:
+                target = model_class.objects.filter(pk=pk).first()
+                if target is None:
+                    # 404 only for a caller who could legitimately act on the
+                    # record had it existed. Answering 404 to everyone else
+                    # turns the endpoint into an existence oracle: an
+                    # unauthorized caller could tell a real id from an invented
+                    # one by the status code.
+                    if request.user.has_perm(perm):
+                        return Response(
+                            {"error": f"{model_class.__name__} does not exist"},
+                            status=status.HTTP_404_NOT_FOUND,
+                        )
                     return Response(
-                        {"error": f"{model_class.__name__} does not exist"},
-                        status=status.HTTP_404_NOT_FOUND,
+                        {
+                            "error": _(
+                                "You do not have permission to perform this action."
+                            )
+                        },
+                        status=status.HTTP_403_FORBIDDEN,
                     )
                 if target.employee_id == employee:
                     return func(self, request, pk, *args, **kwargs)
@@ -120,7 +133,9 @@ def manager_or_owner_permission_required(model_class, perm):
     return decorator
 
 
-def approver_permission_required(model_class, perm):
+def approver_permission_required(
+    model_class, perm, designated_approvers=None, pk_kwarg="pk"
+):
     """
     Gate an approve/reject endpoint: the caller must hold ``perm`` or manage the
     employee the record belongs to, and must never be that employee.
@@ -140,18 +155,37 @@ def approver_permission_required(model_class, perm):
     manager may legitimately manage everyone; either way a scoped check would
     still pass them for their own request. So the self-approval refusal is
     explicit and independent of the manager test.
+
+    ``designated_approvers`` names the callers a record nominates for itself --
+    a leave request built by a multiple-approval condition is approved by the
+    managers on that condition, who need be neither the reporting manager nor a
+    permission holder. Without it, scoping the manager test would lock those
+    approvers out of the chain they exist to serve. It is consulted after the
+    self-approval refusal, never before it.
+
+    ``pk_kwarg`` is the URL keyword naming the record, for the handlers routed
+    as something other than ``pk``.
     """
 
     def decorator(func):
         @wraps(func)
-        def wrapper(self, request, pk=None, *args, **kwargs):
+        def wrapper(self, request, *args, **kwargs):
             employee = request.user.employee_get
-            try:
-                target = model_class.objects.get(pk=pk)
-            except model_class.DoesNotExist:
+            target_pk = kwargs.get(pk_kwarg, args[0] if args else None)
+            target = model_class.objects.filter(pk=target_pk).first()
+            if target is None:
+                # 404 only for a caller who could legitimately act on the
+                # record had it existed. Answering 404 to everyone else turns
+                # the endpoint into an existence oracle: an unauthorized caller
+                # could tell a real id from an invented one by the status code.
+                if request.user.has_perm(perm):
+                    return Response(
+                        {"error": f"{model_class.__name__} does not exist"},
+                        status=status.HTTP_404_NOT_FOUND,
+                    )
                 return Response(
-                    {"error": f"{model_class.__name__} does not exist"},
-                    status=status.HTTP_404_NOT_FOUND,
+                    {"error": _("You do not have permission to perform this action.")},
+                    status=status.HTTP_403_FORBIDDEN,
                 )
 
             if getattr(target, "employee_id", None) == employee:
@@ -160,8 +194,13 @@ def approver_permission_required(model_class, perm):
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
+            if designated_approvers is not None and employee in (
+                designated_approvers(target) or []
+            ):
+                return func(self, request, *args, **kwargs)
+
             if request.user.has_perm(perm) or check_manager(employee, target):
-                return func(self, request, pk, *args, **kwargs)
+                return func(self, request, *args, **kwargs)
 
             return Response(
                 {"error": _("You do not have permission to perform this action.")},

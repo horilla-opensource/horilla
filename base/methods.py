@@ -11,6 +11,7 @@ from types import SimpleNamespace
 
 import pandas as pd
 import pdfkit
+from django import template
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -22,6 +23,7 @@ from django.db.models import ForeignKey, ManyToManyField, OneToOneField, Q
 from django.db.models.functions import Lower
 from django.forms.models import ModelChoiceField
 from django.http import HttpResponse
+from django.template.base import Lexer, TokenType
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 
@@ -142,61 +144,160 @@ CHART_CONFIG = {
 
 # Tokens that must never resolve in a user-supplied mail-template body —
 # they would leak password hashes, session metadata, or full request state.
-_FORBIDDEN_TEMPLATE_ATTRS = (
-    "password",
-    "username",
-    "META",
-    "COOKIES",
-    "session",
-    "_state",
-    "is_superuser",
-    "is_staff",
-    "user_permissions",
-    "groups",
-    "token",
-    "secret",
-    "api_key",
+# Tokens that must never resolve in a user-supplied mail-template body --
+# they would leak password hashes, session metadata, or full request state.
+_FORBIDDEN_TEMPLATE_ATTRS = frozenset(
+    {
+        "password",
+        "username",
+        "META",
+        "COOKIES",
+        "session",
+        "_state",
+        "is_superuser",
+        "is_staff",
+        "user_permissions",
+        "groups",
+        "token",
+        "secret",
+        "api_key",
+    }
 )
-_FORBIDDEN_TEMPLATE_TAGS = ("debug", "load")
+
+# Tags a mail body may use. Everything else is dropped, including the ones that
+# read from disk or widen the context: `include`, `extends`, `load`, `debug`,
+# `csrf_token`, and any tag a loaded library would add.
+#
+# This is an allow-list on purpose. Denying only `debug` and `load` left every
+# other tag free to carry the very attribute paths the variable check rejects --
+# `{% with h=instance.employee_user_id.password %}{{ h }}{% endwith %}` and
+# `{% firstof ... %}` both reached the superuser's password hash through the
+# reflected mail-template endpoints (GHSA-6fxh-v24c-4cmx).
+_ALLOWED_TEMPLATE_TAGS = frozenset(
+    {
+        "autoescape",
+        "endautoescape",
+        "comment",
+        "endcomment",
+        "cycle",
+        "resetcycle",
+        "filter",
+        "endfilter",
+        "firstof",
+        "for",
+        "empty",
+        "endfor",
+        "if",
+        "elif",
+        "else",
+        "endif",
+        "ifchanged",
+        "endifchanged",
+        "lorem",
+        "now",
+        "regroup",
+        "spaceless",
+        "endspaceless",
+        "templatetag",
+        "url",
+        "verbatim",
+        "endverbatim",
+        "widthratio",
+        "with",
+        "endwith",
+    }
+)
+
+# Everything that cannot be part of a Python identifier, so that a whole
+# construct splits into the names it could possibly look up:
+# `x|default:a.b.password` and `h=a.b.password` both yield "password".
+_TEMPLATE_IDENTIFIER_RE = re.compile(r"[^\w]+")
+
+
+# A quoted literal is never resolved as an attribute path by any builtin that
+# renders its value, so it is removed before the scan. That keeps ordinary prose
+# like `{{ "Reset your password"|upper }}` intact. The two builtins that do
+# resolve a quoted string as a property path -- `dictsort`, `dictsortreversed` --
+# sort by it and output the objects, never the resolved value.
+_QUOTED_LITERAL_RE = re.compile(r"'[^']*'|\"[^\"]*\"")
+
+
+def _references_forbidden_attr(contents):
+    """
+    True if any unquoted part of a `{{ }}` / `{% %}` construct names a
+    forbidden attribute -- anywhere in it, not just before the first filter.
+
+    The whole construct is inspected because Django resolves variables in
+    filter arguments (`|default:a.b.password`), in tag arguments
+    (`{% firstof a.b.password %}`) and in tag assignments
+    (`{% with h=a.b.password %}`), not only in the leading lookup path.
+    """
+    unquoted = _QUOTED_LITERAL_RE.sub(" ", contents)
+    return any(
+        word in _FORBIDDEN_TEMPLATE_ATTRS
+        for word in _TEMPLATE_IDENTIFIER_RE.split(unquoted)
+    )
+
+
+def _strip_all_template_syntax(body):
+    """
+    Reduce a body to inert text: re-lex and keep only text until no construct
+    survives. Each pass is strictly shorter than the last, so this terminates.
+    """
+    while True:
+        tokens = Lexer(body).tokenize()
+        if all(token.token_type == TokenType.TEXT for token in tokens):
+            return body
+        body = "".join(
+            token.contents for token in tokens if token.token_type == TokenType.TEXT
+        )
 
 
 def sanitize_mail_template_body(body):
     """
     Strip dangerous Django-template constructs from a user-supplied mail body.
 
-    Mail-preview endpoints render arbitrary user-supplied bodies through the
-    Django template engine, which exposes attribute traversal on any object
-    in the context (User.password, request.META, etc.). This function removes
-    variable expressions that reference forbidden attributes and removes
-    forbidden template tags. It does not aim to be a full Django-template
-    parser; it normalizes whitespace inside `{{ ... }}` / `{% ... %}` so
-    obvious bypasses like `{{ request . user . password }}` are also caught.
+    Mail bodies are rendered through the Django template engine with real model
+    instances in the context, and template attribute traversal reaches anything
+    hanging off them -- `instance.employee_user_id.password`, for one. This
+    removes any construct that could resolve a forbidden attribute, and any tag
+    outside `_ALLOWED_TEMPLATE_TAGS`.
+
+    Tokenizing with Django's own lexer rather than matching `{{ ... }}` with a
+    regex is deliberate: it is the same lexer that will parse the result, so
+    there is no construct the check and the renderer can disagree about.
     """
     if not body:
         return body
 
-    def _strip_variable(match):
-        # Normalize: remove all whitespace inside {{ ... }} so
-        # `{{ a . password }}` and `{{a.password|upper}}` both collapse to
-        # a single token we can inspect.
-        inner = re.sub(r"\s+", "", match.group(1))
-        # Split filters off: `a.password|upper` -> `a.password`
-        var_path = inner.split("|", 1)[0]
-        parts = var_path.split(".")
-        if any(part in _FORBIDDEN_TEMPLATE_ATTRS for part in parts):
-            return ""
-        return match.group(0)
+    kept = []
+    for token in Lexer(body).tokenize():
+        if token.token_type == TokenType.TEXT:
+            kept.append(token.contents)
+        elif token.token_type == TokenType.COMMENT:
+            continue  # `{# ... #}` is never rendered
+        elif token.token_type == TokenType.VAR:
+            if not _references_forbidden_attr(token.contents):
+                kept.append("{{ " + token.contents + " }}")
+        else:  # TokenType.BLOCK
+            tag_name = token.contents.split(None, 1)[0] if token.contents else ""
+            if tag_name in _ALLOWED_TEMPLATE_TAGS and not _references_forbidden_attr(
+                token.contents
+            ):
+                kept.append("{% " + token.contents + " %}")
 
-    def _strip_tag(match):
-        inner = match.group(1).strip()
-        tag_name = inner.split(None, 1)[0] if inner else ""
-        if tag_name in _FORBIDDEN_TEMPLATE_TAGS:
-            return ""
-        return match.group(0)
+    sanitized = "".join(kept)
 
-    body = re.sub(r"\{\{(.*?)\}\}", _strip_variable, body, flags=re.DOTALL)
-    body = re.sub(r"\{%(.*?)%\}", _strip_tag, body, flags=re.DOTALL)
-    return body
+    # Dropping one half of a block tag leaves source that will not compile --
+    # removing `{% with ... %}` strands its `{% endwith %}` -- and every caller
+    # compiles this return value immediately. Fall back to inert text rather
+    # than raising a TemplateSyntaxError out of a mail send.
+    try:
+        template.Template(sanitized)
+    except Exception:
+        sanitized = _strip_all_template_syntax(body)
+
+    return sanitized
 
 
 def sanitize_mail_template_placeholders(body, allowed_template_words):
@@ -577,7 +678,6 @@ def sortby(request, queryset, key):
     sort_count = request.GET.getlist(key).count(sortby)
     order = None
     if sortby is not None and sortby != "":
-
         field_parts = sortby.split("__")
 
         model_meta = queryset.model._meta
