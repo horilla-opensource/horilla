@@ -446,8 +446,8 @@ class EmployeeKeyResultForm(BaseForm):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         if self.initial.get("employee_objective_id"):
             if (
-                type(self.initial.get("employee_objective_id")) == int
-                or type(self.initial.get("employee_objective_id")) == str
+                type(self.initial.get("employee_objective_id")) is int
+                or type(self.initial.get("employee_objective_id")) is str
             ):
                 self.verbose_name = str(
                     EmployeeObjective.objects.get(
@@ -610,12 +610,13 @@ class KeyResultForm(ModelForm):
         employees = Employee.objects.filter(
             is_active=True, employee_work_info__reporting_manager_id=employee
         )
-        if employee and employees:
-            # manager level access
-            self.fields["employee_id"].queryset = employees
+        if "employee_id" in self.fields:
+            if employee and employees:
+                # manager level access
+                self.fields["employee_id"].queryset = employees
 
-        # Set unique IDs for employee_id fields to prevent conflicts with other forms on the same page
-        self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
+            # Set unique IDs for employee_id fields to prevent conflicts with other forms on the same page
+            self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
 
     def clean_value(self, value_type):
         """

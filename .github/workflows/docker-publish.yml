@@ -107,8 +107,15 @@ jobs:
             VERSION=${{ steps.v.outputs.version }}
             VCS_REF=${{ github.sha }}
             BUILD_DATE=${{ steps.v.outputs.build_date }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # no-cache on purpose. A release build must install from
+          # requirements.txt as written, not from a layer another run
+          # populated: the 2.1.0 publish scanned an image whose entire venv
+          # layer was CACHED from before the msgpack/setuptools pins landed,
+          # so the scan correctly reported versions the current
+          # requirements.txt does not ask for. Reusing layers saves a few
+          # minutes once per release and can silently ship a different image
+          # than the one the tag describes.
+          no-cache: true
 
       - name: Smoke test — version, migrations, health, readiness
         run: |
@@ -194,9 +201,19 @@ jobs:
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: horilla-hr:smoketest
-          severity: CRITICAL
+          # HIGH included: this gate already caught a CRITICAL Django SQL
+          # injection before it shipped, and a HIGH in an HR app handling
+          # payroll and personal data is not a "publish anyway" finding.
+          # ignore-unfixed keeps it actionable -- it only fails on things
+          # that have a fix available.
+          severity: CRITICAL,HIGH
           exit-code: "1"
           ignore-unfixed: true
+          # .trivyignore.yaml suppresses two findings that come from pip's
+          # own vendored dependency manifest rather than anything installed.
+          # Read that file before adding to it -- it records how each was
+          # verified, and the versions actually installed.
+          trivyignores: .trivyignore.yaml
 
       # ---- Publish. Everything below is skipped on a dry run. ----
 
@@ -247,8 +264,9 @@ jobs:
             BUILD_DATE=${{ steps.v.outputs.build_date }}
           provenance: true
           sbom: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Same reasoning as the smoke build above: the published image must
+          # come from the requirements the tag actually carries.
+          no-cache: true
 
       - name: Verify published manifest
         if: steps.v.outputs.dry_run != 'true'
@@ -270,3 +288,63 @@ jobs:
             fi
             echo "Confirmed: pre-release did not take :latest"
           fi
+
+      # ---- Docker Hub descriptions. Rendered from docker/dockerhub/ so the
+      # published page is a release artifact rather than a manual edit.
+      #
+      # Nothing synced these before, and the pages had drifted badly:
+      # horilla/horilla still told its readers to run `horilla/horilla:1.4`
+      # with `manage.py runserver` -- a January 2026 image and Django's
+      # development server -- and that page carries ~15k pulls, 38x the
+      # canonical name. This page itself claimed "latest -- Currently 2.0.0"
+      # after 2.1.2 had shipped. ----
+
+      - name: Render Docker Hub descriptions
+        if: steps.v.outputs.dry_run != 'true' && steps.v.outputs.prerelease != 'true'
+        run: |
+          set -euo pipefail
+          chmod +x docker/dockerhub/render.sh
+          docker/dockerhub/render.sh canonical "${{ steps.v.outputs.version }}" \
+            > /tmp/desc-canonical.md
+          docker/dockerhub/render.sh legacy "${{ steps.v.outputs.version }}" \
+            > /tmp/desc-legacy.md
+
+          # An unrendered placeholder would be published verbatim to a page with
+          # five figures of traffic, so fail the step instead.
+          for f in /tmp/desc-canonical.md /tmp/desc-legacy.md; do
+            if grep -q '__NOTICE__\|__VERSION__' "$f"; then
+              echo "::error::Unrendered placeholder left in $f"
+              grep -n '__NOTICE__\|__VERSION__' "$f"
+              exit 1
+            fi
+            size=$(wc -c < "$f")
+            echo "$f: $size chars"
+            # Docker Hub rejects a full description over 25,000 characters.
+            if [ "$size" -gt 25000 ]; then
+              echo "::error::$f exceeds Docker Hub's 25,000-character limit"
+              exit 1
+            fi
+          done
+
+      - name: Update horilla/horilla-hr description
+        if: steps.v.outputs.dry_run != 'true' && steps.v.outputs.prerelease != 'true'
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_DESCRIPTION_TOKEN }}
+          repository: horilla/horilla-hr
+          short-description: "Free and open source HR software - recruitment, attendance, leave, payroll and performance."
+          readme-filepath: /tmp/desc-canonical.md
+
+      # The deprecated mirror is kept in sync deliberately: it carries ~38x the
+      # pull volume of the canonical name, so it is the page most users read.
+      # Leaving it stale is what produced the 1.4/runserver instructions above.
+      - name: Update horilla/horilla description (deprecated mirror)
+        if: steps.v.outputs.dry_run != 'true' && steps.v.outputs.prerelease != 'true'
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_DESCRIPTION_TOKEN }}
+          repository: horilla/horilla
+          short-description: "[Moved to horilla/horilla-hr] Free and open source HR software."
+          readme-filepath: /tmp/desc-legacy.md

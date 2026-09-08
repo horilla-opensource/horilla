@@ -8,7 +8,7 @@ from django import forms
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
@@ -78,6 +78,11 @@ class QuestionDuplicateFormView(HorillaFormView):
     model = RecruitmentSurvey
     new_display_title = _("Duplicate Survey Questions")
     template_name = "cbv/recruitment_survey/survey_form.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not RecruitmentSurvey.objects.filter(id=kwargs.get("obj_id")).exists():
+            return HttpResponse()
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -195,12 +200,6 @@ class RecruitmentSurveyDetailView(HorillaDetailedView):
     # ]
 
 
-# --- Restored: previous Survey Templates page implementation. Kept
-# side-by-side with the newer shell-based views below (SurveyQuestionTemplateView
-# onward) rather than removed. Route names that would collide with the new
-# views use a "-legacy" suffix.
-
-
 @method_decorator(login_required, name="dispatch")
 class SurveyTemplateSettingsView(TemplateView):
     """
@@ -264,6 +263,10 @@ class SurveyTemplateNavView(HorillaNavView):
     filter_form_context_name = "form"
     filter_body_template = "survey/filter.html"
     search_swap_target = "#view-container"
+    # Modern slide-over filter panel (horilla_nav.html's .oh-filter-modern
+    # styles) -- same treatment as every other modernized nav view this
+    # session. Presentational only; no change needed to SurveyFilter.
+    modern_filter = True
 
 
 @method_decorator(login_required, name="dispatch")
@@ -293,15 +296,10 @@ class SurveyQuestionNavView(HorillaNavView):
     filter_form_context_name = "form"
     filter_body_template = "survey/filter.html"
     search_swap_target = "#questionViewContainer"
-
-
-@method_decorator(login_required, name="dispatch")
-class SurveyQuestionTemplateView(TemplateView):
-    """
-    Survey Templates page view
-    """
-
-    template_name = "survey/view_question_templates.html"
+    # Modern slide-over filter panel (horilla_nav.html's .oh-filter-modern
+    # styles) -- same treatment as every other modernized nav view this
+    # session. Presentational only; no change needed to SurveyFilter.
+    modern_filter = True
 
 
 def _recruitment_survey_queryset_for(request):
@@ -379,54 +377,6 @@ class SurveyQuestionList(HorillaListView):
                 recruitment_ids__recruitment_managers=self.request.user.employee_get
             ).distinct()
         return queryset
-
-
-@method_decorator(login_required, name="dispatch")
-class SurveyTemplateNav(HorillaNavView):
-    """
-    Independent Nav for the Templates tab
-    """
-
-    nav_title = _("Survey Templates")
-    filter_instance = SurveyTemplateFilter()
-    filter_body_template = "cbv/recruitment_survey_template/filter.html"
-    filter_form_context_name = "form"
-    template_name = "generic/inline_nav.html"
-
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.search_url = reverse("list-survey-templates")
-        self.search_swap_target = "#surveyTemplatesListContainer"
-        self.create_attrs = f"""
-                            data-toggle="oh-modal-toggle"
-                            data-target="#genericModal"
-                            hx-target="#genericModalBody"
-                            hx-get="{reverse_lazy('survey-template-create')}"
-                            """
-
-
-@method_decorator(login_required, name="dispatch")
-class SurveyQuestionNav(HorillaNavView):
-    """
-    Independent Nav for the Questions tab
-    """
-
-    nav_title = _("Survey Questions")
-    filter_instance = SurveyFilter()
-    filter_body_template = "cbv/recruitment_survey/filter.html"
-    filter_form_context_name = "form"
-    template_name = "generic/inline_nav.html"
-
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.search_url = reverse("list-survey-questions")
-        self.search_swap_target = "#surveyQuestionsListContainer"
-        self.create_attrs = f"""
-                            data-toggle="oh-modal-toggle"
-                            data-target="#genericModal"
-                            hx-target="#genericModalBody"
-                            hx-get="{reverse_lazy('recruitment-survey-question-template-create')}"
-                            """
 
 
 class SurveyTemplateTabShell(AttendanceTabContentShell):

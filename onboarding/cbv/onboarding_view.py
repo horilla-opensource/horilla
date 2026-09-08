@@ -95,6 +95,11 @@ class TaskCreateForm(HorillaFormView):
     form_class = OnboardingViewTaskForm
     new_display_title = _("Create Task")
 
+    def dispatch(self, request, *args, **kwargs):
+        if not OnboardingStage.objects.filter(id=kwargs.get("obj_id")).exists():
+            return HttpResponse()
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         self.form.fields["stage_id"].widget = forms.HiddenInput()

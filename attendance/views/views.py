@@ -1783,41 +1783,6 @@ def update_worked_hour_field(request):
     specified HTML template.
     """
     clock_in = parse_datetime(
-        request.GET.get("attendance_clock_in_date"),
-        request.GET.get("attendance_clock_in"),
-    )
-    clock_out = parse_datetime(
-        request.GET.get("attendance_clock_out_date"),
-        request.GET.get("attendance_clock_out"),
-    )
-
-    total_seconds = (
-        (clock_out - clock_in).total_seconds() if clock_in and clock_out else -1
-    )
-    hours, minutes = divmod(max(total_seconds, 0), 3600)
-    worked_hours_str = f"{int(hours):02}:{int(minutes // 60):02}"
-    form = AttendanceForm(initial={"attendance_worked_hour": worked_hours_str})
-    return render(
-        request,
-        "attendance/attendance/update_hx_form.html",
-        {"request": request, "form": form},
-    )
-
-
-@login_required
-@hx_request_required
-def update_worked_hour_field(request):
-    """
-    Update the worked hour field based on clock-in and clock-out times.
-
-    This view function calculates the total worked hours for an employee
-    by parsing the clock-in and clock-out dates and times from the request
-    parameters. It computes the duration between the two times and formats
-    the result as a string in the "HH:MM" format. The computed worked hours
-    are then initialized in an AttendanceForm, which is rendered in the
-    specified HTML template.
-    """
-    clock_in = parse_datetime(
         (
             now().strftime("%Y-%m-%d")
             if request.GET.get("create_bulk")
@@ -2116,7 +2081,6 @@ def latecome_attendance_select_filter(request):
 
 
 @login_required
-@hx_request_required
 @permission_required("attendance.add_gracetime")
 def create_grace_time(request):
     """
@@ -2128,7 +2092,20 @@ def create_grace_time(request):
     Returns:
     GET : return grace time form template
     """
-    is_default = eval_validate(request.GET.get("default"))
+    # This endpoint returns only the modal form fragment; a genuine
+    # top-level browser navigation/reload should land on the real Grace
+    # Time settings page instead of showing the raw, unstyled fragment.
+    # Sec-Fetch-Mode is set by the browser itself for a real navigation
+    # and can't be spoofed by an htmx fetch() call, unlike HX-Request alone.
+    if request.headers.get("Sec-Fetch-Mode") == "navigate":
+        redirect_url = reverse("grace-time-view")
+        query_string = request.GET.urlencode()
+        if query_string:
+            redirect_url = f"{redirect_url}?{query_string}"
+        return redirect(redirect_url)
+    is_default = False
+    if request.GET.get("default"):
+        is_default = eval_validate(request.GET.get("default"))
     form = GraceTimeForm(initial={"is_default": is_default})
     if request.method == "POST":
         form = GraceTimeForm(request.POST)
@@ -2188,7 +2165,9 @@ def update_grace_time(request, grace_id):
     Returns:
     GET : return grace time form template
     """
-    grace_time = GraceTime.objects.get(id=grace_id)
+    grace_time = GraceTime.objects.filter(id=grace_id).first()
+    if not grace_time:
+        return HttpResponse()
     form = GraceTimeForm(instance=grace_time)
     if request.method == "POST":
         form = GraceTimeForm(request.POST, instance=grace_time)
@@ -2555,6 +2534,22 @@ def work_records(request):
 def work_records_change_month(request):
     previous_data = request.GET.urlencode()
     employee_filter_form = EmployeeFilter(request.GET or None)
+    # This same instance renders employee_filters.html a SECOND time here
+    # (inside work_record_list.html's own Export modal) -- work_record_
+    # view.html (the outer page) already renders it once for the browse
+    # filter panel, and Django's default auto_id ("id_%s") has no
+    # per-request salt, so both ended up emitting the exact same field
+    # ids. Company/Department/etc are AJAX-loaded Select2 comboboxes now
+    # (EmployeeFilter.ajax_fields), and select2 keys its own generated
+    # markup off the underlying element's id -- with two elements sharing
+    # one id, the browse panel's copy silently never finished
+    # initializing (confirmed live: it stayed plain .oh-select-ajax while
+    # the modal's copy became select2-hidden-accessible). auto_id (not
+    # `prefix`) only changes the rendered id= attribute, not the field
+    # `name`, so request.GET binding here and in the separate
+    # work-record-export view (which builds its own fresh, unprefixed
+    # EmployeeFilter(request.GET)) are both untouched.
+    employee_filter_form.form.auto_id = "id_wrexport_%s"
 
     employees = filtersubordinatesemployeemodel(
         request, employee_filter_form.qs, "attendance.view_attendance"
@@ -3250,7 +3245,9 @@ def validation_condition_update(request, obj_id):
     Args:
         obj_id : validation condition instance id
     """
-    condition = AttendanceValidationCondition.objects.get(id=obj_id)
+    condition = AttendanceValidationCondition.objects.filter(id=obj_id).first()
+    if not condition:
+        return HttpResponse()
     form = AttendanceValidationConditionForm(instance=condition)
     if request.method == "POST":
         form = AttendanceValidationConditionForm(request.POST, instance=condition)

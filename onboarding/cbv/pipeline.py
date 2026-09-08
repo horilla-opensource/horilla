@@ -71,6 +71,14 @@ class PipelineNav(HorillaNavView):
     filter_instance = onboarding_filters.RecruitmentFilter()
     # filter_instance_context_name = "filter"
     filter_form_context_name = "form"
+    # Modern slide-over filter panel (generic/horilla_nav.html's own
+    # {% if modern_filter %} branch) -- same treatment as every other
+    # panel this session. onboarding_filters.RecruitmentFilter inherits
+    # recruitment.filters.RecruitmentFilter.ajax_fields (Managers,
+    # Company); OnboardingStageFilter/OnboardingCandidateFilter each
+    # carry their own ajax_fields for the Stage Manager/Tasks pickers
+    # this combined panel renders.
+    modern_filter = True
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
@@ -408,7 +416,8 @@ class CandidateOnboardingDetail(CandidateDetail):
 
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
-        self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}{instance.onboarding_stage.onboarding_stage_id.pk}"
+        if instance and instance.onboarding_stage:
+            self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}{instance.onboarding_stage.onboarding_stage_id.pk}"
         response = super().get(request, *args, **kwargs)
         return response
 

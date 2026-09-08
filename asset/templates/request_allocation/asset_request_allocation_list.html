@@ -100,7 +100,7 @@
                                                 role="button"
                                                 data-toggle="oh-modal-toggle"
                                                 data-target="#objectCreateModal"
-                                                hx-get="{%url 'asset-allocate-return'  asset_id=asset.asset_id.id %}"
+                                                hx-get="{%url 'asset-allocate-return'  assignment_id=asset.id %}"
                                                 hx-target="#objectCreateModalTarget"
                                             >
                                                 <ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}
@@ -582,7 +582,7 @@
                                                 role="button"
                                                 data-toggle="oh-modal-toggle"
                                                 data-target="#objectCreateModal"
-                                                hx-get="{% url 'asset-allocate-return'  asset_id=asset_allocation.asset_id.id %}"
+                                                hx-get="{% url 'asset-allocate-return'  assignment_id=asset_allocation.id %}"
                                                 hx-target="#objectCreateModalTarget"
                                             >
                                                 <ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}

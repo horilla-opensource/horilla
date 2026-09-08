@@ -38,6 +38,7 @@ from base.methods import (
 from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import (
+    check_manager,
     hx_request_required,
     login_required,
     manager_can_enter,
@@ -827,7 +828,9 @@ def objective_detailed_view_activity(request, id):
         it will return history,comment object to objective_detailed_view_activity.
     """
 
-    objective = EmployeeObjective.objects.get(id=id)
+    objective = EmployeeObjective.objects.filter(id=id).first()
+    if not objective:
+        return HttpResponse()
     if (
         request.user.employee_get == objective.employee_id
         or request.user.employee_get in objective.objective_id.managers.all()
@@ -900,7 +903,9 @@ def emp_objective_search(request, obj_id):
     Returns:
         All the filtered and searched object will based on userlevel.
     """
-    objective = Objective.objects.get(id=obj_id)
+    objective = Objective.objects.filter(id=obj_id).first()
+    if not objective:
+        return HttpResponse()
     emp_objectives = objective.employee_objective.all()
     search_val = request.GET.get("search")
     if search_val is None:
@@ -959,6 +964,7 @@ def kr_table_view(request, emp_objective_id):
 
 @login_required
 @hx_request_required
+@owner_can_enter("pms.change_employeeobjective", EmployeeObjective)
 def objective_detailed_view_objective_status(request, id):
     """
     This view is used to  update status of objective in objective detailed view,
@@ -969,7 +975,10 @@ def objective_detailed_view_objective_status(request, id):
         All the filtered and searched object will based on userlevel.
     """
 
-    objective = EmployeeObjective.objects.get(id=id)
+    objective = EmployeeObjective.objects.filter(id=id).first()
+    if not objective:
+        messages.error(request, _("Objective not found."))
+        return HorillaRedirect(request)
     status = request.POST.get("objective_status")
     objective.status = status
     objective.save()
@@ -983,6 +992,7 @@ def objective_detailed_view_objective_status(request, id):
 
 @login_required
 @hx_request_required
+@owner_can_enter("pms.change_employeekeyresult", EmployeeObjective)
 def objective_detailed_view_key_result_status(request, obj_id, kr_id):
     """
     This view is used to  update status of key result in objective detailed view,
@@ -995,7 +1005,10 @@ def objective_detailed_view_key_result_status(request, obj_id, kr_id):
     """
 
     status = request.POST.get("key_result_status")
-    employee_key_result = EmployeeKeyResult.objects.get(id=kr_id)
+    employee_key_result = EmployeeKeyResult.objects.filter(id=kr_id).first()
+    if not employee_key_result:
+        messages.error(request, _("Key result not found."))
+        return HorillaRedirect(request)
 
     current_value = employee_key_result.current_value
     target_value = employee_key_result.target_value
@@ -1026,6 +1039,14 @@ def objective_detailed_view_current_value(request, kr_id):
     if request.method == "POST":
         current_value = request.POST.get("current_value")
         employee_key_result = EmployeeKeyResult.objects.get(id=kr_id)
+        objective = employee_key_result.employee_objective_id
+        employee = request.user.employee_get
+        if not (
+            request.user.has_perm("pms.change_employeekeyresult")
+            or objective.employee_id == employee
+            or check_manager(employee, objective.employee_id)
+        ):
+            return render(request, "no_perm.html")
         target_value = employee_key_result.target_value
         objective_id = employee_key_result.employee_objective_id.id
         if int(current_value) < target_value:
@@ -1058,9 +1079,11 @@ def objective_detailed_view_current_value(request, kr_id):
             return redirect(objective_detailed_view_activity, objective_id)
         messages.error(request, _("Error occurred during current value updation"))
         return redirect(objective_detailed_view_activity, objective_id)
+    return HttpResponse()
 
 
 @login_required
+@owner_can_enter("pms.change_employeeobjective", EmployeeObjective)
 def objective_archive(request, id):
     """
     this function is used to archive the objective
@@ -1470,7 +1493,9 @@ def key_result_creation_htmx(request, id):
         initial={"start_date": start_date, "end_date": end_date}
     )
     context = {"key_result_form": key_result_form, "objecitve_id": id}
-    objective = EmployeeObjective.objects.get(id=id)
+    objective = EmployeeObjective.objects.filter(id=id).first()
+    if not objective:
+        return HttpResponse()
     if request.method == "POST":
         initial_data = {"employee_objective_id": objective}
         form_key_result = KeyResultForm(request.POST, initial=initial_data)
@@ -1497,7 +1522,9 @@ def key_result_update(request, id):
         success or errors message.
     """
 
-    key_result = EmployeeKeyResult.objects.get(id=id)
+    key_result = EmployeeKeyResult.objects.filter(id=id).first()
+    if not key_result:
+        return HttpResponse()
     key_result_form = KeyResultForm(instance=key_result)
     context = {"key_result_form": key_result_form, "key_result_id": key_result.id}
     if request.method == "POST":
@@ -2297,7 +2324,18 @@ def get_collegues(request):
         context = {"employees": employees}
         employee_html = render_to_string("employee/employees_select.html", context)
         return HttpResponse(employee_html)
-    except:
+    except (ValueError, TypeError, Employee.DoesNotExist):
+        # A non-numeric or unknown employee_id in the query string. Rendering
+        # an empty list is the right response to that, but it was previously
+        # a bare except covering all forty lines above -- so any genuine
+        # error in the colleague/manager/subordinate branches produced the
+        # same empty list with nothing logged, and looked to the user like an
+        # employee with no colleagues.
+        logger.warning(
+            "employee select: no employees for employee_id=%r data=%r",
+            request.GET.get("employee_id"),
+            request.GET.get("data"),
+        )
         context = {"employees": []}
         employee_html = render_to_string("employee/employees_select.html", context)
         return HttpResponse(employee_html)
@@ -3897,7 +3935,9 @@ def meeting_answer_get(request, id, **kwargs):
     employee = request.user.employee_get
     if employee_id := request.GET.get("emp_id"):
         employee = Employee.objects.filter(id=employee_id).first()
-    meeting = Meetings.objects.get(id=id)
+    meeting = Meetings.objects.filter(id=id).first()
+    if not meeting:
+        return HttpResponse()
     answer = MeetingsAnswer.objects.filter(meeting_id=meeting, employee_id=employee)
     questions = meeting.question_template.question.all()
     options = QuestionOptions.objects.all()
@@ -3999,7 +4039,9 @@ def meeting_question_template_view(request, meet_id):
         it will return meeting answer object to meeting_question_template_view.
     """
     employee = request.user.employee_get
-    meeting = Meetings.objects.get(id=meet_id)
+    meeting = Meetings.objects.filter(id=meet_id).first()
+    if not meeting:
+        return HttpResponse()
     answer = MeetingsAnswer.objects.filter(meeting_id=meeting, employee_id=employee)
     is_answered = False
     if answer:

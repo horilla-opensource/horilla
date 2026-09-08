@@ -25,7 +25,6 @@ from employee.models import (
     Policy,
 )
 from employee.views import can_access_document, work_info_export, work_info_import
-from horilla.decorators import owner_can_enter
 from horilla_api.api_decorators.base.decorators import permission_required
 from horilla_api.api_methods.employee.methods import get_next_badge_id
 from horilla_documents.models import Document, DocumentRequest
@@ -164,9 +163,10 @@ class EmployeeAPIView(APIView):
         user = request.user
         employee = Employee.objects.get(pk=pk)
         if (
-            employee
-            in [user.employee_get, request.user.employee_get.get_reporting_manager()]
-        ) or user.has_perm("employee.change_employee"):
+            employee == user.employee_get
+            or employee.get_reporting_manager() == user.employee_get
+            or user.has_perm("employee.change_employee")
+        ):
             serializer = EmployeeSerializer(employee, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
@@ -309,7 +309,16 @@ class EmployeeBankDetailsAPIView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @manager_permission_required("employee.change_employeebankdetails")
+    # Was manager_permission_required, which has no owner path at all and asks
+    # only whether anybody reports to the caller -- so any line manager could
+    # delete any employee's bank record. Same flaw as the PUT above
+    # (GHSA-39gq-9wwx-p8hx), with destruction rather than redirection as the
+    # outcome. The permission string is left as-is: scoping the manager check is
+    # the security fix, and swapping change_ for delete_ here would silently
+    # change who can use the endpoint on existing installs.
+    @manager_or_owner_permission_required(
+        EmployeeBankDetails, "employee.change_employeebankdetails"
+    )
     def delete(self, request, pk):
         try:
             bank_detail = EmployeeBankDetails.objects.get(pk=pk)
@@ -804,14 +813,23 @@ class DocumentAPIView(APIView):
     permission_classes = [IsAuthenticated]
     queryset = Document.objects.none()  # For drf-yasg schema generation
 
-    def get_object(self, pk, request=None):
+    def get_object(self, pk, request, perm="horilla_documents.view_document"):
+        """
+        Resolve a document and authorize the caller against it.
+
+        ``request`` used to default to None, and the check ran only when a
+        caller happened to pass it -- authorization was opt-in per handler.
+        delete() did not opt in, so any authenticated employee could destroy any
+        other employee's contracts and identity documents by id
+        (GHSA-x72c-5gf7-97g3). An optional argument that silently disables an
+        authorization check is the defect; making it required means the next
+        handler added here cannot forget it.
+        """
         try:
             document = Document.objects.get(pk=pk)
         except Document.DoesNotExist:
             raise Http404
-        if request is not None and not can_access_document(
-            request, document, "horilla_documents.view_document"
-        ):
+        if not can_access_document(request, document, perm):
             raise PermissionDenied
         return document
 
@@ -864,18 +882,24 @@ class DocumentAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @method_decorator(owner_can_enter("horilla_documents.change_document", Employee))
+    # The owner_can_enter decorators that used to sit on put and delete are
+    # gone. They were configured with model=Employee while the pk in the URL is
+    # a Document id, so they resolved an Employee from a document id: wrong in
+    # both directions. Usually no employee had that id, and the decorator's
+    # `or not employee` branch let the call through unchecked; when the ids did
+    # collide it authorized against an unrelated employee and could refuse the
+    # document's actual owner. get_object performs the real per-document check,
+    # so removing them takes away misleading cover, not protection.
     def put(self, request, pk):
-        document = self.get_object(pk, request)
+        document = self.get_object(pk, request, "horilla_documents.change_document")
         serializer = DocumentSerializer(document, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @method_decorator(owner_can_enter("horilla_documents.delete_document", Employee))
     def delete(self, request, pk):
-        document = self.get_object(pk)
+        document = self.get_object(pk, request, "horilla_documents.delete_document")
         document.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

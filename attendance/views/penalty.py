@@ -33,7 +33,9 @@ def cut_available_leave(request, instance_id):
     request_copy = request.GET.copy()
     request_copy.pop("instances_ids", None)
     previous_data = request_copy.urlencode()
-    instance = AttendanceLateComeEarlyOut.objects.get(id=instance_id)
+    instance = AttendanceLateComeEarlyOut.objects.filter(id=instance_id).first()
+    if not instance:
+        return HttpResponse()
     form = PenaltyAccountForm(employee=instance.employee_id)
     if apps.is_installed("leave"):
         AvailableLeave = get_horilla_model_class(

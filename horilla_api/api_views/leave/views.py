@@ -19,7 +19,11 @@ from leave.methods import filter_conditional_leave_request
 from leave.models import AvailableLeave, LeaveAllocationRequest, LeaveRequest, LeaveType
 from notifications.signals import notify
 
-from ...api_decorators.base.decorators import manager_permission_required
+from ...api_decorators.base.decorators import (
+    approver_permission_required,
+    manager_or_owner_permission_required,
+    manager_permission_required,
+)
 from ...api_methods.base.methods import groupby_queryset
 
 
@@ -298,13 +302,22 @@ class LeaveAllocationRequestGetUpdateDeleteAPIView(APIView):
         except LeaveAllocationRequest.DoesNotExist as e:
             raise serializers.ValidationError(e)
 
-    @manager_permission_required("leave.view_leaveallocationrequest")
+    # Reading and editing your own pending request is legitimate, so these keep
+    # an owner path -- but the manager branch has to name the requester rather
+    # than accept anyone who manages somebody (GHSA-gc35-jfv9-r3cm). Without
+    # this, any manager could read and rewrite another employee's allocation,
+    # requested_days included.
+    @manager_or_owner_permission_required(
+        LeaveAllocationRequest, "leave.view_leaveallocationrequest"
+    )
     def get(self, request, pk):
         allocation_request = self.get_leave_allocation_request(pk)
         serializer = LeaveAllocationRequestGetSerializer(allocation_request)
         return Response(serializer.data, status=200)
 
-    @manager_permission_required("leave.change_leaveallocationrequest")
+    @manager_or_owner_permission_required(
+        LeaveAllocationRequest, "leave.change_leaveallocationrequest"
+    )
     def put(self, request, pk):
         allocation_request = self.get_leave_allocation_request(pk)
         if allocation_request.status == "requested":
@@ -320,7 +333,11 @@ class LeaveAllocationRequestGetUpdateDeleteAPIView(APIView):
             return Response(serializer.errors, status=400)
         raise serializers.ValidationError({"error": _("Access Denied..")})
 
-    @manager_permission_required("leave.delete_leaveallocationrequest")
+    # Withdrawing your own request is legitimate; deleting someone else's needs
+    # the permission or actually managing them.
+    @manager_or_owner_permission_required(
+        LeaveAllocationRequest, "leave.delete_leaveallocationrequest"
+    )
     def delete(self, request, pk):
         allocation_request = self.get_leave_allocation_request(pk)
         if allocation_request.status == "requested":
@@ -871,7 +888,13 @@ class LeaveAllocationApproveAPIView(APIView):
         available_leave.available_days += leave_allocation_request.requested_days
         available_leave.save()
 
-    @manager_permission_required("leave.change_leaveallocationrequest")
+    # Approving credits requested_days straight onto the requester's balance,
+    # so this needs a second person who actually manages them -- not
+    # manager_permission_required, which passes anyone who manages anybody and
+    # let a manager approve their own allocation (GHSA-gc35-jfv9-r3cm).
+    @approver_permission_required(
+        LeaveAllocationRequest, "leave.change_leaveallocationrequest"
+    )
     def put(self, request, pk):
         leave_allocation_request = self.get_leave_allocation_request(pk)
         if leave_allocation_request.status == "requested":
@@ -904,7 +927,12 @@ class LeaveAllocationRequestRejectAPIView(APIView):
             )
             available_leave.save()
 
-    @manager_permission_required("leave.change_leaveallocationrequest")
+    # Rejecting an already-approved allocation subtracts the days again, so the
+    # same gate applies: an unscoped manager could zero out another employee's
+    # balance. Not in the report, same decorator, same reach.
+    @approver_permission_required(
+        LeaveAllocationRequest, "leave.change_leaveallocationrequest"
+    )
     def put(self, request, pk):
         leave_allocation_request = self.get_leave_allocation_request(pk)
         if leave_allocation_request.status != "rejected":
