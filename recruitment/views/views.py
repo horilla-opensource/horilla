@@ -2461,6 +2461,7 @@ def interview_edit(request, interview_id):
 
 
 @login_required
+@hx_request_required
 def get_interview_managers(request):
     cand_id = request.GET.get("candidate_id")
     form = ScheduleInterviewForm()
