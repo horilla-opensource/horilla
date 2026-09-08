@@ -32,6 +32,64 @@ date and open a fresh Unreleased above it.
 ### Security      — vulnerabilities fixed; link the advisory and credit the reporter
 -->
 
+## [2.1.4] — 2026-09-08
+
+Security release. **Upgrade from any 2.x.** Both flaws below are reachable by an
+ordinary employee holding no permission over the data they reach.
+
+### Security
+
+| Advisory | Severity | Issue |
+|---|---|---|
+| [GHSA-6fxh-v24c-4cmx](https://github.com/horilla/horilla-hr/security/advisories/GHSA-6fxh-v24c-4cmx) | Medium | The mail-template sanitizer's denylist was bypassable, leaving the server-side template injection that CVE-2026-63432 was meant to close reachable — any account in the stock `HR Manager` role could read any user's password hash, the superuser's included |
+| [GHSA-97wm-28fj-g4pj](https://github.com/horilla/horilla-hr/security/advisories/GHSA-97wm-28fj-g4pj) | Critical | The API's manager check asked whether anybody at all reported to the caller, never which employee the record belonged to, so any employee who managed one person could approve, edit and delete other employees' leave, attendance, overtime, rotating assignments and documents |
+
+With thanks to **@Ntn10** and **@lighthousekeeper1212** for reporting these
+responsibly.
+
+**The mail-template sanitizer is no longer a denylist.** `{{ }}` expressions
+were checked only up to the first `|`, so a filter argument carried the path the
+check rejected, and `{% %}` tags were checked only by name, so `{% with %}`,
+`{% firstof %}` and every other tag carried it too. The body is now tokenized
+with Django's own lexer — the same one that parses the result, so no construct
+can be read differently by the check and the renderer — every part of a
+construct is inspected rather than a prefix, and template tags are allow-listed
+instead of denied two at a time. `{% include %}` and `{% extends %}`, which read
+from disk and were on nobody's denylist, are shut with the same change. Eighteen
+call sites share this function and only two of them added the strict allow-list,
+so the fix is at the function, not at the endpoints that were reported.
+
+**API manager checks now name their target.** `manager_permission_required`
+established only that the caller managed *somebody*; the record was then loaded
+straight from the URL. Seventeen record-specific handlers were on it. They now
+use the target-scoped decorators introduced for
+[GHSA-39gq-9wwx-p8hx](https://github.com/horilla/horilla-hr/security/advisories/GHSA-39gq-9wwx-p8hx)
+and [GHSA-gc35-jfv9-r3cm](https://github.com/horilla/horilla-hr/security/advisories/GHSA-gc35-jfv9-r3cm),
+with approve and reject endpoints refusing self-approval independently of the
+manager test. The two bulk endpoints take their ids from the request body rather
+than the URL and were not in the report; they apply the same rule per record,
+since scoping only the by-id routes would have left their unscoped twins in
+place.
+
+Multiple-approval chains are unaffected: an approver a leave condition nominates
+is admitted explicitly, because such an approver is frequently neither the
+requester's reporting manager nor a permission holder.
+
+### Fixed
+
+- `PUT /api/attendance/converted-mail-template` and
+  `POST /api/attendance/offline-employee-mail-send` returned a 500 instead of a
+  404 for a template or employee id that does not exist.
+- Removed an owner-or-manager permission helper on the rotating work-type
+  assignment API that was written but never wired to a handler. The decorator
+  now applied enforces the same rule.
+
+### Added
+
+- Regression tests for both advisories, including the allow cases — a scoped
+  permission check is only correct if the people who legitimately held it still
+  get through.
+
 ## [2.1.3] — 2026-09-07
 
 Bug-fix and security release. **Upgrade if you are on 2.1.0, 2.1.1 or 2.1.2** —
