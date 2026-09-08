@@ -120,6 +120,59 @@ def manager_or_owner_permission_required(model_class, perm):
     return decorator
 
 
+def approver_permission_required(model_class, perm):
+    """
+    Gate an approve/reject endpoint: the caller must hold ``perm`` or manage the
+    employee the record belongs to, and must never be that employee.
+
+    Separate from ``manager_or_owner_permission_required`` because that one
+    admits the owner, which is right for reading or editing your own request and
+    exactly wrong for approving it. Approval needs the opposite: a second person.
+
+    GHSA-gc35-jfv9-r3cm: the leave-allocation approval endpoint credited
+    ``requested_days`` to the requester's balance behind
+    ``manager_permission_required``, which asks only whether anybody reports to
+    the caller. Any employee who managed one person could file an allocation for
+    themselves with an arbitrary day count and approve it.
+
+    Scoping the manager test is not on its own enough. Nothing stops an employee
+    from being recorded as their own reporting manager, and in a small company a
+    manager may legitimately manage everyone; either way a scoped check would
+    still pass them for their own request. So the self-approval refusal is
+    explicit and independent of the manager test.
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(self, request, pk=None, *args, **kwargs):
+            employee = request.user.employee_get
+            try:
+                target = model_class.objects.get(pk=pk)
+            except model_class.DoesNotExist:
+                return Response(
+                    {"error": f"{model_class.__name__} does not exist"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
+            if getattr(target, "employee_id", None) == employee:
+                return Response(
+                    {"error": _("You cannot approve or reject your own request.")},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            if request.user.has_perm(perm) or check_manager(employee, target):
+                return func(self, request, pk, *args, **kwargs)
+
+            return Response(
+                {"error": _("You do not have permission to perform this action.")},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        return wrapper
+
+    return decorator
+
+
 def check_approval_status(model, perm):
     """checking the object approval status"""
 
