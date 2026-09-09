@@ -115,7 +115,7 @@
             confirmButtonColor: '#008000',
             cancelButtonColor: '#d33',
             confirmButtonText: i18nMessages.confirm,
-            cancelButtonText: "Close"
+            cancelButtonText: "{% trans 'Close'|escapejs %}"
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Access the selected value from the select box
