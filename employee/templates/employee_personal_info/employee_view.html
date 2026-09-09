@@ -22,7 +22,7 @@
                       const finalErrorMessage = formattedErrorMessage.replace(/-\s*/g, '<span class="material-symbols-outlined me-2" style="font-size: 14px;"">adjust</span>');
                       Swal.fire({
                         icon: 'error',
-                        title: 'Error',
+                        title: '{% trans "Error"|escapejs %}',
                         html: `
                             <div style='text-align:left;'>
                                 <h5 class='mb-2 fw-bold ms-2'>{% trans "This employee is already related in,"|escapejs %}</h5>

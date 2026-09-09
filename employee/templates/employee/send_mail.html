@@ -156,8 +156,8 @@
         if (!validateForm(empId, hasEmployee)) return false;
 
         Swal.fire({
-            title: "Processing",
-            text: "Mail will be sent in the background",
+            title: "{% trans 'Processing'|escapejs %}",
+            text: "{% trans 'Mail will be sent in the background'|escapejs %}",
             icon: "info",
             timer: 1500,
             showConfirmButton: false
