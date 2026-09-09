@@ -45,7 +45,7 @@
                       class="oh-dropdown__link oh-dropdown__link--danger"
                       onclick="
                         Swal.fire({
-                          title: 'Are you sure?',
+                          title: '{% trans "Are you sure?"|escapejs %}',
                           text: `{% trans "You won't be able to revert this!"|escapejs %}`,
                           icon: 'warning',
                           showCancelButton: true,
