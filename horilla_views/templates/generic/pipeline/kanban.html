@@ -197,7 +197,7 @@
 
           if (initials === 'UN') {
             // Unassign
-            profileContainer.find('.avatar, .avatar-placeholder').replaceWith($('<div class="avatar-placeholder" title="{% trans 'Unassigned' %}">+</div>'))
+            profileContainer.find('.avatar, .avatar-placeholder').replaceWith($('<div class="avatar-placeholder" title="{% trans 'Unassigned'|escapejs %}">+</div>'))
           } else {
             // Assign to selected person
             const personName = $(this).find('span').text()
@@ -264,14 +264,14 @@
 
         // Create the card with proper structure
         const newCard = $('<div class="kanban-card" draggable="true"></div>').attr('data-id', newId).append(`
-                  <div class="card-title">{% trans "New Task" %}</div>
-                  <div class="card-description">{% trans "Click to edit this task description." %}</div>
+                  <div class="card-title">{% trans "New Task"|escapejs %}</div>
+                  <div class="card-description">{% trans "Click to edit this task description."|escapejs %}</div>
                   <div class="card-meta">
-                    <span class="card-priority priority-medium">{% trans "Medium Priority" %}</span>
+                    <span class="card-priority priority-medium">{% trans "Medium Priority"|escapejs %}</span>
                     <div class="meta-content">
-                      <span>{% trans "Today" %}</span>
+                      <span>{% trans "Today"|escapejs %}</span>
                       <div class="profile-container">
-                        <div class="avatar-placeholder" title="{% trans 'Unassigned' %}">+</div>
+                        <div class="avatar-placeholder" title="{% trans 'Unassigned'|escapejs %}">+</div>
                         <div class="assignee-dropdown">
                           <div class="assignee-option" data-initials="JD">
                             <div class="avatar" style="background-color: #4f46e5;">JD</div>
@@ -287,7 +287,7 @@
                           </div>
                           <div class="assignee-option" data-initials="UN">
                             <div class="avatar-placeholder">+</div>
-                            <span>{% trans "Unassigned" %}</span>
+                            <span>{% trans "Unassigned"|escapejs %}</span>
                           </div>
                         </div>
                       </div>
@@ -393,7 +393,7 @@
             if (initials === 'UN') {
               // Unassign
               profileContainer.innerHTML = `
-                      <div class="avatar-placeholder" title="{% trans 'Unassigned' %}">+</div>
+                      <div class="avatar-placeholder" title="{% trans 'Unassigned'|escapejs %}">+</div>
                       <div class="assignee-dropdown">
                         ${dropdown.innerHTML}
                       </div>
@@ -513,11 +513,11 @@
 
         // Set the default content for the new card
         newCard.innerHTML = `
-                <div class="card-title">{% trans "New Task" %}</div>
-                <div class="card-description">{% trans "Click to edit this task description." %}</div>
+                <div class="card-title">{% trans "New Task"|escapejs %}</div>
+                <div class="card-description">{% trans "Click to edit this task description."|escapejs %}</div>
                 <div class="card-meta">
-                  <span class="card-priority priority-medium">{% trans "Medium Priority" %}</span>
-                  <span>{% trans "Today" %}</span>
+                  <span class="card-priority priority-medium">{% trans "Medium Priority"|escapejs %}</span>
+                  <span>{% trans "Today"|escapejs %}</span>
                 </div>
               `
 
