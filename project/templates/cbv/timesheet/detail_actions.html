@@ -19,7 +19,7 @@
     {% endif %}
     <a href="{% url 'delete-time-sheet' instance.id %}" class="oh-btn oh-btn--danger"
         style="{% if perms.project.view_timesheet or request.user|is_reportingmanager %} width: 25%;{% else %}width: 50%;{% endif %}"
-        onclick="event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this project?' %}`)">
+        onclick="event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this project?'|escapejs %}`)">
         <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'create outline' %}"></ion-icon>
         {% trans "Delete" %}
     </a>

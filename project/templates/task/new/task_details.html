@@ -102,7 +102,7 @@
                 href="{% url 'delete-task' task.id %}?view={{request.GET.view }}"
                 class="oh-btn oh-btn--danger"
                 style="width: 50%"
-                onclick="event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this task?' %}`)"
+                onclick="event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this task?'|escapejs %}`)"
             >
                 {% comment %} <a hx-get="{% url 'delete-task' task.id %}" class="oh-btn oh-btn--danger"style="width: 50%;"
                 onclick="event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this task?' %}`)"

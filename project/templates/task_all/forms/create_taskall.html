@@ -92,12 +92,12 @@
                   const element = response.data[i];
                   $("#project_stage").append("<option value="+ element.id + ">"+element.title+"</option>");
                 }
-                $("#project_stage").append( "<option value='create_new_stage'>{% trans 'Create a new Stage' %}</option>");
+                $("#project_stage").append( "<option value='create_new_stage'>{% trans 'Create a new Stage'|escapejs %}</option>");
             }
             });
           } else {
             $("#project_stage").html("<option>---------</option>");
-            $("#project_stage").append( "<option value='create_new_stage'>{% trans 'Create a new Stage' %}</option>")
+            $("#project_stage").append( "<option value='create_new_stage'>{% trans 'Create a new Stage'|escapejs %}</option>")
           }
       });
       $(document).on("change","#project_stage",function(e){

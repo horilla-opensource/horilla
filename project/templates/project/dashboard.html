@@ -328,30 +328,30 @@
             document.getElementById('pr-kpi-grid').innerHTML = `
                 <a href="${pv}" class="pr-kpi-card">
                     <div class="pr-kpi-card__icon pr-kpi-card__icon--blue"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
-                    <div class="pr-kpi-card__label">{% trans "Total Projects" %}</div>
+                    <div class="pr-kpi-card__label">{% trans "Total Projects"|escapejs %}</div>
                     <div class="pr-kpi-card__value">${d.total_projects}</div>
-                    <div class="pr-kpi-card__sub"><span class="pr-badge pr-badge--blue">+${d.total_new_this_month} {% trans "this month" %}</span></div>
+                    <div class="pr-kpi-card__sub"><span class="pr-badge pr-badge--blue">+${d.total_new_this_month} {% trans "this month"|escapejs %}</span></div>
                 </a>
                 <a href="${pv}?status=in_progress" class="pr-kpi-card">
                     <div class="pr-kpi-card__icon pr-kpi-card__icon--green"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div>
-                    <div class="pr-kpi-card__label">{% trans "Active" %}</div>
+                    <div class="pr-kpi-card__label">{% trans "Active"|escapejs %}</div>
                     <div class="pr-kpi-card__value">${d.active_projects}</div>
-                    <div class="pr-kpi-card__sub"><span class="pr-badge pr-badge--green">+${d.active_started_this_month} {% trans "started this month" %}</span></div>
+                    <div class="pr-kpi-card__sub"><span class="pr-badge pr-badge--green">+${d.active_started_this_month} {% trans "started this month"|escapejs %}</span></div>
                 </a>
                 <a href="${pv}?status=completed" class="pr-kpi-card">
                     <div class="pr-kpi-card__icon pr-kpi-card__icon--purple"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-                    <div class="pr-kpi-card__label">{% trans "Completed" %}</div>
+                    <div class="pr-kpi-card__label">{% trans "Completed"|escapejs %}</div>
                     <div class="pr-kpi-card__value">${d.completed_projects}</div>
-                    <div class="pr-kpi-card__sub"><span class="pr-badge ${changeClass}">${changeIcon} ${fmtPct(Math.abs(d.completed_change_pct))} {% trans "vs last month" %}</span></div>
+                    <div class="pr-kpi-card__sub"><span class="pr-badge ${changeClass}">${changeIcon} ${fmtPct(Math.abs(d.completed_change_pct))} {% trans "vs last month"|escapejs %}</span></div>
                 </a>
                 <a href="${pv}?overdue=True" class="pr-kpi-card">
                     <div class="pr-kpi-card__icon pr-kpi-card__icon--red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-                    <div class="pr-kpi-card__label">{% trans "Overdue" %}</div>
+                    <div class="pr-kpi-card__label">{% trans "Overdue"|escapejs %}</div>
                     <div class="pr-kpi-card__value">${d.overdue_projects}</div>
-                    <div class="pr-kpi-card__sub">${d.overdue_new_this_month > 0 ? `<span class="pr-badge pr-badge--red">+${d.overdue_new_this_month} {% trans "this month" %}</span>` : '{% trans "Past end date" %}'}</div>
+                    <div class="pr-kpi-card__sub">${d.overdue_new_this_month > 0 ? `<span class="pr-badge pr-badge--red">+${d.overdue_new_this_month} {% trans "this month"|escapejs %}</span>` : '{% trans "Past end date"|escapejs %}'}</div>
                 </a>`;
             document.getElementById('pr-last-updated').textContent =
-                `{% trans "Last updated" %}: ${new Date().toLocaleTimeString()}`;
+                `{% trans "Last updated"|escapejs %}: ${new Date().toLocaleTimeString()}`;
         });
     }
 
@@ -359,7 +359,7 @@
     function prLoadPipeline() {
         prFetch(PR_URLS.pipeline).then(d => {
             const el = document.getElementById('pr-pipeline');
-            if (!d.total) { el.innerHTML = emptyHtml('{% trans "No active projects" %}'); return; }
+            if (!d.total) { el.innerHTML = emptyHtml('{% trans "No active projects"|escapejs %}'); return; }
             const colors = { new: 'rgba(148,163,184,0.15)', in_progress: 'rgba(59,130,246,0.15)', on_hold: 'rgba(245,158,11,0.15)', completed: 'rgba(34,197,94,0.15)' };
             const textColors = { new: '#64748b', in_progress: '#2563eb', on_hold: '#d97706', completed: '#16a34a' };
             el.innerHTML = '<div class="pr-pipeline">' + d.stages.map(s =>
@@ -377,7 +377,7 @@
         prFetch(PR_URLS.tasks).then(d => {
             const el = document.getElementById('pr-task-chart');
             const legend = document.getElementById('pr-task-legend');
-            if (!d.counts.length) { el.innerHTML = emptyHtml('{% trans "No tasks yet" %}'); legend.innerHTML = ''; return; }
+            if (!d.counts.length) { el.innerHTML = emptyHtml('{% trans "No tasks yet"|escapejs %}'); legend.innerHTML = ''; return; }
             const colors = d.keys.map(k => TASK_COLORS[k] || '#94a3b8');
             el.style.cursor = "pointer";
             renderChart('task-status', el, {
@@ -393,7 +393,7 @@
                 colors: colors,
                 legend: { show: false },
                 dataLabels: { enabled: true, formatter: (val) => Math.round(val) + '%' },
-                plotOptions: { pie: { donut: { size: "62%", labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '12px', fontWeight: 600 } } } } },
+                plotOptions: { pie: { donut: { size: "62%", labels: { show: true, total: { show: true, label: '{% trans "Total"|escapejs %}', color: textColor, fontSize: '12px', fontWeight: 600 } } } } },
                 stroke: { width: 2, colors: [cardBg] },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
             });
@@ -408,12 +408,12 @@
         prFetch(PR_URLS.trend).then(d => {
             const el = document.getElementById('pr-trend-chart');
             const hasData = d.started.some(v => v > 0) || d.completed.some(v => v > 0) || d.overdue.some(v => v > 0);
-            if (!hasData) { el.innerHTML = emptyHtml('{% trans "No project activity yet" %}'); return; }
+            if (!hasData) { el.innerHTML = emptyHtml('{% trans "No project activity yet"|escapejs %}'); return; }
             renderChart('trend', el, {
                 series: [
-                    { name: "{% trans 'Started' %}", data: d.started },
-                    { name: "{% trans 'Completed' %}", data: d.completed },
-                    { name: "{% trans 'Overdue' %}", data: d.overdue },
+                    { name: "{% trans 'Started'|escapejs %}", data: d.started },
+                    { name: "{% trans 'Completed'|escapejs %}", data: d.completed },
+                    { name: "{% trans 'Overdue'|escapejs %}", data: d.overdue },
                 ],
                 chart: { type: 'area', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
                 colors: ['#3b82f6', '#22c55e', '#ef4444'],
@@ -433,10 +433,10 @@
     function prLoadTop() {
         prFetch(PR_URLS.top).then(d => {
             const el = document.getElementById("pr-top-chart");
-            if (!d.projects.length) { el.innerHTML = emptyHtml('{% trans "No active projects" %}'); return; }
+            if (!d.projects.length) { el.innerHTML = emptyHtml('{% trans "No active projects"|escapejs %}'); return; }
             el.style.cursor = "pointer";
             renderChart('top-active', el, {
-                series: [{ name: '{% trans "Tasks" %}', data: d.projects.map(p => p.task_count) }],
+                series: [{ name: '{% trans "Tasks"|escapejs %}', data: d.projects.map(p => p.task_count) }],
                 chart: {
                     type: "bar", height: 240, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, cfg) => {
@@ -460,7 +460,7 @@
         prFetch(PR_URLS.contributors).then(d => {
             const el = document.getElementById('pr-contributors');
             document.getElementById('pr-contributors-month').textContent = d.month;
-            if (!d.contributors.length) { el.innerHTML = '<div class="pr-info-panel__empty">{% trans "No completed tasks this month" %}</div>'; return; }
+            if (!d.contributors.length) { el.innerHTML = '<div class="pr-info-panel__empty">{% trans "No completed tasks this month"|escapejs %}</div>'; return; }
             el.innerHTML = d.contributors.map(c => {
                 const initials = c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                 const avatarInner = c.avatar ? `<img src="${c.avatar}" alt="">` : initials;
@@ -468,12 +468,12 @@
                     <div class="pr-list-item__avatar">${avatarInner}</div>
                     <div class="pr-list-item__info">
                         <div class="pr-list-item__name">${c.name}</div>
-                        <div class="pr-list-item__detail">${c.completed_count} {% trans "tasks" %}</div>
+                        <div class="pr-list-item__detail">${c.completed_count} {% trans "tasks"|escapejs %}</div>
                     </div>
                     <div class="pr-list-item__value" style="color:var(--pr-green);">${c.completed_count}</div>
                 </a>`;
             }).join('');
-        }).catch(() => { document.getElementById('pr-contributors').innerHTML = '<div class="pr-info-panel__empty">{% trans "No data" %}</div>'; });
+        }).catch(() => { document.getElementById('pr-contributors').innerHTML = '<div class="pr-info-panel__empty">{% trans "No data"|escapejs %}</div>'; });
     }
 
     // ─── TASK DEADLINES ───
@@ -484,10 +484,10 @@
                 ...d.overdue.map(t => ({...t, kind: 'overdue'})),
                 ...d.upcoming.map(t => ({...t, kind: 'upcoming'})),
             ];
-            if (!items.length) { el.innerHTML = '<div class="pr-info-panel__empty">{% trans "No upcoming deadlines" %}</div>'; return; }
+            if (!items.length) { el.innerHTML = '<div class="pr-info-panel__empty">{% trans "No upcoming deadlines"|escapejs %}</div>'; return; }
             el.innerHTML = items.map(t => {
                 const badge = t.kind === 'overdue'
-                    ? `<span class="pr-badge pr-badge--red">{% trans "Overdue" %}</span>`
+                    ? `<span class="pr-badge pr-badge--red">{% trans "Overdue"|escapejs %}</span>`
                     : `<span class="pr-badge ${t.days_left <= 3 ? 'pr-badge--red' : 'pr-badge--amber'}">${t.days_left}d</span>`;
                 return `<a href="${PR_URLS.projectDetail.replace('__ID__', t.project_id || '')}" class="pr-list-item">
                     <div class="pr-list-item__info">
@@ -497,7 +497,7 @@
                     ${badge}
                 </a>`;
             }).join('');
-        }).catch(() => { document.getElementById('pr-deadlines').innerHTML = '<div class="pr-info-panel__empty">{% trans "No data" %}</div>'; });
+        }).catch(() => { document.getElementById('pr-deadlines').innerHTML = '<div class="pr-info-panel__empty">{% trans "No data"|escapejs %}</div>'; });
     }
 
     function prLoadAll() {

@@ -32,8 +32,8 @@
         $.each(data, function(index, stage) {
             $("#project_stage").append("<option value=" + stage.pk + ">" + stage.fields.title + "</option>");
         });
-        $("#project_stage").append( "<option value='create_new_stage'>{% trans 'Create a new Stage' %}</option>");
-        $("#project_stage").append( "<option value='old_stage'>{% trans 'Old Stage' %}</option>");
+        $("#project_stage").append( "<option value='create_new_stage'>{% trans 'Create a new Stage'|escapejs %}</option>");
+        $("#project_stage").append( "<option value='old_stage'>{% trans 'Old Stage'|escapejs %}</option>");
 
     });
     $("#project_stage").change(function(e){

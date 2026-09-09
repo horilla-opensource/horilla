@@ -32,7 +32,7 @@
         $('#id_task_manager').select2()
         $('#id_task_members').select2()
         $('#project_stage').select2()
-        $("#project_stage").append( "<option value='create_new_stage'>{% trans 'Create a new Stage' %}</option>");
+        $("#project_stage").append( "<option value='create_new_stage'>{% trans 'Create a new Stage'|escapejs %}</option>");
 
         function getCookie(name) {
           let cookieValue = null;

@@ -98,7 +98,7 @@
               const element = response.data[i];
               $("#id_task_id").append("<option value="+ element.id + ">"+element.title+"</option>");
             }
-            $("#id_task_id").append( "<option value='create_new_task'>{% trans 'Create a new task' %}</option>");
+            $("#id_task_id").append( "<option value='create_new_task'>{% trans 'Create a new task'|escapejs %}</option>");
           },
           error: (error) => {
             reloadMessage()
