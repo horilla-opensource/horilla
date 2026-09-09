@@ -39,7 +39,7 @@
                 type="submit"
                 class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
                 title="{% trans 'Remove' %}"
-                onclick="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
+                onclick="return confirm('{% trans "Are you sure want to delete this attendance?"|escapejs %}')"
             >
                 <ion-icon name="trash-outline"></ion-icon>
                 {% trans 'Delete' %}

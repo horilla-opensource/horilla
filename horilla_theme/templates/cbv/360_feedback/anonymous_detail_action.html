@@ -17,7 +17,7 @@
         <form
             action="{% url 'archive-anonymous-feedback' obj_id=instance.id %}"
             method="post"
-            onsubmit="return confirm('{% if instance.archive %}{% trans "Are you sure you want to Un-archive this feedback?" %}{% else %}{% trans "Are you sure you want to archive this feedback?" %}{% endif %}')"
+            onsubmit="return confirm('{% if instance.archive %}{% trans "Are you sure you want to Un-archive this feedback?"|escapejs %}{% else %}{% trans "Are you sure you want to archive this feedback?"|escapejs %}{% endif %}')"
             style="display: contents"
         >
             {% csrf_token %}
@@ -33,7 +33,7 @@
         <form
             action="{% url 'delete-anonymous-feedback' obj_id=instance.id %}"
             method="post"
-            onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')"
+            onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?"|escapejs %}')"
             style="display: contents"
         >
             {% csrf_token %}

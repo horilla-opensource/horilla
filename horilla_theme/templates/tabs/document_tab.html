@@ -257,7 +257,7 @@
     			$wrapper.find('.title-error').remove();
 
     			if (newTitle.length < 3) {
-    				$('<div class="title-error text-red-500 text-sm mt-1">{% trans "Title must be at least 3 characters." %}</div>')
+    				$('<div class="title-error text-red-500 text-sm mt-1">{% trans "Title must be at least 3 characters."|escapejs %}</div>')
     				.insertAfter($(this));
     				$(this).focus();
     				return;

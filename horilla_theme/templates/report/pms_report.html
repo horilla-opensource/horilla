@@ -286,7 +286,7 @@
         // obvious on first encounter, and a tooltip needs no separate
         // state tracking to stay accurate; the label/icon direction
         // already show the current open/closed state either way.
-        $('<div class="oh-fields-toggle-header" title="{% trans "Click to expand or collapse" %}">')
+        $('<div class="oh-fields-toggle-header" title="{% trans "Click to expand or collapse"|escapejs %}">')
             .append($('<span class="oh-fields-toggle-label">').text(label))
             .append('<ion-icon name="chevron-back-outline" class="oh-fields-toggle-icon"></ion-icon>')
             .prependTo($box);
@@ -295,9 +295,9 @@
     function setupFieldsCollapse() {
         var $unused = $("#pivot-container .pvtAxisContainer.pvtUnused");
         if (!$unused.length) return;
-        injectToggleHeader($unused, "{% trans 'Available Fields' %}");
-        injectToggleHeader($("#pivot-container .pvtAxisContainer.pvtRows"), "{% trans 'Columns' %}");
-        injectToggleHeader($("#pivot-container .pvtAxisContainer.pvtCols"), "{% trans 'Rows' %}");
+        injectToggleHeader($unused, "{% trans 'Available Fields'|escapejs %}");
+        injectToggleHeader($("#pivot-container .pvtAxisContainer.pvtRows"), "{% trans 'Columns'|escapejs %}");
+        injectToggleHeader($("#pivot-container .pvtAxisContainer.pvtCols"), "{% trans 'Rows'|escapejs %}");
         applyFieldsCollapsedState();
     }
 
@@ -346,7 +346,7 @@
     // changes trigger one) since PivotTable.js rebuilds these header
     // cells from scratch on every render.
     function updateTotalsLabel(aggregatorName) {
-        var label = (aggregatorName === "Count") ? "{% trans 'Totals' %}" : aggregatorName;
+        var label = (aggregatorName === "Count") ? "{% trans 'Totals'|escapejs %}" : aggregatorName;
         $("#pivot-container .pvtTotalLabel").text(label);
     }
 
@@ -381,9 +381,9 @@
     }
 
     const reportHeadingByModel = {
-        objective: "{% trans 'Performance Reports' %}",
-        employeeobjective: "{% trans 'Employee Objective Reports' %}",
-        feedback: "{% trans 'Feedback Reports' %}",
+        objective: "{% trans 'Performance Reports'|escapejs %}",
+        employeeobjective: "{% trans 'Employee Objective Reports'|escapejs %}",
+        feedback: "{% trans 'Feedback Reports'|escapejs %}",
     };
 
     function updateReportHeading(model) {
@@ -407,7 +407,7 @@
             var $list = $("#reportTemplateList");
             $list.empty();
             if (!res.templates.length) {
-                $list.append('<p class="text-muted mb-0 text-center py-2">{% trans "No saved templates yet." %}</p>');
+                $list.append('<p class="text-muted mb-0 text-center py-2">{% trans "No saved templates yet."|escapejs %}</p>');
                 return;
             }
             res.templates.forEach(function (t) {
@@ -416,7 +416,7 @@
                     $('<ion-icon name="bookmark-outline"></ion-icon>'),
                     $('<span></span>').text(t.name)
                 );
-                var $del = $('<span class="oh-report-template-delete" title="{% trans "Delete" %}"></span>').data("id", t.id).append(
+                var $del = $('<span class="oh-report-template-delete" title="{% trans "Delete"|escapejs %}"></span>').data("id", t.id).append(
                     $('<ion-icon name="trash-outline"></ion-icon>')
                 );
                 $row.append($link).append($del);
@@ -438,7 +438,7 @@
                 <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
                     <div class="flex flex-col items-center justify-center h-full">
                         <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
-                        <p class="text-[#666] mb-5">${hideControls === false ? "{% trans 'No filtered records found at the moment' %}" : "{% trans 'No records available at the moment' %}"}</p>
+                        <p class="text-[#666] mb-5">${hideControls === false ? "{% trans 'No filtered records found at the moment'|escapejs %}" : "{% trans 'No records available at the moment'|escapejs %}"}</p>
                     </div>
                 </div>
             </div>
@@ -520,13 +520,13 @@
         // (event.target is undefined) since none of that applies here. Using
         // Swal directly, which is what that override wraps anyway.
         Swal.fire({
-            text: "{% trans 'Delete this saved template?' %}",
+            text: "{% trans 'Delete this saved template?'|escapejs %}",
             icon: "question",
             showCancelButton: true,
             confirmButtonColor: "#008000",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "{% trans 'Confirm' %}",
-            cancelButtonText: "{% trans 'Cancel' %}"
+            confirmButtonText: "{% trans 'Confirm'|escapejs %}",
+            cancelButtonText: "{% trans 'Cancel'|escapejs %}"
         }).then(function (result) {
             if (!result.isConfirmed) return;
             $.ajax({
@@ -554,7 +554,7 @@
         var name = $("#reportTemplateName").val().trim();
         if (!name) {
             Swal.fire({
-                text: "{% trans 'Please enter a template name.' %}",
+                text: "{% trans 'Please enter a template name.'|escapejs %}",
                 icon: "warning",
                 confirmButtonText: i18nMessages.close
             });
@@ -579,7 +579,7 @@
                 return;
             }
             Swal.fire({
-                text: "{% trans 'Nothing to save yet.' %}",
+                text: "{% trans 'Nothing to save yet.'|escapejs %}",
                 icon: "warning",
                 confirmButtonText: i18nMessages.close
             });
@@ -800,7 +800,7 @@
                     let selectedModel = $("#model-select").val();
                     $.get("{% url 'report-check-export-access' %}", {model: modelPathMap[selectedModel]}, function (resp) {
                         if (!resp.allowed) {
-                            alert("{% trans 'You dont have access to export this data' %}");
+                            alert("{% trans 'You dont have access to export this data'|escapejs %}");
                             return;
                         }
                         var baseFilename = excelFilenameFor(selectedModel);
@@ -907,7 +907,7 @@
                         worksheet.mergeCells(currentRow, baseCol, currentRow, baseCol + 3);
                         filterCell.value = {
                             richText: [
-                                { text: "{% trans 'Applied Filters: ' %}", font: { size: 10, bold: true, color: { argb: 'FF333333' } } },
+                                { text: "{% trans 'Applied Filters: '|escapejs %}", font: { size: 10, bold: true, color: { argb: 'FF333333' } } },
                                 { text: filterSummary, font: { size: 10, color: { argb: 'FF333333' } } }
                             ]
                         };
@@ -1289,42 +1289,42 @@
         // ------------------------------------------------------------------
         var FILTER_FIELDS_BY_MODEL = {
             objective: [
-                { value: "managers", label: "{% trans 'Managers' %}", type: "dropdown" },
-                { value: "manager_badge_id", label: "{% trans 'Manager Badge Id' %}", type: "dropdown" },
-                { value: "assignees", label: "{% trans 'Assignees' %}", type: "dropdown" },
-                { value: "assignee_badge_id", label: "{% trans 'Assignee Badge Id' %}", type: "dropdown" },
-                { value: "assignee_department", label: "{% trans 'Assignee Department' %}", type: "dropdown" },
-                { value: "assignee_job_position", label: "{% trans 'Assignee Job Position' %}", type: "dropdown" },
-                { value: "assignee_job_role", label: "{% trans 'Assignee Job Role' %}", type: "dropdown" },
-                { value: "duration", label: "{% trans 'Duration' %}", type: "number" },
-                { value: "key_result", label: "{% trans 'Key Result' %}", type: "dropdown" },
-                { value: "company", label: "{% trans 'Company' %}", type: "dropdown" }
+                { value: "managers", label: "{% trans 'Managers'|escapejs %}", type: "dropdown" },
+                { value: "manager_badge_id", label: "{% trans 'Manager Badge Id'|escapejs %}", type: "dropdown" },
+                { value: "assignees", label: "{% trans 'Assignees'|escapejs %}", type: "dropdown" },
+                { value: "assignee_badge_id", label: "{% trans 'Assignee Badge Id'|escapejs %}", type: "dropdown" },
+                { value: "assignee_department", label: "{% trans 'Assignee Department'|escapejs %}", type: "dropdown" },
+                { value: "assignee_job_position", label: "{% trans 'Assignee Job Position'|escapejs %}", type: "dropdown" },
+                { value: "assignee_job_role", label: "{% trans 'Assignee Job Role'|escapejs %}", type: "dropdown" },
+                { value: "duration", label: "{% trans 'Duration'|escapejs %}", type: "number" },
+                { value: "key_result", label: "{% trans 'Key Result'|escapejs %}", type: "dropdown" },
+                { value: "company", label: "{% trans 'Company'|escapejs %}", type: "dropdown" }
             ],
             feedback: [
-                { value: "review_cycle", label: "{% trans 'Feedback Title' %}", type: "dropdown" },
-                { value: "status", label: "{% trans 'Status' %}", type: "dropdown" },
-                { value: "employee", label: "{% trans 'Employee' %}", type: "dropdown" },
-                { value: "employee_badge_id", label: "{% trans 'Employee Badge Id' %}", type: "dropdown" },
-                { value: "manager", label: "{% trans 'Manager' %}", type: "dropdown" },
-                { value: "manager_badge_id", label: "{% trans 'Manager Badge Id' %}", type: "dropdown" },
-                { value: "colleague", label: "{% trans 'Colleague' %}", type: "dropdown" },
-                { value: "subordinate", label: "{% trans 'Subordinate' %}", type: "dropdown" },
-                { value: "start_date", label: "{% trans 'Start Date' %}", type: "date" },
-                { value: "end_date", label: "{% trans 'End Date' %}", type: "date" }
+                { value: "review_cycle", label: "{% trans 'Feedback Title'|escapejs %}", type: "dropdown" },
+                { value: "status", label: "{% trans 'Status'|escapejs %}", type: "dropdown" },
+                { value: "employee", label: "{% trans 'Employee'|escapejs %}", type: "dropdown" },
+                { value: "employee_badge_id", label: "{% trans 'Employee Badge Id'|escapejs %}", type: "dropdown" },
+                { value: "manager", label: "{% trans 'Manager'|escapejs %}", type: "dropdown" },
+                { value: "manager_badge_id", label: "{% trans 'Manager Badge Id'|escapejs %}", type: "dropdown" },
+                { value: "colleague", label: "{% trans 'Colleague'|escapejs %}", type: "dropdown" },
+                { value: "subordinate", label: "{% trans 'Subordinate'|escapejs %}", type: "dropdown" },
+                { value: "start_date", label: "{% trans 'Start Date'|escapejs %}", type: "date" },
+                { value: "end_date", label: "{% trans 'End Date'|escapejs %}", type: "date" }
             ],
             employeeobjective: [
-                { value: "employee", label: "{% trans 'Employee' %}", type: "dropdown" },
-                { value: "employee_badge_id", label: "{% trans 'Employee Badge Id' %}", type: "dropdown" },
-                { value: "department", label: "{% trans 'Department' %}", type: "dropdown" },
-                { value: "job_position", label: "{% trans 'Job Position' %}", type: "dropdown" },
-                { value: "job_role", label: "{% trans 'Job Role' %}", type: "dropdown" },
-                { value: "key_result", label: "{% trans 'Key Result' %}", type: "dropdown" },
-                { value: "status", label: "{% trans 'Status' %}", type: "dropdown" },
-                { value: "start_date", label: "{% trans 'Start Date' %}", type: "date" },
-                { value: "end_date", label: "{% trans 'End Date' %}", type: "date" },
-                { value: "start_value", label: "{% trans 'Start Value' %}", type: "number" },
-                { value: "current_value", label: "{% trans 'Current Value' %}", type: "number" },
-                { value: "target_value", label: "{% trans 'Target Value' %}", type: "number" }
+                { value: "employee", label: "{% trans 'Employee'|escapejs %}", type: "dropdown" },
+                { value: "employee_badge_id", label: "{% trans 'Employee Badge Id'|escapejs %}", type: "dropdown" },
+                { value: "department", label: "{% trans 'Department'|escapejs %}", type: "dropdown" },
+                { value: "job_position", label: "{% trans 'Job Position'|escapejs %}", type: "dropdown" },
+                { value: "job_role", label: "{% trans 'Job Role'|escapejs %}", type: "dropdown" },
+                { value: "key_result", label: "{% trans 'Key Result'|escapejs %}", type: "dropdown" },
+                { value: "status", label: "{% trans 'Status'|escapejs %}", type: "dropdown" },
+                { value: "start_date", label: "{% trans 'Start Date'|escapejs %}", type: "date" },
+                { value: "end_date", label: "{% trans 'End Date'|escapejs %}", type: "date" },
+                { value: "start_value", label: "{% trans 'Start Value'|escapejs %}", type: "number" },
+                { value: "current_value", label: "{% trans 'Current Value'|escapejs %}", type: "number" },
+                { value: "target_value", label: "{% trans 'Target Value'|escapejs %}", type: "number" }
             ]
         };
 
@@ -1353,39 +1353,39 @@
 
         var FILTER_OPERATORS_BY_TYPE = {
             text: [
-                { value: "equals", label: "{% trans 'Equals' %}" },
-                { value: "not_equals", label: "{% trans 'Not Equals' %}" },
-                { value: "contains", label: "{% trans 'Contains' %}" },
-                { value: "is_empty", label: "{% trans 'Is Empty' %}" }
+                { value: "equals", label: "{% trans 'Equals'|escapejs %}" },
+                { value: "not_equals", label: "{% trans 'Not Equals'|escapejs %}" },
+                { value: "contains", label: "{% trans 'Contains'|escapejs %}" },
+                { value: "is_empty", label: "{% trans 'Is Empty'|escapejs %}" }
             ],
             dropdown: [
-                { value: "equals", label: "{% trans 'Equals' %}" },
-                { value: "not_equals", label: "{% trans 'Not Equals' %}" },
-                { value: "is_empty", label: "{% trans 'Is Empty' %}" }
+                { value: "equals", label: "{% trans 'Equals'|escapejs %}" },
+                { value: "not_equals", label: "{% trans 'Not Equals'|escapejs %}" },
+                { value: "is_empty", label: "{% trans 'Is Empty'|escapejs %}" }
             ],
             number: [
-                { value: "equals", label: "{% trans 'Equals' %}" },
-                { value: "not_equals", label: "{% trans 'Not Equals' %}" },
-                { value: "greater_than", label: "{% trans 'Greater Than' %}" },
-                { value: "less_than", label: "{% trans 'Less Than' %}" },
-                { value: "between", label: "{% trans 'Between' %}" },
-                { value: "is_empty", label: "{% trans 'Is Empty' %}" }
+                { value: "equals", label: "{% trans 'Equals'|escapejs %}" },
+                { value: "not_equals", label: "{% trans 'Not Equals'|escapejs %}" },
+                { value: "greater_than", label: "{% trans 'Greater Than'|escapejs %}" },
+                { value: "less_than", label: "{% trans 'Less Than'|escapejs %}" },
+                { value: "between", label: "{% trans 'Between'|escapejs %}" },
+                { value: "is_empty", label: "{% trans 'Is Empty'|escapejs %}" }
             ],
             date: [
-                { value: "equals", label: "{% trans 'Equals' %}" },
-                { value: "not_equals", label: "{% trans 'Not Equals' %}" },
-                { value: "greater_than", label: "{% trans 'After' %}" },
-                { value: "less_than", label: "{% trans 'Before' %}" },
-                { value: "between", label: "{% trans 'Between' %}" },
-                { value: "today", label: "{% trans 'Today' %}" },
-                { value: "yesterday", label: "{% trans 'Yesterday' %}" },
-                { value: "this_week", label: "{% trans 'This Week' %}" },
-                { value: "last_week", label: "{% trans 'Last Week' %}" },
-                { value: "this_month", label: "{% trans 'This Month' %}" },
-                { value: "last_month", label: "{% trans 'Last Month' %}" },
-                { value: "this_year", label: "{% trans 'This Year' %}" },
-                { value: "last_year", label: "{% trans 'Last Year' %}" },
-                { value: "is_empty", label: "{% trans 'Is Empty' %}" }
+                { value: "equals", label: "{% trans 'Equals'|escapejs %}" },
+                { value: "not_equals", label: "{% trans 'Not Equals'|escapejs %}" },
+                { value: "greater_than", label: "{% trans 'After'|escapejs %}" },
+                { value: "less_than", label: "{% trans 'Before'|escapejs %}" },
+                { value: "between", label: "{% trans 'Between'|escapejs %}" },
+                { value: "today", label: "{% trans 'Today'|escapejs %}" },
+                { value: "yesterday", label: "{% trans 'Yesterday'|escapejs %}" },
+                { value: "this_week", label: "{% trans 'This Week'|escapejs %}" },
+                { value: "last_week", label: "{% trans 'Last Week'|escapejs %}" },
+                { value: "this_month", label: "{% trans 'This Month'|escapejs %}" },
+                { value: "last_month", label: "{% trans 'Last Month'|escapejs %}" },
+                { value: "this_year", label: "{% trans 'This Year'|escapejs %}" },
+                { value: "last_year", label: "{% trans 'Last Year'|escapejs %}" },
+                { value: "is_empty", label: "{% trans 'Is Empty'|escapejs %}" }
             ]
         };
 
@@ -1400,7 +1400,7 @@
         }
 
         function buildFieldOptionsHtml() {
-            var html = '<option value="">{% trans "Select Field" %}</option>';
+            var html = '<option value="">{% trans "Select Field"|escapejs %}</option>';
             getFilterFields().forEach(function (f) {
                 html += '<option value="' + f.value + '">' + f.label + '</option>';
             });
@@ -1409,7 +1409,7 @@
 
         function buildOperatorOptionsHtml(fieldType) {
             var operators = FILTER_OPERATORS_BY_TYPE[fieldType] || FILTER_OPERATORS_BY_TYPE.text;
-            var html = '<option value="">{% trans "Select Operator" %}</option>';
+            var html = '<option value="">{% trans "Select Operator"|escapejs %}</option>';
             operators.forEach(function (op) {
                 html += '<option value="' + op.value + '">' + op.label + '</option>';
             });
@@ -1455,7 +1455,7 @@
                         $valueSelect.append($("<option></option>").attr("value", val).text(val));
                     }
                 });
-                $valueSelect.select2({ width: "100%", placeholder: "{% trans 'Select one or more' %}" });
+                $valueSelect.select2({ width: "100%", placeholder: "{% trans 'Select one or more'|escapejs %}" });
                 if (selectedValues.length) {
                     $valueSelect.val(selectedValues).trigger("change");
                 }
@@ -1481,13 +1481,13 @@
             var initialConnector = (prefill && prefill.connector) || "and";
             var $connector = $('<span class="oh-filter-connector-pill filter-connector-select"></span>')
                 .attr("data-value", initialConnector)
-                .text(initialConnector === "or" ? "{% trans 'OR' %}" : "{% trans 'AND' %}")
-                .attr("title", "{% trans 'Click to toggle AND/OR' %}")
+                .text(initialConnector === "or" ? "{% trans 'OR'|escapejs %}" : "{% trans 'AND'|escapejs %}")
+                .attr("title", "{% trans 'Click to toggle AND/OR'|escapejs %}")
                 .on("click", function () {
                     var next = $(this).attr("data-value") === "and" ? "or" : "and";
                     $(this)
                         .attr("data-value", next)
-                        .text(next === "or" ? "{% trans 'OR' %}" : "{% trans 'AND' %}");
+                        .text(next === "or" ? "{% trans 'OR'|escapejs %}" : "{% trans 'AND'|escapejs %}");
                 });
             var $connectorCell = $('<div class="oh-dynamic-filter-cell oh-dynamic-filter-cell--connector"></div>').append($connector);
             if (isFirstRow) {
@@ -1495,10 +1495,10 @@
             }
             var $field = $('<select class="oh-select filter-field-select"></select>').html(buildFieldOptionsHtml());
             var $operator = $('<select class="oh-select filter-operator-select"></select>').html(buildOperatorOptionsHtml("text"));
-            var $value = $('<input type="text" class="oh-input filter-value-input">').attr("placeholder", "{% trans 'Enter value' %}");
+            var $value = $('<input type="text" class="oh-input filter-value-input">').attr("placeholder", "{% trans 'Enter value'|escapejs %}");
             // Second box for the "between" operator's upper bound -- hidden
             // unless "between" is the selected operator.
-            var $valueTo = $('<input type="text" class="oh-input filter-value-input-to" style="display:none;">').attr("placeholder", "{% trans 'Enter value' %}");
+            var $valueTo = $('<input type="text" class="oh-input filter-value-input-to" style="display:none;">').attr("placeholder", "{% trans 'Enter value'|escapejs %}");
             // Deliberately NOT the "oh-select" class: a global $(document).ready
             // handler elsewhere auto-applies select2 to every ".oh-select" on
             // the page, including this one while it's still hidden/unused --
@@ -1508,8 +1508,8 @@
             var $valueSelect = $('<select class="oh-filter-value-select filter-value-select" multiple style="display:none;"></select>');
             // Relative-date operators (Today/This Week/etc.) are
             // self-contained -- no value box makes sense for them at all.
-            var $noValueText = $('<span class="oh-filter-no-value"></span>').text("{% trans 'No value needed' %}").hide();
-            var $remove = $('<span class="oh-dynamic-filter-remove" title="{% trans "Remove" %}"><ion-icon name="close-outline"></ion-icon></span>');
+            var $noValueText = $('<span class="oh-filter-no-value"></span>').text("{% trans 'No value needed'|escapejs %}").hide();
+            var $remove = $('<span class="oh-dynamic-filter-remove" title="{% trans "Remove"|escapejs %}"><ion-icon name="close-outline"></ion-icon></span>');
 
             // Re-evaluates which value widget(s) should show, based on the
             // CURRENT field type and operator together (not just field type
@@ -1552,7 +1552,7 @@
                 if (type === "date") {
                     $value.show().attr("type", "date").removeAttr("placeholder").val(selectedValue || "");
                 } else {
-                    $value.show().attr("type", "text").attr("placeholder", "{% trans 'Enter value' %}").val(selectedValue || "");
+                    $value.show().attr("type", "text").attr("placeholder", "{% trans 'Enter value'|escapejs %}").val(selectedValue || "");
                 }
             }
 
@@ -1673,7 +1673,7 @@
             var operatorLabel = operatorLabelFor(type, filter.operator);
             var prefix = "";
             if (index > 0) {
-                prefix = ((filter.connector || "and") === "or" ? "{% trans 'OR' %}" : "{% trans 'AND' %}") + " ";
+                prefix = ((filter.connector || "and") === "or" ? "{% trans 'OR'|escapejs %}" : "{% trans 'AND'|escapejs %}") + " ";
             }
             if (NO_VALUE_OPERATORS.indexOf(filter.operator) !== -1) {
                 return prefix + fieldLabel + " " + operatorLabel;

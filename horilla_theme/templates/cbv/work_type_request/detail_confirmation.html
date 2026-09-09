@@ -86,7 +86,7 @@
             <a
                 href="#"
                 title="{% trans 'Approve' %}"
-                onclick="event.preventDefault(); event.stopPropagation(); workTypeRequestRowApprove('{% url 'work-type-request-approve' instance.id %}', '{% trans 'Do you want to approve this request?' %}')"
+                onclick="event.preventDefault(); event.stopPropagation(); workTypeRequestRowApprove('{% url 'work-type-request-approve' instance.id %}', '{% trans 'Do you want to approve this request?'|escapejs %}')"
                 class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300"
                 style="cursor: pointer"
             >
@@ -118,7 +118,7 @@
             <a
                 href="#"
                 title="{% trans 'Reject' %}"
-                onclick="event.preventDefault(); event.stopPropagation(); workTypeRequestRowApprove('{% url 'work-type-request-cancel' instance.id %}', '{% trans 'Do you want to reject this request?' %}')"
+                onclick="event.preventDefault(); event.stopPropagation(); workTypeRequestRowApprove('{% url 'work-type-request-cancel' instance.id %}', '{% trans 'Do you want to reject this request?'|escapejs %}')"
                 class="h-8 w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
                 style="cursor: pointer"
             >

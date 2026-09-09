@@ -200,7 +200,7 @@
         fieldSelect.className = 'oh-input oh-custom-filter-field';
         var placeholderOpt = document.createElement('option');
         placeholderOpt.value = '';
-        placeholderOpt.textContent = '{% trans "Field" %}';
+        placeholderOpt.textContent = '{% trans "Field"|escapejs %}';
         fieldSelect.appendChild(placeholderOpt);
         fields.forEach(function (f) {
             var opt = document.createElement('option');
@@ -223,7 +223,7 @@
         var removeBtn = document.createElement('button');
         removeBtn.type = 'button';
         removeBtn.className = 'oh-custom-filter-remove';
-        removeBtn.setAttribute('aria-label', '{% trans "Remove filter" %}');
+        removeBtn.setAttribute('aria-label', '{% trans "Remove filter"|escapejs %}');
         removeBtn.textContent = '×';
         removeBtn.addEventListener('click', function () { removeCustomFilterRow(this); });
 
@@ -256,7 +256,7 @@
     function buildLookupPlaceholderOption() {
         var opt = document.createElement('option');
         opt.value = '';
-        opt.textContent = '{% trans "Lookup" %}';
+        opt.textContent = '{% trans "Lookup"|escapejs %}';
         return opt;
     }
 
@@ -293,7 +293,7 @@
             select.disabled = !!disabled;
             var placeholderOpt = document.createElement('option');
             placeholderOpt.value = '';
-            placeholderOpt.textContent = '{% trans "Select" %}';
+            placeholderOpt.textContent = '{% trans "Select"|escapejs %}';
             select.appendChild(placeholderOpt);
             (config.choices || []).forEach(function (pair) {
                 var opt = document.createElement('option');
@@ -312,7 +312,7 @@
         // seconds-backed fields with no native input type) keeps a text
         // input but with a format hint.
         var inputType = 'text';
-        var placeholder = disabled ? '{% trans "Select a field first" %}' : '{% trans "Value" %}';
+        var placeholder = disabled ? '{% trans "Select a field first"|escapejs %}' : '{% trans "Value"|escapejs %}';
         if (config) {
             if (config.type === 'date_range') {
                 inputType = 'date';

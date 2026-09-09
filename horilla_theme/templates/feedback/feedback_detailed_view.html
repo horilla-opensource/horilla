@@ -127,7 +127,7 @@
           {% endif %}
           {% if perms.pms.delete_feedback %}
             <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"
-                onsubmit="return confirm('{% trans 'Do you want archive this Feedback ?' %}')">
+                onsubmit="return confirm('{% trans 'Do you want archive this Feedback ?'|escapejs %}')">
                 {% csrf_token %}
                 <button class="w-8 h-8 flex justify-center items-center bg-danger hover:bg-danger-dark rounded-md text-white"
                     title="{% trans 'Archive' %}">
@@ -136,7 +136,7 @@
             </form>
             {% if not feedback.feedback_answer.all %}
               <form action="{% url 'feedback-delete' id=feedback.id %}" method="post"
-                  onsubmit="return confirm('{% trans 'Do you want Delete this Feedback ?' %}')">
+                  onsubmit="return confirm('{% trans 'Do you want Delete this Feedback ?'|escapejs %}')">
                   {% csrf_token %}
                   <button class="w-8 h-8 flex justify-center items-center bg-danger hover:bg-danger-dark rounded-md text-white"
                       title="{% trans 'Delete' %}">
@@ -539,7 +539,7 @@
     document.execCommand("copy");
     $temp.remove();
     Swal.fire({
-      text: `Link copied ${link}`,
+      text: "{% trans 'Link copied:'|escapejs %} " + link,
       icon: "success",
       showConfirmButton: false,
       timer: 3000, // Set the timer to 3000 milliseconds (3 seconds)

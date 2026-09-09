@@ -387,7 +387,7 @@
                                             });
                                             var $preview = $('#nestedGroupByPreview');
                                             if (labels.length > 1) {
-                                                $preview.text('{% trans "Preview" %}: ' + labels.join(' › '));
+                                                $preview.text('{% trans "Preview"|escapejs %}: ' + labels.join(' › '));
                                             } else {
                                                 $preview.text('');
                                             }

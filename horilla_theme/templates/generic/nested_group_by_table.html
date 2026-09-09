@@ -538,7 +538,7 @@
             $row.removeClass('force-open');
             $row.find('.ngb-crumb-select-wrap').removeClass('force-open');
             $row.find('.ngb-crumb-hidden-input').val('');
-            $row.find('.ngb-crumb-select-label').text('{% trans "Select field" %}');
+            $row.find('.ngb-crumb-select-label').text('{% trans "Select field"|escapejs %}');
             $row.find('.ngb-crumb-option').prop('disabled', false).removeClass('text-primary-600 font-semibold');
             $(btn).before($row);
             ngbCrumbRenumber();

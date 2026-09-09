@@ -69,7 +69,7 @@
             </a>
         {% else %}
             <a
-                onclick="shiftRequestRowApprove('{% url 'shift-request-approve' instance.id %}', '{% trans 'Do you want to approve this request?' %}')"
+                onclick="shiftRequestRowApprove('{% url 'shift-request-approve' instance.id %}', '{% trans 'Do you want to approve this request?'|escapejs %}')"
                 class="oh-btn oh-btn--success px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
                 style="cursor:pointer;"
                 title="{% trans 'Approve' %}"
@@ -86,7 +86,7 @@
             </a>
         {% else %}
             <a
-                onclick="shiftRequestRowApprove('{% url 'shift-request-cancel' instance.id %}', '{% trans 'Do you want to reject this request?' %}')"
+                onclick="shiftRequestRowApprove('{% url 'shift-request-cancel' instance.id %}', '{% trans 'Do you want to reject this request?'|escapejs %}')"
                 class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
                 style="cursor:pointer;"
                 title="{% trans 'Reject' %}"

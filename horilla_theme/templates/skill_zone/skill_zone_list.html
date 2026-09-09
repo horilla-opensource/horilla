@@ -68,7 +68,7 @@
                                             {% if skill_zone.grouper.is_active %}
                                                 <form
                                                     action="{% url 'skill-zone-archive' skill_zone.grouper.id %}"
-                                                    onsubmit="return confirm(`{% trans 'Do you want to archive this talent pool?' %}`)"
+                                                    onsubmit="return confirm(`{% trans 'Do you want to archive this talent pool?'|escapejs %}`)"
                                                     method="post"
                                                 >
                                                     {% csrf_token %}
@@ -79,7 +79,7 @@
                                             {% else %}
                                                 <form
                                                     action="{% url 'skill-zone-archive' skill_zone.grouper.id %}"
-                                                    onsubmit="return confirm(`{% trans 'Do you want to unarchive this talent pool?' %}`)"
+                                                    onsubmit="return confirm(`{% trans 'Do you want to unarchive this talent pool?'|escapejs %}`)"
                                                     method="post"
                                                 >
                                                     {% csrf_token %}
@@ -257,7 +257,7 @@
                                                             {% if perms.recruitment.delete_skillzonecandidate %}
                                                                 <form
                                                                     action="{% url 'skill-zone-cand-delete' sz_candidate.id  %}"
-                                                                    onsubmit="return confirm(`{% trans 'Do you want to remove this candidate' %}`)"
+                                                                    onsubmit="return confirm(`{% trans 'Do you want to remove this candidate'|escapejs %}`)"
                                                                     method="post"
                                                                 >
                                                                     {% csrf_token %}

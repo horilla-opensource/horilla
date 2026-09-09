@@ -543,7 +543,7 @@
         const from = period.from_date || "";
         const to = period.to_date || "";
         let text = from && to
-            ? "{% trans 'Period' %}: " + from + " → " + to
+            ? "{% trans 'Period'|escapejs %}: " + from + " → " + to
             : "";
         // A report that overrides its own window ships a label for it
         // ("Rolling 6 months"); showing the raw dates alone made a fixed
@@ -556,7 +556,7 @@
         if (compare && compare.period) {
             const cf = compare.period.from_date || "";
             const ct = compare.period.to_date || "";
-            const clabel = compare.label || "{% trans 'Compare' %}";
+            const clabel = compare.label || "{% trans 'Compare'|escapejs %}";
             if (cf && ct) {
                 text += text ? "  ·  " : "";
                 text += clabel + ": " + cf + " → " + ct;
@@ -616,7 +616,7 @@
                 const cmp = document.createElement("div");
                 cmp.className = "sr-kpi-compare";
                 const prior = document.createElement("span");
-                prior.textContent = "{% trans 'Prior' %}: " + String(kpi.prior_value);
+                prior.textContent = "{% trans 'Prior'|escapejs %}: " + String(kpi.prior_value);
                 cmp.appendChild(prior);
                 if (kpi.delta_label) {
                     const delta = document.createElement("span");
@@ -714,8 +714,8 @@
                 const priorTotal = chart.prior_data.reduce(function (a, b) {
                     return a + (Number(b) || 0);
                 }, 0);
-                note.textContent = (chart.compare_label || "{% trans 'Prior' %}")
-                    + " {% trans 'total' %}: " + priorTotal;
+                note.textContent = (chart.compare_label || "{% trans 'Prior'|escapejs %}")
+                    + " {% trans 'total'|escapejs %}: " + priorTotal;
                 wrap.appendChild(note);
             }
             const el = document.createElement("div");
@@ -885,8 +885,8 @@
         if (!drillModal) return;
         drillModal.classList.add("oh-modal--show");
         drillModal.setAttribute("aria-hidden", "false");
-        if (drillTitle) drillTitle.textContent = "{% trans 'Drill-down' %}: " + (value || "");
-        if (drillMeta) drillMeta.textContent = "{% trans 'Loading…' %}";
+        if (drillTitle) drillTitle.textContent = "{% trans 'Drill-down'|escapejs %}: " + (value || "");
+        if (drillMeta) drillMeta.textContent = "{% trans 'Loading…'|escapejs %}";
         if (drillThead) drillThead.innerHTML = "";
         if (drillTbody) drillTbody.innerHTML = "";
         try {
@@ -899,9 +899,9 @@
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Failed to load");
-            if (drillTitle) drillTitle.textContent = data.title || ("{% trans 'Drill-down' %}: " + value);
+            if (drillTitle) drillTitle.textContent = data.title || ("{% trans 'Drill-down'|escapejs %}: " + value);
             if (drillMeta) {
-                drillMeta.textContent = (data.count != null ? data.count + " {% trans 'rows' %}" : "")
+                drillMeta.textContent = (data.count != null ? data.count + " {% trans 'rows'|escapejs %}" : "")
                     + (data.message ? " · " + data.message : "");
             }
             const columns = data.columns || [];
@@ -928,7 +928,7 @@
                         if (col.type === "link" && val) {
                             const a = document.createElement("a");
                             a.href = val;
-                            a.textContent = "{% trans 'Open' %}";
+                            a.textContent = "{% trans 'Open'|escapejs %}";
                             a.target = "_blank";
                             a.rel = "noopener";
                             td.appendChild(a);
@@ -965,14 +965,14 @@
         }
         tableSection.hidden = false;
         let metaText = rows.length === 1
-            ? "1 {% trans 'row' %}"
-            : rows.length + " {% trans 'rows' %}";
+            ? "1 {% trans 'row'|escapejs %}"
+            : rows.length + " {% trans 'rows'|escapejs %}";
         // A metric whose KPI counts every match but whose list is capped has
         // to say so, or the card reads "347" above a table of 100.
         if (table && table.truncated) {
             metaText += table.total_rows
-                ? "  ·  {% trans 'sample of' %} " + table.total_rows
-                : "  ·  {% trans 'partial list' %}";
+                ? "  ·  {% trans 'sample of'|escapejs %} " + table.total_rows
+                : "  ·  {% trans 'partial list'|escapejs %}";
         }
         tableMeta.textContent = metaText;
 
@@ -1031,7 +1031,7 @@
                 }
                 if (dim && val) {
                     r.classList.add("sr-row--drill");
-                    r.title = "{% trans 'Click to drill down' %}";
+                    r.title = "{% trans 'Click to drill down'|escapejs %}";
                     r.addEventListener("click", function () {
                         openDrilldown(dim, val, "");
                     });
@@ -1043,7 +1043,7 @@
 
     async function load() {
         statusEl.className = "sr-status";
-        statusText.textContent = "{% trans 'Loading…' %}";
+        statusText.textContent = "{% trans 'Loading…'|escapejs %}";
         if (statusDot) statusDot.hidden = false;
         statusEl.hidden = false;
         kpiSection.hidden = true;
@@ -1105,8 +1105,8 @@
             const open = advanced.hidden;
             advanced.hidden = !open;
             this.textContent = open
-                ? "{% trans 'Hide filters' %}"
-                : "{% trans 'More filters' %}";
+                ? "{% trans 'Hide filters'|escapejs %}"
+                : "{% trans 'More filters'|escapejs %}";
             if (open) initOhSelects(advanced, document.getElementById("sr-filters"));
         });
     }
@@ -1148,8 +1148,8 @@
         favoriteBtn.setAttribute("aria-pressed", on ? "true" : "false");
         favoriteIcon.textContent = on ? "★" : "☆";
         favoriteLabel.textContent = on
-            ? "{% trans 'Favorited' %}"
-            : "{% trans 'Favorite' %}";
+            ? "{% trans 'Favorited'|escapejs %}"
+            : "{% trans 'Favorite'|escapejs %}";
     }
 
     function refreshPresetSelect(presets) {
@@ -1158,7 +1158,7 @@
         savedPresetSelect.innerHTML = "";
         const blank = document.createElement("option");
         blank.value = "";
-        blank.textContent = "{% trans '— Select a preset —' %}";
+        blank.textContent = "{% trans '— Select a preset —'|escapejs %}";
         savedPresetSelect.appendChild(blank);
         (presets || []).forEach((p) => {
             presetsById[String(p.id)] = p.filters || {};
@@ -1217,7 +1217,7 @@
             return input && advanced.contains(input) && filters[k];
         })) {
             advanced.hidden = false;
-            if (toggleAdvanced) toggleAdvanced.textContent = "{% trans 'Hide filters' %}";
+            if (toggleAdvanced) toggleAdvanced.textContent = "{% trans 'Hide filters'|escapejs %}";
             initOhSelects(advanced, document.getElementById("sr-filters"));
         }
         syncCustomVisibility();
@@ -1251,7 +1251,7 @@
     });
 
     document.getElementById("sr-save-preset").addEventListener("click", async function () {
-        const name = window.prompt("{% trans 'Name this filter preset' %}");
+        const name = window.prompt("{% trans 'Name this filter preset'|escapejs %}");
         if (!name || !name.trim()) return;
         try {
             const res = await fetch(page.dataset.presetsUrl, {
@@ -1278,7 +1278,7 @@
     document.getElementById("sr-delete-preset").addEventListener("click", async function () {
         const id = savedPresetSelect.value;
         if (!id) return;
-        if (!window.confirm("{% trans 'Delete this saved filter preset?' %}")) return;
+        if (!window.confirm("{% trans 'Delete this saved filter preset?'|escapejs %}")) return;
         const url = page.dataset.presetsUrl.replace(/\/?$/, "/") + id + "/delete/";
         try {
             const res = await fetch(url, {
@@ -1333,7 +1333,7 @@
         const recipients = (document.getElementById("sr-sub-recipients").value || "").trim();
         const attachmentFormat = document.getElementById("sr-sub-format").value || "xlsx";
         if (!recipients) {
-            window.alert("{% trans 'Add at least one recipient email.' %}");
+            window.alert("{% trans 'Add at least one recipient email.'|escapejs %}");
             return;
         }
         try {
@@ -1357,8 +1357,8 @@
             if (!res.ok) throw new Error(data.error || "Failed to subscribe");
             closeSubscribeModal();
             if (data.manage_url && window.confirm(
-                (data.message || "{% trans 'Subscription created.' %}") +
-                "\n\n{% trans 'Open subscriptions list?' %}"
+                (data.message || "{% trans 'Subscription created.'|escapejs %}") +
+                "\n\n{% trans 'Open subscriptions list?'|escapejs %}"
             )) {
                 window.location.href = data.manage_url;
             }

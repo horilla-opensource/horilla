@@ -38,7 +38,7 @@
                     <h3 class="text-sm font-medium">{% trans "Work Information Tracking" %}</h3>
                     <span
                         class="oh-info mr-2"
-                        title='{% if tracking_is_all_companies %}{% trans "Configure the default, then choose which companies should receive these settings." %}{% else %}{% trans "By enabling this feature, you can save the history of employee work information during updates for the currently selected company." %}{% endif %}'
+                        title="{% if tracking_is_all_companies %}{% trans 'Configure the default, then choose which companies should receive these settings.' %}{% else %}{% trans 'By enabling this feature, you can save the history of employee work information during updates for the currently selected company.' %}{% endif %}"
                     >
                     </span>
                 </div>
@@ -168,11 +168,11 @@
         function initHistoryTrackingSelects() {
             initSelect(
                 $("#historyTrackingSection select[name='tracking_fields']"),
-                "{% trans 'Select fields…' %}"
+                "{% trans 'Select fields…'|escapejs %}"
             );
             initSelect(
                 $("#historyTrackingAssignCompanies"),
-                "{% trans 'Select companies…' %}"
+                "{% trans 'Select companies…'|escapejs %}"
             );
         }
         initHistoryTrackingSelects();

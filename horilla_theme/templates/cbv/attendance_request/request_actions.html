@@ -33,14 +33,14 @@
             title="{% trans 'Approve' %}"
             onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                     Swal.fire({
-                        title: '{% trans 'Are you sure?' %}',
-                        text: '{% trans 'Do you want to approve this attendance request?' %}',
+                        title: '{% trans 'Are you sure?'|escapejs %}',
+                        text: '{% trans 'Do you want to approve this attendance request?'|escapejs %}',
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonColor: '#008000',
                         cancelButtonColor: '#6c757d',
-                        confirmButtonText: '{% trans 'Confirm' %}',
-                        cancelButtonText: '{% trans 'Cancel' %}'
+                        confirmButtonText: '{% trans 'Confirm'|escapejs %}',
+                        cancelButtonText: '{% trans 'Cancel'|escapejs %}'
                     }).then(function(result) {
                         if (result.isConfirmed) {
                             htmx.ajax('POST', '{% url 'approve-validate-attendance-request' instance.id %}', {target: '#validateAttendanceRequestModalBody', swap: 'innerHTML'});
@@ -59,14 +59,14 @@
             title="{% trans 'Reject' %}"
             onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                     Swal.fire({
-                        title: '{% trans 'Are you sure?' %}',
-                        text: '{% trans 'Do you want to reject this attendance request?' %}',
+                        title: '{% trans 'Are you sure?'|escapejs %}',
+                        text: '{% trans 'Do you want to reject this attendance request?'|escapejs %}',
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#d33',
                         cancelButtonColor: '#6c757d',
-                        confirmButtonText: '{% trans 'Confirm' %}',
-                        cancelButtonText: '{% trans 'Cancel' %}'
+                        confirmButtonText: '{% trans 'Confirm'|escapejs %}',
+                        cancelButtonText: '{% trans 'Cancel'|escapejs %}'
                     }).then(function(result) {
                         if (result.isConfirmed) {
                             htmx.ajax('POST', '{% url 'cancel-validate-attendance-request' instance.id %}', {target: '#validateAttendanceRequestModalBody', swap: 'innerHTML'});

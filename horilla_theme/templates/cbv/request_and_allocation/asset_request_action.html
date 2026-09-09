@@ -70,7 +70,7 @@
                 class="h-7 w-7 flex items-center justify-center bg-danger text-white rounded-md hover:bg-danger-dark transition duration-300"
                 role="button"
                 href="{% url 'asset-request-reject' instance.id %}"
-                onclick="return confirm(`{% trans 'Do you want to reject this request?' %}`)"
+                onclick="return confirm(`{% trans 'Do you want to reject this request?'|escapejs %}`)"
                 title="{% trans 'Reject' %}"
             >
                 <img

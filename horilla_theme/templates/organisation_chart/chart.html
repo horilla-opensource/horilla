@@ -538,7 +538,7 @@
     		treeContainer.innerHTML = `
                 <div class="org-empty-state">
                     <ion-icon name="people-outline"></ion-icon>
-                    <div>{% trans "No organization data available" %}</div>
+                    <div>{% trans "No organization data available"|escapejs %}</div>
                 </div>
             `;
     		return;

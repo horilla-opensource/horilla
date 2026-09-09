@@ -27,7 +27,7 @@
                     type="submit"
                     class="oh-btn oh-btn--danger oh-btn--sq-sm"
                     title="{% trans 'Remove' %}"
-                    onclick="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
+                    onclick="return confirm('{% trans "Are you sure want to delete this attendance?"|escapejs %}')"
                 >
                     <ion-icon name="trash-outline"></ion-icon>
                 </button>
@@ -59,14 +59,14 @@
                     class="h-7 w-7 flex items-center justify-center bg-success text-white rounded-md hover:bg-success-dark transition duration-300"
                     onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                     Swal.fire({
-                        title: '{% trans 'Are you sure?' %}',
-                        text: '{% trans 'Do you want to validate this attendance?' %}',
+                        title: '{% trans 'Are you sure?'|escapejs %}',
+                        text: '{% trans 'Do you want to validate this attendance?'|escapejs %}',
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonColor: '#008000',
                         cancelButtonColor: '#6c757d',
-                        confirmButtonText: '{% trans 'Confirm' %}',
-                        cancelButtonText: '{% trans 'Cancel' %}'
+                        confirmButtonText: '{% trans 'Confirm'|escapejs %}',
+                        cancelButtonText: '{% trans 'Cancel'|escapejs %}'
                     }).then(function(result) {
                         if (result.isConfirmed) {
                             htmx.ajax('GET', '{% url 'validate-this-attendance' instance.id %}', {swap: 'none'});

@@ -1216,13 +1216,13 @@ function initStandardCatalog() {
         // template delete in standard_report_print_modal's sibling views)
         // sidesteps the override instead of fighting it.
         Swal.fire({
-            text: "{% trans 'Delete this saved view?' %}",
+            text: "{% trans 'Delete this saved view?'|escapejs %}",
             icon: "question",
             showCancelButton: true,
             confirmButtonColor: "#008000",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "{% trans 'Confirm' %}",
-            cancelButtonText: "{% trans 'Cancel' %}",
+            confirmButtonText: "{% trans 'Confirm'|escapejs %}",
+            cancelButtonText: "{% trans 'Cancel'|escapejs %}",
         }).then(function (result) {
             if (!result.isConfirmed) return;
             fetch("/report/standard/saved-views/" + viewId + "/delete/", {
@@ -1267,7 +1267,7 @@ function initStandardCatalog() {
     function submitSaveView() {
         var name = saveViewInput.value.trim();
         if (!name) {
-            setSaveViewError("{% trans 'Please enter a name for this view.' %}");
+            setSaveViewError("{% trans 'Please enter a name for this view.'|escapejs %}");
             saveViewInput.focus();
             return;
         }
@@ -1286,7 +1286,7 @@ function initStandardCatalog() {
             div.className = "sr-saved-view";
             div.dataset.viewId = data.view.id;
             div.dataset.viewSlugs = JSON.stringify(data.view.report_slugs);
-            div.innerHTML = '<span class="sr-saved-view__name"></span><span class="sr-saved-view__del" data-view-id="' + data.view.id + '" title="{% trans "Delete view" %}">×</span>';
+            div.innerHTML = '<span class="sr-saved-view__name"></span><span class="sr-saved-view__del" data-view-id="' + data.view.id + '" title="{% trans "Delete view"|escapejs %}">×</span>';
             div.querySelector(".sr-saved-view__name").textContent = data.view.name;
             list.appendChild(div);
             div.addEventListener("click", function (e) {
@@ -1300,7 +1300,7 @@ function initStandardCatalog() {
             closeSaveViewModal();
         }).catch(function () {
             saveViewSubmitBtn.disabled = false;
-            setSaveViewError("{% trans 'Something went wrong — please try again.' %}");
+            setSaveViewError("{% trans 'Something went wrong — please try again.'|escapejs %}");
         });
     }
 
@@ -1333,8 +1333,8 @@ function initStandardCatalog() {
         if (bulkBar) bulkBar.hidden = !inGrid || slugs.length === 0;
         if (bulkCount) {
             bulkCount.textContent = slugs.length === 1
-                ? "1 " + "{% trans 'report selected' %}"
-                : slugs.length + " " + "{% trans 'reports selected' %}";
+                ? "1 " + "{% trans 'report selected'|escapejs %}"
+                : slugs.length + " " + "{% trans 'reports selected'|escapejs %}";
         }
         document.querySelectorAll(".sr-row").forEach(function (row) {
             var slug = row.dataset.slug;
@@ -1399,7 +1399,7 @@ function initStandardCatalog() {
                 headers: { "X-Requested-With": "XMLHttpRequest" },
             });
         });
-        srToast(slugs.length + " {% trans 'report(s) queued — check your email shortly.' %}");
+        srToast(slugs.length + " {% trans 'report(s) queued — check your email shortly.'|escapejs %}");
     });
 
     // ---- Subscribe modal ----
@@ -1419,7 +1419,7 @@ function initStandardCatalog() {
         if (!slugs.length) return;
         setSubError("");
         document.getElementById("srSubscribeCount").textContent =
-            slugs.length + " {% trans 'report(s) selected.' %}";
+            slugs.length + " {% trans 'report(s) selected.'|escapejs %}";
         srOpenModal(subModal);
         setTimeout(function () { subRecipients.focus(); }, 50);
     });
@@ -1432,7 +1432,7 @@ function initStandardCatalog() {
         if (!slugs.length) { srCloseModal(subModal); return; }
         var recipients = subRecipients.value.trim();
         if (!recipients) {
-            setSubError("{% trans 'Enter at least one recipient email address.' %}");
+            setSubError("{% trans 'Enter at least one recipient email address.'|escapejs %}");
             subRecipients.focus();
             return;
         }
@@ -1441,7 +1441,7 @@ function initStandardCatalog() {
         var invalid = recipients.split(",").map(function (e) { return e.trim(); })
             .filter(function (e) { return e && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e); });
         if (invalid.length) {
-            setSubError("{% trans 'Not a valid email address:' %} " + invalid[0]);
+            setSubError("{% trans 'Not a valid email address:'|escapejs %} " + invalid[0]);
             subRecipients.focus();
             return;
         }
@@ -1455,12 +1455,12 @@ function initStandardCatalog() {
             subSubmit.disabled = false;
             if (data.error) { setSubError(data.error); return; }
             srCloseModal(subModal);
-            var msg = data.created + " {% trans 'subscription(s) created.' %}";
-            if (data.skipped && data.skipped.length) msg += " " + data.skipped.length + " {% trans 'skipped (no access).' %}";
+            var msg = data.created + " {% trans 'subscription(s) created.'|escapejs %}";
+            if (data.skipped && data.skipped.length) msg += " " + data.skipped.length + " {% trans 'skipped (no access).'|escapejs %}";
             srToast(msg);
         }).catch(function () {
             subSubmit.disabled = false;
-            setSubError("{% trans 'Could not create subscriptions. Please try again.' %}");
+            setSubError("{% trans 'Could not create subscriptions. Please try again.'|escapejs %}");
         });
     });
 
@@ -1490,7 +1490,7 @@ function initStandardCatalog() {
         });
         var newOpt = document.createElement("option");
         newOpt.value = ATV_NEW;
-        newOpt.textContent = "{% trans '+ Create a new view…' %}";
+        newOpt.textContent = "{% trans '+ Create a new view…'|escapejs %}";
         atvSelect.appendChild(newOpt);
         if (atvSelect.options.length === 1) atvSelect.value = ATV_NEW;
         toggleAtvNewName();
@@ -1512,7 +1512,7 @@ function initStandardCatalog() {
         atvNewName.value = "";
         refreshAtvOptions();
         document.getElementById("srAddToViewCount").textContent =
-            slugs.length + " {% trans 'report(s) selected.' %}";
+            slugs.length + " {% trans 'report(s) selected.'|escapejs %}";
         srOpenModal(atvModal);
     });
 
@@ -1527,7 +1527,7 @@ function initStandardCatalog() {
         if (isNew) {
             var name = atvNewName.value.trim();
             if (!name) {
-                setAtvError("{% trans 'Please enter a name for the new view.' %}");
+                setAtvError("{% trans 'Please enter a name for the new view.'|escapejs %}");
                 atvNewName.focus();
                 return;
             }
@@ -1545,20 +1545,20 @@ function initStandardCatalog() {
                 div.className = "sr-saved-view";
                 div.dataset.viewId = data.view.id;
                 div.dataset.viewSlugs = JSON.stringify(data.view.report_slugs);
-                div.innerHTML = '<span class="sr-saved-view__name"></span><span class="sr-saved-view__del" data-view-id="' + data.view.id + '" title="{% trans "Delete view" %}">×</span>';
+                div.innerHTML = '<span class="sr-saved-view__name"></span><span class="sr-saved-view__del" data-view-id="' + data.view.id + '" title="{% trans "Delete view"|escapejs %}">×</span>';
                 div.querySelector(".sr-saved-view__name").textContent = data.view.name;
                 list.appendChild(div);
                 srCloseModal(atvModal);
-                srToast("{% trans 'View created and reports added.' %}");
+                srToast("{% trans 'View created and reports added.'|escapejs %}");
             }).catch(function () {
                 atvSubmit.disabled = false;
-                setAtvError("{% trans 'Could not create the view. Please try again.' %}");
+                setAtvError("{% trans 'Could not create the view. Please try again.'|escapejs %}");
             });
             return;
         }
 
         var existing = document.querySelector('#srSavedViewsList .sr-saved-view[data-view-id="' + atvSelect.value + '"]');
-        if (!existing) { setAtvError("{% trans 'That view no longer exists.' %}"); return; }
+        if (!existing) { setAtvError("{% trans 'That view no longer exists.'|escapejs %}"); return; }
         atvSubmit.disabled = true;
         fetch("/report/standard/saved-views/" + existing.dataset.viewId + "/reports/", {
             method: "POST",
@@ -1568,10 +1568,10 @@ function initStandardCatalog() {
             atvSubmit.disabled = false;
             existing.dataset.viewSlugs = JSON.stringify(Array.from(new Set((JSON.parse(existing.dataset.viewSlugs || "[]")).concat(slugs))));
             srCloseModal(atvModal);
-            srToast("{% trans 'Added to view.' %}");
+            srToast("{% trans 'Added to view.'|escapejs %}");
         }).catch(function () {
             atvSubmit.disabled = false;
-            setAtvError("{% trans 'Could not add to that view. Please try again.' %}");
+            setAtvError("{% trans 'Could not add to that view. Please try again.'|escapejs %}");
         });
     });
 

@@ -223,7 +223,7 @@
                 $("#messages").html(
                     $(`
             <div class="oh-alert oh-alert--animated oh-alert--danger">
-              {% trans "Server error." %}
+              {% trans "Server error."|escapejs %}
             </div>
           `),
                 );
@@ -274,7 +274,7 @@
         if ($body.length && !$body.data("loaded") && $body.data("url")) {
             $body.data("loaded", true);
             $body.html(
-                '<div class="text-xs text-dark-200 py-4 text-center">{% trans "Loading…" %}</div>'
+                '<div class="text-xs text-dark-200 py-4 text-center">{% trans "Loading…"|escapejs %}</div>'
             );
             if (typeof htmx !== "undefined") {
                 htmx

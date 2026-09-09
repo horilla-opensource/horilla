@@ -23,14 +23,14 @@
                 class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300"
                 onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                     Swal.fire({
-                        title: '{% trans 'Are you sure?' %}',
-                        text: '{% trans 'Do you want to approve this overtime?' %}',
+                        title: '{% trans 'Are you sure?'|escapejs %}',
+                        text: '{% trans 'Do you want to approve this overtime?'|escapejs %}',
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonColor: '#008000',
                         cancelButtonColor: '#6c757d',
-                        confirmButtonText: '{% trans 'Confirm' %}',
-                        cancelButtonText: '{% trans 'Cancel' %}'
+                        confirmButtonText: '{% trans 'Confirm'|escapejs %}',
+                        cancelButtonText: '{% trans 'Cancel'|escapejs %}'
                     }).then(function(result) {
                         if (result.isConfirmed) {
                             var f = document.getElementById('ot-approve-confirm-' + pk);
@@ -61,13 +61,13 @@
                 class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300"
                 onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                     Swal.fire({
-                        title: '{% trans 'Are you sure?' %}',
-                        text: '{% trans 'This does not satisfy the minimum OT requirement!' %}',
+                        title: '{% trans 'Are you sure?'|escapejs %}',
+                        text: '{% trans 'This does not satisfy the minimum OT requirement!'|escapejs %}',
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#008000',
                         cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'Approve',
+                        confirmButtonText: '{% trans "Approve"|escapejs %}',
                         cancelButtonText: i18nMessages.cancel
                     }).then(function(result) {
                         if (result.isConfirmed) {

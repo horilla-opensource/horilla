@@ -92,7 +92,7 @@
                 class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
                 role="button"
                 href="{% url 'asset-request-reject' instance.id %}"
-                onclick="return confirm(`{% trans 'Do you want to reject this request?' %}`)"
+                onclick="return confirm(`{% trans 'Do you want to reject this request?'|escapejs %}`)"
                 title="{% trans 'Reject' %}"
             >
                 <ion-icon name="close-outline"></ion-icon>
