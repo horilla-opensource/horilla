@@ -29,7 +29,7 @@
             <a class="oh-btn oh-btn--success" href="{% url 'gdrive_start_stop' %}" title="Start">Start</a>
             {% endif %}
             <a class="oh-btn oh-btn--danger oh-btn--sq-sm" href="{% url 'gdrive_delete' %}" title="Remove">
-                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
+                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline'|escapejs %}"></ion-icon>
             </a>
             {% endif %}
         </div>`)
