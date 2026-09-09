@@ -1,9 +1,5 @@
 
-{% load i18n %}
-{% load static %}
-{% load basefilters %}
-{% load horillafilters employee_filter %}
-
+{% load i18n static basefilters horillafilters employee_filter %}
 
 <span name="" id="filterEmployee" style="display: none" hx-get="{% url 'employee-filter-view' %}?{{pd}}" hx-target="#view-container"></span>
 <div class="d-flex flex-row-reverse m-2">
@@ -115,7 +111,7 @@
                     {% if perms.employee.delete_employee %}
                       <li class="oh-dropdown__item">
                         <form action="{% url 'employee-delete' emp.id %}?view=card" method="post"
-                          onsubmit="return confirm('{% trans "All non-active contracts of the employee will also be deleted. Do you want to continue ?" %}')">
+                          onsubmit="return confirm('{% trans "All non-active contracts of the employee will also be deleted. Do you want to continue ?"|escapejs %}')">
                           {% csrf_token %}
                           <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</button>
                         </form>

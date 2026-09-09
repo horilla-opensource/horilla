@@ -1,8 +1,6 @@
+{% load basefilters horillafilters static i18n %}
 {% include 'filter_tags.html' %}
-{% load basefilters %}
-{% load horillafilters %}
-{% load static %}
-{% load i18n %}
+
 {% if messages %}
     <div class="oh-alert-container">
         {% for message in messages %}
@@ -186,7 +184,7 @@
                             <div
                                 class="oh-sticky-table__th {% if request.sort_option.order == '-employee_work_info__date_joining' %}arrow-up {% elif request.sort_option.order == 'employee_work_info__date_joining' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                 data-cell-index="12"
-                                data-cell-title='{% trans "Date of Joining" %}'
+                                data-cell-title="{% trans 'Date of Joining' %}"
                                 hx-target="#view-container"
                                 hx-get="{% url 'employee-filter-view' %}?{{pd}}&orderby=employee_work_info__date_joining"
                             >
@@ -354,7 +352,7 @@
                                                 </button>
                                             {% else %}
                                                 <form
-                                                    hx-confirm='{% trans "Do you want to un-archive this employee?" %}'
+                                                    hx-confirm="{% trans 'Do you want to un-archive this employee?' %}"
                                                     hx-post="{% url 'employee-archive' emp.id %}"
                                                     hx-target="#relatedModel"
                                                     style="width: 100%"
@@ -373,7 +371,7 @@
                                         {% if perms.employee.delete_employee %}
                                             <form
                                                 action="{% url 'employee-delete' emp.id %}?view=list"
-                                                onsubmit="return confirm('{% trans "All non-active contracts of the employee will also be deleted. Do you want to continue ?" %}')"
+                                                onsubmit="return confirm('{% trans "All non-active contracts of the employee will also be deleted. Do you want to continue ?"|escapejs %}')"
                                                 method="post"
                                                 style="width: 100%"
                                             >

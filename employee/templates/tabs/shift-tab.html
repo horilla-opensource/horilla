@@ -1016,7 +1016,7 @@
                                                         {% if shift_request.approved == False and shift_request.canceled == False %}
                                                             <a  href="{% url 'shift-request-approve' shift_request.id %}"
                                                                 title="{% trans 'Approve' %}"
-                                                                onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
+                                                                onclick="return confirm('{% trans "Do you want to approve this request?"|escapejs %}')"
                                                                 class="oh-btn oh-btn--success">
                                                                 <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                                                             </a>
@@ -1036,7 +1036,7 @@
                                                             <a
                                                                 href="{% url 'shift-request-cancel' shift_request.id %}"
                                                                 title="{% trans 'Reject' %}"
-                                                                onclick="return confirm('{% trans "Do you want to reject this request?" %}')"
+                                                                onclick="return confirm('{% trans "Do you want to reject this request?"|escapejs %}')"
                                                                 class="oh-btn oh-btn--danger">
                                                                 <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
                                                             </a>

@@ -1,5 +1,6 @@
-{% load horillafilters %} {% load basefilters %} {% load static %}
-{% load i18n %} {% include 'filter_tags.html' %}
+{% load horillafilters basefilters static i18n %}
+
+{% include 'filter_tags.html' %}
 {% if messages %}
 <div class="oh-alert-container">
   {% for message in messages %}
@@ -231,7 +232,7 @@
                           {% endif %} {% endif %} {% if perms.employee.delete_employee %}
                           <form
                             action="{% url 'employee-delete' emp.id %}?view=list"
-                            onsubmit="return confirm('{% trans "Are you sure want to delete this employee?" %}')"
+                            onsubmit="return confirm('{% trans "Are you sure want to delete this employee?"|escapejs %}')"
                             method="post" style = "width:100%"
                           > {% csrf_token %}
                             <button

@@ -696,9 +696,9 @@
             fetchP("{% url 'employee-dashboard-dept' %}")
                 .then(r => r.json())
                 .then(data => {
-                    if (!data.departments.length) { document.querySelector('#chart-em-dept').innerHTML = emptyHtml('{% trans "No department data" %}'); return; }
+                    if (!data.departments.length) { document.querySelector('#chart-em-dept').innerHTML = emptyHtml('{% trans "No department data"|escapejs %}'); return; }
                     new ApexCharts(document.querySelector('#chart-em-dept'), {
-                        series: [{ name: '{% trans "Employees" %}', data: data.departments.map(d => d.count) }],
+                        series: [{ name: '{% trans "Employees"|escapejs %}', data: data.departments.map(d => d.count) }],
                         chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, cfg) => {
                                 const dept = data.departments[cfg.dataPointIndex];
@@ -720,7 +720,7 @@
             fetchP("{% url 'employee-dashboard-gender' %}")
                 .then(r => r.json())
                 .then(data => {
-                    if (!data.genders.length) { document.querySelector('#chart-em-gender').innerHTML = emptyHtml('{% trans "No gender data" %}'); return; }
+                    if (!data.genders.length) { document.querySelector('#chart-em-gender').innerHTML = emptyHtml('{% trans "No gender data"|escapejs %}'); return; }
                     const genderColors = { male: '#3b82f6', female: '#ec4899', other: '#a855f7' };
                     new ApexCharts(document.querySelector('#chart-em-gender'), {
                         series: data.genders.map(g => g.count),
@@ -732,7 +732,7 @@
                         },
                         labels: data.genders.map(g => g.label),
                         colors: data.genders.map(g => genderColors[g.gender] || '#94a3b8'),
-                        plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                        plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total"|escapejs %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
                         stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                         legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light' },
@@ -743,7 +743,7 @@
             fetchP("{% url 'employee-dashboard-type' %}")
                 .then(r => r.json())
                 .then(data => {
-                    if (!data.types.length) { document.querySelector('#chart-em-type').innerHTML = emptyHtml('{% trans "No type data" %}'); return; }
+                    if (!data.types.length) { document.querySelector('#chart-em-type').innerHTML = emptyHtml('{% trans "No type data"|escapejs %}'); return; }
                     new ApexCharts(document.querySelector('#chart-em-type'), {
                         series: data.types.map(t => t.count),
                         chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
@@ -754,7 +754,7 @@
                         },
                         labels: data.types.map(t => t.type),
                         colors: COLORS,
-                        plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                        plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total"|escapejs %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
                         stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                         legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                         tooltip: { theme: isDark ? 'dark' : 'light' },
@@ -765,9 +765,9 @@
             fetchP("{% url 'employee-dashboard-position' %}")
                 .then(r => r.json())
                 .then(data => {
-                    if (!data.positions.length) { document.querySelector('#chart-em-position').innerHTML = emptyHtml('{% trans "No position data" %}'); return; }
+                    if (!data.positions.length) { document.querySelector('#chart-em-position').innerHTML = emptyHtml('{% trans "No position data"|escapejs %}'); return; }
                     new ApexCharts(document.querySelector('#chart-em-position'), {
-                        series: [{ name: '{% trans "Employees" %}', data: data.positions.map(p => p.count) }],
+                        series: [{ name: '{% trans "Employees"|escapejs %}', data: data.positions.map(p => p.count) }],
                         chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, cfg) => {
                                 const pos = data.positions[cfg.dataPointIndex];
@@ -789,9 +789,9 @@
             fetchP("{% url 'employee-dashboard-joining-trend' %}")
                 .then(r => r.json())
                 .then(data => {
-                    if (!data.months.length) { document.querySelector('#chart-em-joining').innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+                    if (!data.months.length) { document.querySelector('#chart-em-joining').innerHTML = emptyHtml('{% trans "No data"|escapejs %}'); return; }
                     new ApexCharts(document.querySelector('#chart-em-joining'), {
-                        series: [{ name: '{% trans "New Hires" %}', data: data.months.map(m => m.count) }],
+                        series: [{ name: '{% trans "New Hires"|escapejs %}', data: data.months.map(m => m.count) }],
                         chart: { type: 'bar', height: 260, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
                         colors: ['#E54F38'],
                         plotOptions: { bar: { borderRadius: 8, columnWidth: '45%' } },
@@ -810,11 +810,11 @@
                 .then(r => r.json())
                 .then(data => {
                     const container = document.getElementById('em-recent-list');
-                    if (!data.employees.length) { container.innerHTML = '<div class="em-panel__empty">{% trans "No employees" %}</div>'; return; }
+                    if (!data.employees.length) { container.innerHTML = '<div class="em-panel__empty">{% trans "No employees"|escapejs %}</div>'; return; }
                     container.innerHTML = data.employees.map(emp => {
                         const initials = emp.name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
                         const avatar = emp.avatar
-                            ? `<img src="${emp.avatar}" alt="{% trans '${emp.name}' %}">`
+                            ? `<img src="${emp.avatar}" alt="${emp.name}">`
                             : initials;
                         return `<a href="/employee/employee-view/${emp.id}/" class="em-emp-item">
                     <div class="em-emp-item__avatar">${avatar}</div>
@@ -831,17 +831,17 @@
                 .then(r => r.json())
                 .then(data => {
                     const container = document.getElementById('em-bday-list');
-                    if (!data.birthdays.length) { container.innerHTML = '<div class="em-panel__empty">{% trans "No upcoming birthdays" %}</div>'; return; }
+                    if (!data.birthdays.length) { container.innerHTML = '<div class="em-panel__empty">{% trans "No upcoming birthdays"|escapejs %}</div>'; return; }
                     container.innerHTML = data.birthdays.map(b => {
                         const avatar = b.avatar
-                            ? `<img src="${b.avatar}" alt="{% trans '${b.name}' %}">`
+                            ? `<img src="${b.avatar}" alt="${b.name}">`
                             : '🎂';
-                        const daysLabel = b.days_left === 0 ? '{% trans "Today!" %}' : b.days_left === 1 ? '{% trans "Tomorrow" %}' : `${b.days_left} {% trans "days" %}`;
+                        const daysLabel = b.days_left === 0 ? '{% trans "Today!"|escapejs %}' : b.days_left === 1 ? '{% trans "Tomorrow"|escapejs %}' : `${b.days_left} {% trans "days"|escapejs %}`;
                         return `<div class="em-bday-item">
-                    <div class="em-bday-item__avatar">${avatar}</div>
-                    <div class="em-bday-item__name">${b.name}</div>
-                    <div class="em-bday-item__date">${b.date}<br><span style="font-size:10px;opacity:0.7">${daysLabel}</span></div>
-                </div>`;
+                                    <div class="em-bday-item__avatar">${avatar}</div>
+                                    <div class="em-bday-item__name">${b.name}</div>
+                                    <div class="em-bday-item__date">${b.date}<br><span style="font-size:10px;opacity:0.7">${daysLabel}</span></div>
+                                </div>`;
                     }).join('');
                 });
 

@@ -21,14 +21,14 @@
                       const formattedErrorMessage = errorMessage.replace(/,\s*/g, '<br>');
                       const finalErrorMessage = formattedErrorMessage.replace(/-\s*/g, '<span class="material-symbols-outlined me-2" style="font-size: 14px;"">adjust</span>');
                       Swal.fire({
-                          icon: 'error',
-                          title: 'Error',
-                          html: `
-              <div style='text-align:left;'>
-                  <h5 class='mb-2 fw-bold ms-2'>{% trans "This employee is already related in," %}</h5>
-                  <p class='ms-2'>${finalErrorMessage}</p>
-              </div>
-              `,
+                        icon: 'error',
+                        title: 'Error',
+                        html: `
+                            <div style='text-align:left;'>
+                                <h5 class='mb-2 fw-bold ms-2'>{% trans "This employee is already related in,"|escapejs %}</h5>
+                                <p class='ms-2'>${finalErrorMessage}</p>
+                            </div>
+                        `,
                       });
                     });
                 </script>

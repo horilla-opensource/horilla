@@ -27,7 +27,7 @@ style="display: flex;">
 
 <script>
     $('#block-account').click(function() {
-    var message = '{% if instance.employee_user_id.is_active %}{% trans "Do you really want to prevent this employee from accessing and logging into this webpage?" %}{% else %}{% trans "Do you really want to allow this employee to access and log into this webpage?" %}{% endif %}';
+    var message = '{% if instance.employee_user_id.is_active %}{% trans "Do you really want to prevent this employee from accessing and logging into this webpage?"|escapejs %}{% else %}{% trans "Do you really want to allow this employee to access and log into this webpage?"|escapejs %}{% endif %}';
 
         Swal.fire({
             text: message,

@@ -1,8 +1,5 @@
-{% load basefilters %}
-{% load horillafilters %}
-{% load employee_filter %}
-{% load static %}
-{% load i18n %}
+{% load basefilters horillafilters employee_filter static i18n %}
+
 {% include 'filter_tags.html' %}
 {% if messages %}
 <div class="oh-wrapper">
@@ -39,11 +36,11 @@
                     <div class="oh-sticky-table__th">
                         {% trans "Employee" %}
                     </div>
-                    <div data-cell-index="1" data-cell-title='{% trans "Action Taken" %}' class="oh-sticky-table__th">{% trans "Action Taken" %}</div>
-                    <div data-cell-index="5" data-cell-title='{% trans "Login Block" %}' class="oh-sticky-table__th">{% trans "Login Block" %}</div>
-                    <div data-cell-index="2" data-cell-title='{% trans "Action Date" %}' class="oh-sticky-table__th">{% trans "Action Date" %}</div>
-                    <div data-cell-index="3" data-cell-title='{% trans "Attachments" %}' class="oh-sticky-table__th">{% trans "Attachments" %}</div>
-                    <div data-cell-index="4" data-cell-title='{% trans "Description" %}' class="oh-sticky-table__th">{% trans "Description" %}</div>
+                    <div data-cell-index="1" data-cell-title="{% trans "Action Taken" %}" class="oh-sticky-table__th">{% trans "Action Taken" %}</div>
+                    <div data-cell-index="5" data-cell-title="{% trans "Login Block" %}" class="oh-sticky-table__th">{% trans "Login Block" %}</div>
+                    <div data-cell-index="2" data-cell-title="{% trans "Action Date" %}" class="oh-sticky-table__th">{% trans "Action Date" %}</div>
+                    <div data-cell-index="3" data-cell-title="{% trans "Attachments" %}" class="oh-sticky-table__th">{% trans "Attachments" %}</div>
+                    <div data-cell-index="4" data-cell-title="{% trans "Description" %}" class="oh-sticky-table__th">{% trans "Description" %}</div>
                     {% if perms.employee.change_disciplinaryaction or perms.employee.delete_disciplinaryaction or perms.employee.add_disciplinaryaction %}
                         <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                     {% endif %}

@@ -1,7 +1,4 @@
-{% load i18n %}
-{% load static %}
-{% load basefilters %}
-{% load horillafilters %}
+{% load i18n static basefilters horillafilters %}
 <div class="oh-wrapper mt-4">
     <div class="oh-tabs">
         <ul class="oh-tabs__tablist">
@@ -140,7 +137,7 @@
                                                         type="submit"
                                                         class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                                                         title="{% trans 'Re-validate Request' %}"
-                                                        onclick="return confirm('{% trans "Are you sure want to cancel the request?" %}')"
+                                                        onclick="return confirm('{% trans "Are you sure want to cancel the request?"|escapejs %}')"
                                                         href="{% url 'cancel-validate-attendance-request' attendance.id %}"
                                                     >
                                                         <ion-icon name="close-circle-outline"></ion-icon>
@@ -406,7 +403,7 @@
                                                 {% if perms.attendance.delete_attendance %}
                                                     <form
                                                         action="{% url 'attendance-delete' attendance.id  %}"
-                                                        onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
+                                                        onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?"|escapejs %}')"
                                                         hx-target="#tab_contents"
                                                         method="post"
                                                         class="w-50"
