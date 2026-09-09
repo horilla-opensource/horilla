@@ -352,7 +352,7 @@
 
     function updateRefreshText() {
         const mins = Math.floor((Date.now() - lastRefresh) / 60000);
-        refreshText.textContent = mins < 1 ? '{% trans "Just now" %}' : mins + '{% trans "m ago" %}';
+        refreshText.textContent = mins < 1 ? '{% trans "Just now"|escapejs %}' : mins + '{% trans "m ago"|escapejs %}';
     }
     registerAutoRefresh(setInterval(updateRefreshText, 30000));
 
@@ -365,7 +365,7 @@
         localStorage.setItem(REFRESH_KEY, 'on');
         refreshDot.classList.add('on-refresh__dot--pulse');
         refreshToggle.textContent = '⟳';
-        refreshToggle.title = '{% trans "Auto-refresh ON (5 min)" %}';
+        refreshToggle.title = '{% trans "Auto-refresh ON (5 min)"|escapejs %}';
         // Wrapped so a hidden tab does not keep fetching; refreshes once on return.
         const refreshTick = autoRefreshWhenVisible(() => {
             lastRefresh = Date.now();
@@ -380,7 +380,7 @@
         localStorage.setItem(REFRESH_KEY, 'off');
         refreshDot.classList.remove('on-refresh__dot--pulse');
         refreshToggle.textContent = '⏸';
-        refreshToggle.title = '{% trans "Auto-refresh OFF" %}';
+        refreshToggle.title = '{% trans "Auto-refresh OFF"|escapejs %}';
         if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
     }
     refreshToggle.addEventListener('click', () => { if (autoRefreshOn) stopAutoRefresh(); else startAutoRefresh(); });
@@ -394,27 +394,27 @@
             document.getElementById('on-kpi-grid').innerHTML = `
                 <a href="{% url 'candidates-view' %}?start_onboard=true&created_at_from=${data.period_from_date}&created_at_till=${data.period_to_date}&filter_applied=on" class="on-kpi-card">
                     <div class="on-kpi-card__icon on-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg></div>
-                    <div class="on-kpi-card__label">{% trans "Onboarding" %}</div>
+                    <div class="on-kpi-card__label">{% trans "Onboarding"|escapejs %}</div>
                     <div class="on-kpi-card__value">${data.total_candidates}</div>
-                    <div class="on-kpi-card__sub">${data.in_progress} {% trans "in progress" %}</div>
+                    <div class="on-kpi-card__sub">${data.in_progress} {% trans "in progress"|escapejs %}</div>
                 </a>
                 <a href="{% url 'cbv-pipeline-onboarding' %}" class="on-kpi-card">
                     <div class="on-kpi-card__icon on-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-                    <div class="on-kpi-card__label">{% trans "Completed" %}</div>
+                    <div class="on-kpi-card__label">{% trans "Completed"|escapejs %}</div>
                     <div class="on-kpi-card__value">${data.completed_onboarding}</div>
-                    <div class="on-kpi-card__sub">{% trans "Finished onboarding" %}</div>
+                    <div class="on-kpi-card__sub">{% trans "Finished onboarding"|escapejs %}</div>
                 </a>
                 <a href="{% url 'cbv-pipeline-onboarding' %}" class="on-kpi-card">
                     <div class="on-kpi-card__icon on-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg></div>
-                    <div class="on-kpi-card__label">{% trans "Task Completion" %}</div>
+                    <div class="on-kpi-card__label">{% trans "Task Completion"|escapejs %}</div>
                     <div class="on-kpi-card__value">${data.task_completion}%</div>
-                    <div class="on-kpi-card__sub">${data.completed_tasks}/${data.total_tasks} {% trans "done" %}${data.stuck_tasks > 0 ? ' · <span class="on-badge on-badge--red">' + data.stuck_tasks + ' stuck</span>' : ''}</div>
+                    <div class="on-kpi-card__sub">${data.completed_tasks}/${data.total_tasks} {% trans "done"|escapejs %}${data.stuck_tasks > 0 ? ' · <span class="on-badge on-badge--red">' + data.stuck_tasks + ' stuck</span>' : ''}</div>
                 </a>
                 <a href="{% url 'recruitment-view' %}" class="on-kpi-card">
                     <div class="on-kpi-card__icon on-kpi-card__icon--purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
-                    <div class="on-kpi-card__label">{% trans "Recruitments" %}</div>
+                    <div class="on-kpi-card__label">{% trans "Recruitments"|escapejs %}</div>
                     <div class="on-kpi-card__value">${data.active_recruitments}</div>
-                    <div class="on-kpi-card__sub">{% trans "Active hiring" %}</div>
+                    <div class="on-kpi-card__sub">{% trans "Active hiring"|escapejs %}</div>
                 </a>`;
         });
     }
@@ -425,9 +425,9 @@
         fetchP("{% url 'onboarding-dashboard-stages' %}")
         .then(r => r.json())
         .then(data => {
-            if (!data.stages.length) { document.querySelector("#chart-on-stages").innerHTML = emptyHtml('{% trans "No onboarding stages" %}'); return; }
+            if (!data.stages.length) { document.querySelector("#chart-on-stages").innerHTML = emptyHtml('{% trans "No onboarding stages"|escapejs %}'); return; }
             renderChart('stage-pipeline', document.querySelector("#chart-on-stages"), {
-                series: [{ name: '{% trans "Candidates" %}', data: data.stages.map(s => s.count) }],
+                series: [{ name: '{% trans "Candidates"|escapejs %}', data: data.stages.map(s => s.count) }],
                 chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, cfg) => {
                         const stage = data.stages[cfg.dataPointIndex];
@@ -454,7 +454,7 @@
         .then(r => r.json())
         .then(data => {
             const total = data.statuses.reduce((a, s) => a + s.count, 0);
-            if (!total) { document.querySelector("#chart-on-tasks").innerHTML = emptyHtml('{% trans "No tasks" %}'); return; }
+            if (!total) { document.querySelector("#chart-on-tasks").innerHTML = emptyHtml('{% trans "No tasks"|escapejs %}'); return; }
             renderChart('task-status', document.querySelector("#chart-on-tasks"), {
                 series: data.statuses.map(s => s.count),
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
@@ -466,7 +466,7 @@
                 },
                 labels: data.statuses.map(s => s.label),
                 colors: data.statuses.map(s => taskColors[s.status] || '#94a3b8'),
-                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total"|escapejs %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
                 stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
@@ -480,7 +480,7 @@
         fetchP("{% url 'onboarding-dashboard-recruitment' %}")
         .then(r => r.json())
         .then(data => {
-            if (!data.recruitments.length) { document.querySelector("#chart-on-recruitment").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            if (!data.recruitments.length) { document.querySelector("#chart-on-recruitment").innerHTML = emptyHtml('{% trans "No data"|escapejs %}'); return; }
             renderChart('by-recruitment', document.querySelector("#chart-on-recruitment"), {
                 series: data.recruitments.map(r => r.count),
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
@@ -491,7 +491,7 @@
                 },
                 labels: data.recruitments.map(r => r.recruitment),
                 colors: COLORS.slice(0, data.recruitments.length),
-                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total"|escapejs %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
                 stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
@@ -505,9 +505,9 @@
         fetchP("{% url 'onboarding-dashboard-position' %}")
         .then(r => r.json())
         .then(data => {
-            if (!data.positions.length) { document.querySelector("#chart-on-position").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            if (!data.positions.length) { document.querySelector("#chart-on-position").innerHTML = emptyHtml('{% trans "No data"|escapejs %}'); return; }
             renderChart('by-position', document.querySelector("#chart-on-position"), {
-                series: [{ name: '{% trans "Candidates" %}', data: data.positions.map(p => p.count) }],
+                series: [{ name: '{% trans "Candidates"|escapejs %}', data: data.positions.map(p => p.count) }],
                 chart: { type: 'bar', height: 260, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, cfg) => {
                         const pos = data.positions[cfg.dataPointIndex];
@@ -533,9 +533,9 @@
         fetchP("{% url 'onboarding-dashboard-completion-trend' %}")
         .then(r => r.json())
         .then(data => {
-            if (!data.months.length || !data.months.some(m => m.count > 0)) { document.querySelector("#chart-completion-trend").innerHTML = emptyHtml('{% trans "No completions" %}'); return; }
+            if (!data.months.length || !data.months.some(m => m.count > 0)) { document.querySelector("#chart-completion-trend").innerHTML = emptyHtml('{% trans "No completions"|escapejs %}'); return; }
             renderChart('completion-trend', document.querySelector("#chart-completion-trend"), {
-                series: [{ name: '{% trans "Completed" %}', data: data.months.map(m => m.count) }],
+                series: [{ name: '{% trans "Completed"|escapejs %}', data: data.months.map(m => m.count) }],
                 chart: { type: 'bar', height: 260, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
                         const m = data.months[config.dataPointIndex];
@@ -570,7 +570,7 @@
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('on-candidates');
-            if (!data.candidates.length) { el.innerHTML = '<div class="on-info-panel__empty">{% trans "No onboarding candidates" %}</div>'; return; }
+            if (!data.candidates.length) { el.innerHTML = '<div class="on-info-panel__empty">{% trans "No onboarding candidates"|escapejs %}</div>'; return; }
             el.innerHTML = data.candidates.map(c => {
                 const initials = c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                 const avatarInner = c.profile ? `<img src="${c.profile}" alt="">` : initials;
@@ -587,7 +587,7 @@
                     </div>
                 </a>`;
             }).join('');
-        }).catch(() => { document.getElementById('on-candidates').innerHTML = '<div class="on-info-panel__empty">{% trans "No data" %}</div>'; });
+        }).catch(() => { document.getElementById('on-candidates').innerHTML = '<div class="on-info-panel__empty">{% trans "No data"|escapejs %}</div>'; });
     }
     loadCandidates();
 
@@ -597,13 +597,13 @@
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('on-my-tasks');
-            if (!data.tasks.length) { el.innerHTML = '<div class="on-info-panel__empty">{% trans "No tasks assigned to you" %}</div>'; return; }
+            if (!data.tasks.length) { el.innerHTML = '<div class="on-info-panel__empty">{% trans "No tasks assigned to you"|escapejs %}</div>'; return; }
             el.innerHTML = data.tasks.map(t => {
                 const color = t.progress >= 80 ? '#22c55e' : t.progress >= 40 ? '#f59e0b' : '#3b82f6';
                 return `<div class="on-cand-item">
                     <div class="on-cand-item__info">
                         <div class="on-cand-item__name">${t.title}</div>
-                        <div class="on-cand-item__detail">${t.stage} · ${t.done}/${t.total} {% trans "done" %}${t.stuck > 0 ? ' · <span style="color:#ef4444;">' + t.stuck + ' stuck</span>' : ''}</div>
+                        <div class="on-cand-item__detail">${t.stage} · ${t.done}/${t.total} {% trans "done"|escapejs %}${t.stuck > 0 ? ' · <span style="color:#ef4444;">' + t.stuck + ' stuck</span>' : ''}</div>
                     </div>
                     <div class="on-cand-item__progress">
                         <div class="on-cand-item__bar"><div class="on-cand-item__fill" style="width:${t.progress}%;background:${color};"></div></div>
@@ -611,7 +611,7 @@
                     </div>
                 </div>`;
             }).join('');
-        }).catch(() => { document.getElementById('on-my-tasks').innerHTML = '<div class="on-info-panel__empty">{% trans "No data" %}</div>'; });
+        }).catch(() => { document.getElementById('on-my-tasks').innerHTML = '<div class="on-info-panel__empty">{% trans "No data"|escapejs %}</div>'; });
     }
     loadMyTasks();
 
@@ -621,14 +621,14 @@
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('on-portal-status');
-            if (!data.portals.length) { el.innerHTML = '<div class="on-info-panel__empty">{% trans "No portal data" %}</div>'; return; }
+            if (!data.portals.length) { el.innerHTML = '<div class="on-info-panel__empty">{% trans "No portal data"|escapejs %}</div>'; return; }
             el.innerHTML = data.portals.map(p => {
                 const badge = p.used
-                    ? `<span class="on-badge on-badge--green">${p.visits} {% trans "visits" %}</span>`
-                    : '<span class="on-badge on-badge--amber">{% trans "Not accessed" %}</span>';
+                    ? `<span class="on-badge on-badge--green">${p.visits} {% trans "visits"|escapejs %}</span>`
+                    : '<span class="on-badge on-badge--amber">{% trans "Not accessed"|escapejs %}</span>';
                 return `<div class="on-cand-item"><div class="on-cand-item__info"><div class="on-cand-item__name">${p.name}</div></div>${badge}</div>`;
             }).join('');
-        }).catch(() => { document.getElementById('on-portal-status').innerHTML = '<div class="on-info-panel__empty">{% trans "No data" %}</div>'; });
+        }).catch(() => { document.getElementById('on-portal-status').innerHTML = '<div class="on-info-panel__empty">{% trans "No data"|escapejs %}</div>'; });
     }
     loadPortalStatus();
 

@@ -408,7 +408,7 @@
 
         const link = $(this);
         const confirmation = confirm(
-            "{% trans 'Are you sure you want to delete?' %}"
+            "{% trans 'Are you sure you want to delete?'|escapejs %}"
         );
 
         if (confirmation) {
@@ -424,7 +424,7 @@
             Swal.fire({
                 text: textMessage,
                 icon: "warning",
-                confirmButtonText: "Close",
+                confirmButtonText: "{% trans 'Close'|escapejs %}",
               })
         }else {
             $.ajax({
@@ -454,7 +454,7 @@
             Swal.fire({
                 text: textMessage,
                 icon: "warning",
-                confirmButtonText: "Close",
+                confirmButtonText: "{% trans 'Close'|escapejs %}",
               })
         }else {
             Swal.fire({

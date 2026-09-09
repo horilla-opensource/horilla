@@ -72,12 +72,12 @@
 				onclick="
 					event.preventDefault();
 					Swal.fire({
-						title: 'Are you sure?',
-						text: `{% trans 'Do you want to add this candidate to onboarding stage?' %}`,
+						title: '{% trans "Are you sure?"|escapejs %}',
+						text: `{% trans 'Do you want to add this candidate to onboarding stage?'|escapejs %}`,
 						icon: 'question',
 						showCancelButton: true,
-						confirmButtonText: `{% trans 'Yes' %}`,
-						cancelButtonText: `{% trans 'Cancel' %}`,
+						confirmButtonText: `{% trans 'Yes'|escapejs %}`,
+						cancelButtonText: `{% trans 'Cancel'|escapejs %}`,
 					}).then((result) => {
 						if (result.isConfirmed) {
 							$(this).closest('form').find('[type=submit]').click();
@@ -101,9 +101,9 @@
 				event.preventDefault();
 				Swal.fire({
 					icon: 'warning',
-					title: `{% trans 'Already Added!' %}`,
-					text: `{% trans 'Candidate already added to onboarding' %}.`,
-					confirmButtonText: `{% trans 'OK' %}`,
+					title: `{% trans 'Already Added!'|escapejs %}`,
+					text: `{% trans 'Candidate already added to onboarding'|escapejs %}.`,
+					confirmButtonText: `{% trans 'OK'|escapejs %}`,
 				});
 			"
 			style="cursor: default;"
