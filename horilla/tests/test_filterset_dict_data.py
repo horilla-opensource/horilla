@@ -37,7 +37,12 @@ class FilterSetDictDataTests(SimpleTestCase):
         today = datetime.date.today()
         for key in ("not_in_yet", "not_out_yet"):
             with self.subTest(key=key):
-                self._build(lambda: EmployeeFilter({key: today}))
+                # k=key binds the value per iteration. _build calls the lambda
+                # immediately so the late-binding never actually bites, but
+                # ruff B023 flags the shape and it is the shape that is wrong:
+                # the next person to defer the call would get both subtests
+                # running against "not_out_yet".
+                self._build(lambda k=key: EmployeeFilter({k: today}))
 
     def test_asset_history_filter_accepts_a_dict(self):
         self._build(lambda: AssetHistoryFilter({"returned_assets": "True"}))

@@ -3,6 +3,11 @@ repos:
     rev: v4.6.0
     hooks:
       - id: check-yaml
+        # --unsafe checks syntax without constructing tagged objects.
+        # docker-compose.prod.yml uses Compose's own `!override` merge tag,
+        # which PyYAML's safe loader has no constructor for, so the hook failed
+        # on a file that is valid Compose YAML. Every file is still parsed.
+        args: [--unsafe]
       - id: end-of-file-fixer
         exclude: ^.*/migrations/
       - id: trailing-whitespace
