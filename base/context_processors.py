@@ -19,6 +19,7 @@ from base.models import (
 )
 from base.urls import urlpatterns
 from employee.models import EmployeeGeneralSetting, ProfileEditFeature
+from horilla.__version__ import __version__
 from horilla.decorators import hx_request_required, login_required
 from horilla.http.response import HorillaRedirect
 from horilla.methods import get_horilla_model_class
@@ -472,3 +473,21 @@ def navbar_languages(request):
             return {"navbar_languages": languages, "show_language_switcher": True}
 
     return {"navbar_languages": [], "show_language_switcher": False}
+
+
+def horilla_version(request):
+    """
+    Expose the running product version to every template.
+
+    Until now `horilla/__version__.py` was read only by the build -- the Docker
+    label, and the CI check that the tag matches it. Nothing showed it to the
+    people running the product, so "which version are you on?" could not be
+    answered from the screen. Support threads answered it with a branch name,
+    which spans several releases and cannot say whether a given security fix is
+    present.
+
+    Deliberately not added to `/health/` or `/ready/`: both are unauthenticated
+    and publicly reachable, and a version string there hands any scanner the
+    exact set of advisories that apply.
+    """
+    return {"horilla_version": __version__}

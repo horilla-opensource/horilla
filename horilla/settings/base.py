@@ -328,6 +328,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 # Horilla dynamic context processors
                 "horilla.config.get_MENUS",
+                "base.context_processors.horilla_version",
                 "base.context_processors.get_companies",
                 "base.context_processors.white_labelling_company",
                 "base.context_processors.doc_base_url",

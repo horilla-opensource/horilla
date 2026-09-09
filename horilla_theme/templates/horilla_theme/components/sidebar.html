@@ -35,6 +35,27 @@
         transition-delay: 0.06s;
     }
 
+    /* Version marker. The nav above is a fixed calc() height and #sidebar is
+       overflow:hidden, so this block only exists on screen because that height
+       leaves room for it -- change one and change the other.
+
+       The word "Version" is hidden rather than faded when collapsed:
+       .oh-sidebar-label uses opacity, which keeps the text occupying width, and
+       in a 4rem rail that pushes the number itself out of view. Only the number
+       survives the collapse, centred. */
+    .sidebar-version__label {
+        display: none;
+    }
+    #sidebar:hover .sidebar-version__label,
+    #sidebar.sidebar-pinned .sidebar-version__label {
+        display: inline;
+    }
+    #sidebar:not(:hover):not(.sidebar-pinned) .sidebar-version {
+        text-align: center;
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+
     /* Hide open accordion subnavs when sidebar is collapsed so they
        don't bleed through the narrow sidebar as clipped text */
     #sidebar:not(:hover):not(.sidebar-pinned) .sidebar-subnav:not(.hidden) {
@@ -390,8 +411,14 @@
        tablet width, keep the sidebar in its collapsed icon rail regardless of
        pin state; hover/tap still reveals the flyout submenu for navigation. */
     @media (max-width: 991.98px) {
+        /* Every state, :hover included. The base rule is `#sidebar:hover`,
+           which outranks a bare `#sidebar` here regardless of the media query,
+           so hovering expanded the rail to 13rem while .oh-main-content kept
+           its 4rem margin -- 144px of the page vanished underneath it. */
         #sidebar,
-        #sidebar.sidebar-pinned {
+        #sidebar:hover,
+        #sidebar.sidebar-pinned,
+        #sidebar.sidebar-pinned:hover {
             width: 4rem !important;
         }
         #sidebar .oh-sidebar-label,
@@ -401,10 +428,14 @@
             opacity: 0 !important;
             pointer-events: none !important;
         }
+        /* Labels stay hidden even on hover: there is no room in a 4rem rail,
+           and navigation at this width is the hover flyout, which is what the
+           breakpoint was written for. Revealing them here was what made the
+           rail look broken -- text with nowhere to go. */
         #sidebar:hover .oh-sidebar-label,
         #sidebar:hover .sidebar-chevron {
-            opacity: 1 !important;
-            pointer-events: auto !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
         }
         .oh-main-content,
         #sidebar.sidebar-pinned ~ .oh-main-content {
@@ -417,6 +448,73 @@
         #sidebar ~ #floating-buttons .fab-container,
         #sidebar.sidebar-pinned ~ #floating-buttons .fab-container {
             left: 4rem !important;
+        }
+        #sidebar .sidebar-version__label,
+        #sidebar:hover .sidebar-version__label,
+        #sidebar.sidebar-pinned .sidebar-version__label {
+            display: none;
+        }
+        #sidebar .sidebar-version {
+            text-align: center;
+            padding-left: 0.25rem;
+            padding-right: 0.25rem;
+        }
+        /* A pinned sidebar is forced to the 4rem rail above, but every
+           collapsed-rail rule is keyed on :not(.sidebar-pinned), so none of
+           them applied: the items kept their 13rem layout squeezed into 64px
+           -- 31px-wide square tiles with the icon jammed against the left edge
+           instead of 40px centred circles. Below this breakpoint a pinned,
+           unhovered sidebar has to be styled as the rail it is being rendered
+           as. Pre-existing; visible only once the viewport crosses 992px with
+           the sidebar pinned. */
+        #sidebar > div {
+            padding-right: 0.25rem !important;
+            padding-left: 0.25rem !important;
+        }
+        #sidebar nav > * + * {
+            margin-top: 0.625rem !important;
+        }
+        #sidebar nav {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        #sidebar nav::-webkit-scrollbar {
+            display: none;
+        }
+        #sidebar > div > div:first-child {
+            justify-content: center !important;
+            gap: 0 !important;
+        }
+        #sidebar > div > div:first-child > div {
+            flex: 0 0 auto !important;
+            justify-content: center !important;
+            gap: 0 !important;
+        }
+        #sidebar > div > div:first-child img.oh-sidebar-label {
+            flex: 0 0 auto !important;
+            width: 2rem !important;
+            height: 2rem !important;
+            overflow: visible !important;
+            opacity: 1 !important;
+        }
+        #sidebar .sideboxmain {
+            justify-content: center !important;
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            gap: 0 !important;
+            border-radius: 9999px !important;
+        }
+        #sidebar .oh-sidebar-label,
+        #sidebar .sidebar-chevron {
+            flex: 0 0 0 !important;
+            width: 0 !important;
+            overflow: hidden !important;
+        }
+        #sidebar .sidebar-subnav:not(.hidden) {
+            display: none !important;
         }
         #sidebar:not(:hover) #sidebarPinBtn {
             display: none !important;
@@ -526,7 +624,7 @@
         </script>
 
         <nav
-            class="space-y-1 overflow-hidden overflow-y-auto h-[calc(100vh_-_95px)] sidebar-scroll"
+            class="space-y-1 overflow-hidden overflow-y-auto h-[calc(100vh_-_140px)] sidebar-scroll"
             role="navigation"
             aria-label="{% trans 'Main navigation' %}"
         >
@@ -580,6 +678,19 @@
             {% comment %} {{ request.active_company }} {% endcomment %}
             {% comment %} {% include "horilla_theme/components/sidebar/bottom_menu.html" %} {% endcomment %}
         </nav>
+        {% comment %}
+            Version marker. Every support thread starts with "which version are
+            you on?", and a branch name does not answer it -- one branch spans
+            several releases, and only the release number says whether a given
+            security fix is present. Putting it here means any screenshot
+            answers the question without anyone having to ask.
+            Collapses to just the number when the sidebar is unpinned.
+        {% endcomment %}
+        <div class="sidebar-version px-4 pt-3 pb-6 border-t border-t-dark-50 text-[11px] leading-none text-[#999] select-text"
+             title="{% trans 'Horilla HR version' %} {{ horilla_version }}">
+            <span class="sidebar-version__label">{% trans "Version" %}</span>
+            <span class="font-medium">{{ horilla_version }}</span>
+        </div>
     </div>
     <!-- Flyout panel: populated and positioned by JS on hover -->
     <div id="sidebarFlyout">

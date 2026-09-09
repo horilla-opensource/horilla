@@ -74,4 +74,34 @@
             </div>
         </div>
     {% endif %}
+    {% comment %}
+        About. Unpermissioned on purpose -- the page is @login_required and
+        every signed-in user benefits from being able to read their own version
+        back when reporting a problem. Nothing here is sensitive to an
+        authenticated user; the version is deliberately kept out of /health/
+        and /ready/, which are public.
+    {% endcomment %}
+    <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+        <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">
+            {% trans "About" %}
+        </h5>
+        <div class="p-4">
+            <div class="flex items-center justify-between flex-wrap gap-3">
+                <div>
+                    <p class="text-sm text-[#333]">
+                        {% trans "Horilla HR" %}
+                        <span class="font-semibold select-text">{{ horilla_version }}</span>
+                    </p>
+                    <p class="text-xs text-gray-500 mt-1">
+                        {% trans "Quote this version when reporting a problem." %}
+                    </p>
+                </div>
+                <a href="https://github.com/horilla/horilla-hr/releases/tag/{{ horilla_version }}"
+                   target="_blank" rel="noopener noreferrer"
+                   class="text-xs text-primary-600 hover:underline">
+                    {% trans "Release notes" %}
+                </a>
+            </div>
+        </div>
+    </div>
 {% endblock settings %}
