@@ -187,7 +187,7 @@
 
                                 if (json.success_count > 0) {
                                     Swal.fire({
-                                        text: `${json.success_count} Employees Imported Successfully`,
+                                        text: json.success_count + " {% trans 'Employees Imported Successfully'|escapejs %}",
                                         icon: "success",
                                         showConfirmButton: false,
                                         timer: 3000,
@@ -202,14 +202,12 @@
                         }
                         if (!$(".file-xlsx-validation").length) {
                             swal.fire({
-                                text: `You have ${errorCount} errors. Do you want to download the error list?`,
+                                text: "{% trans 'You have'|escapejs %} " + errorCount + " {% trans 'errors. Do you want to download the error list?'|escapejs %}",
                                 icon: "error",
                                 showCancelButton: true,
                                 showDenyButton: true,
-                                confirmButtonText:
-                                    "Download error list & Skip Import",
-                                denyButtonText:
-                                    "Downlod error list & Continue Import",
+                                confirmButtonText: "{% trans 'Download error list & Skip Import'|escapejs %}",
+                                denyButtonText: "{% trans 'Downlod error list & Continue Import'|escapejs %}",
                                 cancelButtonText: i18nMessages.cancel,
                                 confirmButtonColor: "#008000",
                                 denyButtonColor: "#6c757d",
@@ -252,7 +250,7 @@
                                             xhr
                                         ) {
                                             Swal.fire({
-                                                text: `Rotating Shifts Imported Successfully`,
+                                                text: "{% trans 'Rotating Shifts Imported Successfully'|escapejs %}",
                                                 icon: "success",
                                                 showConfirmButton: false,
                                                 timer: 3000,
