@@ -72,7 +72,7 @@
                     showCancelButton: true,
                     confirmButtonColor: '#008000',
                     cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Approve',
+                    confirmButtonText: '{% trans "Approve"|escapejs %}',
                     cancelButtonText: i18nMessages.cancel
                 }).then(function(result) {
                     if (result.isConfirmed) {
