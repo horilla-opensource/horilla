@@ -324,6 +324,28 @@ class HorillaFilterSet(FilterSet):
         if request:
             setattr(request, "is_filtering", True)
 
+    def _data_getlist(self, key):
+        """
+        Read a possibly-multi-valued key out of ``self.data``.
+
+        django-filter accepts any mapping as ``data``, and several dashboard
+        call sites pass a plain dict -- ``EmployeeFilter({"not_in_yet": today})``
+        in the offline/online and not-in-yet cards, ``AssetHistoryFilter``,
+        ``ReimbursementFilter``. A plain dict has no ``getlist``, so those
+        endpoints raised ``AttributeError``, returned a 500, and left the
+        dashboard card they feed spinning on "Loading..." forever
+        (CybroOdooDev/Horilla#3313).
+
+        Reading through one accessor rather than calling ``getlist`` at six
+        sites means the next FilterSet constructed from a dict cannot
+        reintroduce this.
+        """
+        data = self.data or {}
+        if hasattr(data, "getlist"):
+            return data.getlist(key)
+        value = data.get(key, [])
+        return list(value) if isinstance(value, (list, tuple)) else [value]
+
     def _apply_ajax_fields(self):
         """
         Per-instance half of `ajax_fields`: swap in the AJAX widget and
@@ -338,7 +360,7 @@ class HorillaFilterSet(FilterSet):
             field = self.form.fields.get(field_name)
             if field is None:
                 continue
-            selected_values = self.data.getlist(field_name) if self.data else []
+            selected_values = self._data_getlist(field_name)
             field.widget = HorillaAjaxSelectWidget(
                 # reverse_lazy, not reverse: some FilterSets are
                 # instantiated at class-body time (e.g. a NavView's
@@ -409,9 +431,9 @@ class HorillaFilterSet(FilterSet):
         if not self.data:
             return []
         registry = {f["key"]: f for f in self.custom_filter_fields}
-        keys = self.data.getlist("custom_field")
-        lookups = self.data.getlist("custom_lookup")
-        values = self.data.getlist("custom_value")
+        keys = self._data_getlist("custom_field")
+        lookups = self._data_getlist("custom_lookup")
+        values = self._data_getlist("custom_value")
         ajax_registry = getattr(self, "CUSTOM_FILTER_AJAX_FIELDS", {})
         rows = []
         for key, lookup, value in zip(keys, lookups, values):
@@ -448,9 +470,9 @@ class HorillaFilterSet(FilterSet):
         if not self.data:
             return queryset
         registry = {f["key"]: f for f in self.custom_filter_fields}
-        keys = self.data.getlist("custom_field")
-        lookups = self.data.getlist("custom_lookup")
-        values = self.data.getlist("custom_value")
+        keys = self._data_getlist("custom_field")
+        lookups = self._data_getlist("custom_lookup")
+        values = self._data_getlist("custom_value")
         for key, lookup, value in zip(keys, lookups, values):
             if not key or not value:
                 continue
