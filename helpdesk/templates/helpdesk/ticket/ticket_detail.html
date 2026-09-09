@@ -852,7 +852,7 @@
                     $("#ohMessages").append(`
                 <div class="oh-alert-container">
                 <div class="oh-alert oh-alert--animated oh-alert--danger">
-                {% trans "Something went wrong, the status was not updated." %}
+                {% trans "Something went wrong, the status was not updated."|escapejs %}
                 </div>
                 </div>`);
                 },

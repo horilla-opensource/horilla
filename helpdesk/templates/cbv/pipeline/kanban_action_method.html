@@ -84,7 +84,7 @@
             >
                 <a
                     href = "{% url 'ticket-delete' ticket.id %}"
-                    onsubmit="return confirm('{% trans 'Are you sure you want to delete	this Ticket?' %}');"
+                    onsubmit="return confirm('{% trans 'Are you sure you want to delete	this Ticket?'|escapejs %}');"
                 >
                     {% trans 'Delete' %}
                 </a>

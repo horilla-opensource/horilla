@@ -88,7 +88,7 @@
             <a
                 href = "{% url 'ticket-delete' ticket.id %}"
                 class="oh-btn oh-btn--danger oh-btn--sq-sm"
-                onclick="return confirm('{% trans 'Are you sure you want to delete	this Ticket?' %}');"
+                onclick="return confirm('{% trans 'Are you sure you want to delete	this Ticket?'|escapejs %}');"
                 title="{% trans 'Delete' %}"
             >
                 <ion-icon

@@ -37,7 +37,7 @@
 							<form
 								action="{% url 'department-manager-delete' manager.id %}"
 								class="w-50"
-								onsubmit="return confirm('{% trans "Are you sure you want to remove this department manager?" %}');"
+								onsubmit="return confirm('{% trans "Are you sure you want to remove this department manager?"|escapejs %}');"
 								method='post'>
 								{% csrf_token %}
 								<button

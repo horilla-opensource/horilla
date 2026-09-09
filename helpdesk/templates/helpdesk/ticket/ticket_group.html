@@ -265,7 +265,7 @@
                                                             <form
                                                                 action="{% url 'ticket-delete' ticket.id %}"
                                                                 class="w-50"
-                                                                onsubmit="return confirm('{% trans 'Are you sure you want to delete	this Ticket?' %}')"
+                                                                onsubmit="return confirm('{% trans 'Are you sure you want to delete	this Ticket?'|escapejs %}')"
                                                                 method="post"
                                                                 onclick="event.stopPropagation()"
                                                             >
@@ -683,7 +683,7 @@
                                                             <form
                                                                 action="{% url 'ticket-delete' ticket.id %}"
                                                                 class="w-50"
-                                                                onsubmit="return confirm('{% trans 'Are you sure you want to delete	this Ticket?' %}')"
+                                                                onsubmit="return confirm('{% trans 'Are you sure you want to delete	this Ticket?'|escapejs %}')"
                                                                 method="post"
                                                                 onclick="event.stopPropagation()"
                                                             >
@@ -1101,7 +1101,7 @@
                                                             <form
                                                                 action="{% url 'ticket-delete' ticket.id %}"
                                                                 class="w-50"
-                                                                onsubmit="return confirm('{% trans 'Are you sure you want to delete	this Ticket?' %}')"
+                                                                onsubmit="return confirm('{% trans 'Are you sure you want to delete	this Ticket?'|escapejs %}')"
                                                                 method="post"
                                                                 onclick="event.stopPropagation()"
                                                             >
