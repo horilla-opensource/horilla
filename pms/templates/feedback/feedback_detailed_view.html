@@ -174,7 +174,7 @@
                                         <form
                                             action="{% url 'feedback-archive' id=feedback.id %}"
                                             method="post"
-                                            onsubmit="return confirm('{% trans "Do you want archive this Feedback ?" %}')"
+                                            onsubmit="return confirm('{% trans "Do you want archive this Feedback ?"|escapejs %}')"
                                         >
                                             <button
                                                 class="oh-btn w-100"
@@ -189,7 +189,7 @@
                                             <form
                                                 action="{% url 'feedback-delete' id=feedback.id %}"
                                                 method="post"
-                                                onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')"
+                                                onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?"|escapejs %}')"
                                             >
                                                 {% csrf_token %}
                                                 <button
@@ -774,7 +774,7 @@
               document.execCommand("copy");
               $temp.remove();
               Swal.fire({
-                text: `Link copied ${link}`,
+                text: "{% trans 'Link copied'|escapejs %} " + link,
                 icon: "success",
                 showConfirmButton: false,
                 timer: 3000, // Set the timer to 3000 milliseconds (3 seconds)

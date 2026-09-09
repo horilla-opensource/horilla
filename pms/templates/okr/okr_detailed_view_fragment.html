@@ -230,8 +230,8 @@
       if (currentValue < 0) {
         Swal.fire({
           icon: "error",
-          title: "Oops...",
-          text: "Current Value Cannot be -ve",
+          title: "{% trans 'Oops...'|escapejs %}",
+          text: "{% trans 'Current Value Cannot be -ve'|escapejs %}",
           timer: 3000,
           timerProgressBar: true,
           showConfirmButton: false,

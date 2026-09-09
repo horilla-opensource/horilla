@@ -192,7 +192,7 @@
                 confirmationMessage = confirmationMessage.replace(/\n/g, '<br />');
 
                 Swal.fire({
-                    title: 'Are you sure?',
+                    title: '{% trans "Are you sure?"|escapejs %}',
                     html: confirmationMessage,
                     icon: 'warning',
                     showCancelButton: true,

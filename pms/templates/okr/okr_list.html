@@ -390,7 +390,7 @@
                                                                             {% if objective.archive %}
                                                                                 <form
                                                                                     action='{% url "objective-archive" objective.id %}'
-                                                                                    onsubmit="return confirm('{% trans "Do you want to unarchive this objective?" %}')"
+                                                                                    onsubmit="return confirm('{% trans "Do you want to unarchive this objective?"|escapejs %}')"
                                                                                     method="post"
                                                                                     style="display: contents; width: 100%"
                                                                                 >
@@ -408,7 +408,7 @@
                                                                             {% else %}
                                                                                 <form
                                                                                     action='{% url "objective-archive" objective.id %}'
-                                                                                    onsubmit="return confirm('{% trans "Do you want to archive this objective?" %}')"
+                                                                                    onsubmit="return confirm('{% trans "Do you want to archive this objective?"|escapejs %}')"
                                                                                     method="post"
                                                                                     style="display: contents; width: 100%"
                                                                                 >
@@ -428,7 +428,7 @@
                                                                         {% if perms.pms.delete_objective %}
                                                                             <form
                                                                                 action='{% url "objective-delete" objective.id %}'
-                                                                                onsubmit="return confirm('{% trans "Are you sure to delete this objective?" %}')"
+                                                                                onsubmit="return confirm('{% trans "Are you sure to delete this objective?"|escapejs %}')"
                                                                                 method="post"
                                                                                 style="display: contents; width: 100%"
                                                                             >
@@ -727,7 +727,7 @@
                                                                             {% if objective.archive %}
                                                                                 <form
                                                                                     action='{% url "archive-employee-objective" objective.id %}'
-                                                                                    onsubmit="return confirm('{% trans "Do you want to unarchive this objective?" %}')"
+                                                                                    onsubmit="return confirm('{% trans "Do you want to unarchive this objective?"|escapejs %}')"
                                                                                     method="post"
                                                                                     style="display: contents; width: 100%"
                                                                                 >
@@ -745,7 +745,7 @@
                                                                             {% else %}
                                                                                 <form
                                                                                     action='{% url "archive-employee-objective" objective.id %}'
-                                                                                    onsubmit="return confirm('{% trans "Do you want to archive this objective?" %}')"
+                                                                                    onsubmit="return confirm('{% trans "Do you want to archive this objective?"|escapejs %}')"
                                                                                     method="post"
                                                                                     style="display: contents; width: 100%"
                                                                                 >
@@ -765,7 +765,7 @@
                                                                         {% if perms.pms.delete_objective %}
                                                                             <form
                                                                                 action='{% url "delete-employee-objective" objective.id %}'
-                                                                                onsubmit="return confirm('{% trans "Are you sure to delete this objective?" %}')"
+                                                                                onsubmit="return confirm('{% trans "Are you sure to delete this objective?"|escapejs %}')"
                                                                                 method="post"
                                                                                 style="display: contents; width: 100%"
                                                                             >

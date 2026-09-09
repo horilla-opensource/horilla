@@ -18,7 +18,7 @@
                 {% if instance.get_employee_objective.archive %}
                     <form
                         hx-post='{% url "archive-employee-objective" instance.get_employee_objective.id %}?detail_view=True'
-                        hx-confirm='{% trans "Do you want to unarchive this employee objective?" %}'
+                        hx-confirm="{% trans 'Do you want to unarchive this employee objective?' %}"
                         hx-swap="innerHTML"
                         hx-target="#tr{{ instance.id }}"
                         style="display: contents; width: 100%"
@@ -35,7 +35,7 @@
                 {% else %}
                     <form
                         hx-post='{% url "archive-employee-objective" instance.get_employee_objective.id %}?detail_view=True'
-                        hx-confirm='{% trans "Do you want to archive this employee objective?" %}'
+                        hx-confirm="{% trans 'Do you want to archive this employee objective?' %}"
                         hx-swap="innerHTML"
                         hx-target="#tr{{ instance.id }}"
                         style="display: contents; width: 100%"

@@ -36,7 +36,7 @@
                 method="post"
                 hx-post="{% url 'feedback-archive' id=instance.id %}"
                 hx-swap="none"
-                hx-confirm='{% if instance.archive %}{% trans "Are you sure you want to Un-archive this feedback?" %}{% else %}{% trans "Are you sure you want to archive this feedback?" %}{% endif %}'
+                hx-confirm="{% if instance.archive %}{% trans 'Are you sure you want to Un-archive this feedback?' %}{% else %}{% trans 'Are you sure you want to archive this feedback?' %}{% endif %}"
                 style="display: contents"
             >
                 {% csrf_token %}
@@ -98,7 +98,7 @@
                 method="post"
                 hx-post="{% url 'feedback-archive' id=instance.id %}"
                 hx-swap="none"
-                hx-confirm='{% if instance.archive %}{% trans "Are you sure you want to Un-archive this feedback?" %}{% else %}{% trans "Are you sure you want to archive this feedback?" %}{% endif %}'
+                hx-confirm="{% if instance.archive %}{% trans 'Are you sure you want to Un-archive this feedback?' %}{% else %}{% trans 'Are you sure you want to archive this feedback?' %}{% endif %}"
                 style="display: contents"
             >
                 {% csrf_token %}

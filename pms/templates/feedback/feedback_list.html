@@ -261,7 +261,7 @@
                                                         <form
                                                             action="{% url 'feedback-delete' id=feedback.id %}"
                                                             method="post"
-                                                            onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')"
+                                                            onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?"|escapejs %}')"
                                                             style="display: contents"
                                                         >
                                                             {% csrf_token %}
@@ -666,7 +666,7 @@
                                                         <form
                                                             action="{% url 'feedback-delete' id=feedback.id %}"
                                                             method="post"
-                                                            onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')"
+                                                            onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?"|escapejs %}')"
                                                             style="display: contents"
                                                         >
                                                             {% csrf_token %}
@@ -875,7 +875,7 @@
                                                     <form
                                                         action="{% url 'delete-anonymous-feedback' obj_id=feedback.id %}"
                                                         method="post"
-                                                        onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')"
+                                                        onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?"|escapejs %}')"
                                                         style="display: contents"
                                                     >
                                                         {% csrf_token %}

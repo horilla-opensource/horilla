@@ -187,8 +187,8 @@
         if (prgressPercentage < 0) {
             Swal.fire({
                 icon: 'error',
-                title: 'Oops...',
-                text: 'Current Value Cannot be -ve',
+                title: '{% trans "Oops..."|escapejs %}',
+                text: '{% trans "Current Value Cannot be -ve"|escapejs %}',
                 timer: 3000, // Display the alert for 3 seconds
                 timerProgressBar: true, // Show the progress bar
                 showConfirmButton: false // Hide the "OK" button

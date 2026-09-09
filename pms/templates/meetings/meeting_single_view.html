@@ -127,7 +127,7 @@
             {% if perms.pms.delete_meetings %}
                 <form
                     action="{% url 'meetings-delete' meeting.id %}"
-                    onsubmit="return confirm('{% trans "Are you sure to delete this meeting?" %}')"
+                    onsubmit="return confirm('{% trans "Are you sure to delete this meeting?"|escapejs %}')"
                     method="post"
                     style="display: contents; width: 100%"
                 >

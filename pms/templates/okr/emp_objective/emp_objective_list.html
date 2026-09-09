@@ -172,7 +172,7 @@
                                                             <li class="oh-dropdown__item">
                                                                 <a
                                                                     class="fw-light"
-                                                                    onclick="return confirm(`{% trans 'Do you want to un-archive this employee objective?' %}`)"
+                                                                    onclick="return confirm(`{% trans 'Do you want to un-archive this employee objective?'|escapejs %}`)"
                                                                     href='{% url "archive-employee-objective" emp_objective.id %}?single_view=False'
                                                                     hx-target="#emp_objective_card"
                                                                 >{% trans "Unarchive" %}</a>
@@ -181,7 +181,7 @@
                                                             <li class="oh-dropdown__item">
                                                                 <a
                                                                     class="fw-light"
-                                                                    onclick="return confirm(`{% trans 'Do you want to archive this employee objective?' %}`)"
+                                                                    onclick="return confirm(`{% trans 'Do you want to archive this employee objective?'|escapejs %}`)"
                                                                     href='{% url "archive-employee-objective" emp_objective.id %}?single_view=False'
                                                                     hx-target="#emp_objective_card"
                                                                 >{% trans "Archive" %}</a>
