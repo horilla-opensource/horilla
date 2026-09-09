@@ -202,7 +202,7 @@
                                                     {% endif %}
                                                 {% endif %}
                                                 {% if perms.payroll.delete_reimbursement %}
-                                                    <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="event.stopPropagation();return confirm('{% trans "Do you want to delete this record?" %}')"
+                                                    <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="event.stopPropagation();return confirm('{% trans "Do you want to delete this record?"|escapejs %}')"
                                                         class='w-100 oh-btn oh-btn--danger' title='{% trans "Delete" %}'>
 
                                                         <ion-icon name="trash-outline"></ion-icon>
@@ -430,7 +430,7 @@
                                         hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=ad_to_encash"
                                         hx-target="#reimbursementContainer"
                                     >{% trans "Available days to encash" %}</div>
-                                    <div data-cell-index="16" data-cell-title='{% trans "carryforward to encash" %}'
+                                    <div data-cell-index="16" data-cell-title="{% trans 'carryforward to encash' %}"
                                         class="oh-sticky-table__th {% if request.sort_option.order == '-cfd_to_encash' %}arrow-up {% elif request.sort_option.order == 'cfd_to_encash' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                         hx-get="{% url 'search-reimbursement' %}?{{pd}}&sortby=cfd_to_encash"
                                         hx-target="#reimbursementContainer"
@@ -543,7 +543,7 @@
                                                         {% endif %}
                                                     {% endif %}
                                                     {% if perms.payroll.delete_reimbursement %}
-                                                        <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('{% trans "Do you want to delete this record?" %}')"
+                                                        <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('{% trans "Do you want to delete this record?"|escapejs %}')"
                                                             class='w-100 oh-btn oh-btn--danger' title='{% trans "Delete" %}'>
 
                                                             <ion-icon name="trash-outline"></ion-icon>
@@ -869,7 +869,7 @@
                                                         {% endif %}
                                                     {% endif %}
                                                     {% if perms.payroll.delete_reimbursement %}
-                                                        <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('{% trans "Do you want to delete this record?" %}')"
+                                                        <a href="{% url "delete-reimbursement" %}?ids={{req.id}}" onclick="return confirm('{% trans "Do you want to delete this record?"|escapejs %}')"
                                                             class='w-100 oh-btn oh-btn--danger' title='{% trans "Delete" %}'>
 
                                                             <ion-icon name="trash-outline"></ion-icon>
@@ -1054,7 +1054,7 @@
                 confirmButtonColor: "#008000",
                 cancelButtonColor: "#6c757d",
                 confirmButtonText: i18nMessages.confirm,
-                cancelButtonText: "Close",
+                cancelButtonText: "{% trans 'Close'|escapejs %}",
             }).then((result) => {
                 if (result.isConfirmed) {
                     if (approve) {

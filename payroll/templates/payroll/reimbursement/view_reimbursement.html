@@ -78,7 +78,7 @@
                 confirmButtonColor: "#008000",
                 cancelButtonColor: "#6c757d",
                 confirmButtonText: i18nMessages.confirm,
-                cancelButtonText: "Close",
+                cancelButtonText: "{% trans 'Close'|escapejs %}",
             }).then((result) => {
                 if (result.isConfirmed) {
                     if (approve) {
