@@ -423,7 +423,7 @@
                                                         <a
                                                             type="submit"
                                                             href="{% url 'leave-allocation-request-approve' leave_allocation_request.id %}"
-                                                            onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
+                                                            onclick="return confirm('{% trans "Do you want to approve this request?"|escapejs %}')"
                                                             title="{% trans 'Approve' %}"
                                                             class="oh-btn oh-btn--success w-100"
                                                         >

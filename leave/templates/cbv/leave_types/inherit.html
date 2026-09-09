@@ -38,11 +38,11 @@
             });
 
             $container.html(
-                '<label class="oh-label d-block mt-3">{% trans "Leave Days" %}</label>' +
+                '<label class="oh-label d-block mt-3">{% trans "Leave Days"|escapejs %}</label>' +
                 '<table class="w-100" style="border-collapse: collapse;">' +
                 '<thead><tr>' +
-                '<th class="p-2 text-start">{% trans "Employee" %}</th>' +
-                '<th class="p-2 text-start">{% trans "Leave Days" %}</th>' +
+                '<th class="p-2 text-start">{% trans "Employee"|escapejs %}</th>' +
+                '<th class="p-2 text-start">{% trans "Leave Days"|escapejs %}</th>' +
                 '</tr></thead>' +
                 '<tbody>' + rows + '</tbody>' +
                 '</table>'

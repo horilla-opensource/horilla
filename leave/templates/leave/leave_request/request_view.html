@@ -352,7 +352,7 @@
     function leaveRequestConfirm(message, event) {
         // Define the select box options
         event.preventDefault()
-        var question = '<p> {% trans "Would you like to proceed?" %}</p>'
+        var question = '<p> {% trans "Would you like to proceed?"|escapejs %}</p>'
         html = '<p>' + message + '</p>'
         html = html + "<div align='center'>" + question + "</div>"
         Swal.fire({
@@ -362,7 +362,7 @@
             confirmButtonColor: '#008000',
             cancelButtonColor: '#6c757d',
             confirmButtonText: i18nMessages.confirm,
-            cancelButtonText: "Close"
+            cancelButtonText: "{% trans 'Close'|escapejs %}"
         }).then((result) => {
             if (result.isConfirmed) {
                 if (event.target.tagName.toLowerCase() === "form") {

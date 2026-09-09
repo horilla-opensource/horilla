@@ -459,7 +459,7 @@
 
     function updateRefreshText() {
         const mins = Math.floor((Date.now() - lastRefresh) / 60000);
-        refreshText.textContent = mins < 1 ? '{% trans "Just now" %}' : mins + '{% trans "m ago" %}';
+        refreshText.textContent = mins < 1 ? '{% trans "Just now"|escapejs %}' : mins + '{% trans "m ago"|escapejs %}';
     }
     registerAutoRefresh(setInterval(updateRefreshText, 30000));
 
@@ -468,7 +468,7 @@
         localStorage.setItem(REFRESH_KEY, 'on');
         refreshDot.classList.add('ld-refresh__dot--pulse');
         refreshToggle.textContent = '⟳';
-        refreshToggle.title = '{% trans "Auto-refresh ON (5 min)" %}';
+        refreshToggle.title = '{% trans "Auto-refresh ON (5 min)"|escapejs %}';
         // Wrapped so a hidden tab does not keep fetching; refreshes once on return.
         const refreshTick = autoRefreshWhenVisible(() => {
             lastRefresh = Date.now();
@@ -483,7 +483,7 @@
         localStorage.setItem(REFRESH_KEY, 'off');
         refreshDot.classList.remove('ld-refresh__dot--pulse');
         refreshToggle.textContent = '⏸';
-        refreshToggle.title = '{% trans "Auto-refresh OFF" %}';
+        refreshToggle.title = '{% trans "Auto-refresh OFF"|escapejs %}';
         if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
     }
     refreshToggle.addEventListener('click', () => { if (autoRefreshOn) stopAutoRefresh(); else startAutoRefresh(); });
@@ -508,27 +508,27 @@
             document.getElementById('ld-kpi-grid').innerHTML = `
                 <a href="${pendingUrl}" class="ld-kpi-card">
                     <div class="ld-kpi-card__icon ld-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg></div>
-                    <div class="ld-kpi-card__label">{% trans "Pending Approval" %}</div>
+                    <div class="ld-kpi-card__label">{% trans "Pending Approval"|escapejs %}</div>
                     <div class="ld-kpi-card__value">${data.pending_approval}</div>
-                    <div class="ld-kpi-card__sub">${data.pending_allocations > 0 ? '<span class="ld-badge ld-badge--amber">' + data.pending_allocations + ' {% trans "allocation req" %}</span>' : '{% trans "Requests awaiting review" %}'}</div>
+                    <div class="ld-kpi-card__sub">${data.pending_allocations > 0 ? '<span class="ld-badge ld-badge--amber">' + data.pending_allocations + ' {% trans "allocation req"|escapejs %}</span>' : '{% trans "Requests awaiting review"|escapejs %}'}</div>
                 </a>
                 <a href="${approvedUrl}" class="ld-kpi-card">
                     <div class="ld-kpi-card__icon ld-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-                    <div class="ld-kpi-card__label">{% trans "Approved" %}</div>
+                    <div class="ld-kpi-card__label">{% trans "Approved"|escapejs %}</div>
                     <div class="ld-kpi-card__value">${data.approved_this_month}</div>
-                    <div class="ld-kpi-card__sub"><span class="ld-badge ld-badge--green">${data.total_days_used} {% trans "days used" %}</span></div>
+                    <div class="ld-kpi-card__sub"><span class="ld-badge ld-badge--green">${data.total_days_used} {% trans "days used"|escapejs %}</span></div>
                 </a>
                 <a href="${rejectedUrl}" class="ld-kpi-card">
                     <div class="ld-kpi-card__icon ld-kpi-card__icon--red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
-                    <div class="ld-kpi-card__label">{% trans "Rejected" %}</div>
+                    <div class="ld-kpi-card__label">{% trans "Rejected"|escapejs %}</div>
                     <div class="ld-kpi-card__value">${data.rejected_this_month}</div>
                     <div class="ld-kpi-card__sub">${data.month}</div>
                 </a>
                 <a href="${onLeaveTodayUrl}" class="ld-kpi-card">
                     <div class="ld-kpi-card__icon ld-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-                    <div class="ld-kpi-card__label">{% trans "On Leave Today" %}</div>
+                    <div class="ld-kpi-card__label">{% trans "On Leave Today"|escapejs %}</div>
                     <div class="ld-kpi-card__value">${data.on_leave_today}</div>
-                    <div class="ld-kpi-card__sub">${data.pending_comp > 0 ? '<span class="ld-badge ld-badge--amber">' + data.pending_comp + ' {% trans "comp. requests" %}</span>' : '{% trans "Employees away" %}'}</div>
+                    <div class="ld-kpi-card__sub">${data.pending_comp > 0 ? '<span class="ld-badge ld-badge--amber">' + data.pending_comp + ' {% trans "comp. requests"|escapejs %}</span>' : '{% trans "Employees away"|escapejs %}'}</div>
                 </a>`;
         });
     }
@@ -539,13 +539,13 @@
         fetchP("{% url 'leave-dashboard-monthly-trend' %}")
         .then(r => r.json())
         .then(data => {
-            if (!data.months.length) { document.querySelector("#chart-monthly-trend").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            if (!data.months.length) { document.querySelector("#chart-monthly-trend").innerHTML = emptyHtml('{% trans "No data"|escapejs %}'); return; }
             const statusForSeries = ['approved', 'rejected', 'requested'];
             renderChart('monthly-trend', document.querySelector("#chart-monthly-trend"), {
                 series: [
-                    { name: '{% trans "Approved" %}', data: data.months.map(m => m.approved) },
-                    { name: '{% trans "Rejected" %}', data: data.months.map(m => m.rejected) },
-                    { name: '{% trans "Pending" %}', data: data.months.map(m => m.pending) },
+                    { name: '{% trans "Approved"|escapejs %}', data: data.months.map(m => m.approved) },
+                    { name: '{% trans "Rejected"|escapejs %}', data: data.months.map(m => m.rejected) },
+                    { name: '{% trans "Pending"|escapejs %}', data: data.months.map(m => m.pending) },
                 ],
                 chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: true,
                     events: { dataPointSelection: (e, ctx, config) => {
@@ -576,7 +576,7 @@
         .then(r => r.json())
         .then(data => {
             document.getElementById('lt-month').textContent = data.month;
-            if (!data.types.length) { document.querySelector("#chart-leave-types").innerHTML = emptyHtml('{% trans "No leave data" %}'); return; }
+            if (!data.types.length) { document.querySelector("#chart-leave-types").innerHTML = emptyHtml('{% trans "No leave data"|escapejs %}'); return; }
             const colors = data.types.map((t, i) => COLORS[i % COLORS.length]);
             renderChart('leave-types', document.querySelector("#chart-leave-types"), {
                 series: data.types.map(t => t.days),
@@ -589,7 +589,7 @@
                 },
                 labels: data.types.map(t => t.type),
                 colors: colors,
-                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total Days" %}', color: textColor, fontSize: '12px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0).toFixed(1) } } } } },
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total Days"|escapejs %}', color: textColor, fontSize: '12px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0).toFixed(1) } } } } },
                 stroke: { width: 2, colors: [cardBg] },
                 dataLabels: { enabled: false },
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
@@ -605,13 +605,13 @@
         .then(r => r.json())
         .then(data => {
             document.getElementById('pu-month').textContent = data.month;
-            if (data.paid === 0 && data.unpaid === 0) { document.querySelector("#chart-paid-unpaid").innerHTML = emptyHtml('{% trans "No leave data" %}'); return; }
+            if (data.paid === 0 && data.unpaid === 0) { document.querySelector("#chart-paid-unpaid").innerHTML = emptyHtml('{% trans "No leave data"|escapejs %}'); return; }
             renderChart('paid-unpaid', document.querySelector("#chart-paid-unpaid"), {
                 series: [data.paid, data.unpaid],
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit' },
-                labels: ['{% trans "Paid" %}', '{% trans "Unpaid" %}'],
+                labels: ['{% trans "Paid"|escapejs %}', '{% trans "Unpaid"|escapejs %}'],
                 colors: ['#22c55e', '#ef4444'],
-                plotOptions: { pie: { donut: { size: '70%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0).toFixed(1) + 'd' } } } } },
+                plotOptions: { pie: { donut: { size: '70%', labels: { show: true, total: { show: true, label: '{% trans "Total"|escapejs %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0).toFixed(1) + 'd' } } } } },
                 stroke: { width: 2, colors: [cardBg] },
                 dataLabels: { enabled: false },
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
@@ -627,9 +627,9 @@
         .then(r => r.json())
         .then(data => {
             document.getElementById('dept-month').textContent = data.month;
-            if (!data.departments.length) { document.querySelector("#chart-dept-leave").innerHTML = emptyHtml('{% trans "No leave data" %}'); return; }
+            if (!data.departments.length) { document.querySelector("#chart-dept-leave").innerHTML = emptyHtml('{% trans "No leave data"|escapejs %}'); return; }
             renderChart('dept-leave', document.querySelector("#chart-dept-leave"), {
-                series: [{ name: '{% trans "Leave Days" %}', data: data.departments.map(d => d.days) }],
+                series: [{ name: '{% trans "Leave Days"|escapejs %}', data: data.departments.map(d => d.days) }],
                 chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
                         const dept = data.departments[config.dataPointIndex].department;
@@ -654,10 +654,10 @@
         fetchP("{% url 'leave-dashboard-weekly-pattern' %}")
         .then(r => r.json())
         .then(data => {
-            if (!data.counts.some(c => c > 0)) { document.querySelector("#chart-weekly-pattern").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            if (!data.counts.some(c => c > 0)) { document.querySelector("#chart-weekly-pattern").innerHTML = emptyHtml('{% trans "No data"|escapejs %}'); return; }
             const maxCount = Math.max(...data.counts);
             renderChart('weekly-pattern', document.querySelector("#chart-weekly-pattern"), {
-                series: [{ name: '{% trans "Leave Days" %}', data: data.counts }],
+                series: [{ name: '{% trans "Leave Days"|escapejs %}', data: data.counts }],
                 chart: { type: 'radar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
                 colors: ['#E54F38'],
                 fill: { opacity: 0.25 },
@@ -677,7 +677,7 @@
         .then(r => r.json())
         .then(data => {
             const el = document.querySelector("#chart-utilization");
-            if (!data.utilization.length) { el.innerHTML = emptyHtml('{% trans "No allocation data" %}'); return; }
+            if (!data.utilization.length) { el.innerHTML = emptyHtml('{% trans "No allocation data"|escapejs %}'); return; }
             let html = '<div style="padding:8px 8px 0;">';
             data.utilization.forEach(u => {
                 const color = u.rate >= 80 ? '#ef4444' : u.rate >= 50 ? '#f59e0b' : '#22c55e';
@@ -699,7 +699,7 @@
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ld-on-leave');
-            if (!data.employees.length) { el.innerHTML = '<div class="ld-info-panel__empty">{% trans "No one on leave today" %}</div>'; return; }
+            if (!data.employees.length) { el.innerHTML = '<div class="ld-info-panel__empty">{% trans "No one on leave today"|escapejs %}</div>'; return; }
             el.innerHTML = data.employees.map(e => {
                 const initials = e.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                 const avatarInner = e.avatar ? `<img src="${e.avatar}" alt="">` : initials;
@@ -712,7 +712,7 @@
                     <div class="ld-leave-item__days">${e.start}${e.start !== e.end ? ' – ' + e.end : ''}</div>
                 </a>`;
             }).join('');
-        }).catch(() => { document.getElementById('ld-on-leave').innerHTML = '<div class="ld-info-panel__empty">{% trans "No one on leave today" %}</div>'; });
+        }).catch(() => { document.getElementById('ld-on-leave').innerHTML = '<div class="ld-info-panel__empty">{% trans "No one on leave today"|escapejs %}</div>'; });
     }
     loadOnLeaveToday();
 
@@ -722,12 +722,12 @@
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ld-upcoming');
-            if (!data.upcoming.length) { el.innerHTML = '<div class="ld-info-panel__empty">{% trans "No upcoming leaves" %}</div>'; return; }
+            if (!data.upcoming.length) { el.innerHTML = '<div class="ld-info-panel__empty">{% trans "No upcoming leaves"|escapejs %}</div>'; return; }
             el.innerHTML = data.upcoming.map(u => {
                 const initials = u.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                 const avatarInner = u.avatar ? `<img src="${u.avatar}" alt="">` : initials;
                 const badge = u.days_away === 1
-                    ? '<span class="ld-badge ld-badge--amber">{% trans "Tomorrow" %}</span>'
+                    ? '<span class="ld-badge ld-badge--amber">{% trans "Tomorrow"|escapejs %}</span>'
                     : `<span class="ld-badge ld-badge--green">${u.days_away}d</span>`;
                 return `<a href="/employee/employee-view/${u.id}/" class="ld-leave-item">
                     <div class="ld-leave-item__avatar">${avatarInner}</div>
@@ -738,7 +738,7 @@
                     ${badge}
                 </a>`;
             }).join('');
-        }).catch(() => { document.getElementById('ld-upcoming').innerHTML = '<div class="ld-info-panel__empty">{% trans "No upcoming leaves" %}</div>'; });
+        }).catch(() => { document.getElementById('ld-upcoming').innerHTML = '<div class="ld-info-panel__empty">{% trans "No upcoming leaves"|escapejs %}</div>'; });
     }
     loadUpcomingLeaves();
 
@@ -749,7 +749,7 @@
         .then(data => {
             const el = document.getElementById('ld-top-takers');
             document.getElementById('takers-month').textContent = data.month;
-            if (!data.takers.length) { el.innerHTML = '<div class="ld-info-panel__empty">{% trans "No leaves this month" %}</div>'; return; }
+            if (!data.takers.length) { el.innerHTML = '<div class="ld-info-panel__empty">{% trans "No leaves this month"|escapejs %}</div>'; return; }
             el.innerHTML = data.takers.map(t => {
                 const initials = t.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                 const avatarInner = t.avatar ? `<img src="${t.avatar}" alt="">` : initials;
@@ -757,12 +757,12 @@
                     <div class="ld-leave-item__avatar">${avatarInner}</div>
                     <div class="ld-leave-item__info">
                         <div class="ld-leave-item__name">${t.name}</div>
-                        <div class="ld-leave-item__type">${t.requests} {% trans "request(s)" %}</div>
+                        <div class="ld-leave-item__type">${t.requests} {% trans "request(s)"|escapejs %}</div>
                     </div>
                     <div class="ld-leave-item__days" style="font-weight:700;color:var(--ld-amber);">${t.days}d</div>
                 </a>`;
             }).join('');
-        }).catch(() => { document.getElementById('ld-top-takers').innerHTML = '<div class="ld-info-panel__empty">{% trans "No leaves this month" %}</div>'; });
+        }).catch(() => { document.getElementById('ld-top-takers').innerHTML = '<div class="ld-info-panel__empty">{% trans "No leaves this month"|escapejs %}</div>'; });
     }
     loadTopLeaveTakers();
 
@@ -772,16 +772,16 @@
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ld-holidays');
-            if (!data.holidays.length) { el.innerHTML = '<div class="ld-info-panel__empty">{% trans "No upcoming holidays" %}</div>'; return; }
+            if (!data.holidays.length) { el.innerHTML = '<div class="ld-info-panel__empty">{% trans "No upcoming holidays"|escapejs %}</div>'; return; }
             el.innerHTML = data.holidays.map(h => {
-                const badge = h.days_away === 0 ? '{% trans "Today" %}' : h.days_away === 1 ? '{% trans "Tomorrow" %}' : h.days_away + 'd';
+                const badge = h.days_away === 0 ? '{% trans "Today"|escapejs %}' : h.days_away === 1 ? '{% trans "Tomorrow"|escapejs %}' : h.days_away + 'd';
                 return `<div class="ld-holiday-item">
                     <div class="ld-holiday-item__date">${h.start}</div>
                     <div class="ld-holiday-item__name">${h.name}</div>
                     <div class="ld-holiday-item__away">${badge}</div>
                 </div>`;
             }).join('');
-        }).catch(() => { document.getElementById('ld-holidays').innerHTML = '<div class="ld-info-panel__empty">{% trans "No upcoming holidays" %}</div>'; });
+        }).catch(() => { document.getElementById('ld-holidays').innerHTML = '<div class="ld-info-panel__empty">{% trans "No upcoming holidays"|escapejs %}</div>'; });
     }
     loadUpcomingHolidays();
 

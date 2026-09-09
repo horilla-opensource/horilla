@@ -32,7 +32,7 @@
     test.find("button[type=submit]").hide();
     var button = `
     <div class="oh-modal__dialog-footer p-0 mt-3">
-      <button id="buttonID" class="oh-btn oh-btn--secondary oh-btn--shadow">{% trans 'Save' %}</button>
+      <button id="buttonID" class="oh-btn oh-btn--secondary oh-btn--shadow">{% trans 'Save'|escapejs %}</button>
     </div>
     `;
     test.find(".d-flex").after(button);
@@ -43,10 +43,10 @@
             event.preventDefault();
             event.stopImmediatePropagation();
             Swal.fire({
-                title: "{% trans 'Cannot submit leave request' %}",
-                text: "{% trans 'The selected dates result in 0 leave days for this leave type. Please adjust the dates, breakdown or leave type.' %}",
+                title: "{% trans 'Cannot submit leave request'|escapejs %}",
+                text: "{% trans 'The selected dates result in 0 leave days for this leave type. Please adjust the dates, breakdown or leave type.'|escapejs %}",
                 icon: "warning",
-                confirmButtonText: "{% trans 'OK' %}",
+                confirmButtonText: "{% trans 'OK'|escapejs %}",
             });
             return false;
         }
@@ -72,15 +72,15 @@
                 },
                 success: function (response) {
                     var interviews = response.interviews;
-                    title = "{% trans 'Leave Request Alert.' %}";
+                    title = "{% trans 'Leave Request Alert.'|escapejs %}";
                     var content = `<div>
-                        <p>${employeeName} {% trans "has interview in the requested date." %}</p>
+                        <p>${employeeName} {% trans "has interview in the requested date."|escapejs %}</p>
                         <ol style="margin-left:5%">`;
                             interviews.forEach(function (interview, index) {
                                 content += `<li style="text-align:left; font-size:14px">${interview}</li>`;
                             });
                             content += `</ol>
-                            <p style="font-weight:700">{% trans "Are you sure you want to proceed with the request?" %}</p>
+                            <p style="font-weight:700">{% trans "Are you sure you want to proceed with the request?"|escapejs %}</p>
                         </div>`;
 
                         if (interviews.length != 0) {

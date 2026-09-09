@@ -112,7 +112,7 @@
                                         {% if leave.end_date.month > current_date.month %}
                                             onclick="leaveRequestConfirm('This leave request is for the month of {{leave.start_date|date:'F'}}. Approval depends on the {{leave.employee_id.get_full_name}} having available leave days for this month.',event)"
                                         {% else %}
-                                            onclick="return confirm('{% trans "Do You really want to Approve this request?" %}')"
+                                            onclick="return confirm('{% trans "Do You really want to Approve this request?"|escapejs %}')"
                                             ;
                                         {% endif %}
                                     >

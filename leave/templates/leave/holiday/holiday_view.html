@@ -286,7 +286,7 @@
   $(document).ready(function () {
     $("#delete").submit(function (e) {
       e.preventDefault(); // Prevent form submission
-      if (confirm('{% trans "Are you sure you want to delete this record?" %}')) {
+      if (confirm('{% trans "Are you sure you want to delete this record?"|escapejs %}')) {
         // If user confirms, submit the form
         this.submit();
       } else {

@@ -356,7 +356,7 @@
                                                             Approval depends on the {{leave_request.employee_id.get_full_name}} having available leave days for
                                                             this month.',event)"
                                                 {% else %}
-                                                    onclick="return confirm('{% trans "Do You really want to Approve this request?" %}')"
+                                                    onclick="return confirm('{% trans "Do You really want to Approve this request?"|escapejs %}')"
                                                     ;
                                                 {% endif %}
                                             >
