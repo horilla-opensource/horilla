@@ -220,6 +220,22 @@ class StartTests(Fixture):
         )
         self.assertEqual(batch.employee_count, 2)
 
+    def test_started_from_the_review_page_it_answers_with_the_progress_modal(self):
+        self.stash()
+        with patch(
+            "attendance.methods.utils.get_employee_attendance_summary",
+            return_value=self.summaries(),
+        ):
+            response = self.client.post(
+                reverse("payroll-batch-start"), HTTP_HX_REQUEST="true"
+            )
+        batch = PayrollBatch.objects.get()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response, reverse("payroll-batch-generate", args=[batch.pk])
+        )
+        self.assertContains(response, batch.batch_name)
+
     def test_a_blocked_employee_is_not_in_the_run(self):
         """
         The point of the review step. Red text on a row that gets generated

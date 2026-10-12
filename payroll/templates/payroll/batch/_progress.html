@@ -10,7 +10,7 @@ length of a 500-person run.
 <div id="pb-progress"
      {% if not batch.is_finished %}
      hx-get="{% url 'payroll-batch-generate' batch.pk %}"
-     hx-trigger="load delay:100ms"
+     hx-trigger="load delay:50ms"
      hx-target="#pb-progress"
      hx-swap="outerHTML"
      {% endif %}>
@@ -31,12 +31,58 @@ length of a 500-person run.
   </div>
 
   <div class="pb__bar">
-    <div class="pb__bar-fill {% if batch.progress_state == 'done' %}pb__bar-fill--done{% elif batch.progress_state == 'failed' %}pb__bar-fill--failed{% endif %}"
+    <div id="pb-bar-fill" class="pb__bar-fill {% if batch.progress_state == 'done' %}pb__bar-fill--done{% elif batch.progress_state == 'failed' %}pb__bar-fill--failed{% endif %}"
          style="width: {{ batch.percent_complete }}%;"></div>
   </div>
 
+  {% if not batch.is_finished %}
+    <div class="pb__run-now">
+      <ion-icon name="hourglass-outline"></ion-icon>
+      {% if next_employee %}{% blocktrans with name=next_employee %}Working on {{ name }}{% endblocktrans %}{% endif %}
+      <span class="pb__run-pct">{{ batch.percent_complete|floatformat:0 }}%</span>
+    </div>
+    <div class="pb__run-time">
+      {% trans "Elapsed" %} {{ elapsed }}{% if eta %} &middot; {% trans "about" %} {{ eta }} {% trans "left" %}{% endif %}
+    </div>
+    {% if recent_lines %}
+    <div class="pb__lines mt-2">
+      {% for line in recent_lines %}
+      <div class="pb__line">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <span class="pb__line-name">{{ line.employee_id }}</span>
+        <span class="pb__line-note">{% if line.payslip %}{{ line.payslip.net_pay|floatformat:2 }}{% endif %}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <div class="pb__run-counts">
+      <span>{% trans "Done" %} <b>{{ batch.generated_count }}</b></span>
+      <span>{% trans "Failed" %} <b class="{% if batch.failed_count %}pb__run-bad{% endif %}">{{ batch.failed_count }}</b></span>
+      <span>{% trans "Left" %} <b>{{ left_count }}</b></span>
+    </div>
+  {% endif %}
+
+  {% if failed_lines %}
+  <div class="pb__lines pb__lines--failed mt-3">
+    <div class="pb__lines-title">{% trans "Needs fixing" %} ({{ failed_lines|length }})</div>
+    {% for line in failed_lines %}
+    <div class="pb__line pb__line--failed">
+      <ion-icon name="close-circle-outline"></ion-icon>
+      <span class="pb__line-name">{{ line.employee_id }}</span>
+      <span class="pb__line-note" title="{{ line.message }}">{{ line.message|truncatechars:70 }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
   {% if batch.is_finished %}
+  <div class="pb__run-time mt-2">{% trans "Finished in" %} {{ elapsed }}</div>
   <div class="pb__kpis mt-3">
+    <div class="pb__kpi">
+      <div class="pb__kpi-label">{% trans "Net total" %}</div>
+      <div class="pb__kpi-value">{{ batch.total_net|floatformat:2 }}</div>
+      <div class="pb__kpi-note">{% trans "Gross" %} {{ batch.total_gross|floatformat:2 }}</div>
+    </div>
     <div class="pb__kpi">
       <div class="pb__kpi-label">{% trans "Generated" %}</div>
       <div class="pb__kpi-value">{{ batch.generated_count }}</div>

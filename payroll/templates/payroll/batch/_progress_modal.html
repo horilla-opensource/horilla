@@ -1,0 +1,17 @@
+{% load i18n %}
+{% comment %}The run's progress, shown in a modal over the review page.{% endcomment %}
+<div class="pb__runmodal-head">
+  <div>
+    <div class="pb__runmodal-title">{{ batch.batch_name }}</div>
+    <div class="pb__runmodal-sub">
+      {{ batch.period_start|date:"j M Y" }} &ndash; {{ batch.period_end|date:"j M Y" }}
+      &middot; {{ batch.employee_count }} {% trans "people" %}
+    </div>
+  </div>
+</div>
+<div style="padding:1rem 1.25rem;">
+  {% include "payroll/batch/_progress.html" %}
+</div>
+<div class="pb__problem" style="padding:0 1.25rem 1rem;">
+  {% trans "Payslips are written as they are generated. If this is closed, reopen the run from the list and it carries on from where it stopped; nobody is paid twice." %}
+</div>

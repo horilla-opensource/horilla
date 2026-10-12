@@ -51,6 +51,16 @@ and to_date.
   var overlay = document.getElementById('cal-modal-overlay');
   var content = document.getElementById('cal-modal-content');
 
+  // Set when a resolution is saved. When the calendar closes the page is told,
+  // so one that shows the summary (the payroll run review) can refresh itself.
+  var calChanged = false;
+  new MutationObserver(function () {
+    if (overlay.style.display === 'none' && calChanged) {
+      calChanged = false;
+      document.dispatchEvent(new CustomEvent('attendance-calendar-saved'));
+    }
+  }).observe(overlay, { attributes: true, attributeFilter: ['style'] });
+
   // Close on backdrop click
   overlay.addEventListener('click', function (e) {
     if (e.target === overlay) overlay.style.display = 'none';
@@ -342,7 +352,7 @@ and to_date.
       },
       body: body.toString(),
     }).then(function (r) { return r.text(); })
-      .then(function (html) { content.innerHTML = html; })
+      .then(function (html) { content.innerHTML = html; calChanged = true; })
       .catch(function () {
         content.innerHTML = '<p style="padding:24px;color:#dc3545;">Failed to save.</p>';
       });
@@ -422,7 +432,7 @@ and to_date.
         conflict_type: conflictType,
       })
     }).then(function (r) { return r.text(); })
-      .then(function (html) { content.innerHTML = html; })
+      .then(function (html) { content.innerHTML = html; calChanged = true; })
       .catch(function () {
         content.innerHTML = '<p style="padding:24px;color:#dc3545;">Failed to save resolution.</p>';
       });

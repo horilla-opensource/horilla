@@ -133,10 +133,11 @@ class DeductionListView(HorillaListView):
 
     row_attrs = """
                 {diff_cell}
-                hx-get='{deduction_detail_view}?instance_ids={ordered_ids}'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
+                hx-get="{get_update_url}"
+                hx-target="#objectUpdateModalTarget"
+                data-target="#objectUpdateModal"
                 data-toggle="oh-modal-toggle"
+                hx-swap="innerHTML"
                 """
 
     row_status_indications = [
@@ -277,10 +278,11 @@ class DeductionCardView(HorillaCardView):
     ]
 
     card_attrs = """
-                hx-get='{deduction_detail_view}?instance_ids={ordered_ids}'
+                hx-get="{get_update_url}"
                 data-toggle="oh-modal-toggle"
-                data-target="#genericModal"
-                hx-target="#genericModalBody"
+                data-target="#objectUpdateModal"
+                hx-target="#objectUpdateModalTarget"
+                hx-swap="innerHTML"
                 """
 
     actions = [

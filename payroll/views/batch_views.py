@@ -376,6 +376,43 @@ def wizard_review(request):
 # ---------------------------------------------------------------------------
 
 
+def _progress_context(batch):
+    """Who is next and who just finished, from queries that stay small on a long run."""
+    from django.utils import timezone
+
+    from payroll.models.models import PayrollBatchLine
+
+    lines = batch.lines.select_related("employee_id", "payslip")
+    done = lines.exclude(status=PayrollBatchLine.QUEUED)
+
+    # Elapsed since the run was created, and what is left at the pace so far.
+    elapsed = max(int((timezone.now() - batch.created_at).total_seconds()), 0)
+    left = max(batch.employee_count - batch.processed_count, 0)
+    eta = (
+        int(elapsed / batch.processed_count * left)
+        if batch.processed_count and not batch.is_finished
+        else None
+    )
+
+    def clock(seconds):
+        return f"{seconds // 60}:{seconds % 60:02d}"
+
+    return {
+        "batch": batch,
+        "elapsed": clock(elapsed),
+        "eta": clock(eta) if eta is not None else None,
+        "left_count": max(batch.employee_count - batch.processed_count, 0),
+        "next_employee": getattr(
+            lines.filter(status=PayrollBatchLine.QUEUED).first(), "employee_id", None
+        ),
+        # Newest first, a handful: a hundred rows in a modal helps nobody.
+        "recent_lines": list(
+            done.exclude(status=PayrollBatchLine.FAILED).order_by("-pk")[:6]
+        ),
+        "failed_lines": list(lines.filter(status=PayrollBatchLine.FAILED)),
+    }
+
+
 @login_required
 @permission_required("payroll.add_payslip")
 def wizard_start(request):
@@ -400,6 +437,8 @@ def wizard_start(request):
         messages.error(
             request, _("Nobody in this run can be paid yet. Fix the problems listed.")
         )
+        if request.headers.get("HX-Request"):
+            return HorillaRedirect(request, reverse("payroll-batch-review"))
         return redirect("payroll-batch-review")
 
     batch = batch_run.create_batch(
@@ -411,6 +450,11 @@ def wizard_start(request):
         settings=_settings_for(request),
     )
     request.session.pop(SESSION_KEY, None)
+    if request.headers.get("HX-Request"):
+        # The review page shows the run in a modal instead of leaving the page.
+        return render(
+            request, "payroll/batch/_progress_modal.html", _progress_context(batch)
+        )
     return redirect("payroll-batch-progress", batch_id=batch.pk)
 
 
@@ -420,7 +464,9 @@ def wizard_progress(request, batch_id):
     """The progress page. The bar itself is the fragment below."""
     batch = get_object_or_404(PayrollBatch, pk=batch_id)
     return render(
-        request, "payroll/batch/wizard_progress.html", {"step": 3, "batch": batch}
+        request,
+        "payroll/batch/wizard_progress.html",
+        {"step": 3, **_progress_context(batch)},
     )
 
 
@@ -449,7 +495,7 @@ def wizard_generate_slice(request, batch_id):
             batch.save(update_fields=["progress_state", "last_error"])
 
     batch.refresh_from_db()
-    return render(request, "payroll/batch/_progress.html", {"batch": batch})
+    return render(request, "payroll/batch/_progress.html", _progress_context(batch))
 
 
 # ---------------------------------------------------------------------------

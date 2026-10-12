@@ -13,6 +13,7 @@ before, so this is the only thing standing between the extraction and a
 silently dead click handler.
 """
 
+import re
 from datetime import date
 from unittest.mock import patch
 
@@ -206,19 +207,10 @@ class ReviewPageTests(TestCase):
                 self.assertIn(f'data-sort-key="{key}"', body)
 
     def test_every_sortable_column_shows_its_sort_indicator(self):
-        """
-        One arrow element per sortable header, present from the start -- a
-        control that only appears once you are already pointing at the column
-        does not tell you the column is sortable.
-        """
-        response = self.review()
-        body = response.content.decode()
-
-        sortable = body.count('class="pb__sortable"') + body.count(
-            'class="pb__num pb__sortable"'
-        )
-        self.assertEqual(sortable, 10)
-        self.assertEqual(body.count('<span class="pb__arrow"></span>'), 10)
+        """Each sortable header shows its arrows from the start."""
+        body = self.review().content.decode()
+        self.assertEqual(len(re.findall(r'<th [^>]*data-sort-key="', body)), 10)
+        self.assertEqual(body.count("data-sort-icons>"), 10)
 
     def test_the_contract_can_be_edited_from_the_row(self):
         """
@@ -255,18 +247,11 @@ class ReviewPageTests(TestCase):
         self.assertIn("pb__alert--danger", body)
         self.assertNotIn("oh-alert--danger", body)
 
-    def test_the_figures_size_to_their_content(self):
-        """
-        Without this the label column took most of the width and every
-        two-word header wrapped, which is what pushed the sort arrows onto a
-        line of their own.
-        """
-        response = self.review()
-        body = response.content.decode()
-
-        # Overtime is a duration: right-aligned with the counts, not left.
+    def test_the_figures_can_be_hidden_per_column(self):
+        """Every figure column is tagged so the column chooser can hide it."""
+        body = self.review().content.decode()
+        self.assertEqual(body.count("data-col-toggle="), 9)
         self.assertIn('data-sort-key="overtime"', body)
-        self.assertEqual(body.count('class="pb__num pb__sortable"'), 9)
 
     def test_few_paid_days_is_counted_and_marked(self):
         """
@@ -298,15 +283,12 @@ class ReviewPageTests(TestCase):
         self.assertContains(response, "data-row-search")
         self.assertContains(response, "data-no-match")
 
-    def test_the_review_can_be_re_run_after_fixing(self):
-        """
-        Resolving a conflict changes nothing on the page that is already open.
-        Without a way back to a fresh review, the blocked count stays stale and
-        the run stays blocked.
-        """
+    def test_the_review_refreshes_itself_after_fixing(self):
+        """A saved calendar or contract reloads the review; there is no Re-check button."""
         response = self.review(unresolved_conflicts=1)
-        self.assertContains(response, "Re-check")
+        self.assertNotContains(response, "Re-check")
+        self.assertContains(response, "attendance-calendar-saved")
+        self.assertContains(response, "reloadPayrollContracts")
 
-        # And the second look is genuinely recomputed, not cached: the same
-        # request with the conflict gone reports nobody blocked.
+        # A fresh request is genuinely recomputed: with the conflict gone nobody is blocked.
         self.assertEqual(self.review().context["blocked_count"], 0)

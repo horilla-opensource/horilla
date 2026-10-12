@@ -1059,7 +1059,7 @@ OFFBOARDING_TASKS = {
     "interview": ["Schedule exit interview"],
     "handover": ["Transfer ongoing work", "Return laptop and access card"],
     "fnf": ["Clear pending reimbursements", "Prepare final settlement"],
-    "other": ["Organise a farewell for the team"],
+    "other": ["Organise a team farewell"],
     "archived": ["Archive employee records"],
 }
 EXIT_REASONS = [

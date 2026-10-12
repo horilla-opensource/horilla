@@ -129,10 +129,11 @@ class AllowanceListView(HorillaListView):
     }
 
     row_attrs = """
-                hx-get='{allowance_detail_view}?instance_ids={ordered_ids}'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
+                hx-get="{get_update_url}"
+                hx-target="#objectCreateModalTarget"
+                data-target="#objectCreateModal"
                 data-toggle="oh-modal-toggle"
+                hx-swap="innerHTML"
                 """
 
     row_status_class = "taxable-{is_taxable} fixed-{is_fixed}"
@@ -314,10 +315,11 @@ class AllowancesCardView(HorillaCardView):
     }
 
     card_attrs = """
-                hx-get='{allowance_detail_view}?instance_ids={ordered_ids}'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
+                hx-get="{get_update_url}"
+                hx-target="#objectCreateModalTarget"
+                data-target="#objectCreateModal"
                 data-toggle="oh-modal-toggle"
+                hx-swap="innerHTML"
                 """
 
     card_status_class = "taxable-{is_taxable} fixed-{is_fixed}"

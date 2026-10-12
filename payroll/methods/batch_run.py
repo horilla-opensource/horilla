@@ -36,10 +36,9 @@ from django.utils.translation import gettext_lazy as _
 
 logger = logging.getLogger(__name__)
 
-# How many employees one request generates. Small enough that a slice returns
-# quickly on a slow database, large enough that a 500-person run is not 500
-# round trips.
-SLICE_SIZE = 10
+# How many employees one request generates. Small, so the bar moves every
+# moment or two; a 500-person run is still only a couple of hundred quick requests.
+SLICE_SIZE = 3
 
 BLOCKING = "blocking"
 WARNING = "warning"

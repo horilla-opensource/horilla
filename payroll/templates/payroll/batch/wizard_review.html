@@ -23,11 +23,32 @@
 
   <section class="oh-wrapper pb pb--wizard">
 
-    <div class="oh-main__titlebar oh-main__titlebar--left mb-3">
-      <h1 class="oh-main__titlebar-title fw-bold mb-0">{{ batch_name }}</h1>
-      <div style="font-size:.8rem;color:#6b7280;">
-        {{ period_start|date:"j M Y" }} &ndash; {{ period_end|date:"j M Y" }}
+    <div class="oh-main__titlebar oh-main__titlebar--left mb-3"
+         style="display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+      <div>
+        <h1 class="oh-main__titlebar-title fw-bold mb-0">{{ batch_name }}</h1>
+        <div style="font-size:.8rem;color:#6b7280;">
+          {{ period_start|date:"j M Y" }} &ndash; {{ period_end|date:"j M Y" }}
+        </div>
       </div>
+      {% comment %}The review refreshes itself when a contract or the attendance is saved from it, so there is no Re-check.{% endcomment %}
+      <form method="post" action="{% url 'payroll-batch-start' %}"
+            hx-post="{% url 'payroll-batch-start' %}"
+            hx-target="#pb-run-modal-body" hx-swap="innerHTML"
+            hx-on::before-request="document.getElementById('pb-run-modal').style.display='flex'"
+            style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+        {% csrf_token %}
+        <label class="pb__search pb__titlebar-search">
+          <ion-icon name="search-outline"></ion-icon>
+          <input type="search" data-row-search
+                 placeholder="{% trans 'Search name or badge ID' %}"
+                 aria-label="{% trans 'Search name or badge ID' %}">
+        </label>
+        <button type="submit" class="oh-btn oh-btn--secondary" {% if not ready_count %}disabled{% endif %}>
+          {% blocktrans count n=ready_count %}Generate {{ n }} payslip{% plural %}Generate {{ n }} payslips{% endblocktrans %}
+          <ion-icon name="arrow-forward-outline" class="ms-1"></ion-icon>
+        </button>
+      </form>
     </div>
 
     {% include "payroll/batch/_steps.html" with step=step %}
@@ -105,26 +126,15 @@
     </form>
     {% endif %}
 
-    {% comment %}Above the table: with a long list the buttons were a scroll away.{% endcomment %}
-    <form method="post" action="{% url 'payroll-batch-start' %}"
-          class="pb__actions mb-3">
-      {% csrf_token %}
-      <div class="d-flex align-items-center gap-2">
-        <a href="{% url 'payroll-batch-scope' %}" class="pb__btn">
-          <ion-icon name="arrow-back-outline"></ion-icon>
-          {% trans "Back" %}
-        </a>
-        <button type="button" class="pb__btn"
-                onclick="window.location.reload();">
-          <ion-icon name="refresh-outline"></ion-icon>
-          {% trans "Re-check" %}
-        </button>
+
+    {% comment %}The run, shown here while it generates instead of on a page of its own.{% endcomment %}
+    <div id="pb-run-modal" class="pb__runmodal" style="display:none;" role="dialog" aria-modal="true">
+      <div class="pb__runmodal-box">
+        <div id="pb-run-modal-body">
+          <div style="padding:2rem;text-align:center;color:#6b7280;">{% trans "Starting the run…" %}</div>
+        </div>
       </div>
-      <button type="submit" class="oh-btn oh-btn--secondary" {% if not ready_count %}disabled{% endif %}>
-        {% blocktrans count n=ready_count %}Generate {{ n }} payslip{% plural %}Generate {{ n }} payslips{% endblocktrans %}
-        <ion-icon name="arrow-forward-outline" class="ms-1"></ion-icon>
-      </button>
-    </form>
+    </div>
 
     <div class="pb__panel mb-3">
       <div class="pb__panel-head">
@@ -136,48 +146,116 @@
             <ion-icon name="arrow-undo-outline"></ion-icon>
             {% trans "Blocked first" %}
           </button>
-          <label class="pb__search">
-            <ion-icon name="search-outline"></ion-icon>
-            <input type="search" data-row-search
-                   placeholder="{% trans 'Search name or badge ID' %}"
-                   aria-label="{% trans 'Search name or badge ID' %}">
-          </label>
         </div>
       </div>
       {% if rows %}
-      <div class="pb__scroll">
-        <table class="pb__table pb__table--top" id="pb-review-table">
-          <thead>
-            <tr>
-              <th class="pb__sortable" data-sort-key="pbname" data-sort-type="text">
-                {% trans "Employee" %}<span class="pb__arrow"></span>
+      <div class="max-h-[calc(100vh_-_260px)] overflow-hidden overflow-y-auto overflow-x-auto heightContainer p-2">
+        <table class="fixed-table w-full border-separate" id="pb-review-table" style="min-width:1100px;">
+          <thead class="sticky top-0 bg-[white] z-[1]">
+            <tr class="border-b border-[#ececec]">
+              <th class="stickyleft text-sm font-medium text-left min-w-[220px]" data-sort-key="pbname" data-sort-type="text">
+                <div class="flex gap-1.5 px-1.5 py-1.5 items-center cursor-pointer">
+                  <span class="text-xs flex items-center text-primary-600" data-sort-icons>
+                    <i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>
+                  </span>
+                  <span class="flex w-max">{% trans "Employee" %}</span>
+                </div>
               </th>
-              <th class="pb__num pb__sortable" data-sort-key="present">
-                {% trans "Present" %}<span class="pb__arrow"></span>
+              <th class="text-sm font-medium text-left min-w-[85px]" data-sort-key="present" data-col="present">
+                <div class="flex gap-1.5 px-1.5 py-1.5 items-center cursor-pointer">
+                  <span class="text-xs flex items-center text-primary-600" data-sort-icons>
+                    <i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>
+                  </span>
+                  <span class="flex w-max">{% trans "Present" %}</span>
+                </div>
               </th>
-              <th class="pb__num pb__sortable" data-sort-key="paidleave">
-                {% trans "Paid leave" %}<span class="pb__arrow"></span>
+              <th class="text-sm font-medium text-left min-w-[85px]" data-sort-key="paidleave" data-col="paidleave">
+                <div class="flex gap-1.5 px-1.5 py-1.5 items-center cursor-pointer">
+                  <span class="text-xs flex items-center text-primary-600" data-sort-icons>
+                    <i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>
+                  </span>
+                  <span class="flex w-max">{% trans "Paid leave" %}</span>
+                </div>
               </th>
-              <th class="pb__num pb__sortable" data-sort-key="unpaidleave">
-                {% trans "Unpaid leave" %}<span class="pb__arrow"></span>
+              <th class="text-sm font-medium text-left min-w-[85px]" data-sort-key="unpaidleave" data-col="unpaidleave">
+                <div class="flex gap-1.5 px-1.5 py-1.5 items-center cursor-pointer">
+                  <span class="text-xs flex items-center text-primary-600" data-sort-icons>
+                    <i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>
+                  </span>
+                  <span class="flex w-max">{% trans "Unpaid leave" %}</span>
+                </div>
               </th>
-              <th class="pb__num pb__sortable" data-sort-key="absent">
-                {% trans "Absent" %}<span class="pb__arrow"></span>
+              <th class="text-sm font-medium text-left min-w-[85px]" data-sort-key="absent" data-col="absent">
+                <div class="flex gap-1.5 px-1.5 py-1.5 items-center cursor-pointer">
+                  <span class="text-xs flex items-center text-primary-600" data-sort-icons>
+                    <i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>
+                  </span>
+                  <span class="flex w-max">{% trans "Absent" %}</span>
+                </div>
               </th>
-              <th class="pb__num pb__sortable" data-sort-key="weekoff">
-                {% trans "Week off" %}<span class="pb__arrow"></span>
+              <th class="text-sm font-medium text-left min-w-[85px]" data-sort-key="weekoff" data-col="weekoff">
+                <div class="flex gap-1.5 px-1.5 py-1.5 items-center cursor-pointer">
+                  <span class="text-xs flex items-center text-primary-600" data-sort-icons>
+                    <i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>
+                  </span>
+                  <span class="flex w-max">{% trans "Week off" %}</span>
+                </div>
               </th>
-              <th class="pb__num pb__sortable" data-sort-key="holiday">
-                {% trans "Holiday" %}<span class="pb__arrow"></span>
+              <th class="text-sm font-medium text-left min-w-[85px]" data-sort-key="holiday" data-col="holiday">
+                <div class="flex gap-1.5 px-1.5 py-1.5 items-center cursor-pointer">
+                  <span class="text-xs flex items-center text-primary-600" data-sort-icons>
+                    <i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>
+                  </span>
+                  <span class="flex w-max">{% trans "Holiday" %}</span>
+                </div>
               </th>
-              <th class="pb__num pb__sortable" data-sort-key="working">
-                {% trans "Working days" %}<span class="pb__arrow"></span>
+              <th class="text-sm font-medium text-left min-w-[85px]" data-sort-key="working" data-col="working">
+                <div class="flex gap-1.5 px-1.5 py-1.5 items-center cursor-pointer">
+                  <span class="text-xs flex items-center text-primary-600" data-sort-icons>
+                    <i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>
+                  </span>
+                  <span class="flex w-max">{% trans "Working days" %}</span>
+                </div>
               </th>
-              <th class="pb__num pb__sortable" data-sort-key="paiddays">
-                {% trans "Paid days" %}<span class="pb__arrow"></span>
+              <th class="text-sm font-medium text-left min-w-[85px]" data-sort-key="paiddays" data-col="paiddays">
+                <div class="flex gap-1.5 px-1.5 py-1.5 items-center cursor-pointer">
+                  <span class="text-xs flex items-center text-primary-600" data-sort-icons>
+                    <i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>
+                  </span>
+                  <span class="flex w-max">{% trans "Paid days" %}</span>
+                </div>
               </th>
-              <th class="pb__num pb__sortable" data-sort-key="overtime">
-                {% trans "Overtime" %}<span class="pb__arrow"></span>
+              <th class="text-sm font-medium text-left min-w-[85px]" data-sort-key="overtime" data-col="overtime">
+                <div class="flex gap-1.5 px-1.5 py-1.5 items-center cursor-pointer">
+                  <span class="text-xs flex items-center text-primary-600" data-sort-icons>
+                    <i class="fa-solid fa-arrow-up"></i><i class="fa-solid fa-arrow-down"></i>
+                  </span>
+                  <span class="flex w-max">{% trans "Overtime" %}</span>
+                </div>
+              </th>
+              <th class="stickyright action-col-header text-sm font-medium min-w-[110px]">
+                <div class="p-1.5 flex items-center justify-center gap-1" x-data="{ open: false }" style="position:relative;">
+                  <span class="flex-1 text-center">{% trans "Actions" %}</span>
+                  <button type="button" class="oh-sticky-dropdown_btn is-column-config-trigger"
+                          @click="open = !open" :aria-expanded="open.toString()" aria-haspopup="true"
+                          title="{% trans 'Customize columns' %}" aria-label="{% trans 'Customize columns' %}">
+                    <ion-icon name="options-outline" role="img" class="md hydrated" aria-hidden="true"></ion-icon>
+                  </button>
+                  <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" x-cloak
+                       @click.outside="open = false"
+                       style="position:absolute;right:0;top:100%;z-index:30;min-width:180px;padding:8px 12px;text-align:left;">
+                    <div class="pb__colhead">{% trans "Columns" %}</div>
+                    <label class="pb__colopt"><input type="checkbox" data-col-toggle="present" checked> {% trans "Present" %}</label>
+                    <label class="pb__colopt"><input type="checkbox" data-col-toggle="paidleave" checked> {% trans "Paid leave" %}</label>
+                    <label class="pb__colopt"><input type="checkbox" data-col-toggle="unpaidleave" checked> {% trans "Unpaid leave" %}</label>
+                    <label class="pb__colopt"><input type="checkbox" data-col-toggle="absent" checked> {% trans "Absent" %}</label>
+                    <label class="pb__colopt"><input type="checkbox" data-col-toggle="weekoff" checked> {% trans "Week off" %}</label>
+                    <label class="pb__colopt"><input type="checkbox" data-col-toggle="holiday" checked> {% trans "Holiday" %}</label>
+                    <label class="pb__colopt"><input type="checkbox" data-col-toggle="working" checked> {% trans "Working days" %}</label>
+                    <label class="pb__colopt"><input type="checkbox" data-col-toggle="paiddays" checked> {% trans "Paid days" %}</label>
+                    <label class="pb__colopt"><input type="checkbox" data-col-toggle="overtime" checked> {% trans "Overtime" %}</label>
+                  </div>
+                </div>
               </th>
             </tr>
           </thead>
@@ -196,7 +274,7 @@
                 data-working="{{ row.total_working }}"
                 data-paiddays="{{ row.paid_days }}"
                 data-overtime="{{ row.overtime_seconds }}">
-              <td>
+              <td class="stickyleft text-sm text-left px-1 py-1 text-[#666]">
                 <div style="font-weight:600;">{{ row.employee }}</div>
                 {% for level, message in row.problems %}
                   <span class="pb__problem pb__problem--{{ level }}">
@@ -204,50 +282,43 @@
                     {{ message }}
                   </span>
                 {% endfor %}
-                <div class="pb__fixes">
-                  <button type="button" class="pb__fix"
+              </td>
+              <td data-col="present" class="text-sm text-left px-1 py-1 text-[#666]">{{ row.present }}</td>
+              <td data-col="paidleave" class="text-sm text-left px-1 py-1 text-[#666]">{{ row.paid_leave }}</td>
+              <td data-col="unpaidleave" class="text-sm text-left px-1 py-1 text-[#666]">{{ row.unpaid_leave }}</td>
+              <td data-col="absent" class="text-sm text-left px-1 py-1 text-[#666]">{{ row.absent }}</td>
+              <td data-col="weekoff" class="text-sm text-left px-1 py-1 text-[#666]">{{ row.week_off }}</td>
+              <td data-col="holiday" class="text-sm text-left px-1 py-1 text-[#666]">{{ row.holiday }}</td>
+              <td data-col="working" class="text-sm text-left px-1 py-1 text-[#666]">{{ row.total_working }}</td>
+              <td data-col="paiddays" class="text-sm text-left px-1 py-1 text-[#666] {% if row.low_paid %}pb__low{% endif %}"
+                  {% if row.low_paid %}title="{% blocktrans with n=low_paid_threshold %}Under {{ n }} paid days{% endblocktrans %}"{% endif %}>
+                {{ row.paid_days }}
+              </td>
+              <td data-col="overtime" class="text-sm text-left px-1 py-1 text-[#666]">{{ row.overtime_label|default:"—" }}</td>
+              <td class="stickyright action-col-cell text-sm text-center px-1 py-1 text-[#666]">
+                <div class="flex justify-center gap-1">
+                  <button type="button" class="oh-btn oh-btn--light-bkg"
+                          title="{% if row.unresolved_conflicts %}{% trans 'Regularise attendance' %}{% else %}{% trans 'Open attendance' %}{% endif %}"
                           data-calendar-url="{% url 'attendance-monthly-summary-calendar' %}?employee_id={{ row.employee.pk }}&amp;from_date={{ period_start|date:'Y-m-d' }}&amp;to_date={{ period_end|date:'Y-m-d' }}">
                     <ion-icon name="calendar-outline"></ion-icon>
-                    {% if row.unresolved_conflicts %}
-                      {% trans "Regularise attendance" %}
-                    {% else %}
-                      {% trans "Open attendance" %}
-                    {% endif %}
                   </button>
-                  {% comment %}
-                  The other blocking problem -- no wage, no hourly rate, no
-                  earning marked as basic pay -- is fixed on the contract, so
-                  the contract opens from here too. ?modal=1 is the form's own
-                  modal chrome, which already exists for this.
-                  {% endcomment %}
+                  {% comment %}Opens the contract in the form's modal, for a missing wage or basic pay.{% endcomment %}
                   {% if row.contract and perms.payroll.change_contract %}
-                  <button type="button" class="pb__fix"
+                  <button type="button" class="oh-btn oh-btn--light-bkg"
+                          title="{% trans 'Edit contract' %}"
                           hx-get="{% url 'update-contract' row.contract.pk %}?modal=1"
                           hx-target="#relatedObjectModalBody"
                           data-toggle="oh-modal-toggle"
                           data-target="#relatedObjectModal">
                     <ion-icon name="create-outline"></ion-icon>
-                    {% trans "Edit contract" %}
                   </button>
                   {% endif %}
                 </div>
               </td>
-              <td class="pb__num">{{ row.present }}</td>
-              <td class="pb__num">{{ row.paid_leave }}</td>
-              <td class="pb__num">{{ row.unpaid_leave }}</td>
-              <td class="pb__num">{{ row.absent }}</td>
-              <td class="pb__num">{{ row.week_off }}</td>
-              <td class="pb__num">{{ row.holiday }}</td>
-              <td class="pb__num">{{ row.total_working }}</td>
-              <td class="pb__num {% if row.low_paid %}pb__low{% endif %}"
-                  {% if row.low_paid %}title="{% blocktrans with n=low_paid_threshold %}Under {{ n }} paid days{% endblocktrans %}"{% endif %}>
-                {{ row.paid_days }}
-              </td>
-              <td class="pb__num">{{ row.overtime_label|default:"—" }}</td>
             </tr>
             {% endfor %}
             <tr data-no-match class="pb__row--hidden">
-              <td colspan="10" class="pb__empty">
+              <td colspan="11" class="pb__empty">
                 {% trans "Nobody here matches that search." %}
               </td>
             </tr>
@@ -260,19 +331,86 @@
     </div>
 
     {% if excluded %}
-    <div class="pb__panel mb-3">
-      <div class="pb__panel-head">{% trans "Not included" %}</div>
-      <table class="pb__table">
-        <tbody>
-          {% for employee, reason in excluded %}
-          <tr>
-            <td style="width:35%;">{{ employee }}</td>
-            <td style="color:#6b7280;">{{ reason }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    {% comment %}Collapsed by default: who is left out is rarely the point of this step.{% endcomment %}
+    <div class="pb__panel mb-3" x-data="{ open: false }" id="pb-excluded">
+      <button type="button" class="pb__panel-head w-100" style="cursor:pointer;text-align:left;"
+              @click="open = !open" :aria-expanded="open.toString()">
+        <span>{% trans "Not included" %} <span class="pb__count">({{ excluded|length }})</span></span>
+        <ion-icon name="chevron-down-outline" :style="open ? 'transform:rotate(180deg)' : ''"
+                  style="transition:transform .15s;"></ion-icon>
+      </button>
+      <div x-show="open" x-cloak>
+        <div class="overflow-x-auto p-2">
+          <table class="fixed-table w-full border-separate">
+            <thead class="sticky top-0 bg-[white] z-[1]">
+              <tr class="border-b border-[#ececec]">
+                <th class="text-sm font-medium text-left min-w-[85px]"><div class="px-1.5 py-1.5">{% trans "Employee" %}</div></th>
+                <th class="text-sm font-medium text-left min-w-[85px]"><div class="px-1.5 py-1.5">{% trans "Reason" %}</div></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for employee, reason in excluded %}
+              <tr data-ex-row>
+                <td class="text-sm text-left px-1 py-1 text-[#666]" style="width:35%;">{{ employee }}</td>
+                <td class="text-sm text-left px-1 py-1 text-[#666]">{{ reason }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% comment %}The theme's pagination box, driven in the page: the whole list is already here.{% endcomment %}
+        <div class="pb__pager" data-ex-pager hidden>
+          <div class="hlv-pagination border border-primary-500">
+            <button type="button" data-ex-go="first" title="{% trans 'First' %}" aria-label="{% trans 'First page' %}"><i class="fa-solid fa-angles-left"></i></button>
+            <button type="button" data-ex-go="prev" title="{% trans 'Previous' %}" aria-label="{% trans 'Previous page' %}"><i class="fa-solid fa-angle-left"></i></button>
+            <div>
+              <input type="number" min="1" value="1" data-ex-input
+                     title="{% trans 'Enter a page number and press Enter' %}" aria-label="{% trans 'Page number' %}"
+                     onclick="this.select()">
+              <span data-ex-total>/ 1</span>
+            </div>
+            <button type="button" data-ex-go="next" title="{% trans 'Next' %}" aria-label="{% trans 'Next page' %}"><i class="fa-solid fa-angle-right"></i></button>
+            <button type="button" data-ex-go="last" title="{% trans 'Last' %}" aria-label="{% trans 'Last page' %}"><i class="fa-solid fa-angles-right"></i></button>
+          </div>
+        </div>
+      </div>
     </div>
+    <script>
+    (function () {
+      var root = document.getElementById("pb-excluded");
+      if (!root) return;
+      var rows = Array.prototype.slice.call(root.querySelectorAll("[data-ex-row]"));
+      var pager = root.querySelector("[data-ex-pager]");
+      var input = root.querySelector("[data-ex-input]");
+      var total = root.querySelector("[data-ex-total]");
+      var SIZE = 10;
+      var pages = Math.max(1, Math.ceil(rows.length / SIZE));
+      var page = 1;
+
+      function show(n) {
+        page = Math.min(Math.max(parseInt(n, 10) || 1, 1), pages);
+        rows.forEach(function (row, i) {
+          row.style.display = Math.floor(i / SIZE) + 1 === page ? "" : "none";
+        });
+        input.value = page;
+        input.max = pages;
+        total.textContent = "/ " + pages;
+        root.querySelectorAll('[data-ex-go="first"],[data-ex-go="prev"]').forEach(function (b) { b.disabled = page === 1; });
+        root.querySelectorAll('[data-ex-go="next"],[data-ex-go="last"]').forEach(function (b) { b.disabled = page === pages; });
+      }
+
+      pager.hidden = pages === 1;
+      root.querySelectorAll("[data-ex-go]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var go = btn.dataset.exGo;
+          show(go === "first" ? 1 : go === "prev" ? page - 1 : go === "next" ? page + 1 : pages);
+        });
+      });
+      input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); show(input.value); } });
+      input.addEventListener("change", function () { show(input.value); });
+      show(1);
+    })();
+    </script>
     {% endif %}
 
   </section>
@@ -289,6 +427,19 @@ The default order is not a sort -- it is "blocked first, then by name", set in
 batch_run.review() because a blocked row is the reason the screen is being
 read. Sorting a column overrides that, so there is a way back to it.
 {% endcomment %}
+<style>
+  #pb-review-table .stickyleft, #pb-review-table .stickyright { z-index: 2; }
+  #pb-review-table thead .stickyleft, #pb-review-table thead .stickyright { z-index: 3; }
+  #pb-review-table tbody tr:hover .stickyleft,
+  #pb-review-table tbody tr:hover .stickyright { background: var(--pb-soft, #f6f7f9); }
+  #pb-review-table tbody tr.pb__row--blocked .stickyleft,
+  #pb-review-table tbody tr.pb__row--blocked .stickyright { background: #fef2f2; }
+  #pb-review-table .stickyleft { border-right: 1px solid #ececec; }
+  #pb-review-table .stickyright { border-left: 1px solid #ececec; }
+  #pb-review-table td { padding-top: 2px; padding-bottom: 2px; }
+  .pb__colhead { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #6b7280; margin-bottom: 4px; }
+  .pb__colopt { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 2px 0; cursor: pointer; }
+</style>
 <script>
 (function () {
   var table = document.getElementById("pb-review-table");
@@ -302,7 +453,7 @@ read. Sorting a column overrides that, so there is a way back to it.
   // panel reuse plenty of attribute names, and a document-wide lookup ends up
   // reading somebody else's element.
   var panel = table.closest(".pb__panel") || document;
-  var search = panel.querySelector("[data-row-search]");
+  var search = document.querySelector("[data-row-search]");
   var counter = panel.querySelector("[data-row-count]");
   var reset = panel.querySelector("[data-sort-reset]");
 
@@ -341,8 +492,13 @@ read. Sorting a column overrides that, so there is a way back to it.
   function markHeaders() {
     table.querySelectorAll("[data-sort-key]").forEach(function (th) {
       var active = th.dataset.sortKey === sortKey;
-      th.classList.toggle("pb__sortable--on", active);
-      th.classList.toggle("pb__sortable--desc", active && !ascending);
+      var icons = th.querySelectorAll("[data-sort-icons] i");
+      // Ascending shows the down arrow, descending the up arrow, as the
+      // theme's list headers do; unsorted shows both.
+      if (icons.length === 2) {
+        icons[0].style.display = active && ascending ? "none" : "";
+        icons[1].style.display = active && !ascending ? "none" : "";
+      }
       th.setAttribute(
         "aria-sort",
         active ? (ascending ? "ascending" : "descending") : "none"
@@ -392,9 +548,37 @@ read. Sorting a column overrides that, so there is a way back to it.
     // Escape clears, which is what a search box is expected to do.
     search.addEventListener("keydown", function (e) {
       if (e.key === "Escape") { search.value = ""; filter(); }
+      // Enter must not submit the form the box sits in -- that generates payslips.
+      if (e.key === "Enter") { e.preventDefault(); }
     });
   }
 
+  // Column chooser: hide or show a column in the header and every row. The
+  // choice is remembered in the browser, and the pinned columns are not in it.
+  var COLS_KEY = "pbReviewColumns";
+  var hidden = [];
+  try { hidden = JSON.parse(localStorage.getItem(COLS_KEY) || "[]"); } catch (e) {}
+
+  function applyColumns() {
+    table.querySelectorAll("[data-col]").forEach(function (cell) {
+      cell.style.display = hidden.indexOf(cell.dataset.col) !== -1 ? "none" : "";
+    });
+    document.querySelectorAll("[data-col-toggle]").forEach(function (box) {
+      box.checked = hidden.indexOf(box.dataset.colToggle) === -1;
+    });
+  }
+
+  document.querySelectorAll("[data-col-toggle]").forEach(function (box) {
+    box.addEventListener("change", function () {
+      var key = box.dataset.colToggle;
+      hidden = hidden.filter(function (k) { return k !== key; });
+      if (!box.checked) hidden.push(key);
+      try { localStorage.setItem(COLS_KEY, JSON.stringify(hidden)); } catch (e) {}
+      applyColumns();
+    });
+  });
+
+  applyColumns();
   filter();
   markHeaders();
 })();
@@ -408,6 +592,10 @@ read. Sorting a column overrides that, so there is a way back to it.
   the honest response: it closes everything and re-runs the review.
   {% endcomment %}
   document.body.addEventListener("reloadPayrollContracts", function () {
+    window.location.reload();
+  });
+  // The attendance calendar announces a saved resolution when it is closed.
+  document.addEventListener("attendance-calendar-saved", function () {
     window.location.reload();
   });
 </script>

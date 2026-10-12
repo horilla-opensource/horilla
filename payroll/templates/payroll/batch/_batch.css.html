@@ -404,10 +404,57 @@ apart the moment they were written twice.
     color: var(--pb-muted);
   }
   .pb__search:focus-within { border-color: var(--pb-accent); }
-  .pb__search input {
-    border: 0; outline: 0; background: none; font-size: .78rem;
-    color: var(--pb-ink); width: 190px;
+
+  /* ---- the run, in a modal ---- */
+  .pb__runmodal {
+    position: fixed; inset: 0; z-index: 100000; background: rgba(0,0,0,.45);
+    align-items: center; justify-content: center;
   }
+  .pb__runmodal-box {
+    background: #fff; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    width: min(94vw, 620px); max-height: 90vh; overflow-y: auto;
+  }
+  .pb__runmodal-head { padding: 1rem 1.25rem; border-bottom: 1px solid var(--pb-line); }
+  .pb__runmodal-title { font-weight: 600; font-size: 1.05rem; }
+  .pb__runmodal-sub { font-size: .8rem; color: var(--pb-muted); }
+  .pb__lines { max-height: 200px; overflow-y: auto; border: 1px solid var(--pb-line); border-radius: 8px; }
+  .pb__lines--failed { border-color: #fecaca; }
+  .pb__lines-title {
+    position: sticky; top: 0; background: #fef2f2; color: #b91c1c;
+    font-size: .72rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .04em; padding: 5px 10px;
+  }
+  .pb__run-now {
+    display: flex; align-items: center; gap: 6px; margin-top: .6rem;
+    font-size: .82rem; color: var(--pb-muted);
+  }
+  .pb__run-pct { margin-left: auto; font-weight: 600; color: var(--pb-ink); font-variant-numeric: tabular-nums; }
+  .pb__run-time { font-size: .78rem; color: var(--pb-muted); font-variant-numeric: tabular-nums; }
+  .pb__run-counts { display: flex; gap: 1.25rem; margin-top: .6rem; font-size: .8rem; color: var(--pb-muted); }
+  .pb__run-counts b { color: var(--pb-ink); font-variant-numeric: tabular-nums; }
+  .pb__run-bad { color: #b91c1c !important; }
+  /* Four figures in one row: the default wrapped the last one onto a row of its own. */
+  .pb__runmodal .pb__kpis { grid-template-columns: repeat(4, 1fr); }
+  .pb__runmodal .pb__kpi { padding: .7rem .8rem; }
+  .pb__runmodal .pb__kpi-value { font-size: 1.1rem; }
+  .pb__line {
+    display: flex; align-items: center; gap: 8px; padding: 5px 10px;
+    font-size: .8rem; border-bottom: 1px solid var(--pb-line);
+  }
+  .pb__line:last-child { border-bottom: 0; }
+  .pb__line ion-icon { color: #16a34a; flex: 0 0 auto; }
+  .pb__line--failed ion-icon { color: #dc2626; }
+  .pb__line-name { font-weight: 600; flex: 1 1 auto; }
+  .pb__line-note { color: var(--pb-muted); font-variant-numeric: tabular-nums; text-align: right; }
+  .pb__line--failed .pb__line-note { color: #b91c1c; }
+  /* The theme styles bare inputs (border, ring, height); this one is boxed by its label. */
+  .pb__search input {
+    border: 0 !important; outline: 0 !important; box-shadow: none !important;
+    background: none !important; padding: 0 !important; height: auto !important;
+    font-size: .78rem; color: var(--pb-ink); width: 190px;
+  }
+  .pb__titlebar-search { height: 40px; padding: 0 12px; border-radius: 8px; background: #fff; }
+  .pb__titlebar-search input { font-size: .85rem; width: 220px; }
 
   /* ---- sortable headers ---- */
   /* Not the [hidden] attribute: a `tr { display: table-row }` rule in any
