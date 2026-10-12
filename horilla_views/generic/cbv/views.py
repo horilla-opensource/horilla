@@ -50,6 +50,7 @@ from horilla.signals import post_generic_import, pre_generic_import
 from horilla_views import models
 from horilla_views.cbv_methods import (  # update_initial_cache,
     assign_related,
+    dedupe_single_value_params,
     export_xlsx,
     generate_import_excel,
     get_short_uuid,
@@ -337,7 +338,7 @@ class HorillaListView(ListView):
         context["sortby_mapping"] = self.sortby_mapping
         context["selected_instances_key_id"] = self.selected_instances_key_id
         context["row_status_indications"] = self.row_status_indications
-        context["saved_filters"] = self._saved_filters
+        context["saved_filters"] = dedupe_single_value_params(self._saved_filters)
         context["quick_export"] = self.quick_export and has_export_access(
             self.request, self.model
         )
@@ -1968,7 +1969,7 @@ class HorillaCardView(ListView):
         context["card_status_indications"] = self.card_status_indications
         context["custom_body_template"] = self.custom_body_template
         context["custom_empty_template"] = self.custom_empty_template
-        context["saved_filters"] = self._saved_filters
+        context["saved_filters"] = dedupe_single_value_params(self._saved_filters)
 
         if self.show_filter_tags:
             data_dict = parse_qs(self._saved_filters.urlencode())
@@ -2028,7 +2029,9 @@ class HorillaCardView(ListView):
                     records_per_page=self.records_per_page,
                 )
                 context["queryset"] = queryset[:0]  # empty — groups has the data
-                context["saved_filters"] = self._saved_filters
+                context["saved_filters"] = dedupe_single_value_params(
+                    self._saved_filters
+                )
             except Exception:
                 context["queryset"] = paginator_qry(
                     queryset, self.request.GET.get("page"), self.records_per_page

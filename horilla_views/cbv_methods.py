@@ -412,6 +412,18 @@ def paginator_qry(qryset, page_number, records_per_page=50):
     return qryset
 
 
+SINGLE_VALUE_QUERY_PARAMS = {"page", "view_id", "filter_applied", "sortby"}
+
+
+def dedupe_single_value_params(query_dict):
+    """Copy of query_dict keeping only the last value of single-value params."""
+    cleaned = query_dict.copy()
+    for key in list(cleaned.keys()):
+        if key in SINGLE_VALUE_QUERY_PARAMS or key.startswith("dynamic_page"):
+            cleaned[key] = cleaned.getlist(key)[-1]
+    return cleaned
+
+
 def saved_filter_path_query(request):
     """
     SavedFilter rows are keyed by the request path that was active when they
