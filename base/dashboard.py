@@ -17,10 +17,10 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
 
-def _safe_url(url_name):
-    """Reverse a URL name; return '#' if the URL is not registered."""
+def _safe_url(url_name, query=""):
+    """Reverse a URL name with an optional query string; return '#' if the URL is not registered."""
     try:
-        return reverse(url_name)
+        return reverse(url_name) + query
     except Exception:
         return "#"
 
@@ -186,7 +186,7 @@ def _get_setup_checklist_context(request):
             "key": "shift",
             "title": _("Shift"),
             "description": _("Define working schedules — Morning, Evening, Night."),
-            "url": _safe_url("employee-shift-view"),
+            "url": _safe_url("employee-settings-view", "?tab=shift"),
             "done": (
                 _exists_for_company(EmployeeShift, company_pk) if company_pk else False
             ),
@@ -195,7 +195,7 @@ def _get_setup_checklist_context(request):
             "key": "shift_schedule",
             "title": _("Shift Schedule"),
             "description": _("Set day-wise timings for each shift."),
-            "url": _safe_url("employee-shift-schedule-view"),
+            "url": _safe_url("employee-settings-view", "?tab=shift-schedule"),
             "done": (
                 _exists_for_company(EmployeeShiftSchedule, company_pk)
                 if company_pk
@@ -206,7 +206,7 @@ def _get_setup_checklist_context(request):
             "key": "work_type",
             "title": _("Work Type"),
             "description": _("Set engagement types — Full Time, Part Time, Contract."),
-            "url": _safe_url("work-type-view"),
+            "url": _safe_url("employee-settings-view", "?tab=work-type"),
             "done": _exists_for_company(WorkType, company_pk) if company_pk else False,
         },
         {
