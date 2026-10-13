@@ -11,7 +11,6 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
@@ -143,106 +142,50 @@ class TaskListView(HorillaListView):
         "end_date",
     ]
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        today = timezone.now().date()
-        tomorrow = today + timezone.timedelta(days=1)
-        this_week = today + timezone.timedelta(days=7)
-        yesterday = today - timezone.timedelta(days=1)
-
-        self.row_status_indications = [
-            (
-                "todo--dot",
-                _("To Do"),
-                """
-                    onclick="
-                        $('#applyFilter').closest('form').find('[name=status]').val('to_do');
-                        $('#applyFilter').click();
-                    "
-                """,
-            ),
-            (
-                "in-progress--dot",
-                _("In progress"),
-                """
-                    onclick="
-                        $('#applyFilter').closest('form').find('[name=status]').val('in_progress');
-                        $('#applyFilter').click();
-                    "
-                """,
-            ),
-            (
-                "completed--dot",
-                _("Completed"),
-                """
-                    onclick="
-                        $('#applyFilter').closest('form').find('[name=status]').val('completed');
-                        $('#applyFilter').click();
-                    "
-                """,
-            ),
-            (
-                "expired--dot",
-                _("Expired"),
-                """
-                    onclick="
-                        $('#applyFilter').closest('form').find('[name=status]').val('expired');
-                        $('#applyFilter').click();
-                    "
-                """,
-            ),
-            (
-                "",
-                _("Yesterday"),
-                f"""
-                    onclick="
-                        $('#applyFilter').closest('form').find('[name=end_from]').val('');
-                        $('#applyFilter').closest('form').find('[name=end_till]').val('');
-                        $('#applyFilter').closest('form').find('[name=end_date]').val('{yesterday}');
-                        $('#applyFilter').click();
-                    "
-                """,
-            ),
-            (
-                "",
-                _("Today"),
-                f"""
-                    onclick="
-                        $('#applyFilter').closest('form').find('[name=end_from]').val('');
-                        $('#applyFilter').closest('form').find('[name=end_till]').val('');
-                        $('#applyFilter').closest('form').find('[name=end_date]').val('{today}');
-                        $('#applyFilter').click();
-                    "
-                """,
-            ),
-            (
-                "",
-                _("Tomorrow"),
-                f"""
-                    onclick="
-                        $('#applyFilter').closest('form').find('[name=end_from]').val('');
-                        $('#applyFilter').closest('form').find('[name=end_till]').val('');
-                        $('#applyFilter').closest('form').find('[name=end_date]').val('{tomorrow}');
-                        $('#applyFilter').click();
-                    "
-                """,
-            ),
-            (
-                "",
-                _("This Week"),
-                f"""
-                    onclick="
-                        $('#applyFilter').closest('form').find('[name=end_date]').val('');
-                        $('#applyFilter').closest('form').find('[name=end_from]').val('{today}');
-                        $('#applyFilter').closest('form').find('[name=end_till]').val('{this_week}');
-                        $('#applyFilter').click();
-                    "
-                """,
-            ),
-        ]
-        context["row_status_indications"] = self.row_status_indications
-        return context
+    row_status_indications = [
+        (
+            "todo--dot",
+            _("To Do"),
+            """
+                onclick="
+                    $('#applyFilter').closest('form').find('[name=status]').val('to_do');
+                    $('#applyFilter').click();
+                "
+            """,
+        ),
+        (
+            "in-progress--dot",
+            _("In progress"),
+            """
+                onclick="
+                    $('#applyFilter').closest('form').find('[name=status]').val('in_progress');
+                    $('#applyFilter').click();
+                "
+            """,
+        ),
+        (
+            "completed--dot",
+            _("Completed"),
+            """
+                onclick="
+                    $('#applyFilter').closest('form').find('[name=status]').val('completed');
+                    $('#applyFilter').click();
+                "
+            """,
+        ),
+        (
+            "expired--dot",
+            _("Expired"),
+            """
+                onclick="
+                    $('#applyFilter').closest('form').find('[name=status]').val('expired');
+                    $('#applyFilter').click();
+                "
+            """,
+        ),
+    ]
+    show_quick_date_filters = True
+    quick_date_fields = ("end_date", "end_from", "end_till")
 
 
 @method_decorator(login_required, name="dispatch")
@@ -616,66 +559,8 @@ class TaskCardView(HorillaKanbanView):
             },
         ]
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        today = timezone.now().date()
-        tomorrow = today + timezone.timedelta(days=1)
-        this_week = today + timezone.timedelta(days=7)
-        yesterday = today - timezone.timedelta(days=1)
-
-        self.card_status_indications = [
-            (
-                "",
-                _("Yesterday"),
-                f"""
-                    onclick="
-                        $('#applyFilter').closest('form').find('[name=end_from]').val('');
-                        $('#applyFilter').closest('form').find('[name=end_till]').val('');
-                        $('#applyFilter').closest('form').find('[name=end_date]').val('{yesterday}');
-                        $('#applyFilter').click();
-                    "
-                """,
-            ),
-            (
-                "",
-                _("Today"),
-                f"""
-                    onclick="
-                        $('#applyFilter').closest('form').find('[name=end_from]').val('');
-                        $('#applyFilter').closest('form').find('[name=end_till]').val('');
-                        $('#applyFilter').closest('form').find('[name=end_date]').val('{today}');
-                        $('#applyFilter').click();
-                    "
-                """,
-            ),
-            (
-                "",
-                _("Tomorrow"),
-                f"""
-                    onclick="
-                        $('#applyFilter').closest('form').find('[name=end_from]').val('');
-                        $('#applyFilter').closest('form').find('[name=end_till]').val('');
-                        $('#applyFilter').closest('form').find('[name=end_date]').val('{tomorrow}');
-                        $('#applyFilter').click();
-                    "
-                """,
-            ),
-            (
-                "",
-                _("This Week"),
-                f"""
-                    onclick="
-                        $('#applyFilter').closest('form').find('[name=end_date]').val('');
-                        $('#applyFilter').closest('form').find('[name=end_from]').val('{today}');
-                        $('#applyFilter').closest('form').find('[name=end_till]').val('{this_week}');
-                        $('#applyFilter').click();
-                    "
-                """,
-            ),
-        ]
-        context["card_status_indications"] = self.card_status_indications
-        return context
+    show_quick_date_filters = True
+    quick_date_fields = ("end_date", "end_from", "end_till")
 
     def get_queryset(self):
         self.queryset = super().get_queryset()
@@ -751,6 +636,7 @@ class TasksInIndividualView(TaskListView):
 
     show_filter_tags = False
     row_status_indications = None
+    show_quick_date_filters = False
     bulk_select_option = False
     action_method = None
     custom_empty_template = "cbv/projects/compact_empty.html"

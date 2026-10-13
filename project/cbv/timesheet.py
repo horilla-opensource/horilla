@@ -10,7 +10,6 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import resolve, reverse
-from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.formats import localize
 from django.utils.functional import cached_property
@@ -312,84 +311,32 @@ class TimeSheetList(HorillaListView):
             (get_field("date").verbose_name, "date"),
         ]
 
-    @cached_property
-    def row_status_indications(self):
-        today = timezone.now().date()
-        tomorrow = today + timezone.timedelta(days=1)
-        this_week = today + timezone.timedelta(days=7)
-        yesterday = today - timezone.timedelta(days=1)
-        return [
-            (
-                "in-progress--dot",
-                _("In progress"),
-                """
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=status]').val('in_Progress');
-                    $('#applyFilter').click();
+    row_status_indications = [
+        (
+            "in-progress--dot",
+            _("In progress"),
+            """
+            onclick="
+                $('#applyFilter').closest('form').find('[name=status]').val('in_Progress');
+                $('#applyFilter').click();
 
-                "
-                """,
-            ),
-            (
-                "completed--dot",
-                _("Completed"),
-                """
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=status]').val('completed');
-                    $('#applyFilter').click();
+            "
+            """,
+        ),
+        (
+            "completed--dot",
+            _("Completed"),
+            """
+            onclick="
+                $('#applyFilter').closest('form').find('[name=status]').val('completed');
+                $('#applyFilter').click();
 
-                "
-                """,
-            ),
-            (
-                "filter--dot",
-                _("Yesterday"),
-                f"""
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=start_from]').val('');
-                    $('#applyFilter').closest('form').find('[name=end_till]').val('');
-                    $('#applyFilter').closest('form').find('[name=date]').val('{yesterday}');
-                    $('#applyFilter').click();
-                "
-                """,
-            ),
-            (
-                "filter--dot",
-                _("Today"),
-                f"""
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=start_from]').val('');
-                    $('#applyFilter').closest('form').find('[name=end_till]').val('');
-                    $('#applyFilter').closest('form').find('[name=date]').val('{today}');
-                    $('#applyFilter').click();
-                "
-                """,
-            ),
-            (
-                "filter--dot",
-                _("Tomorrow"),
-                f"""
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=start_from]').val('');
-                    $('#applyFilter').closest('form').find('[name=end_till]').val('');
-                    $('#applyFilter').closest('form').find('[name=date]').val('{tomorrow}');
-                    $('#applyFilter').click();
-                "
-                """,
-            ),
-            (
-                "filter--dot",
-                _("This Week"),
-                f"""
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=date]').val('');
-                    $('#applyFilter').closest('form').find('[name=start_from]').val('{today}');
-                    $('#applyFilter').closest('form').find('[name=end_till]').val('{this_week}');
-                    $('#applyFilter').click();
-                "
-                """,
-            ),
-        ]
+            "
+            """,
+        ),
+    ]
+    show_quick_date_filters = True
+    quick_date_fields = ("date", "start_from", "end_till")
 
     row_attrs = """
                 hx-get='{detail_view}?instance_ids={ordered_ids}'
@@ -463,84 +410,32 @@ class MyTimeSheetList(HorillaListView):
             (get_field("date").verbose_name, "date"),
         ]
 
-    @cached_property
-    def row_status_indications(self):
-        today = timezone.now().date()
-        tomorrow = today + timezone.timedelta(days=1)
-        this_week = today + timezone.timedelta(days=7)
-        yesterday = today - timezone.timedelta(days=1)
-        return [
-            (
-                "in-progress--dot",
-                _("In progress"),
-                """
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=status]').val('in_Progress');
-                    $('#applyFilter').click();
+    row_status_indications = [
+        (
+            "in-progress--dot",
+            _("In progress"),
+            """
+            onclick="
+                $('#applyFilter').closest('form').find('[name=status]').val('in_Progress');
+                $('#applyFilter').click();
 
-                "
-                """,
-            ),
-            (
-                "completed--dot",
-                _("Completed"),
-                """
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=status]').val('completed');
-                    $('#applyFilter').click();
+            "
+            """,
+        ),
+        (
+            "completed--dot",
+            _("Completed"),
+            """
+            onclick="
+                $('#applyFilter').closest('form').find('[name=status]').val('completed');
+                $('#applyFilter').click();
 
-                "
-                """,
-            ),
-            (
-                "filter--dot",
-                _("Yesterday"),
-                f"""
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=start_from]').val('');
-                    $('#applyFilter').closest('form').find('[name=end_till]').val('');
-                    $('#applyFilter').closest('form').find('[name=date]').val('{yesterday}');
-                    $('#applyFilter').click();
-                "
-                """,
-            ),
-            (
-                "filter--dot",
-                _("Today"),
-                f"""
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=start_from]').val('');
-                    $('#applyFilter').closest('form').find('[name=end_till]').val('');
-                    $('#applyFilter').closest('form').find('[name=date]').val('{today}');
-                    $('#applyFilter').click();
-                "
-                """,
-            ),
-            (
-                "filter--dot",
-                _("Tomorrow"),
-                f"""
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=start_from]').val('');
-                    $('#applyFilter').closest('form').find('[name=end_till]').val('');
-                    $('#applyFilter').closest('form').find('[name=date]').val('{tomorrow}');
-                    $('#applyFilter').click();
-                "
-                """,
-            ),
-            (
-                "filter--dot",
-                _("This Week"),
-                f"""
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=date]').val('');
-                    $('#applyFilter').closest('form').find('[name=start_from]').val('{today}');
-                    $('#applyFilter').closest('form').find('[name=end_till]').val('{this_week}');
-                    $('#applyFilter').click();
-                "
-                """,
-            ),
-        ]
+            "
+            """,
+        ),
+    ]
+    show_quick_date_filters = True
+    quick_date_fields = ("date", "start_from", "end_till")
 
     row_attrs = """
                 hx-get='{detail_view}?instance_ids={ordered_ids}'
@@ -573,6 +468,7 @@ class TaskTimeSheet(TimeSheetList):
 
     row_attrs = ""
     row_status_indications = False
+    show_quick_date_filters = False
     bulk_select_option = False
 
     def __init__(self, **kwargs: Any) -> None:
@@ -829,84 +725,32 @@ class TimeSheetCardView(HorillaCardView):
 
     card_status_class = "status-{status}"
 
-    @cached_property
-    def card_status_indications(self):
-        today = timezone.now().date()
-        tomorrow = today + timezone.timedelta(days=1)
-        this_week = today + timezone.timedelta(days=7)
-        yesterday = today - timezone.timedelta(days=1)
-        return [
-            (
-                "in-progress--dot",
-                _("In progress"),
-                """
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=status]').val('in_Progress');
-                    $('#applyFilter').click();
+    card_status_indications = [
+        (
+            "in-progress--dot",
+            _("In progress"),
+            """
+            onclick="
+                $('#applyFilter').closest('form').find('[name=status]').val('in_Progress');
+                $('#applyFilter').click();
 
-                "
-                """,
-            ),
-            (
-                "completed--dot",
-                _("Completed"),
-                """
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=status]').val('completed');
-                    $('#applyFilter').click();
+            "
+            """,
+        ),
+        (
+            "completed--dot",
+            _("Completed"),
+            """
+            onclick="
+                $('#applyFilter').closest('form').find('[name=status]').val('completed');
+                $('#applyFilter').click();
 
-                "
-                """,
-            ),
-            (
-                "filter--dot",
-                _("Yesterday"),
-                f"""
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=start_from]').val('');
-                    $('#applyFilter').closest('form').find('[name=end_till]').val('');
-                    $('#applyFilter').closest('form').find('[name=date]').val('{yesterday}');
-                    $('#applyFilter').click();
-                "
-                """,
-            ),
-            (
-                "filter--dot",
-                _("Today"),
-                f"""
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=start_from]').val('');
-                    $('#applyFilter').closest('form').find('[name=end_till]').val('');
-                    $('#applyFilter').closest('form').find('[name=date]').val('{today}');
-                    $('#applyFilter').click();
-                "
-                """,
-            ),
-            (
-                "filter--dot",
-                _("Tomorrow"),
-                f"""
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=start_from]').val('');
-                    $('#applyFilter').closest('form').find('[name=end_till]').val('');
-                    $('#applyFilter').closest('form').find('[name=date]').val('{tomorrow}');
-                    $('#applyFilter').click();
-                "
-                """,
-            ),
-            (
-                "filter--dot",
-                _("This Week"),
-                f"""
-                onclick="
-                    $('#applyFilter').closest('form').find('[name=date]').val('');
-                    $('#applyFilter').closest('form').find('[name=start_from]').val('{today}');
-                    $('#applyFilter').closest('form').find('[name=end_till]').val('{this_week}');
-                    $('#applyFilter').click();
-                "
-                """,
-            ),
-        ]
+            "
+            """,
+        ),
+    ]
+    show_quick_date_filters = True
+    quick_date_fields = ("date", "start_from", "end_till")
 
     card_attrs = """
                 hx-get='{detail_view}?instance_ids={ordered_ids}'
