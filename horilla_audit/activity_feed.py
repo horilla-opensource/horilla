@@ -230,6 +230,7 @@ def normalize_log_entries(log_entries):
                 "source": "auditlog",
                 "revert_history_id": None,
                 "object_pk": getattr(entry, "object_pk", None),
+                "log_id": getattr(entry, "pk", None),
             }
         )
     return entries

@@ -153,6 +153,11 @@ def _employee_field_name(model):
     return candidates[0] if candidates else None
 
 
+def _model_label(model):
+    key = (model._meta.app_label.lower(), model._meta.model_name.lower())
+    return MODEL_LABELS.get(key, model._meta.verbose_name.title())
+
+
 def get_employee_history_models():
     """(key, label, model, field_name) for each curated HR-relevant model."""
     entries = []
@@ -186,6 +191,27 @@ def _history_related_name(model):
     return None
 
 
+def _history_rows_by_pk(model, history_related_name, rows):
+    """One query for every row's simple-history versions, newest first."""
+    accessor = getattr(model, history_related_name)
+    if hasattr(accessor, "model"):
+        history_model = accessor.model
+        link_field = model._meta.pk
+    else:
+        history_model = accessor.rel.related_model
+        link_field = accessor.rel.field
+
+    grouped = {row.pk: [] for row in rows}
+    versions = (
+        history_model.objects.filter(**{f"{link_field.name}__in": list(grouped)})
+        .select_related("history_user")
+        .order_by("-history_date", "-history_id")
+    )
+    for version in versions:
+        grouped.setdefault(getattr(version, link_field.attname), []).append(version)
+    return grouped
+
+
 def get_employee_model_history(
     employee, model_key, date_from=None, date_to=None, sort="-date"
 ):
@@ -207,18 +233,37 @@ def get_employee_model_history(
         .distinct()
         .order_by("-pk")[:MAX_RECORDS_PER_MODEL]
     )
+    if "__" not in field_name:
+        for row in rows:
+            setattr(row, field_name, employee)
 
     history_related_name = _history_related_name(model)
+    model_label = _model_label(model)
     entries = []
 
     if history_related_name:
         tracking_status = "simple_history"
+        versions_by_pk = _history_rows_by_pk(model, history_related_name, rows)
+        actor_cache = {}
         for row in rows:
-            for entry in normalize_tracking_entries(
-                get_diff(row, history_related_name)
-            ):
+            diffs = get_diff(
+                row,
+                history_related_name,
+                history_list=versions_by_pk.get(row.pk, []),
+                actor_cache=actor_cache,
+            )
+            record_repr = str(row)
+            for entry in normalize_tracking_entries(diffs):
+                pair = entry.get("pair")
                 entry["record"] = row
-                entry["record_repr"] = str(row)
+                entry["record_repr"] = record_repr
+                entry["model_label"] = model_label
+                history_id = getattr(pair[0], "pk", None) if pair else None
+                entry["entry_key"] = (
+                    f"{model_key}|h|{history_id}"
+                    if history_id is not None
+                    else f"{model_key}|c|{row.pk}"
+                )
                 entries.append(entry)
     else:
         # Query existing LogEntry rows before checking live registration --
@@ -234,6 +279,8 @@ def get_employee_model_history(
             row = by_pk.get(entry.get("object_pk"))
             entry["record"] = row
             entry["record_repr"] = str(row) if row else entry.get("object_pk")
+            entry["model_label"] = model_label
+            entry["entry_key"] = f"{model_key}|l|{entry['log_id']}"
             entries.append(entry)
 
         if entries or auditlog.contains(model):
@@ -259,3 +306,66 @@ def get_employee_model_history(
     )
 
     return entries, tracking_status
+
+
+def get_employee_entries_by_keys(employee, keys, sort="-date"):
+    """Entries picked by ``entry_key`` across models, merged into one feed."""
+    allowed = {m["key"] for m in get_employee_history_models()}
+    wanted = {}
+    for key in keys:
+        model_key = key.split("|", 1)[0]
+        if model_key in allowed:
+            wanted.setdefault(model_key, set()).add(key)
+
+    selected = []
+    for model_key, model_keys in wanted.items():
+        model_entries, _status = get_employee_model_history(
+            employee, model_key, sort=sort
+        )
+        selected.extend(e for e in model_entries if e.get("entry_key") in model_keys)
+
+    selected.sort(
+        key=lambda e: e["history_date"] or timezone.now(), reverse=sort != "date"
+    )
+    return selected
+
+
+def _entry_search_text(entry):
+    parts = [
+        entry.get("model_label"),
+        entry.get("record_repr"),
+        entry.get("actor_name"),
+        entry.get("action_phrase"),
+        entry.get("reason"),
+    ]
+    for change in entry.get("changes") or []:
+        parts.extend(
+            [
+                change.get("field_label") or change.get("field"),
+                change.get("old_value"),
+                change.get("new_value"),
+            ]
+        )
+    return " ".join(str(p) for p in parts if p).lower()
+
+
+def get_employee_history_search(
+    employee, model_options, search, date_from=None, date_to=None, sort="-date"
+):
+    """Entries from every given model whose text contains the search phrase."""
+    phrase = search.lower()
+    matched = []
+    for option in model_options:
+        model_entries, tracking_status = get_employee_model_history(
+            employee, option["key"], date_from=date_from, date_to=date_to, sort=sort
+        )
+        if tracking_status == "none":
+            continue
+        for entry in model_entries:
+            if phrase in _entry_search_text(entry):
+                matched.append(entry)
+
+    matched.sort(
+        key=lambda e: e["history_date"] or timezone.now(), reverse=sort != "date"
+    )
+    return matched

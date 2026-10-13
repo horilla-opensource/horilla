@@ -28,6 +28,7 @@ def activity_history_feed(
     has_perm_to_revert=False,
     object=None,
     model=None,
+    search=None,
 ):
     """
     Render the shared activity-history timeline.
@@ -49,6 +50,7 @@ def activity_history_feed(
     )
     return {
         **feed,
+        "search": search or feed["search"],
         "show_header": _as_bool(show_header, True),
         "show_search": _as_bool(show_search, True),
         "title": title or _("Activity history"),

@@ -21,7 +21,12 @@ from base.forms import AddToUserGroupForm
 from employee import views
 from employee.cbv.document_request import DocumentIndividualTabShell
 from employee.filters import EmployeeFilter
-from employee.history import get_employee_history_models, get_employee_model_history
+from employee.history import (
+    get_employee_entries_by_keys,
+    get_employee_history_models,
+    get_employee_history_search,
+    get_employee_model_history,
+)
 from employee.models import Employee
 from horilla import settings
 from horilla.http.response import HorillaRedirect
@@ -200,16 +205,36 @@ class EmployeeHistoryTabView(TemplateView):
         if sort not in {"date", "-date"}:
             sort = "-date"
 
-        entries, tracking_status = get_employee_model_history(
-            employee,
-            selected_model,
-            date_from=date_from,
-            date_to=date_to,
-            sort=sort,
-        )
+        search = (self.request.GET.get("search") or "").strip()
+        selected_view = self.request.GET.get("view") == "selected"
+        if selected_view:
+            entries = get_employee_entries_by_keys(
+                employee, self.request.GET.getlist("selected"), sort=sort
+            )
+            tracking_status = "simple_history"
+        elif search:
+            entries = get_employee_history_search(
+                employee,
+                model_options,
+                search,
+                date_from=date_from,
+                date_to=date_to,
+                sort=sort,
+            )
+            tracking_status = "simple_history"
+        else:
+            entries, tracking_status = get_employee_model_history(
+                employee,
+                selected_model,
+                date_from=date_from,
+                date_to=date_to,
+                sort=sort,
+            )
 
         context.update(
             {
+                "selected_view": selected_view,
+                "search": search,
                 "employee": employee,
                 "model_options": model_options,
                 "selected_model": selected_model,
