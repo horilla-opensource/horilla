@@ -5,6 +5,7 @@ horilla/cbv_methods.py
 import json
 import types
 import uuid
+from datetime import datetime, timedelta
 from io import BytesIO
 from typing import Any
 from urllib.parse import urlencode
@@ -410,6 +411,34 @@ def paginator_qry(qryset, page_number, records_per_page=50):
     paginator = Paginator(qryset, records_per_page)
     qryset = paginator.get_page(page_number)
     return qryset
+
+
+def get_quick_date_filters(ranges, fields):
+    """Build (label, onclick attrs) pairs from (label, start_offset, end_offset) ranges and (exact, from, to) fields."""
+    exact_field, from_field, to_field = fields
+    today = datetime.now().date()
+
+    def setter(name, value):
+        return (
+            f"$('#applyFilter').closest('form').find('[name={name}]').val('{value}');"
+        )
+
+    filters = []
+    for label, start_offset, end_offset in ranges:
+        start = today + timedelta(days=start_offset)
+        end = None if end_offset is None else today + timedelta(days=end_offset)
+        steps = []
+        if end is None and exact_field:
+            steps += [setter(from_field, ""), setter(to_field, "")]
+            steps.append(setter(exact_field, start))
+        else:
+            if exact_field:
+                steps.append(setter(exact_field, ""))
+            steps.append(setter(from_field, start))
+            steps.append(setter(to_field, end or start))
+        steps.append("$('#applyFilter').click();")
+        filters.append((label, 'onclick="' + " ".join(steps) + '"'))
+    return filters
 
 
 SINGLE_VALUE_QUERY_PARAMS = {"page", "view_id", "filter_applied", "sortby"}

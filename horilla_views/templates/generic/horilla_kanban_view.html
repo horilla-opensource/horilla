@@ -30,48 +30,9 @@
 
     {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
 
-    {% if card_status_indications %}
-        <div class="flex flex-wrap gap-2 items-center justify-end mb-2">
-            {% for indication in card_status_indications|with_dot %}
-                <button
-                    class="oh-row-status-indication px-4 py-2 bg-[white] border border-primary-500 hover:border-primary-600 rounded-md text-xs flex gap-2 items-center flex-shrink-0 whitespace-nowrap transition duration-300"
-                    {{ indication.2|safe }}
-                >
-                    <span class="h-3 w-3 rounded-full flex {{ indication.0 }}"></span>{{ indication.1 }}
-                </button>
-            {% endfor %}
-            {% with quick_date_indications=card_status_indications|without_dot %}
-                {% if quick_date_indications %}
-                    <div class="relative flex-shrink-0" x-data="{ open: false }">
-                        <button
-                            @click="open = !open"
-                            class="px-4 py-2 bg-white border border-primary-500 hover:border-primary-600 rounded-md text-xs flex gap-1 items-center whitespace-nowrap transition duration-300"
-                        >
-                            <ion-icon name="calendar-outline"></ion-icon>
-                            {% trans "Quick Date" %}
-                            <ion-icon name="chevron-down-outline"></ion-icon>
-                        </button>
-                        <div
-                            x-show="open"
-                            @click.outside="open = false"
-                            x-cloak
-                            class="absolute right-0 mt-1 z-20 bg-white border border-[#e6e6e6] rounded-md shadow-lg p-2 flex flex-col gap-1 min-w-[160px]"
-                        >
-                            {% for indication in quick_date_indications %}
-                                <button
-                                    class="px-3 py-2 rounded-md text-xs text-left whitespace-nowrap hover:bg-[#f5f5f5] transition duration-300"
-                                    {{ indication.2|safe }}
-                                    @click="open = false"
-                                >
-                                    {{ indication.1 }}
-                                </button>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
-            {% endwith %}
-        </div>
-    {% endif %}
+    {% with row_status_indications=card_status_indications %}
+        {% include "generic/quick_actions.html" with hide_pagination=True %}
+    {% endwith %}
 
     <div
         id="helperContainer"

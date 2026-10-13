@@ -336,6 +336,9 @@
                 </div>
         </div>
     {% else %}
+        {% with row_status_indications=card_status_indications %}
+            {% include "generic/quick_actions.html" %}
+        {% endwith %}
         {% if custom_empty_template %}
             {% include custom_empty_template %}
         {% else %}

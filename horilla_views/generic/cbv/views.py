@@ -53,6 +53,7 @@ from horilla_views.cbv_methods import (  # update_initial_cache,
     dedupe_single_value_params,
     export_xlsx,
     generate_import_excel,
+    get_quick_date_filters,
     get_short_uuid,
     get_verbose_name_from_field_path,
     hx_request_required,
@@ -194,6 +195,14 @@ class HorillaListView(ListView):
     selected_instances_key_id: str = "selectedInstances"
 
     show_filter_tags: bool = True
+    show_quick_date_filters: bool = False
+    quick_date_ranges: list = [
+        (_("Yesterday"), -1, None),
+        (_("Today"), 0, None),
+        (_("Tomorrow"), 1, None),
+        (_("This Week"), 0, 7),
+    ]
+    quick_date_fields: tuple = ("", "", "")
     show_toggle_form: bool = True
     filter_keys_to_remove: list = []
     # {field: value} pairs not shown as filter tags (still applied), e.g. a default
@@ -331,6 +340,11 @@ class HorillaListView(ListView):
         context["header_attrs"] = self.header_attrs
 
         context["show_filter_tags"] = self.show_filter_tags
+        context["show_quick_date_filters"] = self.show_quick_date_filters
+        if self.show_quick_date_filters:
+            context["quick_date_filters"] = get_quick_date_filters(
+                self.quick_date_ranges, self.quick_date_fields
+            )
         context["bulk_select_option"] = self.bulk_select_option
         context["show_header"] = self.show_header
         context["row_status_class"] = self.row_status_class
@@ -1899,6 +1913,14 @@ class HorillaCardView(ListView):
     card_attrs: str = """"""
 
     show_filter_tags: bool = True
+    show_quick_date_filters: bool = False
+    quick_date_ranges: list = [
+        (_("Yesterday"), -1, None),
+        (_("Today"), 0, None),
+        (_("Tomorrow"), 1, None),
+        (_("This Week"), 0, 7),
+    ]
+    quick_date_fields: tuple = ("", "", "")
     filter_keys_to_remove: list = []
     # {field: value} pairs not shown as filter tags (still applied), e.g. a default
     hidden_filter_tag_values: dict = {}
@@ -1965,6 +1987,11 @@ class HorillaCardView(ListView):
         context["actions"] = self.actions
         context["details"] = self.details
         context["show_filter_tags"] = self.show_filter_tags
+        context["show_quick_date_filters"] = self.show_quick_date_filters
+        if self.show_quick_date_filters:
+            context["quick_date_filters"] = get_quick_date_filters(
+                self.quick_date_ranges, self.quick_date_fields
+            )
         context["card_status_class"] = self.card_status_class
         context["card_status_indications"] = self.card_status_indications
         context["custom_body_template"] = self.custom_body_template
