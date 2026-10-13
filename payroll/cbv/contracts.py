@@ -51,12 +51,14 @@ class ContractsList(HorillaListView):
         "filing_status",
         "wage",
         "contract_status",
-        # Deliberately NOT salary_structure_id. A bulk update writes the field
-        # directly, and the field is not what puts an employee on a
-        # structure's components -- Contract.set_salary_structure is. Offering
-        # it here would assign a structure that then paid nothing, which is
-        # worse than not offering it. The Components bulk action does it
-        # properly.
+        # A bulk update otherwise applies every field with one raw SQL
+        # UPDATE, which never calls save() -- so this field alone would
+        # assign a structure an employee was never actually added to,
+        # paying nothing. Contract.bulk_update_setters routes it through
+        # set_salary_structure() per contract instead, same as the
+        # Components bulk action and the individual contract form already
+        # do.
+        "salary_structure_id",
     ]
 
     def __init__(self, **kwargs: Any) -> None:

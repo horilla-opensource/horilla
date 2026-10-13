@@ -919,6 +919,14 @@ class Contract(HorillaModel):
         else:
             return _("No")
 
+    # Read by DynamicBulkUpdateForm.save(): a bulk update otherwise applies
+    # every field with one raw SQL UPDATE, which never calls save() and so
+    # never runs _sync_structure_members -- bulk-changing salary_structure_id
+    # that way would leave every affected contract pointing at a structure
+    # whose components it was never actually added to. Naming the method
+    # here routes just this field through it instead, per selected contract.
+    bulk_update_setters = {"salary_structure_id": "set_salary_structure"}
+
     def set_salary_structure(self, new_structure):
         """
         Reassign this contract's salary structure. ``save()`` does the rest:
