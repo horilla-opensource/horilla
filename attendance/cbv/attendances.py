@@ -139,66 +139,12 @@ class AttendancesListView(HorillaListView):
         ("employee_id__employee_work_info__company_id", _("Company")),
     ]
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        today = datetime.now().date()
-        yesterday = today - timedelta(days=1)
-        tomorrow = today + timedelta(days=1)
-        this_week = today + timedelta(days=7)
-
-        self.row_status_indications = (self.row_status_indications or []) + [
-            (
-                "",
-                _("Yesterday"),
-                f"""
-                    onclick="
-                        $('#applyFilter').closest('form').find('[name=attendance_date__gte]').val('');
-                        $('#applyFilter').closest('form').find('[name=attendance_date__lte]').val('');
-                        $('#applyFilter').closest('form').find('[name=attendance_date]').val('{yesterday}');
-                        $('#applyFilter').click();
-                    "
-                """,
-            ),
-            (
-                "",
-                _("Today"),
-                f"""
-                    onclick="
-                        $('#applyFilter').closest('form').find('[name=attendance_date__gte]').val('');
-                        $('#applyFilter').closest('form').find('[name=attendance_date__lte]').val('');
-                        $('#applyFilter').closest('form').find('[name=attendance_date]').val('{today}');
-                        $('#applyFilter').click();
-                    "
-                """,
-            ),
-            (
-                "",
-                _("Tomorrow"),
-                f"""
-                    onclick="
-                        $('#applyFilter').closest('form').find('[name=attendance_date__gte]').val('');
-                        $('#applyFilter').closest('form').find('[name=attendance_date__lte]').val('');
-                        $('#applyFilter').closest('form').find('[name=attendance_date]').val('{tomorrow}');
-                        $('#applyFilter').click();
-                    "
-                """,
-            ),
-            (
-                "",
-                _("This Week"),
-                f"""
-                    onclick="
-                        $('#applyFilter').closest('form').find('[name=attendance_date]').val('');
-                        $('#applyFilter').closest('form').find('[name=attendance_date__gte]').val('{today}');
-                        $('#applyFilter').closest('form').find('[name=attendance_date__lte]').val('{this_week}');
-                        $('#applyFilter').click();
-                    "
-                """,
-            ),
-        ]
-        context["row_status_indications"] = self.row_status_indications
-        return context
+    show_quick_date_filters = True
+    quick_date_fields = (
+        "attendance_date",
+        "attendance_date__gte",
+        "attendance_date__lte",
+    )
 
     # def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
     #     """
