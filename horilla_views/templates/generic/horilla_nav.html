@@ -19,7 +19,7 @@
     id="filterForm"
     onsubmit="event.preventDefault()"
     hx-get="{{search_url}}"
-    hx-trigger="load, submit"
+    hx-trigger="load[htmxShouldLoadOnce('{{search_swap_target|default:'#listContainer'|escapejs}}', this)], submit"
     hx-replace-url="false"
     hx-target="{{search_swap_target}}"
     hx-timeout="15000"
@@ -237,6 +237,11 @@
 
   </div>
   <script>
+    // Captured synchronously (document.currentScript is only valid for the
+    // duration of this script's own top-level execution, not inside the
+    // setTimeout below) so htmxShouldLoadOnce can tell, on a tab page, which
+    // tab pane THIS nav instance belongs to -- see its own docstring.
+    var ohNavScriptEl = document.currentScript;
     var form = $('#filterForm')[0];
     var data ={{last_filter|safe}}
     for (const key in data) {
@@ -260,12 +265,19 @@
       }
     }
     setTimeout(() => {
-      $(".oh-btn--view-active").click();
-      {% if apply_first_filter %}
-      if (!$(".oh-btn--view-active").length) {
-        $("#applyFilter").click()
+      // See htmxShouldLoadOnce's docstring: htmx's Back-button history
+      // restore reinserts this whole nav fragment -- script tag included --
+      // already having run this same auto-click once, next to an already
+      // populated list. Re-running it would discard that restored content
+      // and refetch it, which is what made Back look like a full reload.
+      if (htmxShouldLoadOnce('{{search_swap_target|default:"#listContainer"|escapejs}}', ohNavScriptEl)) {
+        $(".oh-btn--view-active").click();
+        {% if apply_first_filter %}
+        if (!$(".oh-btn--view-active").length) {
+          $("#applyFilter").click()
+        }
+        {% endif %}
       }
-      {% endif %}
     }, 100);
     $(".oh-btn--view").click(function (e) {
       e.preventDefault();

@@ -135,7 +135,7 @@
                 id="filterForm"
                 onsubmit="event.preventDefault()"
                 hx-get="{{search_url}}"
-                hx-trigger="{% if apply_first_filter %}submit{% else %}load, submit{% endif %}"
+                hx-trigger="{% if apply_first_filter %}submit{% else %}load[htmxShouldLoadOnce('{{search_swap_target|default:'#listContainer'|escapejs}}', this)], submit{% endif %}"
                 hx-replace-url="false"
                 hx-target="{{search_swap_target}}"
                 hx-timeout="15000"
@@ -551,6 +551,11 @@
 {% endif %}
 
 <script>
+    // Captured synchronously (document.currentScript is only valid for the
+    // duration of this script's own top-level execution, not inside the
+    // setTimeout below) so htmxShouldLoadOnce can tell, on a tab page, which
+    // tab pane THIS nav instance belongs to -- see its own docstring.
+    var ohNavScriptEl = document.currentScript;
     $(document).ready(function () {
         $("#filterForm").on("htmx:configRequest", function (event) {
             if (event.detail.verb == "get" && event.target.tagName == "FORM") {
@@ -609,12 +614,21 @@
         });
 
         setTimeout(() => {
-            $(".oh-view-btn--active").click();
-            {% if apply_first_filter %}
-            if (!$(".oh-view-btn--active").length) {
-                $("#applyFilter").click()
+            // htmx's Back-button history restore reinserts this whole nav
+            // fragment -- script tag included -- exactly as it looked right
+            // before the user navigated away, i.e. already having run this
+            // same auto-click once and already sitting next to a fully
+            // populated list. Re-running it then would discard that correct,
+            // already-restored content and refetch it from scratch, which is
+            // what made Back look like the whole page reloading.
+            if (htmxShouldLoadOnce('{{search_swap_target|default:"#listContainer"|escapejs}}', ohNavScriptEl)) {
+                $(".oh-view-btn--active").click();
+                {% if apply_first_filter %}
+                if (!$(".oh-view-btn--active").length) {
+                    $("#applyFilter").click()
+                }
+                {% endif %}
             }
-            {% endif %}
         }, 100);
         $(document).ready(function () {
 

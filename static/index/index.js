@@ -979,6 +979,60 @@ function htmxLoadFailIndicator(e, evt) {
     renderLoadFailure($(e).attr("hx-target"), evt);
 }
 
+/**
+ * Guard for an `hx-trigger="load[...]"` conditional: htmx's history restore
+ * (the browser Back button, after an hx-push-url navigation) reinserts the
+ * whole previous page -- as a cache hit from its own localStorage snapshot,
+ * or as a fresh server refetch when that snapshot was evicted -- and
+ * reprocesses every node in it exactly like a first render. A swap target
+ * that was already fully loaded before the user navigated away gets
+ * reinserted already populated, but its own `hx-trigger="load"` loader fires
+ * again anyway and immediately refetches over it, which looks and feels
+ * exactly like the whole page reloading. This only returns true the first
+ * time a given target is genuinely empty, so the real first load is
+ * unaffected and only the redundant refetch-on-restore is skipped.
+ *
+ * `selector` (e.g. "#listContainer") is reused verbatim by every
+ * HorillaNavView/HorillaListView pair in the app, so a HorillaTabView page
+ * with more than one tab already loaded has several elements answering to it
+ * at once -- a bare `document.querySelector` always grabs the FIRST one,
+ * which belongs to whichever tab loaded earliest, not the tab this call is
+ * actually guarding. That earlier tab's target is never empty, so every
+ * later tab's own genuinely-empty target was wrongly read as "already
+ * loaded" and skipped its load entirely, leaving it blank. `scopeEl` -- an
+ * element that lives inside the SAME tab pane as the nav instance making
+ * this call (`this` from the hx-trigger expression, or a `<script>` element
+ * captured via `document.currentScript` before any async callback) -- lets
+ * this look inside that one pane (its nearest `.oh-tabs__content` ancestor)
+ * instead of the whole document, so each tab resolves its own target.
+ *
+ * A per-tab shell (generic/horilla_tab_content_shell.html,
+ * cbv/work_shift_tab/profile_tab_shell.html) renders `selector`'s container
+ * with a ".animated-background" skeleton div already inside it, before its
+ * Nav has even loaded -- so on a genuine first load the container already
+ * has one child, and a plain child-count check reads that as "already
+ * loaded" and never fires the real request at all. Skeleton-only content
+ * doesn't count as "loaded" here for that reason.
+ *
+ * @param {string} selector - CSS selector for the element being loaded into
+ *        (its own hx-target, or itself when none is set).
+ * @param {Element} [scopeEl] - an element inside this call's own tab pane,
+ *        if this nav instance might be one of several tabs on the page.
+ */
+function htmxShouldLoadOnce(selector, scopeEl) {
+    var scope = document;
+    if (scopeEl && typeof scopeEl.closest === "function") {
+        var pane = scopeEl.closest(".oh-tabs__content");
+        if (pane) scope = pane;
+    }
+    var el = selector && scope.querySelector(selector);
+    if (!el) return true;
+    var realChildren = Array.prototype.filter.call(el.children, function (child) {
+        return !child.classList.contains("animated-background");
+    });
+    return realChildren.length === 0;
+}
+
 function hxConfirm(element, messageText) {
     Swal.fire({
         html: messageText,

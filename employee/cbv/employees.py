@@ -414,11 +414,14 @@ class EmployeesList(HorillaListView):
                    """
     }
 
+    # A real navigation, not hx-get/hx-push-url into #listContainer: htmx
+    # takes over the browser's Back button for any URL it pushes that way,
+    # and its own history-restore always replaces the whole page body in one
+    # shot -- even on a cache hit, that full teardown-and-rebuild reads as
+    # the page reloading. A real link leaves Back to the browser's own
+    # native history, which is instant and flicker-free.
     row_attrs = """
-                hx-get="{get_profile_url}"
-                hx-target="#listContainer"
-                hx-swap="innerHTML"
-                hx-push-url="{get_individual_url}"
+                onclick="window.location.href='{get_individual_url}'"
                 class="cursor-pointer"
                 """
     sortby_mapping = [
@@ -899,11 +902,11 @@ class EmployeeCard(HorillaCardView):
 
     custom_body_template = "cbv/employees_view/card_body.html"
 
+    # See EmployeesList.row_attrs' comment: a real navigation so the
+    # browser's own Back/Forward history handles this, not htmx's.
     card_attrs = """
-                hx-get="{get_profile_url}"
-                hx-target="#listContainer"
-                hx-swap="innerHTML"
-                hx-push-url="{get_individual_url}"
+                onclick="window.location.href='{get_individual_url}'"
+                style="cursor:pointer"
                 """
 
 
