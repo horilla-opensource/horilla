@@ -116,6 +116,7 @@ from base.forms import (
     WorkTypeRequestColumnForm,
     WorkTypeRequestCommentForm,
     WorkTypeRequestForm,
+    find_reset_user,
 )
 from base.methods import (
     check_chart_permission,
@@ -922,6 +923,14 @@ def include_employee_instance(request, form):
     return form
 
 
+def mask_email(email):
+    """j***@acme.com: the first character of the name and the whole domain."""
+    name, _sep, domain = email.partition("@")
+    if not domain:
+        return email
+    return f"{name[:1]}***@{domain}"
+
+
 def reset_send_success(request):
     return render(request, "reset_send.html")
 
@@ -934,6 +943,9 @@ class HorillaPasswordResetView(PasswordResetView):
     template_name = "forgot_password.html"
     form_class = PassWordResetForm
     success_url = reverse_lazy("reset-send-success")
+    subject_template_name = "base/mail_templates/password_reset_subject.txt"
+    email_template_name = "base/mail_templates/password_reset_email.txt"
+    html_email_template_name = "base/mail_templates/password_reset_email.html"
 
     def form_valid(self, form):
         email_backend = ConfiguredEmailBackend()
@@ -946,25 +958,42 @@ class HorillaPasswordResetView(PasswordResetView):
             messages.error(self.request, _("Primary mail server is not configured"))
             return redirect("forgot-password")
 
-        username = form.cleaned_data["email"]
-        user = HorillaUser.objects.filter(username=username).first()
-        if user:
-            opts = {
-                "use_https": self.request.is_secure(),
-                "token_generator": self.token_generator,
-                "from_email": email_backend.dynamic_from_email_with_display_name,
-                "email_template_name": self.email_template_name,
-                "subject_template_name": self.subject_template_name,
-                "request": self.request,
-                "html_email_template_name": self.html_email_template_name,
-                "extra_email_context": self.extra_email_context,
-            }
-            form.save(**opts)
-            if self.request.user.is_authenticated:
-                messages.success(
-                    self.request, _("Password reset link sent successfully")
-                )
-                return HorillaRedirect(self.request)
+        user = find_reset_user(form.cleaned_data["email"])
+        if not user:
+            messages.error(
+                self.request,
+                _(
+                    "No account found with this username or email. "
+                    "Check it and try again."
+                ),
+            )
+            return redirect("forgot-password")
+        opts = {
+            "use_https": self.request.is_secure(),
+            "token_generator": self.token_generator,
+            "from_email": email_backend.dynamic_from_email_with_display_name,
+            "email_template_name": self.email_template_name,
+            "subject_template_name": self.subject_template_name,
+            "request": self.request,
+            "html_email_template_name": self.html_email_template_name,
+            "extra_email_context": self.extra_email_context,
+        }
+        form.save(**opts)
+        if not form.sent_to_email:
+            messages.error(
+                self.request,
+                _("This account has no email address to send the reset link to."),
+            )
+            return redirect("forgot-password")
+        # Masked (j***@acme.com): this page is reached without logging in, so
+        # the full address of whoever owns the username is not shown.
+        messages.success(
+            self.request,
+            _("Password reset link sent to %(email)s")
+            % {"email": mask_email(form.sent_to_email)},
+        )
+        if self.request.user.is_authenticated:
+            return HorillaRedirect(self.request)
 
         return redirect(reverse_lazy("reset-send-success"))
 
@@ -977,6 +1006,9 @@ class EmployeePasswordResetView(PasswordResetView):
 
     template_name = "forgot_password.html"
     form_class = PassWordResetForm
+    subject_template_name = "base/mail_templates/password_reset_subject.txt"
+    email_template_name = "base/mail_templates/password_reset_email.txt"
+    html_email_template_name = "base/mail_templates/password_reset_email.html"
 
     def form_valid(self, form):
         try:
@@ -990,8 +1022,7 @@ class EmployeePasswordResetView(PasswordResetView):
                 messages.error(self.request, _("Primary mail server is not configured"))
                 return HorillaRedirect(self.request)
 
-            username = form.cleaned_data["email"]
-            user = HorillaUser.objects.filter(username=username).first()
+            user = find_reset_user(form.cleaned_data["email"])
             # Previously had no server-side authorization at all -- the
             # trigger menu item is hidden client-side via
             # employee.cbv.accessibility.password_reset_accessibility, but
@@ -7973,16 +8004,14 @@ def generate_error_report(error_list, error_data, file_name):
     response = HttpResponse(content_type="application/ms-excel")
     response["Content-Disposition"] = f'attachment; filename="{file_name}"'
     writer = pd.ExcelWriter(response, engine="xlsxwriter")
-    try:
-        styled_data_frame = data_frame.style.map(
-            lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
-        )
-        styled_data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
-    except Exception:
-        data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
-
+    data_frame.to_excel(
+        writer, index=False, header=False, startrow=1, sheet_name="Sheet1"
+    )
     worksheet = writer.sheets["Sheet1"]
-    worksheet.set_column("A:Z", 30)
+    center_format = writer.book.add_format({"align": "center"})
+    header_format = writer.book.add_format({"bold": True, "align": "center"})
+    worksheet.set_column(0, len(data_frame.columns) - 1, 30, center_format)
+    worksheet.write_row(0, 0, list(data_frame.columns), header_format)
     writer.close()
 
     def get_error_sheet(request):
