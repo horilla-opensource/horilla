@@ -1916,6 +1916,15 @@ def employee_create_update_personal_info(request, obj_id=None):
     if form.is_valid():
         form.save()
         if obj_id is None:
+            # Saving an employee creates an empty work information row; put the
+            # company the user is working in on it (None when "All companies"
+            # is selected), or the employee has no company until someone edits
+            # it, and drops out of the company-filtered lists.
+            company = get_session_company(request)
+            if company:
+                EmployeeWorkInformation.objects.filter(
+                    employee_id=form.instance, company_id__isnull=True
+                ).update(company_id=company)
             messages.success(request, _("New Employee Added."))
             if send_employee_invitation(
                 form.instance, request.get_host(), request.is_secure()
