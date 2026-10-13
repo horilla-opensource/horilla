@@ -5,9 +5,9 @@
     {% if r.via == "structure" %}
       <input type="checkbox" checked disabled title="{% trans 'Applied through the salary structure' %}">
     {% elif editable %}
-      <input type="checkbox" data-applies-pick value="{{ r.pk }}">
+      <input type="checkbox" data-applies-pick value="{{ r.pk }}"{% if r.checked %} checked{% endif %}>
     {% else %}
-      <input type="checkbox" disabled>
+      <input type="checkbox" disabled{% if r.checked %} checked{% endif %}>
     {% endif %}
   </td>
   <td>{{ r.code|default:"-" }}</td>
@@ -18,11 +18,11 @@
     {% if r.via == "structure" %}
       <span class="oh-applies__pill oh-applies__pill--structure">{% trans "Via structure" %}</span>
     {% else %}
-      <span class="oh-applies__pill oh-applies__pill--outside" data-applies-outside hidden>{% trans "Outside structure" %}</span>
+      <span class="oh-applies__pill oh-applies__pill--outside" data-applies-outside{% if not r.checked %} hidden{% endif %}>{% trans "Outside structure" %}</span>
       {% if r.warning %}
-        <span class="oh-applies__warn" data-applies-outside hidden title="{% blocktrans with s=r.warning %}On the {{ s }} structure, which does not include this component. It is applied to them outside that structure.{% endblocktrans %}">&#9888; {% trans "Not in" %} {{ r.warning }}</span>
+        <span class="oh-applies__warn" data-applies-outside{% if not r.checked %} hidden{% endif %} title="{% blocktrans with s=r.warning %}On the {{ s }} structure, which does not include this component. It is applied to them outside that structure.{% endblocktrans %}">&#9888; {% trans "Not in" %} {{ r.warning }}</span>
       {% endif %}
-      <span class="oh-applies__none" data-applies-inside>&mdash;</span>
+      <span class="oh-applies__none" data-applies-inside{% if r.checked %} hidden{% endif %}>&mdash;</span>
     {% endif %}
   </td>
 </tr>

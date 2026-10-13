@@ -1,5 +1,12 @@
 {% load static %}
-<div hx-get="{% url nav_url_name pk=emp_id %}" hx-trigger="load"></div>
+{# See generic/horilla_tab_content_shell.html's comment: without a guard, htmx's #}
+{# Back-button history restore reinserts this shell already populated, and the #}
+{# bare "load" trigger below refetches over it anyway -- this tab section #}
+{# visibly reloading right after the rest of the page comes back. Checking this #}
+{# div's own child count (it swaps into itself, no hx-target) rather than #}
+{# #{{ shell_target_id }} -- which always starts with one child, the #}
+{# ".animated-background" skeleton below, even on a genuine first load. #}
+<div hx-get="{% url nav_url_name pk=emp_id %}" hx-trigger="load[this.children.length===0]"></div>
 <div id="{{ shell_target_id }}" class="oh-wrapper">
     <div class="animated-background"></div>
 </div>

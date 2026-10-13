@@ -510,6 +510,18 @@
 
   window.horillaComponentForm = wire;
 
+  // htmx:afterSettle fires after its ~20ms settle delay (time for CSS
+  // transition classes to apply), by which point the browser has already
+  // painted the swapped-in form exactly as the server rendered it -- every
+  // step panel and every condition-gated field visible, since none of that
+  // hiding happens until this file's wire() runs. That paint-then-collapse
+  // is the blink. htmx:afterSwap fires synchronously right after the new
+  // content lands in the DOM, before anything has had a chance to render,
+  // so running wire() there hides what needs hiding before the first paint
+  // instead of after it. Settle is kept too, as a harmless no-op second
+  // pass -- wire() just re-applies the same state -- in case anything ever
+  // changes between swap and settle that sync()/showStep() need to see.
+  document.addEventListener("htmx:afterSwap", wire);
   document.addEventListener("htmx:afterSettle", wire);
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", wire);

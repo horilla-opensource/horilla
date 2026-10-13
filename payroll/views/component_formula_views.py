@@ -257,6 +257,34 @@ SAMPLE_PERIODS = [
 ]
 
 
+def limit_note_rows(ceiling, basis):
+    """
+    What a ceiling comes to over a few example periods.
+
+    Shared by preview_maximum_unit (the live AJAX recompute the form calls on
+    every edit) and component_layout.form_context (which renders the same
+    thing server-side for the component form's own initial load) -- one real
+    place doing the arithmetic, so a form being edited shows the exact same
+    figures start to finish instead of a placeholder that then jumps to the
+    AJAX endpoint's own answer a moment later.
+    """
+    from payroll.methods.proration import FULL_PERIOD, period_factor
+
+    rows = [
+        {
+            "label": str(label),
+            "factor": round(period_factor(day_dict, basis), 4),
+            "amount": round(ceiling * period_factor(day_dict, basis), 2),
+        }
+        for label, day_dict in SAMPLE_PERIODS
+    ]
+    return {
+        "flat": basis == FULL_PERIOD or not basis,
+        "ceiling": round(ceiling, 2),
+        "rows": rows,
+    }
+
+
 @login_required
 @hx_request_required
 @permission_required("payroll.view_allowance")
@@ -269,8 +297,6 @@ def preview_maximum_unit(request):
     Showing the worked figures is how that stays honest: if the arithmetic ever
     stops matching the label again, the note says so.
     """
-    from payroll.methods.proration import FULL_PERIOD, period_factor
-
     try:
         ceiling = float(request.POST.get("maximum_amount") or 0)
     except (TypeError, ValueError):
@@ -280,23 +306,7 @@ def preview_maximum_unit(request):
         )
 
     basis = (request.POST.get("maximum_unit") or "").strip()
-    rows = [
-        {
-            "label": str(label),
-            "factor": round(period_factor(day_dict, basis), 4),
-            "amount": round(ceiling * period_factor(day_dict, basis), 2),
-        }
-        for label, day_dict in SAMPLE_PERIODS
-    ]
-
-    return JsonResponse(
-        {
-            "ok": True,
-            "flat": basis == FULL_PERIOD or not basis,
-            "ceiling": round(ceiling, 2),
-            "rows": rows,
-        }
-    )
+    return JsonResponse({"ok": True, **limit_note_rows(ceiling, basis)})
 
 
 # Where "Add from library" can send someone afterwards. An allowlist rather
@@ -399,10 +409,13 @@ def component_applies_rows(request):
     except ValueError:
         pk, page = None, 1
     targeted = set()
+    everyone = False
+    excluded = set()
     if pk and model is Allowance:
-        targeted = set(
-            Allowance.objects.get(pk=pk).specific_employees.values_list("pk", flat=True)
-        )
+        instance = Allowance.objects.get(pk=pk)
+        targeted = set(instance.specific_employees.values_list("pk", flat=True))
+        everyone = bool(instance.include_active_employees)
+        excluded = set(instance.exclude_employees.values_list("pk", flat=True))
     if request.GET.get("ids"):
         # Everyone the search matches who is not already on a structure, for the
         # header box to tick in one go.
@@ -413,7 +426,13 @@ def component_applies_rows(request):
             {"ids": [str(r["pk"]) for r in rows if r["via"] != "structure"]}
         )
     rows, has_next, _covered = applies_page(
-        model, pk, targeted, page, request.GET.get("q", "")
+        model,
+        pk,
+        targeted,
+        page,
+        request.GET.get("q", ""),
+        everyone=everyone,
+        excluded=excluded,
     )
     html = render_to_string(
         "payroll/component/_applies_rows.html",

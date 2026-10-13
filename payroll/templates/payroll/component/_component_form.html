@@ -343,9 +343,22 @@ and have nowhere on the form to set them.
                     <span data-limit-note-title>{% trans "How this works out" %}</span>
                   </div>
                   <div class="oh-limit-note__body" data-limit-note-body>
-                    <span class="oh-limit-note__muted">
-                      {% trans "Enter an amount to see what it allows." %}
-                    </span>
+                    {% if limit_note %}
+                      {% for row in limit_note.rows %}
+                        <div class="oh-limit-note__row">
+                          <span class="oh-limit-note__label">{{ row.label }}</span>
+                          <span class="oh-limit-note__dots"></span>
+                          <span class="oh-limit-note__value">{{ row.amount_display }}</span>
+                          {% if row.factor_display %}
+                            <span class="oh-limit-note__share">(&times;{{ row.factor_display }})</span>
+                          {% endif %}
+                        </div>
+                      {% endfor %}
+                    {% else %}
+                      <span class="oh-limit-note__muted">
+                        {% trans "Enter an amount to see what it allows." %}
+                      </span>
+                    {% endif %}
                   </div>
                   <div class="oh-limit-note__foot">
                     {% trans "Example periods. A real one follows the company calendar and the employee's contract." %}
@@ -562,4 +575,9 @@ carrying the same field names.
   if (input.value) check();
 })();
 </script>
-<script src="{% static 'src/js/componentForm.js' %}"></script>
+{# ?v= is a manual cache-bust: WhiteNoise doesn't content-hash this URL, so a #}
+{# browser can keep serving a cached copy of this file indefinitely even #}
+{# after its content changes on disk. Bump this number by hand whenever #}
+{# componentForm.js changes -- same convention as footer_scripts.html's #}
+{# htmxSelect2.js. #}
+<script src="{% static 'src/js/componentForm.js' %}?v=1"></script>

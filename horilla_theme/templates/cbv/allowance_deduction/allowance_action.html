@@ -20,9 +20,24 @@
     {% endif %}
 
     {# A standard pay item cannot be deleted -- the loan and penalty  #}
-{# generators read it. Hidden rather than shown-and-refused: an   #}
-{# offered action that always fails is worse than no action.      #}
-{% if perms.payroll.delete_allowance and not instance.is_system %}
+{# generators read it. Disabled rather than hidden, so the column   #}
+{# stays visibly consistent instead of just quietly missing a row.  #}
+{% if perms.payroll.delete_allowance %}
+        {% if instance.is_system %}
+        <button
+            type="button"
+            class="oh-btn oh-btn--danger oh-btn--disabled oh-btn--sq-sm"
+            disabled
+            onclick="event.preventDefault()"
+            title="{% trans 'Standard pay item — cannot be deleted' %}"
+        >
+            <ion-icon
+                name="trash-outline"
+                role="img"
+                class="md hydrated"
+            ></ion-icon>
+        </button>
+        {% else %}
         <a
             class="oh-btn oh-btn--danger oh-btn--sq-sm"
             hx-get="{% url 'generic-delete' %}?model=payroll.Allowance&pk={{instance.id}}"
@@ -37,6 +52,7 @@
                 class="md hydrated"
             ></ion-icon>
         </a>
+        {% endif %}
     {% endif %}
 </div>
 {% if request.GET.deleted %}

@@ -316,7 +316,67 @@ def form_context(form, model):
         # The deduction form has no specific-employees field: its table is a read-out.
         "applies_editable": "specific_employees" in form.fields,
         "who_title": WHO_TITLE,
+        "limit_note": _limit_note_context(instance),
     }
+
+
+def _limit_note_context(instance):
+    """
+    The "How this works out" note's server-rendered starting state.
+
+    componentForm.js recomputes this itself on load (and on every edit) via
+    an AJAX call to the same arithmetic -- necessary for *editing* the
+    amount, but a record that already has a ceiling configured otherwise
+    showed the form's generic "Enter an amount..." placeholder first and
+    then jumped to the real figures once that call returned. Mirrors the
+    same source-selection the JS does (fixed amount, else a configured
+    maximum) so the two start out identical and that jump never happens.
+    """
+    if not instance or not instance.pk:
+        return None
+    if getattr(instance, "is_fixed", False):
+        ceiling = instance.amount
+    elif getattr(instance, "has_max_limit", False):
+        ceiling = instance.maximum_amount
+    else:
+        return None
+    if ceiling in (None, ""):
+        return None
+
+    from payroll.views.component_formula_views import limit_note_rows
+
+    try:
+        ceiling = float(ceiling)
+    except (TypeError, ValueError):
+        return None
+    data = limit_note_rows(ceiling, instance.maximum_unit or "")
+    # Pre-formatted the same way componentForm.js's own
+    # toLocaleString(undefined, {...FractionDigits}) renders them (comma
+    # thousands separator, a fixed 2 decimals for the amount, up to 4 with
+    # trailing zeros trimmed for the factor) -- so the AJAX recompute that
+    # runs right after this renders replaces this markup with the exact
+    # same text, not a visibly different one.
+    for row in data["rows"]:
+        row["amount_display"] = _js_like_number(row["amount"], 2, 2)
+        show_share = not data["flat"] and row["factor"] != 1
+        row["factor_display"] = (
+            _js_like_number(row["factor"], 4, 0) if show_share else None
+        )
+    return data
+
+
+def _js_like_number(value, max_decimals, min_decimals):
+    """
+    Python equivalent of JS's Number.prototype.toLocaleString(undefined,
+    {minimumFractionDigits, maximumFractionDigits}) under this app's
+    effectively-en-US default locale: comma-grouped thousands, decimals
+    padded out to min_decimals and trimmed of trailing zeros beyond that,
+    up to max_decimals.
+    """
+    whole, _, frac = f"{value:,.{max_decimals}f}".partition(".")
+    if min_decimals < max_decimals:
+        frac = frac.rstrip("0").ljust(min_decimals, "0")
+    return whole if not frac else f"{whole}.{frac}"
 
 
 WHO_TITLE = _("Who gets it")
@@ -335,6 +395,14 @@ def applies_excluded(form):
             str(pk) for pk in instance.exclude_employees.values_list("pk", flat=True)
         ]
     return []
+
+
+def applies_everyone(form):
+    """Whether this component is set to reach every active employee, as saved or just posted."""
+    if form.is_bound and hasattr(form, "data"):
+        return bool(form.data.get("include_active_employees"))
+    instance = getattr(form, "instance", None)
+    return bool(getattr(instance, "include_active_employees", False))
 
 
 def applies_rows(form, model, page=1, query=""):
@@ -361,15 +429,20 @@ def applies_rows(form, model, page=1, query=""):
         targeted = {
             int(v) for v in form.data.getlist("specific_employees") if v.isdigit()
         }
-    rows, has_next, covered = applies_page(model, pk, targeted, page, query)
+    everyone = applies_everyone(form)
+    excluded = {int(v) for v in applies_excluded(form) if v.isdigit()}
+    rows, has_next, covered = applies_page(
+        model, pk, targeted, page, query, everyone=everyone, excluded=excluded
+    )
     # Those on a structure that carries it are counted separately, not as ticks.
     return rows, has_next, sorted(targeted - covered), len(covered)
 
 
-def applies_page(model, pk, targeted, page=1, query=""):
+def applies_page(model, pk, targeted, page=1, query="", everyone=False, excluded=None):
     from employee.models import Employee
     from payroll.models.models import Contract
 
+    excluded = excluded or set()
     in_structures = set()
     if pk:
         in_structures = set(
@@ -404,6 +477,18 @@ def applies_page(model, pk, targeted, page=1, query=""):
             via = "outside"
         if structure is not None and via != "structure":
             warning = structure.title
+        # Matches _applies_table.html's own paint(): a structure row is
+        # always ticked, an "everyone" component ticks all but the excluded,
+        # and otherwise only those specifically targeted are ticked. Getting
+        # this right here (not just in paint()) means the row renders in its
+        # final state immediately, instead of painting over a sea of
+        # wrongly-unticked boxes a moment after the form appears.
+        if via == "structure":
+            checked = True
+        elif everyone:
+            checked = employee.pk not in excluded
+        else:
+            checked = via != ""
         row = {
             "pk": employee.pk,
             "name": employee.get_full_name(),
@@ -418,7 +503,7 @@ def applies_page(model, pk, targeted, page=1, query=""):
             "structure": structure.title if structure is not None else "",
             "via": via,
             "warning": warning,
-            "checked": via != "",
+            "checked": checked,
         }
         if via == "structure":
             covered.add(employee.pk)

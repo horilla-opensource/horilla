@@ -4013,7 +4013,13 @@ $(document).ready(function () {
 });
 
 
-$(document).on("htmx:afterSettle", function (event) {
+// Also bound to afterSwap: afterSettle fires ~20ms after the swapped
+// content is already in the DOM (htmx's settleDelay), long enough for the
+// browser to paint plain, unstyled <select> elements before this handler
+// replaces them with select2 -- a visible "pop". afterSwap fires
+// synchronously before that paint. Safe to run twice per swap: the
+// destroy-before-reinit below makes it idempotent.
+function reinitPlainSelects(event) {
     var target = $(event.target);
     // `.find()` only matches descendants -- when a swap targets a <select>
     // directly (hx-target="#some-select"), the target itself needs reinit too,
@@ -4031,7 +4037,9 @@ $(document).on("htmx:afterSettle", function (event) {
     allSelects.off("select2:select").on("select2:select", function (e) {
         this.dispatchEvent(new Event("change"));
     });
-});
+}
+$(document).on("htmx:afterSwap", reinitPlainSelects);
+$(document).on("htmx:afterSettle", reinitPlainSelects);
 
 
 // Helper function to hash data using SHA-256

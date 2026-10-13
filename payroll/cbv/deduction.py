@@ -110,6 +110,10 @@ class DeductionListView(HorillaListView):
     model = Deduction
     filter_class = DeductionFilter
 
+    # See AllowanceListView's matching attribute: "from" tracks which page
+    # embeds this list's nav, not a real filter.
+    filter_keys_to_remove = ["from"]
+
     bulk_update_fields = [
         "specific_employees",
         "exclude_employees",
@@ -216,6 +220,10 @@ class DeductionCardView(HorillaCardView):
 
     model = Deduction
     filter_class = DeductionFilter
+
+    # See AllowanceListView's matching attribute: "from" tracks which page
+    # embeds this list's nav, not a real filter.
+    filter_keys_to_remove = ["from"]
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

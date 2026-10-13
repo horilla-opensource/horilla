@@ -14,6 +14,7 @@ from horilla_views.generic.cbv.views import HorillaTabView, TemplateView
 from payroll.cbv.allowances import AllowanceListView
 from payroll.cbv.deduction import DeductionListView
 from payroll.cbv.payslip_automation import PaySlipAutomationListView
+from payroll.cbv.salary_structure import SalaryStructureListView
 
 
 def _payroll_settings_tab_badge_count(request, view_cls):
@@ -68,14 +69,23 @@ class PayrollSettingsTabView(HorillaTabView):
         right number on first load — lazy-loaded (non-active) tabs don't run
         the count-updating script embedded in their list template until the
         user actually clicks them, so without this they'd sit at "0".
+
+        view_classes lines up with self.tabs position for position (Salary
+        Structures, Allowances, Deductions, Payslip Auto Generation). It used
+        to start one entry short of self.tabs, which shifted every pairing by
+        one: Salary Structures showed Allowances' count, Allowances showed
+        Deductions', Deductions showed Payslip Auto Generation's, and that
+        last tab was left with no count at all.
         """
         context = super().get_context_data(**kwargs)
-        view_classes = [AllowanceListView, DeductionListView, PaySlipAutomationListView]
-        for idx, tab in enumerate(self.tabs):
-            if idx < len(view_classes):
-                tab["badge"] = _payroll_settings_tab_badge_count(
-                    self.request, view_classes[idx]
-                )
+        view_classes = [
+            SalaryStructureListView,
+            AllowanceListView,
+            DeductionListView,
+            PaySlipAutomationListView,
+        ]
+        for tab, view_cls in zip(self.tabs, view_classes):
+            tab["badge"] = _payroll_settings_tab_badge_count(self.request, view_cls)
         return context
 
 

@@ -1,5 +1,21 @@
 {% load i18n %}
-<div hx-get="{% url nav_url_name %}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
+{% comment %}
+htmx's Back-button history restore reinserts this whole shell fragment --
+script tag included -- exactly as it looked right before the user navigated
+away, with this div already swapped full of the nav's own markup. Without
+a guard, the bare "load" trigger fires again anyway and refetches over it,
+which looks and feels like this one tab section reloading on its own right
+after the rest of the page comes back.
+
+Checking #{{ container_id }} (the list container) for that would be wrong:
+it always starts with one child -- the ".animated-background" skeleton
+below -- even on a genuine first load, so it never reads as "empty" and
+the tab would never load at all. This div swaps into ITSELF (no
+hx-target), so checking its own child count instead tells first load
+(no children yet) and a restored, already-loaded one (the nav's markup
+already sitting inside it) apart correctly.
+{% endcomment %}
+<div hx-get="{% url nav_url_name %}?{{ request.GET.urlencode }}" hx-trigger="load[this.children.length===0]"></div>
 <div
     class="oh-checkpoint-badge mb-2"
     id="{{ selected_instances_key_id }}"

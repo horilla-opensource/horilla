@@ -89,6 +89,13 @@ class AllowanceListView(HorillaListView):
     model = Allowance
     filter_class = AllowanceFilter
 
+    # "from" tracks which page embeds this list's nav (so "Add from library"
+    # returns there instead of always landing on the standalone Allowances
+    # page -- see AllowanceNavView) -- not a real filter, so it must not
+    # render as one in the applied-filters tag bar, complete with a Save
+    # button offering to save "From: Settings" as a saved filter.
+    filter_keys_to_remove = ["from"]
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.view_id = "allowance_id"
@@ -284,6 +291,10 @@ class AllowancesCardView(HorillaCardView):
 
     model = Allowance
     filter_class = AllowanceFilter
+
+    # See AllowanceListView's matching attribute: "from" tracks which page
+    # embeds this list's nav, not a real filter.
+    filter_keys_to_remove = ["from"]
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

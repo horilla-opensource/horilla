@@ -4028,7 +4028,17 @@ $(document).on("click", "[data-toggle='oh-modal-toggle']", function () {
 });
 
 
-$(document).on("htmx:afterSettle", function (event) {
+// Bound to afterSwap as well as afterSettle: afterSettle fires ~20ms after
+// the swapped content is already in the DOM (htmx's settleDelay, there so
+// CSS transition classes can apply), and a browser paints in that gap --
+// plain, unstyled <select> elements were visible for a frame before this
+// handler replaced them with their select2 widget, a visible "pop". afterSwap
+// fires synchronously, before the browser has a chance to paint the new
+// content at all, so reinitializing there as well means select2 is already
+// in place by the first paint. Harmless to run twice per swap (afterSettle
+// still fires right after): the destroy-before-reinit below makes this
+// idempotent.
+function reinitPlainSelects(event) {
     var target = $(event.target);
     // .filter().add(.find()) rather than just .find(): a swap can target
     // the <select> itself (hx-target="#some-select"), which .find() alone
@@ -4058,7 +4068,9 @@ $(document).on("htmx:afterSettle", function (event) {
     target.find("select").off("select2:select").on("select2:select", function (e) {
         this.dispatchEvent(new Event("change"));
     });
-});
+}
+$(document).on("htmx:afterSwap", reinitPlainSelects);
+$(document).on("htmx:afterSettle", reinitPlainSelects);
 
 
 // Generic AJAX-backed select (HorillaAjaxSelectWidget, horilla_widgets) --
@@ -4143,6 +4155,14 @@ function initOhSelectAjax(scope) {
 }
 $(document).ready(function () {
     initOhSelectAjax($(document));
+});
+// Also on afterSwap, same reasoning as reinitPlainSelects above -- and
+// already safe to call twice per swap without the "wipes an in-progress
+// search" risk the comment above this function warns about: the
+// select2-hidden-accessible guard there means whichever of afterSwap/
+// afterSettle runs first initializes the field, and the other just skips it.
+$(document).on("htmx:afterSwap", function (event) {
+    initOhSelectAjax($(event.target));
 });
 $(document).on("htmx:afterSettle", function (event) {
     initOhSelectAjax($(event.target));
