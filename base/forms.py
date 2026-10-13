@@ -10,17 +10,20 @@ import os
 import re
 import uuid
 from datetime import date, datetime, timedelta
+from email.mime.image import MIMEImage
 from typing import Any
 
 import bleach
 from django import forms
 from django.apps import apps
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import SetPasswordForm, _unicode_ci_compare
 from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.staticfiles import finders
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.core.validators import validate_ipv46_address
@@ -28,7 +31,7 @@ from django.db.models import Q
 from django.forms import DateInput, HiddenInput, TextInput
 from django.template import loader
 from django.template.loader import render_to_string
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_encode
@@ -3134,8 +3137,51 @@ class DriverForm(forms.ModelForm):
 UserModel = get_user_model()
 
 
+def find_reset_user(identifier):
+    """
+    The user a password reset is for, from what was typed in the forgot-password
+    form: a username, or an email address (the employee's personal or work
+    email, or the login's own). None when nothing matches, or when an email
+    matches more than one account -- then the username has to be used.
+    """
+    identifier = (identifier or "").strip()
+    if not identifier:
+        return None
+    user = HorillaUser.objects.filter(username=identifier).first()
+    if user:
+        return user
+    by_name = HorillaUser.objects.filter(username__iexact=identifier)
+    if by_name.count() == 1:
+        return by_name.first()
+    if "@" not in identifier:
+        return None
+    user_ids = set(
+        Employee._base_manager.filter(email__iexact=identifier).values_list(
+            "employee_user_id", flat=True
+        )
+    )
+    user_ids |= set(
+        Employee._base_manager.filter(
+            employee_work_info__email__iexact=identifier
+        ).values_list("employee_user_id", flat=True)
+    )
+    user_ids |= set(
+        HorillaUser.objects.filter(email__iexact=identifier).values_list(
+            "id", flat=True
+        )
+    )
+    user_ids.discard(None)
+    users = HorillaUser.objects.filter(id__in=user_ids, is_active=True)
+    return users.first() if users.count() == 1 else None
+
+
 class PassWordResetForm(forms.Form):
+    # A username or an email address; the field keeps its old name because the
+    # form is also posted by other callers (e.g. the employee invitation).
     email = forms.CharField()
+    # The address the reset link was sent to, set by save(); None when the
+    # account has no email address to send it to.
+    sent_to_email = None
 
     def send_mail(
         self,
@@ -3158,8 +3204,43 @@ class PassWordResetForm(forms.Form):
         if html_email_template_name is not None:
             html_email = loader.render_to_string(html_email_template_name, context)
             email_message.attach_alternative(html_email, "text/html")
+            # The company logo the HTML refers to as cid:company_logo
+            logo_path = context.get("logo_path")
+            if logo_path:
+                with open(logo_path, "rb") as logo_file:
+                    logo = MIMEImage(logo_file.read())
+                logo.add_header("Content-ID", "<company_logo>")
+                logo.add_header(
+                    "Content-Disposition",
+                    "inline",
+                    filename=os.path.basename(logo_path),
+                )
+                email_message.attach(logo)
 
         email_message.send()
+
+    @staticmethod
+    def get_branding(employee):
+        """
+        The name and logo the mail is sent under: the employee's company when
+        WHITE_LABELLING is on (else the headquarters company), Horilla when it
+        is off or no company has one.
+        """
+        name = "Horilla"
+        logo_path = finders.find("images/ui/horilla-sticker-round.png")
+        if getattr(settings, "WHITE_LABELLING", False):
+            company = None
+            try:
+                company = employee.get_company()
+            except Exception:
+                company = None
+            company = company or Company.objects.filter(hq=True).last()
+            if company:
+                name = company.company
+                icon = company.icon
+                if icon and os.path.exists(icon.path):
+                    logo_path = icon.path
+        return name, logo_path
 
     def get_users(self, email):
         """
@@ -3186,8 +3267,8 @@ class PassWordResetForm(forms.Form):
     def save(
         self,
         domain_override=None,
-        subject_template_name="registration/password_reset_subject.txt",
-        email_template_name="registration/password_reset_email.html",
+        subject_template_name="base/mail_templates/password_reset_subject.txt",
+        email_template_name="base/mail_templates/password_reset_email.txt",
         use_https=False,
         token_generator=default_token_generator,
         from_email=None,
@@ -3199,8 +3280,9 @@ class PassWordResetForm(forms.Form):
         Generate a one-use only link for resetting password and send it to the
         user.
         """
-        username = self.cleaned_data["email"]
-        user = HorillaUser.objects.get(username=username)
+        user = find_reset_user(self.cleaned_data["email"])
+        if user is None:
+            raise HorillaUser.DoesNotExist
         employee = user.employee_get
         email = employee.email
         work_mail = None
@@ -3236,14 +3318,25 @@ class PassWordResetForm(forms.Form):
             domain = current_site.domain
         if email:
             token = token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            protocol = "https" if use_https else "http"
+            company_name, logo_path = self.get_branding(employee)
             context = {
                 "email": email,
                 "domain": domain,
                 "site_name": site_name,
-                "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                "uid": uid,
                 "user": user,
                 "token": token,
-                "protocol": "https" if use_https else "http",
+                "protocol": protocol,
+                "first_name": getattr(employee, "employee_first_name", "") or "",
+                "reset_url": f"{protocol}://{domain}"
+                + reverse(
+                    "password_reset_confirm", kwargs={"uidb64": uid, "token": token}
+                ),
+                "valid_hours": settings.PASSWORD_RESET_TIMEOUT // 3600,
+                "white_label_company_name": company_name,
+                "logo_path": logo_path,
                 **(extra_email_context or {}),
             }
             self.send_mail(
@@ -3254,6 +3347,7 @@ class PassWordResetForm(forms.Form):
                 email,
                 html_email_template_name=html_email_template_name,
             )
+            self.sent_to_email = email
 
 
 def validate_ip_or_cidr(value):
