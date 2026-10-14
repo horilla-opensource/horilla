@@ -5,6 +5,8 @@ views.py
 import ast
 import contextlib
 import json
+import math
+import uuid
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 from io import BytesIO
@@ -1963,89 +1965,179 @@ def assign_leave_type_import(request):
     It processes the data, checks for errors, and either assigns leave types to employees
     or generates an error report in the form of an Excel file.
     """
+    template_columns = [
+        "Employee Badge ID",
+        "Leave Type",
+        "Available Days",
+        "Carryforward Days",
+        "Total Leave Days",
+        "Assigned Date",
+    ]
     error_data = {
-        "Employee Badge ID": [],
-        "Leave Type": [],
+        **{column: [] for column in template_columns},
         "Badge ID Error": [],
         "Leave Type Error": [],
-        "Available Days": [],
-        "Carry Forward Days": [],
+        "Assigned Error": [],
+        "Available Days Error": [],
+        "Carryforward Days Error": [],
+        "Total Leave Days Error": [],
         "Assigned Date Error": [],
         "Other Errors": [],
     }
 
-    if request.method == "POST":
-        file = request.FILES["assign_leave_type_import"]
-        data_frame = pd.read_excel(file)
-        assign_leave_dicts = data_frame.to_dict("records")
+    def is_blank(value):
+        if value is None:
+            return True
+        if isinstance(value, str):
+            return not value.strip()
+        return bool(pd.isna(value))
 
-        # Pre-fetch all employees and leave types
+    def parse_days(row, column, default):
+        """Return (days, error). Blank falls back to `default`."""
+        value = row.get(column)
+        if is_blank(value):
+            return default, None
+        try:
+            days = float(value)
+        except (TypeError, ValueError):
+            return None, _("Must be a number.")
+        if math.isnan(days) or math.isinf(days) or days < 0:
+            return None, _("Must be a non-negative number.")
+        return days, None
+
+    def popup(created, errors, path_info=None):
+        return HttpResponse(
+            render_to_string(
+                "import_popup.html",
+                {
+                    "created_count": created,
+                    "error_count": errors,
+                    "model": _("Leave Balances"),
+                    "path_info": path_info,
+                },
+            )
+        )
+
+    if request.method == "POST":
+        file = request.FILES.get("assign_leave_type_import")
+        if not file:
+            messages.error(request, _("Please choose a file to import."))
+            return popup(0, 0)
+
+        error_list = []
+        assign_leave_dicts = []
+        try:
+            data_frame = pd.read_excel(file, dtype=object)
+        except Exception:
+            data_frame = None
+            error_list.append(
+                {
+                    "Other Errors": _(
+                        "The file could not be read. Please upload a valid .xlsx file."
+                    )
+                }
+            )
+        if data_frame is not None:
+            data_frame.columns = [str(c).strip() for c in data_frame.columns]
+            missing = [
+                c
+                for c in ("Employee Badge ID", "Leave Type")
+                if c not in data_frame.columns
+            ]
+            if missing:
+                error_list.append(
+                    {
+                        "Other Errors": _(
+                            "Missing required column(s): {}. Please use the template."
+                        ).format(", ".join(missing))
+                    }
+                )
+            else:
+                assign_leave_dicts = data_frame.dropna(how="all").to_dict("records")
+
         employees = {
-            emp.badge_id.lower(): emp for emp in Employee.objects.all() if emp.badge_id
+            emp.badge_id.strip().lower(): emp
+            for emp in Employee.objects.all()
+            if emp.badge_id
         }
-        leave_types = {lt.name.lower(): lt for lt in LeaveType.objects.all()}
+        leave_types = {lt.name.strip().lower(): lt for lt in LeaveType.objects.all()}
         existing = {
-            (al.leave_type_id.id, al.employee_id.id): al
+            (al.leave_type_id_id, al.employee_id_id)
             for al in AvailableLeave.objects.all()
         }
 
-        assign_leave_list, error_list = [], []
+        assign_leave_list = []
+        seen = set()
 
         for row in assign_leave_dicts:
-            badge_id = str(row.get("Employee Badge ID", "")).strip().lower()
-            leave_type_name = str(row.get("Leave Type", "")).strip().lower()
+            badge_raw = row.get("Employee Badge ID")
+            type_raw = row.get("Leave Type")
+            badge_id = "" if is_blank(badge_raw) else str(badge_raw).strip().lower()
+            type_name = "" if is_blank(type_raw) else str(type_raw).strip().lower()
             employee = employees.get(badge_id)
-            leave_type = leave_types.get(leave_type_name)
+            leave_type = leave_types.get(type_name)
+            errors = {}
 
-            if not employee:
-                row["Badge ID Error"] = _("This badge id does not exist.")
-                error_list.append(row)
-                continue
-            if not leave_type:
-                row["Leave Type Error"] = _("This leave type does not exist.")
-                error_list.append(row)
-                continue
+            if not badge_id:
+                errors["Badge ID Error"] = _("Employee Badge ID is required.")
+            elif not employee:
+                errors["Badge ID Error"] = _("This badge id does not exist.")
+            if not type_name:
+                errors["Leave Type Error"] = _("Leave Type is required.")
+            elif not leave_type:
+                errors["Leave Type Error"] = _("This leave type does not exist.")
 
-            if (leave_type.id, employee.id) in existing:
-                row["Assigned Error"] = _(
-                    "Leave type has already been assigned to the employee."
-                )
-                error_list.append(row)
-                continue
+            if employee and leave_type:
+                key = (leave_type.id, employee.id)
+                if key in existing:
+                    errors["Assigned Error"] = _(
+                        "Leave type has already been assigned to the employee."
+                    )
+                elif key in seen:
+                    errors["Assigned Error"] = _(
+                        "Duplicate row: this employee and leave type appear more than once in the file."
+                    )
 
-            # Extract optional fields # 779
-            available_days = row.get("Available Days")
-            carryforward_days = row.get("Carryforward Days")
-            total_leave_days = row.get("Total Leave Days")
-            assigned_date_raw = row.get("Assigned Date")
-
-            # Apply defaults when missing
-            if pd.isna(available_days) or available_days == "":
-                available_days = leave_type.total_days
-            if pd.isna(carryforward_days) or carryforward_days == "":
-                carryforward_days = 0
-            if pd.isna(total_leave_days) or total_leave_days == "":
-                total_leave_days = available_days + carryforward_days
-
-            assigned_date = parse_excel_date(assigned_date_raw) or (
-                timezone.now().date()
-                if isinstance(assigned_date_raw, float)
-                and math.isnan(assigned_date_raw)
-                else None
+            available_days, err = parse_days(
+                row, "Available Days", leave_type.total_days if leave_type else 0
             )
-            if not assigned_date:
-                row["Other Errors"] = _(
-                    "Invalid date format. Please use YYYY-MM-DD or a supported format."
+            if err:
+                errors["Available Days Error"] = err
+            carryforward_days, err = parse_days(row, "Carryforward Days", 0)
+            if err:
+                errors["Carryforward Days Error"] = err
+            if available_days is not None and carryforward_days is not None:
+                total_leave_days, err = parse_days(
+                    row, "Total Leave Days", available_days + carryforward_days
                 )
+            else:
+                total_leave_days, err = parse_days(row, "Total Leave Days", 0)
+            if err:
+                errors["Total Leave Days Error"] = err
+
+            assigned_date_raw = row.get("Assigned Date")
+            assigned_date = None
+            if is_blank(assigned_date_raw):
+                assigned_date = timezone.now().date()
+            else:
+                assigned_date = parse_excel_date(assigned_date_raw)
+                if not assigned_date:
+                    errors["Assigned Date Error"] = _(
+                        "Invalid date format. Please use YYYY-MM-DD or a supported format."
+                    )
+
+            if errors:
+                row.update(errors)
                 error_list.append(row)
                 continue
 
+            seen.add((leave_type.id, employee.id))
             available_leave = AvailableLeave(
                 leave_type_id=leave_type,
                 employee_id=employee,
-                available_days=float(available_days),
-                carryforward_days=float(carryforward_days),
-                total_leave_days=float(total_leave_days),
+                available_days=available_days,
+                carryforward_days=carryforward_days,
+                total_leave_days=total_leave_days,
                 assigned_date=assigned_date,
             )
             if carryforward_days:
@@ -2054,28 +2146,17 @@ def assign_leave_type_import(request):
                     available_leave.reset_date = leave_type.leave_type_next_reset_date()
                 except Exception:
                     pass
-
             assign_leave_list.append(available_leave)
 
-        # Bulk create available leaves
         if assign_leave_list:
             AvailableLeave.objects.bulk_create(assign_leave_list)
 
-        # Generate error report if there are errors
         path_info = None
         if error_list:
             path_info = generate_error_report(
                 error_list, error_data, "AssignLeaveError.xlsx"
             )
-
-        context = {
-            "created_count": len(assign_leave_dicts) - len(error_list),
-            "error_count": len(error_list),
-            "model": _("Leave Balances"),
-            "path_info": path_info,
-        }
-        html = render_to_string("import_popup.html", context)
-        return HttpResponse(html)
+        return popup(len(assign_leave_list), len(error_list), path_info)
     return HttpResponse("")
 
 
