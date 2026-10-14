@@ -7,6 +7,27 @@
     <a  hx-get="{% url 'recruitment-update' instance.id %}?instance_ids={{instance.ordered_ids}}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
     {% endif %}
     <a hx-get="{% url 'recruitment-duplicate' instance.id %}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" title="{% trans 'Duplicate' %}"><ion-icon name="copy-outline"></ion-icon></a>
+    {% if perms.recruitment.change_recruitment %}
+      {% if instance.closed %}
+        <a
+          hx-get="{% url 'recruitment-reopen-pipeline' instance.id %}"
+          hx-swap="none"
+          hx-confirm="{% trans 'Are you sure you want to reopen this recruitment?' %}"
+          hx-on::after-request="if(event.detail.successful){$('#applyFilter').click();$('#reloadMessagesButton').click();}"
+          class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
+          title="{% trans 'Reopen' %}"
+        ><ion-icon name="lock-open-outline"></ion-icon></a>
+      {% else %}
+        <a
+          hx-get="{% url 'recruitment-close-pipeline' instance.id %}"
+          hx-swap="none"
+          hx-confirm="{% trans 'Are you sure you want to close this recruitment?' %}"
+          hx-on::after-request="if(event.detail.successful){$('#applyFilter').click();$('#reloadMessagesButton').click();}"
+          class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
+          title="{% trans 'Close' %}"
+        ><ion-icon name="lock-closed-outline"></ion-icon></a>
+      {% endif %}
+    {% endif %}
     {% if perms.recruitment.delete_recruitment %}
       {% if instance.is_active %}
         <a

@@ -51,9 +51,9 @@
         id="pipelineContainer"
         hx-get="{% url 'cbv-pipeline-tab' %}"
         hx-trigger="load"
+        hx-on::after-swap="var t = this.querySelector('.oh-tabs__tab--active') || this.querySelector('.oh-tabs__tab'); if (t) { t.click(); }"
     >
     </div>
-
     <div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
         <div class="oh-activity-sidebar__body" id="noteContainer">
             <div class="oh-activity-sidebar__header">

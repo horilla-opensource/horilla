@@ -52,20 +52,23 @@
         {% include "generic/filter_tags.html" %}
     {% endif %}
 
+    {# PipelineNav builds title/Filter (RecruitmentFilter -- Is Closed, #}
+    {# managers, etc)/Create. Shown whether or not there are tabs: each #}
+    {# tab's own Nav filters that ONE recruitment's candidates, a separate #}
+    {# concern from filtering WHICH recruitments show as tabs at all, so #}
+    {# showing this only when the tab list was empty meant the Is Closed #}
+    {# filter -- and the Create button -- became unreachable the moment #}
+    {# any recruitment was open. #}
+    <div hx-get="{% url 'cbv-pipeline-nav' %}" hx-trigger="load[this.children.length===0]"></div>
+
     <div class="bg-white p-3 rounded-md shadow-card oh-tabs">
         {% if not tabs %}
             <div class="flex flex-col items-center justify-center py-10">
-                <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="200" class="mb-4">
+                <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
                 <p class="text-[#666]">{% trans "No records available at the moment" %}</p>
-                {% if tab_create_attrs %}
-                    <button type="button" class="oh-btn oh-btn--secondary mt-4" {{ tab_create_attrs|safe }}>
-                        <ion-icon name="add-outline"></ion-icon>
-                        {{ tab_create_label|default:_("Create") }}
-                    </button>
-                {% endif %}
             </div>
         {% else %}
-        <div class="flex flex-nowrap items-start gap-2 justify-between mb-3">
+        <div class="flex flex-nowrap items-start gap-2 mb-3">
             <div class="flex gap-1 flex-wrap oh-tabs__tab-scroll min-w-0 flex-1">
                 {% for tab in tabs %}
                     <div class="relative inline-block dropdown-wrapper-tab">
@@ -107,14 +110,6 @@
                     </div>
                 {% endfor %}
             </div>
-            {% if tab_create_attrs %}
-                <div class="flex items-start shrink-0">
-                    <button type="button" class="oh-btn oh-btn--secondary" {{ tab_create_attrs|safe }}>
-                        <ion-icon name="add-outline"></ion-icon>
-                        {{ tab_create_label|default:_("Create") }}
-                    </button>
-                </div>
-            {% endif %}
         </div>
 
         <div class="oh-tabs__contents">

@@ -132,14 +132,28 @@ def recruitment_pipeline_actions(request, rec):
         )
 
     if change_perm or rec_manager_perm:
+        # A plain href gets redirected back to HTTP_REFERER on a real
+        # navigation -- a full flash/reload of the whole page, sidebar
+        # included. Targeting this request straight at #pipelineContainer
+        # instead: recruitment_close_pipeline/recruitment_reopen_pipeline
+        # answer an htmx request with cbv-pipeline-tab's own freshly
+        # rendered content (see their own comments), so this one
+        # request/response both performs the update and supplies what
+        # replaces #pipelineContainer -- no separate indirection (a hidden
+        # "refresh" button clicked via hx-on::after-request to fire a
+        # second, independent request) that turned out not to reliably
+        # swap even though this action's own request plainly succeeded.
         if rec.closed:
             actions.append(
                 {
                     "action": _("Reopen"),
                     "attrs": f"""
-                        href="{reverse("recruitment-reopen-pipeline", kwargs={"rec_id": rec.pk})}"
+                        hx-get="{reverse("recruitment-reopen-pipeline", kwargs={"rec_id": rec.pk})}"
+                        hx-target="#pipelineContainer"
+                        hx-swap="innerHTML"
+                        hx-confirm="{_("Are you sure you want to reopen this recruitment?")}"
+                        hx-on::after-request="if(event.detail.successful){{$('#reloadMessagesButton').click();}}"
                         style="cursor: pointer;"
-                        onclick="return confirm('Are you sure you want to reopen this recruitment?');"
                     """,
                 },
             )
@@ -148,9 +162,12 @@ def recruitment_pipeline_actions(request, rec):
                 {
                     "action": _("Close"),
                     "attrs": f"""
-                        href="{reverse("recruitment-close-pipeline", kwargs={"rec_id": rec.pk})}"
+                        hx-get="{reverse("recruitment-close-pipeline", kwargs={"rec_id": rec.pk})}"
+                        hx-target="#pipelineContainer"
+                        hx-swap="innerHTML"
+                        hx-confirm="{_("Are you sure you want to close this recruitment?")}"
+                        hx-on::after-request="if(event.detail.successful){{$('#reloadMessagesButton').click();}}"
                         style="cursor: pointer;"
-                        onclick="return confirm('Are you sure you want to close this recruitment?');"
                     """,
                 },
             )
@@ -192,11 +209,15 @@ class RecruitmentTabView(HorillaTabView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        recruitments = (
-            self.filter_class(self.request.GET)
-            .qs.filter(is_active=True, closed=False)
-            .order_by("-id")
-        )
+        recruitments = self.filter_class(self.request.GET).qs.filter(is_active=True)
+        # Open recruitments by default (this page is meant for active,
+        # day-to-day pipeline work), but an explicit "Is Closed" filter
+        # (PipelineNav's own filter panel) should actually be respected --
+        # forcing closed=False unconditionally made "Is Closed: Yes" always
+        # return zero tabs, even with closed recruitments in the database.
+        if "closed" not in self.request.GET:
+            recruitments = recruitments.filter(closed=False)
+        recruitments = recruitments.order_by("-id")
         view_type = self.request.GET.get("view")
         if not view_type and self.request.user and self.request.user.is_authenticated:
             active_view = (
@@ -272,20 +293,8 @@ class RecruitmentTabView(HorillaTabView):
                 self.tabs.append(tab)
 
     show_filter_tags = False
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.user.has_perm("recruitment.add_recruitment"):
-            context["tab_create_label"] = _("Create")
-            context[
-                "tab_create_attrs"
-            ] = f"""
-                hx-get="{reverse_lazy('recruitment-create')}?{urlencode({'pipeline': 'true'})}"
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-            """
-        return context
+    # Create (and now Filter) live on PipelineNav instead, shown above the
+    # tab strip whether or not there are tabs -- see recruitment_tabs.html.
 
 
 @method_decorator(login_required, name="dispatch")
@@ -570,7 +579,7 @@ class CandidateList(HorillaListView):
     actions = [
         {
             "action": _("Schedule Interview"),
-            "icon": "time-outline",
+            "icon": "calendar-outline",
             "attrs": """
                 class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                 hx-get = "{get_schedule_interview}"
@@ -915,14 +924,16 @@ class PipelineNav(HorillaNavView):
 
     nav_title = _("Pipeline")
     search_swap_target = "#pipelineContainer"
-    filter_body_template = "cbv/pipeline/pipeline_filter.html"
-    filter_instance = filters.RecruitmentFilter()
-    filter_form_context_name = "form"
     apply_first_filter = False
     modern_filter = True
+    # Just the Create button here -- no Search box, no Filter dropdown.
+    # search_url still has to be set (below): horilla_nav.html only renders
+    # this whole bar -- Create included -- under `{% if search_url %}`.
+    hide_search = True
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        self.search_url = str(reverse_lazy("cbv-pipeline-tab"))
         if self.request.user.has_perm("recruitment.add_recruitment"):
             self.create_attrs = f"""
                 hx-get="{reverse_lazy('recruitment-create')}?{urlencode({'pipeline': 'true'})}"
@@ -932,27 +943,6 @@ class PipelineNav(HorillaNavView):
             """
         else:
             self.create_attrs = None
-
-        rec_id = self.request.GET.get("obj_id", "")
-        id_suffix = f"&obj_id={rec_id}" if rec_id else ""
-        self.view_types = [
-            {
-                "type": "list",
-                "icon": "list-outline",
-                "url": f'{reverse_lazy("cbv-pipeline-tab")}?view=list{id_suffix}',
-                "attrs": f"""
-                    title ='List'
-                """,
-            },
-            {
-                "type": "card",
-                "icon": "grid-outline",
-                "url": f'{reverse_lazy("cbv-pipeline-tab")}?view=card{id_suffix}',
-                "attrs": f"""
-                    title ='Card'
-                """,
-            },
-        ]
 
     def get_context_data(self, **kwargs):
         """
