@@ -505,6 +505,8 @@ class DocumentIndividualTabList(DocumentListView):
     List view for the Documents tab in employee individual & profile view
     """
 
+    show_saved_filters = False
+
     columns = [
         (_("Document"), "title"),
         (_("Status"), "document_status_display"),
