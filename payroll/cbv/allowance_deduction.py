@@ -120,6 +120,8 @@ class AllowanceTabList(AllowanceListView):
         self.view_id = "allowance_tab_id"
         pk = self.request.resolver_match.kwargs.get("pk")
         self.search_url = reverse("allowance-tab-list", kwargs={"pk": pk})
+        if not self.request.user.has_perm("payroll.add_allowance"):
+            self.row_attrs = ""
 
     columns = [
         col
@@ -248,6 +250,8 @@ class DeductionTab(DeductionListView):
         pk = self.request.resolver_match.kwargs.get("pk")
         self.search_url = reverse("deduction-tab-list", kwargs={"pk": pk})
         self.row_status_indications = None
+        if not self.request.user.has_perm("payroll.add_deduction"):
+            self.row_attrs = "{diff_cell}"
 
     columns = [
         col
