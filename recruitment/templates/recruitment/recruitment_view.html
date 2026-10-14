@@ -23,13 +23,20 @@
 <script>
 	function toggleLinkedIn(){
 		const isEnabled = $("#id_publish_in_linkedin").is(":checked");
+		// The whole field (label and select) is one block, hidden with an inline
+		// style: a d-none class on the label's "flex" wrapper loses to its display.
+		const field = $("#id_linkedin_account_id_parent_div");
+		if (field.length) {
+			field.toggle(isEnabled);
+			return;
+		}
 		const linkedInInput = $("[name='linkedin_account_id']");
 		const inputContainer = linkedInInput.closest('div');
 		const labelContainer = linkedInInput
 			.closest(".col-12, .col-sm-12, .col-md-12, .col-lg-6, .col-lg-4")
 			.find("label")
 			.first()
-			parent();
+			.parent();
 		inputContainer.toggleClass("d-none", !isEnabled);
 		if (labelContainer.length) {
 			labelContainer.toggleClass("d-none", !isEnabled);

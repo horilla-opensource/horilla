@@ -188,6 +188,15 @@
 
       function toggleLinkedIn() {
         const isEnabled = $("#id_publish_in_linkedin").is(":checked");
+        // The whole field (label and select) is one block, #<field>_parent_div.
+        // Hide that block with an inline style: the label's own wrapper is a
+        // "flex" element, and a d-none class on it loses to the flex display, so
+        // the label stayed visible while only the select was hidden.
+        const field = $("#id_linkedin_account_id_parent_div");
+        if (field.length) {
+          field.toggle(isEnabled);
+          return;
+        }
         const linkedInInput = $("[name='linkedin_account_id']");
         const inputContainer = linkedInInput.closest("div");
         inputContainer.toggleClass("d-none", !isEnabled);
