@@ -16,6 +16,7 @@ from django.conf import settings
 from django.contrib.auth.context_processors import PermWrapper
 from django.db.models import Model, QuerySet
 from django.db.models.utils import AltersData
+from django.utils import timezone
 from django.utils.html import format_html, format_html_join
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
@@ -51,6 +52,15 @@ time_format_mapping = {
 
 @register.filter(name="selected_format")
 def selected_format(date, company: object = None) -> str:
+    if isinstance(date, datetime.datetime):
+        if timezone.is_aware(date):
+            date = timezone.localtime(date)
+        date_format = getattr(company, "date_format", None) or "MMM. D, YYYY"
+        time_format = getattr(company, "time_format", None) or "hh:mm A"
+        return date.strftime(
+            f"{date_format_mapping.get(date_format, '%b. %d, %Y')} "
+            f"{time_format_mapping.get(time_format, '%I:%M %p')}"
+        )
     if not isinstance(date, (datetime.date, datetime.time)):
         try:
             date = datetime.datetime.fromisoformat(date)
