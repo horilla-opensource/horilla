@@ -130,7 +130,9 @@ class ShiftRequestList(ShiftList):
             queryset.filter(reallocate_to__isnull=True),
             "base.view_shiftrequest",
         )
-        queryset = queryset | data.filter(employee_id=employee)
+        queryset = queryset | data.filter(
+            employee_id=employee, reallocate_to__isnull=True
+        )
         queryset = queryset.filter(employee_id__is_active=True)
 
         return queryset
