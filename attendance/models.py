@@ -600,6 +600,27 @@ class Attendance(HorillaModel):
             context={"instance": self},
         )
 
+    def overtime_cell(self):
+        """
+        Overtime column of the OT tab: the overtime plus a "Min OT" warning when
+        it is below the minimum OT required for approval.
+        """
+        min_ot = strtime_seconds("00:30")
+        min_ot_display = "00:30"
+        condition = AttendanceValidationCondition.objects.first()
+        if condition is not None:
+            min_ot = strtime_seconds(condition.minimum_overtime_to_approve)
+            min_ot_display = condition.minimum_overtime_to_approve
+
+        return render_template(
+            path="cbv/attendances/ot_cell.html",
+            context={
+                "instance": self,
+                "below_min": 0 < (self.overtime_second or 0) < min_ot,
+                "min_ot_display": min_ot_display,
+            },
+        )
+
     def ot_actions(self):
         """
         combined actions column for OT tab: approve OT + edit + delete

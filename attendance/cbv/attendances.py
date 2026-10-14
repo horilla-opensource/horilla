@@ -515,6 +515,17 @@ class OTAttendancesList(AttendancesListView):
 
     selected_instances_key_id = "overtimeselectedInstances"
 
+    # Same columns as the other tabs, but the Overtime column (shown by
+    # default here) flags overtime below the minimum OT needed for approval.
+    columns = [
+        (_("Overtime"), "overtime_cell") if col[1] == "attendance_overtime" else col
+        for col in AttendancesListView.columns
+    ]
+    default_columns = [
+        *AttendancesListView.default_columns,
+        (_("Overtime"), "overtime_cell"),
+    ]
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("ot-attendance-tab")

@@ -50,7 +50,7 @@
         {% elif instance.overtime_second >= 60 %}
             <button
                 type="button"
-                class="oh-btn oh-btn--warning px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                class="oh-btn oh-btn--success px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
                 title="{% trans 'Approve Overtime (OT < min.OT)' %}"
                 onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                     Swal.fire({

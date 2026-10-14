@@ -15,7 +15,7 @@ import logging
 import uuid
 
 from base.import_template_data import import_template_frame, write_import_xlsx
-from horilla.http.response import HorillaRedirect
+from horilla.http.response import HorillaRedirect, with_bulk_result
 from horilla.methods import remove_dynamic_url
 
 logger = logging.getLogger(__name__)
@@ -1446,7 +1446,13 @@ def validate_bulk_attendance(request):
         else:
             messages.error(request, msg)
 
-    return JsonResponse({"message": "success"})
+    # Everything selected that wasn't validated (missing, own record, pending
+    # update request) counts as failed. The browser shows these counts in a
+    # result dialog instead of the toasts above.
+    failed = max(len(set(map(str, ids))) - validate_req_count, 0)
+    return with_bulk_result(
+        JsonResponse({"message": "success"}), validate_req_count, failed
+    )
 
 
 @login_required
@@ -1604,6 +1610,8 @@ def approve_bulk_overtime(request):
     for attendance_id in filtered_ids:
         try:
             attendance = Attendance.objects.get(id=attendance_id)
+            if attendance.attendance_overtime_approve:
+                continue  # already approved: nothing to do, counted as skipped
             attendance.attendance_overtime_approve = True
             attendance.save()
             otapprove_ids.append(attendance)
@@ -1622,7 +1630,12 @@ def approve_bulk_overtime(request):
     if otapprove_ids:
         messages.success(request, _(" {} Overtime approved".format(len(otapprove_ids))))
 
-    return JsonResponse({"message": "Success"})
+    # Selected but not approved (missing, own record, already approved) = failed.
+    # The browser shows these counts in a result dialog instead of the toasts.
+    failed = max(len(set(map(str, ids))) - len(otapprove_ids), 0)
+    return with_bulk_result(
+        JsonResponse({"message": "Success"}), len(otapprove_ids), failed
+    )
 
 
 @login_required

@@ -1,0 +1,12 @@
+{% load i18n %}
+<div class="flex items-center gap-2">
+    <span>{{ instance.attendance_overtime }}</span>
+    {% if below_min %}
+        <span
+            class="inline-flex items-center gap-1 rounded-md bg-warning/15 px-1.5 py-0.5 text-xs font-medium text-warning-dark"
+            title="{% trans 'Below the minimum OT required for approval' %} ({{ min_ot_display }})"
+        >
+            <ion-icon name="warning-outline"></ion-icon>{% trans "Min OT" %}
+        </span>
+    {% endif %}
+</div>

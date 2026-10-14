@@ -35,6 +35,17 @@ function getCookie(name) {
     return cookieValue;
 }
 
+// Re-run the activity nav's current search/filter, which swaps a fresh list
+// into #listContainer.
+function refreshAttendanceActivityList() {
+    var apply = document.getElementById("applyFilter");
+    if (apply) {
+        apply.click();
+    } else {
+        location.reload();
+    }
+}
+
 function deleteAttendanceNav() {
     ids = [];
     ids.push($("#selectedInstances").attr("data-ids"));
@@ -67,7 +78,10 @@ function deleteAttendanceNav() {
                         ids: JSON.stringify(ids),
                     },
                     complete: function () {
-                        refreshAttendanceListContainer();
+                        // This is the Check-in / Check-out Log page: reload its own
+                        // list. refreshAttendanceListContainer() reloads the
+                        // Attendances tab view, which is a different page.
+                        refreshAttendanceActivityList();
                     },
                 });
             }

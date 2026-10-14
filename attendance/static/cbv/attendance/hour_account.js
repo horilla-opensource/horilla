@@ -101,12 +101,11 @@ function lateComeBulkDelete() {
                     },
                     success: function (response, textStatus, jqXHR) {
                         if (jqXHR.status === 200) {
-                            // Clear both the DOM attribute and the localStorage mirror
-                            // (selectSelected() restores from localStorage on load) so
-                            // the now-processed rows don't reappear as "selected" after
-                            // the reload below.
+                            // The rows are gone, so drop them from the selection (DOM
+                            // attribute + localStorage mirror) and refresh the list in
+                            // place instead of reloading the whole page.
                             clearSelection("selectedInstances");
-                            location.reload();
+                            hlvReloadListInPlace();
                         }
                     },
                 });

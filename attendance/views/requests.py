@@ -50,7 +50,7 @@ from horilla.decorators import (
     manager_can_enter,
     permission_required,
 )
-from horilla.http.response import HorillaRedirect
+from horilla.http.response import HorillaRedirect, with_bulk_result
 from notifications.signals import notify
 
 
@@ -690,14 +690,17 @@ def bulk_approve_attendance_request(request):
     if not ids and len(ids) <= 0:
         messages.error(request, _("No attendance request selected"))
         return redirect(reverse("request-attendance-view"))
+    done = 0
     for attendance_id in ids:
-        attendance = Attendance.objects.get(id=attendance_id)
-        if attendance.employee_id != request.user.employee_get:
+        attendance = Attendance.objects.filter(id=attendance_id).first()
+        if attendance and attendance.employee_id != request.user.employee_get:
             filtered_ids.append(attendance_id)
     if request.user.is_superuser:
         filtered_ids = ids
     for attendance_id in filtered_ids:
-        attendance = Attendance.objects.get(id=attendance_id)
+        attendance = Attendance.objects.filter(id=attendance_id).first()
+        if attendance is None or not attendance.is_validate_request:
+            continue  # missing, or already approved / rejected
         prev_attendance_date = attendance.attendance_date
         prev_attendance_clock_in_date = attendance.attendance_clock_in_date
         prev_attendance_clock_in = attendance.attendance_clock_in
@@ -765,6 +768,7 @@ def bulk_approve_attendance_request(request):
                 shift=shift,
             )
 
+        done += 1
         messages.success(request, _("Attendance request has been approved"))
         employee = attendance.employee_id
         notify.send(
@@ -794,7 +798,11 @@ def bulk_approve_attendance_request(request):
                 redirect=reverse("request-attendance-view") + f"?id={attendance.id}",
                 icon="checkmark-circle-outline",
             )
-    return HttpResponse("success")
+    # Everything selected that wasn't approved (missing, own request, already
+    # processed) counts as failed. The browser shows these counts in a result
+    # dialog instead of the per-record toasts.
+    failed = max(len(set(map(str, ids))) - done, 0)
+    return with_bulk_result(HttpResponse("success"), done, failed)
 
 
 @login_required
@@ -807,9 +815,12 @@ def bulk_reject_attendance_request(request):
     if not ids and len(ids) <= 0:
         messages.error(request, _("No attendance request selected"))
         return redirect(reverse("request-attendance-view"))
+    done = 0
     for attendance_id in ids:
         try:
             attendance = Attendance.objects.get(id=attendance_id)
+            if not attendance.is_validate_request:
+                continue  # already approved / rejected
             if (
                 attendance.employee_id.employee_user_id == request.user
                 or is_reportingmanager(request)
@@ -828,6 +839,7 @@ def bulk_reject_attendance_request(request):
                     messages.success(
                         request, _("The requested attendance is rejected.")
                     )
+                done += 1
                 employee = attendance.employee_id
                 notify.send(
                     request.user,
@@ -842,7 +854,8 @@ def bulk_reject_attendance_request(request):
                 )
         except (Attendance.DoesNotExist, OverflowError):
             messages.error(request, _("Attendance request not found"))
-    return HttpResponse("success")
+    failed = max(len(set(map(str, ids))) - done, 0)
+    return with_bulk_result(HttpResponse("success"), done, failed)
 
 
 @login_required
