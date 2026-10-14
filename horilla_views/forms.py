@@ -122,6 +122,10 @@ class DynamicBulkUpdateForm(forms.Form):
     """
 
     verbose_name = _("Bulk Update")
+    # The selects are hidden behind select2, so a native "required" check would
+    # pop its tooltip on an invisible control and scroll the modal out of place.
+    # Required fields are enforced (and their errors shown) server-side instead.
+    use_required_attribute = False
 
     def __init__(
         self,
@@ -129,9 +133,13 @@ class DynamicBulkUpdateForm(forms.Form):
         root_model: models.models.Model = None,
         bulk_update_fields: list = [],
         ids: list = [],
+        required_fields: list = (),
         **kwargs,
     ):
         self.ids = ids
+        # Bulk-update fields are optional by default (blank = leave unchanged);
+        # a list can name the ones that must be filled in.
+        self.required_fields = list(required_fields)
         self.root_model = root_model
         self.bulk_update_fields = sorted(
             bulk_update_fields, key=lambda x: x.count("__")
@@ -207,8 +215,15 @@ class DynamicBulkUpdateForm(forms.Form):
                 self.fields[key].widget.option_template_name = (
                     "horilla_widgets/select_option.html",
                 )
+        for key in self.required_fields:
+            if key in self.fields:
+                # Shows the required marker; enforced in is_valid() below.
+                self.fields[key].required = True
 
     def is_valid(self):
+        # Django's own cleaning reports the empty required fields (once each).
+        if self.required_fields and not forms.Form.is_valid(self):
+            return False
         valid = True
         try:
             with transaction.atomic():

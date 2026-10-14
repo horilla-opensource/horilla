@@ -144,3 +144,35 @@ def set_selected_company(company_id):
 
 def get_selected_company():
     return current_company_id.get()
+
+
+class BulkDeleteSummaryMiddleware:
+    """
+    Drops the toast messages of a bulk delete the browser is already reporting.
+
+    static/index/index.js wraps every bulk-delete call: progress dialog, then a
+    Total / Deleted / Failed result dialog worked out from which ids still
+    exist. It marks those requests with X-Hlv-Bulk-Delete. The views still queue
+    a toast per record ("You cannot delete X"), which would show up on top of
+    that dialog (or, after a page reload, long after it), so they're discarded
+    here instead of being edited out of every view. Bulk approve / reject views
+    do the same by returning X-Hlv-Bulk-Result
+    (horilla.http.response.with_bulk_result).
+
+    Must sit after MessageMiddleware in MIDDLEWARE: responses unwind in reverse,
+    so this runs before the messages are written back to the session.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        if request.headers.get("X-Hlv-Bulk-Delete") or response.has_header(
+            "X-Hlv-Bulk-Result"
+        ):
+            storage = getattr(request, "_messages", None)
+            if storage is not None:
+                # Iterating marks every queued message as used.
+                list(storage)
+        return response

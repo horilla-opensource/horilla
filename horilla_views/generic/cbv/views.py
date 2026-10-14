@@ -213,6 +213,8 @@ class HorillaListView(ListView):
     export_fields: list = []
     verbose_name: str = ""
     bulk_update_fields: list = []
+    # Bulk-update fields that must be filled in (the rest are optional: blank = unchanged).
+    bulk_update_required_fields: list = []
     bulk_template: str = "generic/bulk_form.html"
     records_count_in_tab: bool = True
     history_tracking: bool = True
@@ -470,6 +472,7 @@ class HorillaListView(ListView):
         context["toggle_form"] = self.toggle_form
         context["show_toggle_form"] = self.show_toggle_form
 
+        context["model_label"] = self.model._meta.label_lower if self.model else ""
         if self.bulk_select_option:
             context["select_all_ids"] = self.select_all
         if self._saved_filters.get("field"):
@@ -699,6 +702,7 @@ class HorillaListView(ListView):
             root_model=self.model,
             bulk_update_fields=self.bulk_update_fields,
             ids=instance_ids,
+            required_fields=self.bulk_update_required_fields,
         )
         if instance_ids and form.is_valid():
             form.save()
@@ -717,10 +721,16 @@ class HorillaListView(ListView):
             )
         if not instance_ids:
             messages.info(request, _("No records selected"))
+        # Same title as the form first opened with, and keep the selection.
+        form.verbose_name = form.verbose_name + f" ({len(instance_ids)} {_('Records')})"
         return render(
             request,
             self.bulk_template,
-            {"form": form, "post_bulk_path": self.post_bulk_path},
+            {
+                "form": form,
+                "post_bulk_path": self.post_bulk_path,
+                "instance_ids": instance_ids,
+            },
         )
 
     def get_bulk_form(self):
@@ -729,7 +739,9 @@ class HorillaListView(ListView):
         """
         # Bulk update feature
         return DynamicBulkUpdateForm(
-            root_model=self.model, bulk_update_fields=self.bulk_update_fields
+            root_model=self.model,
+            bulk_update_fields=self.bulk_update_fields,
+            required_fields=self.bulk_update_required_fields,
         )
 
     def serve_import_sheet(self, request, *args, **kwargs):

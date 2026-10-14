@@ -387,3 +387,25 @@ def elided_page_range(page):
             page.number, on_each_side=1, on_ends=1
         )
     ]
+
+
+@register.filter(name="with_dot")
+def with_dot(row_status_indications):
+    """
+    Splits a row_status_indications list (see quick_actions.html) into the
+    entries that carry a real status-dot class -- e.g. "approved--dot" --
+    kept as individually visible pills. Pairs with without_dot below, which
+    are instead collapsed into a single "Quick Date"-style dropdown so a
+    long list of plain action buttons (no color to scan for) doesn't blow
+    out the toolbar's width the way a row of status dots earns.
+    """
+    # Views that define no status indications (e.g. a kanban with none) pass None.
+    return [indication for indication in row_status_indications or [] if indication[0]]
+
+
+@register.filter(name="without_dot")
+def without_dot(row_status_indications):
+    """See with_dot above."""
+    return [
+        indication for indication in row_status_indications or [] if not indication[0]
+    ]

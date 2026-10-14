@@ -26,6 +26,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.http import require_POST
 from openpyxl import Workbook
 from openpyxl.drawing.image import Image
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
@@ -1082,3 +1083,31 @@ class DynamicView(View):
             return HttpResponseForbidden("Invalid session key.")
 
         return render(request, "dynamic.html", {"field": field})
+
+
+@func_login_required
+@require_POST
+def existing_ids(request):
+    """
+    Which of the posted ids still exist for a model.
+
+    List views keep their selection in the browser (data-ids on the selection
+    store), so once records are deleted the store still holds their ids and the
+    "Unselect (N)" / "Update (N)" counts stay too high. The list asks this after
+    it reloads and drops the ids that are gone.
+    """
+    label = request.POST.get("model", "")
+    try:
+        model = apps.get_model(label)
+        ids = json.loads(request.POST.get("ids", "[]"))
+        if not isinstance(ids, list):
+            raise ValueError
+    except (LookupError, ValueError):
+        return JsonResponse({"ids": []}, status=400)
+    try:
+        existing = list(
+            model._base_manager.filter(pk__in=ids).values_list("pk", flat=True)
+        )
+    except (ValueError, TypeError):
+        return JsonResponse({"ids": []}, status=400)
+    return JsonResponse({"ids": [str(pk) for pk in existing]})

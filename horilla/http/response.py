@@ -1,3 +1,5 @@
+import json
+
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -44,3 +46,15 @@ class HorillaRedirect(HttpResponseRedirect):
             self.headers["HX-Redirect"] = previous_url
         else:
             super().__init__(previous_url)
+
+
+def with_bulk_result(response, done, failed):
+    """
+    Report the outcome of a bulk approve / reject to the browser.
+
+    static/index/index.js reads this header and shows a Total / Approved (or
+    Rejected) / Failed dialog in place of the per-record toasts, which
+    BulkDeleteSummaryMiddleware drops for any response carrying it.
+    """
+    response["X-Hlv-Bulk-Result"] = json.dumps({"done": done, "failed": failed})
+    return response

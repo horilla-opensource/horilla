@@ -13,7 +13,7 @@ if (typeof i18nMessages === 'undefined') {
         noRowsSelected: gettext("No rows are selected from the records."),
         confirmBulkDelete: gettext("Do you really want to delete all the selected records?"),
         confirmBulkArchive: gettext("Do you really want to archive all the selected records?"),
-        confirmBulkReject: gettext("Do you really want to approve all the selected requests?"),
+        confirmBulkReject: gettext("Do you really want to reject all the selected requests?"),
         confirmBulkApprove: gettext("Do you really want to approve all the selected requests?"),
         confirmBulkUnArchive: gettext("Do you really want to unarchive all the selected records?"),
         confirmBulkResetPassword: gettext("Do you really want to reset the password for all selected employees? Their current password will stop working immediately."),
@@ -778,7 +778,135 @@ function resyncSelectButtons() {
 $(document).on("htmx:afterSettle", function () {
     resyncSelectButtons();
     setTimeout(resyncSelectButtons, 400);
+    // afterSettle fires once per swapped fragment; one check per burst is enough.
+    clearTimeout(window.__hlvPruneTimer);
+    window.__hlvPruneTimer = setTimeout(pruneDeletedSelections, 600);
 });
+
+// Refresh the current list in place (no full page reload): re-run the nav's
+// search / filter form, which swaps a fresh list into the container. Falls back
+// to a reload on pages without one.
+function hlvReloadListInPlace() {
+    // Pages with tabs carry one nav (and so one #applyFilter) per tab; use the
+    // active tab's, not whichever sits first in the DOM.
+    var activeTab = document.querySelector(".oh-tabs__content--active");
+    var apply =
+        (activeTab && activeTab.querySelector("#applyFilter")) ||
+        document.getElementById("applyFilter");
+    if (apply) {
+        apply.click();
+    } else {
+        location.reload();
+    }
+}
+
+// A bulk archive / un-archive / approve / reject / delete / validate acts on the
+// selected rows, so those rows must leave the selection once it has run -
+// otherwise "Unselect (N)" / "Update (N)" keep counting rows that are no longer
+// in the list (e.g. archived ones). Matched by URL convention so it covers every
+// list without a registry: the last segment has "bulk" plus an action word.
+function hlvIsBulkSelectionAction(url) {
+    var path = String(url || "").split("?")[0].replace(/\/+$/, "");
+    var segment = path.substring(path.lastIndexOf("/") + 1);
+    return (
+        /bulk/.test(segment) &&
+        /archive|approve|reject|cancel|delete|validate/.test(segment) &&
+        !/export|invitation|password/.test(segment)
+    );
+}
+
+function hlvDropSelectedIds(ids) {
+    if (!ids || !ids.length) return;
+    var gone = {};
+    ids.forEach(function (id) { gone[String(id)] = true; });
+    var without = function (list) {
+        return list.filter(function (id) { return !gone[String(id)]; });
+    };
+    var changed = false;
+    // Selection stores on this page ...
+    $("[data-ids]").each(function () {
+        if (!this.id) return;
+        var current;
+        try { current = JSON.parse(this.getAttribute("data-ids") || "[]"); } catch (e) { return; }
+        var kept = without(current);
+        if (kept.length === current.length) return;
+        changed = true;
+        this.setAttribute("data-ids", JSON.stringify(kept));
+        setStoredSelection(this.id, kept);
+    });
+    // ... and the ones only remembered in localStorage (restored after a reload).
+    try {
+        var prefix = "hlv_selection:" + window.location.pathname + ":";
+        Object.keys(localStorage).forEach(function (key) {
+            if (key.indexOf(prefix) !== 0) return;
+            var current = JSON.parse(localStorage.getItem(key) || "[]");
+            var kept = without(current);
+            if (kept.length !== current.length) {
+                changed = true;
+                localStorage.setItem(key, JSON.stringify(kept));
+            }
+        });
+    } catch (e) {
+        // localStorage unavailable - nothing remembered to clean up.
+    }
+    if (!changed) return;
+    $(".list-table-row, .bulk-list-table-row").each(function () {
+        if (gone[String($(this).val())]) {
+            $(this).prop("checked", false);
+            highlightRow($(this));
+        }
+    });
+    $('[id^="count_"], [class*="count_"]').each(function () {
+        var $count = $(this);
+        var $container = $count.closest(".hlv-container[data-selected-instances-key]");
+        reloadSelectedCount($count, $container.attr("data-selected-instances-key") || "selectedInstances");
+    });
+    resyncSelectButtons();
+}
+
+// The selection lives in the browser (data-ids on the store), so deleting
+// records leaves their ids behind and "Unselect (N)" / "Update (N)" keep
+// counting them. After a list (re)loads, ask the server which selected ids
+// still exist and drop the rest. Only ids that no longer exist are removed -
+// ones merely filtered out of view stay selected.
+function pruneDeletedSelections() {
+    var seen = {};
+    $(".hlv-container[data-model]").each(function () {
+        var $container = $(this);
+        var model = $container.attr("data-model");
+        var storeKey = $container.attr("data-selected-instances-key") || "selectedInstances";
+        var key = model + "|" + storeKey;
+        if (!model || seen[key]) return;
+        seen[key] = true;
+        var ids = JSON.parse(ensureSelectionStore(storeKey).attr("data-ids") || "[]").map(String);
+        if (!ids.length) return;
+        $.ajax({
+            type: "POST",
+            url: "/existing-ids/",
+            data: {
+                csrfmiddlewaretoken: getCookie("csrftoken"),
+                model: model,
+                ids: JSON.stringify(ids),
+            },
+            success: function (response) {
+                var alive = new Set(response.ids || []);
+                // Ids may have changed while the request was in flight.
+                var current = JSON.parse(ensureSelectionStore(storeKey).attr("data-ids") || "[]").map(String);
+                var kept = current.filter(function (id) { return alive.has(id) || ids.indexOf(id) === -1; });
+                if (kept.length === current.length) return;
+                ensureSelectionStore(storeKey).attr("data-ids", JSON.stringify(kept));
+                setStoredSelection(storeKey, kept);
+                $('[id^="count_"]').each(function () {
+                    reloadSelectedCount($(this), storeKey);
+                });
+                $('[class*="count_"]').each(function () {
+                    reloadSelectedCount($(this), storeKey);
+                });
+                resyncSelectButtons();
+            },
+        });
+    });
+}
 
 function removeHighlight() {
     setTimeout(function () {
@@ -1738,3 +1866,444 @@ const ChartTheme = {
         }
     },
 };
+
+
+/* ---------------------------------------------------------------------------
+ * Bulk delete workflow, shared by every list: progress dialog while the request
+ * runs, then a Total / Deleted / Failed result dialog.
+ *
+ * The existing per-page handlers keep their own confirm dialog and $.ajax call.
+ * $.ajax / htmx are wrapped below for the bulk-delete URLs in
+ * HLV_BULK_DELETE_MODELS, so none of those handlers had to change. The numbers
+ * come from asking the server which of the posted ids still exist
+ * (/existing-ids/), which works for any endpoint whatever it returns. The
+ * handler's own success / complete callback (often a reload) only runs after the
+ * result dialog is closed, and the server drops the per-record toasts for these
+ * requests (BulkDeleteSummaryMiddleware).
+ * ------------------------------------------------------------------------- */
+
+// Last URL segment of each bulk-delete endpoint -> model whose ids it posts.
+var HLV_BULK_DELETE_MODELS = {
+    "attendance-bulk-delete": "attendance.attendance",
+    "attendance-activity-bulk-delete": "attendance.attendanceactivity",
+    "attendance-account-bulk-delete": "attendance.attendanceovertime",
+    "late-come-early-out-bulk-delete": "attendance.attendancelatecomeearlyout",
+    "rotating-work-type-assign-bulk-delete": "base.rotatingworktypeassign",
+    "rotating-shift-assign-bulk-delete": "base.rotatingshiftassign",
+    "work-type-request-bulk-delete": "base.worktyperequest",
+    "shift-request-bulk-delete": "base.shiftrequest",
+    "holidays-bulk-delete": "base.holidays",
+    "biometric-users-bulk-delete": "biometric.biometricemployees",
+    "cosec-users-bulk-delete": "biometric.biometricemployees",
+    "tickets-bulk-delete": "helpdesk.ticket",
+    "assigned-leave-bulk-delete": "leave.availableleave",
+    "restrict-days-bulk-delete": "leave.restrictleave",
+    "leave-request-bulk-delete": "leave.leaverequest",
+    "leave-allocation-request-bulk-delete": "leave.leaveallocationrequest",
+    "user-request-bulk-delete": "leave.leaverequest",
+    "onboarding-candidate-bulk-delete": "recruitment.candidate",
+    "candidate-bulk-delete": "recruitment.candidate",
+    "payslip-bulk-delete": "payroll.payslip",
+    "contract-bulk-delete": "payroll.contract",
+    "objective-bulk-delete": "pms.employeeobjective",
+    "feedback-bulk-delete": "pms.feedback",
+    "project-bulk-delete": "project.project",
+    "task-all-bulk-delete": "project.task",
+    "time-sheet-bulk-delete": "project.timesheet",
+};
+
+function hlvBulkDeleteModel(url) {
+    var path = String(url || "").split("?")[0].replace(/\/+$/, "");
+    return HLV_BULK_DELETE_MODELS[path.substring(path.lastIndexOf("/") + 1)] || null;
+}
+
+// Bulk approve / reject endpoints: progress dialog only (their per-record toasts
+// are the result). Last URL segment -> action.
+var HLV_BULK_ACTIONS = {
+    "shift-request-bulk-approve": "approve",
+    "shift-request-bulk-cancel": "reject",
+    "work-type-request-bulk-approve": "approve",
+    "work-type-request-bulk-cancel": "reject",
+    "document-bulk-approve": "approve",
+    "document-bulk-reject": "reject",
+    "leave-requests-bulk-approve": "approve",
+    "leave-requests-bulk-reject": "reject",
+    "bulk-approve-attendance-request": "approve",
+    "bulk-reject-attendance-request": "reject",
+    "validate-bulk-attendance": "validate",
+    "approve-bulk-overtime": "approveot",
+    "leave-allocation-request-bulk-approve": "approve",
+    "leave-allocation-request-bulk-reject": "reject",
+};
+
+// Bulk archive endpoints that take ?is_active=False (archive) / =True (un-archive).
+// (Case-insensitive: some endpoints are called with is_active=false.)
+var HLV_BULK_ARCHIVES = {
+    "rotating-shift-assign-bulk-archive": true,
+    "rotating-work-type-assign-bulk-archive": true,
+    "candidate-bulk-archive": true,
+    "task-all-bulk-archive": true,
+    "project-bulk-archive": true,
+    "feedback-bulk-archive": true,
+    "objective-bulk-archive": true,
+    "tickets-bulk-archive": true,
+    "employee-bulk-archive": true,
+};
+
+function hlvBulkActionKind(url) {
+    var parts = String(url || "").split("?");
+    var path = parts[0].replace(/\/+$/, "");
+    var segment = path.substring(path.lastIndexOf("/") + 1);
+    if (HLV_BULK_ARCHIVES[segment]) {
+        var flag = new URLSearchParams(parts[1] || "").get("is_active");
+        return String(flag).toLowerCase() === "false" ? "archive" : "unarchive";
+    }
+    return HLV_BULK_ACTIONS[segment] || null;
+}
+
+// ids may be a JSON string, an array, or repeated "ids" params, depending on
+// the caller (jQuery data object / query string, htmx parameters).
+function hlvBulkDeleteIds(data) {
+    var raw = null;
+    if (!data) return [];
+    if (typeof data === "string") {
+        var all = new URLSearchParams(data).getAll("ids");
+        raw = all.length > 1 ? all : all[0];
+    } else if (typeof FormData !== "undefined" && data instanceof FormData) {
+        var fd = data.getAll("ids");
+        raw = fd.length > 1 ? fd : fd[0];
+    } else {
+        raw = data.ids;
+    }
+    if (typeof raw === "string") {
+        try {
+            raw = JSON.parse(raw);
+        } catch (e) {
+            raw = raw ? [raw] : [];
+        }
+    }
+    if (!Array.isArray(raw)) raw = raw === undefined || raw === null ? [] : [raw];
+    return raw.map(String);
+}
+
+function hlvMessages() {
+    return typeof i18nMessages !== "undefined" ? i18nMessages : {};
+}
+
+// Compact layout comes from the global .swal2-popup rules in the stylesheet.
+function hlvBulkDeleteProgress(count, title) {
+    var m = hlvMessages();
+    Swal.fire({
+        title: title || m.deletingRecords || "Deleting records",
+        width: "24rem",
+        html:
+            '<style>@keyframes hlvSlide{0%{margin-left:-40%}100%{margin-left:100%}}</style>' +
+            (count
+                ? '<div style="margin:0 0 6px;color:#6b7280;font-size:13px">' + count + " " +
+                  (m.recordsCount || "record(s)") + "</div>"
+                : "") +
+            '<div style="height:6px;border-radius:6px;background:#eceef2;overflow:hidden;margin-bottom:18px">' +
+            '<div style="width:40%;height:100%;border-radius:6px;background:#e54f38;animation:hlvSlide 1.1s ease-in-out infinite"></div></div>',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+    });
+}
+
+function hlvBulkActionProgress(kind, count) {
+    var m = hlvMessages();
+    var titles = {
+        approve: m.approvingRequests || "Approving requests",
+        reject: m.rejectingRequests || "Rejecting requests",
+        archive: m.archivingRecords || "Archiving records",
+        unarchive: m.unarchivingRecords || "Un-archiving records",
+        validate: m.validatingRecords || "Validating attendances",
+        approveot: m.approvingOvertime || "Approving overtime",
+    };
+    hlvBulkDeleteProgress(count, titles[kind]);
+}
+
+// Result dialog laid out like the import result. `kind` is "approve", "reject",
+// "archive" or "unarchive" for those bulk actions, anything else for a delete. Returns the
+// Swal promise, so callers can wait for it to be closed.
+function hlvShowBulkDeleteSummary(r, kind) {
+    var m = hlvMessages();
+    var words = {
+        approve: {
+            result: m.approveResult || "Approve Result",
+            warnings: m.approveWarnings || "Approve Completed with Warnings",
+            success: m.approveSuccessful || "Approve Successful",
+            none: m.noneApproved || "Nothing was approved. They were already approved or rejected.",
+            some: m.someNotApproved || "Some requests were skipped (already approved or rejected).",
+            all: m.allApproved || "All selected requests were approved.",
+            done: m.approved || "Approved",
+        },
+        reject: {
+            result: m.rejectResult || "Reject Result",
+            warnings: m.rejectWarnings || "Reject Completed with Warnings",
+            success: m.rejectSuccessful || "Reject Successful",
+            none: m.noneRejected || "Nothing was rejected. They were already rejected.",
+            some: m.someNotRejected || "Some requests were skipped (already rejected).",
+            all: m.allRejected || "All selected requests were rejected.",
+            done: m.rejected || "Rejected",
+        },
+        approveot: {
+            result: m.approveOtResult || "Approve OT Result",
+            warnings: m.approveOtWarnings || "Approve OT Completed with Warnings",
+            success: m.approveOtSuccessful || "Approve OT Successful",
+            none: m.noneOtApproved || "Nothing was approved. The overtime was already approved or can't be approved by you.",
+            some: m.someOtNotApproved || "Some attendances were skipped (overtime already approved, or your own).",
+            all: m.allOtApproved || "Overtime was approved for all selected attendances.",
+            done: m.approved || "Approved",
+        },
+        validate: {
+            result: m.validateResult || "Validate Result",
+            warnings: m.validateWarnings || "Validate Completed with Warnings",
+            success: m.validateSuccessful || "Validate Successful",
+            none: m.noneValidated || "Nothing was validated. They have a pending update request or can't be validated by you.",
+            some: m.someNotValidated || "Some attendances were skipped (pending update request, or your own).",
+            all: m.allValidated || "All selected attendances were validated.",
+            done: m.validated || "Validated",
+        },
+        archive: {
+            result: m.archiveResult || "Archive Result",
+            warnings: m.archiveWarnings || "Archive Completed with Warnings",
+            success: m.archiveSuccessful || "Archive Successful",
+            none: m.noneArchived || "Nothing was archived. They could not be archived.",
+            some: m.someNotArchived || "Some records could not be archived (in use or not allowed).",
+            all: m.allArchived || "All selected records were archived.",
+            done: m.archived || "Archived",
+        },
+        unarchive: {
+            result: m.unarchiveResult || "Un-archive Result",
+            warnings: m.unarchiveWarnings || "Un-archive Completed with Warnings",
+            success: m.unarchiveSuccessful || "Un-archive Successful",
+            none: m.noneUnarchived || "Nothing was un-archived. They are already active or could not be restored.",
+            some: m.someNotUnarchived || "Some records were skipped (already active or could not be restored).",
+            all: m.allUnarchived || "All selected records were un-archived.",
+            done: m.unarchived || "Un-archived",
+        },
+    }[kind] || {
+        result: m.deleteResult || "Delete Result",
+        warnings: m.deleteWarnings || "Delete Completed with Warnings",
+        success: m.deleteSuccessful || "Delete Successful",
+        none: m.noneDeleted || "Nothing was deleted. They have related data.",
+        some: m.someNotDeleted || "Some records have related data and were not deleted.",
+        all: m.allDeleted || "All selected records were deleted.",
+        done: m.deleted || "Deleted",
+    };
+    var total = r.deleted + r.failed;
+    var icon, title, text;
+    if (total === 0) {
+        icon = "info";
+        title = words.result;
+        text = m.nothingToDelete || "No records were selected.";
+    } else if (r.deleted === 0) {
+        icon = "warning";
+        title = words.result;
+        text = words.none;
+    } else if (r.failed) {
+        icon = "warning";
+        title = words.warnings;
+        text = words.some;
+    } else {
+        icon = "success";
+        title = words.success;
+        text = words.all;
+    }
+    var card = function (value, label, border, bg, color) {
+        return (
+            '<div style="flex:1;border:1px solid ' + border + ";background:" + bg +
+            ';border-radius:8px;padding:8px 0"><div style="font-size:18px;font-weight:600;color:' + color + '">' +
+            value + '</div><div style="font-size:10px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:' +
+            color + '">' + label + "</div></div>"
+        );
+    };
+    var failedOn = r.failed > 0;
+    return Swal.fire({
+        title: title,
+        icon: icon,
+        width: "24rem",
+        html:
+            '<p style="color:#6b7280;font-size:13px;margin:0">' + text + "</p>" +
+            '<div style="display:flex;gap:8px;margin-top:12px">' +
+            card(total, m.total || "Total", "#e5e7eb", "#f9fafb", "#1f2937") +
+            card(r.deleted, words.done, "#bbf7d0", "#f0fdf4", "#15803d") +
+            card(
+                r.failed,
+                m.failed || "Failed",
+                failedOn ? "#fecaca" : "#e5e7eb",
+                failedOn ? "#fef2f2" : "#f9fafb",
+                failedOn ? "#dc2626" : "#9ca3af"
+            ) +
+            "</div>",
+        confirmButtonText: m.close || "Close",
+    });
+}
+
+// The outcome a bulk approve / reject view reports in X-Hlv-Bulk-Result, or
+// null when it doesn't (those still rely on their own toasts).
+function hlvBulkActionResult(xhr) {
+    var raw = xhr && xhr.getResponseHeader && xhr.getResponseHeader("X-Hlv-Bulk-Result");
+    if (!raw) return null;
+    try {
+        var r = JSON.parse(raw);
+        return { deleted: r.done || 0, failed: r.failed || 0 };
+    } catch (e) {
+        return null;
+    }
+}
+
+// Which of `ids` are gone now -> summary dialog. Calls done() once it is
+// closed, or straight away if the check itself fails (progress dialog closed).
+function hlvBulkDeleteFinish(model, ids, done) {
+    var settle = function () {
+        if (done) done();
+    };
+    hlvNativeAjax.call($, {
+        type: "POST",
+        url: "/existing-ids/",
+        data: {
+            csrfmiddlewaretoken: getCookie("csrftoken"),
+            model: model,
+            ids: JSON.stringify(ids),
+        },
+        success: function (response) {
+            var alive = (response.ids || []).length;
+            hlvShowBulkDeleteSummary({
+                deleted: Math.max(ids.length - alive, 0),
+                failed: Math.min(alive, ids.length),
+            }).then(settle);
+        },
+        error: function () {
+            Swal.close();
+            settle();
+        },
+    });
+}
+
+var hlvNativeAjax = $.ajax;
+$.ajax = function (url, settings) {
+    var opts = url && typeof url === "object" ? url : $.extend({}, settings, { url: url });
+    var type = String(opts.type || opts.method || "GET").toUpperCase();
+    if (type === "POST" && hlvIsBulkSelectionAction(opts.url)) {
+        var postedIds = hlvBulkDeleteIds(opts.data);
+        var pageSuccess = opts.success;
+        // Runs ahead of the page's own success callback (often a reload).
+        opts = $.extend({}, opts, {
+            success: [function () { hlvDropSelectedIds(postedIds); }].concat(pageSuccess || []),
+        });
+    }
+    var kind = type === "POST" ? hlvBulkActionKind(opts.url) : null;
+    if (kind) {
+        // Progress dialog, then the result dialog when the view reports counts
+        // (X-Hlv-Bulk-Result). All of the page's own callbacks (success, error,
+        // complete) wait until that dialog is closed, in their usual order, so
+        // a reload or dialog they trigger doesn't cut it short.
+        var ready = null;
+        var wrap = function (fns, xhrIndex) {
+            return function () {
+                var self = this, args = arguments;
+                if (!ready) {
+                    var result = hlvBulkActionResult(args[xhrIndex]);
+                    if (result) {
+                        ready = hlvShowBulkDeleteSummary(result, kind);
+                    } else {
+                        Swal.close();
+                        ready = Promise.resolve();
+                    }
+                }
+                ready.then(function () {
+                    [].concat(fns || []).forEach(function (f) {
+                        if (typeof f === "function") f.apply(self, args);
+                    });
+                });
+            };
+        };
+        hlvBulkActionProgress(kind, hlvBulkDeleteIds(opts.data).length);
+        return hlvNativeAjax.call(
+            $,
+            $.extend({}, opts, {
+                success: wrap(opts.success, 2), // (data, status, xhr)
+                error: wrap(opts.error, 0), // (xhr, status, err)
+                complete: wrap(opts.complete, 0), // (xhr, status)
+            })
+        );
+    }
+    var model = type === "POST" ? hlvBulkDeleteModel(opts.url) : null;
+    var ids = model ? hlvBulkDeleteIds(opts.data) : [];
+    if (!model || !ids.length) return hlvNativeAjax.apply(this, arguments);
+
+    var ctx = opts.context || opts;
+    var call = function (fns, args) {
+        [].concat(fns || []).forEach(function (fn) {
+            if (typeof fn === "function") fn.apply(ctx, args);
+        });
+    };
+    // The page's own callbacks run later, once the result dialog is closed.
+    // They must be deleted, not set to undefined: $.extend skips undefined
+    // values, so the originals would otherwise stay and fire straight away
+    // (typically a location.reload() that cuts the dialogs short).
+    var wrapped = $.extend({}, opts, {
+        headers: $.extend({}, opts.headers, { "X-Hlv-Bulk-Delete": "1" }),
+    });
+    delete wrapped.success;
+    delete wrapped.error;
+    delete wrapped.complete;
+    hlvBulkDeleteProgress(ids.length);
+    var jq = hlvNativeAjax.call($, wrapped);
+    jq.then(
+        function (data, status, xhr) {
+            hlvBulkDeleteFinish(model, ids, function () {
+                call(opts.success, [data, status, xhr]);
+                call(opts.complete, [xhr, status]);
+            });
+        },
+        function (xhr, status, err) {
+            hlvBulkDeleteFinish(model, ids, function () {
+                call(opts.error, [xhr, status, err]);
+                call(opts.complete, [xhr, status]);
+            });
+        }
+    );
+    return jq;
+};
+
+// The same for htmx-driven bulk deletes (hx-post on a form / span).
+document.addEventListener("htmx:configRequest", function (e) {
+    var cfg = e.detail;
+    if (String(cfg.verb).toLowerCase() === "post" && hlvBulkDeleteModel(cfg.path)) {
+        cfg.headers["X-Hlv-Bulk-Delete"] = "1";
+    }
+});
+document.addEventListener("htmx:beforeRequest", function (e) {
+    var cfg = e.detail.requestConfig || {};
+    var kind = String(cfg.verb).toLowerCase() === "post" ? hlvBulkActionKind(cfg.path) : null;
+    if (kind) {
+        e.detail.xhr.__hlvProgress = kind;
+        hlvBulkActionProgress(kind, hlvBulkDeleteIds(cfg.parameters).length);
+        return;
+    }
+    var model = String(cfg.verb).toLowerCase() === "post" ? hlvBulkDeleteModel(cfg.path) : null;
+    var ids = model ? hlvBulkDeleteIds(cfg.parameters) : [];
+    if (!model || !ids.length) return;
+    e.detail.xhr.__hlvBulkDelete = { model: model, ids: ids };
+    hlvBulkDeleteProgress(ids.length);
+});
+document.addEventListener("htmx:afterRequest", function (e) {
+    var req = e.detail.requestConfig || {};
+    if (
+        e.detail.successful &&
+        String(req.verb).toLowerCase() === "post" &&
+        hlvIsBulkSelectionAction(req.path)
+    ) {
+        hlvDropSelectedIds(hlvBulkDeleteIds(req.parameters));
+    }
+    if (e.detail.xhr && e.detail.xhr.__hlvProgress) {
+        var result = hlvBulkActionResult(e.detail.xhr);
+        if (result) hlvShowBulkDeleteSummary(result, e.detail.xhr.__hlvProgress);
+        else Swal.close();
+    }
+    var job = e.detail.xhr && e.detail.xhr.__hlvBulkDelete;
+    if (job) hlvBulkDeleteFinish(job.model, job.ids);
+});
