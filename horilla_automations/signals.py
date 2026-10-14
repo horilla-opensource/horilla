@@ -3,6 +3,7 @@ horilla_automation/signals.py
 
 """
 
+import contextlib
 import copy
 import logging
 import threading
@@ -39,6 +40,32 @@ setattr(QuerySet, "from_list", from_list)
 SIGNAL_HANDLERS = []
 INSTANCE_HANDLERS = []
 REFRESH_METHODS = {}
+
+_suspension = threading.local()
+
+
+def automations_suspended():
+    """
+    True while the current thread is inside suspend_automations().
+    """
+    return getattr(_suspension, "active", False)
+
+
+@contextlib.contextmanager
+def suspend_automations():
+    """
+    Saves made by this thread inside the block do not trigger mail
+    automations. For bulk loads (the demo database) that create thousands of
+    rows: every one would start a mail thread, and those threads write to the
+    database at the same time as the load, which on SQLite fails with
+    "database is locked". Other threads (other requests) are unaffected.
+    """
+    previous = automations_suspended()
+    _suspension.active = True
+    try:
+        yield
+    finally:
+        _suspension.active = previous
 
 
 def start_automation():
@@ -80,6 +107,9 @@ def start_automation():
 
     def create_post_bulk_update_handler(automation, model_class, query_strings):
         def post_bulk_update_handler(sender, queryset, *args, **kwargs):
+            if automations_suspended():
+                return
+
             def _bulk_update_thread_handler(
                 queryset, previous_queryset_copy, automation
             ):
@@ -158,6 +188,8 @@ def start_automation():
                     """
                     Signal handler for post-save events of the model instances.
                     """
+                    if automations_suspended():
+                        return
                     request = getattr(_thread_locals, "request", None)
                     previous_record = getattr(_thread_locals, "previous_record", None)
                     previous_instance = None
