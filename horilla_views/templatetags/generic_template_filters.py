@@ -197,6 +197,9 @@ def employee_profile_url(obj):
 
     from employee.models import Employee
 
+    if getattr(obj, "disable_employee_profile_link", False):
+        return ""
+
     employee = obj if isinstance(obj, Employee) else getattr(obj, "employee_id", None)
     if isinstance(employee, Employee):
         try:
