@@ -28,7 +28,7 @@
       <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Is Closed" %}</label>
+            <label class="oh-label">{% trans "Closed" %}</label>
             {% comment %} {{form.closed}} {% endcomment %}
             <select name="closed" id="closed" class="oh-select oh-select-2 w-100">
               <option value="unknown">{% trans "Unknown" %}</option>
@@ -39,7 +39,7 @@
         </div>
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Is Published" %}</label>
+            <label class="oh-label">{% trans "Published" %}</label>
             {{form.is_published}}
           </div>
         </div>
@@ -61,7 +61,7 @@
             {{form.start_from}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Is Active" %}?</label>
+            <label class="oh-label">{% trans "Active" %}?</label>
             {{form.is_active}}
           </div>
         </div>

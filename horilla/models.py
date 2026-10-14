@@ -136,7 +136,7 @@ class HorillaModel(models.Model, metaclass=HorillaModelBase):
     )
     horilla_history = AuditlogHistoryField()
     objects = models.Manager()
-    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Active"))
 
     @property
     def get_created_at_date(self):

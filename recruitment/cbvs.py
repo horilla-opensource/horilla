@@ -125,7 +125,7 @@ class LinkedInSettingListView(views.HorillaListView):
         "username",
         "email",
         "company_id",
-        ("Is Active", "is_active_toggle"),
+        ("Active", "is_active_toggle"),
     ]
 
     header_attrs = {

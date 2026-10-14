@@ -28,14 +28,14 @@
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                        <label class="oh-label" for="{{form.closed.id_for_label}}">{% trans 'Is Closed' %}</label>
+                        <label class="oh-label" for="{{form.closed.id_for_label}}">{% trans 'Closed' %}</label>
                         {{ form.closed }}
                     </div>
                 </div>
 
                 <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                        <label class="oh-label" for="{{form.is_published.id_for_label}}">{% trans 'Is Published' %}</label>
+                        <label class="oh-label" for="{{form.is_published.id_for_label}}">{% trans 'Published' %}</label>
                         {{ form.is_published }}
                     </div>
                 </div>
@@ -147,7 +147,7 @@
                         <select name="country" class="oh-select-2 w-100 country" id="country"></select>
                     </div>
                     <div class="oh-input-group">
-                        <label class="oh-label">{% trans 'Is Hired' %}</label>
+                        <label class="oh-label">{% trans 'Hired' %}</label>
                         {{ candidate_filter_obj.form.hired }}
                     </div>
                     <div class="oh-input-group">
@@ -165,7 +165,7 @@
                         {{ candidate_filter_obj.form.offer_letter_status }}
                     </div>
                     <div class="oh-input-group">
-                        <label class="oh-label">{% trans 'Is Canceled' %}</label>
+                        <label class="oh-label">{% trans 'Canceled' %}</label>
                         {{ candidate_filter_obj.form.canceled }}
                     </div>
                     <div class="oh-input-group">

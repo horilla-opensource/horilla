@@ -182,7 +182,7 @@ class Recruitment(HorillaModel):
             "To publish a recruitment in website, if false then it \
             will not appear on open recruitment page."
         ),
-        verbose_name=_("Is Published"),
+        verbose_name=_("Published"),
     )
     open_positions = models.ManyToManyField(
         JobPosition,
@@ -1851,21 +1851,12 @@ class InterviewSchedule(HorillaModel):
         blank=True,
     )
     completed = models.BooleanField(
-        default=False, verbose_name=_("Is Interview Completed")
+        default=False, verbose_name=_("Interview Completed")
     )
     objects = HorillaCompanyManager("candidate_id__recruitment_id__company_id")
 
     def __str__(self) -> str:
         return f"{self.candidate_id} -Interview."
-
-    def candidate_custom_col(self):
-        """
-        method for candidate coloumn
-        """
-        return render_template(
-            path="cbv/interview/candidate_custom_col.html",
-            context={"instance": self},
-        )
 
     def interviewer_custom_col(self):
         """
@@ -1875,27 +1866,6 @@ class InterviewSchedule(HorillaModel):
             path="cbv/interview/interviewer_custom_col.html",
             context={"instance": self},
         )
-
-    def custom_color(self):
-        """
-        Custom background color for all rows with hover effect
-        """
-        # interviews = InterviewSchedule.objects.filter(
-        #     employee_id=self.user.employee_get.id
-        # )
-        request = getattr(_thread_locals, "request", None)
-        if not getattr(self, "request", None):
-            self.request = request
-        user = request.user
-        if user.employee_get in self.employee_id.all():
-            color = "rgba(255, 166, 0, 0.158)"
-            hovering = "white"
-
-            return (
-                f'style="background-color: {color};" '
-                f"onmouseover=\"this.style.backgroundColor='{hovering}';\" "
-                f"onmouseout=\"this.style.backgroundColor='{color}';\""
-            )
 
     def interviewer_detail(self):
         """
@@ -1922,6 +1892,22 @@ class InterviewSchedule(HorillaModel):
         else:
             return _("None")
 
+    def interview_state(self):
+        """
+        Return completed, expired, today_passed, today_upcoming or upcoming.
+        """
+        if self.completed:
+            return "completed"
+        now = tz.localtime() if settings.USE_TZ else datetime.now()
+        now = now.replace(tzinfo=None)
+        if self.interview_date < now.date():
+            return "expired"
+        if self.interview_date > now.date():
+            return "upcoming"
+        if datetime.combine(self.interview_date, self.interview_time) < now:
+            return "today_passed"
+        return "today_upcoming"
+
     def status_custom_col(self):
         """
         method for status coloumn
@@ -1929,7 +1915,7 @@ class InterviewSchedule(HorillaModel):
         now = datetime.now(tz=timezone.utc if settings.USE_TZ else None)
         return render_template(
             path="cbv/interview/status_custom_col.html",
-            context={"instance": self, "now": now},
+            context={"instance": self, "now": now, "state": self.interview_state()},
         )
 
     def custom_action_col(self):

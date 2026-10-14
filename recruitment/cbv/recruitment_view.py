@@ -132,8 +132,8 @@ class RecruitmentList(HorillaListView):
         ("title", _("Recruitment")),
         ("job_position_id", _("Job Position")),
         ("company_id", _("Company")),
-        ("closed", _("Is Closed")),
-        ("is_published", _("Is Published")),
+        ("closed", _("Closed")),
+        ("is_published", _("Published")),
         ("start_date", _("Start Date")),
         ("end_date", _("End Date")),
     ]
@@ -174,8 +174,8 @@ class RecruitmentNav(HorillaNavView):
         ("title", _("Recruitment")),
         ("job_position_id", _("Job Position")),
         ("company_id", _("Company")),
-        ("closed", _("Is Closed")),
-        ("is_published", _("Is Published")),
+        ("closed", _("Closed")),
+        ("is_published", _("Published")),
         ("start_date", _("Start Date")),
         ("end_date", _("End Date")),
     ]
