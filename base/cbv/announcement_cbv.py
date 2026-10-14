@@ -118,7 +118,10 @@ class AnnouncementFormView(HorillaFormView):
                 employee_work_info__job_position_id__in=job_positions
             )
 
-            anou.employees.add(*employees)
+            # set(), not add(): when an announcement is edited, an employee taken
+            # out of the field (and not covered by a selected department or job
+            # position) has to be removed, or they come back when it is reopened.
+            anou.employees.set(employees)
 
             notify.send(
                 self.request.user.employee_get,

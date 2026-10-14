@@ -272,7 +272,7 @@ def update_announcement(request, anoun_id):
             employees = employees | Employee.objects.filter(
                 employee_work_info__job_position_id__in=job_positions
             )
-            anou.employees.add(*employees)
+            anou.employees.set(employees)
 
             notify.send(
                 request.user.employee_get,
