@@ -1946,14 +1946,9 @@ urlpatterns = [
         name="get-upcoming-holidays",
     ),
     path(
-        "duplicate-holiday/<int:obj_id>/",
-        views.object_duplicate,
+        "duplicate-holiday/<int:pk>/",
+        holidays.HolidayDuplicateFormView.as_view(),
         name="duplicate-holiday",
-        kwargs={
-            "model": Holidays,
-            "form": HolidayForm,
-            "template": "holiday/holiday_form.html",
-        },
     ),
     path("holiday-delete/<int:obj_id>/", views.holiday_delete, name="holiday-delete"),
     path(

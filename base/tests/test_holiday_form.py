@@ -43,8 +43,11 @@ class HolidayFormTests(TestCase):
         )
         holiday.department.add(self.dept)
         form = HolidayForm(
-            self._data(start_date="2026-11-02", end_date="2026-11-02",
-                       department=[self.dept.pk]),
+            self._data(
+                start_date="2026-11-02",
+                end_date="2026-11-02",
+                department=[self.dept.pk],
+            ),
             instance=holiday,
         )
         self.assertTrue(form.is_valid(), form.errors)
@@ -173,9 +176,7 @@ class HolidayImportTests(TestCase):
         self.assertEqual(total, 5)
         self.assertEqual(Holidays.objects.entire().count(), 3)
         self.assertTrue(
-            Holidays.objects.entire()
-            .filter(name="Scoped", company_id=company)
-            .exists()
+            Holidays.objects.entire().filter(name="Scoped", company_id=company).exists()
         )
         self.assertTrue(
             Holidays.objects.entire()
