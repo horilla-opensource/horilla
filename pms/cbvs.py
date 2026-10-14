@@ -9,6 +9,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import (
+    check_manager,
     filter_own_and_subordinate_recordes,
     is_reportingmanager,
     sanitize_mail_template_body,
@@ -257,9 +258,31 @@ class EmployeeBonusPointFormView(views.HorillaFormView):
             if kwargs.get("pk")
             else "pms.add_employeebonuspoint"
         )
-        if is_reportingmanager(request) or request.user.has_perm(perm):
+        if request.user.has_perm(perm):
             return super().dispatch(request, *args, **kwargs)
+        # A reporting manager may only add / change points of the employees they
+        # manage, not of every employee because they manage someone.
+        if is_reportingmanager(request):
+            target = self._target_employee(request, kwargs.get("pk"))
+            # No employee named yet (the form's own employee field decides):
+            # EmployeeBonusPointForm.clean() checks it on submit.
+            if target is None or check_manager(request.user.employee_get, target):
+                return super().dispatch(request, *args, **kwargs)
         return handle_no_permission(request)
+
+    @staticmethod
+    def _target_employee(request, pk=None):
+        """
+        The employee the bonus point is for: the record's own employee when
+        editing, else the employee named in the request.
+        """
+        if pk:
+            bonus = models.EmployeeBonusPoint.objects.filter(pk=pk).first()
+            return bonus.employee_id if bonus else None
+        employee_id = request.GET.get("employee_id") or request.POST.get("employee_id")
+        if employee_id and str(employee_id).isdigit():
+            return Employee.objects.filter(id=employee_id).first()
+        return None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

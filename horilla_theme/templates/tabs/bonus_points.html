@@ -12,7 +12,7 @@
                 <div class="flex items-center justify-between mb-3">
                     <h5 class="mb-1 font-semibold text-sm">{% trans "Bonus Points" %}</h5>
                     {% if "pms"|app_installed %}
-                        {% if perms.pms.add_employeebonuspoint or request.user|is_reportingmanager %}
+                        {% if perms.pms.add_employeebonuspoint or request.user|check_manager:employee %}
                         <div class="flex items-center gap-4">
                             <button
                                 class="p-2 w-8 h-8 justify-center bg-brand-600 text-white rounded-full text-sm flex items-center gap-2 hover:bg-brand-800 transition duration-300"

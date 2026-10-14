@@ -4,7 +4,7 @@
         <div class="d-flex justify-content-between align-items-center">
             <h3 class="oh-faq-card__title">{% trans "Bonus Points" %}</h3>
             {% if "pms"|app_installed %}
-                {% if perms.pms.add_employeebonuspoint or request.user|is_reportingmanager %}
+                {% if perms.pms.add_employeebonuspoint or request.user|check_manager:employee %}
                 <div class="oh-dropdown">
                     <button
                         class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"

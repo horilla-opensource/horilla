@@ -3865,7 +3865,6 @@ def bonus_points_history_tab(request, pk):
 
 
 @login_required
-@manager_can_enter(perm="employee.add_bonuspoint")
 def add_bonus_points(request, emp_id):
     """
     This function is used to add bonus points to an employee
@@ -3876,6 +3875,16 @@ def add_bonus_points(request, emp_id):
 
     Returns: returns add_points form
     """
+    from base.methods import check_manager
+
+    # The permission, or being this employee's reporting manager. Managing
+    # someone else is not enough, and the employee cannot add their own points.
+    employee = Employee.objects.filter(id=emp_id).first()
+    if not (
+        request.user.has_perm("employee.add_bonuspoint")
+        or (employee and check_manager(request.user.employee_get, employee))
+    ):
+        return render(request, "no_perm.html")
 
     bonus_point = BonusPoint.find(emp_id)
     if not bonus_point:
