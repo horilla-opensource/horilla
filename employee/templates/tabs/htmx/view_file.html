@@ -23,20 +23,31 @@
         </div>
 
         <div class="flex justify-end items-center gap-2 flex-wrap mb-4">
-            <a
-                type="submit"
-                hx-get="{% url 'file-upload' document.id %}"
-                hx-target="#objectCreateModalTarget"
-                data-toggle="oh-modal-toggle"
-                data-target="#objectCreateModal"
-                title="{% trans 'Upload file' %}"
-                class="oh-btn oh-btn--warning px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-            >
-                <ion-icon name="attach-outline"></ion-icon>
-                {% trans "Upload File" %}
-            </a>
+            {% if not document.document_request_id %}
+            {% elif document.document %}
+                <a
+                    title="{% trans 'Upload file' %}"
+                    class="oh-btn oh-btn--warning oh-btn--disabled px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                >
+                    <ion-icon name="attach-outline"></ion-icon>
+                    {% trans "Upload File" %}
+                </a>
+            {% else %}
+                <a
+                    type="submit"
+                    hx-get="{% url 'file-upload' document.id %}"
+                    hx-target="#objectCreateModalTarget"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#objectCreateModal"
+                    title="{% trans 'Upload file' %}"
+                    class="oh-btn oh-btn--warning px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                >
+                    <ion-icon name="attach-outline"></ion-icon>
+                    {% trans "Upload File" %}
+                </a>
+            {% endif %}
             {% if document.document %}
-                {% if perms.horilla_documents.change_documentrequest %}
+                {% if document.document_request_id and perms.horilla_documents.change_documentrequest %}
                     {% if document.status == "approved" %}
                         <a class="oh-btn oh-btn--success oh-btn--disabled px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300" title="{% trans 'Approved' %}">
                             <ion-icon name="checkmark-outline"></ion-icon>

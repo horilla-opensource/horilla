@@ -20,4 +20,4 @@ class DocumentTitleTests(TestCase):
     def test_valid_title_saves(self):
         doc = Document.objects.create(title="Passport", employee_id=self.employee)
         self.assertIsNotNone(doc.pk)
-        self.assertEqual(doc.status, "requested")
+        self.assertEqual(doc.status, "approved")

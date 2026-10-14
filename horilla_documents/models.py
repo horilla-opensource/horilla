@@ -160,6 +160,8 @@ class Document(HorillaModel):
                 )
 
     def save(self, *args, **kwargs):
+        if not self.document_request_id_id:
+            self.status = "approved"
         super().save(*args, **kwargs)
         if self.is_digital_asset:
             if apps.is_installed("asset"):
