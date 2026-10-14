@@ -22,6 +22,8 @@ class IndividualLeaveTab(MainParentListView):
     class for rendering leave tab in employee profile
     """
 
+    show_saved_filters = False
+    row_status_indications = []
     template_name = "cbv/employee_individual/leave_tab.html"
 
     def dispatch(self, request, *args, **kwargs):
