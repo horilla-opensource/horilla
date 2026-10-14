@@ -2839,7 +2839,16 @@ class HorillaProfileView(DetailView):
             user_id=self.request.user, path=self.request.path_info
         ).first()
 
-        self.visible_tabs = self.tabs.copy()
+        from horilla_views.templatetags.generic_template_filters import (
+            accessibility as tab_accessibility,
+        )
+
+        self.visible_tabs = [
+            tab
+            for tab in self.tabs
+            if not tab.get("accessibility")
+            or tab_accessibility(tab["accessibility"], context["instance"])
+        ]
 
         self.tabs_list = [(tab["title"], tab["title"]) for tab in self.visible_tabs]
 
