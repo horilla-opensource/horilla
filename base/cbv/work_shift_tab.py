@@ -123,6 +123,9 @@ class WorkTypeIndividualTabList(WorkRequestListView):
     List view for work type tab
     """
 
+    show_saved_filters = False
+    row_status_indications = []
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         pk = self.request.resolver_match.kwargs.get("pk")
@@ -176,6 +179,9 @@ class ShiftRequestIndividualTabView(ShiftRequestList):
     """
     List view for shift request tab
     """
+
+    show_saved_filters = False
+    row_status_indications = []
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -237,6 +243,9 @@ class ShiftAllocationIndividualTabView(AllocatedShift):
     standalone Allocated Shift Requests list this view is based on.
     """
 
+    show_saved_filters = False
+    row_status_indications = []
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.view_id = "shift-allocation-individual-div"
@@ -291,6 +300,8 @@ class RotatingShiftAssignIndividualView(RotatingShiftListParent):
     """
     List view for Rotating shift request tab
     """
+
+    show_saved_filters = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -356,6 +367,8 @@ class RotatingWorkIndividualTab(GeneralParent):
     """
     List view for rotating work type tab
     """
+
+    show_saved_filters = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

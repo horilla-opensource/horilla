@@ -45,6 +45,8 @@ class MailLogTabList(HorillaListView):
     list view for mail log  tab
     """
 
+    show_saved_filters = False
+
     model = EmailLog
     filter_class = MailLogFilter
 
