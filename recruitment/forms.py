@@ -316,6 +316,13 @@ class RecruitmentCreationForm(BaseModelForm):
         self.fields["publish_in_linkedin"].widget.attrs.update(
             {"onchange": "toggleLinkedIn()"}
         )
+        # Off when a new recruitment form opens (the model default is on):
+        # posting to LinkedIn is something to choose, not something that
+        # happens unless it is unticked. An existing recruitment keeps its own
+        # value, and so does a copy made from one (the copy's initial data
+        # wins over the field's initial).
+        if not self.instance.pk:
+            self.fields["publish_in_linkedin"].initial = False
 
     # def create_option(self, *args,**kwargs):
     #     option = super().create_option(*args,**kwargs)
