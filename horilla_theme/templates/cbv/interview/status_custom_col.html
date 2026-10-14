@@ -5,17 +5,22 @@
         <i class="material-icons text-[17px]">check_circle</i>
         <span>{% trans "Interview Completed" %}</span>
     </div>
-{% elif instance.interview_date|date:"Y-m-d" < now|date:"Y-m-d" %}
+{% elif state == "expired" %}
     <div class="flex items-center gap-2 w-full text-xs font-semibold text-red-600">
         <i class="material-icons text-[17px]">dangerous</i>
         <span>{% trans "Expired Interview" %}</span>
     </div>
-{% elif instance.interview_date|date:"Y-m-d" == now|date:"Y-m-d" and not instance.completed %}
+{% elif state == "today_passed" %}
+    <div class="flex items-center gap-2 w-full text-xs font-semibold text-yellow-500">
+        <i class="material-symbols-outlined text-[17px]">today</i>
+        <span>{% trans "Interview Today" %}</span>
+    </div>
+{% elif state == "today_upcoming" %}
     <div class="flex items-center gap-2 w-full text-xs font-semibold text-blue-600">
         <i class="material-symbols-outlined text-[17px]">today</i>
         <span>{% trans "Interview Today" %}</span>
     </div>
-{% elif instance.interview_date|date:"Y-m-d" > now|date:"Y-m-d" %}
+{% elif state == "upcoming" %}
     <div
         class="flex items-center gap-2 w-full text-xs font-semibold text-orange-500"
         title="{{instance.interview_date|timeuntil}}"

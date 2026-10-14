@@ -1,33 +1,36 @@
 {% load i18n %}
-
-<div data-cell-index="1">
-{% for employee in instance.employee_id.all %}
-<div id="employeeContainer{{employee.id}}-{{instance.id}}">
-    <span class="oh-user-panel oh-collapse-panel" data-type="user" >
-        <div class="oh-profile oh-profile--md">
-            <div class="oh-profile__avatar mr-1">
+<input type="hidden" class="d-none">
+<div data-cell-index="1" class="oh-avatar-stack">
+    <div class="oh-avatar-stack__images">
+        {% for employee in instance.employee_id.all|slice:":3" %}
+            <div class="oh-avatar-stack__img">
                 <img
-                src="https://ui-avatars.com/api/?name={{employee.get_full_name}}&background=random"
-                class="oh-profile__image"
-                alt="{% trans 'Employee' %}"
-                />
+                    src="https://ui-avatars.com/api/?name={{ employee.get_full_name }}&background=random"
+                    alt="{{ employee.get_full_name }}"
+                >
             </div>
-        <span class="oh-profile__name oh-text--dark" title="{{employee.get_full_name}}">
-        {{employee.get_full_name|truncatechars:15}}</span>
-        </div>
-        {% if perms.recruitment.change_interviewschedule or request.user.employee_get in instance.employee_id.all %}
-        <a
-        hx-confirm="{% trans 'Are you sure you want to remove this interviewer?' %}"
-        hx-post="{% url 'interview-employee-remove' instance.id employee.id %}"
-        title="{% trans "Remove" %}" hx-swap="innerHTML"
-        hx-target="#listContainer"
-        onclick="event.stopPropagation()"
-        >
-        <ion-icon name="close-outline"></ion-icon>
-        </a>
-        {% endif %}
-        </span>
-        </div>
         {% endfor %}
-        <span class="count-span">{{instance.employee_id.all|length}} {% trans "Interviewers" %}</span>
+        {% with extra=instance.employee_id.all|length|add:"-3" %}
+            {% if extra > 0 %}
+                <div class="oh-avatar-stack__img oh-avatar-stack__more">+{{ extra }}</div>
+            {% endif %}
+        {% endwith %}
+        {% if not instance.employee_id.all %}
+            <span class="oh-avatar-stack__empty">{% trans "No interviewers" %}</span>
+        {% endif %}
+    </div>
+    {% if instance.employee_id.all %}
+        <div class="oh-avatar-stack__popover-content">
+            <div class="oh-avatar-stack__popover-title">{% trans "Interviewers" %}</div>
+            {% for employee in instance.employee_id.all %}
+                <div class="oh-avatar-stack__popover-row">
+                    <img
+                        src="https://ui-avatars.com/api/?name={{ employee.get_full_name }}&background=random"
+                        alt=""
+                    >
+                    <span>{{ employee.get_full_name }}</span>
+                </div>
+            {% endfor %}
         </div>
+    {% endif %}
+</div>
