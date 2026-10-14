@@ -63,12 +63,54 @@ class HorillaHistoryView(DetailView):
 
     def get_queryset(self):
         """
-        Bypass company-scoped managers so history opens for any row visible
-        in multi-company / All Companies list views.
+        The company-scoped queryset. It already covers "All my companies"
+        (every company the user belongs to); _base_manager, used before,
+        reached other companies' rows. get_queryset(), not all(): the
+        manager's all() also hides inactive employees' records.
         """
         if self.model is not None:
-            return self.model._base_manager.all()
+            return self.model._default_manager.get_queryset()
         return super().get_queryset()
+
+    def history_owner(self, instance):
+        """
+        The employee a record belongs to, so they and their managers can see
+        its history without the model's view permission. Subclasses override
+        this where the link to the employee is indirect.
+        """
+        from employee.models import Employee
+
+        if isinstance(instance, Employee):
+            return instance
+        owner = getattr(instance, "employee_id", None)
+        return owner if isinstance(owner, Employee) else None
+
+    def can_view_history(self, instance):
+        """
+        This view serves any model from ?model=, so it can't rely on a
+        per-model decorator: the model's view permission, or the record being
+        the user's own or someone's they manage. Only logging in was checked
+        before, so any employee could read (and revert) any record's history.
+        """
+        from base.methods import check_manager
+
+        user = self.request.user
+        opts = instance._meta
+        if user.has_perm(f"{opts.app_label}.view_{opts.model_name}"):
+            return True
+        employee = getattr(user, "employee_get", None)
+        owner = self.history_owner(instance)
+        return bool(
+            employee and owner and (owner == employee or check_manager(employee, owner))
+        )
+
+    def _resolve_model(self, request):
+        """The model named by ?model=app.Model, or None if it isn't one."""
+        try:
+            app_label, model_name = request.GET.get("model", "").split(".")
+            return apps.get_model(app_label, model_name)
+        except (ValueError, LookupError):
+            return None
 
     def get(self, request, *args, **kwargs):
         """
@@ -76,10 +118,7 @@ class HorillaHistoryView(DetailView):
         single URL/view can serve the history sidebar for any model.
         """
         if not self.model:
-            model_param = request.GET.get("model")
-            if model_param:
-                app_label, model_name = model_param.split(".")
-                self.model = apps.get_model(app_label, model_name)
+            self.model = self._resolve_model(request)
         if not self.model:
             # No ?model=app.Model on the request and no subclass default --
             # get_queryset() has nothing to query, and Django's own
@@ -98,6 +137,10 @@ class HorillaHistoryView(DetailView):
             self.history_related_name = "history"
         else:
             self.history_related_name = None
+        instance = self.get_queryset().filter(pk=kwargs.get("pk")).first()
+        if instance is None or not self.can_view_history(instance):
+            messages.info(request, _("You don't have permission."))
+            return HorillaFormView.HttpResponse()
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -105,19 +148,31 @@ class HorillaHistoryView(DetailView):
         Revert
         """
         history_id = kwargs.get("history_id")
-        model_param = request.GET.get("model")
-        if not model_param:
+        self.model = self._resolve_model(request)
+        if not self.model:
             messages.error(request, _("Missing model parameter."))
             return HorillaRedirect(request)
-        app, model = model_param.split(".")
-        self.model = apps.get_model(app, model)
-
+        opts = self.model._meta
+        instance = self.get_queryset().filter(pk=kwargs.get("pk")).first()
+        # Reverting rewrites the record, so it takes the change permission,
+        # on a record the user can reach -- only logging in was checked, and
+        # the <pk> in the URL was ignored entirely.
+        if instance is None or not request.user.has_perm(
+            f"{opts.app_label}.change_{opts.model_name}"
+        ):
+            messages.info(request, _("You don't have permission."))
+            return HorillaFormView.HttpResponse()
+        try:
+            history_model = get_history_model_for_model(self.model)
+        except Exception:
+            history_model = None
         history = (
-            get_history_model_for_model(self.model)
-            .objects.filter(history_id=history_id)
-            .first()
+            history_model.objects.filter(history_id=history_id).first()
+            if history_model
+            else None
         )
-        if not history:
+        # The snapshot must be of this record, not any row of the model.
+        if not history or history.instance.pk != instance.pk:
             messages.error(request, _("History record not found."))
             return HorillaRedirect(request)
         history.instance.save()

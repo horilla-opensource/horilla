@@ -749,6 +749,7 @@ def view_payroll_dashboard(request):
 
 
 @login_required
+@permission_required("payroll.view_payslip")
 def dashboard_employee_chart(request):
     """
     payroll dashboard employee chart data
@@ -833,6 +834,7 @@ def dashboard_employee_chart(request):
 
 
 @login_required
+@permission_required("payroll.view_payslip")
 def payslip_details(request):
     """
     payroll dashboard payslip details data
@@ -856,6 +858,7 @@ def payslip_details(request):
 
 
 @login_required
+@permission_required("payroll.view_payslip")
 def dashboard_department_chart(request):
     """
     payroll dashboard department chart data
@@ -955,6 +958,7 @@ def contract_ending(request):
 
 
 @login_required
+@permission_required("payroll.view_payslip")
 def payslip_export(request):
     """
     payroll dashboard exporting to excell data

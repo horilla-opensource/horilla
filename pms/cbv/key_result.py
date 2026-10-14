@@ -366,3 +366,8 @@ class EKRHistory(HorillaHistoryView):
         self.has_perm_to_revert = self.request.user.has_perm(
             "pms.change_employeekeyresult"
         )
+
+    def history_owner(self, instance):
+        # A key result belongs to the employee who owns its objective.
+        objective = getattr(instance, "employee_objective_id", None)
+        return getattr(objective, "employee_id", None)
