@@ -262,9 +262,12 @@ def valid_import_file_headers(data_frame):
 
 def process_employee_records(data_frame, selected_company=None):
     """
-    Validate import rows. When `selected_company` (a Company instance) is
-    given, only rows for that company are accepted (blank defaults to it);
-    when None ("All Company"), rows may belong to any company.
+    Validate import rows.
+
+    - `selected_company` (a Company instance): only rows for that company are
+      accepted; a blank Company is rejected with a Company Error.
+    - None ("All Company"/no selection): rows may name any existing company,
+      or leave it blank (company_id=None).
     """
 
     email_regex = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
@@ -310,9 +313,6 @@ def process_employee_records(data_frame, selected_company=None):
         company = emp.get("Company")
         if isinstance(company, str):
             company = company.strip() or None
-        if selected_company and not company:
-            company = selected_company.company
-            emp["Company"] = company
         basic_salary = emp.get("Basic Salary")
         salary_hour = emp.get("Salary Hour")
         monthly_ctc = emp.get("CTC")
@@ -393,14 +393,19 @@ def process_employee_records(data_frame, selected_company=None):
             save = False
 
         # Company validation
-        if company and company not in existing_companies:
-            errors["Company Error"] = f"Company '{company}' does not exist."
+        if selected_company and not company:
+            errors["Company Error"] = (
+                f"Company is required and must match the selected company "
+                f"'{selected_company.company}'."
+            )
             save = False
         elif selected_company and company != selected_company.company:
             errors["Company Error"] = (
-                f"Company '{company}' does not match the selected company "
-                f"'{selected_company.company}'."
+                f"Company '{company}' does not match the selected company."
             )
+            save = False
+        if company and company not in existing_companies:
+            errors["Company Error"] = f"Company '{company}' does not exist."
             save = False
 
         # Salary validation
