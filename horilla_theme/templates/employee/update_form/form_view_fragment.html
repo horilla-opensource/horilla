@@ -53,21 +53,21 @@
 
             <!-- Right: Step Tabs -->
             <div class="flex items-center gap-2 flex-wrap">
-                <a href="#" class="emp-step-btn flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap no-underline emp-step-btn--active"
+                <a href="#" class="emp-step-btn flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap no-underline{% if not active_tab or active_tab == 'personal' %} emp-step-btn--active{% else %} emp-step-btn--done{% endif %}"
                    data-action="general-tab" data-target="#personal" id="step-personal">
-                    <div class="w-5 h-5 rounded-full border-2 border-secondary-200 bg-white/20 flex items-center justify-center text-xxs font-semibold">1</div>
+                    <div class="w-5 h-5 rounded-full border-2 border-secondary-200{% if not active_tab or active_tab == 'personal' %} bg-white/20{% endif %} flex items-center justify-center text-xxs font-semibold">1</div>
                     {% trans "Personal Information" %}
                 </a>
 
-                <a href="#" class="emp-step-btn flex items-center gap-2 text-dark-200 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap no-underline"
+                <a href="#" class="emp-step-btn flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap no-underline{% if active_tab == 'work' %} emp-step-btn--active{% elif active_tab == 'bank' %} emp-step-btn--done{% else %} text-dark-200{% endif %}"
                    data-action="general-tab" data-target="#work" id="step-work">
-                    <div class="w-5 h-5 rounded-full border-2 border-secondary-200 flex items-center justify-center text-xxs font-semibold">2</div>
+                    <div class="w-5 h-5 rounded-full border-2 border-secondary-200{% if active_tab == 'work' %} bg-white/20{% endif %} flex items-center justify-center text-xxs font-semibold">2</div>
                     {% trans "Work Information" %}
                 </a>
 
-                <a href="#" class="emp-step-btn flex items-center gap-2 text-dark-200 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap no-underline"
+                <a href="#" class="emp-step-btn flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap no-underline{% if active_tab == 'bank' %} emp-step-btn--active{% else %} text-dark-200{% endif %}"
                    data-action="general-tab" data-target="#bank" id="step-bank">
-                    <div class="w-5 h-5 rounded-full border-2 border-secondary-200 flex items-center justify-center text-xxs font-semibold">3</div>
+                    <div class="w-5 h-5 rounded-full border-2 border-secondary-200{% if active_tab == 'bank' %} bg-white/20{% endif %} flex items-center justify-center text-xxs font-semibold">3</div>
                     {% trans "Bank Information" %}
                 </a>
             </div>
@@ -78,6 +78,19 @@
     {% include 'employee/update_form/personal_info.html' with active_tab=active_tab %}
     {% include 'employee/update_form/work_details.html' with active_tab=active_tab %}
     {% include 'employee/update_form/bank_details.html' with active_tab=active_tab %}
+
+</div>
+
+{% if messages %}
+<div id="reloadMessages" hx-swap-oob="innerHTML">
+    <div class="oh-alert-container">
+        {% for message in messages %}
+            <div class="oh-alert oh-alert--animated {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
 
     <script>
         (function () {
@@ -110,17 +123,39 @@
                 });
             }
 
-            var root = document.getElementById("employee-update-form-root");
-            var serverTab = root && root.getAttribute("data-active-tab");
-            if (serverTab) {
-                localStorage.setItem("activeEmpTab", "#" + serverTab);
-                applyEmployeeEditTab("#" + serverTab);
-            } else {
-                var stored = localStorage.getItem("activeEmpTab");
-                if (["#personal", "#work", "#bank"].includes(stored)) {
-                    applyEmployeeEditTab(stored);
+            function restoreEmployeeEditTab() {
+                var root = document.getElementById("employee-update-form-root");
+                var serverTab = root && root.getAttribute("data-active-tab");
+                if (serverTab) {
+                    localStorage.setItem("activeEmpTab", "#" + serverTab);
+                    applyEmployeeEditTab("#" + serverTab);
+                } else {
+                    var stored = localStorage.getItem("activeEmpTab");
+                    if (["#personal", "#work", "#bank"].includes(stored)) {
+                        applyEmployeeEditTab(stored);
+                    }
                 }
             }
+
+            restoreEmployeeEditTab();
+
+            $(document).off("htmx:beforeSwap.empEditTab").on("htmx:beforeSwap.empEditTab", function (e) {
+                if (e.target.id === "employee-update-form-root") {
+                    $("#historyModal").removeClass("oh-modal--show");
+                }
+            });
+
+            $(document).off("htmx:afterSettle.empEditTab").on("htmx:afterSettle.empEditTab", function (e) {
+                if (e.target.id !== "employee-update-form-root") {
+                    return;
+                }
+                restoreEmployeeEditTab();
+                $(e.target).find("select").each(function () {
+                    if ($(this).data("select2")) {
+                        $(this).addClass("select2-hidden-accessible").attr({ tabindex: "-1", "aria-hidden": "true" });
+                    }
+                });
+            });
 
             $("[data-action=general-tab]").off("click.empEditTab").on("click.empEditTab", function (e) {
                 e.preventDefault();
@@ -139,14 +174,3 @@
             });
         })();
     </script>
-</div>
-
-{% if messages %}
-<div id="reloadMessages" hx-swap-oob="innerHTML">
-    <div class="oh-alert-container">
-        {% for message in messages %}
-            <div class="oh-alert oh-alert--animated {{ message.tags }}">{{ message }}</div>
-        {% endfor %}
-    </div>
-</div>
-{% endif %}

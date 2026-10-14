@@ -33,7 +33,7 @@
 </style>
 
 <div id="view-container">
-    <div id="employee-update-form-root">
+    {% comment %} <div id="employee-update-form-root">
 
         <!-- Header + Stepper -->
         <div class="bg-white rounded-2xl shadow-card px-6 py-3 mb-2">
@@ -144,6 +144,7 @@
                 });
             });
         </script>
-    </div>
+    </div> {% endcomment %}
+    {% include "employee/update_form/form_view_fragment.html" %}
 </div>
 {% endblock content %}

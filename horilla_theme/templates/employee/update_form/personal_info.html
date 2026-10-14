@@ -1,6 +1,6 @@
 {% load i18n widget_tweaks %}
 
-<div class="oh-general__tab-target" id="personal">
+<div class="oh-general__tab-target{% if active_tab and active_tab != 'personal' %} d-none{% endif %}" id="personal">
     <div class="bg-white rounded-2xl shadow-card px-6 py-5">
         <form
             method="post"
