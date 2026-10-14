@@ -6,12 +6,6 @@
             <div class="shadow-card p-5 bg-white rounded-md border border-dark-50">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-md font-semibold flex items-center">
-                        {% if policy.is_visible_to_all %}
-                            <span class="inline-block w-2 h-2 rounded-full bg-success m-[2px]"></span>
-                        {% else %}
-                            <span class="inline-block w-2 h-2 rounded-full bg-danger m-[2px]"></span>
-                        {% endif %}
-
                         {{ policy.title }}
                     </h3>
                     {% if perms.employee.change_policy or perms.employee.delete_policy %}
