@@ -1,0 +1,14 @@
+{% load i18n %}
+<div role="alert" class="flex items-start gap-3 mb-4 p-3 rounded-lg border border-red-200 bg-red-50 text-left">
+    <ion-icon name="alert-circle" class="shrink-0 text-red-500" style="font-size:22px;"></ion-icon>
+    <div class="min-w-0 flex-1">
+        <p class="text-sm font-semibold text-red-700 mb-0.5">{% trans "Import failed" %}</p>
+        <p class="text-xs text-red-600 break-words max-h-24 overflow-y-auto">{{ error_message }}</p>
+        <p class="text-xs text-red-500/80 mt-1">{% trans "Please correct the file and upload it again." %}</p>
+    </div>
+    <button type="button" class="shrink-0 text-red-400 hover:text-red-600 transition"
+        aria-label="{% trans 'Dismiss' %}"
+        onclick="this.closest('[role=alert]').remove()">
+        <ion-icon name="close-outline" style="font-size:18px;"></ion-icon>
+    </button>
+</div>

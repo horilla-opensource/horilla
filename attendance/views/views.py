@@ -14,6 +14,7 @@ provide the main entry points for interacting with the application's functionali
 import logging
 import uuid
 
+from base.import_template_data import import_template_frame, write_import_xlsx
 from horilla.http.response import HorillaRedirect
 from horilla.methods import remove_dynamic_url
 
@@ -247,22 +248,10 @@ def attendance_excel(_request):
         HttpResponse: An HTTP response containing an empty Excel template with predefined columns.
     """
     try:
-        columns = [
-            "Badge ID",
-            "Shift",
-            "Work type",
-            "Attendance date",
-            "Check-in date",
-            "Check-in",
-            "Check-out date",
-            "Check-out",
-            "Worked hour",
-            "Minimum hour",
-        ]
-        data_frame = pd.DataFrame(columns=columns)
+        data_frame = import_template_frame("attendance")
         response = HttpResponse(content_type="application/ms-excel")
         response["Content-Disposition"] = 'attachment; filename="my_excel_file.xlsx"'
-        data_frame.to_excel(response, index=False)
+        write_import_xlsx(data_frame, response)
         return response
     except Exception as exception:
         return HttpResponse(exception)
@@ -290,6 +279,31 @@ def attendance_import(request):
         data_frame = (
             pd.read_csv(file) if file_extension == "csv" else pd.read_excel(file)
         )
+        required_columns = [
+            "Badge ID",
+            "Shift",
+            "Work type",
+            "Attendance date",
+            "Check-in date",
+            "Check-in",
+            "Check-out date",
+            "Check-out",
+            "Worked hour",
+            "Minimum hour",
+        ]
+        missing_columns = [c for c in required_columns if c not in data_frame.columns]
+        if missing_columns:
+            message = _(
+                "These required headers are missing in the uploaded file: "
+            ) + ", ".join(missing_columns)
+            response = render(
+                request,
+                "attendance/attendance/import_error_alert.html",
+                {"error_message": message},
+            )
+            response["HX-Retarget"] = "#attendanceImportError"
+            response["HX-Reswap"] = "innerHTML"
+            return response
         attendance_dicts = data_frame.to_dict("records")
         attendance_import = process_attendance_data(attendance_dicts)
         path_info = None
@@ -1081,7 +1095,7 @@ def handle_activity_import_error(error_data):
     # Create an HTTP response with an Excel attachment
     response = HttpResponse(content_type="application/ms-excel")
     response["Content-Disposition"] = 'attachment; filename="ImportError.xlsx"'
-    data_frame.to_excel(response, index=False)
+    write_import_xlsx(data_frame, response)
 
     def get_activity_error_sheet(request):
         remove_dynamic_url(path_info)
@@ -1128,22 +1142,12 @@ def attendance_activity_import(request):
 @require_http_methods(["GET"])
 def attendance_activity_import_excel(request):
     if request.method == "GET":
-        data_frame = pd.DataFrame(
-            columns=[
-                "Badge ID",
-                "Employee",
-                "Attendance Date",
-                "In Date",
-                "Check In",
-                "Check Out",
-                "Out Date",
-            ]
-        )
+        data_frame = import_template_frame("attendance_activity")
         response = HttpResponse(
             content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
         response["Content-Disposition"] = 'attachment; filename="activity_excel.xlsx"'
-        data_frame.to_excel(response, index=False)
+        write_import_xlsx(data_frame, response)
         return response
 
 
