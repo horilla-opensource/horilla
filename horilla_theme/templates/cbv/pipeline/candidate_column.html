@@ -1,33 +1,79 @@
 {% load i18n %}
+<style>
+    /* Candidate name, with a green clock chip beside it when an interview is today.
+       The cell is one text line tall and clips anything taller, so the chip is
+       smaller than the line and its hover effect stays inside it. */
+    .rc-name {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+    }
+    .rc-name__text {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .rc-today {
+        position: relative;
+        display: inline-flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 999px;
+        background: #dcfce7;
+        color: #16a34a;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+    }
+    .rc-today svg {
+        display: block;
+        width: 14px;
+        height: 14px;
+        fill: currentColor;
+    }
+    .rc-today:hover,
+    .rc-today:focus-visible {
+        background: #16a34a;
+        color: #ffffff;
+        outline: none;
+    }
+    .dark .rc-today { background: #14532d; color: #bbf7d0; }
+    .dark .rc-today:hover,
+    .dark .rc-today:focus-visible { background: #22c55e; color: #052e16; }
+    /* The interview details stay in the cell text (the table's hover tooltip shows
+       it) but are not drawn. */
+    .rc-today__text {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+</style>
 <div
     class="oh-table-config__td cursor-pointer"
     style="text-decoration: none; width: 150px !important"
 >
-    {% for interview_schedule in instance.candidate_interview.all %}
-        {% if interview_schedule.interview_date|date:"Y-m-d" == now|date:"Y-m-d" %}
-            <div
-                class="d-flex"
-                style="flex-direction: row-reverse; margin-bottom: -30px"
-            >
-                <span class="tooltip">
-                    <span
-                        class="material-symbols-outlined"
-                        style="flex-direction: row-reverse; color: green"
-                    >
-                        alarm_on
-                    </span>
-                    <span
-                        class="tooltiptext fw-bold"
-                        style="width: max-content; margin-top: 100%; font-weight: bold"
-                    >
+    <div class="rc-name">
+        <span class="rc-name__text" title="{{ instance }}">{{ instance }}</span>
+        {% for interview_schedule in instance.candidate_interview.all %}
+            {% if interview_schedule.interview_date|date:"Y-m-d" == now|date:"Y-m-d" %}
+                <span class="rc-today" tabindex="0">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M22 5.72l-4.6-3.86-1.29 1.53 4.6 3.86L22 5.72zM7.88 3.39L6.6 1.86 2 5.71l1.29 1.53 4.59-3.85zM12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm-1.46-5.47L8.41 12.4l-1.06 1.06 3.18 3.18 6-6-1.06-1.06-4.93 4.95z" />
+                    </svg>
+                    <span class="rc-today__text">
                         {% trans "INTERVIEW : Today at" %}
                         {{ interview_schedule.interview_time }} {% trans "with" %}
                         {{ interview_schedule.employee_id.all|join:", " }}
                     </span>
                 </span>
-            </div>
-        {% endif %}
-    {% endfor %}
-
-    <span title="{{instance}}">{{ instance }} </span>
+            {% endif %}
+        {% endfor %}
+    </div>
 </div>
