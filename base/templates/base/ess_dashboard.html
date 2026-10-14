@@ -746,6 +746,16 @@
         .ess-list-row:last-child {
             border-bottom: none;
         }
+        /* A row that opens something (an announcement's detail) */
+        .ess-list-row--link {
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .ess-list-row--link:hover,
+        .ess-list-row--link:focus-visible {
+            background: rgba(128, 128, 128, 0.08);
+            outline: none;
+        }
         .ess-list-row__main {
             display: flex;
             align-items: center;
@@ -1220,13 +1230,31 @@
                     return;
                     }
                     container.innerHTML = d.announcements.map(function (a) {
-                    return '<div class="ess-list-row">' +
+                    return '<div class="ess-list-row ess-list-row--link" tabindex="0" role="button" data-ann-id="' + esc(a.id) + '">' +
                         '<div class="ess-list-row__title">' + esc(a.title) + '</div>' +
                         '<div class="ess-list-row__sub">'   + esc(a.date)  +
                         (a.expire_date ? ' &middot; expires ' + esc(a.expire_date) : '') +
                         '</div>' +
                         '</div>';
                     }).join('');
+
+                    // Clicking a row opens the announcement in the standard detail modal
+                    var annIds = d.announcements.map(function (a) { return a.id; });
+                    function openAnnouncement(row) {
+                        htmx.ajax('GET',
+                            '/announcement-single-view/' + row.dataset.annId + '/?instance_ids=' + encodeURIComponent(JSON.stringify(annIds)),
+                            { target: '#objectDetailsModalTarget', swap: 'innerHTML' }
+                        ).then(function () {
+                            document.getElementById('objectDetailsModal').classList.add('oh-modal--show');
+                            htmx.process(document.getElementById('objectDetailsModalTarget'));
+                        });
+                    }
+                    container.querySelectorAll('.ess-list-row[data-ann-id]').forEach(function (row) {
+                        row.addEventListener('click', function () { openAnnouncement(row); });
+                        row.addEventListener('keydown', function (e) {
+                            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAnnouncement(row); }
+                        });
+                    });
                 })
                 .catch(function () {});
             }
