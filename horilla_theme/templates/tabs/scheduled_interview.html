@@ -82,72 +82,6 @@
     <div class="mt-4 mb-3 flex items-center justify-between flex-wrap gap-2">
         <span class="text-md font-semibold">{{ employee.get_full_name }}'s
             {% trans "Scheduled Interviews" %}</span>
-
-        {% if interviews.paginator.num_pages > 1 %}
-            <div class="hlv-pagination inline-flex items-center h-8 gap-0.5 bg-white border border-primary-500 rounded-md px-1 flex-shrink-0">
-                <button
-                    type="button"
-                    class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if interviews.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
-                    {% if interviews.has_previous %}
-                    hx-target="#scheduled-interview-list"
-                    hx-swap="outerHTML"
-                    hx-get="{{ request.path }}?page=1"
-                    {% endif %}
-                >
-                    <i class="fa-solid fa-angles-left"></i>
-                </button>
-                <button
-                    type="button"
-                    class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if interviews.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
-                    {% if interviews.has_previous %}
-                    hx-target="#scheduled-interview-list"
-                    hx-swap="outerHTML"
-                    hx-get="{{ request.path }}?page={{ interviews.previous_page_number }}"
-                    {% endif %}
-                >
-                    <i class="fa-solid fa-angle-left"></i>
-                </button>
-                <div class="flex items-center gap-1 px-1 h-7 text-xs text-[#666] leading-none">
-                    <input
-                        type="number"
-                        name="page"
-                        min="1"
-                        max="{{ interviews.paginator.num_pages }}"
-                        value="{{ interviews.number }}"
-                        title="{% trans 'Enter a page number and press Enter' %}"
-                        class="w-9 h-6 m-0 py-0 px-1 text-center text-xs leading-6 border border-[#e6e6e6] rounded outline-none focus:border-primary-600 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                        hx-target="#scheduled-interview-list"
-                        hx-swap="outerHTML"
-                        hx-get="{{ request.path }}"
-                        hx-trigger="keyup[keyCode==13] changed, blur changed"
-                        onclick="this.select()"
-                    >
-                    <span class="inline-flex items-center h-6 leading-none whitespace-nowrap">/ {{ interviews.paginator.num_pages }}</span>
-                </div>
-                <button
-                    type="button"
-                    class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if interviews.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
-                    {% if interviews.has_next %}
-                    hx-target="#scheduled-interview-list"
-                    hx-swap="outerHTML"
-                    hx-get="{{ request.path }}?page={{ interviews.next_page_number }}"
-                    {% endif %}
-                >
-                    <i class="fa-solid fa-angle-right"></i>
-                </button>
-                <button
-                    type="button"
-                    class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if interviews.has_next %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"
-                    {% if interviews.has_next %}
-                    hx-target="#scheduled-interview-list"
-                    hx-swap="outerHTML"
-                    hx-get="{{ request.path }}?page={{ interviews.paginator.num_pages }}"
-                    {% endif %}
-                >
-                    <i class="fa-solid fa-angles-right"></i>
-                </button>
-            </div>
-        {% endif %}
     </div>
 {% endif %}
 
@@ -237,6 +171,20 @@
                     </div>
                 </div>
             {% endfor %}
+            {% if interviews.has_next %}
+                <li
+                    class="interview-more"
+                    hx-get="{{ request.path }}?page={{ interviews.next_page_number }}"
+                    hx-trigger="intersect once"
+                    hx-target="this"
+                    hx-swap="outerHTML"
+                    hx-select=".interview-item, .interview-more"
+                >
+                    <div class="flex justify-center items-center p-4">
+                        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+                    </div>
+                </li>
+            {% endif %}
         </ol>
     </div>
 </div>
