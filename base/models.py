@@ -716,7 +716,7 @@ class RotatingWorkTypeAssign(HorillaModel):
         """
 
         if self.is_active:
-            return "Is Active"
+            return "Active"
         else:
             return "Archived"
 
@@ -1290,7 +1290,7 @@ class RotatingShiftAssign(HorillaModel):
         """
 
         if self.is_active:
-            return "Is Active"
+            return "Active"
         else:
             return "Archived"
 
@@ -2831,7 +2831,7 @@ class Holidays(HorillaModel):
     start_date = models.DateField(verbose_name=_("Start Date"))
     end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
     recurring = models.BooleanField(default=False, verbose_name=_("Recurring"))
-    is_specific = models.BooleanField(default=False, verbose_name=_("Is Specific"))
+    is_specific = models.BooleanField(default=False, verbose_name=_("Specific"))
     assigning_type = models.CharField(
         choices=ASSIGNING_TYPE,
         max_length=100,

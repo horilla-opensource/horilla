@@ -1291,7 +1291,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
             "is_active": HiddenInput(),
         }
         labels = {
-            "is_active": _("Is Active"),
+            "is_active": _("Active"),
             "rotate_every_weekend": _("Rotate every weekend"),
             "rotate_every": _("Rotate every"),
         }
@@ -1470,7 +1470,7 @@ class RotatingWorkTypeAssignUpdateForm(forms.ModelForm):
             "rotate_every_weekend": _("Rotate every weekend"),
             "rotate_every": _("Rotate every"),
             "based_on": _("Based on"),
-            "is_active": _("Is Active"),
+            "is_active": _("Active"),
         }
 
     def __init__(self, *args, **kwargs):
@@ -1987,7 +1987,7 @@ class RotatingShiftAssignForm(ModelForm):
         labels = {
             "rotating_shift_id": _("Rotating Shift"),
             "start_date": _("Start date"),
-            "is_active": _("Is Active"),
+            "is_active": _("Active"),
             "rotate_every_weekend": _("Rotate every weekend"),
             "rotate_every": _("Rotate every"),
         }
@@ -2148,7 +2148,7 @@ class RotatingShiftAssignUpdateForm(ModelForm):
             "rotate_every_weekend": _("Rotate every weekend"),
             "rotate_every": _("Rotate every"),
             "based_on": _("Based on"),
-            "is_active": _("Is Active"),
+            "is_active": _("Active"),
         }
 
     def __init__(self, *args, **kwargs):

@@ -148,7 +148,7 @@
                     <span class="oh-timeoff-modal__stat-title">{% trans "Status" %}</span>
                     <span
                         class="oh-timeoff-modal__stat-count"
-                    >{% if instance.is_active %}{% trans "Is Active" %}{% else %}{% trans "Archived" %}{% endif %}</span>
+                    >{% if instance.is_active %}{% trans "Active" %}{% else %}{% trans "Archived" %}{% endif %}</span>
                 </div>
             </div>
             {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager or perms.base.delete_rotatingworktypeassign %}

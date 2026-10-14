@@ -102,7 +102,7 @@ class CompanyListView(HorillaListView):
 
     columns = [
         (_("Company"), "company_icon_with_name"),
-        (_("Is Hq"), "hq"),
+        (_("Hq"), "hq"),
         (_("Address"), "address"),
         (_("Country"), "country"),
         (_("State"), "state"),

@@ -398,7 +398,7 @@ class ShiftRequestDetailview(HorillaDetailedView):
         (_("Previous Shift"), "previous_shift_id"),
         (_("Requested Date"), "requested_date"),
         (_("Requested Till"), "requested_till"),
-        (_("Is permenent shift"), "is_permanent"),
+        (_("Permenent shift"), "is_permanent"),
         (_("Description"), "description"),
     ]
 
