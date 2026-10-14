@@ -127,6 +127,7 @@ class EmployeeFilter(HorillaFilterSet):
     )
     employee_first_name = django_filters.CharFilter(lookup_expr="icontains")
     employee_last_name = django_filters.CharFilter(lookup_expr="icontains")
+    badge_id = django_filters.CharFilter(lookup_expr="icontains")
 
     # Modern filter panel's single "Employee" search box (filter_employee.html)
     # -- replaces separate First Name / Last Name inputs with one field that
@@ -250,7 +251,7 @@ class EmployeeFilter(HorillaFilterSet):
 
     is_from_onboarding = django_filters.ChoiceFilter(
         field_name="is_from_onboarding",
-        label="Is From Onboarding",
+        label="From Onboarding",
         choices=[
             (True, "Yes"),
             (False, "No"),
@@ -258,7 +259,7 @@ class EmployeeFilter(HorillaFilterSet):
     )
     is_directly_converted = django_filters.ChoiceFilter(
         field_name="is_directly_converted",
-        label="Is Directly Converted",
+        label="Directly Converted",
         choices=[
             (True, "Yes"),
             (False, "No"),

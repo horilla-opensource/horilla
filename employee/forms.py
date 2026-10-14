@@ -578,7 +578,7 @@ excel_columns = [
     ("zip", _("Zip Code")),
     ("marital_status", _("Marital Status")),
     ("children", _("Children")),
-    ("is_active", _("Is active")),
+    ("is_active", _("Active")),
     ("emergency_contact", _("Emergency Contact")),
     ("emergency_contact_name", _("Emergency Contact Name")),
     ("emergency_contact_relation", _("Emergency Contact Relation")),
