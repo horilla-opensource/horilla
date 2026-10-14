@@ -58,7 +58,7 @@ class Project(HorillaModel):
         ("cancelled", _("Cancelled")),
         ("expired", _("Expired")),
     ]
-    title = models.CharField(max_length=200, unique=True, verbose_name=_("Name"))
+    title = models.CharField(max_length=200, verbose_name=_("Name"))
     managers = models.ManyToManyField(
         Employee,
         blank=True,
@@ -78,6 +78,12 @@ class Project(HorillaModel):
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
     objects = HorillaCompanyManager("company_id")
+
+    def get_company_name(self):
+        """
+        Company column of the list view; "All Companies" when none is assigned.
+        """
+        return self.company_id.company if self.company_id else _("All Companies")
 
     def get_description(self, length=50):
         """
@@ -255,6 +261,7 @@ class Project(HorillaModel):
         verbose_name = _("Project")
         verbose_name_plural = _("Projects")
         ordering = ["-id"]
+        unique_together = ["title", "company_id"]
 
 
 class ProjectStage(HorillaModel):
