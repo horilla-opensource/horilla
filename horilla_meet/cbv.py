@@ -5,17 +5,26 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext_lazy as _trans
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import TemplateView
 
 from horilla.decorators import (
     check_integration_enabled,
+    hx_request_required,
     login_required,
     permission_required,
 )
 from horilla_meet.filters import GoogleMeetingFilter
 from horilla_meet.form import GoogleCloudCredentialForm, GoogleMeetingForm
 from horilla_meet.models import GoogleCloudCredential, GoogleCredential, GoogleMeeting
-from horilla_views.generic.cbv import views
+from horilla_views.generic.cbv.views import (
+    HorillaDetailedView,
+    HorillaFormView,
+    HorillaListView,
+    HorillaNavView,
+    HorillaSectionView,
+    HorillaTabView,
+)
 
 # -------------------------------------- Google Credentials --------------------------------
 
@@ -24,7 +33,7 @@ from horilla_views.generic.cbv import views
 @method_decorator(
     permission_required("horilla_meet.view_googlecloudcredential"), name="dispatch"
 )
-class GMeetCredentialSectionView(views.HorillaSectionView):
+class GMeetCredentialSectionView(HorillaSectionView):
     """
     View for displaying the Google Meet credentials section.
 
@@ -50,7 +59,7 @@ class GMeetCredentialSectionView(views.HorillaSectionView):
 @method_decorator(
     permission_required("horilla_meet.view_googlecloudcredential"), name="dispatch"
 )
-class GmeetCredentialNavView(views.HorillaNavView):
+class GmeetCredentialNavView(HorillaNavView):
     """
     View for the Google Meet credentials nav view.
 
@@ -72,7 +81,7 @@ class GmeetCredentialNavView(views.HorillaNavView):
             data-target="#genericModal"
         """
 
-    nav_title = _trans("Google Cloud Credentials")
+    nav_title = _("Google Cloud Credentials")
     search_swap_target = "#credContainer"
     search_url = None
 
@@ -82,7 +91,7 @@ class GmeetCredentialNavView(views.HorillaNavView):
 @method_decorator(
     permission_required("horilla_meet.view_googlecloudcredential"), name="dispatch"
 )
-class GmeetCredentialListView(views.HorillaListView):
+class GmeetCredentialListView(HorillaListView):
     """
     View for listing Google Meet credentials.
 
@@ -111,7 +120,7 @@ class GmeetCredentialListView(views.HorillaListView):
 
     actions = [
         {
-            "action": _trans("Edit"),
+            "action": _("Edit"),
             "icon": "create-outline",
             "attrs": """
                 class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
@@ -122,7 +131,7 @@ class GmeetCredentialListView(views.HorillaListView):
                 """,
         },
         {
-            "action": _trans("Delete"),
+            "action": _("Delete"),
             "icon": "trash",
             "attrs": """
                 class="oh-btn oh-btn--danger oh-btn--sq-sm"
@@ -149,7 +158,7 @@ class GmeetCredentialListView(views.HorillaListView):
 @method_decorator(
     permission_required("horilla_meet.add_googlecloudcredential"), name="dispatch"
 )
-class GoogleCredentialsFormView(views.HorillaFormView):
+class GoogleCredentialsFormView(HorillaFormView):
     """
     View for creating or updating Google Cloud credentials.
 
@@ -165,7 +174,7 @@ class GoogleCredentialsFormView(views.HorillaFormView):
 
     form_class = GoogleCloudCredentialForm
     model = GoogleCloudCredential
-    new_display_title = _trans("Create Google Cloud Credentials")
+    new_display_title = _("Create Google Cloud Credentials")
     template_name = "generic/horilla_form.html"
 
     def get_form_kwargs(self):
@@ -187,14 +196,14 @@ class GoogleCredentialsFormView(views.HorillaFormView):
             )
         return super().form_invalid(form)
 
-    def form_valid(self, form: GoogleCloudCredentialForm) -> views.HttpResponse:
+    def form_valid(self, form: GoogleCloudCredentialForm):
         if form.is_valid():
             message = "Google cloud credential added"
             if form.instance.pk:
                 message = "Google cloud credential updated"
             form.save()
 
-            messages.success(self.request, _trans(message))
+            messages.success(self.request, _(message))
             return self.HttpResponse()
 
         return super().form_valid(form)
@@ -208,7 +217,7 @@ class GoogleCredentialsFormView(views.HorillaFormView):
     permission_required("horilla_meet.add_googlemeeting"), name="dispatch"
 )
 @method_decorator(check_integration_enabled(app_name="horilla_meet"), name="dispatch")
-class GmeetFormView(views.HorillaFormView):
+class GmeetFormView(HorillaFormView):
     """
     View for creating or updating Google Meet meetings.
 
@@ -224,7 +233,7 @@ class GmeetFormView(views.HorillaFormView):
 
     form_class = GoogleMeetingForm
     model = GoogleMeeting
-    new_display_title = _trans("Create Google Meet")
+    new_display_title = _("Create Google Meet")
     template_name = "gmeet/meet_form.html"
 
     def get_form_kwargs(self):
@@ -246,14 +255,14 @@ class GmeetFormView(views.HorillaFormView):
             )
         return super().form_invalid(form)
 
-    def form_valid(self, form: GoogleMeetingForm) -> views.HttpResponse:
+    def form_valid(self, form: GoogleMeetingForm):
         if form.is_valid():
             message = "Google cloud credential added"
             if form.instance.pk:
                 message = "Google cloud credential updated"
             form.save()
 
-            messages.success(self.request, _trans(message))
+            messages.success(self.request, _(message))
             return self.HttpResponse()
 
         return super().form_valid(form)
@@ -264,7 +273,7 @@ class GmeetFormView(views.HorillaFormView):
 @method_decorator(
     permission_required("horilla_meet.view_googlemeeting"), name="dispatch"
 )
-class GmeetSectionView(views.HorillaSectionView):
+class GmeetSectionView(HorillaSectionView):
     """
     View for displaying the Google Meet section.
 
@@ -294,11 +303,65 @@ class GmeetSectionView(views.HorillaSectionView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required("horilla_meet.view_googlecloudcredential"), name="dispatch"
+)
+class GmeetSettingsTabView(HorillaTabView):
+    """Tab view for the Google Meet settings page (Rules and Meetings)."""
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.tabs = [
+            {
+                "title": _("Google Meet Rules"),
+                "url": f"{reverse_lazy('gmeet-settings-rules-tab')}",
+            },
+        ]
+
+    def get_context_data(self, **kwargs):
+        from base.models import IntegrationApps
+
+        if IntegrationApps.objects.filter(
+            app_label="horilla_meet", is_enabled=True
+        ).exists() and self.request.user.has_perm("horilla_meet.view_googlemeeting"):
+            self.tabs.append(
+                {
+                    "title": _("Meetings"),
+                    "url": f"{reverse_lazy('gmeet-settings-meetings-tab')}",
+                }
+            )
+        return super().get_context_data(**kwargs)
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
+@method_decorator(
+    permission_required("horilla_meet.view_googlecloudcredential"), name="dispatch"
+)
+class GmeetRulesTab(TemplateView):
+    """Rules tab body: integration toggle and Google Cloud credentials."""
+
+    template_name = "gmeet_credentials/gmeet_rules_tab.html"
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(check_integration_enabled(app_name="horilla_meet"), name="dispatch")
 @method_decorator(
     permission_required("horilla_meet.view_googlemeeting"), name="dispatch"
 )
-class GmeetNavView(views.HorillaNavView):
+class GmeetMeetingsTab(TemplateView):
+    """Meetings tab body: embeds the existing Google Meet nav and list."""
+
+    template_name = "gmeet/gmeet_meetings_tab.html"
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(check_integration_enabled(app_name="horilla_meet"), name="dispatch")
+@method_decorator(
+    permission_required("horilla_meet.view_googlemeeting"), name="dispatch"
+)
+class GmeetNavView(HorillaNavView):
     """
     Nav view for Google Meet.
 
@@ -331,7 +394,8 @@ class GmeetNavView(views.HorillaNavView):
         context["create_attrs"] = self.create_attrs
         return context
 
-    nav_title = _trans("Google Meet View")
+    nav_title = _("Google Meet View")
+    template_name = "generic/inline_nav.html"
     search_url = reverse_lazy("gmeet-list-view")
     filter_instance = GoogleMeetingFilter()
     filter_form_context_name = "form"
@@ -344,7 +408,7 @@ class GmeetNavView(views.HorillaNavView):
 @method_decorator(
     permission_required("horilla_meet.view_googlemeeting"), name="dispatch"
 )
-class GmeetListView(views.HorillaListView):
+class GmeetListView(HorillaListView):
     """
     View for listing Google Meetings.
 
@@ -364,7 +428,7 @@ class GmeetListView(views.HorillaListView):
     search_url = reverse_lazy("gmeet-list-view")
     filter_class = GoogleMeetingFilter
     columns = [
-        ("Title", "get_title_column"),
+        ("Title", "title"),
         ("Employee", "employee_id"),
         ("Start Time", "start_time_str"),
         ("Duration", "duration"),
@@ -374,7 +438,7 @@ class GmeetListView(views.HorillaListView):
 
     actions = [
         {
-            "action": _trans("Meeting Link"),
+            "action": _("Meeting Link"),
             "icon": "link-outline",
             "attrs": """
                 class="oh-btn oh-btn--light-bkg w-50"
@@ -383,7 +447,7 @@ class GmeetListView(views.HorillaListView):
                 """,
         },
         {
-            "action": _trans("Edit"),
+            "action": _("Edit"),
             "icon": "create-outline",
             "attrs": """
                 class="oh-btn oh-btn--light-bkg w-50"
@@ -394,7 +458,7 @@ class GmeetListView(views.HorillaListView):
                 """,
         },
         {
-            "action": _trans("Delete"),
+            "action": _("Delete"),
             "icon": "trash",
             "attrs": """
                 class="oh-btn oh-btn--light-bkg w-50 text-danger"
@@ -410,11 +474,11 @@ class GmeetListView(views.HorillaListView):
     header_attrs = {
         "duration": "style='width:100px;'",
         "action": "style='width:150px;'",
-        "get_title_column": "style='width:200px !important;'",
+        "title": "style='width:200px !important;'",
     }
 
     row_attrs = """
-        class = "oh-permission-table__tr oh-permission-table__tr oh-permission-table--collapsed fade-me-out oh-sticky-table__tr"
+        class = "fade-me-out"
         hx-get="{detailed_url}?instance_ids={ordered_ids}"
         hx-target="#genericModalBody"
         data-toggle="oh-modal-toggle"
@@ -427,7 +491,7 @@ class GmeetListView(views.HorillaListView):
 @method_decorator(
     permission_required("horilla_meet.view_googlemeeting"), name="dispatch"
 )
-class GmeetDetailedView(views.HorillaDetailedView):
+class GmeetDetailedView(HorillaDetailedView):
     """
     Detailed view for Google Meetings.
 
@@ -444,47 +508,57 @@ class GmeetDetailedView(views.HorillaDetailedView):
     """
 
     model = GoogleMeeting
-    title = "Google Meeting"
-    # template_name = "gmeet/gmeet_detailed_view.html"
-    cols = {"description": 12}
+    title = _("Details")
+    header = {
+        "title": "title",
+        "subtitle": "detail_subtitle",
+        "avatar": "get_avatar",
+    }
+    cols = {
+        "meet_url": 12,
+        "event_id": 12,
+        "start_time": 12,
+        "end_time": 12,
+        "description": 12,
+    }
     body = [
-        ("Meeting URL", "meet_url"),
-        ("Event ID", "event_id"),
-        ("Start Time", "start_time"),
-        ("End Time", "end_time"),
-        ("Description", "description"),
+        (_("Meeting URL"), "meet_url"),
+        (_("Event ID"), "event_id"),
+        (_("Start Time"), "start_time"),
+        (_("End Time"), "end_time"),
+        (_("Description"), "description"),
     ]
 
     actions = [
         {
-            "action": "Edit",
-            "icon": "create-outline",
-            "attrs": """
-            hx-get="{get_update_url}"
-            hx-target="#genericModalBody"
-            data-toggle="oh-modal-toggle"
-            data-target="#genericModal"
-            class="oh-btn oh-btn--light-bkg oh-btn--secondary w-50"
-            """,
-        },
-        {
-            "action": "Join Meeting",
+            "action": _("Join Meeting"),
             "icon": "link-outline",
             "attrs": """
-                class="oh-btn oh-btn--warning text-white w-50"
+                class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
                 href={meet_url}
                 target="_blank"
             """,
         },
         {
-            "action": "Delete",
+            "action": _("Edit"),
+            "icon": "create-outline",
+            "attrs": """
+                class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                hx-get="{get_update_url}"
+                hx-target="#genericModalBody"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+            """,
+        },
+        {
+            "action": _("Delete"),
             "icon": "trash-outline",
             "attrs": """
-            class="oh-btn oh-btn--danger w-50 delete_button"
-            hx-confirm="Are you sure you want to delete this meeting?"
-            hx-post="{get_delete_url}?detail_view=true"
-            hx-target = "#listContainer"
-            hx-on-htmx-after-request="reloadMessage(this); nextButtonClick()"
+                class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300 delete_button"
+                hx-confirm="Are you sure you want to delete this meeting?"
+                hx-post="{get_delete_url}?detail_view=true"
+                hx-target="#listContainer"
+                hx-on-htmx-after-request="reloadMessage(this); nextButtonClick()"
             """,
         },
     ]

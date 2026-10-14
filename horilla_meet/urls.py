@@ -42,6 +42,21 @@ urlpatterns = [
         name="gmeet-view",
     ),
     path(
+        "gmeet-settings-tab-view/",
+        cbv.GmeetSettingsTabView.as_view(),
+        name="gmeet-settings-tab-view",
+    ),
+    path(
+        "gmeet-settings-rules-tab/",
+        cbv.GmeetRulesTab.as_view(),
+        name="gmeet-settings-rules-tab",
+    ),
+    path(
+        "gmeet-settings-meetings-tab/",
+        cbv.GmeetMeetingsTab.as_view(),
+        name="gmeet-settings-meetings-tab",
+    ),
+    path(
         "gmeet-list-view/",
         cbv.GmeetListView.as_view(),
         name="gmeet-list-view",

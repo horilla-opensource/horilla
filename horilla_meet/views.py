@@ -1,6 +1,8 @@
+import os
 from datetime import datetime
 
 from django.apps import apps
+from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -54,6 +56,7 @@ def google_authenticate(request):
     )
 
     request.session["oauth_state"] = state
+    request.session["oauth_code_verifier"] = flow.code_verifier
     return redirect(auth_url)
 
 
@@ -85,6 +88,11 @@ def google_auth_callback(request):
         ],
         redirect_uri=redirect_uri,
     )
+
+    if settings.DEBUG and not request.is_secure():
+        os.environ.setdefault("OAUTHLIB_INSECURE_TRANSPORT", "1")
+
+    flow.code_verifier = request.session.pop("oauth_code_verifier", None)
 
     flow.fetch_token(authorization_response=request.build_absolute_uri())
 

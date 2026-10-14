@@ -231,6 +231,8 @@ class GoogleMeeting(HorillaModel):
     )
     attendees = models.JSONField(default=list, blank=True, null=True)
 
+    disable_employee_profile_link = True
+
     class Meta:
         """
         Metadata for GoogleMeeting model.
@@ -360,6 +362,15 @@ class GoogleMeeting(HorillaModel):
 
     def detailed_url(self):
         return reverse_lazy("gmeet-detail-view", kwargs={"pk": self.pk})
+
+    def get_avatar(self):
+        """Avatar URL for the detail view header."""
+        return f"https://ui-avatars.com/api/?name={self.title}&background=random"
+
+    def detail_subtitle(self):
+        """Subtitle for the detail view header."""
+        start_time = timezone.localtime(self.start_time)
+        return f"{start_time:%d %b %Y, %I:%M %p} · {self.duration} min"
 
     def save(self, *args, **kwargs):
         """

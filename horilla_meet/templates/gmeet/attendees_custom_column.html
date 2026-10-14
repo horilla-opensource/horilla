@@ -1,28 +1,37 @@
 {% load i18n %}
-
-<div data-cell-index="1">
-    {% for employee in instance.get_attendees %}
-    <div id="employeeContainer{{employee.id}}-{{instance.id}}">
-        <span class="oh-user-panel oh-collapse-panel" data-type="user">
-            <div class="oh-profile oh-profile--md">
-                <div class="oh-profile__avatar mr-1">
+{% with attendees=instance.get_attendees %}
+    <div data-cell-index="1" class="oh-avatar-stack">
+        <div class="oh-avatar-stack__images">
+            {% for attendee in attendees|slice:":3" %}
+                <div class="oh-avatar-stack__img">
                     <img
-                        src="https://ui-avatars.com/api/?name={{employee.get_full_name}}&background=random"
-                        class="oh-profile__image"
-                        alt=""
-                    />
+                        src="https://ui-avatars.com/api/?name={{ attendee.get_full_name }}&background=random"
+                        alt="{{ attendee.get_full_name }}"
+                    >
                 </div>
-                <span
-                    class="oh-profile__name oh-text--dark"
-                    title="{{employee.get_full_name}}"
-                >
-                    {{employee.get_full_name|truncatechars:15}}
-                </span>
+            {% endfor %}
+            {% with extra=attendees|length|add:"-3" %}
+                {% if extra > 0 %}
+                    <div class="oh-avatar-stack__img oh-avatar-stack__more">+{{ extra }}</div>
+                {% endif %}
+            {% endwith %}
+            {% if not attendees %}
+                <span class="oh-avatar-stack__empty">{% trans "No attendees" %}</span>
+            {% endif %}
+        </div>
+        {% if attendees %}
+            <div class="oh-avatar-stack__popover-content">
+                <div class="oh-avatar-stack__popover-title">{% trans "Attendees" %}</div>
+                {% for attendee in attendees %}
+                    <div class="oh-avatar-stack__popover-row">
+                        <img
+                            src="https://ui-avatars.com/api/?name={{ attendee.get_full_name }}&background=random"
+                            alt=""
+                        >
+                        <span>{{ attendee.get_full_name }}</span>
+                    </div>
+                {% endfor %}
             </div>
-        </span>
+        {% endif %}
     </div>
-    {% endfor %}
-    <span class="count-span"
-        >{{instance.attendees|length}} {% trans "Attendees" %}</span
-    >
-</div>
+{% endwith %}
