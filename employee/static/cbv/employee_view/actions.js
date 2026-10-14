@@ -526,6 +526,13 @@ $(document).on("click", "#deleteEmployees", function (e) {
                 ids.push($("#selectedInstances").attr("data-ids"));
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
 
+                // One call, so real progress is unknown: the bar runs until it
+                // finishes. Without it the page just sat there.
+                hlvBulkDeleteProgress(
+                    ids.length,
+                    i18nMessages.deletingEmployees || "Deleting employees"
+                );
+
                 $.ajax({
                     type: "POST",
                     url: "/employee/employee-bulk-delete/",
@@ -533,12 +540,16 @@ $(document).on("click", "#deleteEmployees", function (e) {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
                     },
-                    success: function (response, textStatus, jqXHR) {
-                        if (jqXHR.status === 200) {
-                            reloadEmployeeListContainer();
-                        } else {
-                            // console.log("Unexpected HTTP status:", jqXHR.status);
-                        }
+                    error: function () {
+                        Swal.close();
+                        Swal.fire({
+                            text: i18nMessages.deleteFailed || "Could not delete the employees.",
+                            icon: "error",
+                        });
+                    },
+                    success: function (response) {
+                        reloadEmployeeListContainer();
+                        hlvShowBulkDeleteSummary(response);
                     },
                 });
             }

@@ -28,7 +28,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import models
+from django.db import models, transaction
 from django.db.models import F, ProtectedError, Q
 from django.db.models.query import QuerySet
 from django.forms import DateInput, HiddenInput, Select
@@ -127,7 +127,7 @@ from horilla.decorators import (
 )
 from horilla.filters import HorillaPaginator
 from horilla.group_by import group_by_queryset
-from horilla.http.response import HorillaRedirect
+from horilla.http.response import HorillaRedirect, with_bulk_result
 from horilla.methods import dynamic_attr, get_horilla_model_class
 from horilla_audit.models import AccountBlockUnblock, HistoryTrackingFields
 from horilla_auth.methods import generate_random_password
@@ -1165,10 +1165,12 @@ def document_bulk_approve(request):
                 request, _(f"{not_uploaded_count} document(s) skipped (not uploaded)")
             )
 
-    refreshed = htmx_refresh_document_request_container(request)
-    if refreshed is not None:
-        return refreshed
-    return HorillaRedirect(request)
+    response = htmx_refresh_document_request_container(request)
+    if response is None:
+        response = HorillaRedirect(request)
+    if request.method == "POST":
+        response = with_bulk_result(response, count_approved, not_uploaded_count)
+    return response
 
 
 @login_required
@@ -1209,10 +1211,12 @@ def document_bulk_reject(request):
         messages.success(
             request, _("{} Document request rejected").format(updated_count)
         )
-        refreshed = htmx_refresh_document_request_container(request)
-        if refreshed is not None:
-            return refreshed
-        return HorillaRedirect(request)
+        response = htmx_refresh_document_request_container(request)
+        if response is None:
+            response = HorillaRedirect(request)
+        return with_bulk_result(
+            response, updated_count, max(len(ids) - updated_count, 0)
+        )
 
     return render(
         request, "documents/document_reject_reason.html", {"ids": ids, "form": form}
@@ -2274,49 +2278,98 @@ def employee_delete(request, obj_id):
     return HorillaRedirect(request, fallback_url=f"/view={view}")
 
 
+def _employees_blocking_delete(employee_ids):
+    """
+    Ids (out of employee_ids) that Django would refuse to delete because a
+    record points at them with on_delete=PROTECT.
+
+    Asking Django to delete them just to find out costs ~0.5s each: it walks
+    every relation before raising ProtectedError. One query per protecting
+    relation answers it for the whole selection. Non-active contracts don't
+    count, the delete removes them first.
+    """
+    blocked = set()
+    for rel in Employee._meta.related_objects:
+        if rel.on_delete is not models.PROTECT:
+            continue
+        queryset = rel.related_model._base_manager.filter(
+            **{f"{rel.field.name}__in": employee_ids}
+        )
+        if rel.related_model._meta.model_name == "contract":
+            queryset = queryset.filter(contract_status="active")
+        blocked.update(queryset.values_list(rel.field.name, flat=True).distinct())
+    return blocked
+
+
+def _delete_employees(employees):
+    """Delete the employees (and their logins); return how many went."""
+    users = [e.employee_user_id_id for e in employees if e.employee_user_id_id]
+    no_user = [e.pk for e in employees if not e.employee_user_id_id]
+    with transaction.atomic():
+        if apps.is_installed("payroll"):
+            from payroll.models.models import Contract
+
+            Contract.objects.filter(employee_id__in=[e.pk for e in employees]).exclude(
+                contract_status="active"
+            ).delete()
+        if users:
+            Employee.employee_user_id.field.related_model.objects.filter(
+                pk__in=users
+            ).delete()
+        if no_user:
+            Employee.objects.filter(pk__in=no_user).delete()
+    return len(employees)
+
+
 @login_required
 @permission_required("employee.delete_employee")
 def employee_bulk_delete(request):
     """
-    This method is used to delete set of Employee instances
+    This method is used to delete set of Employee instances.
+
+    Returns a summary instead of queueing toasts: the list is reloaded right
+    after this call and the toast pop-up was easy to miss, which left the user
+    with no feedback when nothing could be deleted.
+
+    The logged-in user's own employee is never deleted (counted as failed).
     """
     ids = json.loads(request.POST.get("ids", "[]"))
-    if not ids:
-        messages.error(request, _("No IDs provided."))
-    deleted_count = 0
+    selected = list(
+        Employee.objects.filter(id__in=ids).select_related("employee_user_id")
+    )
+    employees = [e for e in selected if e.employee_user_id_id != request.user.pk]
+    blocked_ids = _employees_blocking_delete([e.pk for e in employees])
     active_superuser_count = Employee.objects.filter(
         is_active=True, employee_user_id__is_superuser=True
     ).count()
-    employees = Employee.objects.filter(id__in=ids).select_related("employee_user_id")
+
+    to_delete = []
+    # The requester's own employee is never deleted, so it counts as failed:
+    # that keeps total = deleted + failed, matching what they selected.
+    failed = len(selected) - len(employees)
     for employee in employees:
+        user = employee.employee_user_id
+        is_superuser = user is not None and user.is_superuser
+        if employee.pk in blocked_ids or (is_superuser and active_superuser_count <= 1):
+            failed += 1
+            continue
+        if is_superuser:
+            active_superuser_count -= 1
+        to_delete.append(employee)
+
+    deleted = 0
+    if to_delete:
         try:
-            user = employee.employee_user_id
-            if user is not None and user.is_superuser and active_superuser_count <= 1:
-                messages.error(request, _("You can't delete the last superuser."))
-                continue
-            if apps.is_installed("payroll"):
-                if employee.contract_set.all().exists():
-                    contracts = employee.contract_set.all()
-                    for contract in contracts:
-                        if contract.contract_status != "active":
-                            contract.delete()
-            user.delete()
-            if user is not None and user.is_superuser:
-                active_superuser_count -= 1
-            deleted_count += 1
-        except Employee.DoesNotExist:
-            messages.error(request, _("Employee not found."))
+            deleted = _delete_employees(to_delete)
         except ProtectedError:
-            messages.error(
-                request, _("You cannot delete %(employee)s.") % {"employee": employee}
-            )
-    if deleted_count > 0:
-        messages.success(
-            request,
-            _("%(deleted_count)s employees deleted.")
-            % {"deleted_count": deleted_count},
-        )
-    return JsonResponse({"message": "Success"})
+            # Something not caught by the pre-check (a protect a level down):
+            # one at a time, so only the ones that really are blocked fail.
+            for employee in to_delete:
+                try:
+                    deleted += _delete_employees([employee])
+                except ProtectedError:
+                    failed += 1
+    return JsonResponse({"message": "Success", "deleted": deleted, "failed": failed})
 
 
 @login_required
@@ -2331,35 +2384,35 @@ def employee_bulk_archive(request):
     is_active = False
     if request.GET.get("is_active") == "True":
         is_active = True
+    done = failed = 0
     for employee_id in ids:
-        employee = Employee.objects.get(id=employee_id)
+        employee = Employee.objects.filter(id=employee_id).first()
+        if employee is None:
+            failed += 1
+            continue
+        user = employee.employee_user_id
+        if not is_active and user is not None and user.pk == request.user.pk:
+            # Never archive the account making the request; the rest of the
+            # selection is still processed.
+            failed += 1
+            continue
 
-        emp = Employee.objects.get(id=employee_id)
-        if emp.employee_user_id.is_superuser and emp.is_active:
-            count = 0
-            employees = Employee.objects.filter(is_active=True)
-            for super_emp in employees:
-                if super_emp.employee_user_id.is_superuser:
-                    count = count + 1
+        if user is not None and user.is_superuser and employee.is_active:
+            count = Employee.objects.filter(
+                is_active=True, employee_user_id__is_superuser=True
+            ).count()
             if count == 1:
-                messages.error(request, _("You can't archive the last superuser."))
-                return HttpResponse("<script>$('#filterEmployee').click();</script>")
+                failed += 1
+                continue
 
         employee.is_active = is_active
         if employee.get_archive_condition() is False:
             employee.save()
             employee.sync_login_access()
-            message = _("archived")
-            if is_active:
-                message = _("un-archived")
-            messages.success(
-                request,
-                _("%(employee)s is %(message)s")
-                % {"employee": employee, "message": message},
-            )
+            done += 1
         else:
-            messages.warning(request, _("Related data found for {}.").format(employee))
-    return JsonResponse({"message": "Success"})
+            failed += 1
+    return with_bulk_result(JsonResponse({"message": "Success"}), done, failed)
 
 
 @login_required

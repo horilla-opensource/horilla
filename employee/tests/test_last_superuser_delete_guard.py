@@ -11,6 +11,8 @@ locked out with no admin account left on the instance.
 These tests pin the same protection on the delete path.
 """
 
+import json
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.test import Client, TestCase
@@ -155,6 +157,87 @@ class LastSuperuserDeleteGuardTests(TestCase):
             1,
             "bulk delete must stop short of removing every superuser",
         )
+
+    def test_bulk_delete_skips_own_employee_but_deletes_others(self):
+        admin_a = self._superuser_employee("self-admin-a")
+        admin_b = self._superuser_employee("self-admin-b")
+        staffer = make_employee(
+            company=self.company, email="self-staffer@test.horilla", first_name="S"
+        )
+        Contract.objects.filter(employee_id=staffer).update(contract_status="expired")
+        client = self._client_as(admin_a)
+
+        client.post(
+            reverse("employee-bulk-delete"),
+            {"ids": f"[{admin_a.pk}, {staffer.pk}, {admin_b.pk}]"},
+        )
+
+        self.assertTrue(Employee.objects.filter(pk=admin_a.pk).exists())
+        self.assertTrue(User.objects.filter(pk=admin_a.employee_user_id.pk).exists())
+        self.assertFalse(Employee.objects.filter(pk=staffer.pk).exists())
+        self.assertFalse(Employee.objects.filter(pk=admin_b.pk).exists())
+
+    def test_bulk_archive_skips_own_employee_but_archives_others(self):
+        admin_a = self._superuser_employee("arch-admin-a")
+        self._superuser_employee("arch-admin-b")
+        staffer = make_employee(
+            company=self.company, email="arch-staffer@test.horilla", first_name="A"
+        )
+        client = self._client_as(admin_a)
+
+        client.post(
+            reverse("employee-bulk-archive"),
+            {"ids": f"[{admin_a.pk}, {staffer.pk}]"},
+        )
+
+        admin_a.refresh_from_db()
+        staffer.refresh_from_db()
+        self.assertTrue(admin_a.is_active)
+        self.assertFalse(staffer.is_active)
+
+    def test_bulk_delete_reports_blocked_employees_in_the_summary(self):
+        admin = self._superuser_employee("sum-admin")
+        blocked = make_employee(
+            company=self.company, email="sum-blocked@test.horilla", first_name="Blocked"
+        )  # keeps the active contract make_employee() creates -> PROTECT
+        client = self._client_as(admin)
+
+        response = client.post(
+            reverse("employee-bulk-delete"),
+            {"ids": f"[{admin.pk}, {blocked.pk}]"},
+        )
+        data = response.json()
+
+        self.assertTrue(Employee.objects.filter(pk=blocked.pk).exists())
+        self.assertEqual(data["deleted"], 0)
+        # Own employee + the blocked one: total = deleted + failed = selected.
+        self.assertEqual(data["failed"], 2)
+
+    def test_bulk_delete_removes_many_and_reports_counts(self):
+        admin = self._superuser_employee("many-admin")
+        free = []
+        for i in range(5):
+            e = make_employee(
+                company=self.company, email=f"many{i}@test.horilla", first_name=f"M{i}"
+            )
+            Contract.objects.filter(employee_id=e).update(contract_status="expired")
+            free.append(e.pk)
+        blocked = make_employee(
+            company=self.company, email="many-blocked@test.horilla", first_name="B"
+        )  # active contract -> PROTECT
+        client = self._client_as(admin)
+
+        response = client.post(
+            reverse("employee-bulk-delete"),
+            {"ids": json.dumps(free + [blocked.pk, admin.pk])},
+        )
+        data = response.json()
+
+        self.assertEqual(data["deleted"], 5)
+        self.assertEqual(data["failed"], 2)  # the blocked one + own employee
+        self.assertFalse(Employee.objects.filter(pk__in=free).exists())
+        self.assertTrue(Employee.objects.filter(pk=blocked.pk).exists())
+        self.assertTrue(Employee.objects.filter(pk=admin.pk).exists())
 
     def test_employee_without_a_user_does_not_raise(self):
         """employee_user_id is nullable -- the guard must tolerate None."""
