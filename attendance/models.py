@@ -289,11 +289,11 @@ class Attendance(HorillaModel):
     )
     approved_overtime_second = models.IntegerField(default=0)
     is_validate_request = models.BooleanField(
-        default=False, verbose_name=_("Is validate request")
+        default=False, verbose_name=_("Validate request")
     )
     is_bulk_request = models.BooleanField(default=False, editable=False)
     is_validate_request_approved = models.BooleanField(
-        default=False, verbose_name=_("Is validate request approved")
+        default=False, verbose_name=_("Validate request approved")
     )
     request_description = models.TextField(
         null=True, verbose_name=_("Request Description")

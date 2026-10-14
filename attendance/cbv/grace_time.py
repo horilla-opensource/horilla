@@ -46,8 +46,8 @@ class GenericGraceTimeListView(HorillaListView):
         (_("Applicable on clock-in"), "applicable_on_clock_in_col"),
         (_("Applicable on clock-out"), "applicable_on_clock_out_col"),
         (_("Assigned Shifts"), "get_shifts_display"),
-        (_("Is default"), "is_default_col"),
-        (_("Is active"), "is_active_col"),
+        (_("Default"), "is_default_col"),
+        (_("Active"), "is_active_col"),
     ]
 
     header_attrs = {
