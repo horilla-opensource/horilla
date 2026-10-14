@@ -20,6 +20,9 @@ class ResignationTabView(ResignationListView):
     List view of resignation Tab in profile
     """
 
+    show_saved_filters = False
+    row_status_indications = []
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.action_method = None
