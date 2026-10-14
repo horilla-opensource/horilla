@@ -196,6 +196,7 @@ class HorillaListView(ListView):
 
     show_filter_tags: bool = True
     show_quick_date_filters: bool = False
+    show_saved_filters: bool = True
     quick_date_ranges: list = [
         (_("Yesterday"), -1, None),
         (_("Today"), 0, None),
@@ -368,6 +369,8 @@ class HorillaListView(ListView):
         context["stored_filters"] = models.SavedFilter.objects.filter(
             saved_filter_path_query(self.request), created_by=self.request.user
         ).distinct()
+        if not self.show_saved_filters:
+            context["stored_filters"] = models.SavedFilter.objects.none()
 
         # Set default pagination if not set
         if not self.records_per_page:
