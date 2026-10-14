@@ -1,13 +1,8 @@
 {% load i18n %}
-{% comment %}
-    Extra info block for the task kanban card: assignees (task_members) as
-    a compact overlapping avatar stack (same treatment as
-    pms/templates/cbv/objectives/manager.html), a due-date indicator, and
-    Manager/Status shown as dropdown-styled pills.
-{% endcomment %}
+
 <div class="mt-1 pt-1 border-t border-t-[#565e6c13]">
     <div class="flex items-center justify-between gap-2 mb-1">
-        <div style="display: inline-flex; align-items: center;">
+        <div class="inline-flex items-center">
             {% for member in instance.task_members.all|slice:":5" %}
                 <img
                     src="https://ui-avatars.com/api/?name={{member.get_full_name}}&background=random"
@@ -15,33 +10,14 @@
                     width="20"
                     height="20"
                     title="{{ member.get_full_name }}"
-                    style="
-                        border-radius: 50%;
-                        object-fit: cover;
-                        border: 2px solid #fff;
-                        {% if not forloop.first %}margin-left: -6px;{% endif %}
-                        position: relative;
-                        z-index: {{ forloop.revcounter }};
-                    "
+                    class="relative w-5 h-5 rounded-full object-cover border-2 border-white {% if not forloop.first %}-ml-1.5{% endif %}"
+                    style="z-index: {{ forloop.revcounter }};"
                 >
             {% endfor %}
             {% if instance.task_members.count > 5 %}
                 <span
                     title="{% for member in instance.task_members.all|slice:'5:' %}{{ member.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}"
-                    style="
-                        display: inline-flex;
-                        align-items: center;
-                        justify-content: center;
-                        width: 20px;
-                        height: 20px;
-                        border-radius: 50%;
-                        background: #eef0f4;
-                        font-size: 9px;
-                        border: 2px solid #fff;
-                        margin-left: -6px;
-                        position: relative;
-                        z-index: 0;
-                    "
+                    class="relative z-0 inline-flex items-center justify-center w-5 h-5 -ml-1.5 rounded-full bg-[#eef0f4] text-[9px] border-2 border-white"
                 >+{{ instance.task_members.count|add:"-5" }}</span>
             {% endif %}
             {% if not instance.task_members.exists %}
@@ -51,38 +27,40 @@
 
         {% if instance.end_date %}
             <span
-                class="text-[10px] font-semibold px-1.5 py-0.5 rounded flex items-center gap-0.5 flex-shrink-0"
-                style="
-                    {% if instance.is_overdue %}background: #fde8e8; color: #c81e1e;
-                    {% elif instance.is_due_soon %}background: #fff3cd; color: #946200;
-                    {% else %}background: #eef0f4; color: #565E6C;{% endif %}
-                "
+                class="text-[10px] font-semibold px-1.5 py-0.5 rounded flex items-center gap-0.5 flex-shrink-0 {% if instance.is_overdue %}bg-[#fde8e8] text-[#c81e1e]{% elif instance.is_due_soon %}bg-[#fff3cd] text-[#946200]{% else %}bg-[#eef0f4] text-[#565E6C]{% endif %}"
                 title="{% trans 'Due date' %}"
             >
-                <ion-icon name="calendar-outline" style="font-size: 11px;"></ion-icon>
+                <ion-icon name="calendar-outline" class="text-[11px]"></ion-icon>
                 {{ instance.end_date }}{% if instance.due_status_display %} &middot; {{ instance.due_status_display }}{% endif %}
             </span>
         {% endif %}
     </div>
 
-    <div class="flex items-center gap-1 flex-wrap">
-        <span
-            class="text-[10px] font-medium px-1.5 py-0.5 rounded flex items-center gap-0.5"
-            style="background: #eef0f4; color: #565E6C;"
-            title="{% trans 'Manager' %}: {% for manager in instance.task_managers.all %}{{ manager.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}"
-        >
-            {% with mgr=instance.task_managers.first %}
-                {{ mgr.get_full_name|default:_("No manager") }}
-            {% endwith %}
-            <ion-icon name="chevron-down-outline" style="font-size: 9px;"></ion-icon>
-        </span>
-        <span
-            class="text-[10px] font-medium px-1.5 py-0.5 rounded flex items-center gap-0.5"
-            style="background: #eef0f4; color: #565E6C;"
-            title="{% trans 'Status' %}"
-        >
-            {{ instance.get_status_display }}
-            <ion-icon name="chevron-down-outline" style="font-size: 9px;"></ion-icon>
-        </span>
+    <div class="flex items-center gap-1.5">
+        <span class="text-[10px] text-gray-400">{% trans "Managers" %}</span>
+        <div class="inline-flex items-center">
+            {% for manager in instance.task_managers.all|slice:":5" %}
+                <img
+                    src="https://ui-avatars.com/api/?name={{manager.get_full_name}}&background=random"
+                    alt="{% trans 'Manager' %}"
+                    width="20"
+                    height="20"
+                    title="{{ manager.get_full_name }}"
+                    class="relative w-5 h-5 rounded-full object-cover border-2 border-white {% if not forloop.first %}-ml-1.5{% endif %}"
+                    style="z-index: {{ forloop.revcounter }};"
+                >
+            {% empty %}
+                <span class="text-[10px] text-gray-400">{% trans "No managers" %}</span>
+            {% endfor %}
+            {% if instance.task_managers.count > 5 %}
+                <span
+                    title="{% for manager in instance.task_managers.all|slice:'5:' %}{{ manager.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                    class="relative z-0 inline-flex items-center justify-center w-5 h-5 -ml-1.5 rounded-full bg-[#eef0f4] text-[9px] border-2 border-white"
+                >+{{ instance.task_managers.count|add:"-5" }}</span>
+            {% endif %}
+            {% if not instance.task_managers.exists %}
+                <span class="text-[10px] text-gray-400">{% trans "No manager" %}</span>
+            {% endif %}
+        </div>
     </div>
 </div>
