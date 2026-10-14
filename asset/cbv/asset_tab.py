@@ -32,6 +32,8 @@ class AssetTabListView(AllocationList):
     Asset tab in individual view
     """
 
+    show_saved_filters = False
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         pk = self.request.resolver_match.kwargs.get("pk")
@@ -65,6 +67,8 @@ class AssetRequestTab(AssetRequestList):
     """
     Asset request tab
     """
+
+    show_saved_filters = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
