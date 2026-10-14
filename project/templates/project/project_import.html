@@ -1,0 +1,166 @@
+{% load static i18n %}
+<div class="oh-modal__dialog-header border-b border-gray-200 pb-3">
+    <h2 class="oh-modal__dialog-title text-base font-semibold text-gray-800">
+        {% trans "Import Project" %}
+    </h2>
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <div class="oh-modal__dialog-body p-0 pb-4">
+        <form hx-post="{% url 'project-import' %}" hx-target="#objectCreateModalTarget" hx-encoding="multipart/form-data" hx-request='{"timeout": 600000}' class="oh-profile-section"
+            hx-on::before-request="projectImportStart(this)"
+            hx-on::after-request="if (!event.detail.successful) { projectImportStop(this); }">
+            {% csrf_token %}
+            <style>
+                .pi-import-loader { display: none; flex-direction: column; align-items: center; text-align: center; padding: 2rem 1rem 1rem; }
+                .pi-import-loader.pi-active { display: flex; }
+                .pi-import-spinner { width: 56px; height: 56px; border: 5px solid #ececec; border-top-color: #e54f38; border-radius: 50%; animation: pi-import-spin 0.9s linear infinite; }
+                .pi-import-title { margin: 1.1rem 0 0.25rem; font-size: 1rem; font-weight: 600; color: #333; }
+                .pi-import-file { font-size: 0.8rem; color: #666; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+                .pi-import-elapsed { margin-top: 0.75rem; font-size: 0.8rem; font-variant-numeric: tabular-nums; color: #888; }
+                .pi-import-note { margin-top: 0.4rem; font-size: 0.75rem; color: #999; }
+                @keyframes pi-import-spin { to { transform: rotate(360deg); } }
+            </style>
+            <div class="pi-import-loader" role="status" aria-live="polite">
+                <div class="pi-import-spinner"></div>
+                <div class="pi-import-title">{% trans "Importing projects..." %}</div>
+                <div class="pi-import-file"></div>
+                <div class="pi-import-elapsed">0:00</div>
+                <div class="pi-import-note">{% trans "Large files can take a few minutes. Please keep this window open." %}</div>
+            </div>
+
+            <div id="error-container" style="color: red"></div>
+
+            <div class="modal-body pt-4">
+                {% if error_message %}
+                    <div role="alert" class="pi-import-alert flex items-start gap-3 mb-4 p-3 rounded-lg border border-red-200 bg-red-50">
+                        <ion-icon name="alert-circle" class="shrink-0 text-red-500" style="font-size:22px;"></ion-icon>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-semibold text-red-700 mb-0.5">{% trans "Import failed" %}</p>
+                            <p class="text-xs text-red-600 break-words max-h-24 overflow-y-auto">{{ error_message }}</p>
+                            <p class="text-xs text-red-500/80 mt-1">{% trans "Please correct the file and upload it again." %}</p>
+                        </div>
+                        <button type="button" class="shrink-0 text-red-400 hover:text-red-600 transition"
+                            aria-label="{% trans 'Dismiss' %}"
+                            onclick="$(this).closest('.pi-import-alert').remove()">
+                            <ion-icon name="close-outline" style="font-size:18px;"></ion-icon>
+                        </button>
+                    </div>
+                {% endif %}
+                <label for="projectImportFile" id="projectImportDrop"
+                    class="pi-dropzone relative flex flex-col items-center justify-center w-full h-[6.5rem] border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 cursor-pointer hover:border-brand-600 hover:bg-brand-50 transition">
+                    <div class="pi-drop-empty flex flex-col items-center text-center px-4">
+                        <ion-icon name="cloud-upload-outline" class="text-3xl text-brand-600 mb-1"></ion-icon>
+                        <p class="text-sm font-semibold text-gray-700 mb-1">{% trans "Upload a File" %}</p>
+                        <p class="text-xs text-gray-500">{% trans "Drag and drop files here" %}</p>
+                        <p class="text-[11px] text-gray-400 mt-1">.xlsx, .xls, .csv</p>
+                    </div>
+                    <div class="pi-drop-file hidden flex-col items-center text-center px-4">
+                        <ion-icon name="document-text-outline" class="text-4xl text-brand-600 mb-2"></ion-icon>
+                        <p class="pi-drop-name text-sm font-semibold text-gray-700 max-w-full truncate"></p>
+                        <p class="text-xs text-gray-500 mt-1">{% trans "Click or drop another file to replace" %}</p>
+                    </div>
+                    <input id="projectImportFile" type="file" name="file" required
+                        accept=".xlsx,.xls,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                </label>
+                <div class="flex items-center gap-3 mt-3">
+                <a href="{% url 'project-import-template' %}"
+                    id="projectImportButton"
+                    class="shrink-0 px-4 py-2 border border-brand-600 text-brand-600 rounded-md text-xs flex items-center gap-2 hover:text-white hover:bg-brand-800 transition duration-300"
+                    style="text-decoration:none;"
+                    onclick="return confirm('{% trans "Do you want to download the template?"|escapejs %}')"
+                    download>
+                    <ion-icon name="cloud-download-outline" style="font-size:16px;"></ion-icon>
+                    <span>{% trans "Download Template" %}</span>
+                </a>
+                <p class="text-xs text-gray-500">{% trans "Fill in the template and upload it here." %}</p>
+                </div>
+            </div>
+            <div class="modal-footer flex items-center justify-end gap-2 mt-5 pt-4 border-t border-gray-200 w-full">
+                <button type="submit"
+                    class="px-5 py-2 bg-brand-600 text-white rounded-md text-xs font-medium flex items-center gap-2 hover:bg-brand-800 transition duration-300">
+                    <ion-icon name="cloud-upload-outline" style="font-size:16px;"></ion-icon>{% trans "Upload" %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    window.projectImportToggleForm = function (form, hidden) {
+        $(form).find(".modal-body, .modal-footer").each(function () {
+            if (hidden) {
+                this.style.setProperty("display", "none", "important");
+            } else {
+                this.style.removeProperty("display");
+            }
+        });
+    };
+    window.projectImportStop = function (form) {
+        clearInterval(form._wiTimer);
+        $(form).find(".pi-import-loader").removeClass("pi-active");
+        projectImportToggleForm(form, false);
+    };
+    window.projectImportStart = function (form) {
+        var $loader = $(form).find(".pi-import-loader");
+        var file = $(form).find("input[type=file]")[0];
+        $loader.find(".pi-import-file").text(file && file.files[0] ? file.files[0].name : "");
+        $loader.find(".pi-import-elapsed").text("0:00");
+        projectImportToggleForm(form, true);
+        $loader.addClass("pi-active");
+        var started = Date.now();
+        clearInterval(form._wiTimer);
+        form._wiTimer = setInterval(function () {
+            if (!document.body.contains(form)) {
+                clearInterval(form._wiTimer);
+                return;
+            }
+            var s = Math.floor((Date.now() - started) / 1000);
+            $loader.find(".pi-import-elapsed").text(Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"));
+        }, 1000);
+    };
+
+    (function () {
+        var drop = document.getElementById("projectImportDrop");
+        var input = document.getElementById("projectImportFile");
+        if (!drop || !input) return;
+        var showFile = function () {
+            var f = input.files[0];
+            drop.querySelector(".pi-drop-empty").classList.toggle("hidden", !!f);
+            var box = drop.querySelector(".pi-drop-file");
+            box.classList.toggle("hidden", !f);
+            box.classList.toggle("flex", !!f);
+            box.querySelector(".pi-drop-name").textContent = f ? f.name : "";
+        };
+        var active = function (on) {
+            drop.classList.toggle("border-brand-600", on);
+            drop.classList.toggle("bg-brand-50", on);
+        };
+        input.addEventListener("change", showFile);
+        ["dragenter", "dragover"].forEach(function (ev) {
+            drop.addEventListener(ev, function (e) { e.preventDefault(); active(true); });
+        });
+        ["dragleave", "drop"].forEach(function (ev) {
+            drop.addEventListener(ev, function (e) { e.preventDefault(); active(false); });
+        });
+        drop.addEventListener("drop", function (e) {
+            if (e.dataTransfer && e.dataTransfer.files.length) {
+                input.files = e.dataTransfer.files;
+                showFile();
+            }
+        });
+    })();
+
+    // Same as the employee import: opening the modal asks right away
+    // whether to download the template. Not again when the same modal comes
+    // back with an import error.
+    {% if not error_message %}
+    document.getElementById("projectImportButton")
+        .dispatchEvent(new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+            view: window
+        }));
+    {% endif %}
+</script>
