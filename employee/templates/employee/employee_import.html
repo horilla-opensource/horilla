@@ -153,10 +153,12 @@
         });
     })();
 
+    {% if not error_message %}
     document.getElementById("workInfoImportButton")
     .dispatchEvent(new MouseEvent("click", {
         bubbles: true,
         cancelable: true,
         view: window
     }));
+    {% endif %}
 </script>
