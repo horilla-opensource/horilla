@@ -8,7 +8,7 @@
         margin-top: 0;
     }
 </style>
-<div id="{{ view_id|safe }}" class="hlv-container" data-list-path="{{request.path}}" data-selected-instances-key="{{selected_instances_key_id}}" data-total-count="{{queryset.paginator.count}}">
+<div id="{{ view_id|safe }}" class="hlv-container" data-list-path="{{request.path}}" data-selected-instances-key="{{selected_instances_key_id}}" data-model="{{model_label}}" data-total-count="{{queryset.paginator.count}}">
         <div
             class="oh-modal"
             id="bulkUpdateModal{{view_id|safe}}"

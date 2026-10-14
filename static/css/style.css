@@ -1010,3 +1010,34 @@ form label {
 .oh-profile-settings__fade-leave-end {
     opacity: 0;
 }
+/* Compact SweetAlert2 dialogs (confirmations, results, warnings). The library
+   defaults (32em wide, 5em icon, 1.875em title, large gaps) left a lot of empty
+   white space around a one-line message. Toasts are excluded; a Swal that sets
+   its own width/padding inline still wins. */
+.swal2-container .swal2-popup:not(.swal2-toast) {
+  width: 26rem;
+  padding: 0 0 1rem;
+}
+.swal2-popup:not(.swal2-toast) .swal2-icon {
+  font-size: 0.7rem;
+  margin: 1.1rem auto 0.4rem;
+}
+.swal2-popup:not(.swal2-toast) .swal2-title {
+  font-size: 1.1rem;
+  padding: 0.2rem 1rem 0;
+  margin: 0;
+}
+.swal2-popup:not(.swal2-toast) .swal2-html-container {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin: 0.6rem 1.2rem 0;
+  padding: 0;
+}
+.swal2-popup:not(.swal2-toast) .swal2-actions {
+  margin: 1rem auto 0;
+}
+.swal2-popup:not(.swal2-toast) .swal2-styled {
+  padding: 0.45rem 1.2rem;
+  font-size: 0.85rem;
+  margin: 0 0.3rem;
+}

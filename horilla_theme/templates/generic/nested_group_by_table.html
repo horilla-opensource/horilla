@@ -289,7 +289,7 @@
     }
 </style>
 
-<div id="{{view_id|safe}}" class="hlv-container relative" data-list-path="{{request.path}}" data-selected-instances-key="{{selected_instances_key_id}}"{% if show_toggle_form %} x-data="{ open: false }"{% endif %}>
+<div id="{{view_id|safe}}" class="hlv-container relative" data-list-path="{{request.path}}" data-selected-instances-key="{{selected_instances_key_id}}" data-model="{{model_label}}"{% if show_toggle_form %} x-data="{ open: false }"{% endif %}>
     <div
         class="oh-modal"
         id="bulkUpdateModal{{view_id|safe}}"
