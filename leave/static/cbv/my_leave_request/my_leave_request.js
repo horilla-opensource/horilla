@@ -41,6 +41,24 @@
 // }
 
 
+// Re-fetch the leave balance cards (taken / available days change when requests
+// are deleted) and swap them in place; the page itself is not reloaded.
+function refreshMyLeaveCards() {
+    var current = document.getElementById("userLeaveCards");
+    if (!current) return;
+    fetch(window.location.href, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then(function (response) { return response.text(); })
+        .then(function (html) {
+            var fresh = new DOMParser()
+                .parseFromString(html, "text/html")
+                .getElementById("userLeaveCards");
+            if (!fresh) return;
+            current.innerHTML = fresh.innerHTML;
+            if (typeof htmx !== "undefined") htmx.process(current);
+        })
+        .catch(function () {});
+}
+
 function myLeaveRequestBulkDelete() {
 
 
@@ -77,7 +95,12 @@ function myLeaveRequestBulkDelete() {
                     },
                     success: function (response, textStatus, jqXHR) {
                         if (jqXHR.status === 200) {
-                            location.reload();
+                            // Refresh in place instead of reloading the page: drop the
+                            // deleted rows from the selection, then reload the list and
+                            // the balance cards.
+                            clearSelection("selectedInstances");
+                            hlvReloadListInPlace();
+                            refreshMyLeaveCards();
                         }
                     },
                 });

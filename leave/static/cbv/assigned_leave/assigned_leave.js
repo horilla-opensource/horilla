@@ -1,4 +1,6 @@
-tickLeaveCheckboxes();
+if (typeof tickLeaveCheckboxes === "function") {
+    tickLeaveCheckboxes();
+}
 function makeLeaveListUnique(list) {
     return Array.from(new Set(list));
 }
@@ -75,8 +77,10 @@ function leaveAssigBulkDelete() {
                     },
                     success: function (response, textStatus, jqXHR) {
                         if (jqXHR.status === 200) {
-                            location.reload();
-                        } else {
+                            // Runs once the result dialog is closed: drop the deleted
+                            // rows from the selection and refresh the list in place.
+                            clearSelection("selectedInstances");
+                            hlvReloadListInPlace();
                         }
                     },
                 });

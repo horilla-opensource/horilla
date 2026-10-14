@@ -230,7 +230,7 @@
 
     <span id="bulkApproveSpan" hx-post="{% url 'leave-requests-bulk-approve' %}" hx-target="#leaveRequest"></span>
 
-    <script src="{% static 'cbv/leave_requests/leave_requests.js' %}"></script>
+    <script src="{% static 'cbv/leave_requests/leave_requests.js' %}?v=2"></script>
     <script>
         $('#penaltyModalBody').submit(function(e) {
         $(".reload-record").click()

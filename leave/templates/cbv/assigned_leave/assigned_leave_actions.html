@@ -4,7 +4,6 @@
 {% with can_change=perms.leave.change_availableleave can_delete=perms.leave.delete_availableleave %}
 {% if can_change or can_delete or can_manage %}
     <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation();">
-        {% include 'generic/history_col.html' %}
         <button type="button"
             hx-get="{% url 'leave-balance-ledger' instance.id %}"
             hx-target="#leaveLedgerContainer"

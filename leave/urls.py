@@ -424,6 +424,21 @@ urlpatterns = [
         views.leave_allocation_request_delete,
         name="leave-allocation-request-delete",
     ),
+    path(
+        "leave-allocation-request-bulk-approve/",
+        views.leave_allocation_bulk_approve,
+        name="leave-allocation-request-bulk-approve",
+    ),
+    path(
+        "leave-allocation-request-bulk-reject/",
+        views.leave_allocation_bulk_reject,
+        name="leave-allocation-request-bulk-reject",
+    ),
+    path(
+        "leave-allocation-request-bulk-delete/",
+        views.leave_allocation_bulk_delete,
+        name="leave-allocation-request-bulk-delete",
+    ),
     # path(
     #     "leave-allocation-request-view/",
     #     views.leave_allocation_request_view,

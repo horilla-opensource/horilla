@@ -58,7 +58,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
-from horilla.http.response import HorillaRedirect
+from horilla.http.response import HorillaRedirect, with_bulk_result
 from horilla.methods import (
     get_horilla_model_class,
     handle_no_permission,
@@ -1220,67 +1220,144 @@ def leave_request_approve(request, id, emp_id=None):
 
 @login_required
 @manager_can_enter("leave.change_leaverequest")
+def _posted_ids(request):
+    """
+    Ids posted either as repeated "ids" params or as one JSON list.
+    """
+    raw = request.POST.getlist("ids") or request.POST.getlist("request_ids")
+    if len(raw) == 1 and raw[0].strip().startswith("["):
+        try:
+            raw = json.loads(raw[0])
+        except ValueError:
+            raw = []
+    ids = []
+    for value in raw:
+        try:
+            ids.append(int(value))
+        except (TypeError, ValueError):
+            continue
+    return ids
+
+
 def leave_request_bulk_approve(request):
-    if request.method == "POST":
-        request_ids = request.POST.getlist("ids")
-        filtered_ids = []
-        for request_id in request_ids:
-            leave_request = LeaveRequest.objects.get(id=int(request_id))
-            # Exclude requests where the employee is the current user
-            if leave_request.employee_id != request.user.employee_get:
-                filtered_ids.append(request_id)
-        if request.user.is_superuser:
-            filtered_ids = request_ids
-        for request_id in filtered_ids:
-            try:
-                leave_request = (
-                    LeaveRequest.objects.get(id=int(request_id)) if request_id else None
-                )
-                if leave_request.status == "requested" and (
-                    leave_request.start_date >= datetime.today().date()
-                    or request.user.has_perm("leave.change_leaverequest")
-                ):
-                    leave_request_approve(request, leave_request.id)
-                else:
-                    if leave_request.status == "approved":
-                        messages.info(
-                            request,
-                            _("{} {} request already approved").format(
-                                leave_request.employee_id, leave_request.leave_type_id
-                            ),
-                        )
-                    elif leave_request.start_date < datetime.today().date():
-                        messages.warning(
-                            request,
-                            _("{} {} request date exceeded").format(
-                                leave_request.employee_id, leave_request.leave_type_id
-                            ),
-                        )
-                    else:
-                        messages.warning(
-                            request,
-                            _("{} {} can't approve.").format(
-                                leave_request.employee_id, leave_request.leave_type_id
-                            ),
-                        )
-            except (ValueError, OverflowError, LeaveRequest.DoesNotExist):
-                messages.error(request, _("Leave request not found"))
-                pass
-    return HorillaRedirect(request)
+    """
+    Approve a bulk of leave requests. Reports how many ended up approved
+    (X-Hlv-Bulk-Result); the browser shows them in a result dialog.
+    """
+    if request.method != "POST":
+        return HorillaRedirect(request)
+    request_ids = _posted_ids(request)
+    pending = []
+    for request_id in request_ids:
+        leave_request = LeaveRequest.objects.filter(id=request_id).first()
+        # A request may not be approved by its own employee (superusers may).
+        if leave_request is None or (
+            not request.user.is_superuser
+            and leave_request.employee_id == request.user.employee_get
+        ):
+            continue
+        if leave_request.status == "requested" and (
+            leave_request.start_date >= datetime.today().date()
+            or request.user.has_perm("leave.change_leaverequest")
+        ):
+            pending.append(leave_request.id)
+    for request_id in pending:
+        leave_request_approve(request, request_id)
+    done = LeaveRequest.objects.filter(id__in=pending, status="approved").count()
+    return with_bulk_result(
+        JsonResponse({"message": "Success"}), done, len(request_ids) - done
+    )
+
+
+def _reject_leave_request(request, leave_request, reason):
+    """
+    Reject one leave request: give the approved days back, record the reason as a
+    comment, notify and mail the employee. Returns False when it was already
+    rejected. Shared by the single and the bulk reject views.
+    """
+    if leave_request.status == "rejected":
+        return False
+    employee_id = leave_request.employee_id
+    leave_type_id = leave_request.leave_type_id
+    available_leave = AvailableLeave.objects.get(
+        leave_type_id=leave_type_id, employee_id=employee_id
+    )
+    available_leave.available_days += leave_request.approved_available_days
+    available_leave.carryforward_days += leave_request.approved_carryforward_days
+    leave_request.approved_available_days = 0
+    leave_request.approved_carryforward_days = 0
+    leave_request.status = "rejected"
+    leave_request.leave_clashes_count = 0
+
+    if leave_request.multiple_approvals() and not request.user.is_superuser:
+        conditional_requests = leave_request.multiple_approvals()
+        approver = [
+            manager
+            for manager in conditional_requests["managers"]
+            if manager.employee_user_id == request.user
+        ]
+        condition_approval = LeaveRequestConditionApproval.objects.filter(
+            manager_id=approver[0], leave_request_id=leave_request
+        ).first()
+        condition_approval.is_approved = False
+        condition_approval.is_rejected = True
+        condition_approval.save()
+
+    leave_request.reject_reason = reason
+    leave_request.save()
+    available_leave.save()
+    comment = LeaverequestComment()
+    comment.request_id = leave_request
+    comment.employee_id = request.user.employee_get
+    comment.comment = leave_request.reject_reason
+    comment.save()
+
+    with contextlib.suppress(Exception):
+        notify.send(
+            request.user.employee_get,
+            recipient=leave_request.employee_id.employee_user_id,
+            verb=gettext_noop("Your leave request has been rejected."),
+            icon="people-circle",
+            redirect=reverse("user-request-view") + f"?id={leave_request.id}",
+        )
+
+    mail_thread = LeaveMailSendThread(request, leave_request, type="reject")
+    mail_thread.start()
+    return True
 
 
 @login_required
 @manager_can_enter("leave.change_leaverequest")
+@require_http_methods(["POST"])
 def leave_bulk_reject(request):
-    request_ids = request.POST.getlist("request_ids")
-
-    for request_id in request_ids:
-        leave_request = (
-            LeaveRequest.objects.get(id=int(request_id)) if request_id else None
+    """
+    Reject a bulk of leave requests with one reason. Reports how many were
+    rejected (X-Hlv-Bulk-Result); the browser shows them in a result dialog.
+    """
+    request_ids = _posted_ids(request)
+    reason = (request.POST.get("reason") or "").strip()
+    if not reason:
+        return with_bulk_result(
+            JsonResponse({"message": "A rejection reason is required."}, status=400),
+            0,
+            len(request_ids),
         )
-        leave_request_cancel(request, leave_request.id)
 
-    return HorillaRedirect(request)
+    done = 0
+    for request_id in request_ids:
+        leave_request = LeaveRequest.objects.filter(id=request_id).first()
+        if leave_request is None or not _may_act_on_leave_request(
+            request, leave_request, "leave.change_leaverequest"
+        ):
+            continue
+        try:
+            if _reject_leave_request(request, leave_request, reason):
+                done += 1
+        except (AvailableLeave.DoesNotExist, IndexError, AttributeError):
+            continue  # no leave balance / not an approver: counted as failed
+    return with_bulk_result(
+        JsonResponse({"message": "Success"}), done, len(request_ids) - done
+    )
 
 
 @login_required
@@ -1310,56 +1387,10 @@ def leave_request_cancel(request, id, emp_id=None):
         form = RejectForm(request.POST)
         if form.is_valid():
             employee_id = leave_request.employee_id
-            leave_type_id = leave_request.leave_type_id
-            available_leave = AvailableLeave.objects.get(
-                leave_type_id=leave_type_id, employee_id=employee_id
-            )
-            if leave_request.status != "rejected":
-                available_leave.available_days += leave_request.approved_available_days
-                available_leave.carryforward_days += (
-                    leave_request.approved_carryforward_days
-                )
-                leave_request.approved_available_days = 0
-                leave_request.approved_carryforward_days = 0
-                leave_request.status = "rejected"
-                leave_request.leave_clashes_count = 0
-
-                if leave_request.multiple_approvals() and not request.user.is_superuser:
-                    conditional_requests = leave_request.multiple_approvals()
-                    approver = [
-                        manager
-                        for manager in conditional_requests["managers"]
-                        if manager.employee_user_id == request.user
-                    ]
-                    condition_approval = LeaveRequestConditionApproval.objects.filter(
-                        manager_id=approver[0], leave_request_id=leave_request
-                    ).first()
-                    condition_approval.is_approved = False
-                    condition_approval.is_rejected = True
-                    condition_approval.save()
-
-                leave_request.reject_reason = form.cleaned_data["reason"]
-                leave_request.save()
-                available_leave.save()
-                comment = LeaverequestComment()
-                comment.request_id = leave_request
-                comment.employee_id = request.user.employee_get
-                comment.comment = leave_request.reject_reason
-                comment.save()
-
+            if _reject_leave_request(
+                request, leave_request, form.cleaned_data["reason"]
+            ):
                 messages.success(request, _("Leave request rejected successfully.."))
-                with contextlib.suppress(Exception):
-                    notify.send(
-                        request.user.employee_get,
-                        recipient=leave_request.employee_id.employee_user_id,
-                        verb=gettext_noop("Your leave request has been rejected."),
-                        icon="people-circle",
-                        redirect=reverse("user-request-view")
-                        + f"?id={leave_request.id}",
-                    )
-
-                mail_thread = LeaveMailSendThread(request, leave_request, type="reject")
-                mail_thread.start()
             else:
                 messages.error(request, _("Leave request already rejected."))
 
@@ -4230,6 +4261,81 @@ def leave_allocation_request_update(request, req_id):
         return HorillaRedirect(request)
 
 
+def _approve_leave_allocation(request, leave_allocation_request):
+    """
+    Approve one leave allocation request: add the days to the employee's
+    balance and notify them. Returns False unless it is still "requested".
+    Shared by the single and the bulk approve views.
+    """
+    if leave_allocation_request.status != "requested":
+        return False
+    employee = leave_allocation_request.employee_id
+    if (
+        employee.available_leave.all()
+        .filter(leave_type_id=leave_allocation_request.leave_type_id)
+        .exists()
+    ):
+        available_leave = (
+            employee.available_leave.all()
+            .filter(leave_type_id=leave_allocation_request.leave_type_id)
+            .first()
+        )
+    else:
+        available_leave = AvailableLeave(
+            leave_type_id=leave_allocation_request.leave_type_id,
+            employee_id=employee,
+        )
+    available_leave.available_days += leave_allocation_request.requested_days
+    available_leave.save()
+    leave_allocation_request.status = "approved"
+    leave_allocation_request.save()
+    with contextlib.suppress(Exception):
+        notify.send(
+            request.user.employee_get,
+            recipient=leave_allocation_request.employee_id.employee_user_id,
+            verb=gettext_noop("Your leave allocation request has been approved"),
+            icon="people-circle",
+            redirect=reverse("leave-allocation-request-view")
+            + f"?id={leave_allocation_request.id}",
+        )
+    return True
+
+
+def _reject_leave_allocation(request, leave_allocation_request, reason):
+    """
+    Reject one leave allocation request (taking back days that were already
+    granted) and notify the employee. Returns False unless it is "requested"
+    or "approved". Shared by the single and the bulk reject views.
+    """
+    if leave_allocation_request.status not in ("requested", "approved"):
+        return False
+    leave_allocation_request.reject_reason = reason
+    if leave_allocation_request.status == "approved":
+        leave_type = leave_allocation_request.leave_type_id
+        requested_days = leave_allocation_request.requested_days
+        available_leave = AvailableLeave.objects.filter(
+            leave_type_id=leave_type,
+            employee_id=leave_allocation_request.employee_id,
+        ).first()
+        if available_leave:
+            available_leave.available_days = max(
+                0, available_leave.available_days - requested_days
+            )
+            available_leave.save()
+    leave_allocation_request.status = "rejected"
+    leave_allocation_request.save()
+    with contextlib.suppress(Exception):
+        notify.send(
+            request.user.employee_get,
+            recipient=leave_allocation_request.employee_id.employee_user_id,
+            verb=gettext_noop("Your leave allocation request has been rejected"),
+            icon="people-circle",
+            redirect=reverse("leave-allocation-request-view")
+            + f"?id={leave_allocation_request.id}",
+        )
+    return True
+
+
 @login_required
 @leave_allocation_reject_permission()
 def leave_allocation_request_approve(request, req_id):
@@ -4244,37 +4350,8 @@ def leave_allocation_request_approve(request, req_id):
     GET :It returns to the default leave allocation request view template.
     """
     leave_allocation_request = LeaveAllocationRequest.objects.get(id=req_id)
-    if leave_allocation_request.status == "requested":
-        employee = leave_allocation_request.employee_id
-        if (
-            employee.available_leave.all()
-            .filter(leave_type_id=leave_allocation_request.leave_type_id)
-            .exists()
-        ):
-            available_leave = (
-                employee.available_leave.all()
-                .filter(leave_type_id=leave_allocation_request.leave_type_id)
-                .first()
-            )
-        else:
-            available_leave = AvailableLeave(
-                leave_type_id=leave_allocation_request.leave_type_id,
-                employee_id=employee,
-            )
-        available_leave.available_days += leave_allocation_request.requested_days
-        available_leave.save()
-        leave_allocation_request.status = "approved"
-        leave_allocation_request.save()
+    if _approve_leave_allocation(request, leave_allocation_request):
         messages.success(request, _("Leave allocation request approved successfully"))
-        with contextlib.suppress(Exception):
-            notify.send(
-                request.user.employee_get,
-                recipient=leave_allocation_request.employee_id.employee_user_id,
-                verb=gettext_noop("Your leave allocation request has been approved"),
-                icon="people-circle",
-                redirect=reverse("leave-allocation-request-view")
-                + f"?id={leave_allocation_request.id}",
-            )
     else:
         messages.error(request, _("The leave allocation request can't be approved"))
     return HorillaRedirect(request)
@@ -4304,35 +4381,12 @@ def leave_allocation_request_reject(request, req_id):
         if request.method == "POST":
             form = LeaveAllocationRequestRejectForm(request.POST)
             if form.is_valid():
-                leave_allocation_request.reject_reason = form.cleaned_data["reason"]
-                if leave_allocation_request.status == "approved":
-                    leave_type = leave_allocation_request.leave_type_id
-                    requested_days = leave_allocation_request.requested_days
-                    available_leave = AvailableLeave.objects.filter(
-                        leave_type_id=leave_type,
-                        employee_id=leave_allocation_request.employee_id,
-                    ).first()
-                    available_leave.available_days = max(
-                        0, available_leave.available_days - requested_days
-                    )
-
-                    available_leave.save()
-                leave_allocation_request.status = "rejected"
-                leave_allocation_request.save()
+                _reject_leave_allocation(
+                    request, leave_allocation_request, form.cleaned_data["reason"]
+                )
                 messages.success(
                     request, _("Leave allocation request rejected successfully")
                 )
-                with contextlib.suppress(Exception):
-                    notify.send(
-                        request.user.employee_get,
-                        recipient=leave_allocation_request.employee_id.employee_user_id,
-                        verb=gettext_noop(
-                            "Your leave allocation request has been rejected"
-                        ),
-                        icon="people-circle",
-                        redirect=reverse("leave-allocation-request-view")
-                        + f"?id={leave_allocation_request.id}",
-                    )
                 return HorillaRedirect(request)
         return render(
             request,
@@ -4401,6 +4455,86 @@ def leave_allocation_request_delete(request, req_id):
     else:
 
         return redirect(reverse("leave-allocation-request-view"))
+
+
+def _can_decide_leave_allocation(request, leave_allocation_request):
+    """Approve / reject right, same rule as leave_allocation_reject_permission."""
+    work_info = getattr(
+        leave_allocation_request.employee_id, "employee_work_info", None
+    )
+    manager = work_info.reporting_manager_id if work_info else None
+    return request.user.has_perm("leave.delete_leaveallocationrequest") or (
+        manager is not None and request.user.employee_get == manager
+    )
+
+
+def _can_delete_leave_allocation(request, leave_allocation_request):
+    """Delete right, same rule as leave_allocation_delete_permission."""
+    return _can_decide_leave_allocation(request, leave_allocation_request) or (
+        request.user.employee_get == leave_allocation_request.employee_id
+    )
+
+
+@login_required
+@require_http_methods(["POST"])
+def leave_allocation_bulk_approve(request):
+    """
+    Approve a bulk of leave allocation requests. Reports how many were approved
+    (X-Hlv-Bulk-Result); the browser shows them in a result dialog.
+    """
+    ids = _posted_ids(request)
+    done = 0
+    for req_id in ids:
+        allocation = LeaveAllocationRequest.objects.filter(id=req_id).first()
+        if allocation and _can_decide_leave_allocation(request, allocation):
+            if _approve_leave_allocation(request, allocation):
+                done += 1
+    return with_bulk_result(JsonResponse({"message": "Success"}), done, len(ids) - done)
+
+
+@login_required
+@require_http_methods(["POST"])
+def leave_allocation_bulk_reject(request):
+    """
+    Reject a bulk of leave allocation requests with one reason. Reports how many
+    were rejected (X-Hlv-Bulk-Result).
+    """
+    ids = _posted_ids(request)
+    reason = (request.POST.get("reason") or "").strip()
+    if not reason:
+        return with_bulk_result(
+            JsonResponse({"message": "A rejection reason is required."}, status=400),
+            0,
+            len(ids),
+        )
+    done = 0
+    for req_id in ids:
+        allocation = LeaveAllocationRequest.objects.filter(id=req_id).first()
+        if allocation and _can_decide_leave_allocation(request, allocation):
+            if _reject_leave_allocation(request, allocation, reason):
+                done += 1
+    return with_bulk_result(JsonResponse({"message": "Success"}), done, len(ids) - done)
+
+
+@login_required
+@require_http_methods(["POST"])
+def leave_allocation_bulk_delete(request):
+    """
+    Delete a bulk of leave allocation requests. Only "requested" ones can be
+    deleted, the same rows whose Delete button is enabled in the list; approved
+    and rejected ones are left alone. The browser works the Total / Deleted /
+    Failed numbers out from which ids still exist, so no counts are returned here.
+    """
+    for req_id in _posted_ids(request):
+        allocation = LeaveAllocationRequest.objects.filter(id=req_id).first()
+        if (
+            allocation
+            and allocation.status == "requested"
+            and _can_delete_leave_allocation(request, allocation)
+        ):
+            with contextlib.suppress(ProtectedError):
+                allocation.delete()
+    return JsonResponse({"message": "Success"})
 
 
 @login_required

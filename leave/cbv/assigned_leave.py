@@ -82,6 +82,9 @@ class AssignedleaveList(HorillaListView):
         (_("Assigned Date"), "assigned_date"),
         (_("Taken Leaves"), "leave_taken"),
     ]
+    # The generic list adds a History column of its own (as in the other lists) but
+    # keeps it hidden unless it is a default column.
+    default_columns = columns + [(_("History"), "get_model_history")]
 
     action_method = "assigned_leave_actions"
     # Mirrors AssignedLeaveNavView.nested_group_by_fields -- needed here

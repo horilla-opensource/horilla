@@ -1,13 +1,5 @@
-{% load i18n horillafilters %}
-{% get_company as theme_obj %}
-{% with penalties_count=instance.get_penalties_count %}
+{% load i18n %}
+{% url "view-penalties" as penalties_url %}
 <div class="flex justify-center" onclick="event.stopPropagation();">
-{% if penalties_count %}
-
-<div data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" hx-get="{% url "view-penalties" %}?leave_request_id={{instance.id}}" hx-target="#penaltyViewModalBody" style="background-color: {{ theme_obj.primary_100|default:'rgba(229, 79, 56, 0.036)' }}; border: 2px solid {{ theme_obj.primary_600|default:'rgb(229, 79, 56)' }}; border-radius: 18px; padding: 2px 12px; font-weight: bold; white-space: nowrap;">{% trans "Penalties" %} :{{penalties_count}}
+    {% include "generic/penalty_badge.html" with count=instance.get_penalties_count url_base=penalties_url query="leave_request_id" obj_id=instance.id %}
 </div>
-{% else %}
-<div style="background-color: rgba(144, 238, 144, 0.036); border: 2px solid rgb(144, 238, 144); border-radius: 18px; padding: 2px 12px; white-space: nowrap;">{% trans 'No Penalties' %}</div>
-{% endif %}
-</div>
-{% endwith %}

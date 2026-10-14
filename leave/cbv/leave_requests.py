@@ -236,6 +236,13 @@ class LeaveRequestsNavView(HorillaNavView):
                     style="cursor: pointer;"
                 """,
             },
+            {
+                "action": _("Bulk Reject"),
+                "attrs": """
+                    onclick="bulkRejectLeaveRequests();"
+                    style="cursor: pointer;"
+                """,
+            },
         ]
         if self.request.user.has_perm("leave.add_leaverequest"):
             self.actions.insert(
