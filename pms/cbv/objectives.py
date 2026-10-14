@@ -880,8 +880,14 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
             self.request.user.has_perm("pms.change_objective")
             or self.request.user.has_perm("pms.change_employeeobjective")
             or self.request.user.has_perm("pms.change_employeekeyresult")
-            or self.request.user.employee_get
-            in emp_objective.objective_id.managers.all()
+            # No employee_objective_id in the request (the profile's standalone
+            # Key Results tab lists key results of many objectives): there is no
+            # single objective whose managers to check.
+            or (
+                emp_objective is not None
+                and self.request.user.employee_get
+                in emp_objective.objective_id.managers.all()
+            )
         ):
             self.actions.append(
                 {
@@ -975,6 +981,10 @@ class EKRTab(EmployeeObjectiveKeyResultDetailListView):
     """
     EKR tab
     """
+
+    # The parent's compact "no key results for this objective" line suits a row
+    # of an objective accordion, not a whole tab: use the usual empty-page look.
+    custom_empty_template = "cbv/objectives/tab_empty.html"
 
     columns = [
         (_("Title"), "title_col"),
