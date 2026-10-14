@@ -65,11 +65,7 @@ function stageSequenceGet(stage) {
       order: JSON.stringify(sequence),
     },
     success: function (response) {
-        Toast.fire({
-            icon: "success",
-            title: gettext("Stage sequence updated"),
-            position: "top-end",
-        });
+        $("#reloadMessagesButton").click();
       // count_element();
     },
   });

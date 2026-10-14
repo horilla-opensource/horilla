@@ -347,21 +347,6 @@
 
 <script>
     $(document).ready(function () {
-        Toast = Swal.mixin({
-            toast: true,
-            icon: "success",
-            title: "General Title",
-            animation: true,
-            position: "top-right",
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-                toast.addEventListener("mouseenter", Swal.stopTimer);
-                toast.addEventListener("mouseleave", Swal.resumeTimer);
-            },
-        });
-
         function isNextStage(currentStageId, targetStageId, parsedStageOrder) {
             var currentStageIndex = parsedStageOrder.findIndex(stage => stage.id == currentStageId);
             var targetStageIndex = parsedStageOrder.findIndex(stage => stage.id == targetStageId);
@@ -488,11 +473,7 @@
                         },
                         success: function (response) {
                             row.find('[name="stage_id"]').val(stageId);
-                            Toast.fire({
-                                icon: "success",
-                                title: '{% trans "Sequence updated"|escapejs %}',
-                                position: "top-end",
-                            });
+                            $("#reloadMessagesButton").click();
                             if (response.message) {
                                 Swal.fire({
                                     title: response.message,
@@ -503,11 +484,7 @@
                             }
                         },
                         error: function (xhr, status, error) {
-                            Toast.fire({
-                                icon: "error",
-                                title: '{% trans "Something went wrong"|escapejs %}',
-                                position: "top-end",
-                            });
+                            $("#reloadMessagesButton").click();
                         },
                     });
                 }, 100);

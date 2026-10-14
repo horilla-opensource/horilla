@@ -582,10 +582,12 @@ def update_candidate_stage_and_sequence(request):
 
     pipeline_cache = CACHE.get(request.session.session_key + "pipeline")
     if not pipeline_cache:
+        messages.error(request, _("Pipeline cache expired."))
         return JsonResponse({"message": _("Pipeline cache expired.")})
 
     stage = pipeline_cache["stages"].filter(id=stage_id).first()
     if not stage:
+        messages.error(request, _("Stage not found."))
         return JsonResponse({"message": _("Stage not found.")})
 
     context = {}
@@ -594,6 +596,7 @@ def update_candidate_stage_and_sequence(request):
         pipeline_cache["candidates"].filter(id=cand_id).update(
             sequence=index, stage_id=stage
         )
+    messages.success(request, _("Sequence updated"))
 
     if stage.stage_type == "hired" and stage.recruitment_id.is_vacancy_filled():
         context["message"] = _("Vacancy is filled")
@@ -2636,12 +2639,14 @@ def stage_sequence_update(request):
     """
     sequence_data = json.loads(request.POST.get("sequence", "{}"))
     if not sequence_data:
+        messages.error(request, _("Missing Sequence"))
         return JsonResponse({"type": "error", "message": _("Missing Sequence")})
 
     for stage_id, seq in sequence_data.items():
         stage = Stage.objects.get(id=stage_id)
         stage.sequence = seq
         stage.save()
+    messages.success(request, _("Stage sequence updated"))
     return JsonResponse({"type": "success", "message": "Stage sequence updated"})
 
 
