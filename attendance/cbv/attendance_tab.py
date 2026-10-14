@@ -96,6 +96,9 @@ class RequestedAttendanceIndividualView(AttendanceRequestListTab):
     list view for requested attendance tab view
     """
 
+    show_saved_filters = False
+    row_status_indications = []
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         pk = self.request.resolver_match.kwargs.get("pk")
@@ -177,6 +180,8 @@ class HourAccountIndividualTabView(HourAccountList):
 
 @method_decorator(login_required, name="dispatch")
 class AllAttendancesList(MyAttendancesListView):
+
+    show_saved_filters = False
 
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)

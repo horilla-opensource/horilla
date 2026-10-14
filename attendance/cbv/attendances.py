@@ -777,6 +777,8 @@ class PenaltyAccountListView(HorillaListView):
     list view for penalty tab
     """
 
+    show_saved_filters = False
+
     filter_class = PenaltyFilter
     model = PenaltyAccounts
     columns = [
@@ -828,6 +830,9 @@ class ValidateAttendancesIndividualTabView(AttendancesListView):
     """
     list view for validate attendance tab view
     """
+
+    show_quick_date_filters = False
+    show_saved_filters = False
 
     def get_queryset(self):
         queryset = super().get_queryset()
