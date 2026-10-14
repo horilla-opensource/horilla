@@ -236,14 +236,14 @@ class LeaveType(HorillaModel):
     )
     name = models.CharField(max_length=30, null=False, verbose_name=_("Name"))
     payment = models.CharField(
-        max_length=30, choices=PAYMENT, default="unpaid", verbose_name=_("Is Paid")
+        max_length=30, choices=PAYMENT, default="unpaid", verbose_name=_("Paid")
     )
     count = models.FloatField(null=True, default=1)
     period_in = models.CharField(max_length=30, choices=TIME_PERIOD, default="day")
     limit_leave = models.BooleanField(default=True, verbose_name=_("Limit Leave Days"))
     total_days = models.FloatField(null=True, default=1)
     reset = models.BooleanField(default=False, verbose_name=_("Reset"))
-    is_encashable = models.BooleanField(default=False, verbose_name=_("Is Encashable"))
+    is_encashable = models.BooleanField(default=False, verbose_name=_("Encashable"))
     reset_based = models.CharField(
         max_length=30,
         choices=RESET_BASED,

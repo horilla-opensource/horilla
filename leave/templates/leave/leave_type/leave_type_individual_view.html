@@ -141,7 +141,7 @@
                 {% endif %}
                 <div class="oh-timeoff-modal__stats">
                     <div class="oh-timeoff-modal__stat">
-                        <span class="oh-timeoff-modal__stat-title">{% trans "Is Paid" %}</span>
+                        <span class="oh-timeoff-modal__stat-title">{% trans "Paid" %}</span>
                         <div class="oh-timeoff-modal__stat-count">
                             {{ leave_type.get_payment_display }}
                         </div>
@@ -182,7 +182,7 @@
                 </div>
                 <div class="oh-timeoff-modal__stats">
                     <div class="oh-timeoff-modal__stat">
-                        <span class="oh-timeoff-modal__stat-title">{% trans "Is Encashable" %}</span>
+                        <span class="oh-timeoff-modal__stat-title">{% trans "Encashable" %}</span>
                         <div class="oh-timeoff-modal__stat-count">{{ leave_type.is_encashable|yes_no }}</div>
                     </div>
                 </div>

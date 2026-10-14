@@ -209,7 +209,7 @@ class LeaveTypeDetailView(HorillaDetailedView):
         (_("Require Attachment"), "require_attachment"),
         (_("Exclude company Leaves"), "exclude_company_leave"),
         (_("Exclude Holidays"), "exclude_holiday"),
-        (_("Is Encashable"), "encashable"),
+        (_("Encashable"), "encashable"),
         (_("Conditions"), "conditions_display"),
     ]
     action_method = "detail_view_actions"
