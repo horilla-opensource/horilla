@@ -30,6 +30,7 @@ from xhtml2pdf import pisa
 
 from base.filters import PenaltyFilter
 from base.forms import PenaltyAccountForm
+from base.import_template_data import import_template_frame, write_import_xlsx
 from base.methods import (
     check_manager,
     choosesubordinates,
@@ -96,17 +97,8 @@ def generate_error_report(error_list, error_data, file_name):
     data_frame = pd.DataFrame(error_data, columns=error_data.keys())
     response = HttpResponse(content_type="application/ms-excel")
     response["Content-Disposition"] = f'attachment; filename="{file_name}"'
-    writer = pd.ExcelWriter(response, engine="xlsxwriter")
-    try:
-        styled_data_frame = data_frame.style.map(
-            lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
-        )
-        styled_data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
-    except Exception:
-        data_frame.to_excel(writer, index=False, sheet_name="Sheet1")
-    worksheet = writer.sheets["Sheet1"]
-    worksheet.set_column("A:Z", 30)
-    writer.close()
+    # Same plain .xlsx layout as the "Download Template" files
+    write_import_xlsx(data_frame, response)
 
     def get_error_sheet(request):
         remove_dynamic_url(path_info)
@@ -1951,18 +1943,12 @@ def assign_leave_type_excel(_request):
         HttpResponse: An HTTP response containing an empty Excel template with predefined columns.
     """
     try:
-        columns = [
-            "Badge ID",
-            "Leave Type",
-            "Available Days",
-            "Carry Forward Days",
-        ]
-        data_frame = pd.DataFrame(columns=columns)
+        data_frame = import_template_frame("assign_leave")
         response = HttpResponse(content_type="application/ms-excel")
         response["Content-Disposition"] = (
             'attachment; filename="assign_leave_type_excel.xlsx"'
         )
-        data_frame.to_excel(response, index=False)
+        write_import_xlsx(data_frame, response)
         return response
     except Exception as exception:
         return HttpResponse(exception)
