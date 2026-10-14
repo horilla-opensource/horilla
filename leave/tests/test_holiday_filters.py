@@ -167,7 +167,8 @@ class TestTodayHolidaysMethod(LeaveHolidayFixtureMixin, TestCase):
         cls.today_specific = Holidays.objects.create(
             name="Today Specific",
             start_date=cls.today,
-            end_date=cls.today,
+            # differs from the global holiday's range (unique per company)
+            end_date=cls.today + timedelta(days=1),
             is_specific=True,
             assigning_type="employee",
             company_id=cls.company,

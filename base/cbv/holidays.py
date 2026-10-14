@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.views.generic import FormView
 
 from base.filters import HolidayFilter
 from base.forms import HolidayForm, HolidaysColumnExportForm
@@ -63,6 +64,8 @@ class HolidayListView(HorillaListView):
         (_("Start Date"), "start_date"),
         (_("End Date"), "end_date"),
         (_("Recurring"), "get_recurring_status"),
+        (_("Available for All"), "get_available_for_all_status"),
+        (_("Company"), "get_company_name"),
     ]
 
     header_attrs = {
@@ -166,7 +169,10 @@ class HolidayDetailView(HorillaDetailedView):
         (_("Start Date"), "start_date"),
         (_("End Date"), "end_date"),
         (_("Recurring"), "get_recurring_status"),
-        (_("Company"), "company_id"),
+        (_("Available for All"), "get_available_for_all_status"),
+        (_("Department"), "get_department_names"),
+        (_("Job Position"), "get_job_position_names"),
+        (_("Company"), "get_company_name"),
     ]
 
     action_method = "detail_view_actions"
@@ -205,6 +211,9 @@ class HolidayFormView(HorillaFormView):
     model = Holidays
     new_display_title = _("Create Holiday")
     template_name = "holiday/holiday_cbv_form.html"
+    # Company is optional here (empty = all companies), so the base view must
+    # not force it to the session company.
+    restrict_company_field = False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -224,3 +233,50 @@ class HolidayFormView(HorillaFormView):
             messages.success(self.request, _(message))
             return self.HttpResponse()
         return super().form_valid(form)
+
+
+@method_decorator(login_required, name="dispatch")
+class HolidayDuplicateFormView(HolidayFormView):
+    """
+    Create form pre-filled from an existing holiday.
+    """
+
+    new_display_title = _("Duplicate Holiday")
+
+    def get_queryset(self):
+        # the form always creates a new record (an unsaved blank instance)
+        return Holidays()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self.form.verbose_name = self.new_display_title
+        return context
+
+    def get(self, request, *args, pk=None, **kwargs):
+        return FormView.get(self, request, *args, **kwargs)
+
+    def post(self, request, *args, pk=None, **kwargs):
+        return FormView.post(self, request, *args, **kwargs)
+
+    def init_form(self, *args, data=None, files=None, instance=None, **kwargs):
+        initial = self.get_initial()
+        original = Holidays.objects.filter(pk=self.kwargs.get("pk")).first()
+        if original and data is None:
+            initial.update(
+                {
+                    "name": f"{original.name} (copy)"[:30],
+                    "start_date": original.start_date,
+                    "end_date": original.end_date,
+                    "recurring": original.recurring,
+                    "available_for_all": not original.is_specific,
+                    "department": list(
+                        original.department.values_list("pk", flat=True)
+                    ),
+                    "job_position": list(
+                        original.job_position.values_list("pk", flat=True)
+                    ),
+                    "employees": list(original.employees.values_list("pk", flat=True)),
+                    "company_id": original.company_id_id,
+                }
+            )
+        return self.form_class(data, files, initial=initial)

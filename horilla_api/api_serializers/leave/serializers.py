@@ -472,6 +472,18 @@ class HoildaySerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {"end_date": [_("End date should not be less than start date.")]}
             )
+        # company is not exposed here: new API holidays are global (None)
+        duplicates = Holidays.objects.entire().filter(
+            company_id=self.instance.company_id if self.instance else None,
+            start_date=start_date or getattr(self.instance, "start_date", None),
+            end_date=end_date,
+        )
+        if self.instance:
+            duplicates = duplicates.exclude(pk=self.instance.pk)
+        if end_date is not None and duplicates.exists():
+            raise serializers.ValidationError(
+                _("A holiday already exists for this date range.")
+            )
         return data
 
 

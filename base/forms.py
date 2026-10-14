@@ -37,7 +37,7 @@ from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 
-from base.methods import reload_queryset
+from base.methods import get_session_company, reload_queryset
 from base.models import (
     Announcement,
     AnnouncementComment,
@@ -3473,27 +3473,59 @@ class HolidayForm(ModelForm):
             )
         return end_date
 
+    available_for_all = forms.BooleanField(
+        label=_("Available for All"),
+        required=False,
+        initial=True,
+        widget=forms.CheckboxInput(attrs={"class": "oh-switch__checkbox"}),
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get("available_for_all"):
+            cleaned_data["department"] = Department.objects.none()
+            cleaned_data["job_position"] = JobPosition.objects.none()
+            cleaned_data["employees"] = Employee.objects.none()
+        elif not (
+            cleaned_data.get("department")
+            or cleaned_data.get("job_position")
+            or cleaned_data.get("employees")
+        ):
+            self.add_error(
+                "department",
+                _(
+                    "Select at least one department, job position or employee, "
+                    "or enable Available for All."
+                ),
+            )
+        return cleaned_data
+
     def save(self, commit=True):
         instance = super().save(commit=False)
         departments = self.cleaned_data.get("department")
         job_positions = self.cleaned_data.get("job_position")
         direct_employees = self.cleaned_data.get("employees")
-        instance.is_specific = bool(departments or job_positions or direct_employees)
+        instance.is_specific = not self.cleaned_data.get("available_for_all")
         instance.assigning_type = None
         if commit:
             instance.save()
             instance.department.set(departments or [])
             instance.job_position.set(job_positions or [])
             if instance.is_specific:
+                # Department / job position / employee selections are
+                # combined (union) into the concrete employee list.
                 condition = Q(pk__in=[])
                 if direct_employees:
                     condition |= Q(pk__in=direct_employees.values_list("pk", flat=True))
+                scope = Q(pk__in=[])
                 if departments:
-                    condition |= Q(employee_work_info__department_id__in=departments)
+                    scope |= Q(employee_work_info__department_id__in=departments)
                 if job_positions:
-                    condition |= Q(
-                        employee_work_info__job_position_id__in=job_positions
-                    )
+                    scope |= Q(employee_work_info__job_position_id__in=job_positions)
+                if instance.company_id_id:
+                    # a company-specific holiday only reaches that company
+                    scope &= Q(employee_work_info__company_id=instance.company_id)
+                condition |= scope
                 expanded = Employee.objects.filter(condition, is_active=True).distinct()
                 instance.employees.set(expanded)
             else:
@@ -3518,6 +3550,7 @@ class HolidayForm(ModelForm):
             f"{self.Meta.model()._meta.get_field('end_date').verbose_name}"
         )
         self.fields["is_specific"].widget = forms.HiddenInput()
+        self.fields["is_specific"].required = False
         self.fields["assigning_type"].widget = forms.HiddenInput()
         self.fields["assigning_type"].required = False
         self.fields["department"].required = False
@@ -3527,6 +3560,28 @@ class HolidayForm(ModelForm):
         for fname in ("department", "job_position", "employees"):
             self.fields[fname].widget.attrs.update({"class": "oh-select oh-select-2"})
         reload_queryset(self.fields)
+        # Empty company means the holiday applies to every company.
+        company_field = self.fields["company_id"]
+        company_field.required = False
+        company_field.empty_label = _("All Companies")
+        if self.instance.pk:
+            self.initial["available_for_all"] = not self.instance.is_specific
+        elif not self.is_bound:
+            request = getattr(_thread_locals, "request", None)
+            self.initial.setdefault("company_id", get_session_company(request))
+        self.order_fields(
+            [
+                "name",
+                "start_date",
+                "end_date",
+                "recurring",
+                "available_for_all",
+                "department",
+                "job_position",
+                "employees",
+                "company_id",
+            ]
+        )
 
 
 class HolidaysColumnExportForm(forms.Form):

@@ -118,6 +118,7 @@ from base.forms import (
     WorkTypeRequestForm,
     find_reset_user,
 )
+from base.import_template_data import import_template_frame, write_import_xlsx
 from base.methods import (
     check_chart_permission,
     check_manager,
@@ -458,6 +459,8 @@ def normalize_demo_payslips():
 
 
 def load_demo_database(request):
+    from horilla_automations.signals import suspend_automations
+
     if initialize_database_condition():
         if request.method == "POST":
             if request.POST.get("load_data_password") == settings.DB_INIT_PASSWORD:
@@ -478,56 +481,62 @@ def load_demo_database(request):
                 except Exception:
                     pass
 
-                for file in data_files:
-                    file_path = path.join(settings.BASE_DIR, "load_data", file)
-                    tmp = None
+                # No mail automations while the demo loads: it creates thousands of
+                # rows, each would start a mail thread, and those threads write to the
+                # database at the same time as the load ("database is locked").
+                with suspend_automations():
+                    for file in data_files:
+                        file_path = path.join(settings.BASE_DIR, "load_data", file)
+                        tmp = None
+                        try:
+                            reset_backfilled_rows_before_reload(file)
+                            shifted = _shift_fixture_dates(file_path)
+                            if shifted is not None:
+                                suffix = path.splitext(file)[1]
+                                with tempfile.NamedTemporaryFile(
+                                    mode="w",
+                                    suffix=suffix,
+                                    delete=False,
+                                    encoding="utf-8",
+                                ) as tmp_f:
+                                    tmp_f.write(shifted)
+                                    tmp = tmp_f.name
+                                call_command("loaddata", tmp)
+                            else:
+                                call_command("loaddata", file_path)
+                        except Exception as e:
+                            messages.error(
+                                request, _("An error occurred : %(e)s") % {"e": e}
+                            )
+                        finally:
+                            if tmp and path.exists(tmp):
+                                os.remove(tmp)
+
                     try:
-                        reset_backfilled_rows_before_reload(file)
-                        shifted = _shift_fixture_dates(file_path)
-                        if shifted is not None:
-                            suffix = path.splitext(file)[1]
-                            with tempfile.NamedTemporaryFile(
-                                mode="w",
-                                suffix=suffix,
-                                delete=False,
-                                encoding="utf-8",
-                            ) as tmp_f:
-                                tmp_f.write(shifted)
-                                tmp = tmp_f.name
-                            call_command("loaddata", tmp)
-                        else:
-                            call_command("loaddata", file_path)
-                    except Exception as e:
-                        messages.error(
-                            request, _("An error occurred : %(e)s") % {"e": e}
+                        from base.demo_data import run_enterprise_demo_seeder
+
+                        run_enterprise_demo_seeder(
+                            load_dir=load_dir_path,
+                            copy_media=False,
+                            scrub_side_files=True,
                         )
-                    finally:
-                        if tmp and path.exists(tmp):
-                            os.remove(tmp)
+                    except Exception as e:
+                        # The seeder is one long sequence of ~25 steps -- an
+                        # exception here could come from any of them, and every
+                        # step after the failing one silently never runs. Log
+                        # the full traceback so whoever reloads the demo can
+                        # actually find which step broke, instead of only ever
+                        # seeing this generic toast.
+                        logger.exception(
+                            "Enterprise demo seeder failed partway through"
+                        )
+                        messages.warning(
+                            request,
+                            _("Enterprise demo seeder could not finish: %(error)s")
+                            % {"error": e},
+                        )
 
-                try:
-                    from base.demo_data import run_enterprise_demo_seeder
-
-                    run_enterprise_demo_seeder(
-                        load_dir=load_dir_path,
-                        copy_media=False,
-                        scrub_side_files=True,
-                    )
-                except Exception as e:
-                    # The seeder is one long sequence of ~25 steps -- an
-                    # exception here could come from any of them, and every
-                    # step after the failing one silently never runs. Log
-                    # the full traceback so whoever reloads the demo can
-                    # actually find which step broke, instead of only ever
-                    # seeing this generic toast.
-                    logger.exception("Enterprise demo seeder failed partway through")
-                    messages.warning(
-                        request,
-                        _("Enterprise demo seeder could not finish: %(error)s")
-                        % {"error": e},
-                    )
-
-                normalize_demo_payslips()
+                    normalize_demo_payslips()
 
                 messages.success(request, _("Database loaded successfully."))
                 try:
@@ -8003,16 +8012,8 @@ def generate_error_report(error_list, error_data, file_name):
     data_frame = pd.DataFrame(error_data, columns=error_data.keys())
     response = HttpResponse(content_type="application/ms-excel")
     response["Content-Disposition"] = f'attachment; filename="{file_name}"'
-    writer = pd.ExcelWriter(response, engine="xlsxwriter")
-    data_frame.to_excel(
-        writer, index=False, header=False, startrow=1, sheet_name="Sheet1"
-    )
-    worksheet = writer.sheets["Sheet1"]
-    center_format = writer.book.add_format({"align": "center"})
-    header_format = writer.book.add_format({"bold": True, "align": "center"})
-    worksheet.set_column(0, len(data_frame.columns) - 1, 30, center_format)
-    worksheet.write_row(0, 0, list(data_frame.columns), header_format)
-    writer.close()
+    # Same plain .xlsx layout as the "Download Template" files
+    write_import_xlsx(data_frame, response)
 
     def get_error_sheet(request):
         remove_dynamic_url(path_info)
@@ -8079,24 +8080,74 @@ def holiday_creation(request):
 @login_required
 def holidays_excel_template(request):
     try:
-        columns = [
-            "Holiday Name",
-            "Start Date",
-            "End Date",
-            "Recurring",
-        ]
-        data_frame = pd.DataFrame(columns=columns)
+        data_frame = import_template_frame("holiday")
         response = HttpResponse(content_type="application/ms-excel")
         response["Content-Disposition"] = (
-            'attachment; filename="assign_leave_type_excel.xlsx"'
+            'attachment; filename="holidays_excel_template.xlsx"'
         )
-        data_frame.to_excel(response, index=False)
+        write_import_xlsx(data_frame, response)
         return response
     except Exception as exception:
         return HttpResponse(exception)
 
 
-def csv_holiday_import(file):
+def _resolve_holiday_company(value, selected_company=None):
+    """
+    Validate the "Company" import column (same rules as the employee import).
+
+    - `selected_company` (a Company instance): the row must name that company;
+      a blank Company is rejected.
+    - None ("All Company"/no selection): the row may name any existing
+      company, or leave it blank (company_id=None, applies to all companies).
+    Returns ``(company, error_message)``.
+    """
+    name = None if value is None or pd.isna(value) else str(value).strip() or None
+    if selected_company and not name:
+        return None, _(
+            "Company is required and must match the selected company '{}'."
+        ).format(selected_company.company)
+    if not name:
+        return None, None
+    company = Company.objects.filter(company__iexact=name).first()
+    if company is None:
+        return None, _("Company '{}' does not exist.").format(name)
+    if selected_company and company.pk != selected_company.pk:
+        return None, _("Company '{}' does not match the selected company.").format(name)
+    return company, None
+
+
+def _bulk_create_unique_holidays(holidays, error_list):
+    """
+    Bulk create imported holidays, skipping any whose date range already
+    exists for the same company (or for all companies when blank) or repeats
+    earlier in the same file. Skipped rows are appended to ``error_list``.
+    """
+    seen = set(
+        Holidays.objects.entire().values_list("company_id_id", "start_date", "end_date")
+    )
+    unique = []
+    for holiday in holidays:
+        key = (holiday.company_id_id, holiday.start_date, holiday.end_date)
+        if key in seen:
+            error_list.append(
+                {
+                    "Holiday Name": holiday.name,
+                    "Start Date": holiday.start_date,
+                    "End Date": holiday.end_date,
+                    "Company": holiday.company_id.company if holiday.company_id else "",
+                    "Duplicate Error": _(
+                        "A holiday already exists for this date range."
+                    ),
+                }
+            )
+            continue
+        seen.add(key)
+        unique.append(holiday)
+    if unique:
+        Holidays.objects.bulk_create(unique)
+
+
+def csv_holiday_import(file, selected_company=None):
     """
     Imports holiday data from a CSV file.
 
@@ -8108,6 +8159,7 @@ def csv_holiday_import(file):
     - "Start Date": Start date of the holiday (date string in a recognized format)
     - "End Date": End date of the holiday (date string in a recognized format)
     - "Recurring": Indicates whether the holiday recurs ("yes" or "no")
+    - "Company": Optional company name; blank applies the holiday to all companies
     """
     holiday_list, error_list = [], []
     file_name = settings.FILE_STORAGE.save(
@@ -8116,19 +8168,29 @@ def csv_holiday_import(file):
     holiday_file = settings.FILE_STORAGE.path(file_name)
 
     with open(holiday_file, errors="ignore") as csv_file:
-        save = True
         reader = csv.reader(csv_file)
         next(reader)
 
         for total_rows, row in enumerate(reader, start=1):
+            save = True
             try:
-                name, start_date, end_date, recurring = row
+                name, start_date, end_date, recurring, *rest = row
+                company_name = rest[0] if rest else ""
                 holiday_dict = {
                     "Holiday Name": name,
                     "Start Date": start_date,
                     "End Date": end_date,
                     "Recurring": recurring,
+                    "Company": company_name,
                 }
+
+                company, company_error = _resolve_holiday_company(
+                    company_name, selected_company
+                )
+                if company_error:
+                    save = False
+                    holiday_dict["Company Error"] = company_error
+                    error_list.append(holiday_dict)
 
                 try:
                     start_date = format_date(start_date)
@@ -8158,6 +8220,7 @@ def csv_holiday_import(file):
                             start_date=start_date,
                             end_date=end_date,
                             recurring=recurring.lower() == "yes",
+                            company_id=company,
                         )
                     )
 
@@ -8165,8 +8228,7 @@ def csv_holiday_import(file):
                 holiday_dict["Other Errors"] = str(e)
                 error_list.append(holiday_dict)
 
-    if holiday_list:
-        Holidays.objects.bulk_create(holiday_list)
+    _bulk_create_unique_holidays(holiday_list, error_list)
 
     if os.path.exists(holiday_file):
         os.remove(holiday_file)
@@ -8174,7 +8236,7 @@ def csv_holiday_import(file):
     return (error_list, total_rows)
 
 
-def excel_holiday_import(file):
+def excel_holiday_import(file, selected_company=None):
     """
     Imports holiday data from an Excel file.
 
@@ -8186,6 +8248,7 @@ def excel_holiday_import(file):
     - "Start Date": Start date of the holiday (date string in a recognized format)
     - "End Date": End date of the holiday (date string in a recognized format)
     - "Recurring": Indicates whether the holiday recurs ("yes" or "no")
+    - "Company": Optional company name; blank applies the holiday to all companies
 
     """
     error_list = []
@@ -8197,6 +8260,13 @@ def excel_holiday_import(file):
         save = True
         try:
             name = holiday["Holiday Name"]
+
+            company, company_error = _resolve_holiday_company(
+                holiday.get("Company"), selected_company
+            )
+            if company_error:
+                save = False
+                holiday["Company Error"] = company_error
 
             try:
                 start_date = pd.to_datetime(holiday["Start Date"]).date()
@@ -8229,6 +8299,7 @@ def excel_holiday_import(file):
                     start_date=start_date,
                     end_date=end_date,
                     recurring=recurring,
+                    company_id=company,
                 )
                 valid_holidays.append(holiday_instance)
             else:
@@ -8238,8 +8309,7 @@ def excel_holiday_import(file):
             holiday["Other errors"] = str(e)
             error_list.append(holiday)
 
-    if valid_holidays:
-        Holidays.objects.bulk_create(valid_holidays)
+    _bulk_create_unique_holidays(valid_holidays, error_list)
 
     return error_list, len(holiday_dicts)
 
@@ -8256,9 +8326,12 @@ def holidays_info_import(request):
         "Start Date": [],
         "End Date": [],
         "Recurring": [],
+        "Company": [],
+        "Company Error": [],
         "Start Date Error": [],
         "End Date Error": [],
         "Recurring Field Error": [],
+        "Duplicate Error": [],
         "Other Errors": [],
     }
 
@@ -8269,14 +8342,18 @@ def holidays_info_import(request):
         if file:
             content_type = file.content_type
             if content_type == "text/csv":
-                error_list, total_count = csv_holiday_import(file)
+                error_list, total_count = csv_holiday_import(
+                    file, get_session_company(request)
+                )
                 if error_list:
                     path_info = generate_error_report(error_list, error_data, file_name)
             elif (
                 content_type
                 == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             ):
-                error_list, total_count = excel_holiday_import(file)
+                error_list, total_count = excel_holiday_import(
+                    file, get_session_company(request)
+                )
                 if error_list:
                     path_info = generate_error_report(error_list, error_data, file_name)
             else:

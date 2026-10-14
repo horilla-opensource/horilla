@@ -1,11 +1,15 @@
 import calendar
+import logging
 from datetime import date, datetime, timedelta
 
+from django.db import IntegrityError
 from django.urls import reverse
 from django.utils.translation import gettext_noop
 
 from horilla.scheduling import register_job
 from notifications.signals import notify
+
+logger = logging.getLogger(__name__)
 
 
 def update_rotating_work_type_assign(rotating_work_type, new_date):
@@ -408,7 +412,15 @@ def recurring_holiday():
         elif end_date == (today - timedelta(days=1)).date():
             recurring_holiday.start_date = new_start_date
             recurring_holiday.end_date = new_end_date
-        recurring_holiday.save()
+        try:
+            recurring_holiday.save()
+        except IntegrityError:
+            # Another holiday already occupies the rolled-over date range
+            # for this company; keep this one unchanged.
+            logger.warning(
+                "Recurring holiday %s not rolled over: duplicate date range",
+                recurring_holiday.pk,
+            )
 
 
 def sync_roster_shifts():
