@@ -57,6 +57,7 @@ from asset.models import (
     AssetServiceRequestNote,
     ReturnImages,
 )
+from base.import_template_data import import_template_frame, write_import_xlsx
 from base.methods import (
     closest_numbers,
     eval_validate,
@@ -1491,22 +1492,11 @@ def asset_excel(_request):
     """asset excel download view"""
 
     try:
-        columns = [
-            "Asset name",
-            "Description",
-            "Serial No.",
-            "Purchase date",
-            "Purchase cost",
-            "Category",
-            "Status",
-            "Batch number",
-        ]
-        # Create a pandas DataFrame with columns but no data
-        dataframe = pd.DataFrame(columns=columns)
+        dataframe = import_template_frame("asset")
         # Write the DataFrame to an Excel file
         response = HttpResponse(content_type="application/ms-excel")
         response["Content-Disposition"] = 'attachment; filename="my_excel_file.xlsx"'
-        dataframe.to_excel(response, index=False)
+        write_import_xlsx(dataframe, response)
         return response
     except Exception as exception:
         return HttpResponse(exception)

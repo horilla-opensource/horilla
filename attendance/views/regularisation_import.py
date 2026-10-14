@@ -27,6 +27,7 @@ from django.utils.translation import gettext_lazy as _
 
 from attendance.models import AttendanceSummaryOverride
 from attendance.views.summary import _parse_date, build_monthly_summary
+from base.import_template_data import write_import_xlsx
 from base.methods import filtersubordinatesemployeemodel
 from employee.filters import EmployeeFilter
 from employee.models import Employee
@@ -456,7 +457,7 @@ def regularisation_import(request):
     if failures:
         response = HttpResponse(content_type=XLSX)
         response["Content-Disposition"] = 'attachment; filename="summary_errors.xlsx"'
-        pd.DataFrame(failures).to_excel(response, index=False)
+        write_import_xlsx(pd.DataFrame(failures), response)
         return response
 
     # Stating a month settles its conflicts -- that is the point of it, and it
