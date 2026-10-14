@@ -9,7 +9,7 @@
 </div>
 <div class="oh-modal__dialog-body" id="assetImportModalBody">
     <div id="AssetImportResponse"></div>
-    <form action="{%url 'asset-import' %}" enctype="multipart/form-data" method="post" class="oh-profile-section">
+    <form hx-post="{% url 'asset-import' %}" hx-encoding="multipart/form-data" hx-target="#AssetImportResponse" class="oh-profile-section">
         {% csrf_token %}
         <div class="oh-dropdown__import-form">
             <label class="oh-dropdown__import-label" for="uploadFile">

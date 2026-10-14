@@ -6,6 +6,7 @@ This module is used to"""
 import csv
 import json
 import os
+import uuid
 from datetime import date, datetime
 from urllib.parse import parse_qs
 
@@ -14,6 +15,7 @@ from django.contrib import messages
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import ProtectedError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -1367,80 +1369,98 @@ def convert_nan(val):
 fs = FileSystemStorage(location="csv_tmp/")
 
 
-def csv_asset_import(file):
-    file_content = ContentFile(file.read())
-    file_name = fs.save("_tmp.csv", file_content)
-    tmp_file = fs.path(file_name)
-
-    with open(tmp_file, errors="ignore") as csv_file:
-        reader = csv.reader(csv_file)
-        next(reader)  # Skip header row
-
-        asset_list = []
-        for row in reader:
-            (
-                asset_name,
-                asset_description,
-                asset_tracking_id,
-                asset_purchase_date,
-                asset_purchase_cost,
-                asset_category_name,
-                asset_status,
-                asset_lot_number,
-            ) = row
-
-            # Helper function to get or create categories and lots
-            asset_category, _ = AssetCategory.objects.get_or_create(
-                asset_category_name=asset_category_name
-            )
-            asset_lot, _ = AssetLot.objects.get_or_create(lot_number=asset_lot_number)
-
-            asset_list.append(
-                Asset(
-                    asset_name=asset_name,
-                    asset_description=asset_description,
-                    asset_tracking_id=asset_tracking_id,
-                    asset_purchase_date=asset_purchase_date,
-                    asset_purchase_cost=asset_purchase_cost,
-                    asset_status=asset_status,
-                    asset_category_id=asset_category,
-                    asset_lot_number_id=asset_lot,
-                )
-            )
-
-    # Bulk create assets from CSV
-    Asset.objects.bulk_create(asset_list)
-
-    # Delete the temporary file
-    if os.path.exists(tmp_file):
-        os.remove(tmp_file)
+ASSET_IMPORT_COLUMNS = [
+    "Asset name",
+    "Description",
+    "Serial No.",
+    "Purchase date",
+    "Purchase cost",
+    "Category",
+    "Batch number",
+    "Status",
+]
 
 
 def spreadsheetml_asset_import(dataframe):
-    for index, row in dataframe.iterrows():
-        asset_name = convert_nan(row["Asset name"])
-        asset_description = convert_nan(row["Description"])
-        asset_tracking_id = convert_nan(row["Serial No."])
-        purchase_date = convert_nan(row["Purchase date"])
-        purchase_cost = convert_nan(row["Purchase cost"])
-        category_name = convert_nan(row["Category"])
-        lot_number = convert_nan(row["Batch number"])
-        status = convert_nan(row["Status"])
+    """
+    Import assets row by row; returns (created_count, error_rows) where each
+    error row is the original row data plus an "Error" column.
+    """
+    created_count = 0
+    error_rows = []
+    for _index, row in dataframe.iterrows():
+        try:
+            with transaction.atomic():
+                _import_asset_row(row)
+            created_count += 1
+        except Exception as exception:
+            error_row = {
+                column: convert_nan(row.get(column)) for column in ASSET_IMPORT_COLUMNS
+            }
+            error_row["Error"] = _friendly_import_error(exception)
+            error_rows.append(error_row)
+    return created_count, error_rows
 
-        asset_category, create = AssetCategory.objects.get_or_create(
-            asset_category_name=category_name
-        )
-        asset_lot_number, create = AssetLot.objects.get_or_create(lot_number=lot_number)
-        Asset.objects.create(
-            asset_name=asset_name,
-            asset_description=asset_description,
-            asset_tracking_id=asset_tracking_id,
-            asset_purchase_date=purchase_date,
-            asset_purchase_cost=purchase_cost,
-            asset_category_id=asset_category,
-            asset_status=status,
-            asset_lot_number_id=asset_lot_number,
-        )
+
+def _friendly_import_error(exception):
+    """Turn raw database errors into messages users can act on."""
+    message = str(exception)
+    if "UNIQUE constraint failed" in message or "duplicate key" in message:
+        if "asset_tracking_id" in message:
+            return _("Serial No. already exists. Each asset needs a unique Serial No.")
+        return _("This record already exists.")
+    if "NOT NULL constraint failed" in message or "null value in column" in message:
+        return _("A required value is missing in this row.")
+    if "FOREIGN KEY constraint failed" in message:
+        return _("A related Category or Batch number is invalid.")
+    return message
+
+
+def _import_asset_row(row):
+    asset_name = convert_nan(row["Asset name"])
+    asset_description = convert_nan(row["Description"])
+    asset_tracking_id = convert_nan(row["Serial No."])
+    purchase_date = convert_nan(row["Purchase date"])
+    purchase_cost = convert_nan(row["Purchase cost"])
+    category_name = convert_nan(row["Category"])
+    lot_number = convert_nan(row["Batch number"])
+    status = convert_nan(row["Status"])
+
+    asset_category, _created = AssetCategory.objects.get_or_create(
+        asset_category_name=category_name
+    )
+    asset_lot_number, _created = AssetLot.objects.get_or_create(lot_number=lot_number)
+    asset = Asset(
+        asset_name=asset_name,
+        asset_description=asset_description,
+        asset_tracking_id=asset_tracking_id,
+        asset_purchase_date=purchase_date,
+        asset_purchase_cost=purchase_cost,
+        asset_category_id=asset_category,
+        asset_status=status,
+        asset_lot_number_id=asset_lot_number,
+    )
+    asset.save()
+
+
+def handle_asset_import_errors(error_rows):
+    """Build a downloadable error sheet and return its dynamic URL path."""
+    from asset.urls import path, urlpatterns
+
+    data_frame = pd.DataFrame(error_rows)
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = 'attachment; filename="ImportError.xlsx"'
+    write_import_xlsx(data_frame, response)
+
+    path_info = f"error-sheet-{uuid.uuid4()}"
+
+    def get_error_sheet(request):
+        # one-time download: drop the temporary route once it is served
+        urlpatterns[:] = [p for p in urlpatterns if p.name != path_info]
+        return response
+
+    urlpatterns.append(path(path_info, get_error_sheet, name=path_info))
+    return f"asset/{path_info}"
 
 
 @login_required
@@ -1457,34 +1477,56 @@ def asset_import(request):
     Args:
         request (HttpRequest): The HTTP request object containing metadata about the request.
     """
-    if request.META.get("HTTP_HX_REQUEST"):
+    if request.method != "POST":
         return render(request, "asset/asset_import.html")
+
+    def error_response(message):
+        response = render(
+            request,
+            "attendance/attendance/import_error_alert.html",
+            {"error_message": message},
+        )
+        response["HX-Retarget"] = "#AssetImportResponse"
+        response["HX-Reswap"] = "innerHTML"
+        return response
+
+    file = request.FILES.get("asset_import")
+    if file is None:
+        return error_response(_("Please select a file to upload."))
     try:
-        if request.method == "POST":
-            file = request.FILES.get("asset_import")
-            if file is not None and file.content_type == "text/csv":
-                try:
-                    csv_asset_import(file)
-                    messages.success(request, _("Successfully imported Assets"))
-                except Exception as exception:
-                    messages.error(request, f"{exception}")
-            elif (
-                file is not None
-                and file.content_type
-                == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            ):
-                try:
-                    dataframe = pd.read_excel(file)
-                    spreadsheetml_asset_import(dataframe)
-                    messages.success(request, _("Successfully imported Assets"))
-                except KeyError as exception:
-                    messages.error(request, f"{exception}")
-            else:
-                messages.error(request, _("File Error"))
-            return redirect(asset_category_view)
+        return _asset_import_file(request, file, error_response)
     except Exception as exception:
-        messages.error(request, f"{exception}")
-    return redirect(asset_category_view)
+        return error_response(str(exception))
+
+
+def _asset_import_file(request, file, error_response):
+    """Run the import for an uploaded file; returns the HTMX response."""
+    name = file.name.lower()
+    if name.endswith(".csv"):
+        dataframe = pd.read_csv(file)
+    elif name.endswith((".xlsx", ".xls")):
+        dataframe = pd.read_excel(file)
+    else:
+        return error_response(
+            _("Unsupported file type. Please upload a .csv or .xlsx file.")
+        )
+    missing = [c for c in ASSET_IMPORT_COLUMNS if c not in dataframe.columns]
+    if missing:
+        return error_response(
+            _("These required headers are missing in the uploaded file: ")
+            + ", ".join(missing)
+        )
+    created_count, error_rows = spreadsheetml_asset_import(dataframe)
+    context = {
+        "created_count": created_count,
+        "error_count": len(error_rows),
+        "model": _("Assets"),
+        "path_info": handle_asset_import_errors(error_rows) if error_rows else None,
+    }
+    response = render(request, "import_popup.html", context)
+    response["HX-Retarget"] = "#objectCreateModal"
+    response["HX-Reswap"] = "innerHTML"
+    return response
 
 
 @login_required
