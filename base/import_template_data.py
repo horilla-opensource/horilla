@@ -104,6 +104,37 @@ IMPORT_TEMPLATES = {
             ["DEMO002", "Sick Leave", 6, 0, 6, "2025-01-01"],
         ],
     },
+    "leave_request": {
+        "columns": [
+            "Badge ID",
+            "Leave Type",
+            "Start Date",
+            "Start Date Breakdown",
+            "End Date",
+            "End Date Breakdown",
+            "Description",
+        ],
+        "rows": [
+            [
+                "DEMO001",
+                "Annual Leave",
+                "2025-02-03",
+                "Full Day",
+                "2025-02-04",
+                "Full Day",
+                "Family function",
+            ],
+            [
+                "DEMO002",
+                "Sick Leave",
+                "2025-02-05",
+                "First Half",
+                "2025-02-05",
+                "First Half",
+                "Medical appointment",
+            ],
+        ],
+    },
     "attendance": {
         "columns": [
             "Badge ID",

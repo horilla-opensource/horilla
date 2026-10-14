@@ -189,3 +189,41 @@ function bulkDeleteLeaveRequests() {
         });
     }
 }
+
+
+function importLeaveRequest() {
+    Swal.fire({
+        text: i18nMessages.downloadTemplate,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: i18nMessages.confirm,
+        cancelButtonText: i18nMessages.cancel,
+    }).then(function (result) {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: "GET",
+                url: "/leave/leave-request-excel/",
+                dataType: "binary",
+                xhrFields: {
+                    responseType: "blob",
+                },
+                success: function (response) {
+                    const file = new Blob([response], {
+                        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    });
+                    const url = URL.createObjectURL(file);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = "leave_request_excel.xlsx";
+                    document.body.appendChild(link);
+                    link.click();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error("Error downloading file:", errorThrown);
+                },
+            });
+        }
+    });
+}

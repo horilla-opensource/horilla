@@ -40,6 +40,7 @@ from base.methods import (
     eval_validate,
     export_data,
     filtersubordinates,
+    filtersubordinatesemployeemodel,
     get_date_range,
     get_key_instances,
     get_pagination,
@@ -2158,6 +2159,251 @@ def assign_leave_type_import(request):
             )
         return popup(len(assign_leave_list), len(error_list), path_info)
     return HttpResponse("")
+
+
+@login_required
+@manager_can_enter("leave.add_leaverequest")
+def leave_request_excel(_request):
+    """
+    Generate an example Excel template for importing leave requests.
+    """
+    try:
+        data_frame = import_template_frame("leave_request")
+        response = HttpResponse(content_type="application/ms-excel")
+        response["Content-Disposition"] = (
+            'attachment; filename="leave_request_excel.xlsx"'
+        )
+        write_import_xlsx(data_frame, response)
+        return response
+    except Exception as exception:
+        return HttpResponse(exception)
+
+
+@login_required
+@hx_request_required
+@manager_can_enter("leave.add_leaverequest")
+def leave_request_import(request):
+    """
+    Import leave requests from an uploaded Excel/CSV file.
+
+    Every row goes through LeaveRequestCreationForm, so it is held to the same
+    rules as a request raised from the form (assigned leave type, balance,
+    overlap, restricted days, ...). Valid rows are created; invalid rows are
+    returned in an error workbook with the reason beside each. Mail and
+    notifications are not sent for imported rows.
+    """
+    template_columns = [
+        "Badge ID",
+        "Leave Type",
+        "Start Date",
+        "Start Date Breakdown",
+        "End Date",
+        "End Date Breakdown",
+        "Description",
+    ]
+    error_data = {
+        **{column: [] for column in template_columns},
+        "Badge ID Error": [],
+        "Leave Type Error": [],
+        "Start Date Error": [],
+        "Start Date Breakdown Error": [],
+        "End Date Error": [],
+        "End Date Breakdown Error": [],
+        "Description Error": [],
+        "Other Errors": [],
+    }
+    breakdowns = {
+        "full day": "full_day",
+        "full_day": "full_day",
+        "first half": "first_half",
+        "first_half": "first_half",
+        "second half": "second_half",
+        "second_half": "second_half",
+    }
+    # form field -> error column
+    error_columns = {
+        "employee_id": "Badge ID Error",
+        "leave_type_id": "Leave Type Error",
+        "start_date": "Start Date Error",
+        "start_date_breakdown": "Start Date Breakdown Error",
+        "end_date": "End Date Error",
+        "end_date_breakdown": "End Date Breakdown Error",
+        "description": "Description Error",
+    }
+
+    def is_blank(value):
+        if value is None:
+            return True
+        if isinstance(value, str):
+            return not value.strip()
+        return bool(pd.isna(value))
+
+    def text(value):
+        return "" if is_blank(value) else str(value).strip()
+
+    def to_date(value):
+        parsed = parse_excel_date(value)
+        if isinstance(parsed, datetime):
+            return parsed.date()
+        return parsed
+
+    def popup(created, errors, path_info=None):
+        return HttpResponse(
+            render_to_string(
+                "import_popup.html",
+                {
+                    "created_count": created,
+                    "error_count": errors,
+                    "model": _("Leave Requests"),
+                    "path_info": path_info,
+                },
+            )
+        )
+
+    if request.method != "POST":
+        return HttpResponse("")
+
+    file = request.FILES.get("leave_request_import")
+    if not file:
+        messages.error(request, _("Please choose a file to import."))
+        return popup(0, 0)
+
+    error_list = []
+    rows = []
+    try:
+        if file.name.lower().endswith(".csv"):
+            data_frame = pd.read_csv(file, dtype=object)
+        else:
+            data_frame = pd.read_excel(file, dtype=object)
+    except Exception:
+        data_frame = None
+        error_list.append(
+            {
+                "Other Errors": _(
+                    "The file could not be read. Please upload a valid .xlsx or .csv file."
+                )
+            }
+        )
+    if data_frame is not None:
+        data_frame.columns = [str(c).strip() for c in data_frame.columns]
+        missing = [
+            c
+            for c in ("Badge ID", "Leave Type", "Start Date", "End Date")
+            if c not in data_frame.columns
+        ]
+        if missing:
+            error_list.append(
+                {
+                    "Other Errors": _(
+                        "Missing required column(s): {}. Please use the template."
+                    ).format(", ".join(missing))
+                }
+            )
+        else:
+            rows = data_frame.dropna(how="all").to_dict("records")
+
+    # Only employees the user may raise leave for; anyone else reads as
+    # "does not exist" rather than confirming the badge is real.
+    employees = {
+        emp.badge_id.strip().lower(): emp
+        for emp in filtersubordinatesemployeemodel(
+            request, Employee.objects.all(), "leave.add_leaverequest"
+        )
+        if emp.badge_id
+    }
+    leave_types = {lt.name.strip().lower(): lt for lt in LeaveType.objects.all()}
+
+    created = 0
+    for row in rows:
+        badge = text(row.get("Badge ID")).lower()
+        type_name = text(row.get("Leave Type")).lower()
+        employee = employees.get(badge)
+        leave_type = leave_types.get(type_name)
+        errors = {}
+
+        if not badge:
+            errors["Badge ID Error"] = _("Badge ID is required.")
+        elif not employee:
+            errors["Badge ID Error"] = _("This badge id does not exist.")
+        if not type_name:
+            errors["Leave Type Error"] = _("Leave Type is required.")
+        elif not leave_type:
+            errors["Leave Type Error"] = _("This leave type does not exist.")
+
+        start_date = to_date(row.get("Start Date"))
+        if not start_date:
+            errors["Start Date Error"] = _(
+                "A valid start date is required (YYYY-MM-DD)."
+            )
+        # A blank end date means a single-day request.
+        end_date = (
+            start_date
+            if is_blank(row.get("End Date"))
+            else to_date(row.get("End Date"))
+        )
+        if not end_date:
+            errors["End Date Error"] = _("Invalid date format. Please use YYYY-MM-DD.")
+
+        breakdown_values = {}
+        for column, key in (
+            ("Start Date Breakdown", "start_date_breakdown"),
+            ("End Date Breakdown", "end_date_breakdown"),
+        ):
+            raw = text(row.get(column)).lower()
+            if not raw:
+                breakdown_values[key] = "full_day"
+            elif raw in breakdowns:
+                breakdown_values[key] = breakdowns[raw]
+            else:
+                errors[f"{column} Error"] = _(
+                    "Must be Full Day, First Half or Second Half."
+                )
+
+        description = text(row.get("Description"))
+        if not description:
+            errors["Description Error"] = _("Description is required.")
+
+        if not errors:
+            form = LeaveRequestCreationForm(
+                {
+                    "employee_id": employee.pk,
+                    "leave_type_id": leave_type.pk,
+                    "start_date": start_date.isoformat(),
+                    "end_date": end_date.isoformat(),
+                    "description": description,
+                    **breakdown_values,
+                }
+            )
+            if form.is_valid():
+                try:
+                    with transaction.atomic():
+                        leave_request = form.save(commit=False)
+                        leave_request.created_by = request.user.employee_get
+                        leave_request.save()
+                        if leave_type.require_approval == "no":
+                            leave_request.no_approval()
+                            leave_request.save()
+                    created += 1
+                    continue
+                except Exception as exception:
+                    errors["Other Errors"] = str(exception)
+            else:
+                for field, field_errors in form.errors.items():
+                    column = error_columns.get(field, "Other Errors")
+                    message = " ".join(field_errors)
+                    errors[column] = (
+                        f"{errors[column]} {message}" if column in errors else message
+                    )
+
+        row.update(errors)
+        error_list.append(row)
+
+    path_info = None
+    if error_list:
+        path_info = generate_error_report(
+            error_list, error_data, "LeaveRequestError.xlsx"
+        )
+    return popup(created, len(error_list), path_info)
 
 
 @login_required

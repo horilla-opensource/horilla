@@ -256,6 +256,16 @@ urlpatterns = [
         name="assigned-leave-bulk-delete",
     ),
     path(
+        "leave-request-excel/",
+        views.leave_request_excel,
+        name="leave-request-excel",
+    ),
+    path(
+        "leave-request-info-import/",
+        views.leave_request_import,
+        name="leave-request-info-import",
+    ),
+    path(
         "assign-leave-type-excel/",
         views.assign_leave_type_excel,
         name="assign-leave-type-excel",

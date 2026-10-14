@@ -237,6 +237,19 @@ class LeaveRequestsNavView(HorillaNavView):
                 """,
             },
         ]
+        if self.request.user.has_perm("leave.add_leaverequest"):
+            self.actions.insert(
+                0,
+                {
+                    "action": _("Import"),
+                    "attrs": """
+                        onclick="importLeaveRequest();"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#leaveRequestImport"
+                        style="cursor: pointer;"
+                    """,
+                },
+            )
         if has_export_access(self.request, LeaveRequest):
             self.actions.append(
                 {
