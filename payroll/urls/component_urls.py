@@ -436,6 +436,11 @@ urlpatterns = [
         name="get-assigned-leaves",
     ),
     path(
+        "bonus-points-note/",
+        component_views.bonus_points_note,
+        name="bonus-points-note",
+    ),
+    path(
         "approve-reimbursements/",
         component_views.approve_reimbursements,
         name="approve-reimbursements",

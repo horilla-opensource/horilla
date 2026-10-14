@@ -1353,9 +1353,10 @@ class ReimbursementForm(ModelForm):
         self.setup_leave_fields()
 
         self.fields["type"].widget.attrs["onchange"] = "toggleReimbursmentType($(this))"
-        self.fields["employee_id"].widget.attrs[
-            "onchange"
-        ] = "getAssignedLeave($(this))"
+        self.fields["employee_id"].widget.attrs["onchange"] = (
+            "getAssignedLeave($(this)); "
+            "if (window.refreshBonusPointsNote) refreshBonusPointsNote();"
+        )
 
         self.fields["allowance_on"].widget = forms.DateInput(
             attrs={"type": "date", "class": "oh-input w-100"}

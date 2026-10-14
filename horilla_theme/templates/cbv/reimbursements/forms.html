@@ -1,6 +1,15 @@
 {% load i18n %}
 <div id="formContainer">
     {% include "generic/horilla_form.html" %}
+    <div
+        id="bonusPointsNote"
+        hx-get="{% url 'bonus-points-note' %}"
+        hx-trigger="load, refreshBonusPointsNote"
+        hx-include="#genericModalBody [name=employee_id]"
+        hx-target="this"
+        hx-swap="innerHTML"
+        class="p-2 px-4"
+    ></div>
     <div class="oh-modal__dialog-body oh-modal__dialog-relative">
         <table
             class="oh-table custom-table border rounded-md w-full"
@@ -38,6 +47,25 @@
         </table>
     </div>
 </div>
+
+<script>
+    // The bonus points note belongs to the Bonus Point Encashment type only.
+    function syncBonusPointsNote() {
+        var type = $("#genericModalBody [name=type]").first().val();
+        $("#bonusPointsNote").toggle(type == "bonus_encashment");
+    }
+    function refreshBonusPointsNote() {
+        var note = document.getElementById("bonusPointsNote");
+        if (note) htmx.trigger(note, "refreshBonusPointsNote");
+    }
+    // Top of the form's bordered box, directly under the heading. Inside the form
+    // the note would inherit the form's hx-target / hx-swap and replace the whole
+    // modal with its response, which is why it sets hx-target="this" itself.
+    var bonusNoteBox = $("#genericModalBody .oh-profile-section").first();
+    if (bonusNoteBox.length) $("#bonusPointsNote").prependTo(bonusNoteBox);
+    $("#genericModalBody [name=type]").on("change", syncBonusPointsNote);
+    syncBonusPointsNote();
+</script>
 
 <script>
     toggleReimbursmentType($("#genericModalBody [name=type]").first());

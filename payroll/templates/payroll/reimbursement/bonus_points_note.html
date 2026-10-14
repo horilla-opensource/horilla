@@ -1,0 +1,12 @@
+{% load i18n %}
+<div
+    class="flex items-center gap-2 rounded-md border p-3 text-sm"
+    style="background: color-mix(in srgb, var(--primary-600, #E54F38) 8%, transparent); border-color: color-mix(in srgb, var(--primary-600, #E54F38) 25%, transparent)"
+    role="note"
+>
+    <ion-icon name="information-circle-outline" style="font-size: 18px; flex-shrink: 0; color: var(--primary-600, #E54F38)"></ion-icon>
+    <span>
+        {% blocktranslate with name=employee.get_full_name %}Available bonus points for {{ name }}:{% endblocktranslate %}
+        <strong>{{ points }}</strong>
+    </span>
+</div>

@@ -1892,6 +1892,43 @@ def search_reimbursement(request):
 
 
 @login_required
+def bonus_points_note(request):
+    """
+    The note under a Bonus Point Encashment form: how many bonus points the
+    selected employee has available. Loaded when the form opens and again
+    whenever the employee is changed (htmx).
+
+    Whoever may create a reimbursement can look up any employee; anyone else
+    only sees their own points (their form has no employee field).
+    """
+    from base.methods import check_manager
+    from employee.models import BonusPoint
+
+    own_employee = getattr(request.user, "employee_get", None)
+    employee_id = request.GET.get("employee_id")
+    employee = (
+        Employee.objects.filter(id=employee_id).first()
+        if employee_id and str(employee_id).isdigit()
+        else own_employee
+    )
+    if employee and employee != own_employee:
+        if not (
+            request.user.has_perm("payroll.add_reimbursement")
+            or (own_employee and check_manager(own_employee, employee))
+        ):
+            employee = None
+    if not employee:
+        return HttpResponse("")
+
+    bonus = BonusPoint.objects.filter(employee_id=employee).first()
+    return render(
+        request,
+        "payroll/reimbursement/bonus_points_note.html",
+        {"employee": employee, "points": bonus.points if bonus else 0},
+    )
+
+
+@login_required
 def get_assigned_leaves(request):
     """
     This method is used to return assigned leaves of the employee
