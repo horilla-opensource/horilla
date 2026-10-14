@@ -155,7 +155,11 @@ class WriteTargetScopingTests(TestCase):
     # --- documents --------------------------------------------------------
 
     def _document(self, employee):
-        return Document.objects.create(title="Passport", employee_id=employee)
+        document = Document.objects.create(title="Passport", employee_id=employee)
+        # Document.save() approves anything uploaded without a request, so put
+        # it back to awaiting approval -- update() skips save().
+        Document.objects.filter(pk=document.pk).update(status="requested")
+        return document
 
     def test_cannot_approve_a_stranger_document(self):
         document = self._document(self.victim)
