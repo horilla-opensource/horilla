@@ -1,4 +1,13 @@
 {% load i18n %}
+{% if not answers and not kr_feedbacks %}
+    {# nothing submitted yet: the Answers sidebar would otherwise open blank #}
+    <li class="list-none">
+        <div class="flex flex-col items-center justify-center py-10">
+            <img src="/static/images/ui/no_records.svg" alt="" width="200" class="mb-4">
+            <p class="text-[#666] mb-0">{% trans "No answers have been submitted yet" %}</p>
+        </div>
+    </li>
+{% endif %}
 {% for answer in answers %}
     <li class="oh-activity-sidebar__qa-item">
         <span class="oh-activity-sidebar__q"> {{ forloop.counter }}. {{ answer.question_id.question }}?</span>
