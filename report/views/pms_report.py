@@ -522,9 +522,7 @@ if apps.is_installed("pms"):
                                 "Status": feedback.status,
                                 "Start Date": feedback.start_date,
                                 "End Date": feedback.end_date,
-                                "Is Cyclic": (
-                                    "Yes" if feedback.cyclic_feedback else "No"
-                                ),
+                                "Cyclic": ("Yes" if feedback.cyclic_feedback else "No"),
                                 "Cycle Period": (
                                     f"{feedback.cyclic_feedback_days_count} {PERIOD.get(feedback.cyclic_feedback_period)}"
                                     if feedback.cyclic_feedback_days_count
@@ -556,7 +554,7 @@ if apps.is_installed("pms"):
                                     "Status": feedback.status,
                                     "Start Date": feedback.start_date,
                                     "End Date": feedback.end_date,
-                                    "Is Cyclic": (
+                                    "Cyclic": (
                                         "Yes" if feedback.cyclic_feedback else "No"
                                     ),
                                     "Cycle Period": (
