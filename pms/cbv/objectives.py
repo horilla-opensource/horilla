@@ -875,7 +875,27 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
             pk=self.request.GET.get("employee_objective_id")
         ).first()
 
+        # Row actions, in this order: History, Edit, Delete.
         self.actions = []
+        if (
+            emp_objective
+            and self.request.user.employee_get
+            in emp_objective.objective_id.managers.all()
+            or self.request.user.has_perm("pms.view_employeekeyresult")
+        ):
+            self.actions.append(
+                {
+                    "action": _("History"),
+                    "icon": "time-outline",
+                    "attrs": """
+                hx-get='{get_history_url}'
+                hx-target="#genericOffCanvas"
+                data-target='#genericSidebar'
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm oh-activity-sidebar__open"
+                style="cursor: pointer;"
+                """,
+                }
+            )
         if (
             self.request.user.has_perm("pms.change_objective")
             or self.request.user.has_perm("pms.change_employeeobjective")
@@ -917,26 +937,6 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
                         hx-on-htmx-after-request= "window.location.reload();"
                         style="cursor: pointer;"
                     """,
-                }
-            )
-
-        if (
-            emp_objective
-            and self.request.user.employee_get
-            in emp_objective.objective_id.managers.all()
-            or self.request.user.has_perm("pms.view_employeekeyresult")
-        ):
-            self.actions.append(
-                {
-                    "action": _("History"),
-                    "icon": "time-outline",
-                    "attrs": """
-                hx-get='{get_history_url}'
-                hx-target="#genericOffCanvas"
-                data-target='#genericSidebar'
-                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm oh-activity-sidebar__open"
-                style="cursor: pointer;"
-                """,
                 }
             )
 
