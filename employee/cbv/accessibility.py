@@ -182,9 +182,12 @@ def mail_log_accessibility(
     permission for mail log tab
     """
 
-    if request.user.has_perm("employee.view_employee"):
-        return True
-    return False
+    employee = Employee.objects.get(id=instance.pk)
+    return bool(
+        request.user.has_perm("employee.view_employee")
+        or request.user == employee.employee_user_id
+        or check_manager(request.user.employee_get, employee)
+    )
 
 
 def history_accessibility(
