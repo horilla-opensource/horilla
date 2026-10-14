@@ -25,19 +25,15 @@ document.addEventListener("horillaMessage", function (evt) {
     var text = detail.text || "";
     if (!text) return;
 
-    if (typeof Swal !== "undefined" && Swal && typeof Swal.fire === "function") {
-        Swal.fire({
-            toast: true,
-            position: "top-end",
-            icon: (detail.level === "error" ? "error" : "success"),
-            title: text,
-            showConfirmButton: false,
-            timer: 2500,
-            timerProgressBar: true,
-        });
-        return;
-    }
-    alert(text);
+    var level = detail.level === "error" ? "danger" : "success";
+    var $alert = $("<div>")
+        .addClass("oh-alert oh-alert--animated oh-alert--" + level)
+        .text(text);
+    var $container = $("<div>").addClass("oh-alert-container").append($alert);
+    $alert.on("animationend", function () {
+        $container.remove();
+    });
+    $("body").append($container);
 });
 
 function tickLeaverequestsCheckboxes() {
