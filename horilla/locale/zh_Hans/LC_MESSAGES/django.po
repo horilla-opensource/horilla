@@ -18,38 +18,38 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 msgid "Default Employee View"
-msgstr "預設員工檢視"
+msgstr "默认员工查看"
 
 msgid "Default Employee Detailed View"
-msgstr "預設員工詳細檢視"
+msgstr "默认员工详细查看"
 
 #| msgid "You dont have access to the feature"
 msgid "You don't have access to the feature"
 msgstr "您无权访问该功能"
 
 msgid "Employee"
-msgstr "員工"
+msgstr "员工"
 
 msgid "Exclude Employees"
-msgstr "排除員工"
+msgstr "排除员工"
 
 msgid "Permissions"
-msgstr "權限"
+msgstr "权限"
 
 msgid "Job Position"
-msgstr "職位"
+msgstr "职位"
 
 msgid "Department"
-msgstr "部門"
+msgstr "部门"
 
 msgid "Work Type"
-msgstr "工作類型"
+msgstr "工作类型"
 
 msgid "Employee Type"
-msgstr "員工類型"
+msgstr "员工类型"
 
 msgid "Job Role"
-msgstr "職務角色"
+msgstr "职务角色"
 
 msgid "Company"
 msgstr "公司"
@@ -58,16 +58,16 @@ msgid "Shift"
 msgstr "班次"
 
 msgid "Tags"
-msgstr "標籤"
+msgstr "标签"
 
 msgid "Groups"
-msgstr "群組"
+msgstr "群组"
 
 msgid "Default Accessibility"
-msgstr "預設可訪問性"
+msgstr "默认可访问性"
 
 msgid "Limit default view access to horilla feature"
-msgstr "限制預設檢視存取至 Horilla 功能"
+msgstr "限制默认查看访问至 Horilla 功能"
 
 msgid "Actions"
 msgstr "操作"
@@ -76,14 +76,14 @@ msgid "Are you sure?"
 msgstr "您确定吗？"
 
 msgid "You won't be able to revert this!"
-msgstr "您將無法還原此操作！"
+msgstr "您将无法还原此操作！"
 
 #| msgid "Clear it"
 msgid "Yes, Clear it"
 msgstr "是的，清除"
 
 msgid "Clear Filter"
-msgstr "清除篩選"
+msgstr "清除筛选"
 
 msgid "Restrict All"
 msgstr "全部限制"
@@ -91,7 +91,7 @@ msgstr "全部限制"
 msgid ""
 "Only those normal users/employees with any category mentioned in the form "
 "can access the"
-msgstr "只有那些在表單中提及任何類別的普通用戶/員工才能存取此功能"
+msgstr "只有那些在表单中提及任何类别的普通用户/员工才能访问此功能"
 
 msgid "feature"
 msgstr "功能"
@@ -99,22 +99,22 @@ msgstr "功能"
 msgid ""
 "If skip all the category fields in the form, then all normal users/employees "
 "can access the feature"
-msgstr "如果跳過表單中的所有類別欄位，則所有普通用戶/員工均可存取此功能"
+msgstr "如果跳过表单中的所有类别字段，则所有普通用户/员工均可访问此功能"
 
 msgid "Accessibility filter saved"
-msgstr "可訪問性篩選已儲存"
+msgstr "可访问性筛选已保存"
 
 msgid "All filter cleared"
-msgstr "所有篩選已清除"
+msgstr "所有筛选已清除"
 
 msgid "Tracking Id"
-msgstr "追蹤ID"
+msgstr "追踪ID"
 
 msgid "Asset Name"
-msgstr "資源名稱"
+msgstr "资源名称"
 
 msgid "Status"
-msgstr "狀態"
+msgstr "状态"
 
 msgid "Available"
 msgstr "可用"
@@ -135,13 +135,13 @@ msgid "Assets"
 msgstr "资产"
 
 msgid "Asset Batch Number"
-msgstr "資源批次編號"
+msgstr "资源批次编号"
 
 msgid "Create Batch Number"
-msgstr "建立批次編號"
+msgstr "创建批次编号"
 
 msgid "Batch Number Update"
-msgstr "批次編號更新"
+msgstr "批次编号更新"
 
 msgid "Batch number updated successfully."
 msgstr "批次号更新成功。"
@@ -153,13 +153,13 @@ msgid "Details"
 msgstr "详情"
 
 msgid "Asset"
-msgstr "資源"
+msgstr "资源"
 
 msgid "Asset Category Creation"
-msgstr "資源類別建立"
+msgstr "资源类别创建"
 
 msgid "Asset Category Update"
-msgstr "資源類別更新"
+msgstr "资源类别更新"
 
 msgid "Asset category updated successfully"
 msgstr "资产类别更新成功"
@@ -168,10 +168,10 @@ msgid "Asset category created successfully"
 msgstr "资产类别创建成功"
 
 msgid "Asset Creation"
-msgstr "資源建立"
+msgstr "资源创建"
 
 msgid "Asset Update"
-msgstr "資源更新"
+msgstr "资源更新"
 
 msgid "Asset updated successfully"
 msgstr "资产更新成功"
@@ -183,22 +183,22 @@ msgid "Asset Category Duplicate"
 msgstr "资产类别重复"
 
 msgid "Duplicate"
-msgstr "複製"
+msgstr "复制"
 
 msgid "Asset Duplicate"
 msgstr "资产重复"
 
 msgid "Add Asset Report"
-msgstr "新增資源報告"
+msgstr "新增资源报告"
 
 msgid "Asset report added successfully."
 msgstr "资产报告添加成功。"
 
 msgid "Category"
-msgstr "類別"
+msgstr "类别"
 
 msgid "Batch Number"
-msgstr "批次編號"
+msgstr "批次编号"
 
 msgid "Import"
 msgstr "导入"
@@ -214,43 +214,43 @@ msgid "Assigned Date"
 msgstr "分配日期"
 
 msgid "Returned Date"
-msgstr "歸還日期"
+msgstr "归还日期"
 
 msgid "Return Status"
-msgstr "歸還狀態"
+msgstr "归还状态"
 
 msgid "Asset History"
-msgstr "資源歷史"
+msgstr "资源历史"
 
 msgid "Asset Details"
-msgstr "資源詳情"
+msgstr "资源详情"
 
 msgid "Allocated User"
-msgstr "分配的使用者"
+msgstr "分配的用户"
 
 msgid "Returned Status"
-msgstr "歸還狀態"
+msgstr "归还状态"
 
 msgid "Allocated Date"
 msgstr "分配日期"
 
 msgid "Return Description"
-msgstr "歸還描述"
+msgstr "归还描述"
 
 msgid "Assign Condition Images"
-msgstr "分配條件圖片"
+msgstr "分配条件图片"
 
 msgid "Return Condition Images"
-msgstr "歸還狀況圖片"
+msgstr "归还状况图片"
 
 msgid "Asset Request"
 msgstr "资产请求"
 
 msgid "Request User"
-msgstr "申請使用者"
+msgstr "申请用户"
 
 msgid "Asset Category"
-msgstr "資源分類"
+msgstr "资源分类"
 
 msgid "Requested Date"
 msgstr "申请日期"
@@ -280,7 +280,7 @@ msgid "Asset Allocation / Return Date"
 msgstr "资产分配／归还日期"
 
 msgid "Return Date"
-msgstr "歸還日期"
+msgstr "归还日期"
 
 msgid "Allocation deleted successfully"
 msgstr "分配删除成功"
@@ -292,14 +292,14 @@ msgid "Asset Allocation"
 msgstr "资产分配"
 
 msgid "Request Date"
-msgstr "申請日期"
+msgstr "申请日期"
 
 #| msgid "Asset Return"
 msgid "Asset Renewal"
 msgstr "资产续期"
 
 msgid "Batch No"
-msgstr "批次編號"
+msgstr "批次编号"
 
 msgid "Assigned by"
 msgstr "分配人"
@@ -345,13 +345,13 @@ msgid "Asset reassigned successfully."
 msgstr "资产重新分配成功。"
 
 msgid "Requested"
-msgstr "已申請"
+msgstr "已申请"
 
 msgid "Approved"
 msgstr "已核准"
 
 msgid "Rejected"
-msgstr "已拒絕"
+msgstr "已拒绝"
 
 #| msgid "Create new batch number"
 msgid "Select batch number..."
@@ -362,7 +362,7 @@ msgid "Select category..."
 msgstr "选择类别…"
 
 msgid "Purchase Date"
-msgstr "購買日期"
+msgstr "购买日期"
 
 msgid "Created At"
 msgstr "创建于"
@@ -390,7 +390,7 @@ msgid "Search asset..."
 msgstr "搜索资产…"
 
 msgid "Asset Allocated Date"
-msgstr "資源分配日期"
+msgstr "资源分配日期"
 
 #| msgid "Expiry Date"
 msgid "Expiry Date From"
@@ -416,13 +416,13 @@ msgid "All"
 msgstr "全部"
 
 msgid "---Choose Batch No.---"
-msgstr "---選擇批次號---"
+msgstr "---选择批次号---"
 
 msgid "Create new batch number"
-msgstr "建立新批次號"
+msgstr "创建新批次号"
 
 msgid "Requesting a laptop for software development purposes."
-msgstr "申請筆記型電腦用於軟體開發用途"
+msgstr "申请笔记本电脑用于软件开发用途"
 
 #| msgid "Please select a valid date format."
 msgid "Please select an asset item to assign."
@@ -433,26 +433,26 @@ msgid "The selected item does not belong to the chosen asset."
 msgstr "所选项目不属于所选的资产。"
 
 msgid "on returns the laptop. However, it has suffered minor damage."
-msgstr "歸還筆記型電腦。然而，它已遭受輕微損壞。"
+msgstr "归还笔记本电脑。然而，它已遭受轻微损坏。"
 
 msgid "Return date cannot be in the future."
-msgstr "歸還日期不能是未來日期"
+msgstr "归还日期不能是未来日期"
 
 #| msgid "Selected Assets"
 msgid "Replacement Asset"
 msgstr "替换资产"
 
 msgid "Name"
-msgstr "名稱"
+msgstr "名称"
 
 msgid "Asset Categories"
 msgstr "资产类别"
 
 msgid "Asset Batch"
-msgstr "資源批次"
+msgstr "资源批次"
 
 msgid "Asset Batches"
-msgstr "資源批次"
+msgstr "资源批次"
 
 msgid "Not-Available"
 msgstr "不可用"
@@ -464,10 +464,10 @@ msgid "Quantity"
 msgstr "数量"
 
 msgid "Notify Before (days)"
-msgstr "提前通知 (天數)"
+msgstr "提前通知 (天数)"
 
 msgid "An asset with this tracking ID already exists."
-msgstr "此追蹤ID的資源已存在"
+msgstr "此追踪ID的资源已存在"
 
 #| msgid "Image"
 msgid "Damaged"
@@ -487,10 +487,10 @@ msgid "Asset Documents"
 msgstr "资产文件"
 
 msgid "Minor damage"
-msgstr "輕微損壞"
+msgstr "轻微损坏"
 
 msgid "Major damage"
-msgstr "嚴重損壞"
+msgstr "严重损坏"
 
 msgid "Healthy"
 msgstr "良好"
@@ -499,7 +499,7 @@ msgid "Assigned By"
 msgstr "分配人"
 
 msgid "Return Condition"
-msgstr "歸還狀況"
+msgstr "归还状况"
 
 msgid "Asset Allocations"
 msgstr "资产分配"
@@ -551,10 +551,10 @@ msgid "create outline"
 msgstr "创建图标"
 
 msgid "Do you want to delete this asset?"
-msgstr "您確定要刪除此資源嗎？"
+msgstr "您确定要删除此资源吗？"
 
 msgid "Delete"
-msgstr "刪除"
+msgstr "删除"
 
 msgid "trash outline"
 msgstr "删除图标"
@@ -563,28 +563,28 @@ msgid "Close"
 msgstr "关闭"
 
 msgid "Create"
-msgstr "建立"
+msgstr "创建"
 
 msgid "Save"
-msgstr "儲存"
+msgstr "保存"
 
 msgid "Import Assets"
-msgstr "匯入資源"
+msgstr "导入资源"
 
 msgid "close outline"
 msgstr "关闭图标"
 
 msgid "Upload a File"
-msgstr "上傳檔案"
+msgstr "上传文件"
 
 msgid "Drag and drop files here"
-msgstr "將檔案拖放到此處"
+msgstr "将文件拖放到此处"
 
 msgid "Download Template"
-msgstr "下載範本"
+msgstr "下载范本"
 
 msgid "Upload"
-msgstr "上傳"
+msgstr "上传"
 
 msgid "chevron back outline"
 msgstr "返回箭头"
@@ -600,60 +600,60 @@ msgid "by "
 msgstr "由"
 
 msgid "Reports"
-msgstr "報告"
+msgstr "报告"
 
 #| msgid "Hide Options"
 msgid "Toggle Options"
 msgstr "切换选项"
 
 msgid "Edit"
-msgstr "編輯"
+msgstr "编辑"
 
 msgid "Tracking ID"
-msgstr "追蹤ID"
+msgstr "追踪ID"
 
 #| msgid "Available Days"
 msgid "Available / Total"
 msgstr "可用 / 总计"
 
 msgid "Asset Report"
-msgstr "資源報告"
+msgstr "资源报告"
 
 msgid "Page"
-msgstr "頁面"
+msgstr "页面"
 
 msgid "of"
 msgstr "的"
 
 msgid "First"
-msgstr "第一頁"
+msgstr "第一页"
 
 msgid "Previous"
-msgstr "上一頁"
+msgstr "上一页"
 
 msgid "Next"
-msgstr "下一頁"
+msgstr "下一页"
 
 msgid "Last"
-msgstr "最後一頁"
+msgstr "最后一页"
 
 msgid "Title"
-msgstr "標題"
+msgstr "标题"
 
 msgid "File"
-msgstr "檔案"
+msgstr "文件"
 
 msgid "Asset Return Form"
-msgstr "資源歸還表單"
+msgstr "资源归还表单"
 
 msgid "Add Report"
-msgstr "新增報告"
+msgstr "新增报告"
 
 msgid "Add Fine"
-msgstr "新增罰款"
+msgstr "新增罚款"
 
 msgid "Report added successfully."
-msgstr "報告新增成功。"
+msgstr "报告新增成功。"
 
 msgid "Assign asset before adding a report"
 msgstr "添加报表前请先分配资产"
@@ -841,34 +841,34 @@ msgid "No Records found."
 msgstr "未找到记录"
 
 msgid "There is no asset allocation at this moment."
-msgstr "目前沒有資源分配。"
+msgstr "目前没有资源分配。"
 
 msgid "Approve request"
 msgstr "批准申请"
 
 msgid "Do you want to reject this request?"
-msgstr "您是否要拒絕此申請？"
+msgstr "您是否要拒绝此申请？"
 
 msgid "No records available at the moment."
-msgstr "目前沒有可用的記錄。"
+msgstr "目前没有可用的记录。"
 
 msgid "Allocated By"
 msgstr "分配者"
 
 msgid "Advanced"
-msgstr "進階"
+msgstr "高级"
 
 msgid "Return Date Greater Or Equal"
-msgstr "歸還日期大於或等於"
+msgstr "归还日期大于或等于"
 
 msgid "Assign Date Greater Or Equal"
-msgstr "分配日期大於或等於"
+msgstr "分配日期大于或等于"
 
 msgid "Return Date lesser Or Equal"
-msgstr "歸還日期小於或等於"
+msgstr "归还日期小于或等于"
 
 msgid "Assign Date Lesser Or Equal"
-msgstr "分配日期小於或等於"
+msgstr "分配日期小于或等于"
 
 msgid "Apply"
 msgstr "申请"
@@ -877,7 +877,7 @@ msgid "ellipsis vertical sharp"
 msgstr "更多操作图标"
 
 msgid "Returned date"
-msgstr "歸還日期"
+msgstr "归还日期"
 
 msgid "No asset history available."
 msgstr "没有可用的资产历史记录。"
@@ -891,35 +891,35 @@ msgid "Search Input"
 msgstr "搜索输入框"
 
 msgid "Search"
-msgstr "搜尋"
+msgstr "搜索"
 
 msgid "Filter"
-msgstr "篩選"
+msgstr "筛选"
 
 msgid "Group By"
-msgstr "分組依據"
+msgstr "分组依据"
 
 #| msgid "Field"
 msgid "Fields"
 msgstr "字段"
 
 msgid "Selected Assets"
-msgstr "已選資源"
+msgstr "已选资源"
 
 msgid "No Asset Batches have been created."
-msgstr "尚未建立任何資源批次。"
+msgstr "尚未创建任何资源批次。"
 
 msgid "Do you want to delete this batch number ?"
-msgstr "您確定要刪除此批次編號嗎？"
+msgstr "您确定要删除此批次编号吗？"
 
 msgid "Do you want to delete this category?"
-msgstr "您確定要刪除此類別嗎？"
+msgstr "您确定要删除此类别吗？"
 
 msgid "Search in :Asset"
-msgstr "搜尋於：資源"
+msgstr "搜索于：资源"
 
 msgid "Search in :Asset Category"
-msgstr "搜尋於：資源類別"
+msgstr "搜索于：资源类别"
 
 msgid "Purchase Cost"
 msgstr "采购成本"
@@ -1121,7 +1121,7 @@ msgid "You cannot delete this Batch number."
 msgstr "您无法删除此批次号。"
 
 msgid "asset"
-msgstr "資源"
+msgstr "资源"
 
 msgid "Oops!! No Asset found..."
 msgstr "哎呀！未找到资产..."
@@ -1223,7 +1223,7 @@ msgid "Bulk Reject"
 msgstr "批量拒绝"
 
 msgid "Activities"
-msgstr "活動"
+msgstr "活动"
 
 msgid "New Attendance Request"
 msgstr "新考勤请求"
@@ -3116,7 +3116,7 @@ msgid "Validate Attendances Request"
 msgstr "验证考勤申请"
 
 msgid "View"
-msgstr "檢視"
+msgstr "查看"
 
 msgid "Add / View Comment"
 msgstr "添加/查看评论"
@@ -3165,7 +3165,7 @@ msgid "Nil"
 msgstr "无"
 
 msgid "Comments"
-msgstr "評論"
+msgstr "评论"
 
 msgid "Comment here"
 msgstr "在此评论"
@@ -3207,7 +3207,7 @@ msgid "Edit Request"
 msgstr "编辑申请"
 
 msgid "Field"
-msgstr "欄位"
+msgstr "字段"
 
 msgid "Current Value"
 msgstr "当前值"
@@ -4003,7 +4003,7 @@ msgid "Next Shift"
 msgstr "下一轮班"
 
 msgid "Archive"
-msgstr "歸檔"
+msgstr "归档"
 
 msgid "Un-Archive"
 msgstr "取消归档"
@@ -5714,7 +5714,7 @@ msgid "Are you sure you want to delete this department?"
 msgstr "您确定要删除此部门吗？"
 
 msgid "Pagination"
-msgstr "分頁"
+msgstr "分页"
 
 msgid "Default pagination for all views."
 msgstr "所有视图的默认分页设置。"
@@ -5897,7 +5897,7 @@ msgid "View in browser"
 msgstr "在浏览器中查看"
 
 msgid "View Leave Request"
-msgstr "查看請假請求"
+msgstr "查看请假请求"
 
 msgid "Unsubscribe here"
 msgstr "在此取消订阅"
@@ -7554,7 +7554,7 @@ msgid "color-settings"
 msgstr "设置"
 
 msgid "report"
-msgstr "報告"
+msgstr "报告"
 
 msgid "recruitment-report"
 msgstr "招聘视图"
@@ -7572,7 +7572,7 @@ msgid "payroll-report"
 msgstr "薪资"
 
 msgid "asset-report"
-msgstr "資源報告"
+msgstr "资源报告"
 
 msgid "pms-report"
 msgstr "导入"
@@ -9552,7 +9552,7 @@ msgid "Are you sure you want to delete this Document Request?"
 msgstr "您确定要删除此文件请求吗？"
 
 msgid "No Documents available at the moment"
-msgstr "目前沒有可用的記錄。"
+msgstr "目前没有可用的记录。"
 
 msgid "file"
 msgstr "文件"
@@ -9561,7 +9561,7 @@ msgid "Max size of the file"
 msgstr "文件最大大小"
 
 msgid "No records available at the moment"
-msgstr "目前沒有可用的記錄。"
+msgstr "目前没有可用的记录。"
 
 #| msgid "Timeline"
 msgid "time outline"
@@ -12741,7 +12741,7 @@ msgid "View attachment"
 msgstr "查看附件"
 
 msgid "Activities:"
-msgstr "活動"
+msgstr "活动"
 
 msgid "View Clashes"
 msgstr "查看资产"
@@ -12813,10 +12813,10 @@ msgid "Views"
 msgstr "视图"
 
 msgid "Comments disabled"
-msgstr "評論"
+msgstr "评论"
 
 msgid "Comments of - "
-msgstr "評論"
+msgstr "评论"
 
 msgid "Are you sure you want to delete this comment?"
 msgstr "您确定要删除此公司吗？"
@@ -12827,10 +12827,10 @@ msgid ""
 msgstr "未设置到期日期时，公告自动过期的天数。"
 
 msgid "Report"
-msgstr "報告"
+msgstr "报告"
 
 msgid "Asset Return"
-msgstr "資源歸還表單"
+msgstr "资源归还表单"
 
 msgid "Attendance Analytics"
 msgstr "考勤分析"
@@ -13001,7 +13001,7 @@ msgid "Create your first group"
 msgstr "创建您的第一个群组"
 
 msgid "Previous Page"
-msgstr "上一頁"
+msgstr "上一页"
 
 msgid "Next Page"
 msgstr "下一页"
@@ -13196,7 +13196,7 @@ msgstr "此职位未提供描述。"
 #| msgid "Name"
 msgctxt "person"
 msgid "Name"
-msgstr "名稱"
+msgstr "名称"
 
 msgid "Enter your name"
 msgstr "输入你的名字"
@@ -14134,7 +14134,7 @@ msgstr "第一页"
 
 #| msgid "Previous Page"
 msgid "Previous page"
-msgstr "上一頁"
+msgstr "上一页"
 
 #| msgid "Next Page"
 msgid "Next page"
@@ -14236,7 +14236,7 @@ msgid "Candidates Started Onboarding"
 msgstr "候选人已开始入职流程"
 
 msgid "Asset Requests To Approve"
-msgstr "待核准的資源申請"
+msgstr "待核准的资源申请"
 
 msgid "Overall Leave"
 msgstr "总体请假情况"
@@ -14257,7 +14257,7 @@ msgid "Feedback To Answers"
 msgstr "反馈回复"
 
 msgid "No charts are available at the moment..."
-msgstr "目前沒有可用的記錄。"
+msgstr "目前没有可用的记录。"
 
 #| msgid "Toggle auto-refresh"
 msgid "Toggle theme"
@@ -15022,7 +15022,7 @@ msgid "No recent reports yet."
 msgstr "暂无最近报表。"
 
 msgid "Asset Reports"
-msgstr "資源報告"
+msgstr "资源报告"
 
 msgid "Expand"
 msgstr "展开"
@@ -15903,7 +15903,7 @@ msgid "Do you want to delete this template"
 msgstr "您要删除此模板吗？"
 
 msgid "No template groups have been established yet."
-msgstr "尚未建立任何模板组。"
+msgstr "尚未创建任何模板组。"
 
 msgid "Create Survey Template"
 msgstr "创建调查模板"
@@ -15921,7 +15921,7 @@ msgid "Redeem"
 msgstr "立即兑换"
 
 msgid "Points History"
-msgstr "資源歷史"
+msgstr "资源历史"
 
 msgid "Bonus account Created"
 msgstr "奖金账户已创建"
@@ -16187,7 +16187,7 @@ msgid "Tour steps"
 msgstr "导览步骤"
 
 msgid "In progress"
-msgstr "進行中"
+msgstr "进行中"
 
 msgid "Last step index"
 msgstr "最后一步序号"
@@ -16592,7 +16592,7 @@ msgid "My Leave requests"
 msgstr "我的休假申请"
 
 msgid "Leave Request Update"
-msgstr "請假請求更新"
+msgstr "请假请求更新"
 
 msgid "Leave request updated successfully"
 msgstr "请假请求更新成功。"
@@ -16806,7 +16806,7 @@ msgid "This leave type is restricted to employees with grade: {grade}."
 msgstr "此休假类型仅限职级为 {grade} 的员工申请。"
 
 msgid "My Leave Requests"
-msgstr "我的請假請求"
+msgstr "我的请假请求"
 
 msgid "Leave Balances"
 msgstr "假期余额"
@@ -16951,7 +16951,7 @@ msgid "warning"
 msgstr "警告"
 
 msgid "You have an interview in this requested date range."
-msgstr "您在此請求日期範圍內有面試安排。"
+msgstr "您在此请求日期范围内有面试安排。"
 
 msgid "Reject Compensatory Leave Request"
 msgstr "拒绝补休申请"
@@ -17336,35 +17336,35 @@ msgid ""
 msgstr "定义日期范围，在此范围内对所选部门或职位的休假申请进行限制。"
 
 msgid "New leave type Created.."
-msgstr "新請假類型已創建。"
+msgstr "新请假类型已创建。"
 
 msgid "Leave type not found"
-msgstr "未找到請假類型"
+msgstr "未找到请假类型"
 
 msgid "Leave type is updated successfully.."
-msgstr "請假類型已成功更新。"
+msgstr "请假类型已成功更新。"
 
 msgid "Leave type deleted successfully.."
-msgstr "請假類型已成功刪除。"
+msgstr "请假类型已成功删除。"
 
 msgid "Leave type not found."
-msgstr "未找到請假類型。"
+msgstr "未找到请假类型。"
 
 #, python-brace-format
 msgid "This leave types are already in use for {}"
-msgstr "這些請假類型已用於 {}"
+msgstr "这些请假类型已用于 {}"
 
 msgid "Leave request created successfully.."
-msgstr "請假請求已成功創建。"
+msgstr "请假请求已成功创建。"
 
 msgid "Leave request is updated successfully.."
-msgstr "請假請求已成功更新。"
+msgstr "请假请求已成功更新。"
 
 msgid "Leave request deleted successfully.."
-msgstr "請假請求已成功刪除。"
+msgstr "请假请求已成功删除。"
 
 msgid "Leave request not found."
-msgstr "未找到請假請求。"
+msgstr "未找到请假请求。"
 
 #| msgid "No %(verbose_name)s found matching the query"
 msgid "No leave request found matching the query."
@@ -17381,14 +17381,14 @@ msgid "You are not an approver for this leave request."
 msgstr "您不是此休假申请的审批人。"
 
 msgid "Leave request approved successfully.."
-msgstr "請假請求已成功批准。"
+msgstr "请假请求已成功批准。"
 
 msgid "Leave request already approved"
-msgstr "請假請求已獲批准"
+msgstr "请假请求已获批准"
 
 #, python-brace-format
 msgid "{} {} request already approved"
-msgstr "{} {} 請求已獲批准"
+msgstr "{} {} 请求已获批准"
 
 #, python-brace-format
 msgid "{} {} request date exceeded"
@@ -17738,7 +17738,7 @@ msgid "Task Added"
 msgstr "任务已添加"
 
 msgid "Contact"
-msgstr "聯絡"
+msgstr "联系"
 
 msgid "Notice Period start Date"
 msgstr "通知期开始日期"
@@ -20173,7 +20173,7 @@ msgid "Payslip auto generate not found."
 msgstr "未找到工资单自动生成。"
 
 msgid "Performance"
-msgstr "效能"
+msgstr "性能"
 
 msgid "Progress Percentage"
 msgstr "进度百分比"
@@ -20628,10 +20628,10 @@ msgid "Bonus For"
 msgstr "奖励对象"
 
 msgid "Field 1"
-msgstr "欄位"
+msgstr "字段"
 
 msgid "Field 2"
-msgstr "欄位"
+msgstr "字段"
 
 msgid "Points"
 msgstr "积分："
@@ -22261,7 +22261,7 @@ msgid "Delete image"
 msgstr "删除图片"
 
 msgid "Profile"
-msgstr "個人資料"
+msgstr "个人资料"
 
 msgid "e.g. Jane Doe"
 msgstr "例如：李小明"
@@ -22376,7 +22376,7 @@ msgid "Interviewers"
 msgstr "面试官"
 
 msgid " Edit"
-msgstr "編輯"
+msgstr "编辑"
 
 msgid " Are you sure you want to delete this interview?"
 msgstr "您确定要删除此次面试吗？"
@@ -22446,7 +22446,7 @@ msgid "This candidate does not have a resume on file."
 msgstr "该候选人尚未上传简历。"
 
 msgid "No survey templates have been established yet."
-msgstr "尚未建立任何调查问卷模板。"
+msgstr "尚未创建任何调查问卷模板。"
 
 msgid "chevron down outline"
 msgstr "下拉箭头"
@@ -22871,10 +22871,10 @@ msgid "Survey Filter"
 msgstr "调查筛选器"
 
 msgid "No questions have been established yet."
-msgstr "尚未建立任何问题。"
+msgstr "尚未创建任何问题。"
 
 msgid "No template have been established yet."
-msgstr "尚未建立任何模板。"
+msgstr "尚未创建任何模板。"
 
 msgid " Create template group"
 msgstr "创建模板组"
@@ -23635,7 +23635,7 @@ msgstr "操作类型"
 
 #| msgid "Delete"
 msgid "Deletes"
-msgstr "刪除"
+msgstr "删除"
 
 #| msgid "Automation deleted"
 msgid "Action=delete"
@@ -25338,7 +25338,7 @@ msgstr "报表保存视图"
 
 #| msgid "Project Name"
 msgid "Preset Name"
-msgstr "预设名称"
+msgstr "默认名称"
 
 msgid "period_preset, dates, and report-specific filter keys."
 msgstr "period_preset、日期及报表专属筛选键。"
@@ -25471,7 +25471,7 @@ msgstr "已达钉选上限（%(n)s）。请先取消钉选一份报表。"
 
 #| msgid "Description is required."
 msgid "Preset name is required."
-msgstr "预设名称为必填项。"
+msgstr "默认名称为必填项。"
 
 #| msgid "Invalid File"
 msgid "Invalid filters."
