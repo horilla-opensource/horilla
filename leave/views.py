@@ -2210,6 +2210,12 @@ def leave_request_import(request):
         "End Date Error": [],
         "End Date Breakdown Error": [],
         "Description Error": [],
+        "Requested Days Error": [],
+        "Leave Balance Error": [],
+        "Overlapping Leave Error": [],
+        "Past Date Error": [],
+        "Restricted Days Error": [],
+        "Attachment Error": [],
         "Other Errors": [],
     }
     breakdowns = {
@@ -2230,6 +2236,31 @@ def leave_request_import(request):
         "end_date_breakdown": "End Date Breakdown Error",
         "description": "Description Error",
     }
+
+    # Rule failures raised by the model's clean(), which come back as plain
+    # messages rather than per-field errors -- bucketed by what they are about
+    # so the error sheet says which rule a row broke.
+    message_columns = (
+        ("sufficient leave balance", "Leave Balance Error"),
+        ("is zero", "Requested Days Error"),
+        ("already has a leave request", "Overlapping Leave Error"),
+        ("past dates", "Past Date Error"),
+        ("restricted", "Restricted Days Error"),
+        ("attachment", "Attachment Error"),
+        ("end date should not be less", "End Date Error"),
+        ("breakdown", "End Date Breakdown Error"),
+    )
+
+    def error_column(field, message):
+        if field in error_columns:
+            return error_columns[field]
+        if field == "attachment":
+            return "Attachment Error"
+        lowered = str(message).lower()
+        for needle, column in message_columns:
+            if needle in lowered:
+                return column
+        return "Other Errors"
 
     def is_blank(value):
         if value is None:
@@ -2389,8 +2420,8 @@ def leave_request_import(request):
                     errors["Other Errors"] = str(exception)
             else:
                 for field, field_errors in form.errors.items():
-                    column = error_columns.get(field, "Other Errors")
                     message = " ".join(field_errors)
+                    column = error_column(field, message)
                     errors[column] = (
                         f"{errors[column]} {message}" if column in errors else message
                     )
