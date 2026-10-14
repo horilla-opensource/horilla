@@ -86,7 +86,7 @@ class MailLogTabList(HorillaListView):
         return queryset
 
     columns = [
-        (_("Subject"), "subject"),
+        (_("Subject"), "subject_display"),
         (_("Date"), "created_at"),
         (_("Status"), "status_display"),
     ]
