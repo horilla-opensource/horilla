@@ -111,6 +111,8 @@ class AllowanceTabList(AllowanceListView):
     list view for allowance tab
     """
 
+    show_saved_filters = False
+
     template_name = "cbv/allowance_deduction/allowance_deduction.html"
 
     def __init__(self, **kwargs: Any) -> None:
@@ -230,6 +232,8 @@ class DeductionTab(DeductionListView):
     """
     list view for deduction tab
     """
+
+    show_saved_filters = False
 
     @method_decorator(login_required, name="dispatch")
     def dispatch(self, request, *args, **kwargs):

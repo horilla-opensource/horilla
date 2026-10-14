@@ -514,6 +514,9 @@ class PayrollTab(PayslipList):
     class for rendering payroll tab in employee profile
     """
 
+    show_saved_filters = False
+    row_status_indications = []
+
     def get_queryset(self):
         queryset = super().get_queryset()
         pk = self.kwargs.get("pk")
