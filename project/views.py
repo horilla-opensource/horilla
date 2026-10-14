@@ -29,6 +29,7 @@ from base.methods import (
 from base.views import generate_error_report
 from horilla.decorators import hx_request_required, login_required, permission_required
 from horilla.http import HorillaRedirect
+from horilla.http.response import with_bulk_result
 from horilla.methods import handle_no_permission
 from notifications.signals import notify
 from project.methods import (
@@ -583,24 +584,19 @@ def project_bulk_archive(request):
         )
         return HttpResponse("<script>$('#applyFilter').click();</script>")
 
+    done = failed = 0
     for project_id in ids:
         project = Project.objects.filter(id=project_id).first()
         if project and is_project_manager_or_super_user(request, project):
             project.is_active = is_active
             project.save()
-            messages.success(
-                request,
-                _("%(project)s is %(message)s successfully.")
-                % {"project": project, "message": message},
-            )
+            done += 1
         else:
-            messages.warning(
-                request,
-                _("Permission denied or project not found: ID %(project_id)s")
-                % {"project_id": project_id},
-            )
+            failed += 1
 
-    return HttpResponse("<script>$('#applyFilter').click();</script>")
+    return with_bulk_result(
+        HttpResponse("<script>$('#applyFilter').click();</script>"), done, failed
+    )
 
 
 @login_required
@@ -1212,19 +1208,16 @@ def task_all_bulk_archive(request):
     is_active = False
     if request.GET.get("is_active") == "True":
         is_active = True
+    done = failed = 0
     for task_id in ids:
         task = Task.objects.filter(id=task_id).first()
         if not task:
-            continue  # Skip if task not found
+            failed += 1
+            continue
         task.is_active = is_active
         task.save()
-        message = _("archived")
-        if is_active:
-            message = _("un-archived")
-        messages.success(
-            request, _("%(task)s is %(message)s") % {"task": task, "message": message}
-        )
-    return JsonResponse({"message": "Success"})
+        done += 1
+    return with_bulk_result(JsonResponse({"message": "Success"}), done, failed)
 
 
 @login_required

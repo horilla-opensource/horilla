@@ -48,7 +48,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
-from horilla.http.response import HorillaRedirect
+from horilla.http.response import HorillaRedirect, with_bulk_result
 from horilla.methods import handle_no_permission
 from horilla_auth.models import HorillaUser
 from horilla_automations.methods.methods import generate_choices
@@ -2982,17 +2982,16 @@ def objective_bulk_archive(request):
     if request.GET.get("is_active") == "False":
         is_active = True
         message = _("archived")
+    done = failed = 0
     for objective_id in ids:
-        objective_obj = EmployeeObjective.objects.get(id=objective_id)
+        objective_obj = EmployeeObjective.objects.filter(id=objective_id).first()
+        if objective_obj is None:
+            failed += 1
+            continue
         objective_obj.archive = is_active
         objective_obj.save()
-        messages.success(
-            request,
-            _("{objective} is {message}").format(
-                objective=objective_obj, message=message
-            ),
-        )
-    return JsonResponse({"message": "Success"})
+        done += 1
+    return with_bulk_result(JsonResponse({"message": "Success"}), done, failed)
 
 
 @login_required
@@ -3043,26 +3042,25 @@ def feedback_bulk_archive(request):
     if request.GET.get("is_active") == "False":
         is_active = True
         message = _("archived")
+    done = failed = 0
     for feedback_id in ids:
-        feedback_id = Feedback.objects.get(id=feedback_id)
-        feedback_id.archive = is_active
-        feedback_id.save()
-        messages.success(
-            request,
-            _("{feedback} is {message}").format(feedback=feedback_id, message=message),
-        )
+        feedback = Feedback.objects.filter(id=feedback_id).first()
+        if feedback is None:
+            failed += 1
+            continue
+        feedback.archive = is_active
+        feedback.save()
+        done += 1
 
     for feedback_id in announy_ids:
-        feedback_id = AnonymousFeedback.objects.get(id=feedback_id)
-        feedback_id.archive = is_active
-        feedback_id.save()
-        messages.success(
-            request,
-            _("{feedback} is {message}").format(
-                feedback=feedback_id.feedback_subject, message=message
-            ),
-        )
-    return JsonResponse({"message": "Success"})
+        feedback = AnonymousFeedback.objects.filter(id=feedback_id).first()
+        if feedback is None:
+            failed += 1
+            continue
+        feedback.archive = is_active
+        feedback.save()
+        done += 1
+    return with_bulk_result(JsonResponse({"message": "Success"}), done, failed)
 
 
 @login_required

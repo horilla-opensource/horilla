@@ -28,6 +28,7 @@ from employee.models import Employee
 from horilla.decorators import hx_request_required, login_required, permission_required
 from horilla.group_by import group_by_queryset
 from horilla.http import HorillaRedirect
+from horilla.http.response import with_bulk_result
 from notifications.signals import notify
 from recruitment.decorators import (
     candidate_login_required,
@@ -358,20 +359,16 @@ def candidate_bulk_archive(request):
     if request.GET.get("is_active") == "False":
         is_active = False
         message = _("archived")
+    done = failed = 0
     for cand_id in ids:
         candidate_obj = Candidate.objects.filter(id=cand_id).first()
         if not candidate_obj:
-            messages.error(request, _("Candidate not found."))
+            failed += 1
             continue
         # Archive actions only need status flip; bypass model-level full save validation.
         Candidate.objects.filter(id=cand_id).update(is_active=is_active)
-        messages.success(
-            request,
-            _("{candidate} is {message}").format(
-                candidate=candidate_obj, message=message
-            ),
-        )
-    return JsonResponse({"message": "Success"})
+        done += 1
+    return with_bulk_result(JsonResponse({"message": "Success"}), done, failed)
 
 
 @login_required

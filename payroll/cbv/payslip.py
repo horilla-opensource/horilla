@@ -71,9 +71,8 @@ class PayslipList(HorillaListView):
     quick_export = False
     bulk_update_fields = [
         "status",
-        "start_date",
-        "end_date",
     ]
+    bulk_update_required_fields = ["status"]
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

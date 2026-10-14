@@ -71,7 +71,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
-from horilla.http.response import HorillaRedirect
+from horilla.http.response import HorillaRedirect, with_bulk_result
 from horilla.methods import handle_no_permission
 from notifications.signals import notify
 
@@ -1648,22 +1648,17 @@ def tickets_bulk_archive(request):
     is_active = False
     if request.GET.get("is_active") == "True":
         is_active = True
+    done = failed = 0
     for ticket_id in ids:
-        ticket = Ticket.objects.get(id=ticket_id)
+        ticket = Ticket.objects.filter(id=ticket_id).first()
+        if ticket is None:
+            failed += 1
+            continue
         ticket.is_active = is_active
         ticket.save()
-    messages.success(request, _("The Ticket updated successfully."))
-    previous_url = request.META.get("HTTP_REFERER", "/")
-
-    # Prevent XSS / open redirect
-    if not url_has_allowed_host_and_scheme(
-        previous_url,
-        allowed_hosts={request.get_host()},
-        require_https=request.is_secure(),
-    ):
-        previous_url = "/"
-
-    return redirect(previous_url)
+        done += 1
+    # The caller reloads the page itself; the counts feed the result dialog.
+    return with_bulk_result(JsonResponse({"message": "Success"}), done, failed)
 
 
 @login_required
