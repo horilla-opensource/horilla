@@ -279,7 +279,7 @@ class ProjectStage(HorillaModel):
         verbose_name=_("Project"),
     )
     sequence = models.IntegerField(null=True, blank=True, editable=False)
-    is_end_stage = models.BooleanField(default=False, verbose_name=_("Is end stage"))
+    is_end_stage = models.BooleanField(default=False, verbose_name=_("End stage"))
     objects = HorillaCompanyManager("project__company_id")
 
     def __str__(self) -> str:
