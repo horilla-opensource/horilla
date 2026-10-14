@@ -2956,6 +2956,11 @@ ul.errorlist ul.errorlist {
 
 .oh-alert--animated {
   animation: slide-right-in-pop-animation 3.5s 0s ease-in-out forwards;
+  pointer-events: auto;
+}
+
+.oh-alert--animated:hover {
+  animation-play-state: paused;
 }
 
 @keyframes slide-right-in-pop-animation {
