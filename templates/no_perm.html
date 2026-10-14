@@ -37,12 +37,13 @@
                     <div class="oh-wrapper">
                         <div class="oh-404">
                             <img
-                                src="{% static 'images/ui/not-found.svg' %}"
-                                class="oh-404__image"
-                                alt="{% trans 'Page not found. 404.' %}"
+                                src="{% static 'horilla_theme/assets/img/no-records.svg' %}"
+                                width="300"
+                                class="mx-auto mb-4"
+                                alt="{% trans 'Access denied' %}"
                             >
-                            <h1 class="oh-404__title">{% trans "Access Denied." %}</h1>
-                            <p class="oh-404__subtitle">{% trans "The page you were looking for could not be found." %}</p>
+                            <h1 class="oh-404__title">{% trans "Access Denied" %}</h1>
+                            <p class="oh-404__subtitle">{% trans "You don't have permission to view this page." %}</p>
                         </div>
                     </div>
                 </main>
