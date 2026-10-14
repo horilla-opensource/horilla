@@ -378,10 +378,16 @@ class StageCreationForm(BaseModelForm):
             if ids:
                 self.errors.pop("stage_managers", None)
         if self.cleaned_data.get("recruitment_id") and self.cleaned_data.get("stage"):
-            if Stage.objects.filter(
+            # Another stage of the same recruitment with this name -- not the
+            # stage being edited, or editing a stage (e.g. its managers or type)
+            # without renaming it reported itself as a duplicate.
+            duplicates = Stage.objects.filter(
                 recruitment_id=self.cleaned_data.get("recruitment_id"),
                 stage=self.cleaned_data.get("stage"),
-            ).exists():
+            )
+            if self.instance.pk:
+                duplicates = duplicates.exclude(pk=self.instance.pk)
+            if duplicates.exists():
                 raise forms.ValidationError(
                     {"stage": _("This stage already exists for the recruitment.")}
                 )
@@ -814,7 +820,7 @@ class QuestionForm(ModelForm):
             "sequence": _("Sequence"),
             "type": _("Type"),
             "options": _("Options"),
-            "is_mandatory": _("Is Mandatory"),
+            "is_mandatory": _("Mandatory"),
         }
 
     def as_p(self, *args, **kwargs):
