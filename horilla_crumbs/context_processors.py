@@ -660,6 +660,25 @@ def build_breadcrumbs(request):
             elif current_section:
                 crumb["name"] = current_section[0]
 
+                if not found:
+                    app = next(
+                        (
+                            m.get("app")
+                            for m in menus
+                            if str(m.get("menu")) == current_section[0]
+                        ),
+                        None,
+                    )
+                    if app:
+                        app_root = f"/{app}/"
+                        try:
+                            resolver_match = resolve(app_root)
+                            crumb["url"] = base_url.rstrip("/") + app_root
+                            crumb["found"] = True
+                            found = True
+                        except Resolver404:
+                            pass
+
             if found:
                 redirect_to = getattr(resolver_match.func, "_redirect_to", None)
                 if redirect_to:
