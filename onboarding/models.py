@@ -38,9 +38,7 @@ class OnboardingStage(HorillaModel):
     )
     employee_id = models.ManyToManyField(Employee, verbose_name=_("Stage Managers"))
     sequence = models.IntegerField(null=True)
-    is_final_stage = models.BooleanField(
-        default=False, verbose_name=_("Is Final Stage")
-    )
+    is_final_stage = models.BooleanField(default=False, verbose_name=_("Final Stage"))
     objects = HorillaCompanyManager("recruitment_id__company_id")
 
     def __str__(self):
@@ -94,7 +92,7 @@ class OnboardingTask(HorillaModel):
     )
     is_required = models.BooleanField(
         default=False,
-        verbose_name=_("Is Required"),
+        verbose_name=_("Required"),
         help_text=_(
             "Required tasks must be completed by the candidate to move to the next stage."
         ),

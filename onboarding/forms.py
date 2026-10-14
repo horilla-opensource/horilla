@@ -182,7 +182,7 @@ class OnboardingViewTaskForm(ModelForm):
         queryset=Employee.objects.all(),
         # widget=forms.SelectMultiple(attrs={"class": "select2-hidden-accessible "})
     )
-    is_required = forms.BooleanField(required=False, label=_("Is Required"))
+    is_required = forms.BooleanField(required=False, label=_("Required"))
 
     class Meta:
         """
@@ -306,7 +306,7 @@ class OnboardingViewStageForm(ModelForm):
         fields = ["stage_title", "employee_id", "is_final_stage", "recruitment_id"]
         labels = {
             "stage_title": _("Stage Title"),
-            "is_final_stage": _("Is Final Stage"),
+            "is_final_stage": _("Final Stage"),
         }
 
     def __init__(self, *args, **kwargs):
