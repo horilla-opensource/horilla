@@ -57,6 +57,7 @@ function openShiftRequestTabAfterInject(container) {
 function refreshShiftRequestList() {
     var doneMessages = function () {
         if (typeof jQuery !== "undefined" && $("#reloadMessagesButton").length) {
+
             $("#reloadMessagesButton").click();
         }
     };
@@ -151,6 +152,27 @@ function shiftRequestRowApprove(url, confirmText) {
     });
 }
 
+// The list keeps its selection in a store named by selected_instances_key_id:
+// "shiftselectedInstances" (Shift Requests) or "allocatedselectedInstances"
+// (Shift Allocations), not the "selectedInstances" these bulk actions used to
+// read - which is why Approve / Reject / Delete saw no rows (or crashed on
+// JSON.parse(undefined)) there. Read whichever store the list on screen uses.
+function shiftRequestSelectedIds() {
+    var key =
+        $(".hlv-container[data-selected-instances-key]")
+            .first()
+            .attr("data-selected-instances-key") || "selectedInstances";
+    var $store = $("#" + key);
+    if (!$store.length) {
+        $store = $("#selectedInstances");
+    }
+    try {
+        return JSON.parse($store.attr("data-ids") || "[]");
+    } catch (e) {
+        return [];
+    }
+}
+
 function shiftRequestApprove() {
   ids = [];
     // function addIdsTab(tabId){
@@ -161,8 +183,7 @@ function shiftRequestApprove() {
     // }
     // addIdsTab("shiftselectedInstances");
     // addIdsTab("allocatedselectedInstances");
-    ids.push($("#selectedInstances").attr("data-ids"));
-    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+    ids = shiftRequestSelectedIds();
     if (ids.length === 0) {
         Swal.fire({
             text: i18nMessages.noRowsSelected,
@@ -210,8 +231,7 @@ function shiftRequestReject() {
     // }
     // addIdsTab("shiftselectedInstances");
     // addIdsTab("allocatedselectedInstances");
-    ids.push($("#selectedInstances").attr("data-ids"));
-    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+    ids = shiftRequestSelectedIds();
     if (ids.length === 0) {
         Swal.fire({
             text: i18nMessages.noRowsSelected,
@@ -255,8 +275,7 @@ function shiftRequestDelete() {
     // }
     // addIdsTab("shiftselectedInstances");
     // addIdsTab("allocatedselectedInstances");
-    ids.push($("#selectedInstances").attr("data-ids"));
-    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+    ids = shiftRequestSelectedIds();
     if (ids.length === 0) {
         Swal.fire({
             text: i18nMessages.noRowsSelected,

@@ -195,7 +195,7 @@ from horilla.decorators import (
     superuser_required,
 )
 from horilla.group_by import group_by_queryset
-from horilla.http.response import HorillaRedirect
+from horilla.http.response import HorillaRedirect, with_bulk_result
 from horilla.menu import get_settings_menu
 from horilla.methods import get_horilla_model_class, remove_dynamic_url
 from horilla_audit.forms import HistoryTrackingFieldsForm
@@ -3142,37 +3142,27 @@ def rotating_work_type_assign_bulk_archive(request):
     if request.GET.get("is_active") == "False":
         is_active = False
         message = _("archived")
-    count = 0
+    done = failed = 0
 
     for id in ids:
-        rwork_type_assign = RotatingWorkTypeAssign.objects.get(id=id)
-        employees_rwork_type_assign = RotatingWorkTypeAssign.objects.filter(
-            is_active=True, employee_id=rwork_type_assign.employee_id
-        )
+        rwork_type_assign = RotatingWorkTypeAssign.objects.filter(id=id).first()
+        if rwork_type_assign is None:
+            failed += 1
+            continue
+        # An employee can only have one active rotating work type assign.
+        if (
+            is_active
+            and RotatingWorkTypeAssign.objects.filter(
+                is_active=True, employee_id=rwork_type_assign.employee_id
+            ).exists()
+        ):
+            failed += 1
+            continue
+        rwork_type_assign.is_active = is_active
+        rwork_type_assign.save()
+        done += 1
 
-        if is_active and employees_rwork_type_assign.exists():
-            messages.error(
-                request,
-                _("Rotating work type for {employee_id} already exists").format(
-                    employee_id=rwork_type_assign.employee_id,
-                ),
-            )
-        else:
-            rwork_type_assign.is_active = is_active
-            rwork_type_assign.save()
-            count += 1
-
-    if count > 0:
-        messages.success(
-            request,
-            _("Rotating work type for {count} employees is {message}").format(
-                count=count, message=message
-            ),
-        )
-
-        return JsonResponse({"message": "Success"})
-
-    return rotating_work_type_assign_redirect(request)
+    return with_bulk_result(JsonResponse({"message": "Success"}), done, failed)
 
 
 @login_required
@@ -4007,41 +3997,26 @@ def rotating_shift_assign_bulk_archive(request):
             request, message=_("No rotatingshift found matching the query.")
         )
     ids = json.loads(ids)
-    is_active = True
-    message = _("un-archived")
-    if request.GET.get("is_active") == "False":
-        is_active = False
-        message = _("archived")
+    is_active = request.GET.get("is_active") != "False"
+    done = failed = 0
     for id in ids:
-        # check permission right here...
-        rshift_assign = RotatingShiftAssign.objects.get(id=id)
-        employees_rshift_assign = RotatingShiftAssign.objects.filter(
-            is_active=True, employee_id=rshift_assign.employee_id
-        )
-        flag = True
-        if is_active:
-            if len(employees_rshift_assign) < 1:
-                flag = False
-                rshift_assign.is_active = is_active
-        else:
-            flag = False
-            rshift_assign.is_active = is_active
+        rshift_assign = RotatingShiftAssign.objects.filter(id=id).first()
+        if rshift_assign is None:
+            failed += 1
+            continue
+        # An employee can only have one active rotating shift assign.
+        if is_active and (
+            rshift_assign.is_active
+            or RotatingShiftAssign.objects.filter(
+                is_active=True, employee_id=rshift_assign.employee_id
+            ).exists()
+        ):
+            failed += 1
+            continue
+        rshift_assign.is_active = is_active
         rshift_assign.save()
-        if not flag:
-            messages.success(
-                request,
-                _("Rotating shift for {employee} is {message}").format(
-                    employee=rshift_assign.employee_id, message=message
-                ),
-            )
-        else:
-            messages.error(
-                request,
-                _("Rotating shift for {employee} is already exists").format(
-                    employee=rshift_assign.employee_id
-                ),
-            )
-    return JsonResponse({"message": "Success"})
+        done += 1
+    return with_bulk_result(JsonResponse({"message": "Success"}), done, failed)
 
 
 @login_required
@@ -4656,14 +4631,18 @@ def work_type_request_bulk_cancel(request):
             request, message=_("No worktype request found matching the query.")
         )
     ids = json.loads(ids)
-    result = False
+    done = failed = 0
     for id in ids:
-        work_type_request = WorkTypeRequest.objects.get(id=id)
+        work_type_request = WorkTypeRequest.objects.filter(id=id).first()
         if (
-            is_reportingmanger(request, work_type_request)
-            or request.user.has_perm("base.cancel_worktyperequest")
-            or work_type_request.employee_id == request.user.employee_get
-            and work_type_request.approved == False
+            work_type_request is not None
+            and not work_type_request.canceled
+            and (
+                is_reportingmanger(request, work_type_request)
+                or request.user.has_perm("base.cancel_worktyperequest")
+                or work_type_request.employee_id == request.user.employee_get
+                and work_type_request.approved == False
+            )
         ):
             work_type_request.canceled = True
             work_type_request.approved = False
@@ -4681,8 +4660,10 @@ def work_type_request_bulk_cancel(request):
                 + f"?id={work_type_request.id}",
                 icon="close",
             )
-            result = True
-    return JsonResponse({"result": result})
+            done += 1
+        else:
+            failed += 1
+    return with_bulk_result(JsonResponse({"result": done > 0}), done, failed)
 
 
 @login_required
@@ -4744,19 +4725,24 @@ def work_type_request_bulk_approve(request):
             request, message=_("No worktype request found matching the query.")
         )
     ids = json.loads(ids)
-    result = False
+    done = failed = 0
     for id in ids:
-        work_type_request = WorkTypeRequest.objects.get(id=id)
+        work_type_request = WorkTypeRequest.objects.filter(id=id).first()
+        # A rejected (canceled) request stays rejected: bulk approve skips it.
         if (
-            is_reportingmanger(request, work_type_request)
-            or request.user.has_perm("base.approve_worktyperequest")
-            or request.user.has_perm("base.change_worktyperequest")
-        ) and not work_type_request.approved:
+            work_type_request is not None
+            and (
+                is_reportingmanger(request, work_type_request)
+                or request.user.has_perm("base.approve_worktyperequest")
+                or request.user.has_perm("base.change_worktyperequest")
+            )
+            and not work_type_request.approved
+            and not work_type_request.canceled
+        ):
             # """
             # Here the request will be approved, can send mail right here
             # """
             work_type_request.approved = True
-            work_type_request.canceled = False
             employee_work_info = work_type_request.employee_id.employee_work_info
             employee_work_info.work_type_id = work_type_request.work_type_id
             employee_work_info.save()
@@ -4770,8 +4756,10 @@ def work_type_request_bulk_approve(request):
                 + f"?id={work_type_request.id}",
                 icon="checkmark",
             )
-            result = True
-    return JsonResponse({"result": result})
+            done += 1
+        else:
+            failed += 1
+    return with_bulk_result(JsonResponse({"result": done > 0}), done, failed)
 
 
 @login_required
@@ -5546,14 +5534,18 @@ def shift_request_bulk_cancel(request):
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
-    result = False
+    done = failed = 0
     for id in ids:
-        shift_request = ShiftRequest.objects.get(id=id)
+        shift_request = ShiftRequest.objects.filter(id=id).first()
         if (
-            is_reportingmanger(request, shift_request)
-            or request.user.has_perm("base.cancel_shiftrequest")
-            or shift_request.employee_id == request.user.employee_get
-            and shift_request.approved == False
+            shift_request is not None
+            and not shift_request.canceled
+            and (
+                is_reportingmanger(request, shift_request)
+                or request.user.has_perm("base.cancel_shiftrequest")
+                or shift_request.employee_id == request.user.employee_get
+                and shift_request.approved == False
+            )
         ):
             shift_request.canceled = True
             shift_request.approved = False
@@ -5585,8 +5577,10 @@ def shift_request_bulk_cancel(request):
                     redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
                     icon="close",
                 )
-            result = True
-    return JsonResponse({"result": result})
+            done += 1
+        else:
+            failed += 1
+    return with_bulk_result(JsonResponse({"result": done > 0}), done, failed)
 
 
 @login_required
@@ -5699,23 +5693,30 @@ def shift_allocation_request_approve(request, id):
 @manager_can_enter("base.change_shiftrequest")
 def shift_request_bulk_approve(request):
     """
-    This method is used to approve a bunch of shift request
+    This method is used to approve a bunch of shift request.
+
+    Rejected (canceled) and already approved requests are skipped, not
+    approved: a rejection is a decision, bulk approve must not undo it.
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
-    result = False
+    done = failed = 0
     for id in ids:
-        shift_request = ShiftRequest.objects.get(id=id)
+        shift_request = ShiftRequest.objects.filter(id=id).first()
         if (
-            is_reportingmanger(request, shift_request)
-            or request.user.has_perm("base.approve_shiftrequest")
-            or request.user.has_perm("base.change_shiftrequest")
-        ) and not shift_request.approved:
+            shift_request is not None
+            and (
+                is_reportingmanger(request, shift_request)
+                or request.user.has_perm("base.approve_shiftrequest")
+                or request.user.has_perm("base.change_shiftrequest")
+            )
+            and not shift_request.approved
+            and not shift_request.canceled
+        ):
             """
             here the request will be approved, can send mail right here
             """
             shift_request.approved = True
-            shift_request.canceled = False
 
             if shift_request.reallocate_to:
                 shift_request.reallocate_to.employee_work_info.shift_id = (
@@ -5735,8 +5736,10 @@ def shift_request_bulk_approve(request):
                 redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
                 icon="checkmark",
             )
-        result = True
-    return JsonResponse({"result": result})
+            done += 1
+        else:
+            failed += 1
+    return with_bulk_result(JsonResponse({"result": done > 0}), done, failed)
 
 
 @login_required
@@ -8531,11 +8534,22 @@ def bulk_holiday_delete(request):
     Deletes multiple holidays based on IDs passed in the POST request.
     """
     ids = request.POST.getlist("ids")
+    if len(ids) == 1 and ids[0].lstrip().startswith("["):
+        # The list view posts the ids as one JSON array string.
+        try:
+            ids = json.loads(ids[0])
+        except ValueError:
+            ids = []
     deleted_count = Holidays.objects.filter(id__in=ids).delete()[0]
     messages.success(
         request, _("{} Holidays have been successfully deleted.".format(deleted_count))
     )
-    return redirect("holiday-filter")
+    if request.headers.get("HX-Request"):
+        return redirect("holiday-filter")
+    # The list view posts via ajax and refreshes itself. Redirecting here made the
+    # ajax call follow the redirect with a GET to "holiday-filter" (405), so the
+    # page's success callback never ran and the list kept the deleted rows.
+    return JsonResponse({"message": "Success"})
 
 
 @login_required
