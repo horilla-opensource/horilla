@@ -157,9 +157,14 @@
 {% if not is_choice_group %}
 	<script>
 		$(document).ready(function () {
-			setTimeout(function() {
-				initializeSortable();
-			}, 50);
+			var attempts = 0;
+			(function runInitializeSortable() {
+				if (typeof initializeSortable === "function") {
+					initializeSortable();
+				} else if (attempts++ < 40) {
+					setTimeout(runInitializeSortable, 50);
+				}
+			})();
 		});
 	</script>
 {% endif %}

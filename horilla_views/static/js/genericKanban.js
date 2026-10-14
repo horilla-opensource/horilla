@@ -61,13 +61,11 @@ function groupSequenceGet(groupHead) {
 			sequence: JSON.stringify(sequence),
 			tab_id: groupHead.attr("data-tab-id"),
 		},
-		success: function (response) {
-			message = response.message || "Group sequence updated successfully.";
-			Toast.fire({
-				icon: "success",
-				title: message,
-				position: "top-end",
-			});
+		success: function () {
+			$("#reloadMessagesButton").click();
+		},
+		error: function () {
+			$("#reloadMessagesButton").click();
 		},
 	});
 }
@@ -110,11 +108,7 @@ function handleValidDrop(groupId, objectId, row) {
 				adjustGroupCount(originalGroupId, -1);
 				adjustGroupCount(groupId, 1);
 
-				Toast.fire({
-					icon: "success",
-					title: typeof gettext !== "undefined" ? gettext("Stage updated") : "Stage updated",
-					position: "top-end",
-				});
+				$("#reloadMessagesButton").click();
 
 				if (response.message) {
 					Swal.fire({
@@ -127,12 +121,8 @@ function handleValidDrop(groupId, objectId, row) {
 					});
 				}
 			},
-			error: function (xhr) {
-				Toast.fire({
-					icon: "error",
-					title: gettext("Failed to update sequence: ") + xhr.responseJSON?.error || "Unknown error",
-					position: "top-end",
-				});
+			error: function () {
+				$("#reloadMessagesButton").click();
 			},
 		});
 	}
@@ -168,31 +158,14 @@ function handleSortableUpdate(event, ui, container) {
 		},
 		success: function (response) {
 			$(".reload-badge").click();
+			$("#reloadMessagesButton").click();
 
 			if (response.info) {
 				console.warn(response.info)
 			}
-			else if (!response.error) {
-				Toast.fire({
-					icon: "success",
-					title: gettext("Sequence updated"),
-					position: "top-end",
-				});
-			}
-			else {
-				Toast.fire({
-					icon: "success",
-					title: response.error,
-					position: "top-end",
-				});
-			}
 		},
-		error: function (xhr) {
-			Toast.fire({
-				icon: "error",
-				title: gettext("Failed to update sequence: ") + xhr.responseJSON?.error || "Unknown error",
-				position: "top-end",
-			});
+		error: function () {
+			$("#reloadMessagesButton").click();
 		}
 	});
 }
