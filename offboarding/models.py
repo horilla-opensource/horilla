@@ -597,7 +597,7 @@ class OffboardingTask(HorillaModel):
         null=True,
         blank=True,
     )
-    is_required = models.BooleanField(default=False, verbose_name=_("Is Required"))
+    is_required = models.BooleanField(default=False, verbose_name=_("Required"))
 
     class Meta:
         unique_together = ["title", "stage_id"]
