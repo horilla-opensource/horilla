@@ -49,6 +49,7 @@ from accessibility.middlewares import ACCESSIBILITY_CACHE_USER_KEYS
 from accessibility.models import DefaultAccessibility
 from base.backends import ConfiguredEmailBackend
 from base.forms import ModelForm
+from base.import_template_data import import_template_frame, write_import_xlsx
 from base.methods import (
     choosesubordinates,
     filtersubordinates,
@@ -848,9 +849,14 @@ def document_delete(request, id):
             document_first = document
             document.delete()
 
+            message = (
+                _("Document request %(doc)s for %(employee)s deleted successfully")
+                if document_first.document_request_id_id
+                else _("Document %(doc)s for %(employee)s deleted successfully")
+            )
             messages.success(
                 request,
-                _("Document request %(doc)s for %(employee)s deleted successfully")
+                message
                 % {
                     "doc": document_first,
                     "employee": document_first.employee_id,
@@ -1100,6 +1106,9 @@ def document_reject(request, id):
     Returns:
     """
     document_obj = get_object_or_404(Document, id=id)
+    if not document_obj.document_request_id:
+        messages.error(request, _("Only document requests can be rejected"))
+        return HorillaRedirect(request)
     form = DocumentRejectForm()
     if document_obj.document:
         if request.method == "POST":
@@ -1138,7 +1147,9 @@ def document_bulk_approve(request):
         ids = request.POST.getlist("ids")
 
         # Documents with uploaded files
-        approved_docs = Document.objects.filter(id__in=ids).exclude(document="")
+        approved_docs = Document.objects.filter(
+            id__in=ids, document_request_id__isnull=False
+        ).exclude(document="")
         count_approved = approved_docs.update(status="approved")
 
         # Documents without uploaded files
@@ -1191,7 +1202,7 @@ def document_bulk_reject(request):
     if request.method == "POST" and form.is_valid():
         reject_reason = form.cleaned_data["reject_reason"]
         updated_count = (
-            Document.objects.filter(id__in=ids)
+            Document.objects.filter(id__in=ids, document_request_id__isnull=False)
             .exclude(status="rejected")
             .update(status="rejected", reject_reason=reject_reason)
         )
@@ -2911,11 +2922,11 @@ def employee_import(request):
 
     """
         )
-    data_frame = pd.DataFrame(columns=["employee_full_name", "email", "phone"])
+    data_frame = import_template_frame("employee")
     # Export the DataFrame to an Excel file
     response = HttpResponse(content_type="application/ms-excel")
     response["Content-Disposition"] = 'attachment; filename="employee_template.xlsx"'
-    data_frame.to_excel(response, index=False)
+    write_import_xlsx(data_frame, response)
     return response
 
 
@@ -3006,7 +3017,7 @@ def work_info_import_file(request):
 
     response = HttpResponse(content_type="application/ms-excel")
     response["Content-Disposition"] = 'attachment; filename="work_info_template.xlsx"'
-    data_frame.to_excel(response, index=False)
+    write_import_xlsx(data_frame, response)
     return response
 
 
@@ -3544,7 +3555,7 @@ def note_tab(request, pk):
         messages.error(request, _("Employee not found."))
         return HorillaRedirect(request)
     notes = EmployeeNote.objects.filter(employee_id=pk).order_by("-id")
-    notes = paginator_qry(notes, request.GET.get("page"))
+    notes = HorillaPaginator(notes, 10).get_page(request.GET.get("page"))
 
     return render(
         request,

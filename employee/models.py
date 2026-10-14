@@ -1164,6 +1164,12 @@ class NoteFiles(HorillaModel):
     def __str__(self):
         return self.files.name.split("/")[-1]
 
+    @property
+    def is_image(self):
+        """Whether the attachment has an image file extension."""
+        name = (self.files.name or "").lower()
+        return name.endswith((".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".svg"))
+
 
 class EmployeeNote(HorillaModel):
     """
