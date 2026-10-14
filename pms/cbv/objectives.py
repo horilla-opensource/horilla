@@ -123,8 +123,8 @@ class ObjectivesList(HorillaListView):
         ("title", _("Title")),
         ("duration_unit", _("Duration Unit")),
         ("duration", _("Duration")),
-        ("is_template", _("Is Template")),
-        ("archive", _("Is Archived")),
+        ("is_template", _("Template")),
+        ("archive", _("Archived")),
         ("company_id", _("Company")),
     ]
 
@@ -329,8 +329,8 @@ class _ObjectivesTabNavBase(HorillaNavView):
         ("title", _("Title")),
         ("duration_unit", _("Duration Unit")),
         ("duration", _("Duration")),
-        ("is_template", _("Is Template")),
-        ("archive", _("Is Archived")),
+        ("is_template", _("Template")),
+        ("archive", _("Archived")),
         ("company_id", _("Company")),
     ]
 

@@ -95,7 +95,7 @@ class KeyResultNavView(HorillaNavView):
         ("progress_type", _("Progress Type")),
         ("target_value", _("Target Value")),
         ("duration", _("Duration")),
-        ("archive", _("Is Archived")),
+        ("archive", _("Archived")),
         ("company_id", _("Company")),
     ]
 
@@ -146,7 +146,7 @@ class KeyResultsListView(HorillaListView):
         ("progress_type", _("Progress Type")),
         ("target_value", _("Target Value")),
         ("duration", _("Duration")),
-        ("archive", _("Is Archived")),
+        ("archive", _("Archived")),
         ("company_id", _("Company")),
     ]
 

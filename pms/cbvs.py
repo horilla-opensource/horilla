@@ -136,7 +136,7 @@ class BonusPointSettingListView(views.HorillaListView):
         ("Bonus For", "get_bonus_for_display"),
         ("Condition", "get_condition"),
         ("Points", "points"),
-        ("Is Active", "is_active_toggle"),
+        ("Active", "is_active_toggle"),
     ]
 
     header_attrs = {
@@ -176,7 +176,7 @@ class BonusPointSettingDetailView(views.HorillaDetailedView):
         (_("Bonus For"), "get_bonus_for_display"),
         (_("Condition"), "get_condition"),
         (_("Points"), "points"),
-        (_("Is Active"), "is_active"),
+        (_("Active"), "is_active"),
     ]
 
 

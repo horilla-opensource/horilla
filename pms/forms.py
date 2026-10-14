@@ -721,7 +721,7 @@ class FeedbackForm(HorillaModelForm):
             "colleague_id": _("Colleague"),
             "question_template_id": _("Question Template"),
             "employee_key_results_id": _("Key Result"),
-            "cyclic_feedback": _("Is Cyclic Feedback"),
+            "cyclic_feedback": _("Cyclic Feedback"),
             # "cyclic_feedback_period":_("")
         }
 

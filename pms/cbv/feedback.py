@@ -184,7 +184,7 @@ class FeedbackListView(HorillaListView):
         ("archive", _("Archive")),
         ("start_date", _("Start Date")),
         ("end_date", _("End Date")),
-        ("cyclic_feedback", _("Is Cyclic Feedback")),
+        ("cyclic_feedback", _("Cyclic Feedback")),
     ]
 
 
@@ -598,7 +598,7 @@ class AnonymousFeedbackTabShell(HorillaTabContentShell):
         ("archive", _("Archive")),
         ("start_date", _("Start Date")),
         ("end_date", _("End Date")),
-        ("cyclic_feedback", _("Is Cyclic Feedback")),
+        ("cyclic_feedback", _("Cyclic Feedback")),
     ]
 
 

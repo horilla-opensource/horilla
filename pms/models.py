@@ -1087,7 +1087,7 @@ class Feedback(HorillaModel):
         EmployeeKeyResult, blank=True, verbose_name=_("Key Result")
     )
     cyclic_feedback = models.BooleanField(
-        default=False, verbose_name=_("Is Cyclic Feedback")
+        default=False, verbose_name=_("Cyclic Feedback")
     )
     cyclic_feedback_days_count = models.IntegerField(
         blank=True, null=True, verbose_name=_("Cycle Period")
@@ -1753,7 +1753,7 @@ class BonusPointSetting(models.Model):
     points = models.IntegerField(
         default=0, validators=[MinValueValidator(0)], verbose_name=_("Points")
     )
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, verbose_name=_("Active"))
     company_id = models.ForeignKey(
         Company,
         null=True,
