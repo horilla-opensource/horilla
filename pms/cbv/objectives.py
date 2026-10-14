@@ -986,6 +986,7 @@ class EKRTab(EmployeeObjectiveKeyResultDetailListView):
     # of an objective accordion, not a whole tab: use the usual empty-page look.
     custom_empty_template = "cbv/objectives/tab_empty.html"
 
+    show_saved_filters = False
     columns = [
         (_("Title"), "title_col"),
         (_("Objective"), "employee_objective_id__objective_id__title"),

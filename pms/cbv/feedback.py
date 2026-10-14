@@ -662,6 +662,9 @@ class PerformanceTab(SelfFeedbacktab):
     performance tab in employee profile
     """
 
+    show_saved_filters = False
+    row_status_indications = []
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         pk = self.request.resolver_match.kwargs.get("pk")
