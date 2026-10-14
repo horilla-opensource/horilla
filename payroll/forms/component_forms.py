@@ -1031,7 +1031,7 @@ class BonusForm(Form):
     date = forms.DateField(widget=forms.DateInput(), required=False)
     employee_id = forms.IntegerField(label="Employee", widget=forms.HiddenInput())
     is_fixed = forms.BooleanField(
-        label="Is Fixed", initial=True, required=False, widget=forms.CheckboxInput()
+        label="Fixed", initial=True, required=False, widget=forms.CheckboxInput()
     )
     amount = forms.DecimalField(
         label="Amount",

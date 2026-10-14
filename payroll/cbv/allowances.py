@@ -109,10 +109,10 @@ class AllowanceListView(HorillaListView):
 
     columns = [
         (_("Allowance"), "title"),
-        (_("Is Taxable"), "get_is_taxable_display"),
-        (_("Is Condition Based"), "get_is_condition_based"),
+        (_("Taxable"), "get_is_taxable_display"),
+        (_("Condition Based"), "get_is_condition_based"),
         (_("Condition"), "condition_based_display"),
-        (_("Is Fixed"), "get_is_fixed"),
+        (_("Fixed"), "get_is_fixed"),
         (_("Amount"), "amount"),
         (_("Based On"), "get_based_on_display"),
         (_("Rate"), "rate"),

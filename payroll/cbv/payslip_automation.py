@@ -48,7 +48,7 @@ class PaySlipAutomationListView(HorillaListView):
     columns = [
         (_("Payslip creation date"), "get_generate_day_display"),
         (_("Company"), "get_company"),
-        (_("Is active"), "is_active_col"),
+        (_("Active"), "is_active_col"),
     ]
 
     header_attrs = {

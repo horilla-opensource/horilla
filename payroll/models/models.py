@@ -1608,6 +1608,7 @@ class Allowance(HorillaModel):
     )
     is_taxable = models.BooleanField(
         default=True,
+        verbose_name=_("Taxable"),
     )
     # Says outright that this earning IS the employee's basic pay, rather than
     # the engine inferring it from a derived code. It is only used when the
@@ -1625,6 +1626,7 @@ class Allowance(HorillaModel):
     )
     is_condition_based = models.BooleanField(
         default=False,
+        verbose_name=_("Condition Based"),
     )
     # If condition based
     field = models.CharField(
@@ -1685,6 +1687,7 @@ class Allowance(HorillaModel):
 
     is_fixed = models.BooleanField(
         default=True,
+        verbose_name=_("Fixed"),
     )
     amount = models.FloatField(
         null=True,
@@ -2267,14 +2270,17 @@ class Deduction(HorillaModel):
 
     is_tax = models.BooleanField(
         default=False,
+        verbose_name=_("Tax"),
     )
 
     is_pretax = models.BooleanField(
         default=True,
+        verbose_name=_("Pretax"),
     )
 
     is_condition_based = models.BooleanField(
         default=False,
+        verbose_name=_("Condition Based"),
     )
     # If condition based then must fill field, value, and condition,
     field = models.CharField(
@@ -2347,6 +2353,7 @@ class Deduction(HorillaModel):
 
     is_fixed = models.BooleanField(
         default=True,
+        verbose_name=_("Fixed"),
     )
     # If fixed amount then fill amount
     amount = models.FloatField(

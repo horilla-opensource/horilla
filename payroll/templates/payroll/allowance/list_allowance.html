@@ -42,14 +42,14 @@
                         class="oh-sticky-table__th">{% trans "Specific Employees" %}</div>
                     <div data-cell-index="2" data-cell-title="{% trans 'Excluded Employees' %}"
                         class="oh-sticky-table__th">{% trans "Excluded Employees" %}</div>
-                    <div data-cell-index="3" data-cell-title="{% trans 'Is Taxable' %}"
-                        class="oh-sticky-table__th"> {%trans "Is Taxable" %} </div>
-                    <div data-cell-index="4" data-cell-title="{% trans 'Is Condition Based' %}"
-                        class="oh-sticky-table__th">{% trans "Is Condition Based" %}</div>
+                    <div data-cell-index="3" data-cell-title="{% trans 'Taxable' %}"
+                        class="oh-sticky-table__th"> {%trans "Taxable" %} </div>
+                    <div data-cell-index="4" data-cell-title="{% trans 'Condition Based' %}"
+                        class="oh-sticky-table__th">{% trans "Condition Based" %}</div>
                     <div data-cell-index="5" data-cell-title="{% trans 'Condition' %}"
                         class="oh-sticky-table__th">{% trans "Condition" %}</div>
-                    <div data-cell-index="6" data-cell-title="{% trans 'Is Fixed' %}"
-                        class="oh-sticky-table__th">{% trans "Is Fixed" %}</div>
+                    <div data-cell-index="6" data-cell-title="{% trans 'Fixed' %}"
+                        class="oh-sticky-table__th">{% trans "Fixed" %}</div>
                     <div data-cell-index="7" data-cell-title="{% trans 'Amount' %}"
                         class="oh-sticky-table__th {% if request.sort_option.order == '-amount' %}arrow-up {% elif request.sort_option.order == 'amount' %}arrow-down {% else %}arrow-up-down {% endif %}"
                         hx-get="{% url 'filter-allowance' %}?{{pd}}&sortby=amount"

@@ -186,10 +186,10 @@ class DeductionListView(HorillaListView):
 
     columns = [
         (_("Deduction"), "title"),
-        (_("Is Pretax"), "get_is_pretax_display"),
-        (_("Is Condition Based"), "get_is_condition_based_display"),
+        (_("Pretax"), "get_is_pretax_display"),
+        (_("Condition Based"), "get_is_condition_based_display"),
         (_("Condition"), "condition_based_col"),
-        (_("Is Fixed"), "get_is_fixed_display"),
+        (_("Fixed"), "get_is_fixed_display"),
         (_("Amount"), "amount"),
         (_("Based On"), "get_based_on_display"),
         (_("Rate"), "rate"),
