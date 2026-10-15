@@ -29,7 +29,7 @@ from base.methods import (
     is_reportingmanager,
 )
 from base.models import EmployeeShift, ShiftRequest
-from base.views import include_employee_instance
+from base.views import include_employee_instance, shift_requests_url
 from employee.models import Employee
 from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import (
@@ -545,7 +545,7 @@ class ShiftRequestFormView(HorillaFormView):
                         ),
                         verb_params={"employee": str(instance.employee_id)},
                         icon="information",
-                        redirect=reverse("shift-request-view") + f"?id={instance.id}",
+                        redirect=shift_requests_url(instance),
                     )
             messages.success(self.request, message)
             return self.HttpResponse()
@@ -671,7 +671,7 @@ class ShiftAllocationFormView(HorillaFormView):
                         ),
                         verb_params={"employee": str(instance.employee_id)},
                         icon="information",
-                        redirect=reverse("shift-request-view") + f"?id={instance.id}",
+                        redirect=shift_requests_url(instance),
                     )
 
                     notify.send(
@@ -682,7 +682,7 @@ class ShiftAllocationFormView(HorillaFormView):
                         ),
                         verb_params={"employee": str(instance.employee_id)},
                         icon="information",
-                        redirect=reverse("shift-request-view") + f"?id={instance.id}",
+                        redirect=shift_requests_url(instance),
                     )
             messages.success(self.request, message)
             return HorillaRedirect(self.request)

@@ -4933,6 +4933,17 @@ def work_type_request_bulk_delete(request):
     return JsonResponse({"result": result})
 
 
+def shift_requests_url(shift_request):
+    """
+    Notification link to the Requests page, opened on the tab matching the
+    shift request: "Shift Allocations" for reallocations, else "Shift Requests".
+    """
+    tab = "shift-inbox" if shift_request.reallocate_to_id else "shift-request"
+    return (
+        reverse("requests-view") + "?" + urlencode({"tab": tab, "id": shift_request.id})
+    )
+
+
 @login_required
 @hx_request_required
 def shift_request(request):
@@ -4968,7 +4979,7 @@ def shift_request(request):
                     ),
                     verb_params={"employee": str(instance.employee_id)},
                     icon="information",
-                    redirect=reverse("shift-request-view") + f"?id={instance.id}",
+                    redirect=shift_requests_url(instance),
                 )
             except Exception as e:
                 pass
@@ -5035,7 +5046,7 @@ def shift_request_allocation(request):
                     ),
                     verb_params={"employee": str(instance.employee_id)},
                     icon="information",
-                    redirect=reverse("shift-request-view") + f"?id={instance.id}",
+                    redirect=shift_requests_url(instance),
                 )
             except Exception as e:
                 pass
@@ -5049,7 +5060,7 @@ def shift_request_allocation(request):
                     ),
                     verb_params={"employee": str(instance.employee_id)},
                     icon="information",
-                    redirect=reverse("shift-request-view") + f"?id={instance.id}",
+                    redirect=shift_requests_url(instance),
                 )
             except Exception as e:
                 pass
@@ -5393,7 +5404,7 @@ def shift_allocation_request_update(request, shift_request_id):
                     ),
                     verb_params={"employee": str(instance.employee_id)},
                     icon="information",
-                    redirect=reverse("shift-request-view") + f"?id={instance.id}",
+                    redirect=shift_requests_url(instance),
                 )
             except Exception as e:
                 pass
@@ -5407,7 +5418,7 @@ def shift_allocation_request_update(request, shift_request_id):
                     ),
                     verb_params={"employee": str(instance.employee_id)},
                     icon="information",
-                    redirect=reverse("shift-request-view") + f"?id={instance.id}",
+                    redirect=shift_requests_url(instance),
                 )
             except Exception as e:
                 pass
@@ -5473,7 +5484,7 @@ def shift_request_cancel(request, id):
         request.user.employee_get,
         recipient=shift_request.employee_id.employee_user_id,
         verb=gettext_noop("Your shift request has been canceled."),
-        redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
+        redirect=shift_requests_url(shift_request),
         icon="close",
     )
     if shift_request.reallocate_to:
@@ -5481,7 +5492,7 @@ def shift_request_cancel(request, id):
             request.user.employee_get,
             recipient=shift_request.reallocate_to.employee_user_id,
             verb=gettext_noop("Your shift request has been rejected."),
-            redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
+            redirect=shift_requests_url(shift_request),
             icon="close",
         )
     return JsonResponse({"result": True}) if is_ajax else HorillaRedirect(request)
@@ -5518,7 +5529,7 @@ def shift_allocation_request_cancel(request, id):
         request.user.employee_get,
         recipient=shift_request.employee_id.employee_user_id,
         verb=gettext_noop("Your shift request has been canceled."),
-        redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
+        redirect=shift_requests_url(shift_request),
         icon="close",
     )
 
@@ -5566,7 +5577,7 @@ def shift_request_bulk_cancel(request):
                 request.user.employee_get,
                 recipient=shift_request.employee_id.employee_user_id,
                 verb=gettext_noop("Your shift request has been canceled."),
-                redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
+                redirect=shift_requests_url(shift_request),
                 icon="close",
             )
             if shift_request.reallocate_to:
@@ -5574,7 +5585,7 @@ def shift_request_bulk_cancel(request):
                     request.user.employee_get,
                     recipient=shift_request.employee_id.employee_user_id,
                     verb=gettext_noop("Your shift request has been canceled."),
-                    redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
+                    redirect=shift_requests_url(shift_request),
                     icon="close",
                 )
             done += 1
@@ -5645,7 +5656,7 @@ def shift_request_approve(request, id):
             user.employee_get,
             recipient=recipient,
             verb=gettext_noop("Your shift request has been approved."),
-            redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
+            redirect=shift_requests_url(shift_request),
             icon="checkmark",
         )
 
@@ -5676,7 +5687,7 @@ def shift_allocation_request_approve(request, id):
             recipient=shift_request.employee_id.employee_user_id,
             verb=gettext_noop("%(employee_get)s is available for shift reallocation."),
             verb_params={"employee_get": str(request.user.employee_get)},
-            redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
+            redirect=shift_requests_url(shift_request),
             icon="checkmark",
         )
         return HorillaRedirect(request)
@@ -5733,7 +5744,7 @@ def shift_request_bulk_approve(request):
                 request.user.employee_get,
                 recipient=shift_request.employee_id.employee_user_id,
                 verb=gettext_noop("Your shift request has been approved."),
-                redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
+                redirect=shift_requests_url(shift_request),
                 icon="checkmark",
             )
             done += 1
@@ -5773,7 +5784,7 @@ def shift_request_delete(request, id):
         messages.error(request, _("You cannot delete this shift request."))
 
     hx_target = request.META.get("HTTP_HX_TARGET", None)
-    path = request.META.get("HTTP_HX_CURRENT_URL", None)
+    path = request.META.get("HTTP_HX_CURRENT_URL", "")
     parsed_url = urlparse(path)
     parsed_path = parsed_url.path.lstrip("/")
     if hx_target and hx_target == "shift-container":
@@ -7336,7 +7347,7 @@ def create_shiftrequest_comment(request, shift_id):
                                 "%(employee)s's shift request has received a comment."
                             ),
                             verb_params={"employee": str(shift.employee_id)},
-                            redirect=reverse("shift-request-view") + f"?id={shift.id}",
+                            redirect=shift_requests_url(shift),
                             icon="chatbox-ellipses",
                         )
                     elif (
@@ -7350,7 +7361,7 @@ def create_shiftrequest_comment(request, shift_id):
                             verb=gettext_noop(
                                 "Your shift request has received a comment."
                             ),
-                            redirect=reverse("shift-request-view") + f"?id={shift.id}",
+                            redirect=shift_requests_url(shift),
                             icon="chatbox-ellipses",
                         )
                     else:
@@ -7365,7 +7376,7 @@ def create_shiftrequest_comment(request, shift_id):
                                 "%(employee)s's shift request has received a comment."
                             ),
                             verb_params={"employee": str(shift.employee_id)},
-                            redirect=reverse("shift-request-view") + f"?id={shift.id}",
+                            redirect=shift_requests_url(shift),
                             icon="chatbox-ellipses",
                         )
                 else:
@@ -7374,7 +7385,7 @@ def create_shiftrequest_comment(request, shift_id):
                         request.user.employee_get,
                         recipient=rec,
                         verb=gettext_noop("Your shift request has received a comment."),
-                        redirect=reverse("shift-request-view") + f"?id={shift.id}",
+                        redirect=shift_requests_url(shift),
                         icon="chatbox-ellipses",
                     )
             return render(
