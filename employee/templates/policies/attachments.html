@@ -22,6 +22,7 @@
                         style="display: block; width: 50%; height: 50%"
                         hx-get="{% url 'remove-attachment-policy' %}?ids={{ attachment.id }}&policy_id={{ policy.id }}"
                         hx-target="#attachmentContainer"
+                        hx-confirm="{% trans 'Are you sure you want to remove this attachment?' %}"
                         onclick="
                             event.stopPropagation();
                             event.preventDefault();
