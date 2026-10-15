@@ -1,0 +1,15 @@
+{% include "generic/horilla_form.html" %}
+
+<script>
+    (function () {
+        function toggleAnnouncementScopeFields() {
+            var publishToAll = $("#id_is_visible_to_all").is(":checked");
+            $("#id_employees_parent_div, #id_department_parent_div, #id_job_position_parent_div")
+                .toggle(!publishToAll);
+        }
+        $("#id_is_visible_to_all")
+            .off("change.announcementScope")
+            .on("change.announcementScope", toggleAnnouncementScopeFields);
+        toggleAnnouncementScopeFields();
+    })();
+</script>

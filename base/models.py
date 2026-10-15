@@ -2522,6 +2522,15 @@ class Announcement(HorillaModel):
     company_id = models.ManyToManyField(
         Company, blank=True, related_name="announcement", verbose_name=_("Company")
     )
+    is_visible_to_all = models.BooleanField(
+        default=True,
+        verbose_name=_("Publish to all"),
+        help_text=_(
+            "When enabled, the announcement is visible to every employee in "
+            "the selected company. Disable it to restrict visibility to the "
+            "employees/department/job position selected below."
+        ),
+    )
     disable_comments = models.BooleanField(
         default=False, verbose_name=_("Disable Comments")
     )

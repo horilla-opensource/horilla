@@ -48,6 +48,7 @@ class AnnouncementFormView(HorillaFormView):
     form_class = AnnouncementForm
     model = Announcement
     new_display_title = _("Create Announcements.")
+    template_name = "cbv/announcement/announcement_form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -72,10 +73,12 @@ class AnnouncementFormView(HorillaFormView):
                 "company_id", [self.request.user.employee_get.get_company()]
             )
 
-            if not (employees or departments or job_positions):
+            if form.cleaned_data.get("is_visible_to_all"):
                 employees = Employee.objects.filter(
                     employee_work_info__company_id__in=company, is_active=True
                 )
+                departments = departments.none()
+                job_positions = job_positions.none()
                 message = _(
                     f"Announcement created successfully to all employees in "
                     f"{', '.join(company.values_list('company', flat=True))}."
