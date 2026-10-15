@@ -251,6 +251,20 @@
                 <span class="material-symbols-outlined">person_add</span>
             </div>
         {% endif %}
+
+        {% if perms.base.add_announcement %}
+            <div
+                class="fab inner-fab"
+                title="{% trans 'Create Announcement' %}"
+                data-delay="9"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-get="{% url 'create-announcement' %}"
+                hx-target="#genericModalBody"
+            >
+                <i class="material-icons">campaign</i>
+            </div>
+        {% endif %}
     </div>
 
     <!-- Main FAB button -->
