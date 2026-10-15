@@ -65,12 +65,24 @@
 
                     <p class="text-sm text-[#565E6C] mb-3 flex-grow">{{ category.description | linebreaksbr }}</p>
                 </div>
-                <a
-                    href="{% url 'faq-view' category.id %}"
-                    class="px-5 py-2 mt-auto group text-primary-600 text-xs font-medium bg-primary-100 rounded-md w-full hover:bg-primary-600 hover:text-white transition duration-300 flex items-center justify-center"
-                >
-                    {% trans "View FAQs" %}
-                </a>
+                {% if embed_in_policies %}
+                    <a
+                        hx-get="{% url 'policies-discipline-faq-view' category.id %}"
+                        hx-target="#policiesDisciplineContent"
+                        hx-push-url="false"
+                        style="cursor: pointer;"
+                        class="px-5 py-2 mt-auto group text-primary-600 text-xs font-medium bg-primary-100 rounded-md w-full hover:bg-primary-600 hover:text-white transition duration-300 flex items-center justify-center"
+                    >
+                        {% trans "View FAQs" %}
+                    </a>
+                {% else %}
+                    <a
+                        href="{% url 'faq-view' category.id %}"
+                        class="px-5 py-2 mt-auto group text-primary-600 text-xs font-medium bg-primary-100 rounded-md w-full hover:bg-primary-600 hover:text-white transition duration-300 flex items-center justify-center"
+                    >
+                        {% trans "View FAQs" %}
+                    </a>
+                {% endif %}
             </div>
         {% endfor %}
     </div>
