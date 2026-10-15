@@ -868,6 +868,11 @@ class DisciplinaryActionForm(ModelForm):
                 self.add_error("employee_id", _("This field is required."))
             cleaned_data["employee_id"] = employee_data
 
+        if cleaned_data.get("unit_in") == "hours" and not (
+            cleaned_data.get("hours") or ""
+        ).strip("0:"):
+            self.add_error("hours", _("This field is required."))
+
         return cleaned_data
 
     def as_p(self):

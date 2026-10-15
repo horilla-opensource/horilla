@@ -149,10 +149,12 @@
                             parentForm.find("[id=id_days]").parent().show();
                             parentForm.find("[id=id_hours]").parent().hide();
                             parentForm.find("[name=days]").prop("required", true);
+                            parentForm.find("[name=hours]").prop("required", false);
                         } else {
                             parentForm.find("[id=id_hours]").parent().show();
                             parentForm.find("[id=id_days]").parent().hide();
                             parentForm.find("[name=days]").prop("required", false);
+                            parentForm.find("[name=hours]").prop("required", true);
                         }
                     });
                     if (response.action_type === "suspension") {
@@ -167,6 +169,7 @@
                         parentForm.find("[id=id_unit_in]").parent().hide();
                         parentForm.find("[id=id_hours]").parent().hide();
                         parentForm.find("[name=days]").prop("required", false);
+                        parentForm.find("[name=hours]").prop("required", false);
                     }
                 },
             });

@@ -61,7 +61,7 @@ class DisciplinaryActionsList(HorillaListView):
     ]
 
     row_attrs = """
-        class ="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
+        class ="oh-sticky-table__tr oh-permission-table__tr"
         hx-get='{dis_action_detail_view}?instance_ids={ordered_ids}'
         hx-target="#genericModalBody"
         data-target="#genericModal"
