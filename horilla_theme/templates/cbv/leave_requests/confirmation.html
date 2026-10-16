@@ -3,49 +3,34 @@
 {% is_manager_of request.user instance as can_manage %}
 <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
     {% if perms.leave.change_leaverequest or can_manage or request.user|is_leave_approval_manager %}
-        {% if instance.status == 'cancelled' %}
-            {% if instance.end_date >= current_date %}
-                <button
-                    type="button"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#rejectModal"
-                    hx-get="{% url 'request-cancel' instance.id %}"
-                    hx-target="#rejectForm"
-                    title="{% trans 'Approve cancellation request' %}"
-                    class="h-7 w-7 flex items-center justify-center bg-success text-white rounded-md hover:bg-success-dark transition duration-300"
-                >
-                    <img
-                        src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
-                        alt="{% trans 'Approve' %}"
-                        width="13"
-                        class="filter brightness-0 invert"
-                    >
-                </button>
-            {% else %}
-                <button
-                    type="button"
-                    disabled
-                    title="{% trans 'Approve cancellation request' %}"
-                    class="h-7 w-7 flex items-center justify-center bg-success text-white rounded-md hover:bg-success-dark transition duration-300 oh-btn--disabled"
-                >
-                    <img
-                        src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
-                        alt="{% trans 'Approve' %}"
-                        width="13"
-                        class="filter brightness-0 invert"
-                    >
-                </button>
-            {% endif %}
-            {# A cancellation request has no "reject" action of its own, so this button always renders disabled. #}
+        {% if instance.status == 'cancel_requested' %}
             <button
                 type="button"
-                disabled
-                title="{% trans 'Reject' %}"
-                class="h-7 w-7 flex items-center justify-center bg-danger text-white rounded-md hover:bg-danger-dark transition duration-300 oh-btn--disabled"
+                hx-post="{% url 'leave-cancellation-approve' instance.id %}"
+                hx-swap="none"
+                hx-confirm="{% trans 'Do you really want to approve this cancellation request?' %}"
+                title="{% trans 'Approve Cancellation' %}"
+                class="h-7 w-7 flex items-center justify-center bg-success text-white rounded-md hover:bg-success-dark transition duration-300"
+            >
+                <img
+                    src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
+                    alt="{% trans 'Approve Cancellation' %}"
+                    width="13"
+                    class="filter brightness-0 invert"
+                >
+            </button>
+            <button
+                type="button"
+                data-toggle="oh-modal-toggle"
+                data-target="#rejectModal"
+                hx-get="{% url 'leave-cancellation-reject' instance.id %}"
+                hx-target="#rejectForm"
+                title="{% trans 'Reject Cancellation' %}"
+                class="h-7 w-7 flex items-center justify-center bg-danger text-white rounded-md hover:bg-danger-dark transition duration-300"
             >
                 <img
                     src="{% static 'horilla_theme/assets/img/icons/close-circle-icon-original.svg' %}"
-                    alt="{% trans 'Reject' %}"
+                    alt="{% trans 'Reject Cancellation' %}"
                     width="13"
                     class="filter brightness-0 invert"
                 >
@@ -88,7 +73,7 @@
                 </a>
             {% endif %}
 
-            {% if instance.status != 'rejected' and instance.end_date >= current_date %}
+            {% if instance.status == 'requested' or instance.status == 'approved' and instance.end_date >= current_date %}
                 <a
                     type="button"
                     data-toggle="oh-modal-toggle"
