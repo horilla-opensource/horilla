@@ -61,8 +61,11 @@ def find_on_time(request, today, week_day, department=None):
 def find_expected_attendances(request, week_day):
     """
     This method is used to find count of expected attendances for the week day
+    (employees without a shift are not expected to clock in)
     """
-    employees = Employee.objects.filter(is_active=True)
+    employees = Employee.objects.filter(
+        is_active=True, employee_work_info__shift_id__isnull=False
+    )
     if apps.is_installed("leave"):
         LeaveRequest = get_horilla_model_class(app_label="leave", model="leaverequest")
         on_leave = LeaveRequest.objects.filter(status="Approved")

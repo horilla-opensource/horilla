@@ -127,12 +127,17 @@ def _missing_punches_employees(today=None, employee_ids=None):
 
 
 def _scoped_employees(request):
-    """Active employees, restricted to a reporting manager's subordinates
-    when they lack attendance.view_attendance; unrestricted otherwise."""
+    """Active employees who work a shift, restricted to a reporting
+    manager's subordinates when they lack attendance.view_attendance;
+    unrestricted otherwise. Employees without a shift are not expected to
+    clock in (as in _missing_punches_employees), so they are left out of
+    attendance rates and absences."""
     from base.methods import filtersubordinatesemployeemodel
     from employee.models import Employee
 
-    employees = Employee.objects.filter(is_active=True)
+    employees = Employee.objects.filter(
+        is_active=True, employee_work_info__shift_id__isnull=False
+    )
     return filtersubordinatesemployeemodel(
         request, employees, perm="attendance.view_attendance"
     )
