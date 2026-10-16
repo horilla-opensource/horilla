@@ -1,0 +1,135 @@
+{% extends "master_import/base.html" %}
+{% load i18n %}
+
+{% block mi_body %}
+<style>
+  .mi__pick { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
+  .mi__pick-label { font-size: .72rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--mi-muted, #64748b); }
+  .mi__pick-select { appearance: none; -webkit-appearance: none; border: 1px solid var(--mi-line); border-radius: 8px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right .7rem center; padding: .45rem 2.2rem .45rem .8rem; font-size: 1.05rem; font-weight: 700; min-width: 240px; cursor: pointer; }
+  #mi-upload > .mi__card-head { align-items: flex-start; }
+  #mi-upload > .mi__card-head .mi__actions { margin-top: 1.15rem; }
+  .mi__pick-select { font-size: .95rem; }
+</style>
+<form data-settings-native="true" class="mi__card" method="post" action="{% url 'master-import-upload' %}" enctype="multipart/form-data" id="mi-upload">
+  {% csrf_token %}
+  <input type="hidden" name="dataset" value="{{ dataset.key }}">
+  <div class="mi__card-head">
+    <div class="mi__pick">
+      <label class="mi__pick-label" for="mi-dataset">{% trans "Data to Import" %}</label>
+      <select class="mi__pick-select" id="mi-dataset" onchange="if (this.value) miGo('{% url 'master-import' %}?dataset=' + this.value)">
+        {% for item in datasets %}
+        <option value="{{ item.key }}" {% if item.key == dataset.key %}selected{% endif %} {% if not item.available %}disabled{% endif %}>{{ item.label }}</option>
+        {% endfor %}
+      </select>
+      <div class="mi__card-sub">{{ dataset.subtitle }}</div>
+    </div>
+    <div class="mi__actions">
+      <a class="mi__btn" hx-boost="false" href="{% url 'master-import-template' dataset.key %}">
+        <ion-icon name="download-outline"></ion-icon>{% trans "Download Template" %}
+      </a>
+      <button type="submit" class="mi__btn mi__btn--primary" id="mi-continue" disabled>
+        {% trans "Continue" %} <ion-icon name="arrow-forward-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="mi__body">
+    <div>
+      <div>
+        <div class="mi__upload-head">
+          <div class="mi__card-title">{% trans "Upload Your File" %}</div>
+          {% if dataset.supports_update and can_update %}
+          <div class="mi__seg" role="radiogroup" aria-label="{% trans 'What to do' %}">
+            <label class="mi__seg-opt"><input type="radio" name="mode" value="create" checked><span>{% trans "Create New" %}</span></label>
+            <label class="mi__seg-opt"><input type="radio" name="mode" value="update"><span>{% trans "Update Existing" %}</span></label>
+            <label class="mi__seg-opt"><input type="radio" name="mode" value="both"><span>{% trans "Create or Update" %}</span></label>
+          </div>
+          {% endif %}
+        </div>
+        {% if dataset.supports_update and can_update %}
+        <div class="mi__card-sub mi__mode-hint" id="mi-mode-hint" style="margin-bottom:.7rem;"
+             data-create="{{ dataset.hint_create }}"
+             data-update="{{ dataset.hint_update }}"
+             data-both="{{ dataset.hint_both }}"></div>
+        {% endif %}
+        <label class="mi__drop" id="mi-drop" for="mi-file">
+          <ion-icon name="cloud-upload-outline"></ion-icon>
+          <div class="mi__drop-title">{% trans "Drop your file here, or browse" %}</div>
+          <div class="mi__drop-sub">{% trans "CSV or Excel workbook, up to 10 MB. Nothing is saved until you confirm the import." %}</div>
+        </label>
+        <input type="file" id="mi-file" name="file" accept=".csv,.xlsx,.xls" hidden>
+        <div class="mi__file" id="mi-picked">
+          <ion-icon name="document-outline"></ion-icon><span id="mi-picked-name"></span>
+        </div>
+      </div>
+
+    </div>
+
+    <details class="mi__fields" style="margin-top:1rem;">
+      <summary>
+        <span><b>{% trans "Fields" %}</b>
+          <span class="mi__card-sub">({{ fields|length }}) &middot; {% trans "Required Fields Are Highlighted" %}</span></span>
+        <ion-icon name="chevron-down-outline" class="mi__fields-chev"></ion-icon>
+      </summary>
+      <div class="mi__pills" style="margin-top:.6rem;">
+        {% for f in fields %}
+          {% if f.key != "Full Name" %}
+          <span class="mi__field {% if f.required %}mi__field--req{% endif %}" title="{{ f.group }}">{{ f.label }}{% if f.required %} *{% endif %}</span>
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% if dataset.key == "employees" %}
+      <div class="mi__card-sub" style="margin-top:.5rem;">
+        {% trans "A single Full Name column also works in place of First Name and Last Name." %}
+      </div>
+      {% endif %}
+    </details>
+
+    <div class="mi__note" style="margin-top:.8rem;">
+      {% if dataset.upload_note %}
+      <div>{{ dataset.upload_note }}</div>
+      {% elif not company %}
+      <div>{% trans "All companies are selected, so rows can name any company and a company that does not exist yet is created from its name. New departments are created too; names are matched exactly, capitals included." %}</div>
+      {% else %}
+      <div>{% blocktrans with name=company.company %}Importing into {{ name }}: rows without a company go to it, and rows naming another company are rejected.{% endblocktrans %}</div>
+      {% endif %}
+    </div>
+  </div>
+</form>
+
+<script>
+(function () {
+  var input = document.getElementById("mi-file");
+  var drop = document.getElementById("mi-drop");
+  var picked = document.getElementById("mi-picked");
+  var name = document.getElementById("mi-picked-name");
+  var go = document.getElementById("mi-continue");
+
+  function show() {
+    var has = input.files && input.files.length;
+    picked.style.display = has ? "flex" : "none";
+    name.textContent = has ? input.files[0].name : "";
+    go.disabled = !has;
+  }
+  input.addEventListener("change", show);
+  ["dragenter", "dragover"].forEach(function (t) {
+    drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add("mi__drop--over"); });
+  });
+  ["dragleave", "drop"].forEach(function (t) {
+    drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove("mi__drop--over"); });
+  });
+  drop.addEventListener("drop", function (e) {
+    if (e.dataTransfer.files.length) { input.files = e.dataTransfer.files; show(); }
+  });
+
+  var hint = document.getElementById("mi-mode-hint");
+  function syncMode() {
+    var chosen = document.querySelector("input[name=mode]:checked");
+    if (hint && chosen) hint.textContent = hint.dataset[chosen.value];
+  }
+  document.querySelectorAll("input[name=mode]").forEach(function (r) { r.addEventListener("change", syncMode); });
+  syncMode();
+
+})();
+</script>
+{% endblock %}

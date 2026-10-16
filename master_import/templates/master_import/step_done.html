@@ -1,0 +1,123 @@
+{% extends "master_import/base.html" %}
+{% load i18n %}
+
+{% block mi_body %}
+{% if summary.failure %}
+  <div class="mi__alert mi__alert--bad">
+    <b>{% trans "The import failed and nothing was saved." %}</b><br>{{ summary.failure }}
+  </div>
+  <a class="mi__btn mi__btn--primary" href="{% url 'master-import-map' job.pk %}">{% trans "Back to Matching" %}</a>
+{% else %}
+<div class="mi__card">
+  <div class="mi__card-head">
+    <div>
+      <div class="mi__card-title">{{ dataset.label }} &middot; {{ job.original_name }}</div>
+      <div class="mi__card-sub">{{ job.finished_at|date:"j M Y, H:i" }}</div>
+    </div>
+    <span class="mi__pill {% if summary.error_count %}mi__pill--miss{% else %}mi__pill--ok{% endif %}">
+      {% if summary.error_count %}{% trans "Imported with Errors" %}{% else %}{% trans "All Rows Imported" %}{% endif %}
+    </span>
+  </div>
+
+  <div class="mi__body">
+    <div class="mi__kpis">
+      <div class="mi__kpi"><div class="mi__kpi-label">{% trans "Rows in File" %}</div><div class="mi__kpi-value">{{ summary.total }}</div></div>
+      {% if dataset.key != "employees" and summary.mode == "both" %}
+      <div class="mi__kpi"><div class="mi__kpi-label">{% trans "Created" %}</div><div class="mi__kpi-value mi__kpi-value--ok">{{ summary.counts.assigned|default:0 }}</div></div>
+      <div class="mi__kpi"><div class="mi__kpi-label">{% trans "Updated" %}</div><div class="mi__kpi-value mi__kpi-value--ok">{{ summary.counts.updated|default:0 }}</div></div>
+      {% elif dataset.key != "employees" %}
+      <div class="mi__kpi"><div class="mi__kpi-label">{% if summary.mode == "update" %}{% trans "Updated" %}{% else %}{% trans "Imported" %}{% endif %}</div><div class="mi__kpi-value mi__kpi-value--ok">{{ summary.imported }}</div></div>
+      {% elif summary.mode == "both" %}
+      <div class="mi__kpi"><div class="mi__kpi-label">{% trans "Created" %}</div><div class="mi__kpi-value mi__kpi-value--ok">{{ summary.counts.employees|default:0 }}</div></div>
+      <div class="mi__kpi"><div class="mi__kpi-label">{% trans "Updated" %}</div><div class="mi__kpi-value mi__kpi-value--ok">{{ summary.counts.updated|default:0 }}</div></div>
+      {% else %}
+      <div class="mi__kpi"><div class="mi__kpi-label">{% if summary.mode == "update" %}{% trans "Updated" %}{% else %}{% trans "Imported" %}{% endif %}</div><div class="mi__kpi-value mi__kpi-value--ok">{{ summary.imported }}</div></div>
+      {% endif %}
+      {% if summary.unchanged %}<div class="mi__kpi"><div class="mi__kpi-label">{% trans "Unchanged" %}</div><div class="mi__kpi-value">{{ summary.unchanged }}</div><div class="mi__kpi-note">{% trans "Already Matched" %}</div></div>{% endif %}
+      {% if summary.skipped %}<div class="mi__kpi"><div class="mi__kpi-label">{% trans "Skipped" %}</div><div class="mi__kpi-value">{{ summary.skipped }}</div><div class="mi__kpi-note">{% trans "Left Out by You" %}</div></div>{% endif %}
+      <div class="mi__kpi"><div class="mi__kpi-label">{% trans "With Errors" %}</div><div class="mi__kpi-value {% if summary.error_count %}mi__kpi-value--bad{% endif %}">{{ summary.error_count }}</div></div>
+      {% if summary.counts and dataset.key == "employees" %}
+      <div class="mi__kpi"><div class="mi__kpi-label">{% if summary.mode == "update" %}{% trans "Bank Accounts Added" %}{% else %}{% trans "Bank Accounts" %}{% endif %}</div><div class="mi__kpi-value">{{ summary.counts.banks }}</div></div>
+      {% endif %}
+    </div>
+
+    {% if dataset.key == "asset_allocation" and summary.counts or dataset.key == "assets" and summary.counts %}
+    <div style="margin-top:1rem;">
+      <div class="mi__card-sub">{% trans "Also Created Along The Way" %}</div>
+      <div class="mi__chips">
+        {% if dataset.key == "asset_allocation" %}<span class="mi__chip">{{ summary.counts.assets }} {% trans "Assets" %}</span>{% endif %}
+        <span class="mi__chip">{{ summary.counts.categories }} {% trans "Categories" %}</span>
+        <span class="mi__chip">{{ summary.counts.batches }} {% trans "Batches" %}</span>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if dataset.key == "assigned_leave" and summary.counts.leave_types %}
+    <div style="margin-top:1rem;">
+      <div class="mi__card-sub">{% trans "Also Created Along The Way" %}</div>
+      <div class="mi__chips"><span class="mi__chip">{{ summary.counts.leave_types }} {% trans "Leave Types" %}</span></div>
+    </div>
+    {% endif %}
+
+    {% if dataset.key == "employees" and summary.counts and summary.mode != "update" or summary.counts.salary_structures %}
+    <div style="margin-top:1rem;">
+      <div class="mi__card-sub">{% trans "Also Created Along The Way" %}</div>
+      <div class="mi__chips">
+        {% if summary.mode != "update" %}<span class="mi__chip">{{ summary.counts.companies }} {% trans "Companies" %}</span>
+        <span class="mi__chip">{{ summary.counts.departments }} {% trans "Departments" %}</span>
+        <span class="mi__chip">{{ summary.counts.job_positions }} {% trans "Job Positions" %}</span>
+        <span class="mi__chip">{{ summary.counts.job_roles }} {% trans "Job Roles" %}</span>
+        <span class="mi__chip">{{ summary.counts.work_types }} {% trans "Work Types" %}</span>
+        <span class="mi__chip">{{ summary.counts.shifts }} {% trans "Shifts" %}</span>
+        <span class="mi__chip">{{ summary.counts.employee_types }} {% trans "Employee Types" %}</span>{% endif %}
+        {% if summary.mode != "update" or summary.counts.salary_structures %}<span class="mi__chip">{{ summary.counts.salary_structures }} {% trans "Salary Structures" %}</span>{% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if summary.errors %}
+  <div class="mi__body" style="border-top:1px solid var(--mi-line);">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.5rem;">
+      <div>
+        <div class="mi__card-title">{% trans "Rows That Were Not Imported" %}</div>
+        <div class="mi__card-sub">{% trans "Download them, fix the problems in the Errors column's list, then upload the corrected file." %}</div>
+      </div>
+      {% if job.error_file %}
+      <a class="mi__btn" hx-boost="false" href="{% url 'master-import-errors' job.pk %}">
+        <ion-icon name="download-outline"></ion-icon>{% trans "Download Error File" %}
+      </a>
+      {% endif %}
+    </div>
+    <div class="mi__scroll">
+      <table class="fixed-table w-full border-separate mi__std">
+        <thead class="sticky top-0 bg-[white] z-[1]"><tr><th class="text-sm font-medium text-left min-w-[85px]" style="width:70px;">{% trans "Row" %}</th><th class="text-sm font-medium text-left min-w-[85px]">{% trans "Employee" %}</th><th class="text-sm font-medium text-left min-w-[85px]">{% trans "Problem" %}</th></tr></thead>
+        <tbody>
+          {% for error in summary.errors %}
+          <tr>
+            <td class="text-sm text-left px-1 py-1 text-[#666]">{{ error.row }}</td>
+            <td class="text-sm text-left px-1 py-1 text-[#666]">{{ error.name }} <span class="mi__sample">({{ error.badge }})</span></td>
+            <td class="text-sm text-left px-1 py-1 text-[#666] mi__err">{{ error.messages|join:" " }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if summary.error_count > summary.errors|length %}
+    <div class="mi__card-sub" style="margin-top:.4rem;">{% blocktrans with n=summary.errors|length %}Showing the first {{ n }}; the downloaded file has them all.{% endblocktrans %}</div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="mi__foot">
+    <a class="mi__btn" href="{% url 'master-import-history' %}">{% trans "Import History" %}</a>
+    <div style="display:flex;gap:.6rem;">
+      {% if summary.error_count %}
+      <a class="mi__btn" href="{% url 'master-import' %}?dataset={{ dataset.key }}">{% trans "Upload Corrected Rows" %}</a>
+      {% endif %}
+      <a class="mi__btn mi__btn--primary" href="{% url 'master-import' %}">{% trans "Start Another Import" %}</a>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

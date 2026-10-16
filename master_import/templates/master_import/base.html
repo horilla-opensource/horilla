@@ -1,0 +1,235 @@
+{% extends 'settings.html' %}
+{% load i18n %}
+
+{% block settings %}
+<style>
+  .mi { --mi-line: #e5e7eb; --mi-soft: #f8fafc; --mi-muted: #6b7280; --mi-ink: #111827; --mi-accent: #e54f38; --mi-ok: #16a34a; --mi-warn: #b45309; --mi-bad: #b91c1c; max-width: 1280px; margin: 0 auto; padding: .35rem .5rem 1rem; zoom: .88; }
+  .mi__title { font-size: 1.2rem; font-weight: 700; color: var(--mi-ink); margin: 0 0 .15rem; }
+  .mi__lead { color: var(--mi-muted); font-size: .85rem; margin-bottom: .9rem; }
+  .mi__steps { display: grid; grid-template-columns: repeat(3, 1fr); background: #fff; border: 1px solid var(--mi-line); border-radius: 10px; margin-bottom: 1.1rem; overflow: hidden; }
+  .mi__step { display: flex; align-items: center; gap: .7rem; padding: .85rem 1.1rem; border-right: 1px solid var(--mi-line); }
+  .mi__step:last-child { border-right: 0; }
+  .mi__dot { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: .78rem; font-weight: 700; background: #f1f5f9; color: var(--mi-muted); flex: 0 0 auto; }
+  .mi__step--on .mi__dot { background: var(--mi-accent); color: #fff; }
+  .mi__step--done .mi__dot { background: #dcfce7; color: var(--mi-ok); }
+  .mi__step-title { font-weight: 600; font-size: .88rem; color: var(--mi-ink); }
+  .mi__step-sub { font-size: .75rem; color: var(--mi-muted); }
+  .mi__card { background: #fff; border: 1px solid var(--mi-line); border-radius: 10px; }
+  .mi__card-head { padding: .9rem 1.1rem; border-bottom: 1px solid var(--mi-line); display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .mi__card-title { font-weight: 600; color: var(--mi-ink); }
+  .mi__card-sub { font-size: .78rem; color: var(--mi-muted); }
+  .mi__body { padding: 1.1rem; }
+  .mi__grid { display: grid; grid-template-columns: 330px 1fr; gap: 1.1rem; align-items: start; }
+  @media (max-width: 960px) { .mi__grid { grid-template-columns: 1fr; } .mi__steps { grid-template-columns: 1fr; } }
+  .mi__search { width: 100%; height: 38px; border: 1px solid var(--mi-line); border-radius: 8px; padding: 0 .75rem; font-size: .85rem; margin-bottom: .6rem; }
+  .mi__ds { display: flex; gap: .7rem; align-items: center; padding: .65rem .7rem; border-radius: 8px; color: inherit; text-decoration: none; border: 1px solid transparent; }
+  .mi__ds:hover { background: var(--mi-soft); }
+  .mi__ds--on { background: #fff1ef; border-color: #f5c7bf; }
+  .mi__ds--off { opacity: .55; pointer-events: none; }
+  .mi__ds-icon { width: 36px; height: 36px; border-radius: 8px; background: #f1f5f9; display: grid; place-items: center; font-size: 1.1rem; flex: 0 0 auto; }
+  .mi__ds-name { font-weight: 600; font-size: .88rem; color: var(--mi-ink); }
+  .mi__ds-sub { font-size: .74rem; color: var(--mi-muted); }
+  .mi__tag { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: 1px 7px; border-radius: 999px; background: #fef3c7; color: #92400e; margin-left: auto; }
+  .mi__drop { display: block; border: 2px dashed #cbd5e1; border-radius: 10px; padding: 2.2rem 1rem; text-align: center; cursor: pointer; background: var(--mi-soft); transition: border-color .15s, background .15s; }
+  .mi__drop:hover, .mi__drop--over { border-color: var(--mi-accent); background: #fff7f5; }
+  .mi__drop ion-icon { display: block; margin: 0 auto; font-size: 2.2rem; color: var(--mi-accent); }
+  .mi__drop-title { font-weight: 600; color: var(--mi-ink); margin-top: .35rem; }
+  .mi__drop-sub { font-size: .8rem; color: var(--mi-muted); }
+  .mi__file { display: none; align-items: center; gap: .6rem; padding: .7rem .9rem; border: 1px solid var(--mi-line); border-radius: 8px; margin-top: .8rem; font-size: .85rem; }
+  .mi__note { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1rem; padding: .8rem 1rem; border: 1px solid var(--mi-line); border-radius: 8px; background: var(--mi-soft); font-size: .82rem; color: var(--mi-muted); }
+  .mi__note b { color: var(--mi-ink); }
+  .mi__foot { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .9rem 1.1rem; border-top: 1px solid var(--mi-line); }
+  /* Buttons of the wizard's own, so the theme's variants cannot tint them. */
+  .mi__btn { display: inline-flex; align-items: center; gap: .4rem; height: 38px; padding: 0 .95rem; border-radius: 8px; font-size: .85rem; font-weight: 600; text-decoration: none; cursor: pointer; border: 1px solid #d1d5db; background: #fff; color: var(--mi-ink); transition: background .15s, border-color .15s; white-space: nowrap; }
+  .mi__btn:hover { background: #f9fafb; border-color: #9ca3af; color: var(--mi-ink); }
+  .mi__btn--primary { background: var(--mi-accent); border-color: var(--mi-accent); color: #fff; }
+  .mi__btn--primary:hover { background: #cf432e; border-color: #cf432e; color: #fff; }
+  .mi__btn:disabled { opacity: .5; cursor: not-allowed; }
+  .mi__actions { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; justify-content: flex-end; }
+  /* The card's header stays in view while the rows scroll under it. */
+  .mi__card-head--sticky { position: sticky; top: 0 !important; z-index: 20; background: #fff; border-radius: 10px 10px 0 0; box-shadow: 0 1px 0 var(--mi-line); }
+  .mi__modal { position: fixed; inset: 0; z-index: 100000; background: rgba(0,0,0,.45); align-items: center; justify-content: center; padding: 1rem; }
+  .mi__modal-box { background: #fff; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,.25); width: min(96vw, 760px); max-height: 90vh; overflow-y: auto; }
+  .mi__x { width: 34px; height: 34px; display: grid; place-items: center; border: 0; border-radius: 8px; background: none; color: var(--mi-muted); cursor: pointer; font-size: 1.5rem; flex: 0 0 auto; }
+  .mi__x:hover { background: #f1f5f9; color: var(--mi-ink); }
+  .mi__scroll .mi__std thead { position: sticky; top: 0; z-index: 5; background: #fff; }
+  .mi__acc { border: 1px solid var(--mi-line); border-radius: 8px; }
+  .mi__acc-top { position: sticky; top: 0; z-index: 3; display: flex; justify-content: space-between; height: 34px; align-items: center; padding: 0 .8rem; background: var(--mi-soft); border-bottom: 1px solid var(--mi-line); font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--mi-muted); }
+  .mi__g-head { position: sticky; top: 34px; z-index: 2; display: flex; justify-content: space-between; align-items: center; height: 38px; padding: 0 .8rem; background: #fff; border-bottom: 1px solid var(--mi-line); cursor: pointer; font-size: .85rem; }
+  .mi__g-head:hover { background: var(--mi-soft); }
+  .mi__chev { vertical-align: -2px; margin-right: .35rem; transition: transform .15s; }
+  .mi__g.mi__open .mi__chev { transform: rotate(90deg); }
+  .mi__g-items { display: none; }
+  .mi__g.mi__open .mi__g-items { display: block; }
+  .mi__g-item { padding: .35rem .8rem .35rem 2.1rem; font-size: .84rem; color: #374151; border-bottom: 1px solid #f1f5f9; }
+  .mi__tabs { display: flex; gap: .3rem; border-bottom: 1px solid var(--mi-line); margin: 1rem 0 .7rem; }
+  .mi__tab { display: inline-flex; align-items: center; gap: .45rem; padding: .55rem .9rem; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; font-size: .86rem; font-weight: 600; color: var(--mi-muted); cursor: pointer; }
+  .mi__tab:hover { color: var(--mi-ink); }
+  .mi__tab--on { color: var(--mi-accent); border-bottom-color: var(--mi-accent); }
+  .mi__modal-box { position: relative; }
+  .mi__confirm { position: absolute; inset: 0; z-index: 30; background: rgba(255,255,255,.88); align-items: center; justify-content: center; padding: 1rem; border-radius: 12px; }
+  .mi__confirm-box { background: #fff; border: 1px solid var(--mi-line); border-radius: 10px; padding: 1.2rem; width: min(100%, 420px); box-shadow: 0 10px 30px rgba(0,0,0,.15); }
+  .mi__records { max-height: 420px; border: 1px solid var(--mi-line); border-radius: 8px; }
+  .mi__records .mi__std td { padding: .2rem .35rem; }
+  .mi__toolbar--bar { justify-content: flex-start; margin-bottom: .35rem; }
+  .mi__toolbar { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-bottom: .6rem; }
+  .mi__find { width: 280px; max-width: 100%; height: 36px; border: 1px solid var(--mi-line); border-radius: 8px; padding: 0 .75rem; font-size: .85rem; }
+  .mi__unused { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; }
+  .mi__unused span { font-size: .78rem; background: #f1f5f9; color: #475569; border-radius: 999px; padding: 2px 10px; }
+  /* The record number stays put while the columns scroll sideways under it. */
+  /* The number column pins to the left in the header and the rows alike; the header, above the rows, keeps its own. */
+  .mi__records .mi__std th:first-child, .mi__records .mi__std td:first-child { position: sticky; left: 0; width: 56px; min-width: 56px; max-width: 56px; padding-left: 0; padding-right: 0; background: #fff; border-right: 1px solid var(--mi-line); text-align: center; color: var(--mi-muted); }
+  .mi__records .mi__std td:first-child { z-index: 2; }
+  .mi__records .mi__std thead th:first-child { z-index: 6; }
+  .mi__btn--small { height: 32px; padding: 0 .75rem; font-size: .8rem; }
+  .mi__panel-actions { display: flex; justify-content: flex-end; gap: .5rem; margin-bottom: .5rem; flex-wrap: wrap; }
+  .mi__skip { width: 16px; height: 16px; cursor: pointer; accent-color: var(--mi-accent); }
+  .mi__row--skipping td { opacity: .55; }
+  .mi__cell { width: 100%; min-width: 110px; height: 32px; border: 1px solid transparent; border-radius: 6px; padding: 0 .5rem; background: transparent; font-size: .84rem; color: var(--mi-ink); }
+  .mi__cell:hover { border-color: #d1d5db; background: #fff; }
+  .mi__cell--bad { border-color: #fecaca; background: #fef2f2; }
+  /* A changed value stays marked, and a focused cell is plainly the one being typed in. */
+  .mi__cell--edited { border-color: #f59e0b; background: #fef3c7; box-shadow: inset 3px 0 0 #f59e0b; font-weight: 600; }
+  .mi__cell:focus { outline: 0; border-color: var(--mi-accent); background: #fff; box-shadow: 0 0 0 3px rgba(229, 79, 56, .18); }
+  .mi__cell--edited:focus { background: #fffbeb; box-shadow: inset 3px 0 0 #f59e0b, 0 0 0 3px rgba(229, 79, 56, .18); }
+  .mi__progress-line { display: flex; justify-content: space-between; font-size: .85rem; color: var(--mi-muted); margin-bottom: .5rem; }
+  .mi__bar { height: 10px; background: #eef0f3; border-radius: 999px; overflow: hidden; }
+  .mi__bar-fill { height: 100%; background: var(--mi-accent); border-radius: 999px; transition: width .35s ease; }
+  .mi__fields { margin-top: 1rem; padding: .85rem 1rem; border: 1px solid var(--mi-line); border-radius: 8px; background: var(--mi-soft); }
+  .mi__fields-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: .55rem; font-size: .88rem; color: var(--mi-ink); }
+  .mi__pills { display: flex; flex-wrap: wrap; gap: .3rem; }
+  .mi__field { font-size: .68rem; padding: 2px 9px; border-radius: 999px; background: #fff; border: 1px solid #d1d5db; color: #4b5563; }
+  .mi__field--req { background: #fff1ef; border-color: var(--mi-accent); color: #b3321f; font-weight: 700; }
+  /* Tables use the theme's own list-table look (fixed-table); this only trims it. */
+  .mi__std { font-size: .84rem; }
+  .mi__std th { padding: .45rem .6rem; background: #fff; color: #111827; white-space: nowrap; }
+  /* Records are wide: columns take the room their header needs and the table scrolls sideways. */
+  .mi__records .mi__std { table-layout: auto; width: max-content; min-width: 100%; }
+  .mi__std td { vertical-align: middle; }
+  .mi__modes { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; margin-bottom: 1rem; }
+  .mi__mode { display: flex; gap: .6rem; align-items: flex-start; padding: .75rem .9rem; border: 1px solid var(--mi-line); border-radius: 8px; cursor: pointer; background: #fff; }
+  .mi__mode:has(input:checked) { border-color: var(--mi-accent); background: #fff7f5; }
+  .mi__mode input { margin-top: .2rem; accent-color: var(--mi-accent); }
+  .mi__mode b { display: block; font-size: .88rem; color: var(--mi-ink); }
+  .mi__mode small { color: var(--mi-muted); font-size: .76rem; }
+  .mi__field--pick { display: inline-flex; align-items: center; gap: .35rem; cursor: pointer; font-size: .82rem; padding: 4px 12px; }
+  .mi__field--pick input { accent-color: var(--mi-accent); }
+  .mi__change { font-size: .78rem; color: #374151; padding: 1px 0; }
+  /* ---- step 1: one column, the drop zone first ---- */
+  .mi__upload { max-width: 980px; margin: 0 auto; }
+  .mi__dsbar { display: flex; gap: .2rem; padding: .5rem .8rem 0; border-bottom: 1px solid var(--mi-line); overflow-x: auto; }
+  .mi__dstab { display: inline-flex; align-items: center; gap: .45rem; padding: .55rem .9rem; font-size: .85rem; font-weight: 600; color: var(--mi-muted); text-decoration: none; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+  .mi__dstab:hover { color: var(--mi-ink); }
+  .mi__dstab--on { color: var(--mi-accent); border-bottom-color: var(--mi-accent); }
+  .mi__dstab--off { opacity: .55; pointer-events: none; }
+  .mi__upload-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: .35rem; }
+  .mi__seg { display: inline-flex; padding: 3px; background: #f1f5f9; border-radius: 9px; }
+  .mi__seg-opt { cursor: pointer; margin: 0; }
+  .mi__seg-opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .mi__seg-opt span { display: block; padding: .38rem .9rem; border-radius: 7px; font-size: .82rem; font-weight: 600; color: var(--mi-muted); }
+  .mi__seg-opt input:checked + span { background: #fff; color: var(--mi-ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+  .mi__seg-opt input:focus-visible + span { outline: 2px solid var(--mi-accent); }
+  .mi__mode-hint { margin-bottom: .8rem; }
+  .mi__drop--has { border-style: solid; border-color: var(--mi-ok); background: #f0fdf4; }
+  .mi__drop--has ion-icon { color: var(--mi-ok); }
+  .mi__upload-bar { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-top: .9rem; }
+  .mi__upload-bar .mi__file { margin: 0; }
+  .mi__scope { display: flex; align-items: center; gap: .5rem; margin-top: .9rem; font-size: .8rem; color: var(--mi-muted); }
+  details.mi__fields { margin-top: 1rem; }
+  details.mi__fields > summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: .86rem; color: var(--mi-ink); }
+  details.mi__fields > summary::-webkit-details-marker { display: none; }
+  details.mi__fields[open] .mi__fields-chev { transform: rotate(180deg); }
+  .mi__fields-chev { transition: transform .15s; }
+  .mi__table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+  .mi__table th { text-align: left; font-size: .7rem; text-transform: uppercase; letter-spacing: .04em; color: var(--mi-muted); padding: .55rem .7rem; border-bottom: 1px solid var(--mi-line); background: var(--mi-soft); }
+  .mi__table td { padding: .5rem .7rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+  .mi__select { width: 100%; height: 36px; border: 1px solid var(--mi-line); border-radius: 8px; padding: 0 .6rem; font-size: .84rem; background: #fff; }
+  .mi__req { color: var(--mi-bad); font-weight: 700; margin-left: 2px; }
+  .mi__group td { background: #f8fafc; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--mi-muted); }
+  .mi__sample { color: var(--mi-muted); font-size: .78rem; }
+  .mi__pill { display: inline-block; font-size: .7rem; font-weight: 600; padding: 1px 8px; border-radius: 999px; }
+  .mi__pill--ok { background: #dcfce7; color: var(--mi-ok); }
+  .mi__pill--miss { background: #fee2e2; color: var(--mi-bad); }
+  .mi__pill--skip { background: #f1f5f9; color: var(--mi-muted); }
+  .mi__kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--mi-line); border: 1px solid var(--mi-line); border-radius: 10px; overflow: hidden; }
+  .mi__kpi { background: #fff; padding: .85rem 1rem; }
+  .mi__kpi-label { font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--mi-muted); }
+  .mi__kpi-value { font-size: 1.5rem; font-weight: 700; color: var(--mi-ink); line-height: 1.2; }
+  .mi__kpi-value--ok { color: var(--mi-ok); } .mi__kpi-value--bad { color: var(--mi-bad); }
+  .mi__kpi-note { font-size: .74rem; color: var(--mi-muted); }
+  .mi__chips { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0; }
+  .mi__chip { font-size: .75rem; background: #eef2ff; color: #4338ca; border-radius: 999px; padding: 2px 10px; }
+  .mi__err { color: var(--mi-bad); font-size: .8rem; }
+  .mi__alert { padding: .7rem 1rem; border-radius: 8px; font-size: .85rem; margin-bottom: .9rem; }
+  .mi__alert--bad { background: #fef2f2; color: var(--mi-bad); border: 1px solid #fecaca; }
+  .mi__alert--ok { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+  .mi__scroll { max-height: 420px; overflow: auto; }
+</style>
+
+<section class="oh-wrapper mi"
+         hx-boost="true"
+         hx-target="#settingsContainer"
+         hx-select="#settingsContainer"
+         hx-select-oob="#breadcrumbs-container"
+         hx-swap="outerHTML show:none"
+         hx-push-url="true"
+         hx-headers='{"HX-Sidebar-Nav": "true"}'>
+  <span data-settings-active="{% block mi_active %}/master-import/{% endblock %}" hidden></span>
+  {% block mi_head %}
+  <h1 class="mi__title">{% trans "Master Data Import" %}</h1>
+  <p class="mi__lead">{% trans "Bring your data into Horilla. Every file is matched and checked before anything is saved." %}</p>
+  {% endblock %}
+
+  {% if step %}
+  <div class="mi__steps">
+    {% for number, title, sub in steps %}
+    <div class="mi__step {% if number == step %}mi__step--on{% elif number < step %}mi__step--done{% endif %}">
+      <span class="mi__dot">{% if number < step %}<ion-icon name="checkmark-outline"></ion-icon>{% else %}{{ number }}{% endif %}</span>
+      <div><div class="mi__step-title">{{ title }}</div><div class="mi__step-sub">{{ sub }}</div></div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% for message in messages %}
+    <div class="mi__alert {% if message.tags == 'error' %}mi__alert--bad{% else %}mi__alert--ok{% endif %}">{{ message }}</div>
+  {% endfor %}
+
+  {% block mi_body %}{% endblock %}
+</section>
+
+<script>
+(function () {
+  // Moves to another step by swapping the settings panel, as the menu links do.
+  window.miGo = function (url) {
+    htmx.ajax("GET", url, { source: document.querySelector(".mi"), target: "#settingsContainer" });
+  };
+
+  // The wizard's own pages are not menu items, so keep the right one lit.
+  window.miActivate = function () {
+    var hint = document.querySelector("[data-settings-active]");
+    if (!hint) return;
+    var want = hint.dataset.settingsActive.replace(/\/+$/, "");
+    var links = document.querySelectorAll(".accordion-panel a[href]");
+    var found = null;
+    links.forEach(function (a) {
+      a.classList.remove("text-primary-600", "font-semibold");
+      if (a.pathname.replace(/\/+$/, "") === want) found = a;
+    });
+    if (!found) return;
+    found.classList.add("text-primary-600", "font-semibold");
+    var panel = found.closest(".accordion-panel");
+    if (panel) {
+      panel.classList.remove("max-h-0");
+      panel.classList.add("max-h-[9999px]");
+    }
+  };
+  if (!window.miNavBound) {
+    window.miNavBound = true;
+    document.body.addEventListener("htmx:afterSettle", function () { window.miActivate(); });
+    window.addEventListener("load", function () { window.miActivate(); });
+  }
+  window.miActivate();
+})();
+</script>
+{% endblock settings %}

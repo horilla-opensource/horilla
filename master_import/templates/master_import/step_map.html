@@ -1,0 +1,166 @@
+{% extends "master_import/base.html" %}
+{% load i18n %}
+
+{% block mi_body %}
+<form data-settings-native="true" class="mi__card" method="post" id="mi-map">
+  {% csrf_token %}
+  <div class="mi__card-head mi__card-head--sticky">
+    <div>
+      <div class="mi__card-title">{{ dataset.label }} &middot; {{ job.original_name }}</div>
+      <div class="mi__card-sub">{{ job.row_count }} {% trans "Rows Found" %} &middot; {{ columns|length }} {% trans "Columns" %}</div>
+    </div>
+    <div class="mi__actions">
+      <a class="mi__btn" href="{% url 'master-import' %}?dataset={{ dataset.key }}">
+        <ion-icon name="arrow-back-outline"></ion-icon>{% trans "Choose Another File" %}
+      </a>
+      <button type="submit" class="mi__btn mi__btn--primary" id="mi-continue">
+        {% trans "Continue" %}<ion-icon name="arrow-forward-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="mi__body">
+    {% if matching and match_choices %}
+    <div class="mi__fields" style="margin:0 0 1rem;">
+      <div class="mi__fields-head"><b>{% if dataset.key == "employees" %}{% trans "Match Employees By" %}{% else %}{% trans "Match Records By" %}{% endif %}</b>
+        <span class="mi__card-sub">{% trans "Each row must find exactly one employee. Tick more than one and all of them must agree." %}</span></div>
+      <div class="mi__pills">
+        {% for key in match_choices %}
+        <label class="mi__field mi__field--pick"><input type="checkbox" name="match" value="{{ key }}" data-match {% if key in match_keys or key in locked_keys %}checked{% endif %} {% if key in locked_keys %}disabled title="{% trans 'Always used' %}"{% endif %}> {{ key }}</label>
+        {% endfor %}
+      </div>
+      <div class="mi__card-sub" style="margin-top:.5rem;">{{ dataset.match_help }}</div>
+    </div>
+    {% endif %}
+    <div class="mi__card-sub" style="margin-bottom:.7rem;">
+      {% trans "Pick the column in your file that holds each field. We matched the ones we could by name; anything you leave as 'Don't Import' is left empty. Next you review every row, fix what needs fixing, and confirm the import." %}
+    </div>
+    <div class="mi__scroll" style="max-height:none;">
+      <table class="fixed-table w-full border-separate mi__std">
+        <thead class="sticky top-0 bg-[white] z-[1]">
+          <tr>
+            <th class="text-sm font-medium text-left" style="width:52px;">#</th>
+            <th class="text-sm font-medium text-left min-w-[85px]" style="width:26%;">{% trans "Field" %}</th>
+            <th class="text-sm font-medium text-left min-w-[85px]" style="width:30%;">{% trans "Column in Your File" %}</th>
+            <th class="text-sm font-medium text-left min-w-[85px]">{% trans "Example from Your File" %}</th>
+            <th class="text-sm font-medium text-left min-w-[85px]" style="width:110px;">{% trans "Status" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            {% ifchanged row.field.group %}
+            <tr class="mi__group"><td class="text-sm text-left px-1 py-1 text-[#666]" colspan="5">{{ row.field.group }}</td></tr>
+            {% endifchanged %}
+            <tr data-field="{{ row.field.key }}" data-required="{% if row.required %}1{% endif %}">
+              <td class="text-sm px-1 py-1 text-[#666]" style="text-align:center;">{{ forloop.counter }}</td>
+              <td class="text-sm text-left px-1 py-1 text-[#666]">{{ row.field.label }}<span class="mi__req" data-star {% if not row.required %}hidden{% endif %}>*</span></td>
+              <td class="text-sm text-left px-1 py-1 text-[#666]">
+                <select class="mi__select" name="map__{{ row.field.key }}" data-map>
+                  <option value="">{% trans "Don't Import" %}</option>
+                  {% for column in columns %}
+                  <option value="{{ column }}" {% if column == row.selected %}selected{% endif %}>{{ column }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td class="text-sm text-left px-1 py-1 text-[#666] mi__sample" data-sample></td>
+              <td class="text-sm text-left px-1 py-1 text-[#666]"><span class="mi__pill" data-status></span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {{ samples|json_script:"mi-samples" }}
+    {{ columns|json_script:"mi-columns" }}
+    <div style="margin-top:1rem;">
+      <div class="mi__card-title" style="font-size:.9rem;">{% trans "Columns In Your File That Are Not Used" %}</div>
+      <div class="mi__card-sub">{% trans "Nothing is matched to these, so they are left out of the import." %}</div>
+      <div class="mi__unused" id="mi-unused"></div>
+    </div>
+  </div>
+
+  <div class="mi__foot">
+    <span class="mi__card-sub" id="mi-missing">
+      {% if missing %}{% trans "Still to match:" %} {{ missing|join:", " }}{% endif %}
+    </span>
+  </div>
+</form>
+
+<script>
+(function () {
+  var form = document.getElementById("mi-map");
+  var samples = JSON.parse(document.getElementById("mi-samples").textContent);
+  var go = document.getElementById("mi-continue");
+  var missingNote = document.getElementById("mi-missing");
+
+  // The app's own header is fixed over the top of the scrolling area, so the
+  // sticky bar has to stop just below it rather than at the very top.
+  var stickyHead = form.querySelector(".mi__card-head--sticky");
+  function pinBelowAppHeader() {
+    var bar = document.querySelector(".oh-main-header");
+    if (stickyHead && bar) {
+      stickyHead.style.top = Math.ceil(bar.getBoundingClientRect().bottom) + "px";
+    }
+  }
+  pinBelowAppHeader();
+  window.addEventListener("resize", pinBelowAppHeader);
+
+  var allColumns = JSON.parse(document.getElementById("mi-columns").textContent);
+  var unusedBox = document.getElementById("mi-unused");
+
+  function showUnused() {
+    var used = {};
+    form.querySelectorAll("[data-map]").forEach(function (s) { if (s.value) used[s.value] = true; });
+    var left = allColumns.filter(function (c) { return !used[c]; });
+    unusedBox.innerHTML = "";
+    if (!left.length) {
+      unusedBox.innerHTML = '<span>{% trans "Every column is used." %}</span>';
+      return;
+    }
+    left.forEach(function (c) {
+      var chip = document.createElement("span");
+      var example = (samples[c] || [])[0];
+      chip.textContent = example ? c + " · " + example : c;
+      unusedBox.appendChild(chip);
+    });
+  }
+
+  var updating = {{ updating|yesno:"true,false" }};
+
+  function refresh() {
+    showUnused();
+    if (updating) {
+      var picked = {};
+      form.querySelectorAll("[data-match]").forEach(function (b) { if (b.checked) picked[b.value] = true; });
+      form.querySelectorAll("tr[data-field]").forEach(function (row) {
+        var need = !!picked[row.dataset.field];
+        row.dataset.required = need ? "1" : "";
+        var star = row.querySelector("[data-star]");
+        if (star) star.hidden = !need;
+      });
+    }
+    var missing = [];
+    var fullMapped = false;
+    form.querySelectorAll("tr[data-field]").forEach(function (row) {
+      if (row.dataset.field === "Full Name") fullMapped = !!row.querySelector("[data-map]").value;
+    });
+    form.querySelectorAll("tr[data-field]").forEach(function (row) {
+      var value = row.querySelector("[data-map]").value;
+      row.querySelector("[data-sample]").textContent = (samples[value] || []).join(" · ");
+      var pill = row.querySelector("[data-status]");
+      var required = row.dataset.required === "1";
+      if (value) { pill.className = "mi__pill mi__pill--ok"; pill.textContent = "{% trans 'Matched' %}"; }
+      else if (required) { pill.className = "mi__pill mi__pill--miss"; pill.textContent = "{% trans 'Required' %}"; }
+      else { pill.className = "mi__pill mi__pill--skip"; pill.textContent = "{% trans 'Skipped' %}"; }
+      if (required && !value && !(row.dataset.field === "First Name" && fullMapped)) {
+        missing.push(row.firstElementChild.textContent.replace("*", "").trim());
+      }
+    });
+    go.disabled = missing.length > 0;
+    missingNote.textContent = missing.length ? "{% trans 'Still to match:' %} " + missing.join(", ") : "";
+  }
+
+  form.addEventListener("change", function (e) { if (e.target.matches("[data-map],[data-match]")) refresh(); });
+  refresh();
+})();
+</script>
+{% endblock %}

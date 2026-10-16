@@ -1,0 +1,145 @@
+{% load i18n %}
+<div class="mi__kpis">
+  <div class="mi__kpi"><div class="mi__kpi-label">{% trans "Rows" %}</div><div class="mi__kpi-value">{{ review.total }}</div></div>
+  {% if review.mode == "both" %}
+  <div class="mi__kpi"><div class="mi__kpi-label">{% trans "Will Create" %}</div><div class="mi__kpi-value mi__kpi-value--ok">{{ review.creating }}</div></div>
+  <div class="mi__kpi"><div class="mi__kpi-label">{% trans "Will Update" %}</div><div class="mi__kpi-value mi__kpi-value--ok">{{ review.updating }}</div></div>
+  {% else %}
+  <div class="mi__kpi"><div class="mi__kpi-label">{% if review.mode == "update" %}{% trans "Will Update" %}{% else %}{% trans "Valid" %}{% endif %}</div><div class="mi__kpi-value mi__kpi-value--ok">{{ review.valid }}</div></div>
+  {% endif %}
+  {% if review.mode == "update" or review.mode == "both" %}<div class="mi__kpi"><div class="mi__kpi-label">{% trans "Unchanged" %}</div><div class="mi__kpi-value">{{ review.unchanged }}</div><div class="mi__kpi-note">{% trans "already match the sheet" %}</div></div>{% endif %}
+  <div class="mi__kpi"><div class="mi__kpi-label">{% trans "Skipped" %}</div><div class="mi__kpi-value">{{ review.skipped }}</div><div class="mi__kpi-note">{% trans "Left Out by You" %}</div></div>
+  <div class="mi__kpi"><div class="mi__kpi-label">{% trans "With Errors" %}</div><div class="mi__kpi-value {% if review.error_count %}mi__kpi-value--bad{% endif %}">{{ review.error_count }}</div><div class="mi__kpi-note">{% trans "left out of the import" %}</div></div>
+</div>
+
+{% if review.will_create %}
+<div style="margin-top:.9rem;">
+  <div class="mi__card-sub" style="margin-bottom:.4rem;">{% trans "These do not exist yet and will be created:" %}</div>
+  <div class="mi__scroll mi__acc" style="max-height:200px;">
+    <div class="mi__acc-top"><span>{% trans "New Records, By Type" %}</span><span>{% trans "Count" %}</span></div>
+    {% for group in review.will_create %}
+    <div class="mi__g">
+      <div class="mi__g-head" onclick="this.parentNode.classList.toggle('mi__open')" tabindex="0"
+           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.parentNode.classList.toggle('mi__open');}">
+        <span><ion-icon name="chevron-forward-outline" class="mi__chev"></ion-icon><b>{{ group.label }}</b></span>
+        <span class="mi__pill mi__pill--skip">{{ group.names|length }}</span>
+      </div>
+      <div class="mi__g-items">
+        {% for name in group.names %}<div class="mi__g-item">{{ name }}</div>{% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="mi__tabs">
+  <button type="button" class="mi__tab {% if review.valid or not review.error_count %}mi__tab--on{% endif %}" data-mi-tab="valid">
+    {% if review.mode == "update" %}{% trans "Will Update" %}{% else %}{% trans "Valid Records" %}{% endif %} <span class="mi__pill mi__pill--ok">{{ review.valid }}</span>
+  </button>
+  <button type="button" class="mi__tab {% if not review.valid and review.error_count %}mi__tab--on{% endif %}" data-mi-tab="errors">
+    {% trans "Error Records" %} <span class="mi__pill {% if review.error_count %}mi__pill--miss{% else %}mi__pill--skip{% endif %}">{{ review.error_count }}</span>
+  </button>
+  <button type="button" class="mi__tab" data-mi-tab="skipped">
+    {% trans "Skipped" %} <span class="mi__pill mi__pill--skip">{{ review.skipped }}</span>
+  </button>
+</div>
+
+<div class="mi__toolbar mi__toolbar--bar">
+  <input type="search" class="mi__find" id="mi-find-rows" placeholder="{% trans 'Search These Records' %}" autocomplete="off">
+  <div class="mi__panel-actions" style="margin:0 0 0 auto;">
+    <span data-mi-actions="valid" class="mi__actions" {% if not review.valid and review.error_count %}style="display:none;"{% endif %}>
+      <a class="mi__btn mi__btn--small" hx-boost="false" href="{{ review.downloads.valid }}"><ion-icon name="download-outline"></ion-icon>{% if review.mode == "update" %}{% trans "Download Update Records" %}{% else %}{% trans "Download Valid Records" %}{% endif %}</a>
+    </span>
+    <span data-mi-actions="errors" class="mi__actions" {% if review.valid or not review.error_count %}style="display:none;"{% endif %}>
+      <button type="button" class="mi__btn mi__btn--small" data-skip-all="errors"><ion-icon name="play-skip-forward-outline"></ion-icon>{% trans "Skip All Error Records" %}</button>
+      <a class="mi__btn mi__btn--small" hx-boost="false" href="{{ review.downloads.errors }}"><ion-icon name="download-outline"></ion-icon>{% trans "Download Error Records" %}</a>
+    </span>
+    <span data-mi-actions="skipped" class="mi__actions" style="display:none;">
+      <a class="mi__btn mi__btn--small" hx-boost="false" href="{{ review.downloads.skipped }}"><ion-icon name="download-outline"></ion-icon>{% trans "Download Skipped Records" %}</a>
+    </span>
+  </div>
+</div>
+<div class="mi__card-sub" style="margin-bottom:.5rem;">{% trans "Every value can be edited and any record skipped. Then use Save changes & recheck." %}</div>
+
+{# ------------------------------------------------------------ valid #}
+<div data-mi-panel="valid" {% if not review.valid and review.error_count %}style="display:none;"{% endif %}>
+  <div class="mi__scroll mi__records">
+    <table class="fixed-table w-full border-separate mi__std">
+      <thead class="sticky top-0 bg-[white] z-[1]"><tr>
+        <th class="text-sm font-medium text-left" style="width:56px;">#</th>
+        <th class="text-sm font-medium text-left" style="width:60px;">{% trans "Skip" %}</th>
+        {% for c in review.columns %}<th class="text-sm font-medium text-left min-w-[85px]">{{ c }}</th>{% endfor %}
+        {% if review.mode == "update" or review.mode == "both" %}<th class="text-sm font-medium text-left" style="min-width:320px;">{% trans "Changes" %}</th>{% endif %}
+      </tr></thead>
+      <tbody>
+        {% for r in review.valid_rows %}
+        <tr>
+          <td class="text-sm px-1 py-1" title="{% trans 'Row' %} {{ r.row }} {% trans 'in your file' %}">{{ r.number }}</td>
+          <td class="text-sm px-1 py-1" style="text-align:center;"><input type="checkbox" class="mi__skip" data-skip-row="{{ r.row }}" title="{% trans 'Leave this record out of the import' %}"></td>
+          {% for cell in r.cells %}<td class="text-sm text-left px-1 py-1 text-[#666]">{% include "master_import/_cell.html" with cell=cell row=r.row %}</td>{% endfor %}
+          {% if review.mode == "update" or review.mode == "both" %}<td class="text-sm text-left px-1 py-1 text-[#666]">{% for change in r.changes %}<div class="mi__change">{{ change }}</div>{% endfor %}</td>{% endif %}
+        </tr>
+        {% empty %}
+        <tr><td colspan="{{ review.columns|length|add:'3' }}" class="text-sm px-1 py-1 mi__sample" style="text-align:center;padding:1.2rem;">{% if review.mode == "update" %}{% if review.unchanged %}{% blocktrans with n=review.unchanged %}Nothing to update: {{ n }} matched rows already have these values.{% endblocktrans %}{% else %}{% trans "Nothing to update." %}{% endif %}{% else %}{% trans "No valid records." %}{% endif %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if review.valid > review.shown_limit %}
+  <div class="mi__card-sub" style="margin-top:.4rem;">{% blocktrans with n=review.shown_limit total=review.valid %}Showing the first {{ n }} of {{ total }}. The download has them all.{% endblocktrans %}</div>
+  {% endif %}
+</div>
+
+{# ----------------------------------------------------------- errors #}
+<div data-mi-panel="errors" {% if review.valid or not review.error_count %}style="display:none;"{% endif %}>
+  <div class="mi__scroll mi__records">
+    <table class="fixed-table w-full border-separate mi__std">
+      <thead class="sticky top-0 bg-[white] z-[1]"><tr>
+        <th class="text-sm font-medium text-left" style="width:56px;">#</th>
+        <th class="text-sm font-medium text-left" style="width:60px;">{% trans "Skip" %}</th>
+        {% for c in review.error_columns %}<th class="text-sm font-medium text-left min-w-[85px]">{{ c }}</th>{% endfor %}
+        <th class="text-sm font-medium text-left" style="min-width:240px;">{% trans "Problem" %}</th>
+      </tr></thead>
+      <tbody>
+        {% for e in review.error_rows %}
+        <tr>
+          <td class="text-sm px-1 py-1" title="{% trans 'Row' %} {{ e.row }} {% trans 'in your file' %}">{{ e.number }}</td>
+          <td class="text-sm px-1 py-1" style="text-align:center;"><input type="checkbox" class="mi__skip" data-skip-row="{{ e.row }}" title="{% trans 'Leave this record out of the import' %}"></td>
+          {% for cell in e.cells %}<td class="text-sm text-left px-1 py-1 text-[#666]">{% include "master_import/_cell.html" with cell=cell row=e.row %}</td>{% endfor %}
+          <td class="text-sm text-left px-1 py-1 mi__err">{{ e.messages|join:" " }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="{{ review.error_columns|length|add:'3' }}" class="text-sm px-1 py-1 mi__sample" style="text-align:center;padding:1.2rem;">{% trans "No errors." %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if review.error_count > review.shown_limit %}
+  <div class="mi__card-sub" style="margin-top:.4rem;">{% blocktrans with n=review.shown_limit total=review.error_count %}Showing the first {{ n }} of {{ total }}. The download has them all.{% endblocktrans %}</div>
+  {% endif %}
+</div>
+
+{# ---------------------------------------------------------- skipped #}
+<div data-mi-panel="skipped" style="display:none;">
+  <div class="mi__scroll mi__records">
+    <table class="fixed-table w-full border-separate mi__std">
+      <thead class="sticky top-0 bg-[white] z-[1]"><tr>
+        <th class="text-sm font-medium text-left" style="width:56px;">#</th>
+        <th class="text-sm font-medium text-left" style="width:60px;">{% trans "Skip" %}</th>
+        {% for c in review.columns %}<th class="text-sm font-medium text-left min-w-[85px]">{{ c }}</th>{% endfor %}
+      </tr></thead>
+      <tbody>
+        {% for r in review.skipped_rows %}
+        <tr>
+          <td class="text-sm px-1 py-1" title="{% trans 'Row' %} {{ r.row }} {% trans 'in your file' %}">{{ r.number }}</td>
+          <td class="text-sm px-1 py-1" style="text-align:center;"><input type="checkbox" class="mi__skip" data-skip-row="{{ r.row }}" data-skipped="1" checked title="{% trans 'Untick to put this record back in the import' %}"></td>
+          {% for cell in r.cells %}<td class="text-sm text-left px-1 py-1 text-[#666]">{% include "master_import/_cell.html" with cell=cell row=r.row %}</td>{% endfor %}
+        </tr>
+        {% empty %}
+        <tr><td colspan="{{ review.columns|length|add:'2' }}" class="text-sm px-1 py-1 mi__sample" style="text-align:center;padding:1.2rem;">{% trans "Nothing skipped." %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
