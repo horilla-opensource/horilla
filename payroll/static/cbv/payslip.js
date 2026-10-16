@@ -108,7 +108,8 @@ function payslipBulkDelete() {
                     },
                     success: function (response, textStatus, jqXHR) {
                         if (jqXHR.status === 200) {
-                            location.reload(); // Reload the current page
+                            // Refresh the list in place, no full page reload
+                            hlvReloadListInPlace();
                         } else {
                             // console.log("Unexpected HTTP status:", jqXHR.status);
                         }

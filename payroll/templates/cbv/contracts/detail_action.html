@@ -18,7 +18,7 @@
                             ></ion-icon>{% trans "Edit" %}
                         </a>
                     {% endif %}
-                    {% if perms.payroll.delete_contract  %}
+                    {% if perms.payroll.delete_contract and instance.contract_status == "draft" %}
                         <a
                             class="oh-btn-group oh-btn oh-btn--danger"style="width: 50%;"
                             hx-confirm="{% trans 'Do you want to delete this Contract?' %}"

@@ -308,7 +308,11 @@ def contract_delete(request, contract_id):
 
     """
     try:
-        Contract.objects.get(id=contract_id).delete()
+        contract = Contract.objects.get(id=contract_id)
+        if contract.contract_status != "draft":
+            messages.error(request, _("Only a draft contract can be deleted."))
+            return HorillaRedirect(request)
+        contract.delete()
         messages.success(request, _("Contract deleted"))
         request_path = request.path.split("/")
         if "delete-contract-modal" in request_path:
@@ -654,6 +658,7 @@ def view_created_payslip(request, payslip_id, **kwargs):
         data["json_data"]["payslip"] = payslip.id
         data["instance"] = payslip
         data["total_calendar_days"] = get_total_calendar_days(data)
+        data["company"] = Company.objects.filter(hq=True).first()
         return render(request, "payroll/payslip/individual_payslip.html", data)
     return render(request, "404.html")
 
@@ -669,8 +674,12 @@ def delete_payslip(request, payslip_id):
     from .component_views import filter_payslip
 
     try:
-        Payslip.objects.get(id=payslip_id).delete()
-        messages.success(request, _("Payslip deleted"))
+        payslip = Payslip.objects.get(id=payslip_id)
+        if payslip.status == "paid":
+            messages.error(request, _("A paid payslip cannot be deleted."))
+        else:
+            payslip.delete()
+            messages.success(request, _("Payslip deleted"))
     except Payslip.DoesNotExist:
         messages.error(request, _("Payslip not found."))
     except ProtectedError:
@@ -1357,6 +1366,14 @@ def payslip_bulk_delete(request):
     for id in ids:
         try:
             payslip = Payslip.objects.get(id=id)
+            if payslip.status == "paid":
+                messages.error(
+                    request,
+                    _("{payslip} is paid and cannot be deleted.").format(
+                        payslip=payslip
+                    ),
+                )
+                continue
             period = f"{payslip.start_date} to {payslip.end_date}"
             payslip.delete()
             messages.success(
@@ -1434,13 +1451,21 @@ def contract_bulk_delete(request):
     for id in ids:
         try:
             contract = Contract.objects.get(id=id)
+            if contract.contract_status != "draft":
+                messages.error(
+                    request,
+                    _("{contract} is not a draft and cannot be deleted.").format(
+                        contract=contract
+                    ),
+                )
+                continue
             name = f"{contract.contract_name}"
             contract.delete()
             messages.success(
                 request,
                 _("{name} deleted.").format(name=name),
             )
-        except Payslip.DoesNotExist:
+        except Contract.DoesNotExist:
             messages.error(request, _("Contract not found."))
         except ProtectedError:
             messages.error(
@@ -1542,6 +1567,11 @@ def generate_payslip_pdf(template_path, context, html=False):
         # Return an HttpResponse containing the PDF content
         response = HttpResponse(pdf, content_type="application/pdf")
         response["Content-Disposition"] = "inline; filename=payslip.pdf"
+        # Every payslip is served from the same URL shape (no per-render
+        # query string/ETag), so without this the browser can reuse a
+        # previously cached PDF -- stale company/logo info included -- for
+        # what looks like a fresh request.
+        response["Cache-Control"] = "no-store, no-cache, must-revalidate"
         return response
     except Exception as e:
         # Handle errors gracefully

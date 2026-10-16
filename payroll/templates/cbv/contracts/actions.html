@@ -23,7 +23,7 @@
 				<ion-icon name="create-outline"></ion-icon>
 			</button>
 		{% endif %}
-		{% if perms.payroll.delete_contract %}
+		{% if perms.payroll.delete_contract and instance.contract_status == "draft" %}
 			<a
 				onclick="event.preventDefault();event.stopPropagation();"
 				class="oh-btn oh-btn--danger oh-btn--sq-sm"
@@ -41,7 +41,13 @@
 				></ion-icon>
 			</a>
 		{% else %}
-			<button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Delete' %}">
+			<button
+				type="button"
+				class="oh-btn oh-btn--danger oh-btn--sq-sm"
+				disabled
+				style="opacity: 0.5; cursor: not-allowed;"
+				title="{% trans 'Only a draft contract can be deleted' %}"
+			>
 				<ion-icon name="trash-outline"></ion-icon>
 			</button>
 		{% endif %}

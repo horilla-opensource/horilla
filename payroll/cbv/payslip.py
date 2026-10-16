@@ -233,20 +233,6 @@ class PayslipNav(HorillaNavView):
             self.actions.extend(
                 [
                     {
-                        "action": _("Generate"),
-                        "attrs": f"""
-                    onclick="window.location.href='{reverse('payroll-batch-scope')}'"
-                    style="cursor: pointer;"
-                """,
-                    },
-                    {
-                        "action": _("Payroll runs"),
-                        "attrs": f"""
-                    onclick="window.location.href='{reverse('payroll-batch-home')}'"
-                    style="cursor: pointer;"
-                """,
-                    },
-                    {
                         "action": _("Payslip Report"),
                         "attrs": f"""
                             data-toggle = "oh-modal-toggle"
