@@ -6,6 +6,7 @@ horilla_automations/methods/methods.py
 import operator
 
 from django.apps import apps as django_apps
+from django.core.cache import cache
 from django.core.exceptions import FieldDoesNotExist
 from django.db import models as django_models
 from django.http import QueryDict
@@ -13,6 +14,22 @@ from django.http import QueryDict
 from base.templatetags.horillafilters import app_installed
 from employee.models import Employee
 from horilla.models import HorillaModel
+
+REFRESH_PENDING_KEY = "mail_automations_refresh_pending"
+
+
+def mark_refresh_pending():
+    """Flag that automations changed and need a Refresh Automations run."""
+    cache.set(REFRESH_PENDING_KEY, True, None)
+
+
+def is_refresh_pending():
+    return bool(cache.get(REFRESH_PENDING_KEY, False))
+
+
+def clear_refresh_pending():
+    cache.delete(REFRESH_PENDING_KEY)
+
 
 recruitment_installed = False
 if app_installed("recruitment"):
