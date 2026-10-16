@@ -1435,7 +1435,24 @@
                     }
                     el.innerHTML = html;
                 };
-                const render = () => build(Math.min(items.length, PILL_LEGEND_LIMIT));
+                // Show as many chips as fit on the one row (up to the limit); the
+                // rest go behind the "+N" chip. Long names used to push it out of the card.
+                const fit = () => {
+                    let k = Math.min(items.length, PILL_LEGEND_LIMIT);
+                    build(k);
+                    while (k > 1 && el.scrollWidth > el.clientWidth + 1) build(--k);
+                    return k;
+                };
+                const render = () => { fit(); };
+                if (window.ResizeObserver) {
+                    let lastWidth = el.clientWidth;
+                    new ResizeObserver(() => {
+                        if (!el.isConnected || el.clientWidth === lastWidth) return;
+                        lastWidth = el.clientWidth;
+                        if (el.querySelector('.pm-pill-more:hover, .pm-pill-more:focus-within')) return;
+                        fit();
+                    }).observe(el);
+                }
                 const refresh = () => {
                     const chips = el.querySelector('.pm-pill-chips');
                     if (chips) chips.innerHTML = chipsHtml(visible);
