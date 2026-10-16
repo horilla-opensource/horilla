@@ -362,7 +362,7 @@ class TaskCreateForm(HorillaFormView):
             self.form.fields["stage"].choices = (
                 [("", _("Select Stage"))]
                 + [(stage.pk, stage) for stage in stages]
-                + [("dynamic_create", _("Dynamic Create"))]
+                + [("dynamic_create", _("Create %(label)s") % {"label": _("Stage")})]
             )
             dynamic_project = Project.objects.filter(id=dynamic_project_id).first()
             employees = employees_for_project(dynamic_project)
@@ -375,7 +375,7 @@ class TaskCreateForm(HorillaFormView):
             self.form.fields["stage"].choices = (
                 [("", _("Select Stage"))]
                 + [(stage.pk, stage) for stage in stages]
-                + [("dynamic_create", _("Dynamic Create"))]
+                + [("dynamic_create", _("Create %(label)s") % {"label": _("Stage")})]
             )
 
         if stage_id:
@@ -423,10 +423,16 @@ class TaskCreateForm(HorillaFormView):
             ):
 
                 self.form.fields["project"].choices.append(
-                    ("dynamic_create", "Dynamic create")
+                    (
+                        "dynamic_create",
+                        _("Create %(label)s") % {"label": _("Project")},
+                    )
                 )
                 self.form.fields["stage"].choices.append(
-                    ("dynamic_create", "Dynamic create")
+                    (
+                        "dynamic_create",
+                        _("Create %(label)s") % {"label": _("Stage")},
+                    )
                 )
 
         return context
