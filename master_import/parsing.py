@@ -47,10 +47,15 @@ def suggest_mapping(columns, fields):
     mapping, taken = {}, set()
     for spec in fields:
         names = [spec.key, spec.label, *spec.aliases]
-        found = next((by_norm[normalise(n)] for n in names if normalise(n) in by_norm), "")
+        found = next(
+            (by_norm[normalise(n)] for n in names if normalise(n) in by_norm), ""
+        )
         if not found:
             close = get_close_matches(
-                normalise(spec.key), [n for n in by_norm if by_norm[n] not in taken], n=1, cutoff=0.85
+                normalise(spec.key),
+                [n for n in by_norm if by_norm[n] not in taken],
+                n=1,
+                cutoff=0.85,
             )
             found = by_norm[close[0]] if close else ""
         if found in taken:

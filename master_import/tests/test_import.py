@@ -55,13 +55,17 @@ class ParsingTests(TestCase):
 
     def test_rows_are_numbered_like_the_sheet(self):
         frame = pd.DataFrame([GOOD, GOOD])
-        rows = apply_mapping(frame, suggest_mapping(list(GOOD), EMPLOYEES.fields), EMPLOYEES.fields)
+        rows = apply_mapping(
+            frame, suggest_mapping(list(GOOD), EMPLOYEES.fields), EMPLOYEES.fields
+        )
         self.assertEqual([r["__row"] for r in rows], [2, 3])
 
 
 def rows_for(*extra):
     frame = pd.DataFrame([{**GOOD, **e} for e in extra] or [GOOD])
-    return apply_mapping(frame, suggest_mapping(list(frame.columns), EMPLOYEES.fields), EMPLOYEES.fields)
+    return apply_mapping(
+        frame, suggest_mapping(list(frame.columns), EMPLOYEES.fields), EMPLOYEES.fields
+    )
 
 
 class EmployeeCheckTests(TestCase):
@@ -111,12 +115,16 @@ class EmployeeCheckTests(TestCase):
         self.assertEqual(len(result.errors), 1)
         self.assertIn("bank", " ".join(result.errors[0]["messages"]).lower())
 
-    def test_a_value_too_long_for_its_column_is_that_rows_error_not_a_failed_import(self):
+    def test_a_value_too_long_for_its_column_is_that_rows_error_not_a_failed_import(
+        self,
+    ):
         long_role = "Marketing Researcher - Digital Marketing Specialist"
         self.assertGreater(len(long_role), 50)
         columns = {**GOOD, "Job Role": long_role}
         rows = apply_mapping(
-            pd.DataFrame([columns]), suggest_mapping(list(columns), EMPLOYEES.fields), EMPLOYEES.fields
+            pd.DataFrame([columns]),
+            suggest_mapping(list(columns), EMPLOYEES.fields),
+            EMPLOYEES.fields,
         )
         result = self.check(rows)
         self.assertEqual(result.valid, [])
@@ -129,7 +137,9 @@ class EmployeeCheckTests(TestCase):
         self.assertEqual(len(result.errors), 1)
 
     def test_the_username_defaults_to_the_email(self):
-        self.assertEqual(self.check(rows_for()).valid[0]["Username"], "maya.chen@acme.test")
+        self.assertEqual(
+            self.check(rows_for()).valid[0]["Username"], "maya.chen@acme.test"
+        )
 
     def test_the_username_falls_back_to_the_badge_id_without_an_email(self):
         rows = rows_for()
@@ -137,7 +147,12 @@ class EmployeeCheckTests(TestCase):
         self.assertEqual(EMPLOYEES.prepare(rows, Context())[0]["Username"], "E-1")
 
     def test_a_username_in_the_sheet_is_used_and_must_be_unique(self):
-        result = self.check(rows_for({"Login": "maya"}, {"Login": "maya", "Employee ID": "E-2", "Work Email": "m2@acme.test"}))
+        result = self.check(
+            rows_for(
+                {"Login": "maya"},
+                {"Login": "maya", "Employee ID": "E-2", "Work Email": "m2@acme.test"},
+            )
+        )
         self.assertEqual(result.valid[0]["Username"], "maya")
         self.assertEqual(len(result.errors), 1)
         self.assertIn("username", " ".join(result.errors[0]["messages"]).lower())
@@ -147,7 +162,9 @@ class EmployeeCheckTests(TestCase):
         self.assertEqual(result.errors, [])
 
     def test_the_import_signs_people_in_with_the_given_username_and_password(self):
-        rows = EMPLOYEES.check(rows_for({"Login": "maya", "Password": "Str0ng-Pass#9421"}), Context()).valid
+        rows = EMPLOYEES.check(
+            rows_for({"Login": "maya", "Password": "Str0ng-Pass#9421"}), Context()
+        ).valid
         EMPLOYEES.commit(rows, Context())
         user = Employee.objects.entire().get(badge_id="E-1").employee_user_id
         self.assertEqual(user.username, "maya")
@@ -157,7 +174,9 @@ class EmployeeCheckTests(TestCase):
 class WizardTests(TestCase):
     def setUp(self):
         self.user = make_user("importer", is_superuser=True)
-        make_employee(company=make_company("Home"), email="importer@home.test", user=self.user)
+        make_employee(
+            company=make_company("Home"), email="importer@home.test", user=self.user
+        )
         self.client.force_login(self.user)
         session = self.client.session
         session["selected_company"] = "all"
@@ -165,13 +184,16 @@ class WizardTests(TestCase):
 
     def upload(self, rows):
         return self.client.post(
-            reverse("master-import-upload"), {"dataset": "employees", "file": sheet(rows)}
+            reverse("master-import-upload"),
+            {"dataset": "employees", "file": sheet(rows)},
         )
 
     def test_the_first_step_lists_the_datasets_and_offers_a_template(self):
         response = self.client.get(reverse("master-import"))
         self.assertContains(response, "Employees")
-        self.assertContains(response, reverse("master-import-template", args=["employees"]))
+        self.assertContains(
+            response, reverse("master-import-template", args=["employees"])
+        )
 
     def test_the_dataset_dropdown_lists_every_dataset(self):
         html = self.client.get(reverse("master-import")).content.decode()
@@ -180,7 +202,9 @@ class WizardTests(TestCase):
         self.assertNotIn("Soon", html)
 
     def test_the_template_is_a_sheet_with_every_field_as_a_column(self):
-        response = self.client.get(reverse("master-import-template", args=["employees"]))
+        response = self.client.get(
+            reverse("master-import-template", args=["employees"])
+        )
         frame = pd.read_excel(io.BytesIO(response.content))
         self.assertEqual(list(frame.columns), [f.key for f in EMPLOYEES.fields])
 
@@ -190,12 +214,16 @@ class WizardTests(TestCase):
         for field in EMPLOYEES.fields:
             if field.key != "Full Name":
                 self.assertIn(f">{field.label}", html)
-        self.assertEqual(html.count("mi__field--req\""), 4)  # Badge ID, First Name, Email, Phone
+        self.assertEqual(
+            html.count('mi__field--req"'), 4
+        )  # Badge ID, First Name, Email, Phone
 
     def test_the_template_is_formatted_for_working_in(self):
         from openpyxl import load_workbook
 
-        response = self.client.get(reverse("master-import-template", args=["employees"]))
+        response = self.client.get(
+            reverse("master-import-template", args=["employees"])
+        )
         sheet = load_workbook(io.BytesIO(response.content)).active
         self.assertEqual(sheet.freeze_panes, "A2")
         header = sheet["A1"]
@@ -203,7 +231,9 @@ class WizardTests(TestCase):
         self.assertEqual(header.fill.start_color.rgb[-6:], "FFFF00")
         self.assertEqual(header.border.left.style, "thin")
         self.assertEqual(sheet["A2"].border.bottom.style, "thin")
-        self.assertEqual(sheet["C20"].border.bottom.style, "thin")  # a blank grid below the sample
+        self.assertEqual(
+            sheet["C20"].border.bottom.style, "thin"
+        )  # a blank grid below the sample
         self.assertGreaterEqual(sheet.column_dimensions["A"].width, 14)
 
     def test_an_upload_makes_a_job_and_goes_to_matching(self):
@@ -231,14 +261,18 @@ class WizardTests(TestCase):
     def test_matching_moves_on_to_the_review_page(self):
         self.upload([GOOD])
         job = ImportJob.objects.get()
-        self.assertRedirects(self.match(job), reverse("master-import-review", args=[job.pk]))
+        self.assertRedirects(
+            self.match(job), reverse("master-import-review", args=[job.pk])
+        )
 
     def test_matching_without_the_required_fields_stays_put(self):
         self.upload([GOOD])
         job = ImportJob.objects.get()
         mapping = {f"map__{k}": v for k, v in job.mapping.items()}
         mapping["map__Email"] = ""
-        response = self.client.post(reverse("master-import-map", args=[job.pk]), mapping)
+        response = self.client.post(
+            reverse("master-import-map", args=[job.pk]), mapping
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Still to match")
 
@@ -257,9 +291,17 @@ class WizardTests(TestCase):
         data = self.client.post(reverse("master-import-check", args=[job.pk])).json()
         self.assertTrue(data["ok"])
         self.assertEqual((data["valid"], data["error_count"]), (1, 1))
-        for text in ("Valid Records", "Error Records", "maya.chen@acme.test", 'data-field="Email"', "mi__cell--bad"):
+        for text in (
+            "Valid Records",
+            "Error Records",
+            "maya.chen@acme.test",
+            'data-field="Email"',
+            "mi__cell--bad",
+        ):
             self.assertIn(text, data["html"])
-        progress = self.client.get(reverse("master-import-check-progress", args=[job.pk]))
+        progress = self.client.get(
+            reverse("master-import-check-progress", args=[job.pk])
+        )
         self.assertEqual(progress.json()["percent"], 100)
 
     def test_cells_use_the_input_that_suits_their_field(self):
@@ -267,9 +309,11 @@ class WizardTests(TestCase):
         self.upload([{**GOOD, "Gender": "female", "Basic Salary": "45000"}])
         job = ImportJob.objects.get()
         self.match(job)
-        html = self.client.post(reverse("master-import-check", args=[job.pk])).json()["html"]
-        self.assertIn('type="date"', html)          # Date Joining
-        self.assertIn('type="number"', html)        # Basic Salary
+        html = self.client.post(reverse("master-import-check", args=[job.pk])).json()[
+            "html"
+        ]
+        self.assertIn('type="date"', html)  # Date Joining
+        self.assertIn('type="number"', html)  # Basic Salary
         self.assertIn('type="email"', html)
         # Open fields are dropdowns: what already exists, plus what the file brings.
         self.assertNotIn("datalist", html)
@@ -277,26 +321,42 @@ class WizardTests(TestCase):
         self.assertIn('<option value="Engineering"', html)
         self.assertRegex(html, r'<select[^>]*data-field="Department"')
         self.assertRegex(html, r'<select[^>]*data-field="Gender"')
-        self.assertIn('id="mi-find-rows"', html)    # the search box
+        self.assertIn('id="mi-find-rows"', html)  # the search box
         # Records are counted from 1, with the file's own row in the tooltip.
         self.assertIn(">1</td>", html)
         self.assertIn("Row 2 in your file", html)
 
     def test_a_dropdown_offers_database_values_and_the_sheets_own(self):
         Department.objects.create(department="Operations")
-        self.upload([GOOD, {**GOOD, "Employee ID": "E-2", "Work Email": "b@acme.test", "Dept": "Brand New"}])
+        self.upload(
+            [
+                GOOD,
+                {
+                    **GOOD,
+                    "Employee ID": "E-2",
+                    "Work Email": "b@acme.test",
+                    "Dept": "Brand New",
+                },
+            ]
+        )
         job = ImportJob.objects.get()
         self.match(job)
-        html = self.client.post(reverse("master-import-check", args=[job.pk])).json()["html"]
+        html = self.client.post(reverse("master-import-check", args=[job.pk])).json()[
+            "html"
+        ]
         for name in ("Operations", "Engineering", "Brand New"):
             self.assertIn(f'<option value="{name}"', html)
 
     def test_a_fixed_choice_field_is_a_dropdown(self):
         columns = {**GOOD, "Gender": "female"}
         frame = pd.DataFrame([columns])
-        rows = apply_mapping(frame, suggest_mapping(list(columns), EMPLOYEES.fields), EMPLOYEES.fields)
+        rows = apply_mapping(
+            frame, suggest_mapping(list(columns), EMPLOYEES.fields), EMPLOYEES.fields
+        )
         self.assertEqual(rows[0]["Gender"], "female")
-        self.assertEqual(next(f for f in EMPLOYEES.fields if f.key == "Gender").kind, "choice")
+        self.assertEqual(
+            next(f for f in EMPLOYEES.fields if f.key == "Gender").kind, "choice"
+        )
 
     def test_fixing_an_error_on_the_review_page_makes_the_row_valid(self):
         self.upload([GOOD, {**GOOD, "Employee ID": "E-2", "Work Email": "bad"}])
@@ -323,8 +383,13 @@ class WizardTests(TestCase):
         employee = Employee.objects.entire().get(badge_id="E-1")
         self.assertEqual(employee.employee_first_name, "Maya")
         self.assertEqual(employee.employee_work_info.company_id.company, "Acme Ltd")
-        self.assertEqual(employee.employee_work_info.department_id.department, "Engineering")
-        self.assertEqual(EmployeeBankDetails.objects.get(employee_id=employee).account_number, "000123456789")
+        self.assertEqual(
+            employee.employee_work_info.department_id.department, "Engineering"
+        )
+        self.assertEqual(
+            EmployeeBankDetails.objects.get(employee_id=employee).account_number,
+            "000123456789",
+        )
         self.assertTrue(Company.objects.filter(company="Acme Ltd").exists())
         # A company made from a name alone has nothing else filled in.
         self.assertIsNone(Company.objects.get(company="Acme Ltd").address)
@@ -339,12 +404,16 @@ class WizardTests(TestCase):
     def skip(self, job, **rows):
         return self.client.post(
             reverse("master-import-edits", args=[job.pk]),
-            data=__import__("json").dumps({"skip": {k.lstrip("r"): v for k, v in rows.items()}}),
+            data=__import__("json").dumps(
+                {"skip": {k.lstrip("r"): v for k, v in rows.items()}}
+            ),
             content_type="application/json",
         )
 
     def test_a_skipped_record_is_left_out_of_the_check_and_the_import(self):
-        self.upload([GOOD, {**GOOD, "Employee ID": "E-2", "Work Email": "two@acme.test"}])
+        self.upload(
+            [GOOD, {**GOOD, "Employee ID": "E-2", "Work Email": "two@acme.test"}]
+        )
         job = ImportJob.objects.get()
         self.match(job)
         self.skip(job, r3=True)
@@ -353,7 +422,9 @@ class WizardTests(TestCase):
         data = self.client.post(reverse("master-import-check", args=[job.pk])).json()
         self.assertEqual((data["valid"], data["error_count"]), (1, 0))
         self.assertIn("Skipped", data["html"])
-        self.assertIn('data-skipped="1"', data["html"])      # listed on the Skipped tab, ticked
+        self.assertIn(
+            'data-skipped="1"', data["html"]
+        )  # listed on the Skipped tab, ticked
         self.client.post(reverse("master-import-run", args=[job.pk]))
         self.assertTrue(Employee.objects.entire().filter(badge_id="E-1").exists())
         self.assertFalse(Employee.objects.entire().filter(badge_id="E-2").exists())
@@ -362,7 +433,9 @@ class WizardTests(TestCase):
         self.assertEqual(job.summary["imported"], 1)
 
     def test_a_skipped_record_can_be_put_back(self):
-        self.upload([GOOD, {**GOOD, "Employee ID": "E-2", "Work Email": "two@acme.test"}])
+        self.upload(
+            [GOOD, {**GOOD, "Employee ID": "E-2", "Work Email": "two@acme.test"}]
+        )
         job = ImportJob.objects.get()
         self.match(job)
         self.skip(job, r3=True)
@@ -373,24 +446,41 @@ class WizardTests(TestCase):
         self.assertEqual(data["valid"], 2)
 
     def test_valid_error_and_skipped_records_can_be_downloaded(self):
-        self.upload([GOOD, {**GOOD, "Employee ID": "E-2", "Work Email": "bad"}, {**GOOD, "Employee ID": "E-3", "Work Email": "three@acme.test"}])
+        self.upload(
+            [
+                GOOD,
+                {**GOOD, "Employee ID": "E-2", "Work Email": "bad"},
+                {**GOOD, "Employee ID": "E-3", "Work Email": "three@acme.test"},
+            ]
+        )
         job = ImportJob.objects.get()
         self.match(job)
         self.skip(job, r4=True)
 
         def sheet_of(kind):
-            response = self.client.get(reverse("master-import-download", args=[job.pk, kind]))
+            response = self.client.get(
+                reverse("master-import-download", args=[job.pk, kind])
+            )
             self.assertEqual(response.status_code, 200)
             return pd.read_excel(io.BytesIO(response.content), dtype=str)
 
-        valid, errors, skipped = sheet_of("valid"), sheet_of("errors"), sheet_of("skipped")
+        valid, errors, skipped = (
+            sheet_of("valid"),
+            sheet_of("errors"),
+            sheet_of("skipped"),
+        )
         self.assertEqual(list(valid["Badge ID"]), ["E-1"])
         self.assertEqual(list(errors["Badge ID"]), ["E-2"])
         self.assertIn("Errors", errors.columns)
         self.assertEqual(list(skipped["Badge ID"]), ["E-3"])
         # only what was matched is in the sheet
         self.assertNotIn("Bank Country", valid.columns)
-        self.assertEqual(self.client.get(reverse("master-import-download", args=[job.pk, "nope"])).status_code, 404)
+        self.assertEqual(
+            self.client.get(
+                reverse("master-import-download", args=[job.pk, "nope"])
+            ).status_code,
+            404,
+        )
 
     def test_corrected_rows_are_imported(self):
         self.upload([{**GOOD, "Work Email": "bad"}])
@@ -402,7 +492,11 @@ class WizardTests(TestCase):
             content_type="application/json",
         )
         self.client.post(reverse("master-import-run", args=[job.pk]))
-        self.assertTrue(Employee.objects.entire().filter(badge_id="E-1", email="maya.chen@acme.test").exists())
+        self.assertTrue(
+            Employee.objects.entire()
+            .filter(badge_id="E-1", email="maya.chen@acme.test")
+            .exists()
+        )
 
     def test_the_summary_lists_errors_and_offers_the_error_file(self):
         self.upload([{**GOOD, "Work Email": "bad"}])
@@ -427,14 +521,17 @@ class WizardTests(TestCase):
 
     def test_history_lists_the_import(self):
         self.upload([GOOD])
-        self.assertContains(self.client.get(reverse("master-import-history")), "people.xlsx")
+        self.assertContains(
+            self.client.get(reverse("master-import-history")), "people.xlsx"
+        )
 
     def test_someone_without_permission_cannot_import(self):
         other = make_user("plain")
         make_employee(company=make_company("Co"), email="plain@co.test", user=other)
         self.client.force_login(other)
         response = self.client.post(
-            reverse("master-import-upload"), {"dataset": "employees", "file": sheet([GOOD])}
+            reverse("master-import-upload"),
+            {"dataset": "employees", "file": sheet([GOOD])},
         )
         self.assertEqual(ImportJob.objects.count(), 0)
         self.assertEqual(response.status_code, 302)
@@ -445,7 +542,10 @@ class WizardTests(TestCase):
         other = make_user("peer")
         make_employee(company=make_company("Co2"), email="peer@co.test", user=other)
         self.client.force_login(other)
-        self.assertEqual(self.client.get(reverse("master-import-map", args=[job.pk])).status_code, 404)
+        self.assertEqual(
+            self.client.get(reverse("master-import-map", args=[job.pk])).status_code,
+            404,
+        )
 
 
 class UpdateModeTests(TestCase):
@@ -459,10 +559,18 @@ class UpdateModeTests(TestCase):
         session = self.client.session
         session["selected_company"] = "all"
         session.save()
-        self.maya = make_employee(company=self.company, email="maya@acme.test", first_name="Maya")
-        self.jon = make_employee(company=self.company, email="jon@acme.test", first_name="Jon")
-        Employee.objects.filter(pk=self.maya.pk).update(badge_id="E-1", phone="9876543210", employee_last_name="Chen")
-        Employee.objects.filter(pk=self.jon.pk).update(badge_id="E-2", phone="9876500000", employee_last_name="Bell")
+        self.maya = make_employee(
+            company=self.company, email="maya@acme.test", first_name="Maya"
+        )
+        self.jon = make_employee(
+            company=self.company, email="jon@acme.test", first_name="Jon"
+        )
+        Employee.objects.filter(pk=self.maya.pk).update(
+            badge_id="E-1", phone="9876543210", employee_last_name="Chen"
+        )
+        Employee.objects.filter(pk=self.jon.pk).update(
+            badge_id="E-2", phone="9876500000", employee_last_name="Bell"
+        )
 
     def run_update(self, rows, keys=("Badge ID",)):
         self.client.post(
@@ -494,24 +602,44 @@ class UpdateModeTests(TestCase):
         return job
 
     def test_create_or_update_updates_known_people_and_creates_the_rest(self):
-        new = {"Badge ID": "E-9", "First Name": "Nia", "Last Name": "Cole", "Email": "nia@acme.test",
-               "Phone": "9876511111", "Company": "Acme Ltd"}
-        known = {"Badge ID": "E-1", "First Name": "Maya", "Last Name": "Chen", "Email": "maya@acme.test",
-                 "Phone": "9876543210", "Company": "Acme Ltd", "Location": "Austin"}
+        new = {
+            "Badge ID": "E-9",
+            "First Name": "Nia",
+            "Last Name": "Cole",
+            "Email": "nia@acme.test",
+            "Phone": "9876511111",
+            "Company": "Acme Ltd",
+        }
+        known = {
+            "Badge ID": "E-1",
+            "First Name": "Maya",
+            "Last Name": "Chen",
+            "Email": "maya@acme.test",
+            "Phone": "9876543210",
+            "Company": "Acme Ltd",
+            "Location": "Austin",
+        }
         job = self.run_both([known, new])
         data = self.check(job)
         self.assertEqual((data["valid"], data["error_count"]), (2, 0))
         self.assertIn("Will Create", data["html"])
         self.assertIn("New employee", data["html"])
         self.client.post(reverse("master-import-run", args=[job.pk]))
-        self.assertEqual(Employee.objects.entire().get(pk=self.maya.pk).employee_work_info.location, "Austin")
-        self.assertEqual(Employee.objects.entire().get(badge_id="E-9").employee_first_name, "Nia")
+        self.assertEqual(
+            Employee.objects.entire().get(pk=self.maya.pk).employee_work_info.location,
+            "Austin",
+        )
+        self.assertEqual(
+            Employee.objects.entire().get(badge_id="E-9").employee_first_name, "Nia"
+        )
         job.refresh_from_db()
         self.assertEqual(job.summary["counts"]["employees"], 1)
         self.assertEqual(job.summary["counts"]["updated"], 1)
 
     def test_a_row_is_matched_by_badge_id_and_shows_what_would_change(self):
-        job = self.run_update([{"Badge ID": "E-1", "Location": "Austin", "Last Name": "Chen-Smith"}])
+        job = self.run_update(
+            [{"Badge ID": "E-1", "Location": "Austin", "Last Name": "Chen-Smith"}]
+        )
         self.assertEqual(job.match_keys, ["Badge ID"])
         data = self.check(job)
         self.assertEqual((data["valid"], data["error_count"]), (1, 0))
@@ -520,7 +648,9 @@ class UpdateModeTests(TestCase):
         self.assertIn("Will Update", data["html"])
 
     def test_only_the_matched_person_is_changed_and_blank_cells_change_nothing(self):
-        job = self.run_update([{"Badge ID": "E-1", "Location": "Austin", "Last Name": None}])
+        job = self.run_update(
+            [{"Badge ID": "E-1", "Location": "Austin", "Last Name": None}]
+        )
         self.check(job)
         self.client.post(reverse("master-import-run", args=[job.pk]))
         maya = Employee.objects.entire().get(pk=self.maya.pk)
@@ -552,7 +682,9 @@ class UpdateModeTests(TestCase):
         self.assertIn("belong to different employees", data["html"])
 
     def test_a_person_matched_twice_in_the_sheet_is_refused(self):
-        job = self.run_update([{"Badge ID": "E-1", "Location": "A"}, {"Badge ID": "E-1", "Location": "B"}])
+        job = self.run_update(
+            [{"Badge ID": "E-1", "Location": "A"}, {"Badge ID": "E-1", "Location": "B"}]
+        )
         data = self.check(job)
         self.assertEqual((data["valid"], data["error_count"]), (1, 1))
         self.assertIn("already updated by row", data["html"])
@@ -576,11 +708,15 @@ class UpdateModeTests(TestCase):
     def test_email_is_refused_when_taken_or_when_not_found_by_badge_id(self):
         taken = self.run_update([{"Badge ID": "E-1", "Email": "jon@acme.test"}])
         self.assertEqual(self.check(taken)["error_count"], 1)
-        by_phone = self.run_update([{"Phone": "9876543210", "Email": "x@acme.test"}], keys=("Phone",))
+        by_phone = self.run_update(
+            [{"Phone": "9876543210", "Email": "x@acme.test"}], keys=("Phone",)
+        )
         self.assertIn("found by Badge ID", self.check(by_phone)["html"])
 
     def test_a_row_naming_another_company_is_refused(self):
-        job = self.run_update([{"Badge ID": "E-1", "Company": "Elsewhere Inc", "Location": "A"}])
+        job = self.run_update(
+            [{"Badge ID": "E-1", "Company": "Elsewhere Inc", "Location": "A"}]
+        )
         data = self.check(job)
         self.assertEqual(data["error_count"], 1)
         self.assertIn("does not move employees", data["html"])
@@ -590,25 +726,46 @@ class UpdateModeTests(TestCase):
         self.assertEqual(self.check(job)["valid"], 1)
         self.client.post(reverse("master-import-run", args=[job.pk]))
         maya = Employee.objects.entire().get(pk=self.maya.pk)
-        self.assertEqual(maya.employee_work_info.department_id.department, "Brand New Dept")
+        self.assertEqual(
+            maya.employee_work_info.department_id.department, "Brand New Dept"
+        )
 
     def test_a_new_bank_account_needs_both_fields_and_an_existing_one_is_updated(self):
-        only_bank = self.run_update([{"Badge ID": "E-1", "Bank Name": "First National"}])
+        only_bank = self.run_update(
+            [{"Badge ID": "E-1", "Bank Name": "First National"}]
+        )
         self.assertEqual(self.check(only_bank)["error_count"], 1)
-        both = self.run_update([{"Badge ID": "E-1", "Bank Name": "First National", "Account Number": "123456"}])
+        both = self.run_update(
+            [
+                {
+                    "Badge ID": "E-1",
+                    "Bank Name": "First National",
+                    "Account Number": "123456",
+                }
+            ]
+        )
         self.check(both)
         self.client.post(reverse("master-import-run", args=[both.pk]))
-        self.assertEqual(EmployeeBankDetails.objects.get(employee_id=self.maya).bank_name, "First National")
+        self.assertEqual(
+            EmployeeBankDetails.objects.get(employee_id=self.maya).bank_name,
+            "First National",
+        )
         again = self.run_update([{"Badge ID": "E-1", "Bank Name": "Second Bank"}])
         self.assertEqual(self.check(again)["valid"], 1)
         self.client.post(reverse("master-import-run", args=[again.pk]))
         bank = EmployeeBankDetails.objects.get(employee_id=self.maya)
-        self.assertEqual((bank.bank_name, bank.account_number), ("Second Bank", "123456"))
+        self.assertEqual(
+            (bank.bank_name, bank.account_number), ("Second Bank", "123456")
+        )
 
     def test_the_map_page_asks_for_the_match_key(self):
         self.client.post(
             reverse("master-import-upload"),
-            {"dataset": "employees", "mode": "update", "file": sheet([{"Badge ID": "E-1", "Location": "A"}])},
+            {
+                "dataset": "employees",
+                "mode": "update",
+                "file": sheet([{"Badge ID": "E-1", "Location": "A"}]),
+            },
         )
         job = ImportJob.objects.latest("pk")
         page = self.client.get(reverse("master-import-map", args=[job.pk]))
@@ -620,16 +777,22 @@ class UpdateModeTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_badge_id_can_be_changed_when_people_are_found_by_email(self):
-        job = self.run_update([{"Email": "maya@acme.test", "Badge ID": "E-100"}], keys=("Email",))
+        job = self.run_update(
+            [{"Email": "maya@acme.test", "Badge ID": "E-100"}], keys=("Email",)
+        )
         data = self.check(job)
         self.assertEqual((data["valid"], data["error_count"]), (1, 0))
         self.assertIn("Badge ID: E-1", data["html"])
         self.client.post(reverse("master-import-run", args=[job.pk]))
-        self.assertEqual(Employee.objects.entire().get(pk=self.maya.pk).badge_id, "E-100")
+        self.assertEqual(
+            Employee.objects.entire().get(pk=self.maya.pk).badge_id, "E-100"
+        )
         self.assertEqual(Employee.objects.entire().get(pk=self.jon.pk).badge_id, "E-2")
 
     def test_a_badge_id_already_in_use_is_refused_on_update(self):
-        job = self.run_update([{"Email": "maya@acme.test", "Badge ID": "E-2"}], keys=("Email",))
+        job = self.run_update(
+            [{"Email": "maya@acme.test", "Badge ID": "E-2"}], keys=("Email",)
+        )
         data = self.check(job)
         self.assertEqual(data["error_count"], 1)
         self.assertIn("already has this Badge ID", data["html"])
@@ -654,7 +817,9 @@ class SalaryStructureColumnTests(TestCase):
         session = self.client.session
         session["selected_company"] = "all"
         session.save()
-        self.structure = SalaryStructure.objects.create(title="Standard Monthly", structure_mode="gross_up")
+        self.structure = SalaryStructure.objects.create(
+            title="Standard Monthly", structure_mode="gross_up"
+        )
 
     def importing(self, rows, mode="create", keys=("Badge ID",)):
         self.client.post(
@@ -697,15 +862,25 @@ class SalaryStructureColumnTests(TestCase):
         self.assertEqual((data["valid"], data["error_count"]), (1, 0))
         self.assertIn("Salary Structures", data["html"])
         self.assertIn("Brand New Structure", data["html"])
-        self.assertFalse(SalaryStructure.objects.entire().filter(title="Brand New Structure").exists())
+        self.assertFalse(
+            SalaryStructure.objects.entire()
+            .filter(title="Brand New Structure")
+            .exists()
+        )
         self.client.post(reverse("master-import-run", args=[job.pk]))
         made = SalaryStructure.objects.entire().get(title="Brand New Structure")
-        self.assertEqual(made.company_id.company, "Acme Ltd")  # the person's own company, made by the import
-        contract = Contract.objects.entire().get(employee_id=Employee.objects.entire().get(badge_id="E-1"))
+        self.assertEqual(
+            made.company_id.company, "Acme Ltd"
+        )  # the person's own company, made by the import
+        contract = Contract.objects.entire().get(
+            employee_id=Employee.objects.entire().get(badge_id="E-1")
+        )
         self.assertEqual(contract.salary_structure_id, made)
         job.refresh_from_db()
         self.assertEqual(job.summary["counts"]["salary_structures"], 1)
-        done = self.client.get(reverse("master-import-done", args=[job.pk])).content.decode()
+        done = self.client.get(
+            reverse("master-import-done", args=[job.pk])
+        ).content.decode()
         self.assertIn("1 Salary Structures", done)
 
     def test_two_people_naming_one_new_structure_share_a_single_structure(self):
@@ -714,40 +889,63 @@ class SalaryStructureColumnTests(TestCase):
         job = self.importing(
             [
                 {**GOOD, "Salary Structure": "Shared New"},
-                {**GOOD, "Employee ID": "E-2", "Work Email": "two@acme.test", "Salary Structure": "Shared New"},
+                {
+                    **GOOD,
+                    "Employee ID": "E-2",
+                    "Work Email": "two@acme.test",
+                    "Salary Structure": "Shared New",
+                },
             ]
         )
         self.check(job)
         self.client.post(reverse("master-import-run", args=[job.pk]))
-        self.assertEqual(SalaryStructure.objects.entire().filter(title="Shared New").count(), 1)
+        self.assertEqual(
+            SalaryStructure.objects.entire().filter(title="Shared New").count(), 1
+        )
 
     def test_a_title_shared_by_two_companies_is_settled_by_the_persons_company(self):
         from payroll.models.models import SalaryStructure
 
         other = make_company("Other Co")
-        SalaryStructure.objects.filter(pk=self.structure.pk).update(company_id=self.company)
-        twin = SalaryStructure.objects.create(title="Standard Monthly", structure_mode="gross_up", company_id=other)
+        SalaryStructure.objects.filter(pk=self.structure.pk).update(
+            company_id=self.company
+        )
+        twin = SalaryStructure.objects.create(
+            title="Standard Monthly", structure_mode="gross_up", company_id=other
+        )
         job = self.importing([{**GOOD, "Salary Structure": "Standard Monthly"}])
         self.check(job)
         self.client.post(reverse("master-import-run", args=[job.pk]))
         from payroll.models.models import Contract
 
-        contract = Contract.objects.entire().get(employee_id=Employee.objects.entire().get(badge_id="E-1"))
+        contract = Contract.objects.entire().get(
+            employee_id=Employee.objects.entire().get(badge_id="E-1")
+        )
         self.assertEqual(contract.salary_structure_id, self.structure)
         self.assertNotEqual(contract.salary_structure_id, twin)
 
     def test_update_mode_changes_the_structure_of_an_existing_contract(self):
         from payroll.models.models import Contract, SalaryStructure
 
-        person = make_employee(company=self.company, email="p@acme.test", first_name="Pat")
+        person = make_employee(
+            company=self.company, email="p@acme.test", first_name="Pat"
+        )
         Employee.objects.filter(pk=person.pk).update(badge_id="P-1")
-        other = SalaryStructure.objects.create(title="Other Structure", structure_mode="gross_up")
+        other = SalaryStructure.objects.create(
+            title="Other Structure", structure_mode="gross_up"
+        )
         Contract.objects.entire().filter(employee_id=person).delete()
         Contract.objects.create(
-            contract_name="Pat", employee_id=person, contract_start_date="2024-01-01",
-            contract_status="active", wage=1000, salary_structure_id=other,
+            contract_name="Pat",
+            employee_id=person,
+            contract_start_date="2024-01-01",
+            contract_status="active",
+            wage=1000,
+            salary_structure_id=other,
         )
-        job = self.importing([{"Badge ID": "P-1", "Salary Structure": "Standard Monthly"}], mode="update")
+        job = self.importing(
+            [{"Badge ID": "P-1", "Salary Structure": "Standard Monthly"}], mode="update"
+        )
         data = self.check(job)
         self.assertEqual((data["valid"], data["error_count"]), (1, 0))
         self.assertIn("Salary Structure: Other Structure", data["html"])
@@ -758,26 +956,42 @@ class SalaryStructureColumnTests(TestCase):
     def test_update_mode_creates_a_missing_structure(self):
         from payroll.models.models import Contract, SalaryStructure
 
-        person = make_employee(company=self.company, email="r@acme.test", first_name="Ray")
+        person = make_employee(
+            company=self.company, email="r@acme.test", first_name="Ray"
+        )
         Employee.objects.filter(pk=person.pk).update(badge_id="R-1")
         Contract.objects.entire().filter(employee_id=person).delete()
-        Contract.objects.create(contract_name="Ray", employee_id=person, contract_start_date="2024-01-01", contract_status="active", wage=1000)
-        job = self.importing([{"Badge ID": "R-1", "Salary Structure": "Made On Update"}], mode="update")
+        Contract.objects.create(
+            contract_name="Ray",
+            employee_id=person,
+            contract_start_date="2024-01-01",
+            contract_status="active",
+            wage=1000,
+        )
+        job = self.importing(
+            [{"Badge ID": "R-1", "Salary Structure": "Made On Update"}], mode="update"
+        )
         data = self.check(job)
         self.assertEqual(data["valid"], 1)
         self.assertIn("Made On Update (new)", data["html"])
         self.client.post(reverse("master-import-run", args=[job.pk]))
         contract = Contract.objects.entire().get(employee_id=person)
         self.assertEqual(contract.salary_structure_id.title, "Made On Update")
-        self.assertEqual(SalaryStructure.objects.entire().filter(title="Made On Update").count(), 1)
+        self.assertEqual(
+            SalaryStructure.objects.entire().filter(title="Made On Update").count(), 1
+        )
 
     def test_update_mode_without_a_contract_is_an_error(self):
         from payroll.models.models import Contract
 
-        person = make_employee(company=self.company, email="q@acme.test", first_name="Quin")
+        person = make_employee(
+            company=self.company, email="q@acme.test", first_name="Quin"
+        )
         Employee.objects.filter(pk=person.pk).update(badge_id="Q-1")
         Contract.objects.entire().filter(employee_id=person).delete()
-        job = self.importing([{"Badge ID": "Q-1", "Salary Structure": "Standard Monthly"}], mode="update")
+        job = self.importing(
+            [{"Badge ID": "Q-1", "Salary Structure": "Standard Monthly"}], mode="update"
+        )
         data = self.check(job)
         self.assertEqual(data["error_count"], 1)
         self.assertIn("no contract", data["html"])
@@ -800,8 +1014,10 @@ class CompanyScopeTests(TestCase):
 
     def person(self, badge, email, company=None, **extra):
         row = {
-            "Employee ID": badge, "Full Name": extra.pop("name", "Sam Lee"),
-            "Work Email": email, "Mobile": extra.pop("phone", "9876543210"),
+            "Employee ID": badge,
+            "Full Name": extra.pop("name", "Sam Lee"),
+            "Work Email": email,
+            "Mobile": extra.pop("phone", "9876543210"),
             "Dept": extra.pop("dept", "Sales"),
         }
         if company is not None:
@@ -824,13 +1040,18 @@ class CompanyScopeTests(TestCase):
         return job, data
 
     def company_of(self, badge):
-        return Employee.objects.entire().get(badge_id=badge).employee_work_info.company_id
+        return (
+            Employee.objects.entire().get(badge_id=badge).employee_work_info.company_id
+        )
 
     # ------------------------------------------------------- all companies
     def test_all_companies_each_row_goes_to_the_company_it_names(self):
         self.select(None)
         job, data = self.run_import(
-            [self.person("A-1", "a1@x.test", "Alpha Ltd"), self.person("B-1", "b1@x.test", "Beta Ltd")]
+            [
+                self.person("A-1", "a1@x.test", "Alpha Ltd"),
+                self.person("B-1", "b1@x.test", "Beta Ltd"),
+            ]
         )
         self.assertEqual((data["valid"], data["error_count"]), (2, 0))
         self.assertEqual(self.company_of("A-1"), self.a)
@@ -876,16 +1097,33 @@ class CompanyScopeTests(TestCase):
             ]
         )
         self.assertEqual((data["valid"], data["error_count"]), (1, 2))
-        self.assertEqual(Employee.objects.entire().filter(badge_id__in=["D-1", "D-3"]).count(), 1)
+        self.assertEqual(
+            Employee.objects.entire().filter(badge_id__in=["D-1", "D-3"]).count(), 1
+        )
 
-    def test_one_department_name_in_two_companies_is_not_duplicated_on_a_single_import(self):
+    def test_one_department_name_in_two_companies_is_not_duplicated_on_a_single_import(
+        self,
+    ):
         self.select(None)
         self.run_import(
-            [self.person("P-1", "p1@x.test", "Alpha Ltd"), self.person("P-2", "p2@x.test", "Beta Ltd")]
+            [
+                self.person("P-1", "p1@x.test", "Alpha Ltd"),
+                self.person("P-2", "p2@x.test", "Beta Ltd"),
+            ]
         )
-        self.assertEqual(Department.objects.entire().filter(department="Sales").count(), 1)
-        first = Employee.objects.entire().get(badge_id="P-1").employee_work_info.department_id
-        second = Employee.objects.entire().get(badge_id="P-2").employee_work_info.department_id
+        self.assertEqual(
+            Department.objects.entire().filter(department="Sales").count(), 1
+        )
+        first = (
+            Employee.objects.entire()
+            .get(badge_id="P-1")
+            .employee_work_info.department_id
+        )
+        second = (
+            Employee.objects.entire()
+            .get(badge_id="P-2")
+            .employee_work_info.department_id
+        )
         self.assertEqual(first, second)
 
     # ------------------------------------------------------ company by company
@@ -895,15 +1133,22 @@ class CompanyScopeTests(TestCase):
         self.assertEqual((data["valid"], data["error_count"]), (1, 0))
         self.assertEqual(self.company_of("O-1"), self.b)
 
-    def test_one_company_rows_naming_another_company_are_refused_and_nothing_is_created(self):
+    def test_one_company_rows_naming_another_company_are_refused_and_nothing_is_created(
+        self,
+    ):
         self.select(self.a)
         job, data = self.run_import(
-            [self.person("R-1", "r1@x.test", "Alpha Ltd"), self.person("R-2", "r2@x.test", "Beta Ltd"),
-             self.person("R-3", "r3@x.test", "Brand New Co")]
+            [
+                self.person("R-1", "r1@x.test", "Alpha Ltd"),
+                self.person("R-2", "r2@x.test", "Beta Ltd"),
+                self.person("R-3", "r3@x.test", "Brand New Co"),
+            ]
         )
         self.assertEqual((data["valid"], data["error_count"]), (1, 2))
         self.assertEqual(self.company_of("R-1"), self.a)
-        self.assertFalse(Employee.objects.entire().filter(badge_id__in=["R-2", "R-3"]).exists())
+        self.assertFalse(
+            Employee.objects.entire().filter(badge_id__in=["R-2", "R-3"]).exists()
+        )
         self.assertFalse(Company.objects.filter(company="Brand New Co").exists())
 
     def test_one_company_never_creates_a_company(self):
@@ -911,27 +1156,41 @@ class CompanyScopeTests(TestCase):
         job, data = self.run_import([self.person("Q-1", "q1@x.test")])
         self.assertEqual(Company.objects.count(), 2)
 
-    def test_a_department_name_that_exists_in_another_company_is_reused_not_doubled(self):
+    def test_a_department_name_that_exists_in_another_company_is_reused_not_doubled(
+        self,
+    ):
         self.select(self.a)
         dept = Department.objects.create(department="Sales")
         dept.company_id.add(self.b)
         self.run_import([self.person("T-1", "t1@x.test")])
-        self.assertEqual(Department.objects.entire().filter(department="Sales").count(), 1)
+        self.assertEqual(
+            Department.objects.entire().filter(department="Sales").count(), 1
+        )
 
     # ------------------------------------------------------- structures by company
     def test_a_structure_title_in_two_companies_goes_to_each_persons_own(self):
         from payroll.models.models import Contract, SalaryStructure
 
-        sa = SalaryStructure.objects.create(title="Standard", structure_mode="gross_up", company_id=self.a)
-        sb = SalaryStructure.objects.create(title="Standard", structure_mode="gross_up", company_id=self.b)
+        sa = SalaryStructure.objects.create(
+            title="Standard", structure_mode="gross_up", company_id=self.a
+        )
+        sb = SalaryStructure.objects.create(
+            title="Standard", structure_mode="gross_up", company_id=self.b
+        )
         self.select(None)
         self.run_import(
             [
-                self.person("W-1", "w1@x.test", "Alpha Ltd", **{"Salary Structure": "Standard"}),
-                self.person("W-2", "w2@x.test", "Beta Ltd", **{"Salary Structure": "Standard"}),
+                self.person(
+                    "W-1", "w1@x.test", "Alpha Ltd", **{"Salary Structure": "Standard"}
+                ),
+                self.person(
+                    "W-2", "w2@x.test", "Beta Ltd", **{"Salary Structure": "Standard"}
+                ),
             ]
         )
-        contract = lambda badge: Contract.objects.entire().get(employee_id=Employee.objects.entire().get(badge_id=badge))
+        contract = lambda badge: Contract.objects.entire().get(
+            employee_id=Employee.objects.entire().get(badge_id=badge)
+        )
         self.assertEqual(contract("W-1").salary_structure_id, sa)
         self.assertEqual(contract("W-2").salary_structure_id, sb)
 
@@ -940,27 +1199,44 @@ class CompanyScopeTests(TestCase):
         self.select(None)
         self.run_import([self.person("U-1", "u1@x.test", "Beta Ltd")])
         self.select(self.a)
-        job, data = self.run_import([{"Badge ID": "U-1", "Location": "Austin"}], mode="update")
+        job, data = self.run_import(
+            [{"Badge ID": "U-1", "Location": "Austin"}], mode="update"
+        )
         self.assertEqual((data["valid"], data["error_count"]), (0, 1))
         self.assertIn("No employee has this Badge ID", data["html"])
-        self.assertIsNone(Employee.objects.entire().get(badge_id="U-1").employee_work_info.location)
+        self.assertIsNone(
+            Employee.objects.entire().get(badge_id="U-1").employee_work_info.location
+        )
 
     def test_update_across_all_companies_reaches_each_person(self):
         self.select(None)
         self.run_import(
-            [self.person("V-1", "v1@x.test", "Alpha Ltd"), self.person("V-2", "v2@x.test", "Beta Ltd")]
+            [
+                self.person("V-1", "v1@x.test", "Alpha Ltd"),
+                self.person("V-2", "v2@x.test", "Beta Ltd"),
+            ]
         )
         job, data = self.run_import(
-            [{"Badge ID": "V-1", "Location": "One"}, {"Badge ID": "V-2", "Location": "Two"}], mode="update"
+            [
+                {"Badge ID": "V-1", "Location": "One"},
+                {"Badge ID": "V-2", "Location": "Two"},
+            ],
+            mode="update",
         )
         self.assertEqual((data["valid"], data["error_count"]), (2, 0))
-        location = lambda badge: Employee.objects.entire().get(badge_id=badge).employee_work_info.location
+        location = (
+            lambda badge: Employee.objects.entire()
+            .get(badge_id=badge)
+            .employee_work_info.location
+        )
         self.assertEqual((location("V-1"), location("V-2")), ("One", "Two"))
 
     def test_update_never_moves_a_person_to_another_company(self):
         self.select(None)
         self.run_import([self.person("M-1", "m1@x.test", "Alpha Ltd")])
-        job, data = self.run_import([{"Badge ID": "M-1", "Entity": "Beta Ltd", "Location": "X"}], mode="update")
+        job, data = self.run_import(
+            [{"Badge ID": "M-1", "Entity": "Beta Ltd", "Location": "X"}], mode="update"
+        )
         self.assertEqual(data["error_count"], 1)
         self.assertEqual(self.company_of("M-1"), self.a)
 
@@ -981,11 +1257,17 @@ class SameNameAcrossCompaniesTests(TestCase):
         for company in (self.a, self.b):
             dept = Department.objects.create(department="Sales")
             dept.company_id.add(company)
-            position = JobPosition.objects.create(job_position="Manager", department_id=dept)
+            position = JobPosition.objects.create(
+                job_position="Manager", department_id=dept
+            )
             position.company_id.add(company)
             role = JobRole.objects.create(job_role="Lead", job_position_id=position)
             role.company_id.add(company)
-            self.dept[company.pk], self.position[company.pk], self.role[company.pk] = dept, position, role
+            self.dept[company.pk], self.position[company.pk], self.role[company.pk] = (
+                dept,
+                position,
+                role,
+            )
 
     def select(self, company):
         session = self.client.session
@@ -994,9 +1276,14 @@ class SameNameAcrossCompaniesTests(TestCase):
 
     def row(self, badge, email, company, **extra):
         row = {
-            "Employee ID": badge, "Full Name": extra.pop("name", "Pat Kim"), "Work Email": email,
-            "Mobile": extra.pop("phone", "9876543210"), "Entity": company,
-            "Dept": "Sales", "Designation": "Manager", "Role": "Lead",
+            "Employee ID": badge,
+            "Full Name": extra.pop("name", "Pat Kim"),
+            "Work Email": email,
+            "Mobile": extra.pop("phone", "9876543210"),
+            "Entity": company,
+            "Dept": "Sales",
+            "Designation": "Manager",
+            "Role": "Lead",
         }
         row.update(extra)
         return row
@@ -1019,7 +1306,12 @@ class SameNameAcrossCompaniesTests(TestCase):
 
     def test_each_person_gets_their_own_companys_department_position_and_role(self):
         self.select(None)
-        self.run_import([self.row("N-1", "n1@x.test", "Alpha Ltd"), self.row("N-2", "n2@x.test", "Beta Ltd")])
+        self.run_import(
+            [
+                self.row("N-1", "n1@x.test", "Alpha Ltd"),
+                self.row("N-2", "n2@x.test", "Beta Ltd"),
+            ]
+        )
         for badge, company in (("N-1", self.a), ("N-2", self.b)):
             info = self.info(badge)
             self.assertEqual(info.department_id, self.dept[company.pk], badge)
@@ -1028,9 +1320,18 @@ class SameNameAcrossCompaniesTests(TestCase):
 
     def test_nothing_is_duplicated_when_each_company_already_has_its_own(self):
         self.select(None)
-        self.run_import([self.row("N-3", "n3@x.test", "Alpha Ltd"), self.row("N-4", "n4@x.test", "Beta Ltd")])
-        self.assertEqual(Department.objects.entire().filter(department="Sales").count(), 2)
-        self.assertEqual(JobPosition.objects.entire().filter(job_position="Manager").count(), 2)
+        self.run_import(
+            [
+                self.row("N-3", "n3@x.test", "Alpha Ltd"),
+                self.row("N-4", "n4@x.test", "Beta Ltd"),
+            ]
+        )
+        self.assertEqual(
+            Department.objects.entire().filter(department="Sales").count(), 2
+        )
+        self.assertEqual(
+            JobPosition.objects.entire().filter(job_position="Manager").count(), 2
+        )
         self.assertEqual(JobRole.objects.entire().filter(job_role="Lead").count(), 2)
 
     def test_importing_into_one_company_uses_that_companys_records(self):
@@ -1040,9 +1341,15 @@ class SameNameAcrossCompaniesTests(TestCase):
         self.assertEqual(info.department_id, self.dept[self.b.pk])
         self.assertEqual(info.job_position_id, self.position[self.b.pk])
 
-    def test_a_reporting_manager_named_the_same_in_two_companies_is_the_persons_own(self):
-        boss_a = make_employee(company=self.a, email="boss@alpha.test", first_name="Alex")
-        boss_b = make_employee(company=self.b, email="boss@beta.test", first_name="Alex")
+    def test_a_reporting_manager_named_the_same_in_two_companies_is_the_persons_own(
+        self,
+    ):
+        boss_a = make_employee(
+            company=self.a, email="boss@alpha.test", first_name="Alex"
+        )
+        boss_b = make_employee(
+            company=self.b, email="boss@beta.test", first_name="Alex"
+        )
         for boss in (boss_a, boss_b):
             Employee.objects.filter(pk=boss.pk).update(employee_last_name="Boss")
         self.select(None)
@@ -1074,10 +1381,24 @@ class SameNameAcrossCompaniesTests(TestCase):
         self.run_import([{"Badge ID": "N-10", "Manager": "Alex Boss"}], mode="update")
         self.assertEqual(self.info("N-10").reporting_manager_id, boss_b)
 
-    def test_the_review_does_not_announce_records_that_already_exist_in_the_persons_company(self):
+    def test_the_review_does_not_announce_records_that_already_exist_in_the_persons_company(
+        self,
+    ):
         self.select(None)
-        data = self.run_import([self.row("N-11", "n11@x.test", "Alpha Ltd"), self.row("N-12", "n12@x.test", "Beta Ltd")])
-        self.assertNotIn("Departments", data["html"].split("These do not exist yet")[-1][:400] if "These do not exist yet" in data["html"] else "")
+        data = self.run_import(
+            [
+                self.row("N-11", "n11@x.test", "Alpha Ltd"),
+                self.row("N-12", "n12@x.test", "Beta Ltd"),
+            ]
+        )
+        self.assertNotIn(
+            "Departments",
+            (
+                data["html"].split("These do not exist yet")[-1][:400]
+                if "These do not exist yet" in data["html"]
+                else ""
+            ),
+        )
 
 
 class AssignedLeaveTests(TestCase):
@@ -1093,13 +1414,16 @@ class AssignedLeaveTests(TestCase):
         session = self.client.session
         session["selected_company"] = "all"
         session.save()
-        self.maya = make_employee(company=self.company, email="maya@acme.test", first_name="Maya")
+        self.maya = make_employee(
+            company=self.company, email="maya@acme.test", first_name="Maya"
+        )
         Employee.objects.filter(pk=self.maya.pk).update(badge_id="E-1")
         self.casual = make_leave_type("Casual Leave", total_days=12)
 
     def run_import(self, rows):
         self.client.post(
-            reverse("master-import-upload"), {"dataset": "assigned_leave", "file": sheet(rows)}
+            reverse("master-import-upload"),
+            {"dataset": "assigned_leave", "file": sheet(rows)},
         )
         job = ImportJob.objects.latest("pk")
         self.client.post(
@@ -1113,9 +1437,20 @@ class AssignedLeaveTests(TestCase):
         return self.client.post(reverse("master-import-check", args=[job.pk])).json()
 
     def test_the_template_has_the_simple_columns(self):
-        response = self.client.get(reverse("master-import-template", args=["assigned_leave"]))
+        response = self.client.get(
+            reverse("master-import-template", args=["assigned_leave"])
+        )
         columns = list(pd.read_excel(io.BytesIO(response.content)).columns)
-        self.assertEqual(columns, ["Badge ID", "Leave Type", "Available Days", "Carryforward Days", "Assigned Date"])
+        self.assertEqual(
+            columns,
+            [
+                "Badge ID",
+                "Leave Type",
+                "Available Days",
+                "Carryforward Days",
+                "Assigned Date",
+            ],
+        )
 
     def test_blank_days_are_zero_and_the_balance_is_assigned(self):
         from leave.models import AvailableLeave
@@ -1124,8 +1459,13 @@ class AssignedLeaveTests(TestCase):
         data = self.check(job)
         self.assertEqual((data["valid"], data["error_count"]), (1, 0))
         self.client.post(reverse("master-import-run", args=[job.pk]))
-        leave = AvailableLeave.objects.entire().get(employee_id=self.maya, leave_type_id=self.casual)
-        self.assertEqual((leave.available_days, leave.carryforward_days, leave.total_leave_days), (0, 0, 0))
+        leave = AvailableLeave.objects.entire().get(
+            employee_id=self.maya, leave_type_id=self.casual
+        )
+        self.assertEqual(
+            (leave.available_days, leave.carryforward_days, leave.total_leave_days),
+            (0, 0, 0),
+        )
         job.refresh_from_db()
         self.assertEqual(job.summary["counts"]["assigned"], 1)
 
@@ -1133,18 +1473,32 @@ class AssignedLeaveTests(TestCase):
         from leave.models import AvailableLeave
 
         job = self.run_import(
-            [{"Badge ID": "E-1", "Leave Type": "Casual Leave", "Available Days": "8", "Carryforward Days": "2"}]
+            [
+                {
+                    "Badge ID": "E-1",
+                    "Leave Type": "Casual Leave",
+                    "Available Days": "8",
+                    "Carryforward Days": "2",
+                }
+            ]
         )
         self.check(job)
         self.client.post(reverse("master-import-run", args=[job.pk]))
         leave = AvailableLeave.objects.entire().get(employee_id=self.maya)
-        self.assertEqual((leave.available_days, leave.carryforward_days, leave.total_leave_days), (8, 2, 10))
+        self.assertEqual(
+            (leave.available_days, leave.carryforward_days, leave.total_leave_days),
+            (8, 2, 10),
+        )
 
     def test_unknown_badge_and_bad_days_are_row_errors(self):
         job = self.run_import(
             [
                 {"Badge ID": "NOPE", "Leave Type": "Casual Leave"},
-                {"Badge ID": "E-1", "Leave Type": "Casual Leave", "Available Days": "-3"},
+                {
+                    "Badge ID": "E-1",
+                    "Leave Type": "Casual Leave",
+                    "Available Days": "-3",
+                },
             ]
         )
         data = self.check(job)
@@ -1167,7 +1521,9 @@ class AssignedLeaveTests(TestCase):
         self.client.post(reverse("master-import-run", args=[job.pk]))
         study = LeaveType.objects.entire().get(name="Study Leave")
         self.assertEqual(study.total_days, 5)
-        self.assertEqual(AvailableLeave.objects.entire().get(leave_type_id=study).available_days, 5)
+        self.assertEqual(
+            AvailableLeave.objects.entire().get(leave_type_id=study).available_days, 5
+        )
         job.refresh_from_db()
         self.assertEqual(job.summary["counts"]["leave_types"], 1)
 
@@ -1201,7 +1557,9 @@ class AssignedLeaveTests(TestCase):
         from horilla.testkit.factories import make_available_leave
         from leave.models import AvailableLeave
 
-        make_available_leave(employee=self.maya, leave_type=self.casual, available=available)
+        make_available_leave(
+            employee=self.maya, leave_type=self.casual, available=available
+        )
         AvailableLeave.objects.entire().filter(employee_id=self.maya).update(
             carryforward_days=carry, total_leave_days=available + carry
         )
@@ -1210,18 +1568,28 @@ class AssignedLeaveTests(TestCase):
         from leave.models import AvailableLeave
 
         self.assign(8, 1)
-        job = self.run_mode([{"Badge ID": "E-1", "Leave Type": "Casual Leave", "Available Days": "15"}], "update")
+        job = self.run_mode(
+            [{"Badge ID": "E-1", "Leave Type": "Casual Leave", "Available Days": "15"}],
+            "update",
+        )
         data = self.check(job)
         self.assertEqual((data["valid"], data["error_count"]), (1, 0))
         self.assertIn("Available Days: 8.0", data["html"])
         self.client.post(reverse("master-import-run", args=[job.pk]))
         leave = AvailableLeave.objects.entire().get(employee_id=self.maya)
-        self.assertEqual((leave.available_days, leave.carryforward_days, leave.total_leave_days), (15, 1, 16))
+        self.assertEqual(
+            (leave.available_days, leave.carryforward_days, leave.total_leave_days),
+            (15, 1, 16),
+        )
 
     def test_update_refuses_a_balance_that_was_never_assigned_and_a_missing_type(self):
         job = self.run_mode(
             [
-                {"Badge ID": "E-1", "Leave Type": "Casual Leave", "Available Days": "3"},
+                {
+                    "Badge ID": "E-1",
+                    "Leave Type": "Casual Leave",
+                    "Available Days": "3",
+                },
                 {"Badge ID": "E-1", "Leave Type": "Nothing", "Available Days": "3"},
             ],
             "update",
@@ -1233,19 +1601,26 @@ class AssignedLeaveTests(TestCase):
 
     def test_a_row_with_nothing_different_is_unchanged(self):
         self.assign(8, 1)
-        job = self.run_mode([{"Badge ID": "E-1", "Leave Type": "Casual Leave", "Available Days": "8"}], "update")
+        job = self.run_mode(
+            [{"Badge ID": "E-1", "Leave Type": "Casual Leave", "Available Days": "8"}],
+            "update",
+        )
         data = self.check(job)
         self.assertEqual((data["valid"], data["error_count"]), (0, 0))
 
     def test_create_or_update_updates_existing_balances_and_assigns_the_rest(self):
-        from leave.models import AvailableLeave, LeaveType
         from horilla.testkit.factories import make_leave_type
+        from leave.models import AvailableLeave, LeaveType
 
         self.assign(8, 0)
         make_leave_type("Sick Leave", total_days=6)
         job = self.run_mode(
             [
-                {"Badge ID": "E-1", "Leave Type": "Casual Leave", "Available Days": "10"},
+                {
+                    "Badge ID": "E-1",
+                    "Leave Type": "Casual Leave",
+                    "Available Days": "10",
+                },
                 {"Badge ID": "E-1", "Leave Type": "Sick Leave", "Available Days": "4"},
             ],
             "both",
@@ -1254,36 +1629,62 @@ class AssignedLeaveTests(TestCase):
         self.assertEqual((data["valid"], data["error_count"]), (2, 0))
         self.assertIn("Will Create", data["html"])
         self.client.post(reverse("master-import-run", args=[job.pk]))
-        self.assertEqual(AvailableLeave.objects.entire().get(employee_id=self.maya, leave_type_id=self.casual).available_days, 10)
+        self.assertEqual(
+            AvailableLeave.objects.entire()
+            .get(employee_id=self.maya, leave_type_id=self.casual)
+            .available_days,
+            10,
+        )
         sick = LeaveType.objects.entire().get(name="Sick Leave")
-        self.assertEqual(AvailableLeave.objects.entire().get(employee_id=self.maya, leave_type_id=sick).available_days, 4)
+        self.assertEqual(
+            AvailableLeave.objects.entire()
+            .get(employee_id=self.maya, leave_type_id=sick)
+            .available_days,
+            4,
+        )
         job.refresh_from_db()
-        self.assertEqual((job.summary["counts"]["assigned"], job.summary["counts"]["updated"]), (1, 1))
+        self.assertEqual(
+            (job.summary["counts"]["assigned"], job.summary["counts"]["updated"]),
+            (1, 1),
+        )
 
     def test_the_match_rules_are_fixed_to_badge_id_and_leave_type(self):
-        job = self.run_mode([{"Badge ID": "E-1", "Leave Type": "Casual Leave"}], "update")
+        job = self.run_mode(
+            [{"Badge ID": "E-1", "Leave Type": "Casual Leave"}], "update"
+        )
         page = self.client.get(reverse("master-import-map", args=[job.pk]))
         self.assertContains(page, "Match Records By")
         html = page.content.decode()
         self.assertEqual(html.count('name="match"'), 2)
-        self.assertEqual(html.count("disabled title=\"Always used\""), 2)
+        self.assertEqual(html.count('disabled title="Always used"'), 2)
 
     def test_an_update_with_nothing_different_says_why_it_is_empty(self):
         self.assign(8, 1)
-        job = self.run_mode([{"Badge ID": "E-1", "Leave Type": "Casual Leave", "Available Days": "8"}], "update")
+        job = self.run_mode(
+            [{"Badge ID": "E-1", "Leave Type": "Casual Leave", "Available Days": "8"}],
+            "update",
+        )
         self.assertIn("already have these values", self.check(job)["html"])
 
     def test_imported_and_updated_balances_appear_in_the_leave_ledger(self):
         from leave.models import AvailableLeave
 
-        job = self.run_mode([{"Badge ID": "E-1", "Leave Type": "Casual Leave", "Available Days": "8"}], "both")
+        job = self.run_mode(
+            [{"Badge ID": "E-1", "Leave Type": "Casual Leave", "Available Days": "8"}],
+            "both",
+        )
         self.check(job)
         self.client.post(reverse("master-import-run", args=[job.pk]))
         leave = AvailableLeave.objects.entire().get(employee_id=self.maya)
         self.assertEqual(leave.history.count(), 1)
-        self.assertEqual([e["label"] for e in leave.build_ledger()][:1], ["Initial assignment"])
+        self.assertEqual(
+            [e["label"] for e in leave.build_ledger()][:1], ["Initial assignment"]
+        )
 
-        job = self.run_mode([{"Badge ID": "E-1", "Leave Type": "Casual Leave", "Available Days": "11"}], "both")
+        job = self.run_mode(
+            [{"Badge ID": "E-1", "Leave Type": "Casual Leave", "Available Days": "11"}],
+            "both",
+        )
         self.check(job)
         self.client.post(reverse("master-import-run", args=[job.pk]))
         leave = AvailableLeave.objects.entire().get(employee_id=self.maya)
@@ -1298,21 +1699,33 @@ class AssetAllocationTests(TestCase):
     def setUp(self):
         self.user = make_user("assetman", is_superuser=True)
         self.company = make_company("Acme Ltd")
-        self.me = make_employee(company=self.company, email="assetman@acme.test", user=self.user)
+        self.me = make_employee(
+            company=self.company, email="assetman@acme.test", user=self.user
+        )
         self.client.force_login(self.user)
         session = self.client.session
         session["selected_company"] = "all"
         session.save()
-        self.maya = make_employee(company=self.company, email="maya@acme.test", first_name="Maya")
+        self.maya = make_employee(
+            company=self.company, email="maya@acme.test", first_name="Maya"
+        )
         Employee.objects.filter(pk=self.maya.pk).update(badge_id="E-1")
 
     ROW = {
-        "Badge ID": "E-1", "Serial No.": "LAP-1", "Asset Name": "Laptop", "Category": "Electronics",
-        "Purchase Date": "2024-01-10", "Purchase Cost": "55000", "Batch Number": "B-01",
+        "Badge ID": "E-1",
+        "Serial No.": "LAP-1",
+        "Asset Name": "Laptop",
+        "Category": "Electronics",
+        "Purchase Date": "2024-01-10",
+        "Purchase Cost": "55000",
+        "Batch Number": "B-01",
     }
 
     def run_import(self, rows):
-        self.client.post(reverse("master-import-upload"), {"dataset": "asset_allocation", "file": sheet(rows)})
+        self.client.post(
+            reverse("master-import-upload"),
+            {"dataset": "asset_allocation", "file": sheet(rows)},
+        )
         job = ImportJob.objects.latest("pk")
         self.client.post(
             reverse("master-import-map", args=[job.pk]),
@@ -1324,7 +1737,9 @@ class AssetAllocationTests(TestCase):
     def check(self, job):
         return self.client.post(reverse("master-import-check", args=[job.pk])).json()
 
-    def test_a_new_asset_category_and_batch_are_created_and_the_asset_is_given_out(self):
+    def test_a_new_asset_category_and_batch_are_created_and_the_asset_is_given_out(
+        self,
+    ):
         from asset.models import Asset, AssetAssignment, AssetCategory, AssetLot
 
         job = self.run_import([{**self.ROW, "Assigned Date": "2024-02-01"}])
@@ -1343,7 +1758,11 @@ class AssetAllocationTests(TestCase):
         self.assertEqual(given.asset_item_id.status, "In use")
         job.refresh_from_db()
         self.assertEqual(
-            (job.summary["counts"]["assets"], job.summary["counts"]["categories"], job.summary["counts"]["batches"]),
+            (
+                job.summary["counts"]["assets"],
+                job.summary["counts"]["categories"],
+                job.summary["counts"]["batches"],
+            ),
             (1, 1, 1),
         )
         self.assertEqual(AssetCategory.objects.entire().count(), 1)
@@ -1355,14 +1774,18 @@ class AssetAllocationTests(TestCase):
         first = self.run_import([{**self.ROW, "Quantity": "2"}])
         self.check(first)
         self.client.post(reverse("master-import-run", args=[first.pk]))
-        other = make_employee(company=self.company, email="jon@acme.test", first_name="Jon")
+        other = make_employee(
+            company=self.company, email="jon@acme.test", first_name="Jon"
+        )
         Employee.objects.filter(pk=other.pk).update(badge_id="E-2")
         job = self.run_import([{"Badge ID": "E-2", "Serial No.": "LAP-1"}])
         self.assertEqual(self.check(job)["valid"], 1)
         self.client.post(reverse("master-import-run", args=[job.pk]))
         self.assertEqual(AssetAssignment.objects.entire().count(), 2)
 
-    def test_a_new_asset_without_its_details_and_an_unknown_employee_are_row_errors(self):
+    def test_a_new_asset_without_its_details_and_an_unknown_employee_are_row_errors(
+        self,
+    ):
         job = self.run_import(
             [
                 {"Badge ID": "E-1", "Serial No.": "NEW-1"},
@@ -1375,7 +1798,9 @@ class AssetAllocationTests(TestCase):
         self.assertIn("No employee has this Badge ID", data["html"])
 
     def test_a_single_unit_cannot_be_given_to_two_people_at_once(self):
-        other = make_employee(company=self.company, email="jon@acme.test", first_name="Jon")
+        other = make_employee(
+            company=self.company, email="jon@acme.test", first_name="Jon"
+        )
         Employee.objects.filter(pk=other.pk).update(badge_id="E-2")
         job = self.run_import([self.ROW, {**self.ROW, "Badge ID": "E-2"}])
         data = self.check(job)
@@ -1386,16 +1811,27 @@ class AssetAllocationTests(TestCase):
         from asset.models import Asset, AssetAssignment
 
         job = self.run_import(
-            [{**self.ROW, "Assigned Date": "2024-02-01", "Return Date": "2024-03-01", "Return Status": "healthy"}]
+            [
+                {
+                    **self.ROW,
+                    "Assigned Date": "2024-02-01",
+                    "Return Date": "2024-03-01",
+                    "Return Status": "healthy",
+                }
+            ]
         )
         self.assertEqual(self.check(job)["valid"], 1)
         self.client.post(reverse("master-import-run", args=[job.pk]))
         given = AssetAssignment.objects.entire().get()
-        self.assertEqual((str(given.return_date), given.return_status), ("2024-03-01", "Healthy"))
+        self.assertEqual(
+            (str(given.return_date), given.return_status), ("2024-03-01", "Healthy")
+        )
         self.assertEqual(Asset.objects.entire().get().asset_status, "Available")
 
     def test_the_template_has_every_column(self):
-        response = self.client.get(reverse("master-import-template", args=["asset_allocation"]))
+        response = self.client.get(
+            reverse("master-import-template", args=["asset_allocation"])
+        )
         columns = list(pd.read_excel(io.BytesIO(response.content)).columns)
         self.assertIn("Serial No.", columns)
         self.assertIn("Warranty Expiry Date", columns)
@@ -1425,8 +1861,16 @@ class AssetAllocationTests(TestCase):
 
         self.give(Quantity="2")
         job = self.run_mode(
-            [{"Badge ID": "E-1", "Serial No.": "LAP-1", "Asset Name": "Laptop Pro", "Quantity": "3", "Category": "Computers",
-              "Assigned Date": "2024-05-05"}],
+            [
+                {
+                    "Badge ID": "E-1",
+                    "Serial No.": "LAP-1",
+                    "Asset Name": "Laptop Pro",
+                    "Quantity": "3",
+                    "Category": "Computers",
+                    "Assigned Date": "2024-05-05",
+                }
+            ],
             "update",
         )
         data = self.check(job)
@@ -1434,22 +1878,44 @@ class AssetAllocationTests(TestCase):
         self.assertIn("Asset Name: Laptop", data["html"])
         self.client.post(reverse("master-import-run", args=[job.pk]))
         asset = Asset.objects.entire().get(asset_tracking_id="LAP-1")
-        self.assertEqual((asset.asset_name, asset.quantity, asset.asset_category_id.asset_category_name), ("Laptop Pro", 3, "Computers"))
+        self.assertEqual(
+            (
+                asset.asset_name,
+                asset.quantity,
+                asset.asset_category_id.asset_category_name,
+            ),
+            ("Laptop Pro", 3, "Computers"),
+        )
         self.assertEqual(asset.asset_items.count(), 3)
-        self.assertEqual(asset.asset_purchase_cost, 55000)  # not in the sheet: left alone
-        self.assertEqual(str(AssetAssignment.objects.entire().get().assigned_date), "2024-05-05")
+        self.assertEqual(
+            asset.asset_purchase_cost, 55000
+        )  # not in the sheet: left alone
+        self.assertEqual(
+            str(AssetAssignment.objects.entire().get().assigned_date), "2024-05-05"
+        )
 
     def test_update_can_return_an_asset_and_frees_its_unit(self):
         from asset.models import Asset, AssetAssignment
 
         self.give(**{"Assigned Date": "2024-02-01"})
         job = self.run_mode(
-            [{"Badge ID": "E-1", "Serial No.": "LAP-1", "Return Date": "2024-09-09", "Return Condition": "Fine"}], "update"
+            [
+                {
+                    "Badge ID": "E-1",
+                    "Serial No.": "LAP-1",
+                    "Return Date": "2024-09-09",
+                    "Return Condition": "Fine",
+                }
+            ],
+            "update",
         )
         self.assertEqual(self.check(job)["valid"], 1)
         self.client.post(reverse("master-import-run", args=[job.pk]))
         given = AssetAssignment.objects.entire().get()
-        self.assertEqual((str(given.return_date), given.return_status, given.return_condition), ("2024-09-09", "Healthy", "Fine"))
+        self.assertEqual(
+            (str(given.return_date), given.return_status, given.return_condition),
+            ("2024-09-09", "Healthy", "Fine"),
+        )
         self.assertEqual(Asset.objects.entire().get().asset_status, "Available")
 
     def test_update_refuses_what_does_not_exist_or_cannot_be_done(self):
@@ -1470,12 +1936,19 @@ class AssetAllocationTests(TestCase):
         from asset.models import Asset, AssetAssignment
 
         self.give()
-        other = make_employee(company=self.company, email="jon@acme.test", first_name="Jon")
+        other = make_employee(
+            company=self.company, email="jon@acme.test", first_name="Jon"
+        )
         Employee.objects.filter(pk=other.pk).update(badge_id="E-2")
         job = self.run_mode(
             [
                 {"Badge ID": "E-1", "Serial No.": "LAP-1", "Asset Name": "Laptop Pro"},
-                {**self.ROW, "Badge ID": "E-2", "Serial No.": "LAP-2", "Asset Name": "Laptop Two"},
+                {
+                    **self.ROW,
+                    "Badge ID": "E-2",
+                    "Serial No.": "LAP-2",
+                    "Asset Name": "Laptop Two",
+                },
             ],
             "both",
         )
@@ -1483,14 +1956,22 @@ class AssetAllocationTests(TestCase):
         self.assertEqual((data["valid"], data["error_count"]), (2, 0))
         self.assertIn("Will Create", data["html"])
         self.client.post(reverse("master-import-run", args=[job.pk]))
-        self.assertEqual(Asset.objects.entire().get(asset_tracking_id="LAP-1").asset_name, "Laptop Pro")
+        self.assertEqual(
+            Asset.objects.entire().get(asset_tracking_id="LAP-1").asset_name,
+            "Laptop Pro",
+        )
         self.assertEqual(AssetAssignment.objects.entire().count(), 2)
         job.refresh_from_db()
-        self.assertEqual((job.summary["counts"]["assigned"], job.summary["counts"]["updated"]), (1, 1))
+        self.assertEqual(
+            (job.summary["counts"]["assigned"], job.summary["counts"]["updated"]),
+            (1, 1),
+        )
 
     def test_the_match_rules_are_locked(self):
         job = self.run_mode([{"Badge ID": "E-1", "Serial No.": "LAP-1"}], "update")
-        html = self.client.get(reverse("master-import-map", args=[job.pk])).content.decode()
+        html = self.client.get(
+            reverse("master-import-map", args=[job.pk])
+        ).content.decode()
         self.assertEqual(html.count('name="match"'), 2)
         self.assertEqual(html.count('disabled title="Always used"'), 2)
 
@@ -1500,7 +1981,9 @@ class HtmxNavigationTests(TestCase):
 
     def setUp(self):
         self.user = make_user("htmxer", is_superuser=True)
-        make_employee(company=make_company("Home"), email="htmxer@home.test", user=self.user)
+        make_employee(
+            company=make_company("Home"), email="htmxer@home.test", user=self.user
+        )
         self.client.force_login(self.user)
         session = self.client.session
         session["selected_company"] = "all"
@@ -1517,7 +2000,9 @@ class HtmxNavigationTests(TestCase):
 
     def test_downloads_are_not_swapped_in(self):
         html = self.client.get(reverse("master-import")).content.decode()
-        template = html[html.index(reverse("master-import-template", args=["employees"])) - 80:]
+        template = html[
+            html.index(reverse("master-import-template", args=["employees"])) - 80 :
+        ]
         self.assertIn('hx-boost="false"', template[:200])
 
     def test_the_history_page_lights_its_own_menu_item(self):
@@ -1527,7 +2012,12 @@ class HtmxNavigationTests(TestCase):
     def test_the_history_page_has_the_settings_titlebar_and_icon_actions(self):
         from master_import.models import ImportJob
 
-        ImportJob.objects.create(dataset="employees", original_name="a.xlsx", status=ImportJob.DONE, created_by=self.user)
+        ImportJob.objects.create(
+            dataset="employees",
+            original_name="a.xlsx",
+            status=ImportJob.DONE,
+            created_by=self.user,
+        )
         html = self.client.get(reverse("master-import-history")).content.decode()
         self.assertIn("mi__bar-head", html)
         self.assertIn("New Import", html)
@@ -1540,20 +2030,34 @@ class AssetsDatasetTests(TestCase):
 
     def setUp(self):
         self.user = make_user("registrar", is_superuser=True)
-        make_employee(company=make_company("Acme Ltd"), email="registrar@acme.test", user=self.user)
+        make_employee(
+            company=make_company("Acme Ltd"),
+            email="registrar@acme.test",
+            user=self.user,
+        )
         self.client.force_login(self.user)
         session = self.client.session
         session["selected_company"] = "all"
         session.save()
 
     ROW = {
-        "Serial No.": "LAP-1", "Asset Name": "Laptop", "Category": "Electronics", "Purchase Date": "2024-01-10",
-        "Purchase Cost": "55000", "Batch Number": "B-01", "Batch Description": "First lot", "Quantity": "2",
-        "Warranty Expiry Date": "2027-01-10", "Notify Before (Days)": "30",
+        "Serial No.": "LAP-1",
+        "Asset Name": "Laptop",
+        "Category": "Electronics",
+        "Purchase Date": "2024-01-10",
+        "Purchase Cost": "55000",
+        "Batch Number": "B-01",
+        "Batch Description": "First lot",
+        "Quantity": "2",
+        "Warranty Expiry Date": "2027-01-10",
+        "Notify Before (Days)": "30",
     }
 
     def run_mode(self, rows, mode):
-        self.client.post(reverse("master-import-upload"), {"dataset": "assets", "mode": mode, "file": sheet(rows)})
+        self.client.post(
+            reverse("master-import-upload"),
+            {"dataset": "assets", "mode": mode, "file": sheet(rows)},
+        )
         job = ImportJob.objects.latest("pk")
         self.assertEqual(job.mode, mode)
         self.client.post(
@@ -1583,13 +2087,17 @@ class AssetsDatasetTests(TestCase):
 
         job = self.execute(self.run_mode([self.ROW], "create"))
         asset = Asset.objects.entire().get(asset_tracking_id="LAP-1")
-        self.assertEqual((asset.quantity, asset.asset_items.count(), asset.notify_before), (2, 2, 30))
+        self.assertEqual(
+            (asset.quantity, asset.asset_items.count(), asset.notify_before), (2, 2, 30)
+        )
         self.assertEqual(asset.asset_lot_number_id.lot_description, "First lot")
         self.assertEqual(AssetCategory.objects.entire().count(), 1)
         self.assertEqual(AssetLot.objects.entire().count(), 1)
         self.assertEqual(job.summary["counts"]["categories"], 1)
 
-    def test_an_existing_serial_is_refused_when_creating_and_missing_details_are_errors(self):
+    def test_an_existing_serial_is_refused_when_creating_and_missing_details_are_errors(
+        self,
+    ):
         self.execute(self.run_mode([self.ROW], "create"))
         job = self.run_mode([self.ROW, {"Serial No.": "NEW-1"}], "create")
         data = self.check(job)
@@ -1601,9 +2109,17 @@ class AssetsDatasetTests(TestCase):
         from asset.models import Asset
 
         self.execute(self.run_mode([self.ROW], "create"))
-        job = self.execute(self.run_mode([{"Serial No.": "LAP-1", "Asset Name": "Laptop Pro", "Quantity": "3"}], "update"))
+        job = self.execute(
+            self.run_mode(
+                [{"Serial No.": "LAP-1", "Asset Name": "Laptop Pro", "Quantity": "3"}],
+                "update",
+            )
+        )
         asset = Asset.objects.entire().get(asset_tracking_id="LAP-1")
-        self.assertEqual((asset.asset_name, asset.quantity, asset.asset_items.count()), ("Laptop Pro", 3, 3))
+        self.assertEqual(
+            (asset.asset_name, asset.quantity, asset.asset_items.count()),
+            ("Laptop Pro", 3, 3),
+        )
         self.assertEqual(asset.asset_purchase_cost, 55000)
         self.assertEqual(job.summary["imported"], 1)
 
@@ -1617,13 +2133,24 @@ class AssetsDatasetTests(TestCase):
         self.execute(self.run_mode([self.ROW], "create"))
         job = self.execute(
             self.run_mode(
-                [{"Serial No.": "LAP-1", "Asset Description": "Updated"}, {**self.ROW, "Serial No.": "LAP-2", "Quantity": "1"}],
+                [
+                    {"Serial No.": "LAP-1", "Asset Description": "Updated"},
+                    {**self.ROW, "Serial No.": "LAP-2", "Quantity": "1"},
+                ],
                 "both",
             )
         )
-        self.assertEqual(Asset.objects.entire().get(asset_tracking_id="LAP-1").asset_description, "Updated")
-        self.assertTrue(Asset.objects.entire().filter(asset_tracking_id="LAP-2").exists())
-        self.assertEqual((job.summary["counts"]["assigned"], job.summary["counts"]["updated"]), (1, 1))
+        self.assertEqual(
+            Asset.objects.entire().get(asset_tracking_id="LAP-1").asset_description,
+            "Updated",
+        )
+        self.assertTrue(
+            Asset.objects.entire().filter(asset_tracking_id="LAP-2").exists()
+        )
+        self.assertEqual(
+            (job.summary["counts"]["assigned"], job.summary["counts"]["updated"]),
+            (1, 1),
+        )
 
 
 class SetupChecklistTests(TestCase):
@@ -1633,7 +2160,9 @@ class SetupChecklistTests(TestCase):
         from django.test import override_settings
 
         user = make_user("setupper", is_superuser=True)
-        make_employee(company=make_company("Home"), email="setupper@home.test", user=user)
+        make_employee(
+            company=make_company("Home"), email="setupper@home.test", user=user
+        )
         self.client.force_login(user)
         with override_settings(DEBUG=True):
             response = self.client.get("/dashboard/?preview_checklist=1")
@@ -1647,7 +2176,9 @@ class SetupChecklistTests(TestCase):
         self.assertFalse(step["done"])
 
     def test_a_finished_import_ticks_the_step(self):
-        ImportJob.objects.create(dataset="employees", original_name="a.xlsx", status=ImportJob.DONE)
+        ImportJob.objects.create(
+            dataset="employees", original_name="a.xlsx", status=ImportJob.DONE
+        )
         _user, context = self.checklist()
         # preview mode shows every step as open, so ask the step builder without it
         from django.test import RequestFactory
@@ -1669,10 +2200,14 @@ class AccessTests(TestCase):
         from django.contrib.auth.models import Permission
 
         user = make_user(name, is_superuser=superuser)
-        make_employee(company=make_company(f"Home {name}"), email=f"{name}@home.test", user=user)
+        make_employee(
+            company=make_company(f"Home {name}"), email=f"{name}@home.test", user=user
+        )
         for code in perms:
             app, codename = code.split(".")
-            user.user_permissions.add(Permission.objects.get(content_type__app_label=app, codename=codename))
+            user.user_permissions.add(
+                Permission.objects.get(content_type__app_label=app, codename=codename)
+            )
         user = type(user).objects.get(pk=user.pk)
         self.client.force_login(user)
         session = self.client.session
@@ -1683,7 +2218,20 @@ class AccessTests(TestCase):
     def upload(self, dataset="employees", mode="create"):
         return self.client.post(
             reverse("master-import-upload"),
-            {"dataset": dataset, "mode": mode, "file": sheet([{"Badge ID": "E-1", "First Name": "A", "Email": "a@a.test", "Phone": "9876543210"}])},
+            {
+                "dataset": dataset,
+                "mode": mode,
+                "file": sheet(
+                    [
+                        {
+                            "Badge ID": "E-1",
+                            "First Name": "A",
+                            "Email": "a@a.test",
+                            "Phone": "9876543210",
+                        }
+                    ]
+                ),
+            },
         )
 
     def test_a_visitor_who_is_not_signed_in_is_sent_to_login(self):
@@ -1710,17 +2258,25 @@ class AccessTests(TestCase):
         html = self.client.get(reverse("master-import")).content.decode()
         self.assertNotIn('value="update"', html)
         self.user_with("changer2", "employee.add_employee", "employee.change_employee")
-        self.assertIn('value="update"', self.client.get(reverse("master-import")).content.decode())
+        self.assertIn(
+            'value="update"', self.client.get(reverse("master-import")).content.decode()
+        )
 
     def test_an_update_job_is_closed_to_someone_who_lost_the_change_permission(self):
         self.user_with("owner", "employee.add_employee", "employee.change_employee")
         self.upload(mode="update")
         job = ImportJob.objects.get()
-        self.assertEqual(self.client.get(reverse("master-import-map", args=[job.pk])).status_code, 200)
+        self.assertEqual(
+            self.client.get(reverse("master-import-map", args=[job.pk])).status_code,
+            200,
+        )
         self.client.logout()
         weaker = self.user_with("weaker", "employee.add_employee")
         ImportJob.objects.filter(pk=job.pk).update(created_by=weaker)
-        self.assertEqual(self.client.get(reverse("master-import-map", args=[job.pk])).status_code, 404)
+        self.assertEqual(
+            self.client.get(reverse("master-import-map", args=[job.pk])).status_code,
+            404,
+        )
 
     def test_nobody_sees_another_users_import_but_a_superuser_does(self):
         self.user_with("owner2", "employee.add_employee")
@@ -1729,16 +2285,33 @@ class AccessTests(TestCase):
         ImportJob.objects.filter(pk=job.pk).update(original_name="private.xlsx")
         self.client.logout()
         self.user_with("other", "employee.add_employee")
-        for name in ("master-import-map", "master-import-review", "master-import-done", "master-import-check-progress"):
-            self.assertEqual(self.client.get(reverse(name, args=[job.pk])).status_code, 404, name)
-        self.assertNotContains(self.client.get(reverse("master-import-history")), "private.xlsx")
+        for name in (
+            "master-import-map",
+            "master-import-review",
+            "master-import-done",
+            "master-import-check-progress",
+        ):
+            self.assertEqual(
+                self.client.get(reverse(name, args=[job.pk])).status_code, 404, name
+            )
+        self.assertNotContains(
+            self.client.get(reverse("master-import-history")), "private.xlsx"
+        )
         self.client.logout()
         self.user_with("boss", superuser=True)
-        self.assertContains(self.client.get(reverse("master-import-history")), "private.xlsx")
+        self.assertContains(
+            self.client.get(reverse("master-import-history")), "private.xlsx"
+        )
 
     def test_an_import_for_a_dataset_the_user_may_not_use_is_closed(self):
         self.user_with("leaveless", "employee.add_employee")
-        self.client.post(reverse("master-import-upload"), {"dataset": "assigned_leave", "file": sheet([{"Badge ID": "E-1", "Leave Type": "x"}])})
+        self.client.post(
+            reverse("master-import-upload"),
+            {
+                "dataset": "assigned_leave",
+                "file": sheet([{"Badge ID": "E-1", "Leave Type": "x"}]),
+            },
+        )
         self.assertFalse(ImportJob.objects.exists())
 
     def test_passwords_are_not_kept_or_written_back_out(self):
@@ -1747,20 +2320,50 @@ class AccessTests(TestCase):
         owner = self.user_with("keeper", "employee.add_employee")
         self.client.post(
             reverse("master-import-upload"),
-            {"dataset": "employees", "file": sheet([
-                {"Badge ID": "E-1", "First Name": "A", "Email": "a@a.test", "Phone": "9876543210", "Password": "Secret#123"},
-                {"Badge ID": "E-2", "First Name": "B", "Email": "bad", "Phone": "9876543211", "Password": "Hidden#456"},
-            ])},
+            {
+                "dataset": "employees",
+                "file": sheet(
+                    [
+                        {
+                            "Badge ID": "E-1",
+                            "First Name": "A",
+                            "Email": "a@a.test",
+                            "Phone": "9876543210",
+                            "Password": "Secret#123",
+                        },
+                        {
+                            "Badge ID": "E-2",
+                            "First Name": "B",
+                            "Email": "bad",
+                            "Phone": "9876543211",
+                            "Password": "Hidden#456",
+                        },
+                    ]
+                ),
+            },
         )
         job = ImportJob.objects.get()
-        self.client.post(reverse("master-import-map", args=[job.pk]), {f"map__{k}": v for k, v in job.mapping.items()})
+        self.client.post(
+            reverse("master-import-map", args=[job.pk]),
+            {f"map__{k}": v for k, v in job.mapping.items()},
+        )
         self.client.post(reverse("master-import-check", args=[job.pk]))
-        errors = self.client.get(reverse("master-import-download", args=[job.pk, "errors"]))
+        errors = self.client.get(
+            reverse("master-import-download", args=[job.pk, "errors"])
+        )
         self.assertNotIn(b"Hidden#456", errors.content)
-        self.assertEqual(pd.read_excel(_io.BytesIO(errors.content))["Password"].tolist(), ["********"])
+        self.assertEqual(
+            pd.read_excel(_io.BytesIO(errors.content))["Password"].tolist(),
+            ["********"],
+        )
         self.client.post(reverse("master-import-run", args=[job.pk]))
         job.refresh_from_db()
         self.assertFalse(job.file)  # the sheet with the passwords is not kept
         self.assertEqual(job.edits, {})
-        self.assertEqual(self.client.get(reverse("master-import-download", args=[job.pk, "valid"])).status_code, 404)
+        self.assertEqual(
+            self.client.get(
+                reverse("master-import-download", args=[job.pk, "valid"])
+            ).status_code,
+            404,
+        )
         self.assertNotIn("Secret#123", str(job.summary))

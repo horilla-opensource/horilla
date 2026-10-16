@@ -5,7 +5,6 @@ from .assets import AssetsDataset
 from .assigned_leave import AssignedLeaveDataset
 from .employees import EmployeesDataset
 
-
 DATASETS = {
     "employees": EmployeesDataset(),
     "assigned_leave": AssignedLeaveDataset(),

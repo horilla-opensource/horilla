@@ -10,7 +10,9 @@ def pick(model, column, name, company, **extra):
     (everyone's), then any. None when nothing has that name.
     """
     records = list(
-        model.objects.entire().filter(**{column: name}, **extra).prefetch_related("company_id")
+        model.objects.entire()
+        .filter(**{column: name}, **extra)
+        .prefetch_related("company_id")
     )
     if not records:
         return None
@@ -27,7 +29,9 @@ def pick(model, column, name, company, **extra):
 def managers_by_name():
     """{full name: [employees]}: the same name can belong to people in several companies."""
     table = {}
-    employees = Employee.objects.entire().select_related("employee_work_info__company_id")
+    employees = Employee.objects.entire().select_related(
+        "employee_work_info__company_id"
+    )
     for employee in employees:
         name = f"{employee.employee_first_name} {employee.employee_last_name}"
         table.setdefault(name, []).append(employee)

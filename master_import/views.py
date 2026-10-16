@@ -9,8 +9,8 @@ import pandas as pd
 from django.contrib import messages
 from django.core.files.base import ContentFile
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
-from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -21,7 +21,13 @@ from horilla.decorators import login_required
 from .datasets import DATASETS, default_dataset, get_dataset
 from .datasets.base import Context
 from .models import ImportJob
-from .parsing import UploadError, apply_mapping, read_upload, sample_values, suggest_mapping
+from .parsing import (
+    UploadError,
+    apply_mapping,
+    read_upload,
+    sample_values,
+    suggest_mapping,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +41,10 @@ SHOWN_ROWS = 200
 
 
 def _allowed(request, dataset):
-    return bool(dataset) and dataset.available and (
-        request.user.is_superuser or request.user.has_perm(dataset.permission)
+    return (
+        bool(dataset)
+        and dataset.available
+        and (request.user.is_superuser or request.user.has_perm(dataset.permission))
     )
 
 
@@ -65,7 +73,9 @@ def _context(request):
 
 def _frame(job):
     if not job.file:
-        raise UploadError(_("The uploaded file is no longer available. Upload it again."))
+        raise UploadError(
+            _("The uploaded file is no longer available. Upload it again.")
+        )
     job.file.open("rb")
     try:
         return read_upload(job.file)
@@ -106,8 +116,12 @@ def upload(request):
     dataset = get_dataset(request.POST.get("dataset", ""))
     if request.method != "POST" or not _allowed(request, dataset):
         return redirect("master-import")
-    if request.POST.get("mode") in ("update", "both") and not _can_update(request, dataset):
-        messages.error(request, _("You don't have permission to update existing records."))
+    if request.POST.get("mode") in ("update", "both") and not _can_update(
+        request, dataset
+    ):
+        messages.error(
+            request, _("You don't have permission to update existing records.")
+        )
         return redirect(f"{reverse('master-import')}?dataset={dataset.key}")
     file = request.FILES.get("file")
     if not file:
@@ -128,7 +142,12 @@ def upload(request):
         created_by=request.user,
         company_id=get_session_company(request),
         mapping=suggest_mapping(list(frame.columns), dataset.fields),
-        mode=request.POST.get("mode") if dataset.supports_update and request.POST.get("mode") in ("update", "both") else "create",
+        mode=(
+            request.POST.get("mode")
+            if dataset.supports_update
+            and request.POST.get("mode") in ("update", "both")
+            else "create"
+        ),
         match_keys=list(dataset.default_match_keys) if dataset.supports_update else [],
     )
     job.file.save(file.name, file, save=False)
@@ -164,12 +183,18 @@ def _xlsx_bytes(frame):
             cell.alignment = Alignment(vertical="center")
         # Bordered down past the sample too, so there is a grid to fill in.
         blanks = max(30 - len(frame), 0)
-        for row in sheet.iter_rows(min_row=1, max_row=len(frame) + 1 + blanks, max_col=len(frame.columns)):
+        for row in sheet.iter_rows(
+            min_row=1, max_row=len(frame) + 1 + blanks, max_col=len(frame.columns)
+        ):
             for cell in row:
                 cell.border = border
         for index, column in enumerate(frame.columns, start=1):
-            longest = max([len(str(column))] + [len(str(v)) for v in frame[column].head(50)])
-            sheet.column_dimensions[get_column_letter(index)].width = min(max(longest + 4, 14), 50)
+            longest = max(
+                [len(str(column))] + [len(str(v)) for v in frame[column].head(50)]
+            )
+            sheet.column_dimensions[get_column_letter(index)].width = min(
+                max(longest + 4, 14), 50
+            )
         sheet.freeze_panes = "A2"
     return buffer.getvalue()
 
@@ -207,16 +232,27 @@ def map_columns(request, job_id):
         return [
             f.label
             for f in dataset.fields
-            if f.key in required_keys() and not job.mapping.get(f.key)
-            and not (f.key == "First Name" and job.mapping.get("Full Name") and not updating)
+            if f.key in required_keys()
+            and not job.mapping.get(f.key)
+            and not (
+                f.key == "First Name" and job.mapping.get("Full Name") and not updating
+            )
         ]
 
     if request.method == "POST":
-        job.mapping = {f.key: request.POST.get(f"map__{f.key}", "") for f in dataset.fields}
+        job.mapping = {
+            f.key: request.POST.get(f"map__{f.key}", "") for f in dataset.fields
+        }
         job.mapping = {k: v for k, v in job.mapping.items() if v in frame.columns}
         if matching:
-            chosen = [k for k in request.POST.getlist("match") if k in dataset.match_choices]
-            chosen = [k for k in dataset.match_choices if k in chosen or k in dataset.locked_match_keys]
+            chosen = [
+                k for k in request.POST.getlist("match") if k in dataset.match_choices
+            ]
+            chosen = [
+                k
+                for k in dataset.match_choices
+                if k in chosen or k in dataset.locked_match_keys
+            ]
             job.match_keys = chosen or list(dataset.default_match_keys)
         if not unmatched():
             job.status = ImportJob.MAPPED
@@ -231,7 +267,11 @@ def map_columns(request, job_id):
         job=job,
         dataset=dataset,
         rows=[
-            {"field": f, "selected": job.mapping.get(f.key, ""), "required": f.key in required_keys()}
+            {
+                "field": f,
+                "selected": job.mapping.get(f.key, ""),
+                "required": f.key in required_keys(),
+            }
             for f in dataset.fields
         ],
         updating=updating,
@@ -264,8 +304,12 @@ def _split(job, dataset, frame, ctx, progress=None):
     live = [r for r in rows if r["__row"] not in skipped_numbers]
     if progress:
         progress(5)
-    return rows, skipped, dataset.check(
-        live, ctx, progress=progress, mode=job.mode, match_keys=job.match_keys
+    return (
+        rows,
+        skipped,
+        dataset.check(
+            live, ctx, progress=progress, mode=job.mode, match_keys=job.match_keys
+        ),
     )
 
 
@@ -276,7 +320,9 @@ def _review(job, dataset, frame, ctx, progress=None):
     mapped = {k for k, v in job.mapping.items() if v}
     if "Full Name" in mapped:
         mapped |= {"First Name", "Last Name"}
-    columns = [f.key for f in dataset.fields if f.key in mapped and f.key != "Full Name"] or dataset.preview_columns
+    columns = [
+        f.key for f in dataset.fields if f.key in mapped and f.key != "Full Name"
+    ] or dataset.preview_columns
     # An error may be in a column the preview does not show; those are added to the error table.
     flagged = {f for e in checked.errors[:SHOWN_ROWS] for f in e["by_field"]}
     error_columns = columns + [
@@ -340,7 +386,11 @@ def _review(job, dataset, frame, ctx, progress=None):
         "updating": sum(1 for r in checked.valid if r.get("__op") == "update"),
         "skipped": len(skipped),
         "skipped_rows": [
-            {"row": r.get("__row"), "number": int(r.get("__row")) - 1, "cells": cells(r)}
+            {
+                "row": r.get("__row"),
+                "number": int(r.get("__row")) - 1,
+                "cells": cells(r),
+            }
             for r in skipped[:SHOWN_ROWS]
         ],
         "downloads": {
@@ -362,16 +412,20 @@ def _review(job, dataset, frame, ctx, progress=None):
                 "row": e["row"],
                 "number": e["row"] - 1,
                 "messages": e["messages"],
-                "cells": [cell(e["data"], c, e["by_field"].get(c, "")) for c in error_columns],
+                "cells": [
+                    cell(e["data"], c, e["by_field"].get(c, "")) for c in error_columns
+                ],
             }
             for e in checked.errors[:SHOWN_ROWS]
         ],
         "shown_limit": SHOWN_ROWS,
         "will_create": [
             {
-                "label": str(dataset.created_models[key]._meta.verbose_name_plural).title()
-                if key in dataset.created_models
-                else key.replace("_", " ").title(),
+                "label": (
+                    str(dataset.created_models[key]._meta.verbose_name_plural).title()
+                    if key in dataset.created_models
+                    else key.replace("_", " ").title()
+                ),
                 "names": names,
             }
             for key, names in checked.will_create.items()
@@ -451,7 +505,9 @@ def check(request, job_id):
             "valid": review["valid"],
             "mode": job.mode,
             "error_count": review["error_count"],
-            "html": render_to_string("master_import/_review.html", {"review": review}, request=request),
+            "html": render_to_string(
+                "master_import/_review.html", {"review": review}, request=request
+            ),
         }
     )
 
@@ -467,13 +523,22 @@ def check_progress(request, job_id):
 def run(request, job_id):
     job, dataset = _job_for(request, job_id)
     if request.method != "POST" or job.status == ImportJob.DONE:
-        return redirect("master-import-done" if job.status == ImportJob.DONE else "master-import-review", job_id=job.pk)
+        return redirect(
+            (
+                "master-import-done"
+                if job.status == ImportJob.DONE
+                else "master-import-review"
+            ),
+            job_id=job.pk,
+        )
     ctx = _context(request)
     ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     done_url = reverse("master-import-done", args=[job.pk])
 
     def finish():
-        return JsonResponse({"ok": True, "url": done_url}) if ajax else redirect(done_url)
+        return (
+            JsonResponse({"ok": True, "url": done_url}) if ajax else redirect(done_url)
+        )
 
     ImportJob.objects.filter(pk=job.pk).update(check_progress=0)
 
@@ -483,7 +548,11 @@ def run(request, job_id):
     try:
         frame = _frame(job)
         rows, skipped, checked = _split(job, dataset, frame, ctx)
-        counts = dataset.commit(checked.valid, ctx, mode=job.mode, progress=report) if checked.valid else {}
+        counts = (
+            dataset.commit(checked.valid, ctx, mode=job.mode, progress=report)
+            if checked.valid
+            else {}
+        )
     except Exception as exc:  # noqa: BLE001 - recorded on the job, shown to the user
         logger.exception("Master import %s failed", job.pk)
         job.status = ImportJob.FAILED
@@ -537,7 +606,11 @@ def _error_workbook(errors, dataset):
     secret = _secret_keys(dataset)
     frame = pd.DataFrame(
         [
-            {"Row": e["row"], **{k: _masked(e["data"], k, secret) for k in keys}, "Errors": "; ".join(e["messages"])}
+            {
+                "Row": e["row"],
+                **{k: _masked(e["data"], k, secret) for k in keys},
+                "Errors": "; ".join(e["messages"]),
+            }
             for e in errors
         ]
     )
@@ -556,7 +629,14 @@ def done(request, job_id):
     job, dataset = _job_for(request, job_id)
     if job.status in (ImportJob.UPLOADED, ImportJob.MAPPED):
         return redirect("master-import-map", job_id=job.pk)
-    return _page(request, "master_import/step_done.html", 4, job=job, dataset=dataset, summary=job.summary)
+    return _page(
+        request,
+        "master_import/step_done.html",
+        4,
+        job=job,
+        dataset=dataset,
+        summary=job.summary,
+    )
 
 
 @login_required
@@ -568,15 +648,36 @@ def download_records(request, job_id, kind):
     rows, skipped, checked = _split(job, dataset, _frame(job), _context(request))
     keys = [f.key for f in dataset.fields]
     if kind == "errors":
-        frame = pd.read_excel(io.BytesIO(_error_workbook(checked.errors, dataset))) if checked.errors else pd.DataFrame(columns=["Row", *keys, "Errors"])
+        frame = (
+            pd.read_excel(io.BytesIO(_error_workbook(checked.errors, dataset)))
+            if checked.errors
+            else pd.DataFrame(columns=["Row", *keys, "Errors"])
+        )
     else:
         chosen = checked.valid if kind == "valid" else skipped
         frame = pd.DataFrame(
-            [{"Row": r.get("__row"), **{k: _masked(r, k, _secret_keys(dataset)) for k in keys}} for r in chosen],
+            [
+                {
+                    "Row": r.get("__row"),
+                    **{k: _masked(r, k, _secret_keys(dataset)) for k in keys},
+                }
+                for r in chosen
+            ],
             columns=["Row", *keys],
         )
-    mapped = [c for c in frame.columns if c in ("Row", "Errors") or c in job.mapping and job.mapping[c] or (c == "First Name" or c == "Last Name") and job.mapping.get("Full Name")]
-    return _xlsx_response(frame[mapped] if len(frame.columns) else frame, f"{dataset.key}_{kind}_records.xlsx")
+    mapped = [
+        c
+        for c in frame.columns
+        if c in ("Row", "Errors")
+        or c in job.mapping
+        and job.mapping[c]
+        or (c == "First Name" or c == "Last Name")
+        and job.mapping.get("Full Name")
+    ]
+    return _xlsx_response(
+        frame[mapped] if len(frame.columns) else frame,
+        f"{dataset.key}_{kind}_records.xlsx",
+    )
 
 
 @login_required
@@ -584,7 +685,11 @@ def error_file(request, job_id):
     job, _dataset = _job_for(request, job_id)
     if not job.error_file:
         raise Http404
-    return FileResponse(job.error_file.open("rb"), as_attachment=True, filename=job.error_file.name.rsplit("/", 1)[-1])
+    return FileResponse(
+        job.error_file.open("rb"),
+        as_attachment=True,
+        filename=job.error_file.name.rsplit("/", 1)[-1],
+    )
 
 
 @login_required

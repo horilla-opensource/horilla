@@ -32,9 +32,15 @@ class Context:
 @dataclass
 class Checked:
     valid: list = field(default_factory=list)
-    errors: list = field(default_factory=list)  # [{"row": n, "data": {...}, "messages": [...]}]
-    will_create: dict = field(default_factory=dict)  # {"companies": ["A"], "departments": [...]}
-    unchanged: list = field(default_factory=list)  # update mode: matched, nothing differs
+    errors: list = field(
+        default_factory=list
+    )  # [{"row": n, "data": {...}, "messages": [...]}]
+    will_create: dict = field(
+        default_factory=dict
+    )  # {"companies": ["A"], "departments": [...]}
+    unchanged: list = field(
+        default_factory=list
+    )  # update mode: matched, nothing differs
 
 
 class Dataset:

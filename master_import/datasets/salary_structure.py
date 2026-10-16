@@ -19,12 +19,17 @@ def pick_structure(title, company_name, table):
     if len(found) > 1:
         # a structure with no company belongs to everyone
         mine = [
-            s for s in found
-            if s.company_id_id is None or (s.company_id and s.company_id.company == company_name)
+            s
+            for s in found
+            if s.company_id_id is None
+            or (s.company_id and s.company_id.company == company_name)
         ]
         found = mine
     if len(found) != 1:
-        return None, f"More than one salary structure is titled '{title}'; it cannot be told apart."
+        return (
+            None,
+            f"More than one salary structure is titled '{title}'; it cannot be told apart.",
+        )
     return found[0], ""
 
 
@@ -32,7 +37,9 @@ def contract_of(employee):
     """The active contract, or the latest one when none is active."""
     contracts = Contract.objects.entire().filter(employee_id=employee)
     return (
-        contracts.filter(contract_status="active").order_by("-contract_start_date", "-id").first()
+        contracts.filter(contract_status="active")
+        .order_by("-contract_start_date", "-id")
+        .first()
         or contracts.order_by("-contract_start_date", "-id").first()
     )
 
@@ -60,7 +67,13 @@ def get_or_create_structure(title, company_name, cache):
         table = structure_table()
         found, _why = pick_structure(title, company_name, table)
         if found is None:
-            company = Company.objects.filter(company=company_name).first() if company_name else None
-            found = SalaryStructure.objects.create(title=title, structure_mode="gross_up", company_id=company)
+            company = (
+                Company.objects.filter(company=company_name).first()
+                if company_name
+                else None
+            )
+            found = SalaryStructure.objects.create(
+                title=title, structure_mode="gross_up", company_id=company
+            )
         cache[key] = found
     return cache[key]

@@ -43,7 +43,11 @@ class ImportJob(models.Model):
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name="+"
     )
     company_id = models.ForeignKey(
-        "base.Company", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+        "base.Company",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     finished_at = models.DateTimeField(null=True, blank=True)

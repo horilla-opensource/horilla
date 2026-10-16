@@ -27,7 +27,6 @@ from horilla_auth.models import HorillaUser
 from payroll.models.models import SalaryStructure
 
 from .base import Checked
-from .scoping import managers_by_name, pick, pick_manager
 from .salary_structure import (
     contract_of,
     get_or_create_structure,
@@ -35,6 +34,7 @@ from .salary_structure import (
     put_on_contract,
     structure_table,
 )
+from .scoping import managers_by_name, pick, pick_manager
 
 EMAIL = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
 PHONE = re.compile(r"^\+?\d{10,15}$")
@@ -140,8 +140,7 @@ class EmployeeUpdater:
         managers = managers_by_name()
         self.structures = structure_table()
         taken_emails = {
-            e.lower()
-            for e in HorillaUser.objects.values_list("username", flat=True)
+            e.lower() for e in HorillaUser.objects.values_list("username", flat=True)
         }
         seen_people, new_emails, new_badges = {}, set(), set()
         all_badges = {
@@ -165,8 +164,15 @@ class EmployeeUpdater:
                     seen_people[employee.pk] = row["__row"]
             if employee is not None and not errors:
                 changes, apply = self._changes(
-                    row, employee, match_keys, managers, taken_emails, new_emails,
-                    all_badges, new_badges, errors,
+                    row,
+                    employee,
+                    match_keys,
+                    managers,
+                    taken_emails,
+                    new_emails,
+                    all_badges,
+                    new_badges,
+                    errors,
                 )
             else:
                 changes, apply = [], {}
@@ -194,7 +200,9 @@ class EmployeeUpdater:
         for key in match_keys:
             value = row.get(key)
             if not value:
-                errors[f"{key} Error"] = f"{key} is empty, and it is used to find the employee."
+                errors[f"{key} Error"] = (
+                    f"{key} is empty, and it is used to find the employee."
+                )
                 continue
             found = index[key].get(_norm(key, value), [])
             if not found:
@@ -211,24 +219,45 @@ class EmployeeUpdater:
             return None
         if len(shared) > 1:
             errors[f"{match_keys[0]} Error"] = (
-                f"{len(shared)} employees share this " + " and ".join(match_keys) + "; it must find exactly one."
+                f"{len(shared)} employees share this "
+                + " and ".join(match_keys)
+                + "; it must find exactly one."
             )
             return None
         return candidate_sets[0][shared.pop()]
 
     def _changes(
-        self, row, emp, match_keys, managers, taken_emails, new_emails, all_badges, new_badges, errors
+        self,
+        row,
+        emp,
+        match_keys,
+        managers,
+        taken_emails,
+        new_emails,
+        all_badges,
+        new_badges,
+        errors,
     ):
         from .employees import LIMITS
 
         info = getattr(emp, "employee_work_info", None)
-        changes, apply = [], {"person": {}, "work": {}, "masters": {}, "bank": {}, "user": None}
+        changes, apply = [], {
+            "person": {},
+            "work": {},
+            "masters": {},
+            "bank": {},
+            "user": None,
+        }
 
         def note(label, old, new):
             changes.append(f"{label}: {old if old not in (None, '') else '-'} → {new}")
 
         # values too long for their column are that row's error, found before saving
-        errors.update(self.dataset._too_long({k: v for k, v in row.items() if k not in match_keys}))
+        errors.update(
+            self.dataset._too_long(
+                {k: v for k, v in row.items() if k not in match_keys}
+            )
+        )
 
         # ---- person
         for label, column in PERSON.items():
@@ -258,7 +287,9 @@ class EmployeeUpdater:
             new_badge = clean_badge_id(new_badge)
             if new_badge and new_badge != str(emp.badge_id or ""):
                 if new_badge in all_badges or new_badge in new_badges:
-                    errors["Badge ID Error"] = "Another employee already has this Badge ID."
+                    errors["Badge ID Error"] = (
+                        "Another employee already has this Badge ID."
+                    )
                 else:
                     new_badges.add(new_badge)
                     apply["person"]["badge_id"] = new_badge
@@ -272,7 +303,9 @@ class EmployeeUpdater:
                 errors["Email Error"] = "Invalid email address."
             elif new_email != (emp.email or "").lower():
                 if "Badge ID" not in match_keys:
-                    errors["Email Error"] = "Email can only be changed when employees are found by Badge ID."
+                    errors["Email Error"] = (
+                        "Email can only be changed when employees are found by Badge ID."
+                    )
                 elif new_email in taken_emails or new_email in new_emails:
                     errors["Email Error"] = "Another user already has this email."
                 else:
@@ -285,16 +318,22 @@ class EmployeeUpdater:
         company = row.get("Company")
         current = _name(getattr(info, "company_id", None), "company")
         if company and ctx_company_differs(company, current):
-            errors["Company Error"] = f"Belongs to {current or 'no company'}; an update does not move employees."
+            errors["Company Error"] = (
+                f"Belongs to {current or 'no company'}; an update does not move employees."
+            )
 
         # ---- work information
         work_old = {
             "Department": _name(getattr(info, "department_id", None), "department"),
-            "Job Position": _name(getattr(info, "job_position_id", None), "job_position"),
+            "Job Position": _name(
+                getattr(info, "job_position_id", None), "job_position"
+            ),
             "Job Role": _name(getattr(info, "job_role_id", None), "job_role"),
             "Work Type": _name(getattr(info, "work_type_id", None), "work_type"),
             "Shift": _name(getattr(info, "shift_id", None), "employee_shift"),
-            "Employee Type": _name(getattr(info, "employee_type_id", None), "employee_type"),
+            "Employee Type": _name(
+                getattr(info, "employee_type_id", None), "employee_type"
+            ),
         }
         for label, (fk, model, column) in MASTERS.items():
             new = row.get(label)
@@ -321,18 +360,27 @@ class EmployeeUpdater:
             if target is None:
                 errors["Reporting Manager Error"] = f"No employee is named '{manager}'."
             elif target.pk == emp.pk:
-                errors["Reporting Manager Error"] = "An employee cannot report to themselves."
+                errors["Reporting Manager Error"] = (
+                    "An employee cannot report to themselves."
+                )
             elif target.pk != getattr(info, "reporting_manager_id_id", None):
                 apply["work"]["reporting_manager_id"] = target
                 current_manager = getattr(info, "reporting_manager_id", None)
-                note("Reporting Manager", current_manager.get_full_name() if current_manager else "", manager)
+                note(
+                    "Reporting Manager",
+                    current_manager.get_full_name() if current_manager else "",
+                    manager,
+                )
 
         location = row.get("Location")
         if location and location != (getattr(info, "location", "") or ""):
             apply["work"]["location"] = location
             note("Location", getattr(info, "location", ""), location)
 
-        for label, column in (("Date Joining", "date_joining"), ("Contract End Date", "contract_end_date")):
+        for label, column in (
+            ("Date Joining", "date_joining"),
+            ("Contract End Date", "contract_end_date"),
+        ):
             if row.get(label) is None:
                 continue
             date_errors = {}
@@ -352,22 +400,36 @@ class EmployeeUpdater:
             if why:
                 errors["Salary Structure Error"] = why
             elif contract is None:
-                errors["Salary Structure Error"] = "This employee has no contract to put the structure on."
+                errors["Salary Structure Error"] = (
+                    "This employee has no contract to put the structure on."
+                )
             elif found is None:
                 apply["structure_new"] = (title, company_name)
-                old = contract.salary_structure_id.title if contract.salary_structure_id_id else ""
+                old = (
+                    contract.salary_structure_id.title
+                    if contract.salary_structure_id_id
+                    else ""
+                )
                 note("Salary Structure", old, f"{title} (new)")
             elif contract.salary_structure_id_id != found.pk:
                 apply["structure"] = found.pk
-                old = contract.salary_structure_id.title if contract.salary_structure_id_id else ""
+                old = (
+                    contract.salary_structure_id.title
+                    if contract.salary_structure_id_id
+                    else ""
+                )
                 note("Salary Structure", old, title)
 
         # ---- bank
         bank = getattr(emp, "employee_bank_details", None)
         given = {label: row[label] for label in BANK if row.get(label)}
         if given:
-            if bank is None and not (given.get("Bank Name") and given.get("Account Number")):
-                errors["Bank Error"] = "A new bank account needs both a bank name and an account number."
+            if bank is None and not (
+                given.get("Bank Name") and given.get("Account Number")
+            ):
+                errors["Bank Error"] = (
+                    "A new bank account needs both a bank name and an account number."
+                )
             else:
                 for label, value in given.items():
                     column = BANK[label]
@@ -382,9 +444,23 @@ class EmployeeUpdater:
     @staticmethod
     def _will_create(valid):
         """New masters this update would add, by exact name."""
-        wanted = {"departments": set(), "job_positions": set(), "job_roles": set(), "work_types": set(), "shifts": set(), "employee_types": set(), "salary_structures": set()}
-        keys = {"Department": "departments", "Job Position": "job_positions", "Job Role": "job_roles",
-                "Work Type": "work_types", "Shift": "shifts", "Employee Type": "employee_types"}
+        wanted = {
+            "departments": set(),
+            "job_positions": set(),
+            "job_roles": set(),
+            "work_types": set(),
+            "shifts": set(),
+            "employee_types": set(),
+            "salary_structures": set(),
+        }
+        keys = {
+            "Department": "departments",
+            "Job Position": "job_positions",
+            "Job Role": "job_roles",
+            "Work Type": "work_types",
+            "Shift": "shifts",
+            "Employee Type": "employee_types",
+        }
         for row in valid:
             for label, bucket in keys.items():
                 if label in row["__apply"]["masters"]:
@@ -394,12 +470,24 @@ class EmployeeUpdater:
                 wanted["salary_structures"].add(row["__apply"]["structure_new"][0])
         existing = {
             "salary_structures": set(),
-            "departments": set(Department.objects.entire().values_list("department", flat=True)),
-            "job_positions": set(JobPosition.objects.entire().values_list("job_position", flat=True)),
-            "job_roles": set(JobRole.objects.entire().values_list("job_role", flat=True)),
-            "work_types": set(WorkType.objects.entire().values_list("work_type", flat=True)),
-            "shifts": set(EmployeeShift.objects.entire().values_list("employee_shift", flat=True)),
-            "employee_types": set(EmployeeType.objects.entire().values_list("employee_type", flat=True)),
+            "departments": set(
+                Department.objects.entire().values_list("department", flat=True)
+            ),
+            "job_positions": set(
+                JobPosition.objects.entire().values_list("job_position", flat=True)
+            ),
+            "job_roles": set(
+                JobRole.objects.entire().values_list("job_role", flat=True)
+            ),
+            "work_types": set(
+                WorkType.objects.entire().values_list("work_type", flat=True)
+            ),
+            "shifts": set(
+                EmployeeShift.objects.entire().values_list("employee_shift", flat=True)
+            ),
+            "employee_types": set(
+                EmployeeType.objects.entire().values_list("employee_type", flat=True)
+            ),
         }
         return {k: sorted(v - existing[k]) for k, v in wanted.items()}
 
@@ -412,19 +500,33 @@ class EmployeeUpdater:
             caches = {}
 
             def master(model, column, name, company=None, **extra):
-                key = (model, column, name, getattr(company, "pk", None), tuple(sorted((k, v.pk) for k, v in extra.items())))
+                key = (
+                    model,
+                    column,
+                    name,
+                    getattr(company, "pk", None),
+                    tuple(sorted((k, v.pk) for k, v in extra.items())),
+                )
                 if key not in caches:
                     found = pick(model, column, name, company, **extra)
-                    caches[key] = found or model.objects.create(**{column: name}, **extra)
+                    caches[key] = found or model.objects.create(
+                        **{column: name}, **extra
+                    )
                 return caches[key]
 
             for row in rows:
                 apply = row["__apply"]
-                emp = Employee.objects.entire().select_related("employee_work_info").get(pk=row["__pk"])
+                emp = (
+                    Employee.objects.entire()
+                    .select_related("employee_work_info")
+                    .get(pk=row["__pk"])
+                )
                 info = getattr(emp, "employee_work_info", None)
                 company = getattr(info, "company_id", None)
                 if apply["person"]:
-                    Employee.objects.entire().filter(pk=emp.pk).update(**apply["person"])
+                    Employee.objects.entire().filter(pk=emp.pk).update(
+                        **apply["person"]
+                    )
                 if apply["user"]:
                     HorillaUser.objects.filter(pk=emp.employee_user_id_id).update(
                         username=apply["user"], email=apply["user"]
@@ -437,34 +539,64 @@ class EmployeeUpdater:
                 for label, (fk, model, column) in MASTERS.items():
                     if label in names:
                         work[fk] = master(model, column, names[label], company)
-                if "Department" in names or "Job Position" in names or "Job Role" in names:
-                    dept = work.get("department_id") or getattr(info, "department_id", None)
+                if (
+                    "Department" in names
+                    or "Job Position" in names
+                    or "Job Role" in names
+                ):
+                    dept = work.get("department_id") or getattr(
+                        info, "department_id", None
+                    )
                     position = getattr(info, "job_position_id", None)
                     if "Job Position" in names:
-                        position = master(JobPosition, "job_position", names["Job Position"], company, department_id=dept)
+                        position = master(
+                            JobPosition,
+                            "job_position",
+                            names["Job Position"],
+                            company,
+                            department_id=dept,
+                        )
                         work["job_position_id"] = position
                     if "Job Role" in names:
-                        work["job_role_id"] = master(JobRole, "job_role", names["Job Role"], company, job_position_id=position)
+                        work["job_role_id"] = master(
+                            JobRole,
+                            "job_role",
+                            names["Job Role"],
+                            company,
+                            job_position_id=position,
+                        )
                 if work and info is not None:
-                    EmployeeWorkInformation.objects.entire().filter(pk=info.pk).update(**work)
+                    EmployeeWorkInformation.objects.entire().filter(pk=info.pk).update(
+                        **work
+                    )
 
                 if apply.get("structure"):
-                    put_on_contract(emp, SalaryStructure.objects.entire().get(pk=apply["structure"]))
+                    put_on_contract(
+                        emp, SalaryStructure.objects.entire().get(pk=apply["structure"])
+                    )
                 elif apply.get("structure_new"):
                     title, company_name = apply["structure_new"]
-                    put_on_contract(emp, get_or_create_structure(title, company_name, made_structures))
+                    put_on_contract(
+                        emp,
+                        get_or_create_structure(title, company_name, made_structures),
+                    )
 
                 if apply["bank"]:
                     if apply["bank_new"]:
-                        EmployeeBankDetails.objects.create(employee_id=emp, **apply["bank"])
+                        EmployeeBankDetails.objects.create(
+                            employee_id=emp, **apply["bank"]
+                        )
                         banks += 1
                     else:
-                        EmployeeBankDetails.objects.entire().filter(employee_id=emp).update(**apply["bank"])
+                        EmployeeBankDetails.objects.entire().filter(
+                            employee_id=emp
+                        ).update(**apply["bank"])
                 updated += 1
         return {
             "updated": updated,
             "banks": banks,
-            "salary_structures": SalaryStructure.objects.entire().count() - structures_before,
+            "salary_structures": SalaryStructure.objects.entire().count()
+            - structures_before,
         }
 
 
