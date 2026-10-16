@@ -1093,6 +1093,7 @@ def view_individual_payslip(request, employee_id, start_date, end_date):
                 "Payslip data not found for the specified employee and date range."
             ),
         )
+    payslip_data["company"] = Company.objects.filter(hq=True).first()
     return render(
         request,
         "payroll/payslip/individual_payslip.html",
