@@ -2042,6 +2042,58 @@ def feedback_answer_post(request, id):
         return redirect(reverse("feedback-view"))
 
 
+FEEDBACK_YES_NO = (("yes", _("Yes")), ("no", _("No")))
+FEEDBACK_LIKERT = (
+    ("Strongly Disagree", _("Strongly Disagree")),
+    ("Disagree", _("Disagree")),
+    ("Neutral", _("Neutral")),
+    ("Agree", _("Agree")),
+    ("Strongly Agree", _("Strongly Agree")),
+)
+FEEDBACK_KEY_RESULT_SCALE = (
+    ("Perfect", _("Perfect")),
+    ("Good", _("Good")),
+    ("Average", _("Average")),
+    ("Bad", _("Bad")),
+)
+
+
+def with_given_choice(choices, given):
+    """
+    Returns the (value, label) choices, adding the given answer if it is not among them.
+    """
+    choices = list(choices)
+    if given and str(given).lower() not in {value.lower() for value, label in choices}:
+        choices.append((given, given))
+    return choices
+
+
+def answer_choices(answer):
+    """
+    Returns every choice the answered question offered, for rendering the answer read-only.
+    """
+    kind = answer.question_id.question_type
+    if kind == "3":
+        choices = FEEDBACK_YES_NO
+    elif kind == "5":
+        choices = FEEDBACK_LIKERT
+    elif kind == "4":
+        choices = [
+            (value, value)
+            for option in answer.question_id.question_options.all()
+            for value in (
+                option.option_a,
+                option.option_b,
+                option.option_c,
+                option.option_d,
+            )
+            if value
+        ]
+    else:
+        return []
+    return with_given_choice(choices, (answer.answer or {}).get("answer"))
+
+
 @login_required
 def feedback_answer_view(request, id, **kwargs):
     """
@@ -2060,17 +2112,31 @@ def feedback_answer_view(request, id, **kwargs):
 
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
-    answers = Answer.objects.filter(feedback_id=feedback, employee_id=employee)
-    key_result_feedback = KeyResultFeedback.objects.filter(
-        feedback_id=feedback, employee_id=employee
+    answers = (
+        Answer.objects.filter(feedback_id=feedback, employee_id=employee)
+        .select_related("question_id")
+        .prefetch_related("question_id__question_options")
+        .order_by("pk")
     )
-
-    if not answers:
-        messages.info(request, _("Feedback is not answered yet"))
-        return redirect(reverse("feedback-view"))
+    page_obj = Paginator(answers, 20).get_page(request.GET.get("page"))
+    for answer in page_obj:
+        answer.choices = answer_choices(answer)
+    key_result_feedback = []
+    if not page_obj.has_next():
+        key_result_feedback = list(
+            KeyResultFeedback.objects.filter(
+                feedback_id=feedback, employee_id=employee
+            ).select_related("key_result_id__key_result_id")
+        )
+        for key_result in key_result_feedback:
+            key_result.choices = with_given_choice(
+                FEEDBACK_KEY_RESULT_SCALE, (key_result.answer or {}).get("answer")
+            )
 
     context = {
-        "answers": answers,
+        "answers": page_obj,
+        "page_obj": page_obj,
+        "is_chunk": page_obj.number > 1,
         "feedback_id": feedback,
         "key_result_feedback": key_result_feedback,
     }

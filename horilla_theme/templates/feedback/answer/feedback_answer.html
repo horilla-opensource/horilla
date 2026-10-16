@@ -1,192 +1,189 @@
 {% extends 'index.html' %}
 {% load static i18n %}
-{% load i18n %}
-
 {% block content %}
-    <div class="oh-wrapper oh-card--w-resp-75">
-        <div class="p-6" style="border: 1px solid #ffffffff; padding: 80px; margin: 50px; border-radius: 10px">
-            <form action="{% url 'feedback-answer-post' id=feedback.id %}" method="post">
-                {% csrf_token %}
+    <style>
+        .oh-rate {
+            position: relative !important;
+        }
+        .oh-rate:not(:checked) > input {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 1px !important;
+            height: 1px !important;
+            opacity: 0 !important;
+            overflow: hidden !important;
+        }
+    </style>
+    <div class="w-full px-6 py-4">
+        <div class="sticky top-[73px] z-10 bg-primary-50 border-b border-secondary-200 pt-2 pb-3 mb-3">
+            <h2 class="text-2xl font-extrabold">{% trans "Feedback Answer" %}</h2>
+            <div class="flex items-center gap-3 mt-2">
+                <img
+                    src="{{ feedback.employee_id.get_avatar }}"
+                    alt=""
+                    class="w-8 h-8 shrink-0 rounded-full object-cover"
+                >
+                <p class="text-sm text-dark-100">
+                    <span class="font-semibold text-dark-200">{{ feedback.review_cycle }}</span>
+                    &middot; {% trans "Feedback for" %}
+                    <span class="font-semibold text-dark-200">{{ feedback.employee_id.get_full_name }}</span>
+                </p>
+            </div>
+        </div>
 
-                <!-- Header -->
-                <div class="oh-main__titlebar oh-main__titlebar--left mb-4 border-b pb-2">
-                    <h3 class="text-lg font-semibold">{% trans "Feedback Answer" %}</h3>
-                </div>
+        <form action="{% url 'feedback-answer-post' id=feedback.id %}" method="post" class="relative">
+            {% csrf_token %}
 
-                <!-- Questions Section -->
-                <div class="oh-card p-6 space-y-6">
-                    {% for q in questions %}
-                        <div class="p-4 border border-gray-100 rounded-md bg-gray-30 hover:shadow-sm transition">
-                            <span class="oh-label oh-label--question font-semibold text-gray-700 mb-2 block">
-                                {{ forloop.counter }}. {{ q.question }}
-                            </span>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                {% for q in questions %}
+                    <div class="bg-white border border-secondary-200 rounded-xl px-4 py-3">
+                        <div class="flex items-start justify-between gap-3 mb-2">
+                            <label class="text-sm font-semibold text-dark-200" {% if q.question_type == '1' %}for="answer{{ q.id }}"{% endif %}>{{ q.question }}</label>
+                        </div>
 
-                            {% if q.question_type == '1' %}
-                                <!-- Text Question -->
-                                <input type="text" class="oh-input w-full" name="answer{{ q.id }}" required>
-                            {% endif %}
+                        {% if q.question_type == '1' %}
+                            <input
+                                type="text"
+                                id="answer{{ q.id }}"
+                                name="answer{{ q.id }}"
+                                class="w-full px-3 py-1.5 border border-secondary-200 rounded-md text-sm focus-visible:outline-0 focus:border-primary-600 [transition:.2s]"
+                            >
+                        {% endif %}
 
-                            {% if q.question_type == '2' %}
-                                <!-- Rating Question -->
-                                <div
-                                    class="oh-rate mt-2 flex items-center gap-3"
-                                    style="flex-direction: row-reverse; justify-content: flex-end"
-                                >
-                                    <input type="radio" id="star5{{ q.id }}" name="answer{{ q.id }}" value="5">
-                                    <label for="star5{{ q.id }}" title="5 {% trans 'Stars' %}">★</label>
+                        {% if q.question_type == '2' %}
+                            <div class="oh-rate flex items-center gap-3" style="flex-direction: row-reverse; justify-content: flex-end">
+                                <input type="radio" id="star5{{ q.id }}" name="answer{{ q.id }}" value="5">
+                                <label for="star5{{ q.id }}" title="5 {% trans 'Stars' %}">★</label>
 
-                                    <input type="radio" id="star4{{ q.id }}" name="answer{{ q.id }}" value="4">
-                                    <label for="star4{{ q.id }}" title="4 {% trans 'Stars' %}">★</label>
+                                <input type="radio" id="star4{{ q.id }}" name="answer{{ q.id }}" value="4">
+                                <label for="star4{{ q.id }}" title="4 {% trans 'Stars' %}">★</label>
 
-                                    <input type="radio" id="star3{{ q.id }}" name="answer{{ q.id }}" value="3">
-                                    <label for="star3{{ q.id }}" title="3 {% trans 'Stars' %}">★</label>
+                                <input type="radio" id="star3{{ q.id }}" name="answer{{ q.id }}" value="3">
+                                <label for="star3{{ q.id }}" title="3 {% trans 'Stars' %}">★</label>
 
-                                    <input type="radio" id="star2{{ q.id }}" name="answer{{ q.id }}" value="2">
-                                    <label for="star2{{ q.id }}" title="2 {% trans 'Stars' %}">★</label>
+                                <input type="radio" id="star2{{ q.id }}" name="answer{{ q.id }}" value="2">
+                                <label for="star2{{ q.id }}" title="2 {% trans 'Stars' %}">★</label>
 
-                                    <input type="radio" id="star1{{ q.id }}" name="answer{{ q.id }}" value="1">
-                                    <label for="star1{{ q.id }}" title="1 {% trans 'Star' %}">★</label>
-                                </div>
-                            {% endif %}
+                                <input type="radio" id="star1{{ q.id }}" name="answer{{ q.id }}" value="1">
+                                <label for="star1{{ q.id }}" title="1 {% trans 'Star' %}">★</label>
+                            </div>
+                        {% endif %}
 
-                            {% if q.question_type == '3' %}
-                                <!-- Boolean Question -->
-                                <div class="oh-input__group mt-2">
-                                    <div class="oh-input-picker-group flex gap-5">
-                                        <label class="oh-input-picker oh-input-picker--likert oh-input-picker--4">
-                                            {% trans "Yes" %}
-                                            <input type="radio" name="answer{{ q.id }}" value="yes">
-                                        </label>
-                                        <label class="oh-input-picker oh-input-picker--likert oh-input-picker--1">
-                                            {% trans "No" %}
-                                            <input type="radio" name="answer{{ q.id }}" value="no">
-                                        </label>
-                                    </div>
-                                </div>
-                            {% endif %}
+                        {% if q.question_type == '3' %}
+                            <div class="flex gap-2">
+                                <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-secondary-200 bg-white text-xs font-medium text-dark-200 hover:border-primary-600 has-[:checked]:bg-primary-300 has-[:checked]:border-primary-600 [transition:.2s]">
+                                    <input type="radio" name="answer{{ q.id }}" value="yes" class="peer sr-only"><span class="w-4 h-4 shrink-0 rounded-full border-2 border-secondary-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-checked:ring-[3px] peer-checked:ring-inset peer-checked:ring-white"></span>
+                                    {% trans "Yes" %}
+                                </label>
+                                <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-secondary-200 bg-white text-xs font-medium text-dark-200 hover:border-primary-600 has-[:checked]:bg-primary-300 has-[:checked]:border-primary-600 [transition:.2s]">
+                                    <input type="radio" name="answer{{ q.id }}" value="no" class="peer sr-only"><span class="w-4 h-4 shrink-0 rounded-full border-2 border-secondary-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-checked:ring-[3px] peer-checked:ring-inset peer-checked:ring-white"></span>
+                                    {% trans "No" %}
+                                </label>
+                            </div>
+                        {% endif %}
 
-                            {% if q.question_type == '4' %}
-                                <!-- Multi-choice Question -->
-                                <div class="mt-2 space-y-2">
-                                    {% for option in options %}
-                                        {% if option.question_id.id == q.id %}
-                                            <div class="flex flex-wrap gap-4">
-                                                <label class="custom-radio-container flex items-center gap-2">
-                                                    <input
-                                                        type="radio"
-                                                        name="answer{{ q.id }}"
-                                                        value="{{ option.option_a }}"
-                                                    >
-                                                    <span>{{ option.option_a }}</span>
-                                                </label>
-                                                <label class="custom-radio-container flex items-center gap-2">
-                                                    <input
-                                                        type="radio"
-                                                        name="answer{{ q.id }}"
-                                                        value="{{ option.option_b }}"
-                                                    >
-                                                    <span>{{ option.option_b }}</span>
-                                                </label>
-                                                <label class="custom-radio-container flex items-center gap-2">
-                                                    <input
-                                                        type="radio"
-                                                        name="answer{{ q.id }}"
-                                                        value="{{ option.option_c }}"
-                                                    >
-                                                    <span>{{ option.option_c }}</span>
-                                                </label>
-                                                <label class="custom-radio-container flex items-center gap-2">
-                                                    <input
-                                                        type="radio"
-                                                        name="answer{{ q.id }}"
-                                                        value="{{ option.option_d }}"
-                                                    >
-                                                    <span>{{ option.option_d }}</span>
-                                                </label>
-                                            </div>
+                        {% if q.question_type == '4' %}
+                            {% for option in options %}
+                                {% if option.question_id.id == q.id %}
+                                    <div class="flex flex-wrap gap-2">
+                                        {% if option.option_a %}
+                                            <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-secondary-200 bg-white text-xs font-medium text-dark-200 hover:border-primary-600 has-[:checked]:bg-primary-300 has-[:checked]:border-primary-600 [transition:.2s]">
+                                                <input type="radio" name="answer{{ q.id }}" value="{{ option.option_a }}" class="peer sr-only"><span class="w-4 h-4 shrink-0 rounded-full border-2 border-secondary-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-checked:ring-[3px] peer-checked:ring-inset peer-checked:ring-white"></span>
+                                                {{ option.option_a }}
+                                            </label>
                                         {% endif %}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
+                                        {% if option.option_b %}
+                                            <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-secondary-200 bg-white text-xs font-medium text-dark-200 hover:border-primary-600 has-[:checked]:bg-primary-300 has-[:checked]:border-primary-600 [transition:.2s]">
+                                                <input type="radio" name="answer{{ q.id }}" value="{{ option.option_b }}" class="peer sr-only"><span class="w-4 h-4 shrink-0 rounded-full border-2 border-secondary-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-checked:ring-[3px] peer-checked:ring-inset peer-checked:ring-white"></span>
+                                                {{ option.option_b }}
+                                            </label>
+                                        {% endif %}
+                                        {% if option.option_c %}
+                                            <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-secondary-200 bg-white text-xs font-medium text-dark-200 hover:border-primary-600 has-[:checked]:bg-primary-300 has-[:checked]:border-primary-600 [transition:.2s]">
+                                                <input type="radio" name="answer{{ q.id }}" value="{{ option.option_c }}" class="peer sr-only"><span class="w-4 h-4 shrink-0 rounded-full border-2 border-secondary-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-checked:ring-[3px] peer-checked:ring-inset peer-checked:ring-white"></span>
+                                                {{ option.option_c }}
+                                            </label>
+                                        {% endif %}
+                                        {% if option.option_d %}
+                                            <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-secondary-200 bg-white text-xs font-medium text-dark-200 hover:border-primary-600 has-[:checked]:bg-primary-300 has-[:checked]:border-primary-600 [transition:.2s]">
+                                                <input type="radio" name="answer{{ q.id }}" value="{{ option.option_d }}" class="peer sr-only"><span class="w-4 h-4 shrink-0 rounded-full border-2 border-secondary-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-checked:ring-[3px] peer-checked:ring-inset peer-checked:ring-white"></span>
+                                                {{ option.option_d }}
+                                            </label>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
 
-                            {% if q.question_type == '5' %}
-                                <!-- Likert Question -->
-                                <div class="oh-input-picker-group oh-input-picker-group--resp mt-3 flex flex-wrap gap-3">
-                                    <label class="oh-input-picker oh-input-picker--likert oh-input-picker--1">
-                                        {% trans "Strongly Disagree" %}
-                                        <input type="radio" name="answer{{ q.id }}" value="Strongly Disagree">
-                                    </label>
-                                    <label class="oh-input-picker oh-input-picker--likert oh-input-picker--2">
-                                        {% trans "Disagree" %}
-                                        <input type="radio" name="answer{{ q.id }}" value="Disagree">
-                                    </label>
-                                    <label class="oh-input-picker oh-input-picker--likert oh-input-picker--3">
-                                        {% trans "Neutral" %}
-                                        <input type="radio" name="answer{{ q.id }}" value="Neutral">
-                                    </label>
-                                    <label class="oh-input-picker oh-input-picker--likert oh-input-picker--4">
-                                        {% trans "Agree" %}
-                                        <input type="radio" name="answer{{ q.id }}" value="Agree">
-                                    </label>
-                                    <label class="oh-input-picker oh-input-picker--likert oh-input-picker--5">
-                                        {% trans "Strongly Agree" %}
-                                        <input type="radio" name="answer{{ q.id }}" value="Strongly Agree">
-                                    </label>
-                                </div>
-                            {% endif %}
+                        {% if q.question_type == '5' %}
+                            <div class="flex flex-wrap gap-2">
+                                <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-secondary-200 bg-white text-xs font-medium text-dark-200 hover:border-primary-600 has-[:checked]:bg-primary-300 has-[:checked]:border-primary-600 [transition:.2s]">
+                                    <input type="radio" name="answer{{ q.id }}" value="Strongly Disagree" class="peer sr-only"><span class="w-4 h-4 shrink-0 rounded-full border-2 border-secondary-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-checked:ring-[3px] peer-checked:ring-inset peer-checked:ring-white"></span>
+                                    {% trans "Strongly Disagree" %}
+                                </label>
+                                <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-secondary-200 bg-white text-xs font-medium text-dark-200 hover:border-primary-600 has-[:checked]:bg-primary-300 has-[:checked]:border-primary-600 [transition:.2s]">
+                                    <input type="radio" name="answer{{ q.id }}" value="Disagree" class="peer sr-only"><span class="w-4 h-4 shrink-0 rounded-full border-2 border-secondary-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-checked:ring-[3px] peer-checked:ring-inset peer-checked:ring-white"></span>
+                                    {% trans "Disagree" %}
+                                </label>
+                                <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-secondary-200 bg-white text-xs font-medium text-dark-200 hover:border-primary-600 has-[:checked]:bg-primary-300 has-[:checked]:border-primary-600 [transition:.2s]">
+                                    <input type="radio" name="answer{{ q.id }}" value="Neutral" class="peer sr-only"><span class="w-4 h-4 shrink-0 rounded-full border-2 border-secondary-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-checked:ring-[3px] peer-checked:ring-inset peer-checked:ring-white"></span>
+                                    {% trans "Neutral" %}
+                                </label>
+                                <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-secondary-200 bg-white text-xs font-medium text-dark-200 hover:border-primary-600 has-[:checked]:bg-primary-300 has-[:checked]:border-primary-600 [transition:.2s]">
+                                    <input type="radio" name="answer{{ q.id }}" value="Agree" class="peer sr-only"><span class="w-4 h-4 shrink-0 rounded-full border-2 border-secondary-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-checked:ring-[3px] peer-checked:ring-inset peer-checked:ring-white"></span>
+                                    {% trans "Agree" %}
+                                </label>
+                                <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-secondary-200 bg-white text-xs font-medium text-dark-200 hover:border-primary-600 has-[:checked]:bg-primary-300 has-[:checked]:border-primary-600 [transition:.2s]">
+                                    <input type="radio" name="answer{{ q.id }}" value="Strongly Agree" class="peer sr-only"><span class="w-4 h-4 shrink-0 rounded-full border-2 border-secondary-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-checked:ring-[3px] peer-checked:ring-inset peer-checked:ring-white"></span>
+                                    {% trans "Strongly Agree" %}
+                                </label>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if feedback.employee_key_results_id.all %}
+                <h3 class="text-base font-bold mt-4 mb-2">{% trans "Key Result" %}</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                    {% for key_result in feedback.employee_key_results_id.all %}
+                        <div class="bg-white border border-secondary-200 rounded-xl px-4 py-3">
+                            <div class="flex items-start justify-between gap-3 mb-2">
+                                <span class="text-sm font-semibold text-dark-200">{{ key_result.key_result }}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-secondary-200 bg-white text-xs font-medium text-dark-200 hover:border-primary-600 has-[:checked]:bg-primary-300 has-[:checked]:border-primary-600 [transition:.2s]">
+                                    <input type="radio" name="key_result{{ key_result.id }}" value="Perfect" class="peer sr-only"><span class="w-4 h-4 shrink-0 rounded-full border-2 border-secondary-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-checked:ring-[3px] peer-checked:ring-inset peer-checked:ring-white"></span>
+                                    {% trans "Perfect" %}
+                                </label>
+                                <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-secondary-200 bg-white text-xs font-medium text-dark-200 hover:border-primary-600 has-[:checked]:bg-primary-300 has-[:checked]:border-primary-600 [transition:.2s]">
+                                    <input type="radio" name="key_result{{ key_result.id }}" value="Good" class="peer sr-only"><span class="w-4 h-4 shrink-0 rounded-full border-2 border-secondary-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-checked:ring-[3px] peer-checked:ring-inset peer-checked:ring-white"></span>
+                                    {% trans "Good" %}
+                                </label>
+                                <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-secondary-200 bg-white text-xs font-medium text-dark-200 hover:border-primary-600 has-[:checked]:bg-primary-300 has-[:checked]:border-primary-600 [transition:.2s]">
+                                    <input type="radio" name="key_result{{ key_result.id }}" value="Average" class="peer sr-only"><span class="w-4 h-4 shrink-0 rounded-full border-2 border-secondary-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-checked:ring-[3px] peer-checked:ring-inset peer-checked:ring-white"></span>
+                                    {% trans "Average" %}
+                                </label>
+                                <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-secondary-200 bg-white text-xs font-medium text-dark-200 hover:border-primary-600 has-[:checked]:bg-primary-300 has-[:checked]:border-primary-600 [transition:.2s]">
+                                    <input type="radio" name="key_result{{ key_result.id }}" value="Bad" class="peer sr-only"><span class="w-4 h-4 shrink-0 rounded-full border-2 border-secondary-300 peer-checked:border-primary-600 peer-checked:bg-primary-600 peer-checked:ring-[3px] peer-checked:ring-inset peer-checked:ring-white"></span>
+                                    {% trans "Bad" %}
+                                </label>
+                            </div>
                         </div>
                     {% endfor %}
                 </div>
+            {% endif %}
 
-                <!-- Key Results Section -->
-                {% if feedback.employee_key_results_id.all %}
-                    <div class="oh-main__titlebar oh-main__titlebar--left mt-8 mb-3 border-b pb-2">
-                        <h1 class="oh-main__titlebar-title fw-bold ml-3 text-lg">
-                            {% trans "Key Result" %}
-                        </h1>
-                    </div>
-
-                    <div class="oh-card p-6 space-y-6">
-                        {% for key_result in feedback.employee_key_results_id.all %}
-                            <div class="p-4 border border-gray-100 rounded-md bg-gray-30 hover:shadow-sm transition">
-                                <span class="oh-label oh-label--question font-semibold text-gray-700 mb-2 block">
-                                    {{ forloop.counter }}. {{ key_result.key_result }}
-                                </span>
-                                <div class="oh-input-picker-group oh-input-picker-group--resp mt-2 flex flex-wrap gap-3">
-                                    <label class="oh-input-picker oh-input-picker--likert oh-input-picker--4">
-                                        {% trans "Perfect" %}
-                                        <input
-                                            type="radio"
-                                            name="key_result{{ key_result.id }}"
-                                            value="Perfect"
-                                            required
-                                        >
-                                    </label>
-                                    <label class="oh-input-picker oh-input-picker--likert oh-input-picker--3">
-                                        {% trans "Good" %}
-                                        <input type="radio" name="key_result{{ key_result.id }}" value="Good">
-                                    </label>
-                                    <label class="oh-input-picker oh-input-picker--likert oh-input-picker--2">
-                                        {% trans "Average" %}
-                                        <input type="radio" name="key_result{{ key_result.id }}" value="Average">
-                                    </label>
-                                    <label class="oh-input-picker oh-input-picker--likert oh-input-picker--1">
-                                        {% trans "Bad" %}
-                                        <input type="radio" name="key_result{{ key_result.id }}" value="Bad">
-                                    </label>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-
-                <!-- Footer -->
-                <div class="flex justify-end mt-6 mb-3">
-                    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow px-5 py-2">
-                        {% trans "Save" %}
-                    </button>
-                </div>
-            </form>
-        </div>
+            <div class="sticky bottom-0 bg-primary-50 pt-2 pb-2 mt-3">
+                <button
+                    type="submit"
+                    class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-lg text-sm font-semibold hover:bg-primary-800 [transition:.2s]"
+                >
+                    <i class="fa-solid fa-check"></i>
+                    {% trans "Submit Feedback" %}
+                </button>
+            </div>
+        </form>
     </div>
 {% endblock content %}

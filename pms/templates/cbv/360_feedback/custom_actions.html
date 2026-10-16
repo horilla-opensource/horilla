@@ -23,8 +23,14 @@
             </a>
         {% endif %}
         <button
-            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
-            href="{% url 'feedback-answer-view' id=instance.id %}"
+            type="button"
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm oh-activity-sidebar__open"
+            data-target="#genericSidebar"
+            hx-get="{% url 'feedback-answer-view' id=instance.id %}"
+            hx-target="#genericOffCanvas"
+            hx-select="unset"
+            hx-push-url="false"
+            onclick="$('#genericSidebar').addClass('oh-activity-sidebar--show')"
             title="{% trans 'Answer view' %}"
         >
             <ion-icon name="eye"></ion-icon>
@@ -87,11 +93,17 @@
                 <img style="width: 20px; height: 20px" src="{% static 'images/ui/writing.png' %}">
             </a>
         {% endif %}
-        <a
-            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
-            href="{% url 'feedback-answer-view' id=instance.id %}"
+        <button
+            type="button"
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm oh-activity-sidebar__open"
+            data-target="#genericSidebar"
+            hx-get="{% url 'feedback-answer-view' id=instance.id %}"
+            hx-target="#genericOffCanvas"
+            hx-select="unset"
+            hx-push-url="false"
+            onclick="$('#genericSidebar').addClass('oh-activity-sidebar--show')"
             title="{% trans 'Answer view' %}"
-        ><ion-icon name="eye"></ion-icon></a>
+        ><ion-icon name="eye"></ion-icon></button>
         {% if perms.pms.delete_feedback %}
             <form
                 action="{% url 'feedback-archive' id=instance.id %}"
