@@ -827,7 +827,7 @@ class QuestionForm(ModelForm):
             "sequence": _("Sequence"),
             "type": _("Type"),
             "options": _("Options"),
-            "is_mandatory": _("Mandatory"),
+            "is_mandatory": _("Required"),
         }
 
     def as_p(self, *args, **kwargs):
@@ -961,11 +961,11 @@ class SurveyPreviewForm(forms.Form):
     SurveyTemplateForm
     """
 
-    def __init__(self, template, *args, **kwargs) -> None:
+    def __init__(self, template, request=None, *args, **kwargs) -> None:
         super().__init__(template, *args, **kwargs)
         all_questions = RecruitmentSurvey.objects.filter(template_id__in=[template])
         context = {"form": self, "questions": all_questions.distinct()}
-        form = render_to_string("survey_preview_form.html", context)
+        form = render_to_string("survey_preview_form.html", context, request=request)
         self.form = form
         return
         # for question in questions:
@@ -1370,7 +1370,7 @@ class ScheduleInterviewForm(BaseModelForm):
             LeaveRequest = apps.get_model("leave", "LeaveRequest")
 
             leave_employees = LeaveRequest.objects.filter(
-                employee_id__in=managers, status="approved"
+                employee_id__in=managers, status__in=["approved", "cancel_requested"]
             )
         else:
             leave_employees = []

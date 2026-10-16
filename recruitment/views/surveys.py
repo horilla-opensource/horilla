@@ -116,7 +116,7 @@ def survey_preview(request, pk=None):
         )
         return HorillaRedirect(request, message=message)
 
-    form = SurveyPreviewForm(template=template).form
+    form = SurveyPreviewForm(template=template, request=request).form
     preview_template = "survey/survey_preview.html"
     if request.META.get("HTTP_HX_REQUEST") == "true":
         preview_template = "survey/survey_preview_container.html"
