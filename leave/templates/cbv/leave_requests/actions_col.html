@@ -9,7 +9,7 @@
             {% if can_manage or can_penalty or leave_manager %}
                 <button data-toggle="oh-modal-toggle" data-target="#penaltyModal" hx-target="#penaltyModalBody"
                     hx-get="{% url 'leave-cut-penalty' instance.id %}" type="button"
-                    class="oh-btn oh-btn--danger oh-btn--sq-sm" title="{% trans 'Penalty' %}">
+                    class="oh-btn oh-btn--warning oh-btn--sq-sm" title="{% trans 'Penalty' %}">
                     <ion-icon name="information-circle-outline"></ion-icon>
                 </button>
             {% else %}
