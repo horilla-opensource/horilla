@@ -451,59 +451,76 @@ def attendance_hours_distribution(request):
     return JsonResponse({"departments": departments[:10]})
 
 
-def _group_attendance_stats(request, group_field):
-    """Expected vs. attended employee-days per group, current month so far.
+def _expected_work_days(employees, start, end):
+    """{employee id: [dates]} each employee was expected to work in [start, end].
 
-    `group_field` is an Employee lookup (department / shift / work type name).
-    "Expected" days exclude weekends, days before an employee's joining date,
+    Expected days exclude weekends, days before an employee's joining date,
     approved leave, and company-wide holidays -- otherwise every approved
-    leave/holiday gets miscounted as an absence. Absence is clamped at zero
-    per employee (attendance recorded on a non-working day can't offset
-    someone else's absence). Returns {group: {"expected": int, "absent": int}}
-    for groups with at least one expected day.
+    leave/holiday gets miscounted as an absence.
     """
-    from attendance.models import Attendance
     from base.models import Holidays
     from leave.methods import holiday_dates_list
     from leave.models import LeaveRequest
 
-    month_start, month_end = _parse_period(request)
-    month_end = min(month_end, date.today())
-
-    employees = _scoped_employees(request)
-    rows = list(employees.values("id", "employee_work_info__date_joining", group_field))
-    if not rows:
-        return {}
-
     holiday_dates = set(
         holiday_dates_list(
             Holidays.objects.filter(
-                start_date__lte=month_end,
-                end_date__gte=month_start,
+                start_date__lte=end,
+                end_date__gte=start,
                 is_specific=False,
             )
         )
     )
     working_dates = []
-    d = month_start
-    while d <= month_end:
+    d = start
+    while d <= end:
         if d.weekday() < 5 and d not in holiday_dates:
             working_dates.append(d)
         d += timedelta(days=1)
-    if not working_dates:
-        return {}
 
     leave_days = {}
     for leave in LeaveRequest.objects.filter(
         status__in=["approved", "cancel_requested"],
         employee_id__in=employees,
-        start_date__lte=month_end,
-        end_date__gte=month_start,
+        start_date__lte=end,
+        end_date__gte=start,
     ).values("employee_id", "start_date", "end_date"):
-        start, end = leave["start_date"], leave["end_date"] or leave["start_date"]
+        first, last = leave["start_date"], leave["end_date"] or leave["start_date"]
         leave_days.setdefault(leave["employee_id"], set()).update(
-            d for d in working_dates if start <= d <= end
+            d for d in working_dates if first <= d <= last
         )
+
+    expected = {}
+    for emp in employees.values("id", "employee_work_info__date_joining"):
+        join_date = emp["employee_work_info__date_joining"]
+        on_leave = leave_days.get(emp["id"], set())
+        expected[emp["id"]] = [
+            d
+            for d in working_dates
+            if (not join_date or d >= join_date) and d not in on_leave
+        ]
+    return expected
+
+
+def _group_attendance_stats(request, group_field):
+    """Expected vs. attended employee-days per group, current month so far.
+
+    `group_field` is an Employee lookup (department / shift / work type name).
+    "Expected" days are as in _expected_work_days. Absence is clamped at zero
+    per employee (attendance recorded on a non-working day can't offset
+    someone else's absence). Returns {group: {"expected": int, "absent": int}}
+    for groups with at least one expected day.
+    """
+    from attendance.models import Attendance
+
+    month_start, month_end = _parse_period(request)
+    month_end = min(month_end, date.today())
+
+    employees = _scoped_employees(request)
+    rows = list(employees.values("id", group_field))
+    if not rows:
+        return {}
+    expected_days = _expected_work_days(employees, month_start, month_end)
 
     present_by_employee = {
         row["employee_id"]: row["days"]
@@ -525,13 +542,7 @@ def _group_attendance_stats(request, group_field):
         group = emp[group_field]
         if not group:
             continue
-        join_date = emp["employee_work_info__date_joining"]
-        on_leave = leave_days.get(emp["id"], set())
-        expected = sum(
-            1
-            for d in working_dates
-            if (not join_date or d >= join_date) and d not in on_leave
-        )
+        expected = len(expected_days.get(emp["id"], []))
         absent = max(0, expected - present_by_employee.get(emp["id"], 0))
         bucket = stats.setdefault(group, {"expected": 0, "absent": 0})
         bucket["expected"] += expected
@@ -692,32 +703,22 @@ def attendance_top_absentees(request):
     absentees = []
 
     try:
-        # Count working days so far this month
-        working_days = 0
-        d = first_of_month
-        while d <= today:
-            if d.weekday() < 5:
-                working_days += 1
-            d += timedelta(days=1)
-
-        if working_days == 0:
-            return JsonResponse({"absentees": []})
-
         employees = _scoped_employees(request)
+        expected_days = _expected_work_days(employees, first_of_month, today)
+        attended = {}
+        for row in Attendance.objects.filter(
+            employee_id__in=employees,
+            attendance_date__gte=first_of_month,
+            attendance_date__lte=today,
+        ).values("employee_id", "attendance_date"):
+            attended.setdefault(row["employee_id"], set()).add(row["attendance_date"])
 
         for emp in employees:
-            present_days = (
-                Attendance.objects.filter(
-                    employee_id=emp,
-                    attendance_date__gte=first_of_month,
-                    attendance_date__lte=today,
-                )
-                .values("attendance_date")
-                .distinct()
-                .count()
-            )
-
-            absent_days = max(0, working_days - present_days)
+            expected = expected_days.get(emp.id, [])
+            if not expected:
+                continue
+            present_days = sum(1 for d in expected if d in attended.get(emp.id, ()))
+            absent_days = len(expected) - present_days
             if absent_days > 0:
                 absentees.append(
                     {
@@ -726,8 +727,8 @@ def attendance_top_absentees(request):
                         "avatar": emp.get_avatar(),
                         "absent_days": absent_days,
                         "present_days": present_days,
-                        "total_days": working_days,
-                        "rate": round((absent_days / working_days * 100), 1),
+                        "total_days": len(expected),
+                        "rate": round((absent_days / len(expected) * 100), 1),
                     }
                 )
 
