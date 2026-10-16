@@ -1,4 +1,4 @@
-{% extends 'index.html' %} {% block content %} {% load static i18n horillafilters i18n %}
+{% extends 'index.html' %} {% block content %} {% load static i18n horillafilters payrollfilters %}
 <style>
   .sent-to-employee{
     background-color: yellowgreen;
@@ -21,7 +21,12 @@ working is its own card so the payslip stays the statement it is.
     <div class="flex gap-2 md:gap-0 flex-wrap justify-between items-end mb-2 border-b border-dark-50 pb-3">
         <div class="flex items-center gap-5">
             <div class="bg-dark-50 p-2 rounded-md w-14">
-                <img src="{{employee.employee_work_info.company_id.icon.url}}" alt="{% trans 'Company' %}">
+                {% with resolved_company=employee.employee_work_info.company_id|default:company %}
+                    <img
+                        src="{% if resolved_company.icon %}{{ resolved_company.icon.url }}{% else %}{% static 'images/ui/auth-logo.png' %}{% endif %}"
+                        alt="{% trans 'Company' %}"
+                    >
+                {% endwith %}
             </div>
             <div class="flex-1">
                 <p class="mb-1 font-semibold">{{employee.get_full_name}}</p>
@@ -113,9 +118,11 @@ working is its own card so the payslip stays the statement it is.
         </div>
     </div>
 </div>
-<aside id="payslipTaxPanel" style="flex:0 0 340px;width:340px;max-width:100%;">
+{% if payslip|income_tax_explanation %}
+<aside id="payslipTaxPanel" style="flex:0 0 360px;width:360px;max-width:100%;">
   {% include "payroll/payslip/_tax_side_panel.html" %}
 </aside>
+{% endif %}
 </div>
 <script>
   (function () {

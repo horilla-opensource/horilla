@@ -645,7 +645,7 @@ class PayslipHelpTextTests(Fixture):
         )
 
     def test_only_a_few_bubbles_are_left(self):
-        self.assertEqual(self.source().count("info.svg"), 4)
+        self.assertEqual(self.source().count('class="ps__i"'), 3)
 
     def test_basic_pay_says_where_the_figure_came_from(self):
         """
@@ -686,12 +686,12 @@ class PayslipHelpTextTests(Fixture):
 
     def test_every_info_icon_uses_the_custom_popover(self):
         """
-        All four should share one mechanism -- a page where three use the
+        All of them share one mechanism -- a page where three use the
         custom popover and a fourth still relies on the global
         title-attribute tooltip is the inconsistency this replaced.
         """
         source = self.source()
-        self.assertEqual(source.count('class="ps__info"'), 4)
+        self.assertEqual(source.count('class="ps__info"'), 3)
         self.assertNotIn('title="{% trans', source)
 
     def test_the_page_still_renders_the_help_that_is_left(self):
@@ -772,6 +772,88 @@ class WhatALineIsTests(DerivedLinesFixture):
         """A line that recomputed itself could not be edited at all."""
         line = self.lines_by_title()["Basic Pay"]
         self.assertEqual(line["depends_on"], [])
+
+
+class EarningWorkingTests(DerivedLinesFixture):
+    """Each earning on the payslip can say how it was worked out."""
+
+    def workings(self):
+        from payroll.methods.earning_working import earning_workings
+
+        found = earning_workings(self.payslip)
+        titles = {w["title"]: w for w in found.values()}
+        return found, titles
+
+    def test_a_percentage_shows_its_base_rate_and_arithmetic(self):
+        _found, titles = self.workings()
+        working = titles["House Rent Allowance"]
+        self.assertIn("40%", working["rule"])
+        steps = dict(working["steps"])
+        self.assertIn("BASIC", steps)
+        self.assertEqual(steps["Rate"], "40%")
+        self.assertIn("× 40%", working["equation"])
+
+    def test_a_flat_amount_says_what_it_is_set_to(self):
+        _found, titles = self.workings()
+        working = titles["Medical Allowance"]
+        self.assertEqual(working["steps"][0][0], "Set amount")
+        self.assertIn("1,250.00", working["steps"][0][1])
+
+    def test_basic_pay_has_a_working_and_says_where_it_comes_from(self):
+        found, _titles = self.workings()
+        self.assertIn("basic", found)
+        self.assertEqual(found["basic"]["rule"], "The contract wage")
+        self.assertIn("Contract wage", dict(found["basic"]["steps"]))
+
+    def test_taxable_or_not_is_stated(self):
+        _found, titles = self.workings()
+        self.assertTrue(
+            any(
+                "taxable" in note.lower()
+                for note in titles["House Rent Allowance"]["notes"]
+            )
+        )
+
+    def test_the_saved_payslip_page_carries_a_popover_for_every_earning(self):
+        url = reverse("view-created-payslip", kwargs={"payslip_id": self.payslip.pk})
+        html = self.client.get(url).content.decode()
+        earnings = 1 + len(
+            self.payslip.pay_head_data["allowances"]
+        )  # basic pay and each allowance
+        self.assertGreaterEqual(html.count("How this was worked out"), earnings)
+        self.assertIn("× 40%", html)
+
+    def test_a_deduction_shows_its_rule_base_and_where_it_sits(self):
+        from payroll.methods.earning_working import deduction_workings
+
+        found = deduction_workings(self.payslip)
+        working = next(w for w in found.values() if w["title"] == "Provident Fund")
+        self.assertIn("12%", working["rule"])
+        self.assertIn("BASIC", dict(working["steps"]))
+        self.assertIn("× 12%", working["equation"])
+        self.assertTrue(any("before income tax" in note for note in working["notes"]))
+
+    def test_the_page_has_a_popover_for_deductions_but_not_the_total(self):
+        url = reverse("view-created-payslip", kwargs={"payslip_id": self.payslip.pk})
+        html = self.client.get(url).content.decode()
+        self.assertIn("× 12%", html)  # Provident Fund's arithmetic
+        self.assertNotIn("What isn't in this total", html)
+        self.assertNotIn("not added in here", html)
+
+    def test_income_tax_has_a_working_only_with_a_filing_status(self):
+        from payroll.methods.earning_working import deduction_workings
+
+        self.assertNotIn(
+            "tax", deduction_workings(self.payslip)
+        )  # no filing status on this contract
+
+    def test_an_unsaved_preview_page_still_draws(self):
+        from django.template.loader import render_to_string
+
+        from payroll.templatetags.payrollfilters import earning_workings_filter
+
+        self.assertEqual(earning_workings_filter(None), {})
+        self.assertEqual(earning_workings_filter(""), {})
 
 
 class RecomputeDependentsTests(DerivedLinesFixture):
@@ -1060,14 +1142,78 @@ class TaxWorkingTests(Fixture):
         self.assertTrue(working["matches"])
         self.assertGreater(working["pretax_total"], 0)
 
+    def test_the_tax_panel_is_only_there_when_the_contract_has_a_filing_status(self):
+        url = reverse("view-created-payslip", kwargs={"payslip_id": self.payslip.pk})
+        with_status = self.client.get(url)
+        self.assertContains(with_status, 'id="payslipTaxPanel"')
+        self.assertContains(with_status, "Tax Working")
+
+        Contract.objects.filter(employee_id=self.employee).update(filing_status=None)
+        without = self.client.get(url)
+        self.assertNotContains(without, 'id="payslipTaxPanel"')
+        self.assertNotContains(without, "Tax Working")
+        self.assertNotContains(without, "Taxable Earnings")
+
+    def test_the_income_tax_line_explains_itself_from_the_same_working_as_the_panel(
+        self,
+    ):
+        from payroll.methods.earning_working import deduction_workings
+        from payroll.templatetags.payrollfilters import income_tax_explanation
+
+        working = deduction_workings(self.payslip)["tax"]
+        explained = income_tax_explanation(self.payslip)
+        self.assertEqual(working["rule"], "Working test")
+        self.assertIn(f"{explained['period_tax']:,.2f}", working["equation"])
+        self.assertIn("Tax Working panel", " ".join(working["notes"]))
+        url = reverse("view-created-payslip", kwargs={"payslip_id": self.payslip.pk})
+        self.assertContains(self.client.get(url), "Tax for the year")
+
+    def test_the_panel_is_two_accordions_with_balanced_markup(self):
+        from html.parser import HTMLParser
+
+        from django.template.loader import render_to_string
+
+        html = render_to_string(
+            "payroll/payslip/_tax_side_panel.html", {"payslip": self.payslip}
+        )
+        self.assertEqual(
+            html.count("data-tsp-toggle"), 2 + 2
+        )  # two buttons, two mentions in the script
+
+        class Balance(HTMLParser):
+            void = {"meta", "br", "hr", "img", "input", "link"}
+
+            def __init__(self):
+                super().__init__()
+                self.stack, self.sections = [], []
+
+            def handle_starttag(self, tag, attrs):
+                if tag in self.void:
+                    return
+                self.stack.append(tag)
+                if tag == "section":
+                    self.sections.append(dict(attrs).get("class", ""))
+
+            def handle_endtag(self, tag):
+                assert self.stack and self.stack.pop() == tag, f"unbalanced </{tag}>"
+
+        parser = Balance()
+        parser.feed(html)
+        self.assertEqual(parser.stack, [])
+        self.assertEqual(len(parser.sections), 2)
+        self.assertNotIn(
+            "is-open", parser.sections[0]
+        )  # the taxable gross working starts closed
+        self.assertIn("is-open", parser.sections[1])  # the income tax starts open
+
     def test_the_panel_follows_the_basis_the_filing_status_taxes(self):
         from payroll.models.models import FilingStatus
 
         url = reverse("view-created-payslip", kwargs={"payslip_id": self.payslip.pk})
         for basis, heading in (
-            ("taxable_gross_pay", "Taxable Gross = Taxable Earnings"),
-            ("gross_pay", "Gross Pay = Basic Pay + Allowances"),
-            ("basic_pay", "Basic Pay = Basic Pay As Set"),
+            ("taxable_gross_pay", "= Taxable Earnings"),
+            ("gross_pay", "= Basic Pay + Allowances"),
+            ("basic_pay", "= Basic Pay As Set"),
         ):
             FilingStatus.objects.filter(filing_status="Working test").update(
                 based_on=basis

@@ -185,7 +185,18 @@ the pay was worked out from. Everything below is the caveats.
      popups left behind when their anchor is removed mid-hover) -- worth
      avoiding here too, and this content needs real layout (rows, a rule,
      tabular numbers) a plain title string cannot give it anyway. */
-  .ps__info { position: relative; display: inline-block; }
+  /* Centred on the label's line, whatever size the label is. */
+  .ps__info { position: relative; display: inline-flex; align-items: center; vertical-align: middle; line-height: 1; }
+  /* The info button: Horilla's plain outline icon, quiet until hovered or focused. */
+  .ps__i {
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-left: 4px; padding: 0; border: 0; background: none;
+    color: #9ca3af; cursor: help; font-size: 14px; line-height: 1;
+    transition: color .15s ease;
+  }
+  .ps__i ion-icon { display: block; pointer-events: none; }
+  .ps__info:hover .ps__i, .ps__i:focus-visible { color: #e54f38; }
+  .ps__i:focus-visible { outline: 2px solid #f5b5ab; outline-offset: 2px; border-radius: 50%; }
   /* position: fixed with no offsets sits where the popover would have been in
      the flow -- just under its icon -- but, unlike absolute, is not clipped by
      the payslip body's scroll container. That clipping cut the popovers off at
@@ -193,16 +204,17 @@ the pay was worked out from. Everything below is the caveats.
   .ps__pop {
     position: fixed; z-index: 1000; top: auto; left: auto;
     margin-top: 6px; max-width: calc(100vw - 24px);
-    width: 270px; border: 1px solid #e6e7eb; border-radius: 10px;
-    background: #fff; box-shadow: 0 6px 20px rgba(17, 24, 39, .14);
-    padding: 10px 12px; font-size: 11.5px; font-weight: 400;
+    width: 280px; border: 1px solid #e6e7eb; border-top: 3px solid #e54f38; border-radius: 10px;
+    background: #fff; box-shadow: 0 10px 28px rgba(17, 24, 39, .16);
+    padding: 12px 14px; font-size: 12px; font-weight: 400; line-height: 1.5;
     color: #1f2430; text-align: left; white-space: normal;
+    text-transform: none; letter-spacing: normal;
   }
   /* Opens leftwards from its icon, for an icon near the right-hand edge. */
   .ps__pop--end { transform: translateX(calc(-100% + 18px)); }
   .ps__pop-title {
-    font-size: 9.5px; font-weight: 700; letter-spacing: .06em;
-    text-transform: uppercase; color: #8b90a0; margin-bottom: 6px;
+    font-size: 10px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; color: #e54f38; margin-bottom: 6px;
   }
   .ps__pop-row {
     display: flex; align-items: baseline; justify-content: space-between;
@@ -344,10 +356,8 @@ the pay was worked out from. Everything below is the caveats.
         <div class="ps__fact-label">
           {% trans "Paid days" %}
           <span class="ps__info" x-data="{open:false}" @mouseenter="open=true" @mouseleave="open=false">
-            <img src="{% static 'horilla_theme/assets/img/icons/info.svg' %}"
-                 alt="{% trans 'Info' %}" class="cursor-pointer"
-                 style="display:inline;vertical-align:-2px;">
-            <div class="ps__pop" x-show="open" x-cloak>
+            <button type="button" class="ps__i" aria-label="{% trans 'More info' %}" @focus="open=true" @blur="open=false"><ion-icon name="information-circle-outline"></ion-icon></button>
+            <div class="ps__pop" x-show="open" x-cloak x-transition.opacity.duration.150ms>
               <div class="ps__pop-title">{% trans "What counts as paid" %}</div>
               <p class="ps__pop-note" style="margin:0; padding:0; border:0; color:#1f2430;">
                 {% trans "Counts every day except absence and unpaid leave: present days, paid leave, week offs and holidays are all paid." %}
@@ -389,6 +399,7 @@ the pay was worked out from. Everything below is the caveats.
   earnings - deductions = net, laid out as that arithmetic. Two columns of one
   table rather than two independent cards, so the totals share a baseline.
   {% endcomment %}
+  {% with workings=payslip|earning_workings dworkings=payslip|deduction_workings %}
   <div class="ps__ledger">
 
     <div class="ps__col">
@@ -399,20 +410,24 @@ the pay was worked out from. Everything below is the caveats.
         <div class="ps__row">
           <span class="ps__label">
             {% trans "Basic Pay" %}
-            <span class="ps__info" x-data="{open:false}" @mouseenter="open=true" @mouseleave="open=false">
-              <img src="{% static 'horilla_theme/assets/img/icons/info.svg' %}"
-                   alt="{% trans 'Info' %}" class="cursor-pointer"
-                   style="display:inline;vertical-align:-2px;">
-              <div class="ps__pop" x-show="open" x-cloak>
-                <div class="ps__pop-title">{% trans "Where this comes from" %}</div>
-                <p class="ps__pop-note" style="margin:0; padding:0; border:0; color:#1f2430;">
-                  {% trans "The contract wage under a Gross Up structure; under CTC Down the structure's basic pay component works it out from the CTC instead." %}
-                </p>
-                <p class="ps__pop-note">
-                  {% trans "Loss of pay comes off this before anything else is worked out." %}
-                </p>
-              </div>
-            </span>
+            {% with w=workings|working_of:"basic" %}
+            {% if w %}
+              {% include "payroll/payslip/_earning_popover.html" with w=w %}
+            {% else %}
+              <span class="ps__info" x-data="{open:false}" @mouseenter="open=true" @mouseleave="open=false">
+                <button type="button" class="ps__i" aria-label="{% trans 'More info' %}" @focus="open=true" @blur="open=false"><ion-icon name="information-circle-outline"></ion-icon></button>
+                <div class="ps__pop" x-show="open" x-cloak x-transition.opacity.duration.150ms>
+                  <div class="ps__pop-title">{% trans "Where this comes from" %}</div>
+                  <p class="ps__pop-note" style="margin:0; padding:0; border:0; color:#1f2430;">
+                    {% trans "The contract wage under a Gross Up structure; under CTC Down the structure's basic pay component works it out from the CTC instead." %}
+                  </p>
+                  <p class="ps__pop-note">
+                    {% trans "Loss of pay comes off this before anything else is worked out." %}
+                  </p>
+                </div>
+              </span>
+            {% endif %}
+            {% endwith %}
           </span>
           <span class="ps__amount{% if not basic_pay %} ps__zero{% endif %}">
             {{ basic_pay|floatformat:2|currency_symbol_position }}
@@ -420,7 +435,12 @@ the pay was worked out from. Everything below is the caveats.
         </div>
         {% for allowance in allowances %}
           <div class="ps__row">
-            <span class="ps__label">{{ allowance.title }}</span>
+            <span class="ps__label">
+              {{ allowance.title }}
+              {% with w=workings|working_of:allowance %}
+                {% if w %}{% include "payroll/payslip/_earning_popover.html" with w=w %}{% endif %}
+              {% endwith %}
+            </span>
             <span class="ps__amount{% if not allowance.amount %} ps__zero{% endif %}">
               {{ allowance.amount|floatformat:2|currency_symbol_position }}
             </span>
@@ -482,6 +502,7 @@ the pay was worked out from. Everything below is the caveats.
             <span class="ps__label">
               {{ deduction.title }}
               <span class="ps__sub">{% trans "off basic pay" %}</span>
+              {% with w=dworkings|working_of:deduction %}{% if w %}{% include "payroll/payslip/_earning_popover.html" with w=w %}{% endif %}{% endwith %}
             </span>
             <span class="ps__amount">{{ deduction.amount|floatformat:2|currency_symbol_position }}</span>
           </div>
@@ -491,6 +512,7 @@ the pay was worked out from. Everything below is the caveats.
             <span class="ps__label">
               {{ deduction.title }}
               <span class="ps__sub">{% trans "off gross pay" %}</span>
+              {% with w=dworkings|working_of:deduction %}{% if w %}{% include "payroll/payslip/_earning_popover.html" with w=w %}{% endif %}{% endwith %}
             </span>
             <span class="ps__amount">{{ deduction.amount|floatformat:2|currency_symbol_position }}</span>
           </div>
@@ -500,6 +522,7 @@ the pay was worked out from. Everything below is the caveats.
             <span class="ps__label">
               {{ deduction.title }}
               <span class="ps__sub">{% trans "before tax" %}</span>
+              {% with w=dworkings|working_of:deduction %}{% if w %}{% include "payroll/payslip/_earning_popover.html" with w=w %}{% endif %}{% endwith %}
             </span>
             <span class="ps__amount{% if not deduction.amount %} ps__zero{% endif %}">
               {{ deduction.amount|floatformat:2|currency_symbol_position }}
@@ -508,21 +531,30 @@ the pay was worked out from. Everything below is the caveats.
         {% endfor %}
         {% for deduction in post_tax_deductions %}
           <div class="ps__row">
-            <span class="ps__label">{{ deduction.title }}</span>
+            <span class="ps__label">
+              {{ deduction.title }}
+              {% with w=dworkings|working_of:deduction %}{% if w %}{% include "payroll/payslip/_earning_popover.html" with w=w %}{% endif %}{% endwith %}
+            </span>
             <span class="ps__amount{% if not deduction.amount %} ps__zero{% endif %}">
               {{ deduction.amount|floatformat:2|currency_symbol_position }}
             </span>
           </div>
         {% endfor %}
         <div class="ps__row">
-          <span class="ps__label">{% trans "Income Tax" %}</span>
+          <span class="ps__label">
+            {% trans "Income Tax" %}
+            {% with w=dworkings|working_of:"tax" %}{% if w %}{% include "payroll/payslip/_earning_popover.html" with w=w %}{% endif %}{% endwith %}
+          </span>
           <span class="ps__amount{% if not federal_tax %} ps__zero{% endif %}">
             {{ federal_tax|floatformat:2|currency_symbol_position }}
           </span>
         </div>
         {% for deduction in tax_deductions %}
           <div class="ps__row">
-            <span class="ps__label">{{ deduction.title }}</span>
+            <span class="ps__label">
+              {{ deduction.title }}
+              {% with w=dworkings|working_of:deduction %}{% if w %}{% include "payroll/payslip/_earning_popover.html" with w=w %}{% endif %}{% endwith %}
+            </span>
             <span class="ps__amount{% if not deduction.amount %} ps__zero{% endif %}">
               {{ deduction.amount|floatformat:2|currency_symbol_position }}
             </span>
@@ -533,6 +565,7 @@ the pay was worked out from. Everything below is the caveats.
             <span class="ps__label">
               {{ deduction.title }}
               <span class="ps__sub">{% trans "off net pay" %}</span>
+              {% with w=dworkings|working_of:deduction %}{% if w %}{% include "payroll/payslip/_earning_popover.html" with w=w %}{% endif %}{% endwith %}
             </span>
             <span class="ps__amount">{{ deduction.amount|floatformat:2|currency_symbol_position }}</span>
           </div>
@@ -560,23 +593,13 @@ the pay was worked out from. Everything below is the caveats.
       <div class="ps__total">
         <span class="ps__label">
           {% if uncovered_deduction %}{% trans "Deductions taken" %}{% else %}{% trans "Total deductions" %}{% endif %}
-          <span class="ps__info" x-data="{open:false}" @mouseenter="open=true" @mouseleave="open=false">
-            <img src="{% static 'horilla_theme/assets/img/icons/info.svg' %}"
-                 alt="{% trans 'Info' %}" class="cursor-pointer"
-                 style="display:inline;vertical-align:-2px;">
-            <div class="ps__pop ps__pop--end" x-show="open" x-cloak>
-              <div class="ps__pop-title">{% trans "What isn't in this total" %}</div>
-              <p class="ps__pop-note" style="margin:0; padding:0; border:0; color:#1f2430;">
-                {% trans "A component marked off basic, gross or net pay is not added in here: it has already changed the figure it names." %}
-              </p>
-            </div>
-          </span>
         </span>
         <span class="ps__amount">{{ total_deductions|floatformat:2|currency_symbol_position }}</span>
       </div>
     </div>
     </div>
   </div>
+  {% endwith %}
 
   {% if uncovered_deduction %}
     {% comment %}
@@ -623,8 +646,8 @@ the pay was worked out from. Everything below is the caveats.
   </div>
 </div>
 
-{% if request.META.HTTP_HX_REQUEST %}
-  <aside id="payslipTaxPanel" hx-swap-oob="true" style="flex:0 0 340px;width:340px;max-width:100%;">
+{% if request.META.HTTP_HX_REQUEST and payslip|income_tax_explanation %}
+  <aside id="payslipTaxPanel" hx-swap-oob="true" style="flex:0 0 360px;width:360px;max-width:100%;">
     {% include "payroll/payslip/_tax_side_panel.html" %}
   </aside>
 {% endif %}
