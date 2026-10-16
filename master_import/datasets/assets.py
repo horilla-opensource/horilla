@@ -222,7 +222,7 @@ class AssetsDataset(Dataset):
                 apply = {"asset": {}, "category": None, "lot": None}
                 changes = []
 
-                def note(label, old, new):
+                def note(label, old, new, changes=changes):
                     changes.append(
                         f"{label}: {old if old not in (None, '') else '-'} → {new}"
                     )
