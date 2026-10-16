@@ -270,8 +270,9 @@ class ModelForm(forms.ModelForm):
                     {
                         "class": f"{existing_class} form-control",
                         "placeholder": label,
-                        "rows": 2,
+                        "rows": 4,
                         "cols": 40,
+                        "style": "height: auto;",
                     }
                 )
 
