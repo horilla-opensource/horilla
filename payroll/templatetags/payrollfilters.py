@@ -172,3 +172,39 @@ def basic_pay_working(payslip):
         "before_lop": round(basic + lop, 2) if in_basic else round(basic, 2),
         "edited": bool(data.get("basic_edited")),
     }
+
+
+@register.filter(name="earning_workings")
+def earning_workings_filter(payslip):
+    """{earning key: how it was worked out} for a saved payslip; empty for a preview."""
+    if not hasattr(payslip, "pay_head_data"):
+        return {}
+    from payroll.methods.earning_working import earning_workings
+
+    try:
+        return earning_workings(payslip)
+    except Exception:  # the explanation is a courtesy; the payslip must still draw
+        return {}
+
+
+@register.filter(name="working_of")
+def working_of(workings, row):
+    """One earning's working: pass "basic", or a stored allowance row."""
+    if not workings:
+        return None
+    from payroll.methods.earning_working import working_key
+
+    return workings.get(working_key(row) if isinstance(row, dict) else row)
+
+
+@register.filter(name="deduction_workings")
+def deduction_workings_filter(payslip):
+    """{deduction key: how it was worked out} for a saved payslip; empty for a preview."""
+    if not hasattr(payslip, "pay_head_data"):
+        return {}
+    from payroll.methods.earning_working import deduction_workings
+
+    try:
+        return deduction_workings(payslip)
+    except Exception:  # the explanation is a courtesy; the payslip must still draw
+        return {}
