@@ -71,9 +71,11 @@ from leave.methods import (
     attendance_days,
     calculate_requested_days,
     company_leave_dates_list,
+    decide_leave_cancellation,
     filter_conditional_leave_request,
     holiday_dates_list,
     parse_excel_date,
+    request_leave_cancellation,
 )
 from leave.models import *
 from leave.models import leave_requested_dates
@@ -718,9 +720,9 @@ def create_leave_report(request):
     else:
         company = Company.objects.filter(id=company_id).first()
 
-    leave_requests = LeaveRequest.objects.filter(status="approved").select_related(
-        "employee_id", "leave_type_id"
-    )
+    leave_requests = LeaveRequest.objects.filter(
+        status__in=["approved", "cancel_requested"]
+    ).select_related("employee_id", "leave_type_id")
     used_days_map = defaultdict(float)
     leave_request_map = defaultdict(list)
 
@@ -1062,6 +1064,13 @@ def leave_request_approve(request, id, emp_id=None):
         request, leave_request, "leave.change_leaverequest"
     ):
         return _leave_decision_denied(request)
+    if leave_request.status == "cancel_requested":
+        # Re-approving would deduct the days a second time.
+        return _cancellation_response(
+            request,
+            "error",
+            _("Decide on the pending cancellation request instead."),
+        )
     employee_id = leave_request.employee_id
     if not request.user.is_superuser:
         if employee_id == request.user.employee_get:
@@ -1275,7 +1284,7 @@ def _reject_leave_request(request, leave_request, reason):
     comment, notify and mail the employee. Returns False when it was already
     rejected. Shared by the single and the bulk reject views.
     """
-    if leave_request.status == "rejected":
+    if leave_request.status in ["rejected", "cancel_requested"]:
         return False
     employee_id = leave_request.employee_id
     leave_type_id = leave_request.leave_type_id
@@ -1382,6 +1391,12 @@ def leave_request_cancel(request, id, emp_id=None):
         request, leave_request, "leave.change_leaverequest"
     ):
         return _leave_decision_denied(request)
+    if leave_request.status == "cancel_requested":
+        return _cancellation_response(
+            request,
+            "error",
+            _("Decide on the pending cancellation request instead."),
+        )
     form = RejectForm()
     if request.method == "POST":
         form = RejectForm(request.POST)
@@ -1419,51 +1434,198 @@ def leave_request_cancel(request, id, emp_id=None):
 @hx_request_required
 def user_leave_cancel(request, id):
     """
-    function used to cancel approved leave request by employee.
+    function used by an employee to request cancellation of an approved leave.
+
+    The leave is not cancelled here: it moves from "approved" to
+    "cancel_requested" and stays in force until a manager approves the
+    cancellation (leave_cancellation_approve) or rejects it
+    (leave_cancellation_reject).
 
     Parameters:
     request (HttpRequest): The HTTP request object.
     id : leave request id
 
     Returns:
-    GET :  it returns to the default my leave request view template.
-
+    GET : the cancellation reason form.
+    POST : redirects to the default my leave request view template.
     """
     leave_request = LeaveRequest.objects.filter(id=id).first()
     if not leave_request:
         return HttpResponse()
     employee_id = leave_request.employee_id
-    if employee_id.employee_user_id.id == request.user.id:
-        current_date = date.today()
-        if (
-            leave_request.status == "approved"
-            and leave_request.end_date >= current_date
-        ):
-            form = RejectForm()
-            if request.method == "POST":
-                form = RejectForm(request.POST)
-                if form.is_valid():
-                    leave_request.reject_reason = form.cleaned_data["reason"]
-                    leave_request.status = "cancelled"
-                    leave_request.save()
-                    messages.success(
-                        request, _("Leave request cancelled successfully..")
-                    )
-
-                    mail_thread = LeaveMailSendThread(
-                        request, leave_request, type="cancel"
-                    )
-                    mail_thread.start()
-                    return HorillaRedirect(request)
-            return render(
-                request,
-                "leave/leave_request/user_cancel_form.html",
-                {"form": form, "id": id},
-            )
-        messages.error(request, _("You can't cancel this leave request."))
+    if not (
+        request.user.is_superuser or employee_id.employee_user_id_id == request.user.id
+    ):
+        messages.error(request, _("You don't have the permission."))
         return HorillaRedirect(request)
-    messages.error(request, _("You don't have the permission."))
+    if (
+        leave_request.status != "approved"
+        or leave_request.end_date < date.today()
+        or leave_request.cancellation_requested
+    ):
+        if leave_request.status == "cancel_requested":
+            messages.error(
+                request, _("A cancellation request is already pending for this leave.")
+            )
+        elif leave_request.cancellation_requested:
+            messages.error(
+                request,
+                _("A cancellation has already been requested for this leave."),
+            )
+        else:
+            messages.error(request, _("You can't cancel this leave request."))
+        return HorillaRedirect(request)
+    form = RejectForm()
+    if request.method == "POST":
+        form = RejectForm(request.POST)
+        if form.is_valid():
+            leave_request, error = request_leave_cancellation(
+                id, form.cleaned_data["reason"], request.user.employee_get
+            )
+            if error:
+                messages.error(request, error)
+                return HorillaRedirect(request)
+            messages.success(request, _("Leave cancellation requested successfully.."))
+            approver = employee_id.get_reporting_manager()
+            with contextlib.suppress(Exception):
+                notify.send(
+                    request.user.employee_get,
+                    recipient=approver.employee_user_id,
+                    verb=gettext_noop(
+                        "%(employee)s has requested to cancel an approved leave."
+                    ),
+                    verb_params={"employee": str(employee_id)},
+                    icon="people-circle",
+                    redirect=reverse("request-view") + f"?id={leave_request.id}",
+                )
+            mail_thread = LeaveMailSendThread(request, leave_request, type="cancel")
+            mail_thread.start()
+            return HorillaRedirect(request)
+    return render(
+        request,
+        "leave/leave_request/user_cancel_form.html",
+        {"form": form, "id": id},
+    )
+
+
+def _cancellation_response(request, level, text):
+    """Reload the leave lists and flash the outcome, as the approve view does."""
+    if level == "success":
+        messages.success(request, text)
+    else:
+        messages.error(request, text)
+    if request.headers.get("HX-Request"):
+        response = HttpResponse("", status=200)
+        response["HX-Trigger"] = json.dumps(
+            {
+                "reloadLeaveRequestList": {"target": "body"},
+                "horillaMessage": {"level": level, "text": str(text)},
+            }
+        )
+        return response
     return HorillaRedirect(request)
+
+
+def _cancellation_decision_denied(request, leave_request):
+    """The response refusing this user a cancellation decision, or None."""
+    if leave_request is None:
+        return _cancellation_response(
+            request, "error", _("No leave request found matching the query.")
+        )
+    if not _may_act_on_leave_request(
+        request, leave_request, "leave.change_leaverequest"
+    ):
+        return _leave_decision_denied(request)
+    if (
+        not request.user.is_superuser
+        and leave_request.employee_id == request.user.employee_get
+    ):
+        return _cancellation_response(
+            request,
+            "error",
+            _("You cannot decide on the cancellation of your own leave request."),
+        )
+    return None
+
+
+def _decide_cancellation(request, id, approve, reason=""):
+    """
+    Shared body of the cancellation approve/reject views: permission and
+    transition checks, then the decision under a row lock.
+    """
+    leave_request = LeaveRequest.objects.filter(id=id).first()
+    denied = _cancellation_decision_denied(request, leave_request)
+    if denied:
+        return denied
+    leave_request, error = decide_leave_cancellation(
+        id, approve, request.user.employee_get, reason
+    )
+    if error:
+        return _cancellation_response(request, "error", error)
+    employee_id = leave_request.employee_id
+
+    with contextlib.suppress(Exception):
+        notify.send(
+            request.user.employee_get,
+            recipient=employee_id.employee_user_id,
+            verb=(
+                gettext_noop("Your leave cancellation request has been approved.")
+                if approve
+                else gettext_noop("Your leave cancellation request has been rejected.")
+            ),
+            icon="people-circle",
+            redirect=reverse("user-request-view") + f"?id={leave_request.id}",
+        )
+    mail_thread = LeaveMailSendThread(
+        request, leave_request, type="cancel_approve" if approve else "cancel_reject"
+    )
+    mail_thread.start()
+    return _cancellation_response(
+        request,
+        "success",
+        (
+            _("Leave cancellation approved successfully..")
+            if approve
+            else _("Leave cancellation rejected successfully..")
+        ),
+    )
+
+
+@login_required
+@hx_request_required
+@manager_can_enter("leave.change_leaverequest")
+@require_http_methods(["POST"])
+def leave_cancellation_approve(request, id):
+    """Approve a pending cancellation: the leave becomes cancelled, days are given back."""
+    return _decide_cancellation(request, id, approve=True)
+
+
+@login_required
+@hx_request_required
+@manager_can_enter("leave.change_leaverequest")
+@require_http_methods(["GET", "POST"])
+def leave_cancellation_reject(request, id):
+    """
+    Reject a pending cancellation: the leave goes back to approved.
+
+    GET : the rejection reason form.
+    POST : record the reason and reject the cancellation.
+    """
+    form = RejectForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        return _decide_cancellation(
+            request, id, approve=False, reason=form.cleaned_data["reason"]
+        )
+    denied = _cancellation_decision_denied(
+        request, LeaveRequest.objects.filter(id=id).first()
+    )
+    if denied:
+        return denied
+    return render(
+        request,
+        "leave/leave_request/cancellation_reject_form.html",
+        {"form": form, "id": id},
+    )
 
 
 @login_required
@@ -3312,7 +3474,7 @@ def employee_leave(request):
     Returns:
     GET : return Json response of employee
     """
-    leaves = LeaveRequest.employees_on_leave_today(status="approved")
+    leaves = LeaveRequest.employees_on_leave_today(status=LEAVE_IN_EFFECT_STATUSES)
     requests_ids = list(leaves.values_list("id", flat=True))
     today_holidays = Holidays.today_holidays().filter(is_specific=False)
     return render(
@@ -3371,7 +3533,7 @@ def dashboard(request):
     today = date.today()
     requested = LeaveRequest.objects.filter(start_date__gte=today, status="requested")
     approved = LeaveRequest.objects.filter(
-        status="approved", start_date__month=today.month
+        status__in=["approved", "cancel_requested"], start_date__month=today.month
     )
     rejected = LeaveRequest.objects.filter(
         status="rejected", start_date__month=today.month
@@ -3484,7 +3646,7 @@ def employee_leave_chart(request):
         day = datetime.strptime(day, "%Y-%m")
 
     leave_requests = LeaveRequest.objects.filter(
-        employee_id__is_active=True, status="approved"
+        employee_id__is_active=True, status__in=["approved", "cancel_requested"]
     )
     leave_requests = leave_requests.filter(
         start_date__month=day.month, start_date__year=day.year
@@ -3555,7 +3717,7 @@ def department_leave_chart(request):
     from_param = request.GET.get("from_date")
     to_param = request.GET.get("to_date")
     leave_request = LeaveRequest.objects.filter(
-        status="approved", employee_id__is_active=True
+        status__in=["approved", "cancel_requested"], employee_id__is_active=True
     )
     if from_param and to_param:
         try:
@@ -3627,7 +3789,9 @@ def leave_type_chart(request):
 
     leave_types = LeaveType.objects.all()
     leave_type_count = {types.name: 0 for types in leave_types}
-    leave_request = LeaveRequest.objects.filter(status="approved")
+    leave_request = LeaveRequest.objects.filter(
+        status__in=["approved", "cancel_requested"]
+    )
     leave_request = leave_request.filter(
         start_date__month=day.month, start_date__year=day.year
     )
@@ -3708,7 +3872,7 @@ def leave_over_period(request):
             start_of_week = today - timedelta(days=today.weekday())
             period_dates = [start_of_week + timedelta(days=i) for i in range(6)]
     leave_request = LeaveRequest.objects.filter(
-        status="approved",
+        status__in=["approved", "cancel_requested"],
         employee_id__is_active=True,
         start_date__lte=period_dates[-1],
     ).filter(

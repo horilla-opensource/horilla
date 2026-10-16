@@ -331,6 +331,16 @@ urlpatterns = [
         name="user-request-delete",
     ),
     path(
+        "cancellation-approve/<int:id>/",
+        views.leave_cancellation_approve,
+        name="leave-cancellation-approve",
+    ),
+    path(
+        "cancellation-reject/<int:id>/",
+        views.leave_cancellation_reject,
+        name="leave-cancellation-reject",
+    ),
+    path(
         "user-request-cancel/<int:id>/",
         views.user_leave_cancel,
         name="user-request-cancel",

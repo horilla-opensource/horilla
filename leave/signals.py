@@ -28,7 +28,7 @@ if apps.is_installed("attendance"):
             super(LeaveRequest, instance).save()
 
         period_dates = instance.requested_dates()
-        if instance.status == "approved":
+        if instance.status in ["approved", "cancel_requested"]:
             for date in period_dates:
                 try:
                     work_entry = (

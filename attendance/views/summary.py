@@ -255,7 +255,7 @@ def build_monthly_summary(from_date, to_date, employee_qs):
     leave_qs = (
         LeaveRequest.objects.filter(
             employee_id__in=emp_pks,
-            status="approved",
+            status__in=["approved", "cancel_requested"],
             start_date__lte=to_date,
         )
         .filter(
@@ -268,7 +268,7 @@ def build_monthly_summary(from_date, to_date, employee_qs):
     # Also include single-day leaves (end_date is null) within range
     single_day_qs = LeaveRequest.objects.filter(
         employee_id__in=emp_pks,
-        status="approved",
+        status__in=["approved", "cancel_requested"],
         start_date__range=(from_date, to_date),
         end_date__isnull=True,
     ).select_related("leave_type_id")
@@ -1142,7 +1142,7 @@ def attendance_monthly_summary_detail(request):
         records = list(
             LeaveRequest.objects.filter(
                 employee_id=emp,
-                status__in=["approved", "requested"],
+                status__in=["approved", "cancel_requested", "requested"],
                 leave_type_id__payment=payment,
                 start_date__lte=to_date,
                 end_date__isnull=False,
@@ -1151,14 +1151,19 @@ def attendance_monthly_summary_detail(request):
         ) + list(
             LeaveRequest.objects.filter(
                 employee_id=emp,
-                status__in=["approved", "requested"],
+                status__in=["approved", "cancel_requested", "requested"],
                 leave_type_id__payment=payment,
                 start_date__range=(from_date, to_date),
                 end_date__isnull=True,
             ).select_related("leave_type_id")
         )
         # Sort: approved first, then requested; within each group by start_date
-        records.sort(key=lambda r: (0 if r.status == "approved" else 1, r.start_date))
+        records.sort(
+            key=lambda r: (
+                0 if r.status in ("approved", "cancel_requested") else 1,
+                r.start_date,
+            )
+        )
         # Add resolution-only entries (days overridden to this leave type without a leave request)
         _res_target = "paid_leave" if metric == "paid_leave" else "unpaid_leave"
         _leave_dates = set()
@@ -1190,7 +1195,7 @@ def attendance_monthly_summary_detail(request):
         leave_dates = set()
         for lr in LeaveRequest.objects.filter(
             employee_id=emp,
-            status="approved",
+            status__in=["approved", "cancel_requested"],
             start_date__lte=to_date,
             end_date__isnull=False,
             end_date__gte=from_date,
@@ -1202,7 +1207,7 @@ def attendance_monthly_summary_detail(request):
                     leave_dates.add(d)
         for lr in LeaveRequest.objects.filter(
             employee_id=emp,
-            status="approved",
+            status__in=["approved", "cancel_requested"],
             start_date__range=(from_date, to_date),
             end_date__isnull=True,
         ):
@@ -1263,7 +1268,7 @@ def attendance_monthly_summary_detail(request):
         leave_date_info = {}
         for _lr in _LR.objects.filter(
             employee_id=emp,
-            status="approved",
+            status__in=["approved", "cancel_requested"],
             start_date__lte=to_date,
             end_date__isnull=False,
             end_date__gte=from_date,
@@ -1277,7 +1282,7 @@ def attendance_monthly_summary_detail(request):
                 )
         for _lr in _LR.objects.filter(
             employee_id=emp,
-            status="approved",
+            status__in=["approved", "cancel_requested"],
             start_date__range=(from_date, to_date),
             end_date__isnull=True,
         ).select_related("leave_type_id"):
@@ -1475,14 +1480,14 @@ def _build_calendar_context(emp, from_date, to_date, show_future_leave=False):
         )
     qs_range = LeaveRequest.objects.filter(
         employee_id=emp,
-        status="approved",
+        status__in=["approved", "cancel_requested"],
         start_date__lte=leave_to,
         end_date__isnull=False,
         end_date__gte=from_date,
     ).select_related("leave_type_id")
     qs_single = LeaveRequest.objects.filter(
         employee_id=emp,
-        status="approved",
+        status__in=["approved", "cancel_requested"],
         start_date__range=(from_date, leave_to),
         end_date__isnull=True,
     ).select_related("leave_type_id")
@@ -2014,7 +2019,7 @@ def attendance_monthly_summary_conflict_resolve(request):
     conflict_label = ""
     for _lr in LeaveRequest.objects.filter(
         employee_id=emp,
-        status="approved",
+        status__in=["approved", "cancel_requested"],
         start_date__lte=date,
         end_date__isnull=False,
         end_date__gte=date,
@@ -2027,7 +2032,7 @@ def attendance_monthly_summary_conflict_resolve(request):
     if not conflict_type:
         for _lr in LeaveRequest.objects.filter(
             employee_id=emp,
-            status="approved",
+            status__in=["approved", "cancel_requested"],
             start_date=date,
             end_date__isnull=True,
         ).select_related("leave_type_id"):

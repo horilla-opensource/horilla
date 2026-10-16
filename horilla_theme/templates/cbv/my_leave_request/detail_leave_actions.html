@@ -1,26 +1,26 @@
 {% load basefilters i18n %}
 
 <div class="flex items-center gap-2 flex-wrap">
-    {% if instance.status == 'approved' and instance.end_date >= current_date %}
+    {% if instance.status == 'approved' and instance.end_date >= current_date and not instance.cancellation_requested %}
         <a
             class="oh-btn oh-btn--light-bkg oh-btn--danger w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
             data-toggle="oh-modal-toggle"
             data-target="#cancelModal"
             hx-get="{% url 'user-request-cancel' instance.id %}"
             hx-target="#cancelForm"
-            title="{% trans 'Cancel' %}"
+            title="{% trans 'Request Cancellation' %}"
         >
             <ion-icon name="close-circle-outline"></ion-icon>
-            {% trans "Cancel" %}
+            {% trans "Request Cancellation" %}
         </a>
     {% else %}
         <button
             class="oh-btn oh-btn--light-bkg w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-            title="{% trans 'Cancel' %}"
+            title="{% if instance.cancellation_requested %}{% trans 'Cancellation already requested' %}{% else %}{% trans 'Cancel' %}{% endif %}"
             disabled
         >
             <ion-icon name="close-circle-outline"></ion-icon>
-            {% trans "Cancel" %}
+            {% if instance.cancellation_requested %}{% trans "Cancellation Requested" %}{% else %}{% trans "Cancel" %}{% endif %}
         </button>
     {% endif %}
 

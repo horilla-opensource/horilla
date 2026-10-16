@@ -148,6 +148,15 @@ def _get_setup_checklist_context(request):
         except Exception:
             return False
 
+    def _has_imported():
+        # Optional step: a finished Master Data Import counts, whoever ran it.
+        try:
+            from master_import.models import ImportJob
+
+            return ImportJob.objects.filter(status=ImportJob.DONE).exists()
+        except Exception:
+            return False
+
     def _has_mail_server():
         try:
             return DynamicEmailConfiguration.objects.filter(
@@ -219,6 +228,17 @@ def _get_setup_checklist_context(request):
             "done": _has_mail_server(),
         },
         {
+            "key": "master_import",
+            "title": _("Import Data"),
+            "description": _(
+                "Bring in employees, leave balances and assets from a spreadsheet."
+            ),
+            "url": _safe_url("master-import"),
+            "done": _has_imported(),
+            # Not needed to finish setup: the checklist can hide without it.
+            "optional": True,
+        },
+        {
             "key": "first_employee",
             "title": _("First Employee"),
             "description": _("Add your first employee to bring everything together."),
@@ -226,6 +246,12 @@ def _get_setup_checklist_context(request):
             "done": _has_employees() if company_pk else False,
         },
     ]
+
+    # Only installed apps get a step; an import is a convenience, not a requirement.
+    from django.apps import apps
+
+    if not apps.is_installed("master_import"):
+        steps = [s for s in steps if s["key"] != "master_import"]
 
     # 5. Preview mode overrides all done flags to False
     if preview_mode:
@@ -235,8 +261,9 @@ def _get_setup_checklist_context(request):
     completed = sum(1 for s in steps if s["done"])
     total = len(steps)
 
-    # Auto-hide once all steps are complete (no dismiss record needed)
-    if not preview_mode and completed == total:
+    # Auto-hide once every required step is complete (no dismiss record needed)
+    required = [s for s in steps if not s.get("optional")]
+    if not preview_mode and all(s["done"] for s in required):
         return {"show_setup_checklist": False}
 
     # 6. Precompute connector-line state for the template.
@@ -317,9 +344,10 @@ def _leave_request_list_qs(request):
 
 
 def _today_leave_qs(request, today, status="approved"):
+    statuses = [status] if isinstance(status, str) else status
     return (
         _leave_request_list_qs(request)
-        .filter(status=status, start_date__lte=today)
+        .filter(status__in=statuses, start_date__lte=today)
         .filter(Q(end_date__gte=today) | Q(end_date__isnull=True, start_date=today))
     )
 
@@ -504,7 +532,9 @@ def dashboard_kpi_data(request):
     full_day_leave_ids = set()
     half_day_today = 0
     try:
-        leave_qs = _today_leave_qs(request, real_today, status="approved")
+        leave_qs = _today_leave_qs(
+            request, real_today, status=["approved", "cancel_requested"]
+        )
         on_leave_employee_ids = set(
             leave_qs.values_list("employee_id", flat=True).distinct()
         )
@@ -692,7 +722,7 @@ def dashboard_leave_breakdown(request):
         rows = (
             _leave_request_list_qs(request)
             .filter(
-                status__in=["approved", "requested"],
+                status__in=["approved", "cancel_requested", "requested"],
                 start_date__lte=last_of_month,
             )
             .filter(
@@ -708,7 +738,8 @@ def dashboard_leave_breakdown(request):
             entry = by_type.setdefault(
                 row["leave_type_id"], {"approved": 0, "requested": 0, "days": 0.0}
             )
-            entry[row["status"]] += row["count"]
+            key = "approved" if row["status"] == "cancel_requested" else row["status"]
+            entry[key] += row["count"]
             entry["days"] += float(row["total_days"] or 0)
 
         for lt in LeaveType.objects.all().order_by("name"):
@@ -983,7 +1014,7 @@ def dashboard_todays_leave(request):
         qs = LeaveRequest.objects.filter(
             start_date__lte=today,
             end_date__gte=today,
-            status="approved",
+            status__in=["approved", "cancel_requested"],
             employee_id__is_active=True,
         ).select_related("employee_id", "leave_type_id")
 
@@ -1706,7 +1737,7 @@ def dashboard_leave_coverage(request):
             day = first_of_month + timedelta(days=offset)
             leave_qs = LeaveRequest.objects.filter(
                 start_date__lte=day,
-                status="approved",
+                status__in=["approved", "cancel_requested"],
                 employee_id__is_active=True,
             ).filter(Q(end_date__gte=day) | Q(end_date__isnull=True, start_date=day))
             if scoped_ids is not None:
@@ -1733,7 +1764,7 @@ def dashboard_leave_coverage(request):
         month_leave_ids = set(
             LeaveRequest.objects.filter(
                 start_date__lte=last_of_month,
-                status="approved",
+                status__in=["approved", "cancel_requested"],
                 employee_id__is_active=True,
             )
             .filter(

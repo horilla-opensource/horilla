@@ -28,6 +28,14 @@ urlpatterns = [
     path("approve/<int:pk>/", LeaveRequestApproveAPIView.as_view()),
     path("reject/<int:pk>/", LeaveRequestRejectAPIView.as_view()),
     path("cancel/<int:pk>/", LeaveRequestCancelAPIView.as_view()),
+    path(
+        "cancellation-approve/<int:pk>/",
+        LeaveCancellationDecisionAPIView.as_view(),
+    ),
+    path(
+        "cancellation-reject/<int:pk>/",
+        LeaveCancellationRejectAPIView.as_view(),
+    ),
     path("allocation-approve/<int:pk>/", LeaveAllocationApproveAPIView.as_view()),
     path("allocation-reject/<int:pk>/", LeaveAllocationRequestRejectAPIView.as_view()),
     path("request-bulk-action/", LeaveRequestBulkApproveDeleteAPIview.as_view()),

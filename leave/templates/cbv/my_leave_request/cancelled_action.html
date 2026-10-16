@@ -7,7 +7,7 @@
 </style>
 
     {% if instance.reject_reason %}
-    {% if instance.status == "cancelled" %}
+    {% if instance.status == "cancelled" or instance.status == "cancel_requested" %}
     <div class="oh-timeoff-modal__stats w-100 mt-3 p-2 row-status--gray diff-cell">
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Cancellation" %}</span>

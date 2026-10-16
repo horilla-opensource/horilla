@@ -2,17 +2,17 @@
 {% load i18n %}
 <div class=" {% if instance.status == 'rejected' %} diff-cell{% endif %}" onclick="event.stopPropagation()">
     <div class="flex items-center justify-center gap-1">
-        {% if instance.status == 'approved' and instance.end_date >= current_date %}
+        {% if instance.status == 'approved' and instance.end_date >= current_date and not instance.cancellation_requested %}
             <a data-toggle="oh-modal-toggle"
                 data-target="#cancelModal"
                 hx-get="{% url 'user-request-cancel' instance.id %}"
                 hx-target="#cancelForm"
-                title="{% trans 'Cancel' %}"
+                title="{% trans 'Request Cancellation' %}"
                 class="oh-btn oh-btn--light-bkg oh-btn--danger oh-btn--sq-sm">
                 <ion-icon name="close-circle-outline"></ion-icon>
             </a>
         {% else %}
-            <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" title="{% trans 'Cancel' %}" disabled>
+            <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" title="{% if instance.cancellation_requested %}{% trans 'Cancellation already requested' %}{% else %}{% trans 'Cancel' %}{% endif %}" disabled>
                 <ion-icon name="close-circle-outline"></ion-icon>
             </button>
         {% endif %}

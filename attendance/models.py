@@ -581,7 +581,7 @@ class Attendance(HorillaModel):
         method for rendering approve OT
         """
         minot = strtime_seconds("00:30")
-        condition = AttendanceValidationCondition.objects.first()
+        condition = AttendanceValidationCondition.for_shift(self.shift_id)
         if condition is not None:
             minot = strtime_seconds(condition.minimum_overtime_to_approve)
 
@@ -607,7 +607,7 @@ class Attendance(HorillaModel):
         """
         min_ot = strtime_seconds("00:30")
         min_ot_display = "00:30"
-        condition = AttendanceValidationCondition.objects.first()
+        condition = AttendanceValidationCondition.for_shift(self.shift_id)
         if condition is not None:
             min_ot = strtime_seconds(condition.minimum_overtime_to_approve)
             min_ot_display = condition.minimum_overtime_to_approve
@@ -626,7 +626,7 @@ class Attendance(HorillaModel):
         combined actions column for OT tab: approve OT + edit + delete
         """
         minot = strtime_seconds("00:30")
-        condition = AttendanceValidationCondition.objects.first()
+        condition = AttendanceValidationCondition.for_shift(self.shift_id)
         if condition is not None:
             minot = strtime_seconds(condition.minimum_overtime_to_approve)
 
@@ -651,7 +651,7 @@ class Attendance(HorillaModel):
         """
 
         minot = strtime_seconds("00:30")
-        condition = AttendanceValidationCondition.objects.first()
+        condition = AttendanceValidationCondition.for_shift(self.shift_id)
         if condition is not None:
             minot = strtime_seconds(condition.minimum_overtime_to_approve)
 
@@ -781,7 +781,7 @@ class Attendance(HorillaModel):
         self.overtime_second = strtime_seconds(self.attendance_overtime)
 
     def handle_overtime_conditions(self):
-        condition = AttendanceValidationCondition.objects.first()
+        condition = AttendanceValidationCondition.for_shift(self.shift_id)
         if self.is_validate_request:
             self.is_validate_request_approved = self.attendance_validated = False
 
@@ -1004,7 +1004,7 @@ class Attendance(HorillaModel):
             approved_leave_requests = self.employee_id.leaverequest_set.filter(
                 start_date__lte=self.attendance_date,
                 end_date__gte=self.attendance_date,
-                status="approved",
+                status__in=["approved", "cancel_requested"],
             )
         else:
             approved_leave_requests = []
@@ -1502,6 +1502,12 @@ class AttendanceValidationCondition(HorillaModel):
     AttendanceValidationCondition model
     """
 
+    minimum_at_work_to_validate = models.CharField(
+        default="00:00",
+        max_length=10,
+        validators=[validate_time_format],
+        verbose_name=_("Minimum Hours to Auto Validate"),
+    )
     validation_at_work = models.CharField(
         max_length=10,
         validators=[validate_time_format],
@@ -1516,16 +1522,67 @@ class AttendanceValidationCondition(HorillaModel):
     auto_approve_ot = models.BooleanField(
         default=False, verbose_name=_("Auto Approve OT")
     )
+    shift_ids = models.ManyToManyField(
+        EmployeeShift,
+        blank=True,
+        verbose_name=_("Shifts"),
+        help_text=_(
+            "Leave empty to apply to every shift that has no condition of its own."
+        ),
+    )
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
     objects = HorillaCompanyManager()
 
-    def clean(self):
+    @classmethod
+    def for_shift(cls, shift=None):
         """
-        This method is used to perform some custom validations
+        Return the condition of the shift, else the shift-less default, else None.
         """
-        super().clean()
-        if not self.id and AttendanceValidationCondition.objects.exists():
-            raise ValidationError(_("You cannot add more conditions."))
+        conditions = cls.objects.all().order_by("pk")
+        if shift is not None:
+            specific = conditions.filter(shift_ids=shift).first()
+            if specific is not None:
+                return specific
+        return conditions.filter(shift_ids__isnull=True).first()
+
+    @classmethod
+    def min_overtime_q(cls, default_seconds=0):
+        """
+        Return a Q matching attendances whose overtime reaches their shift's minimum.
+        """
+        covered_shift_ids = set()
+        shift_q = Q()
+        fallback_seconds = default_seconds
+        has_default = False
+        conditions = cls.objects.all().prefetch_related("shift_ids").order_by("pk")
+        for condition in conditions:
+            minimum = (
+                strtime_seconds(condition.minimum_overtime_to_approve)
+                if condition.minimum_overtime_to_approve
+                else default_seconds
+            )
+            shift_ids = {shift.id for shift in condition.shift_ids.all()}
+            if shift_ids:
+                new_shift_ids = shift_ids - covered_shift_ids
+                if new_shift_ids:
+                    covered_shift_ids |= new_shift_ids
+                    shift_q |= Q(
+                        shift_id__in=new_shift_ids, overtime_second__gte=minimum
+                    )
+            elif not has_default:
+                has_default = True
+                fallback_seconds = minimum
+        fallback_q = Q(overtime_second__gte=fallback_seconds)
+        if covered_shift_ids:
+            fallback_q &= ~Q(shift_id__in=covered_shift_ids)
+        return shift_q | fallback_q
+
+    def shifts_col(self):
+        """
+        Return the shift names of the condition, or "All Shifts" for the default one.
+        """
+        shifts = ", ".join(shift.employee_shift for shift in self.shift_ids.all())
+        return shifts or _("All Shifts")
 
     def break_point_actions(self):
         """

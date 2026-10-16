@@ -2,6 +2,19 @@
 {% is_manager_of request.user instance as can_manage %}
 <div class="oh-modal__button-container text-center mt-3 w-100">
     <div class="oh-btn oh-btn-group">
+        {% if instance.status == 'cancel_requested' %}
+            {% if perms.leave.change_leaverequest or can_manage %}
+                <a href="#" hx-post="{% url 'leave-cancellation-approve' instance.id %}" hx-swap="none"
+                    hx-confirm="{% trans 'Do you really want to approve this cancellation request?' %}"
+                    title="{% trans 'Approve Cancellation' %}" class="oh-btn oh-btn--success w-100">
+                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                </a>
+                <a href="#" data-toggle="oh-modal-toggle" data-target="#rejectModal" hx-get="{% url 'leave-cancellation-reject' instance.id %}" hx-target="#rejectForm"
+                    title="{% trans 'Reject Cancellation' %}" class="oh-btn oh-btn--danger w-100">
+                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                </a>
+            {% endif %}
+        {% else %}
         {% if instance.is_approved and instance.status == 'requested' and perms.leave.change_leaverequest or can_manage %}
             {% if instance.employee_id == request.user.employee_get and not request.user.is_superuser %}
                 <a type="submit" href="#" title="{% trans 'Approve' %}"
@@ -28,7 +41,7 @@
             data-target="#penaltyModal"
             hx-target="#penaltyModalBody"
             hx-get="{% url 'leave-cut-penalty' instance.id %}"
-            type="submit" class="oh-btn oh-btn--info w-100"
+            type="submit" class="oh-btn oh-btn--warning w-100"
             title="{% trans 'Penalty' %}" id="penaltyButton">
                 <ion-icon name="information-circle-outline" role="img" class="md hydrated" aria-label="{% trans 'information circle outline' %}"></ion-icon>
             </button>
@@ -40,6 +53,7 @@
             class="oh-btn oh-btn--danger w-100">
             <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
         </a>
+        {% endif %}
         {% endif %}
     </div>
 </div>

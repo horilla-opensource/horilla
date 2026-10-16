@@ -178,7 +178,7 @@ def absenteeism_rate(filters: ReportFilters) -> dict:
             from leave.models import LeaveRequest
 
             leave_qs = LeaveRequest.objects.filter(
-                status="approved",
+                status__in=["approved", "cancel_requested"],
                 start_date__lte=end,
             ).filter(Q(end_date__gte=month_start) | Q(end_date__isnull=True))
             leave_qs = apply_org_filters(
@@ -466,7 +466,7 @@ def leave_utilization(filters: ReportFilters) -> dict:
     if filters.leave_status:
         leave_qs = leave_qs.filter(status=filters.leave_status)
     else:
-        leave_qs = leave_qs.filter(status="approved")
+        leave_qs = leave_qs.filter(status__in=["approved", "cancel_requested"])
     used_by_type = {
         row["leave_type_id"]: float(row["total"] or 0)
         for row in leave_qs.values("leave_type_id").annotate(
@@ -695,7 +695,7 @@ def unscheduled_absence(filters: ReportFilters) -> dict:
         from leave.models import LeaveRequest
 
         leave_qs = LeaveRequest.objects.filter(
-            status="approved",
+            status__in=["approved", "cancel_requested"],
             start_date__lte=filters.to_date,
             end_date__gte=filters.from_date,
         )

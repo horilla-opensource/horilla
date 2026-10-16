@@ -379,6 +379,7 @@ if apps.is_installed("leave"):
             LEAVE_STATUS = {
                 "requested": "Requested",
                 "approved": "Approved",
+                "cancel_requested": "Cancel Requested",
                 "cancelled": "Cancelled",
                 "rejected": "Rejected",
             }

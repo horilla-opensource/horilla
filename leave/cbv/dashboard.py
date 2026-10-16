@@ -115,7 +115,7 @@ class DashboardOnLeave(HorillaListView):
         queryset = super().get_queryset()
         queryset = queryset.filter(
             employee_id__is_active=True,
-            status="approved",
+            status__in=["approved", "cancel_requested"],
             start_date__lte=today,
             end_date__gte=today,
         )
