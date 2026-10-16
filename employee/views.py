@@ -3441,7 +3441,7 @@ def leave_today_count(request):
         LeaveRequest = get_horilla_model_class(app_label="leave", model="leaverequest")
         leave_today = LeaveRequest.objects.filter(
             Q(start_date__lte=date.today(), end_date__gte=date.today()),
-            status="approved",
+            status__in=["approved", "cancel_requested"],
             is_active=True,
         ).count()
     return HttpResponse(leave_today)

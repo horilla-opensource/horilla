@@ -111,7 +111,9 @@ def _on_leave_today(employee):
     today = date.today()
     requests = (
         LeaveRequest.objects.filter(
-            status="approved", start_date__lte=today, end_date__gte=today
+            status__in=["approved", "cancel_requested"],
+            start_date__lte=today,
+            end_date__gte=today,
         )
         .select_related("employee_id")
         .exclude(employee_id=employee)[:10]
