@@ -215,7 +215,9 @@ def request_leave_cancellation(leave_request_id, reason, employee):
 
     with transaction.atomic():
         leave_request = (
-            LeaveRequest.objects.select_for_update().filter(id=leave_request_id).first()
+            LeaveRequest._base_manager.select_for_update()
+            .filter(id=leave_request_id)
+            .first()
         )
         if leave_request is None:
             return None, _("Leave request not found.")
@@ -258,7 +260,9 @@ def decide_leave_cancellation(leave_request_id, approve, employee, reason=""):
 
     with transaction.atomic():
         leave_request = (
-            LeaveRequest.objects.select_for_update().filter(id=leave_request_id).first()
+            LeaveRequest._base_manager.select_for_update()
+            .filter(id=leave_request_id)
+            .first()
         )
         if leave_request is None:
             return None, _("Leave request not found.")
@@ -268,7 +272,7 @@ def decide_leave_cancellation(leave_request_id, approve, employee, reason=""):
             )
         if approve:
             available_leave = (
-                AvailableLeave.objects.select_for_update()
+                AvailableLeave._base_manager.select_for_update()
                 .filter(
                     leave_type_id=leave_request.leave_type_id,
                     employee_id=leave_request.employee_id,
