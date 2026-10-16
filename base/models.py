@@ -96,11 +96,12 @@ class Company(HorillaModel):
 
     company = models.CharField(max_length=50, verbose_name=_("Name"))
     hq = models.BooleanField(default=False)
-    address = models.TextField(max_length=255)
-    country = models.CharField(max_length=50)
-    state = models.CharField(max_length=50)
-    city = models.CharField(max_length=50)
-    zip = models.CharField(max_length=20)
+    # Nullable so a company can be created from just a name (master data import).
+    address = models.TextField(max_length=255, null=True)
+    country = models.CharField(max_length=50, null=True)
+    state = models.CharField(max_length=50, null=True)
+    city = models.CharField(max_length=50, null=True)
+    zip = models.CharField(max_length=20, null=True)
     icon = models.FileField(
         upload_to=upload_path,
         null=True,

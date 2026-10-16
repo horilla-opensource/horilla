@@ -10,6 +10,7 @@ from itertools import chain, groupby
 
 import pandas as pd
 from django.apps import apps
+from django.contrib.auth.hashers import make_password
 from django.db import connection, models, transaction
 from django.utils.translation import gettext as _
 
@@ -260,7 +261,9 @@ def valid_import_file_headers(data_frame):
     return True, ""
 
 
-def process_employee_records(data_frame, selected_company=None):
+def process_employee_records(
+    data_frame, selected_company=None, auto_create_companies=False, progress=None
+):
     """
     Validate import rows.
 
@@ -268,6 +271,9 @@ def process_employee_records(data_frame, selected_company=None):
       accepted; a blank Company is rejected with a Company Error.
     - None ("All Company"/no selection): rows may name any existing company,
       or leave it blank (company_id=None).
+    - `auto_create_companies`: a company that does not exist yet is not an
+      error; the caller creates it.
+    - `progress(done, total)`: called every few rows, for a progress bar.
     """
 
     email_regex = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
@@ -297,7 +303,9 @@ def process_employee_records(data_frame, selected_company=None):
 
     today = date.today()
 
-    for emp in employee_dicts:
+    for position, emp in enumerate(employee_dicts, start=1):
+        if progress and (position % 10 == 0 or position == len(employee_dicts)):
+            progress(position, len(employee_dicts))
         errors = {}
         save = True
         gender = emp.get("Gender")
@@ -404,7 +412,7 @@ def process_employee_records(data_frame, selected_company=None):
                 f"Company '{company}' does not match the selected company."
             )
             save = False
-        if company and company not in existing_companies:
+        if company and company not in existing_companies and not auto_create_companies:
             errors["Company Error"] = f"Company '{company}' does not exist."
             save = False
 
@@ -458,7 +466,9 @@ def bulk_create_user_import(success_lists):
     Returns:
         list: A list of created HorillaUser instances. If no new users are created, returns an empty list.
     """
-    emails = [row["Email"] for row in success_lists]
+    # A row may carry its own "Username" and "Password"; without them the email
+    # is the username and the password is set afterwards.
+    emails = [row.get("Username") or row["Email"] for row in success_lists]
     existing_usernames = (
         set(
             HorillaUser.objects.filter(username__in=emails).values_list(
@@ -478,14 +488,18 @@ def bulk_create_user_import(success_lists):
 
     users_to_create = [
         HorillaUser(
-            username=row["Email"],
+            username=row.get("Username") or row["Email"],
             email=row["Email"],
-            password=str(row["Phone"]).strip(),
+            password=(
+                (row.get("__hash") or make_password(row["Password"]))
+                if row.get("Password")
+                else str(row["Phone"]).strip()
+            ),
             is_superuser=False,
             is_new_employee=True,
         )
         for row in success_lists
-        if row["Email"] not in existing_usernames
+        if (row.get("Username") or row["Email"]) not in existing_usernames
     ]
 
     created_users = []
@@ -502,7 +516,7 @@ def bulk_create_employee_import(success_lists):
     Creates Employee instances in bulk based on imported data.
     Uses adaptive chunking for compatibility with SQLite, avoids chunking in PostgreSQL.
     """
-    emails = [row["Email"] for row in success_lists]
+    emails = [row.get("Username") or row["Email"] for row in success_lists]
     is_postgres = connection.vendor == "postgresql"
 
     existing_users = {
@@ -519,7 +533,7 @@ def bulk_create_employee_import(success_lists):
 
     employees_to_create = [
         Employee(
-            employee_user_id=existing_users[row.get("Email")],
+            employee_user_id=existing_users[row.get("Username") or row["Email"]],
             badge_id=row.get("Badge ID"),
             employee_first_name=row.get("First Name"),
             employee_last_name=row.get("Last Name"),
@@ -529,7 +543,7 @@ def bulk_create_employee_import(success_lists):
             gender=row.get("Gender").lower() if row.get("Gender") else None,
         )
         for row in success_lists
-        if row["Email"] in existing_users
+        if (row.get("Username") or row["Email"]) in existing_users
     ]
 
     created_employees = []

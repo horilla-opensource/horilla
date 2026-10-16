@@ -614,11 +614,8 @@ class EmployeeNav(HorillaNavView):
                 {
                     "action": _("Import"),
                     "attrs": f"""
-                        href="#"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#objectCreateModal"
-                        hx-get="{reverse('work-info-import')}"
-                        hx-target="#objectCreateModalTarget"
+                        href="{reverse('master-import')}?dataset=employees"
+                        hx-boost="false"
                         style="cursor: pointer;"
                     """,
                 }

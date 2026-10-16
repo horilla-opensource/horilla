@@ -100,6 +100,7 @@ INSTALLED_APPS = [
     "horilla_ldap",
     "horilla_dbtemplate",
     "horilla_tour",
+    "master_import",
 ]
 
 # ========================================
