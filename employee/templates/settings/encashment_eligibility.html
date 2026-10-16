@@ -65,32 +65,51 @@
       hx-on-htmx-after-request="setTimeout(reloadMessage, 70);"
     >
       {% csrf_token %}
-      <div class="row">
+      <div
+        class="row"
+        id="encashmentEligibilityScopeFields"
+        {% if eligibility_form.instance.is_applicable_to_all %}style="display:none;"{% endif %}
+      >
         <div class="col-sm-12 col-md-12 col-lg-12 mb-3">
           <div class="oh-input-group">
             <label class="oh-label">{% trans "Employees" %}</label>
             {{ eligibility_form.employees }}
+            {{ eligibility_form.employees.errors }}
           </div>
         </div>
         <div class="col-sm-12 col-md-12 col-lg-12 mb-3">
           <div class="oh-input-group">
             <label class="oh-label">{% trans "Department" %}</label>
             {{ eligibility_form.department }}
+            {{ eligibility_form.department.errors }}
           </div>
         </div>
         <div class="col-sm-12 col-md-12 col-lg-12">
           <div class="oh-input-group">
             <label class="oh-label">{% trans "Job Position" %}</label>
             {{ eligibility_form.job_position }}
+            {{ eligibility_form.job_position.errors }}
           </div>
         </div>
+        {% if perms.payroll.change_encashmentgeneralsettings %}
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0">{% trans 'Save Changes' %}</button>
+          </div>
+        {% endif %}
       </div>
-      {% if perms.payroll.change_encashmentgeneralsettings %}
-        <div class="d-flex justify-content-end">
-          <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0">{% trans 'Save Changes' %}</button>
-        </div>
-      {% endif %}
       <div class="oh-inner-sidebar-content__footer"></div>
     </form>
   </div>
 </div>
+
+<script>
+    (function () {
+        function toggleEncashmentScopeFields() {
+            var applyToAll = document.getElementById("is_applicable_to_all").checked;
+            document.getElementById("encashmentEligibilityScopeFields").style.display = applyToAll ? "none" : "";
+        }
+        $("#is_applicable_to_all")
+            .off("change.encashmentScope")
+            .on("change.encashmentScope", toggleEncashmentScopeFields);
+    })();
+</script>
