@@ -25,6 +25,11 @@ urlpatterns = [
         feedback.PerformanceTab.as_view(),
         name="individual-performance-tab-list",
     ),
+    path(
+        "individual-key-result-tab-list/<int:pk>/",
+        objectives.EKRTab.as_view(),
+        name="individual-key-result-tab-list",
+    ),
     path("feedback-view/", feedback.FeedbackViewPage.as_view(), name="feedback-view"),
     path(
         "feedback-list-page/",
