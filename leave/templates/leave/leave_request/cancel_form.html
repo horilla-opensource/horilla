@@ -14,7 +14,13 @@
   <div class="oh-general__tab-target oh-profile-section">
     <div class="col-sm-12 col-md-12 col-lg-12">
       <label class="oh-label">{% trans "Reason" %}</label>
-      {{form.reason}} {{form.errors}}
+      <style>
+        #cancelLeaveReasonWrapper textarea {
+          min-height: 120px;
+        }
+      </style>
+      <div id="cancelLeaveReasonWrapper">{{form.reason}}</div>
+      {{form.errors}}
     </div>
     <div class="d-flex flex-row-reverse">
       <button
