@@ -20,6 +20,13 @@ previewed is what gets written.
   .pe__head-sub { font-size: 12px; color: #8b90a0; margin-top: 2px; }
   .pe__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
   @media (max-width: 640px) { .pe__cols { grid-template-columns: 1fr; } }
+  /* Salary adjustments: the same rows as the lines, with a note under them. It goes
+     quiet and read-only once Basic Pay is typed over, because the loss of pay then no
+     longer describes it. */
+  .pe__adj { margin-bottom: 14px; }
+  .pe__adj-note { margin: 4px 0 0; font-size: 11px; color: #9ca3af; }
+  .pe__adj.is-off .pe__title, .pe__adj.is-off .pe__amount { opacity: .45; }
+  .pe__adj.is-off .pe__amount { background: #f4f5f7; pointer-events: none; }
   .pe__section-title {
     font-size: 10px; font-weight: 700; letter-spacing: .06em;
     text-transform: uppercase; color: #6b7280; margin-bottom: 6px;
@@ -216,6 +223,29 @@ previewed is what gets written.
       </div>
 
       <div>
+        {% if adjustments %}
+        <div class="pe__adj" data-pe-adj>
+          <div class="pe__section-title">{% trans "Salary Adjustments" %}</div>
+          {% for adjustment in adjustments %}
+          {% comment %}Not a data-pe-row: it is already inside Basic Pay, so it is not added to the totals.{% endcomment %}
+          <div class="pe__row" data-pe-adj-row data-pe-before="{{ adjustment.before_basic|stringformat:'.2f' }}">
+            <span class="pe__title pe__title--locked">
+              <span class="pe__name">{{ adjustment.title }}</span>
+              <span class="pe__basis">{{ adjustment.note }}{% if adjustment.days %} · {{ adjustment.days }} {% trans "days" %}{% endif %}</span>
+            </span>
+            <span class="pe__remove-spacer"></span>
+            <input type="number" step="0.01" min="0" class="pe__amount" data-pe-adj-amount
+                   name="amount:{{ adjustment.key }}" value="{{ adjustment.amount|floatformat:2 }}"
+                   aria-label="{{ adjustment.title }}">
+          </div>
+          {% endfor %}
+          <p class="pe__adj-note" data-pe-adj-note
+             data-on="{% trans 'Taken off Basic Pay: change it and Basic Pay moves the other way.' %}"
+             data-off="{% trans 'Basic Pay was changed by hand, so loss of pay is no longer taken from it.' %}">
+            {% trans "Taken off Basic Pay: change it and Basic Pay moves the other way." %}
+          </p>
+        </div>
+        {% endif %}
         <div class="pe__section-title">{% trans "Deductions" %}</div>
         {% for line in lines %}
           {% if line.section == "deduction" %}
@@ -481,6 +511,33 @@ previewed is what gets written.
     }
     var match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]*)/);
     return match ? decodeURIComponent(match[1]) : "";
+  }
+
+  // The salary adjustment (loss of pay already inside Basic Pay) and Basic Pay are
+  // two ends of one figure: change the adjustment and Basic Pay moves by the same
+  // amount the other way. Typing into Basic Pay itself says it is now what was
+  // decided, so the adjustment goes quiet and read-only.
+  var adjBlock = form.querySelector("[data-pe-adj]");
+  var adjRow = form.querySelector("[data-pe-adj-row]");
+  var adjAmount = form.querySelector("[data-pe-adj-amount]");
+  var basicAmount = form.querySelector('[data-pe-key="basic"] [data-pe-amount]');
+  if (adjBlock && adjRow && adjAmount && basicAmount) {
+    var before = parseFloat(adjRow.dataset.peBefore) || 0;
+    adjAmount.addEventListener("input", function () {
+      var lop = parseFloat(adjAmount.value);
+      if (isNaN(lop)) { lop = 0; }
+      lop = Math.min(Math.max(lop, 0), before);
+      basicAmount.value = (Math.round((before - lop) * 100) / 100).toFixed(2);
+      // Basic Pay is given here, so a recalculation works the rest out from it
+      // rather than re-deriving it.
+      overridden["basic"] = true;
+    });
+    basicAmount.addEventListener("input", function () {
+      adjBlock.classList.add("is-off");
+      adjAmount.disabled = true;
+      var note = adjBlock.querySelector("[data-pe-adj-note]");
+      if (note) { note.textContent = note.dataset.off; }
+    });
   }
 
   form.addEventListener("input", function (event) {

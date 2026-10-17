@@ -64,6 +64,11 @@ DEDUCTION_BUCKETS = (
 
 BASIC_KEY = "basic"
 TAX_KEY = "tax"
+# Loss of pay, when it is a deduction of its own rather than already inside basic pay.
+LOP_KEY = "lop"
+# The loss of pay already inside basic pay: not a line of the totals, but editable --
+# changing it moves Basic Pay by the same amount the other way.
+ADJ_KEY = "lop_adj"
 NEW_LINE_KEY = "new"
 
 # Names that appear in a formula without being a component. Left out of a
@@ -203,6 +208,46 @@ def _explain(component):
     return basis, ("" if applies in {str(_("Always")), "Always"} else applies)
 
 
+def _loss_of_pay_is_pretax(payslip):
+    """Whether a separate loss of pay comes off taxable gross: the contract says."""
+    from payroll.models.models import Contract
+
+    contract = (
+        Contract.objects.entire()
+        .filter(employee_id=payslip.employee_id, contract_status="active")
+        .first()
+    )
+    return contract is None or bool(contract.loss_of_pay_is_pretax)
+
+
+def salary_adjustments(payslip):
+    """
+    The adjustments already inside Basic Pay, as the payslip's own Salary
+    Adjustments card lists them: today, loss of pay that came off basic.
+
+    Shown on the form so the basic figure beside it is not a mystery, but not
+    editable here -- the amount is part of Basic Pay, so changing Basic Pay is
+    how it is changed. A loss of pay that is a deduction of its own is a line on
+    the form instead (see ``LOP_KEY``), and is not listed twice.
+    """
+    data = payslip.pay_head_data or {}
+    lop = float(data.get("loss_of_pay") or 0)
+    if lop <= 0 or not data.get("lop_reflected_in_basic"):
+        return []
+    basic = float(data.get("basic_pay", payslip.basic_pay) or 0)
+    return [
+        {
+            "key": ADJ_KEY,
+            "title": str(_("Loss of Pay (LOP)")),
+            "note": str(_("Deducted from Basic Pay")),
+            "days": data.get("unpaid_days"),
+            "amount": round(lop, 2),
+            # What Basic Pay was before it, so the form can move one as the other changes.
+            "before_basic": round(basic + lop, 2),
+        }
+    ]
+
+
 def described_lines(payslip):
     """
     Every line on this payslip, in the shape the edit form needs.
@@ -284,6 +329,24 @@ def described_lines(payslip):
         )
     )
 
+    # Loss of pay is on the payslip as a deduction of its own only when it did not
+    # come off basic pay. The totals below are the sum of the lines, so leaving it
+    # off this form would drop it from them the moment the payslip was saved.
+    lop = float(data.get("loss_of_pay") or 0)
+    if lop > 0 and not data.get("lop_reflected_in_basic"):
+        pairs.append(
+            described(
+                LOP_KEY,
+                "deduction",
+                str(_("Loss Of Pay")),
+                lop,
+                True,
+                None,
+                pretax=_loss_of_pay_is_pretax(payslip),
+            )
+        )
+        pairs[-1][1]["basis"] = str(_("Taken separately, not off basic pay"))
+
     for bucket in DEDUCTION_BUCKETS:
         for index, row in enumerate(data.get(bucket) or []):
             pairs.append(
@@ -361,6 +424,21 @@ def apply_edits(payslip, amounts, removed, new_line=None):
     old_tax = float(data.get("federal_tax", 0) or 0)
     old_basic = float(data.get("basic_pay", payslip.basic_pay) or 0)
     amounts = dict(amounts)
+
+    # A loss of pay inside basic pay that was edited: Basic Pay moves by the same
+    # amount the other way. Not when Basic Pay was typed over as well -- then
+    # basic is what was decided and the loss of pay no longer describes it.
+    old_lop = float(data.get("loss_of_pay") or 0)
+    lop_edit = None
+    if data.get("lop_reflected_in_basic") and old_lop > 0 and ADJ_KEY in amounts:
+        before = old_basic + old_lop
+        adjusted = round(min(max(amounts[ADJ_KEY], 0.0), before), 2)
+        posted_basic = amounts.get(BASIC_KEY)
+        if abs(adjusted - old_lop) > 0.005 and (
+            posted_basic is None or abs(posted_basic - (before - adjusted)) <= 0.01
+        ):
+            lop_edit = adjusted
+            amounts[BASIC_KEY] = round(before - adjusted, 2)
     if new_line:
         lines = lines + [
             {
@@ -428,6 +506,12 @@ def apply_edits(payslip, amounts, removed, new_line=None):
     data["federal_tax"] = (
         0.0 if TAX_KEY in removed else amounts.get(TAX_KEY, data.get("federal_tax", 0))
     )
+    if any(line["key"] == LOP_KEY for line in lines):
+        data["loss_of_pay"] = (
+            0.0
+            if LOP_KEY in removed
+            else round(float(amounts.get(LOP_KEY, data.get("loss_of_pay", 0)) or 0), 2)
+        )
     new_basic = round(amounts.get(BASIC_KEY, payslip.basic_pay or 0), 2)
     # The page reads these from the snapshot, not from the model's columns, so
     # leaving them as generated showed the old basic and gross after a save.
@@ -436,14 +520,18 @@ def apply_edits(payslip, amounts, removed, new_line=None):
     data["taxable_gross_pay"] = round(
         taxable_after(payslip, pairs, amounts, removed, new_line), 2
     )
-    if abs(new_basic - old_basic) > 0.005:
-        # Basic was set by hand, so it is no longer "after loss of pay": the
-        # figure is what was decided, and a Salary Adjustments block claiming
-        # a deduction from it would describe something that did not happen.
-        data["loss_of_pay_before_edit"] = data.get("loss_of_pay", 0)
-        data["loss_of_pay"] = 0.0
-        data["lop_reflected_in_basic"] = False
+    if lop_edit is not None:
+        data["loss_of_pay"] = lop_edit
+    elif abs(new_basic - old_basic) > 0.005:
         data["basic_edited"] = True
+        if data.get("lop_reflected_in_basic"):
+            # Basic was set by hand, so it is no longer "after loss of pay": the
+            # figure is what was decided, and a Salary Adjustments block claiming
+            # a deduction from it would describe something that did not happen.
+            # (A separate loss of pay is a line of its own and is left as edited.)
+            data["loss_of_pay_before_edit"] = data.get("loss_of_pay", 0)
+            data["loss_of_pay"] = 0.0
+            data["lop_reflected_in_basic"] = False
     data["total_deductions"] = totals["total_deductions"]
     data["deduction_before_cap"] = totals["deduction_before_cap"]
     data["uncovered_deduction"] = totals["uncovered_deduction"]
@@ -468,12 +556,14 @@ def parse_amounts(post, lines):
     fine.
     """
     amounts = {}
-    for line in lines:
-        raw = post.get(f"amount:{line['key']}")
+    # The salary adjustment is not a line, but its amount is posted like one.
+    keys = [line["key"] for line in lines] + [ADJ_KEY]
+    for key in keys:
+        raw = post.get(f"amount:{key}")
         if raw in (None, ""):
             continue
         try:
-            amounts[line["key"]] = round(float(raw), 2)
+            amounts[key] = round(float(raw), 2)
         except (TypeError, ValueError):
             continue
     return amounts
@@ -711,7 +801,8 @@ def taxable_after(payslip, pairs, amounts, removed, new_line=None):
             taxable -= new
     if new_line and new_line["section"] == "earning":
         taxable += float(new_line["amount"] or 0)
-    taxable -= taxable_loss_of_pay(payslip)
+    if not any(line["key"] == LOP_KEY for line, _component in pairs):
+        taxable -= taxable_loss_of_pay(payslip)
     return max(0.0, taxable)
 
 

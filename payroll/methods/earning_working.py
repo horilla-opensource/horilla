@@ -72,7 +72,9 @@ def _formula(component, context):
     expression = (getattr(component, "formula", "") or "").strip()
     if not expression:
         return None
-    names = sorted(set(re.findall(r"[A-Z_][A-Z0-9_]*", expression.upper())) - FORMULA_CALLS)
+    names = sorted(
+        set(re.findall(r"[A-Z_][A-Z0-9_]*", expression.upper())) - FORMULA_CALLS
+    )
     return {
         "steps": [(name, _num(context[name])) for name in names if name in context],
         "equation": expression,
@@ -105,10 +107,13 @@ def _working_for(component, row, amount, context):
         if abs(configured - float(amount)) > 0.005:
             working["steps"].append((_("For this period"), _num(amount)))
             working["notes"].append(
-                _("Prorated: %(how)s.") % {"how": str(proration_summary(component)).lower()}
+                _("Prorated: %(how)s.")
+                % {"how": str(proration_summary(component)).lower()}
             )
     else:
-        derived = _percent_of(component, context, amount) or _formula(component, context)
+        derived = _percent_of(component, context, amount) or _formula(
+            component, context
+        )
         if derived:
             working["steps"] = derived["steps"]
             working["equation"] = derived["equation"]
@@ -147,15 +152,19 @@ def earning_workings(payslip):
     if basic_component is None:
         working["manual"] = False
         working["rule"] = _("The contract wage")
-        contract = (
-            payslip.employee_id.contract_set.filter(contract_status="active").first()
-        )
+        contract = payslip.employee_id.contract_set.filter(
+            contract_status="active"
+        ).first()
         if contract is not None and getattr(contract, "wage", None):
             working["steps"].append((_("Contract wage"), _num(contract.wage)))
     working["notes"].append(
-        _("Worked out by the structure's basic pay component (CTC Down), not the contract wage.")
+        _(
+            "Worked out by the structure's basic pay component (CTC Down), not the contract wage."
+        )
         if basic_component is not None
-        else _("The contract wage under Gross Up; under CTC Down the structure's basic pay component works it out from the CTC instead.")
+        else _(
+            "The contract wage under Gross Up; under CTC Down the structure's basic pay component works it out from the CTC instead."
+        )
     )
     if in_basic:
         working["steps"].append((_("Before loss of pay"), _num(basic + lop)))
@@ -167,7 +176,9 @@ def earning_workings(payslip):
 
     for row in data.get("allowances") or []:
         amount = float(row.get("amount") or 0)
-        entry = _working_for(allowances.get(row.get("allowance_id")), row, amount, context)
+        entry = _working_for(
+            allowances.get(row.get("allowance_id")), row, amount, context
+        )
         entry["taxable"] = bool(row.get("is_taxable", True))
         entry["notes"].append(
             _("Counts toward taxable gross.") if entry["taxable"] else _("Not taxable.")
@@ -226,7 +237,9 @@ def _income_tax_working(payslip, amount):
         (_("Yearly income"), _num(tax["yearly_income"])),
     ]
     if breakdown.get("standard_deduction"):
-        steps.append((_("Taxable yearly income"), _num(breakdown.get("taxable_income"))))
+        steps.append(
+            (_("Taxable yearly income"), _num(breakdown.get("taxable_income")))
+        )
     steps.append((_("Tax for the year"), _num(tax["yearly_tax"])))
     if tax.get("method") == "periods":
         divide = f"÷ {tax.get('periods')}"
@@ -259,10 +272,14 @@ def deduction_workings(payslip):
             component = components.get(row.get("deduction_id"))
             entry = _working_for(component, row, amount, context)
             entry["notes"].append(note)
-            employer = getattr(component, "employer_rate", 0) if component is not None else 0
+            employer = (
+                getattr(component, "employer_rate", 0) if component is not None else 0
+            )
             if employer:
                 entry["notes"].append(
-                    _("The employer adds %(rate)s%%; that share is not taken from this payslip.")
+                    _(
+                        "The employer adds %(rate)s%%; that share is not taken from this payslip."
+                    )
                     % {"rate": f"{float(employer):g}"}
                 )
             workings[working_key(row)] = entry

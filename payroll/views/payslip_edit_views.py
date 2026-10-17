@@ -32,6 +32,7 @@ from payroll.methods.payslip_edit import (
     parse_amounts,
     parse_new_line,
     recompute_dependents,
+    salary_adjustments,
     tax_explanation,
     taxable_loss_of_pay,
 )
@@ -124,9 +125,15 @@ def edit_payslip_components(request, payslip_id):
         {
             "payslip": payslip,
             "lines": lines,
+            "adjustments": salary_adjustments(payslip),
             # Loss of pay that comes off taxable gross as well: only when it is
             # a separate pre-tax deduction rather than already inside basic.
-            "taxable_lop": taxable_loss_of_pay(payslip),
+            # (None when loss of pay is a line of its own: that line is counted with the pre-tax ones)
+            "taxable_lop": (
+                0.0
+                if any(line["key"] == "lop" for line in lines)
+                else taxable_loss_of_pay(payslip)
+            ),
             "tax_detail_html": _tax_detail_html(
                 request,
                 tax_explanation(

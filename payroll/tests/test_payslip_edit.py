@@ -774,6 +774,163 @@ class WhatALineIsTests(DerivedLinesFixture):
         self.assertEqual(line["depends_on"], [])
 
 
+class SeparateLossOfPayTests(Fixture):
+    """Loss of pay is a line on the edit form only when it did not come off basic pay."""
+
+    def make_separate(self, amount=500.0):
+        data = dict(self.payslip.pay_head_data)
+        data.update({"loss_of_pay": amount, "lop_reflected_in_basic": False})
+        self.payslip.pay_head_data = data
+        self.payslip.save()
+
+    def test_a_separate_loss_of_pay_is_a_deduction_line(self):
+        self.make_separate(500.0)
+        line = self.lines_by_title()["Loss Of Pay"]
+        self.assertEqual(
+            (line["section"], line["amount"], line["removable"]),
+            ("deduction", 500.0, True),
+        )
+        self.assertIn("not off basic pay", line["basis"])
+
+    def test_none_is_offered_once_it_has_come_off_basic_pay(self):
+        data = dict(self.payslip.pay_head_data)
+        data.update({"loss_of_pay": 500.0, "lop_reflected_in_basic": True})
+        self.payslip.pay_head_data = data
+        self.payslip.save()
+        self.assertNotIn("Loss Of Pay", self.lines_by_title())
+
+    def test_none_is_offered_when_there_is_no_loss_of_pay(self):
+        self.make_separate(0.0)
+        self.assertNotIn("Loss Of Pay", self.lines_by_title())
+
+    def test_the_totals_count_it_and_a_changed_amount_is_saved(self):
+        self.make_separate(500.0)
+        lines = payslip_edit.editable_lines(self.payslip)
+        key = next(l["key"] for l in lines if l["title"] == "Loss Of Pay")
+        before = payslip_edit.preview_totals(lines, {}, set())["total_deductions"]
+        after = payslip_edit.preview_totals(lines, {key: 800.0}, set())[
+            "total_deductions"
+        ]
+        self.assertAlmostEqual(after - before, 300.0, places=2)
+        payslip_edit.apply_edits(self.payslip, {key: 800.0}, set())
+        self.payslip.refresh_from_db()
+        self.assertEqual(self.payslip.pay_head_data["loss_of_pay"], 800.0)
+
+    def test_leaving_it_off_waives_it(self):
+        self.make_separate(500.0)
+        lines = payslip_edit.editable_lines(self.payslip)
+        key = next(l["key"] for l in lines if l["title"] == "Loss Of Pay")
+        payslip_edit.apply_edits(self.payslip, {}, {key})
+        self.payslip.refresh_from_db()
+        self.assertEqual(self.payslip.pay_head_data["loss_of_pay"], 0.0)
+
+    def test_editing_basic_pay_does_not_wipe_a_separate_loss_of_pay(self):
+        self.make_separate(500.0)
+        payslip_edit.apply_edits(
+            self.payslip, {"basic": (self.payslip.basic_pay or 0) + 1000.0}, set()
+        )
+        self.payslip.refresh_from_db()
+        self.assertEqual(self.payslip.pay_head_data["loss_of_pay"], 500.0)
+
+    def inside_basic(self, lop=190.67, days=1.0):
+        data = dict(self.payslip.pay_head_data)
+        data.update(
+            {"loss_of_pay": lop, "lop_reflected_in_basic": True, "unpaid_days": days}
+        )
+        self.payslip.pay_head_data = data
+        self.payslip.save()
+        return float(data.get("basic_pay", self.payslip.basic_pay) or 0)
+
+    def test_a_loss_of_pay_inside_basic_is_an_editable_salary_adjustment_not_a_line(
+        self,
+    ):
+        basic = self.inside_basic()
+        adjustments = payslip_edit.salary_adjustments(self.payslip)
+        self.assertEqual(len(adjustments), 1)
+        self.assertEqual(
+            (adjustments[0]["key"], adjustments[0]["days"], adjustments[0]["amount"]),
+            ("lop_adj", 1.0, 190.67),
+        )
+        self.assertAlmostEqual(adjustments[0]["before_basic"], basic + 190.67, places=2)
+        self.assertNotIn(
+            "Loss Of Pay", self.lines_by_title()
+        )  # not a line of the totals as well
+        html = self.client.get(
+            reverse("edit-payslip-components", args=[self.payslip.pk])
+        ).content.decode()
+        self.assertIn("Salary Adjustments", html)
+        self.assertIn("Deducted from Basic Pay", html)
+        self.assertIn('name="amount:lop_adj"', html)
+        self.assertIn("data-pe-adj-amount", html)
+        self.assertIn('<div class="pe__adj" data-pe-adj>', html)
+
+    def test_no_salary_adjustments_section_without_one(self):
+        self.assertEqual(payslip_edit.salary_adjustments(self.payslip), [])
+        html = self.client.get(
+            reverse("edit-payslip-components", args=[self.payslip.pk])
+        ).content.decode()
+        self.assertNotIn('<div class="pe__adj" data-pe-adj>', html)
+
+    def test_changing_the_adjustment_moves_basic_pay_the_other_way(self):
+        basic = self.inside_basic(190.67)
+        before = basic + 190.67
+        post = {"lop_adj": 100.0, "basic": round(before - 100.0, 2)}
+        payslip_edit.apply_edits(self.payslip, post, set())
+        self.payslip.refresh_from_db()
+        self.assertEqual(self.payslip.pay_head_data["loss_of_pay"], 100.0)
+        self.assertTrue(self.payslip.pay_head_data["lop_reflected_in_basic"])
+        self.assertFalse(self.payslip.pay_head_data.get("basic_edited"))
+        self.assertAlmostEqual(self.payslip.basic_pay, before - 100.0, places=2)
+
+    def test_the_server_works_basic_out_from_the_adjustment_when_basic_is_not_sent(
+        self,
+    ):
+        basic = self.inside_basic(190.67)
+        payslip_edit.apply_edits(self.payslip, {"lop_adj": 0.0}, set())
+        self.payslip.refresh_from_db()
+        self.assertAlmostEqual(self.payslip.basic_pay, basic + 190.67, places=2)
+        self.assertEqual(self.payslip.pay_head_data["loss_of_pay"], 0.0)
+
+    def test_the_adjustment_cannot_exceed_what_basic_was(self):
+        basic = self.inside_basic(190.67)
+        payslip_edit.apply_edits(self.payslip, {"lop_adj": 10**9}, set())
+        self.payslip.refresh_from_db()
+        self.assertGreaterEqual(self.payslip.basic_pay, 0)
+        self.assertAlmostEqual(
+            self.payslip.pay_head_data["loss_of_pay"], basic + 190.67, places=2
+        )
+
+    def test_typing_over_basic_pay_retires_the_adjustment(self):
+        basic = self.inside_basic(190.67)
+        # the adjustment input is disabled on the form once basic is typed over, so it is not posted
+        payslip_edit.apply_edits(self.payslip, {"basic": basic + 500.0}, set())
+        self.payslip.refresh_from_db()
+        self.assertEqual(self.payslip.pay_head_data["loss_of_pay"], 0.0)
+        self.assertFalse(self.payslip.pay_head_data["lop_reflected_in_basic"])
+        self.assertTrue(self.payslip.pay_head_data["basic_edited"])
+
+    def test_the_form_goes_quiet_when_basic_is_typed_over(self):
+        self.inside_basic()
+        html = self.client.get(
+            reverse("edit-payslip-components", args=[self.payslip.pk])
+        ).content.decode()
+        self.assertIn('adjBlock.classList.add("is-off")', html)
+        self.assertIn("adjAmount.disabled = true", html)
+        self.assertIn("Basic Pay was changed by hand", html)
+
+    def test_a_separate_loss_of_pay_is_a_line_and_not_an_adjustment(self):
+        self.make_separate(500.0)
+        self.assertEqual(payslip_edit.salary_adjustments(self.payslip), [])
+
+    def test_the_form_shows_the_line(self):
+        self.make_separate(500.0)
+        response = self.client.get(
+            reverse("edit-payslip-components", args=[self.payslip.pk])
+        )
+        self.assertContains(response, "Loss Of Pay")
+        self.assertContains(response, "Taken separately, not off basic pay")
+
+
 class EarningWorkingTests(DerivedLinesFixture):
     """Each earning on the payslip can say how it was worked out."""
 
