@@ -59,7 +59,7 @@
         <div style="flex:1 1 auto;min-width:0;" hx-get="{% url 'payslip-run-navbar' batch.pk %}" hx-trigger="load"></div>
         {% if batch.status == "draft" and perms.payroll.add_payslip and perms.payroll.delete_payslip %}
         <form method="post" action="{% url 'payroll-batch-reopen' batch.pk %}"
-              onsubmit="return confirm('{% trans "Go back to Check the inputs? The draft payslips of this run are discarded and made again when you generate." %}');">
+              onsubmit="return confirm('{% trans "Go back to Review & Regularize? The draft payslips of this run are discarded and made again when you generate." %}');">
           {% csrf_token %}
           <button type="submit" class="pb__btn"
                   title="{% trans 'Fix attendance or contracts, then generate again' %}">
@@ -113,10 +113,12 @@
       </div>
     </div>
 
-    {% if messages %}
-      {% for message in messages %}
-      <div class="oh-alert oh-alert--animated {{ message.tags }}">{{ message }}</div>
-      {% endfor %}
+    {% if messages and request.META.HTTP_HX_REQUEST %}
+      <div class="oh-alert-container">
+        {% for message in messages %}
+        <div class="oh-alert oh-alert--animated {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
     {% endif %}
 
     {% if not batch.is_finished %}

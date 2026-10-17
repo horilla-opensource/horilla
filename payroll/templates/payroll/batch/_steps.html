@@ -6,14 +6,14 @@ The three steps, with the current one marked. `step` is 1, 2 or 3.
   <div class="pb__step {% if step == 1 %}pb__step--on{% elif step > 1 %}pb__step--done{% endif %}" role="listitem"{% if step == 1 %} aria-current="step"{% endif %}>
     <span class="pb__step-num">{% if step > 1 %}&check;{% else %}1{% endif %}</span>
     <div class="pb__step-text">
-      <div class="pb__step-title">{% trans "Who is in it" %}</div>
+      <div class="pb__step-title">{% trans "Select Employees" %}</div>
       <div class="pb__step-sub">{% trans "Pick the period and the people" %}</div>
     </div>
   </div>
   <div class="pb__step {% if step == 2 %}pb__step--on{% elif step > 2 %}pb__step--done{% endif %}" role="listitem"{% if step == 2 %} aria-current="step"{% endif %}>
     <span class="pb__step-num">{% if step > 2 %}&check;{% else %}2{% endif %}</span>
     <div class="pb__step-text">
-      <div class="pb__step-title">{% trans "Check the inputs" %}</div>
+      <div class="pb__step-title">{% trans "Review & Regularize" %}</div>
       <div class="pb__step-sub">{% trans "Review hours and fix problems" %}</div>
     </div>
   </div>

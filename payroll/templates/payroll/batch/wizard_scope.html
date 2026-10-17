@@ -14,10 +14,12 @@
 
     {% include "payroll/batch/_steps.html" with step=step %}
 
-    {% if messages %}
-      {% for message in messages %}
-      <div class="oh-alert oh-alert--animated {{ message.tags }}">{{ message }}</div>
-      {% endfor %}
+    {% if messages and request.META.HTTP_HX_REQUEST %}
+      <div class="oh-alert-container">
+        {% for message in messages %}
+        <div class="oh-alert oh-alert--animated {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
     {% endif %}
 
     <form method="post" x-data="{ scope: '{{ form.scope.value|default:'all' }}' }">
@@ -61,7 +63,7 @@
       </div>
 
       <div class="pb__panel mb-3">
-        <div class="pb__panel-head">{% trans "Who is in it" %}</div>
+        <div class="pb__panel-head">{% trans "Select Employees" %}</div>
         <div style="padding:1rem;">
           <div class="pb__choices">
             {% for radio in form.scope %}
@@ -103,7 +105,7 @@
       <div class="pb__actions">
         <a href="{% url 'payroll-batch-home' %}" class="pb__btn">{% trans "Cancel" %}</a>
         <button type="submit" class="oh-btn oh-btn--secondary">
-          {% trans "Check the inputs" %}
+          {% trans "Review & Regularize" %}
           <ion-icon name="arrow-forward-outline" class="ms-1"></ion-icon>
         </button>
       </div>

@@ -18,10 +18,12 @@
       </div>
     </div>
 
-    {% if messages %}
-      {% for message in messages %}
-      <div class="oh-alert oh-alert--animated {{ message.tags }}">{{ message }}</div>
-      {% endfor %}
+    {% if messages and request.META.HTTP_HX_REQUEST %}
+      <div class="oh-alert-container">
+        {% for message in messages %}
+        <div class="oh-alert oh-alert--animated {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
     {% endif %}
 
     <form method="post">
