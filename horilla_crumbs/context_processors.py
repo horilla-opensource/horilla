@@ -7,6 +7,7 @@ from django.apps import apps
 from django.conf import settings
 from django.shortcuts import redirect
 from django.urls import Resolver404, path, resolve, reverse
+from django.utils.translation import get_language
 from django.utils.translation import gettext as _trans
 from django.utils.translation import gettext_lazy as _
 
@@ -766,6 +767,11 @@ def breadcrumbs(request):
     Active breadcrumbs context processor.
     """
     try:
+        current_language = get_language()
+        if request.session.get("breadcrumbs_lang") != current_language:
+            request.session.pop("breadcrumbs", None)
+        request.session["breadcrumbs_lang"] = current_language
+
         if is_asset_request(request):
             return {"breadcrumbs": request.session.get("breadcrumbs", [])}
 
