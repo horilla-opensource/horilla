@@ -317,24 +317,29 @@ def payroll_calculation(employee, start_date, end_date, month_summary=None):
     # BASIC, a deduction based on basic pay, and the balance (which is worked
     # out from CTC less this cut, or it would simply win the money back).
     # Only where the LOP does not itself depend on gross, which includes basic.
-    kwargs["basic_lop_reduction"] = (
-        float(loss_of_pay)
-        if (
-            # Only when the package is stated on the contract. When the wage is
-            # the pot being divided, the loss of pay has already come off it
-            # (compute_salary_on_period reduces the wage), so cutting basic as
-            # well would take it twice.
-            #
-            # The same goes for a stated CTC on a contract that also holds a
-            # wage: the package was prorated by the wage's own ratio above, and
-            # that ratio already carries the loss of pay.
-            (lop_off_basic or (ctc_stated and not pot_prorated_by_wage))
-            and basic_source == BASIC_FROM_COMPONENT
-            and contract.deduct_leave_from_basic_pay
-            and not basic_pay_details.get("lop_from_gross")
-        )
-        else 0.0
+    #
+    # Whether the cut applies is a yes/no kept apart from its size. The size can
+    # still change below -- under CTC Down the loss of pay is worked out again
+    # from the basic the structure defines -- and a contract with a stated CTC
+    # and no wage starts from a loss of pay of zero (it is a share of a wage that
+    # is not there). Reading "is the cut non-zero?" back off the size lost the
+    # answer in exactly that case, so such a contract was left with its basic
+    # whole and the loss of pay taken off separately, whatever its toggle said.
+    basic_cut_applies = bool(
+        # Only when the package is stated on the contract. When the wage is
+        # the pot being divided, the loss of pay has already come off it
+        # (compute_salary_on_period reduces the wage), so cutting basic as
+        # well would take it twice.
+        #
+        # The same goes for a stated CTC on a contract that also holds a
+        # wage: the package was prorated by the wage's own ratio above, and
+        # that ratio already carries the loss of pay.
+        (lop_off_basic or (ctc_stated and not pot_prorated_by_wage))
+        and basic_source == BASIC_FROM_COMPONENT
+        and contract.deduct_leave_from_basic_pay
+        and not basic_pay_details.get("lop_from_gross")
     )
+    kwargs["basic_lop_reduction"] = float(loss_of_pay) if basic_cut_applies else 0.0
     if structure_mode == "ctc_down":
         # CTC is the whole cost to the employer, so the balance earning needs to
         # know which employer contributions are coming. See employer_cost.py.
@@ -373,7 +378,7 @@ def payroll_calculation(employee, start_date, end_date, month_summary=None):
         loss_of_pay_amount = 0 if contract.deduct_leave_from_basic_pay else loss_of_pay
         component_context["LOP"] = loss_of_pay
         kwargs["loss_of_pay_amount"] = loss_of_pay_amount
-        if kwargs["basic_lop_reduction"]:
+        if basic_cut_applies:
             kwargs["basic_lop_reduction"] = float(loss_of_pay)
 
     # basic pay will be basic_pay = basic_pay - update_compensation_amount
