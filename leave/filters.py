@@ -352,19 +352,23 @@ class LeaveRequestFilter(HorillaFilterSet):
         today = datetime.today()
 
         today_leave_requests = queryset.filter(
-            Q(start_date__lte=today) & Q(end_date__gte=today) & Q(status="approved")
+            Q(start_date__lte=today)
+            & Q(end_date__gte=today)
+            & Q(status__in=["approved", "cancel_requested"])
         )
         start_of_week = today - timedelta(days=today.weekday())
         end_of_week = start_of_week + timedelta(days=6)
         weekly_leave_requests = queryset.filter(
-            status="approved", start_date__lte=end_of_week, end_date__gte=start_of_week
+            status__in=["approved", "cancel_requested"],
+            start_date__lte=end_of_week,
+            end_date__gte=start_of_week,
         )
         start_of_month = today.replace(day=1)
         end_of_month = start_of_month.replace(day=28) + timedelta(days=4)
         if end_of_month.month != today.month:
             end_of_month = end_of_month - timedelta(days=end_of_month.day)
         monthly_leave_requests = queryset.filter(
-            status="approved",
+            status__in=["approved", "cancel_requested"],
             start_date__lte=end_of_month,
             end_date__gte=start_of_month,
         )
@@ -372,7 +376,7 @@ class LeaveRequestFilter(HorillaFilterSet):
         end_of_year = today.replace(month=12, day=31)
         yearly_leave_requests = (
             queryset.filter(
-                status="approved",
+                status__in=["approved", "cancel_requested"],
                 start_date__lte=end_of_year,
                 end_date__gte=start_of_year,
             )

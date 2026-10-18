@@ -244,7 +244,7 @@ def batch_delete(request, batch_id):
 @permission_required("payroll.add_payslip")
 def batch_reopen(request, batch_id):
     """
-    Send a draft run back to "Check the inputs", to fix what it was built on.
+    Send a draft run back to "Review & Regularize", to fix what it was built on.
 
     A draft is only worth keeping while it is right. When it turns out wrong
     because of what it read -- attendance that needs regularising, a contract
@@ -288,7 +288,7 @@ def batch_reopen(request, batch_id):
     messages.info(
         request,
         _(
-            "Back at Check the inputs. The draft payslips were discarded; fix "
+            "Back at Review & Regularize. The draft payslips were discarded; fix "
             "what needs fixing and generate again."
         ),
     )

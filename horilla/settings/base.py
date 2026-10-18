@@ -102,6 +102,7 @@ INSTALLED_APPS = [
     "horilla_scim",
     "horilla_dbtemplate",
     "horilla_tour",
+    "master_import",
 ]
 
 # ========================================

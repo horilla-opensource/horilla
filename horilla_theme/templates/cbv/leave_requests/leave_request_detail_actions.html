@@ -16,7 +16,7 @@
             hx-target="#penaltyModalBody"
             hx-get="{% url 'leave-cut-penalty' instance.id %}"
             type="button"
-            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            class="oh-btn oh-btn--warning px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
             title="{% trans 'Penalty' %}"
         >
             <ion-icon name="information-circle-outline"></ion-icon>
@@ -33,6 +33,34 @@
         </button>
     {% endif %}
 
+    {% if instance.status == 'cancel_requested' %}
+        {# Approve / Reject Cancellation Buttons #}
+        {% if can_change or can_manage or leave_manager %}
+            <a
+                href="#"
+                hx-post="{% url 'leave-cancellation-approve' instance.id %}"
+                hx-swap="none"
+                hx-confirm="{% trans 'Do you really want to approve this cancellation request?' %}"
+                title="{% trans 'Approve Cancellation' %}"
+                class="oh-btn oh-btn--success px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            >
+                <ion-icon name="checkmark-outline"></ion-icon>
+                {% trans "Approve Cancellation" %}
+            </a>
+            <a
+                href="#"
+                data-toggle="oh-modal-toggle"
+                data-target="#rejectModal"
+                hx-get="{% url 'leave-cancellation-reject' instance.id %}"
+                hx-target="#rejectForm"
+                title="{% trans 'Reject Cancellation' %}"
+                class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            >
+                <ion-icon name="close-circle-outline"></ion-icon>
+                {% trans "Reject Cancellation" %}
+            </a>
+        {% endif %}
+    {% else %}
     {# Approve Button #}
     {% if instance.is_approved and instance.status == 'requested' and can_change or can_manage or leave_manager %}
         <a
@@ -62,19 +90,30 @@
     {% endif %}
 
     {# Reject Button #}
-    {% if instance.status != 'rejected' and instance.end_date >= current_date and can_change or can_manage or leave_manager %}
-        <a
-            type="submit"
-            data-toggle="oh-modal-toggle"
-            data-target="#rejectModal"
-            hx-get="{% url 'request-cancel' instance.id %}"
-            hx-target="#rejectForm"
-            title="{% trans 'Reject' %}"
-            class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
-        >
-            <ion-icon name="close-circle-outline"></ion-icon>
-            {% trans "Reject" %}
-        </a>
+    {% if can_change or can_manage or leave_manager %}
+        {% if instance.status == 'requested' or instance.status == 'approved' and instance.end_date >= current_date %}
+            <a
+                type="submit"
+                data-toggle="oh-modal-toggle"
+                data-target="#rejectModal"
+                hx-get="{% url 'request-cancel' instance.id %}"
+                hx-target="#rejectForm"
+                title="{% trans 'Reject' %}"
+                class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+            >
+                <ion-icon name="close-circle-outline"></ion-icon>
+                {% trans "Reject" %}
+            </a>
+        {% else %}
+            <button
+                class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+                title="{% trans 'Reject' %}"
+                disabled
+            >
+                <ion-icon name="close-circle-outline"></ion-icon>
+                {% trans "Reject" %}
+            </button>
+        {% endif %}
     {% else %}
         <button
             class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
@@ -84,6 +123,8 @@
             <ion-icon name="close-circle-outline"></ion-icon>
             {% trans "Reject" %}
         </button>
+    {% endif %}
+
     {% endif %}
 
     {# Edit Button #}

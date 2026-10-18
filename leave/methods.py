@@ -198,3 +198,108 @@ def parse_excel_date(value):
 
     # If nothing matches, return None (caller should handle error)
     return None
+
+
+def request_leave_cancellation(leave_request_id, reason, employee):
+    """
+    Move an approved leave to "cancel_requested". The leave stays in force
+    until a manager decides on the cancellation.
+
+    The row is locked so two submissions can't both pass the status check.
+    Returns (leave_request, error_message); error_message is None on success.
+    """
+    from django.db import transaction
+    from django.utils.translation import gettext as _
+
+    from leave.models import LeaveRequest, LeaverequestComment
+
+    with transaction.atomic():
+        leave_request = (
+            LeaveRequest._base_manager.select_for_update()
+            .filter(id=leave_request_id)
+            .first()
+        )
+        if leave_request is None:
+            return None, _("Leave request not found.")
+        if leave_request.status == "cancel_requested":
+            return leave_request, _(
+                "A cancellation request is already pending for this leave."
+            )
+        if leave_request.cancellation_requested:
+            return leave_request, _(
+                "A cancellation has already been requested for this leave."
+            )
+        if leave_request.status != "approved" or leave_request.end_date < date.today():
+            return leave_request, _("You can't cancel this leave request.")
+        leave_request.cancellation_requested = True
+        leave_request.reject_reason = reason
+        leave_request.status = "cancel_requested"
+        leave_request.save()
+        LeaverequestComment.objects.create(
+            request_id=leave_request,
+            employee_id=employee,
+            comment=_("Cancellation requested: %(reason)s") % {"reason": reason},
+        )
+    return leave_request, None
+
+
+def decide_leave_cancellation(leave_request_id, approve, employee, reason=""):
+    """
+    Approve or reject a pending cancellation request.
+
+    Approve: the leave becomes "cancelled" and its approved days go back to the
+    employee's balance (the same refund a rejection makes). Reject: the leave
+    returns to "approved", dates and allocation untouched. Locked rows make
+    concurrent decisions apply only once.
+    Returns (leave_request, error_message); error_message is None on success.
+    """
+    from django.db import transaction
+    from django.utils.translation import gettext as _
+
+    from leave.models import AvailableLeave, LeaveRequest, LeaverequestComment
+
+    with transaction.atomic():
+        leave_request = (
+            LeaveRequest._base_manager.select_for_update()
+            .filter(id=leave_request_id)
+            .first()
+        )
+        if leave_request is None:
+            return None, _("Leave request not found.")
+        if leave_request.status != "cancel_requested":
+            return leave_request, _(
+                "This leave request has no pending cancellation request."
+            )
+        if approve:
+            available_leave = (
+                AvailableLeave._base_manager.select_for_update()
+                .filter(
+                    leave_type_id=leave_request.leave_type_id,
+                    employee_id=leave_request.employee_id,
+                )
+                .first()
+            )
+            if available_leave is None:
+                return leave_request, _(
+                    "No available leave record found for this employee and leave type."
+                )
+            available_leave.available_days += leave_request.approved_available_days
+            available_leave.carryforward_days += (
+                leave_request.approved_carryforward_days
+            )
+            available_leave.save()
+            leave_request.approved_available_days = 0
+            leave_request.approved_carryforward_days = 0
+            leave_request.status = "cancelled"
+            comment_text = _("Cancellation approved")
+        else:
+            leave_request.status = "approved"
+            leave_request.reject_reason = ""
+            comment_text = _("Cancellation rejected")
+        if reason:
+            comment_text = f"{comment_text}: {reason}"
+        leave_request.save()
+        LeaverequestComment.objects.create(
+            request_id=leave_request, employee_id=employee, comment=comment_text
+        )
+    return leave_request, None

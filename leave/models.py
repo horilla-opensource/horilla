@@ -151,9 +151,15 @@ ACCRUAL_PLAN = [("job_position", _("Job Position")), ("job_role", _("Job Role"))
 LEAVE_STATUS = (
     ("requested", _("Requested")),
     ("approved", _("Approved")),
+    ("cancel_requested", _("Cancel Requested")),
     ("cancelled", _("Cancelled")),
     ("rejected", _("Rejected")),
 )
+
+# An approved leave stays in force (balance deducted, attendance marked, on
+# the calendar) until its cancellation is approved, so "Cancel Requested"
+# counts wherever "approved" does.
+LEAVE_IN_EFFECT_STATUSES = ["approved", "cancel_requested"]
 
 LEAVE_ALLOCATION_STATUS = (
     ("requested", _("Requested")),
@@ -801,7 +807,7 @@ class AvailableLeave(HorillaModel):
             leave_type_id=self.leave_type_id,
             employee_id=self.employee_id,
             start_date__gte=self.assigned_date,  # Considering leaves taken after assigned date
-            status="approved",
+            status__in=["approved", "cancel_requested"],
         ).aggregate(total_sum=Sum("requested_days"))
 
         return leave_taken["total_sum"] if leave_taken["total_sum"] else 0
@@ -867,7 +873,7 @@ class AvailableLeave(HorillaModel):
             leave_type_id=self.leave_type_id,
             employee_id=self.employee_id,
             start_date__gte=self.assigned_date,
-            status="approved",
+            status__in=["approved", "cancel_requested"],
         ):
             approved_snapshot = (
                 request.history.filter(status="approved")
@@ -1184,6 +1190,15 @@ class LeaveRequest(HorillaModel):
         default="requested",
         verbose_name=_("Status"),
     )
+    cancellation_requested = models.BooleanField(
+        default=False,
+        editable=False,
+        verbose_name=_("Cancellation Requested"),
+        help_text=_(
+            "Set once the employee has asked to cancel this approved leave. "
+            "It stays set if the request is rejected, so it can't be asked twice."
+        ),
+    )
     requested_date = models.DateField(
         default=timezone.now, verbose_name=_("Created Date")
     )
@@ -1489,7 +1504,7 @@ class LeaveRequest(HorillaModel):
         method to change background if they are cancelled
         """
 
-        if self.status == "cancelled":
+        if self.status == "cancelled" and self.end_date >= date.today():
             return 'style="background-color: lightgrey"'
 
     def leave_requests_detail_view(self):
@@ -1580,7 +1595,9 @@ class LeaveRequest(HorillaModel):
             start_date__lte=today, end_date__gte=today, is_active=True
         )
 
-        if status is not None:
+        if isinstance(status, (list, tuple)):
+            queryset = queryset.filter(status__in=status)
+        elif status is not None:
             queryset = queryset.filter(status=status)
 
         return queryset

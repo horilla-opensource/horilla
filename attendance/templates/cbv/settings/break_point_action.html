@@ -13,4 +13,17 @@
             <ion-icon name="create-outline" role="img" class="md hydrated"></ion-icon>
         </a>
     {% endif %}
+    {% if perms.attendance.delete_attendancevalidationcondition %}
+        <button
+            type="button"
+            class="oh-btn oh-btn--danger oh-btn--sq-sm"
+            title="{% trans 'Remove' %}"
+            hx-get="{% url 'generic-delete' %}?model=attendance.attendancevalidationcondition&pk={{ instance.pk }}"
+            data-toggle="oh-modal-toggle"
+            data-target="#deleteConfirmation"
+            hx-target="#deleteConfirmationBody"
+        >
+            <ion-icon name="trash-outline" class="text-white"></ion-icon>
+        </button>
+    {% endif %}
 </div>

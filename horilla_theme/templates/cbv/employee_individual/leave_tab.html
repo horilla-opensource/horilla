@@ -2,6 +2,10 @@
 {% load i18n %}
 {% block content %}
     <style>
+    .cancel_requested--dot {
+        background-color: #8b5cf6;
+    }
+
         .cancelled--dot {
             background-color: grey;
         }
@@ -19,6 +23,11 @@
             border-left: 4px solid red !important;
             border-radius: 5px 0 0 4px;
         }
+    .status-cancel_requested {
+        border-left: 4px solid #8b5cf6 !important;
+        border-radius: 5px 0 0 4px;
+    }
+
         .status-cancelled {
             border-left: 4px solid grey !important;
             border-radius: 5px 0 0 4px;

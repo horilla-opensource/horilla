@@ -2329,13 +2329,16 @@ class HorillaFormView(FormView):
                 ]
                 for dynamic_tuple in self.dynamic_create_fields:
                     view = dynamic_tuple[1]
-                    view.display_title = "Dynamic create"
                     field = dynamic_tuple[0]
                     additional_data_fields = []
                     if len(dynamic_tuple) == 3:
                         additional_data_fields = dynamic_tuple[2]
                     key = self.request.session.session_key + "cbv" + field
                     field_instance = form.instance._meta.get_field(field)
+                    field_label = (
+                        form.fields[field].label or field_instance.verbose_name
+                    )
+                    view.display_title = _("Create %(label)s") % {"label": field_label}
                     value = form.initial.get(field, [])
 
                     form_field = forms.ChoiceField
@@ -2369,7 +2372,12 @@ class HorillaFormView(FormView):
                     queryset = form.fields[field].queryset
                     choices = [(instance.id, instance) for instance in queryset]
                     choices.insert(0, ("", "Select option"))
-                    choices.append(("dynamic_create", "Dynamic create"))
+                    choices.append(
+                        (
+                            "dynamic_create",
+                            _("Create %(label)s") % {"label": field_label},
+                        )
+                    )
                     attrs = form.fields[field].widget.attrs
                     for data_field in additional_data_fields:
 

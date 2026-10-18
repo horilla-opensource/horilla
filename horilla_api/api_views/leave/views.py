@@ -18,7 +18,11 @@ from horilla_api.api_methods.base.methods import reject_reason_from
 from horilla_api.api_methods.base.pagination import HorillaPageNumberPagination
 from horilla_api.api_serializers.leave.serializers import *
 from leave.filters import *
-from leave.methods import filter_conditional_leave_request
+from leave.methods import (
+    decide_leave_cancellation,
+    filter_conditional_leave_request,
+    request_leave_cancellation,
+)
 from leave.models import AvailableLeave, LeaveAllocationRequest, LeaveRequest, LeaveType
 from notifications.signals import notify
 
@@ -779,6 +783,11 @@ class LeaveRequestApproveAPIView(APIView):
     )
     def put(self, request, pk):
         leave_request = self.get_leave_request(pk)
+        if leave_request.status == "cancel_requested":
+            # Re-approving would deduct the days a second time.
+            raise serializers.ValidationError(
+                _("Decide on the pending cancellation request instead.")
+            )
         serializer = LeaveRequestApproveSerializer(leave_request, data=request.data)
         if serializer.is_valid():
             available_leave = serializer.validated_data.get("available_leave")
@@ -831,6 +840,10 @@ class LeaveRequestRejectAPIView(APIView):
     def put(self, request, pk):
         leave_request = self.get_leave_request(pk)
         employee_id = request.user.employee_get
+        if leave_request.status == "cancel_requested":
+            raise serializers.ValidationError(
+                _("Decide on the pending cancellation request instead.")
+            )
         if leave_request.status != "rejected":
             reason = reject_reason_from(request)
             if reason:
@@ -861,19 +874,69 @@ class LeaveRequestCancelAPIView(APIView):
             raise serializers.ValidationError(e)
 
     def put(self, request, pk):
+        """Request cancellation of an approved leave; a manager decides it."""
         leave_request = self.get_leave_request(pk)
-        if (
-            leave_request.employee_id == request.user.employee_get
-            and leave_request.status == "approved"
-        ):
-            start_date = leave_request.start_date
-            curr_date = datetime.now().date()
-            if start_date >= curr_date:
-                leave_request.status = "cancelled"
-                leave_request.save()
-                return Response(status=200)
-            raise serializers.ValidationError(_("Nothing to cancel."))
-        raise serializers.ValidationError(_("Access Denied."))
+        employee = request.user.employee_get
+        if leave_request.employee_id != employee:
+            raise serializers.ValidationError(_("Access Denied."))
+        reason = reject_reason_from(request) or ""
+        leave_request, error = request_leave_cancellation(pk, reason, employee)
+        if error:
+            raise serializers.ValidationError(error)
+        with contextlib.suppress(Exception):
+            notify.send(
+                employee,
+                recipient=employee.get_reporting_manager().employee_user_id,
+                verb=gettext_noop(
+                    "%(employee)s has requested to cancel an approved leave."
+                ),
+                verb_params={"employee": str(employee)},
+                icon="people-circle",
+                redirect=f"/leave/request-view?id={leave_request.id}",
+            )
+        return Response(status=200)
+
+
+class LeaveCancellationDecisionAPIView(APIView):
+    """Approve or reject a pending leave cancellation request."""
+
+    permission_classes = [IsAuthenticated]
+    approve = True
+
+    @approver_permission_required(
+        LeaveRequest,
+        "leave.change_leaverequest",
+        designated_approvers=_leave_condition_approvers,
+    )
+    def put(self, request, pk):
+        leave_request, error = decide_leave_cancellation(
+            pk,
+            self.approve,
+            request.user.employee_get,
+            "" if self.approve else (reject_reason_from(request) or ""),
+        )
+        if error:
+            raise serializers.ValidationError(error)
+        with contextlib.suppress(Exception):
+            notify.send(
+                request.user.employee_get,
+                recipient=leave_request.employee_id.employee_user_id,
+                verb=(
+                    gettext_noop("Your leave cancellation request has been approved.")
+                    if self.approve
+                    else gettext_noop(
+                        "Your leave cancellation request has been rejected."
+                    )
+                ),
+                icon="people-circle",
+                redirect=f"/leave/user-request-view?id={leave_request.id}",
+                api_redirect=f"/api/leave/user-request/{leave_request.id}/",
+            )
+        return Response(status=200)
+
+
+class LeaveCancellationRejectAPIView(LeaveCancellationDecisionAPIView):
+    approve = False
 
 
 class LeaveAllocationApproveAPIView(APIView):

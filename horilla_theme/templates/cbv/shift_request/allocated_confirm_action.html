@@ -32,10 +32,6 @@
                     <ion-icon name="checkmark-outline"></ion-icon>
                 </button>
             {% endif %}
-        {% else %}
-            <button class="oh-btn oh-btn--success oh-btn--sq-sm" disabled title="{% trans 'Approved' %}">
-                <ion-icon name="checkmark-outline"></ion-icon>
-            </button>
         {% endif %}
 
         {% if is_owner and not can_manage and not instance.reallocate_canceled and not instance.approved and not instance.reallocate_approved %}
@@ -45,11 +41,11 @@
                 class="oh-btn oh-btn--danger oh-btn--sq-sm"
                 title="{% trans 'Not available' %}"
             >
-                <ion-icon name="close-circle-outline"></ion-icon>
+                <ion-icon name="thumbs-down-outline"></ion-icon>
             </a>
         {% else %}
             <button class="oh-btn oh-btn--danger oh-btn--sq-sm" disabled title="{% trans 'Not available' %}">
-                <ion-icon name="close-circle-outline"></ion-icon>
+                <ion-icon name="thumbs-down-outline"></ion-icon>
             </button>
         {% endif %}
 

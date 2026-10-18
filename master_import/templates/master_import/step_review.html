@@ -1,0 +1,267 @@
+{% extends "master_import/base.html" %}
+{% load i18n %}
+
+{% block mi_body %}
+<div class="mi__card" id="mi-review"
+     data-check="{% url 'master-import-check' job.pk %}"
+     data-progress="{% url 'master-import-check-progress' job.pk %}"
+     data-edits="{% url 'master-import-edits' job.pk %}">
+  {% csrf_token %}
+  <div class="mi__card-head mi__card-head--sticky">
+    <div>
+      <div class="mi__card-title">{{ dataset.label }} &middot; {{ job.original_name }}</div>
+      <div class="mi__card-sub">{{ job.row_count }} {% trans "Rows" %} &middot; {% trans "Fix anything below, then confirm the import." %}</div>
+    </div>
+    <div class="mi__actions">
+      <a class="mi__btn" href="{% url 'master-import-map' job.pk %}">
+        <ion-icon name="arrow-back-outline"></ion-icon>{% trans "Back to Matching" %}
+      </a>
+      <button type="button" class="mi__btn" id="mi-save" style="display:none;">
+        <ion-icon name="save-outline"></ion-icon><span>{% trans "Save Changes & Recheck" %}</span>
+      </button>
+      <button type="button" class="mi__btn mi__btn--primary" id="mi-import" style="display:none;"></button>
+    </div>
+  </div>
+
+  <div class="mi__body" id="mi-progress">
+    <div class="mi__progress-line"><span id="mi-stage">{% trans "Reading Your File…" %}</span><span id="mi-percent">0%</span></div>
+    <div class="mi__bar"><div class="mi__bar-fill" id="mi-bar" style="width:0%"></div></div>
+  </div>
+  <div class="mi__body" id="mi-body" style="display:none;"></div>
+</div>
+
+<div class="mi__modal" id="mi-confirm" style="display:none;" role="dialog" aria-modal="true">
+  <div class="mi__modal-box" style="width:min(96vw,440px);">
+    <div class="mi__body">
+      <div class="mi__card-title" id="mi-confirm-title"></div>
+      <div class="mi__card-sub" id="mi-confirm-text" style="margin:.35rem 0 1.1rem;"></div>
+      <div id="mi-run-progress" style="display:none;margin-bottom:.4rem;">
+        <div class="mi__progress-line"><span id="mi-run-stage">{% trans "Importing…" %}</span><span id="mi-run-percent">0%</span></div>
+        <div class="mi__bar"><div class="mi__bar-fill" id="mi-run-bar" style="width:0%"></div></div>
+        <div class="mi__card-sub" style="margin-top:.5rem;">{% trans "Please keep this page open." %}</div>
+      </div>
+      <form data-settings-native="true" hx-boost="false" id="mi-run-form" method="post" action="{% url 'master-import-run' job.pk %}" style="display:flex;gap:.6rem;justify-content:flex-end;">
+        {% csrf_token %}
+        <button type="button" class="mi__btn" id="mi-confirm-cancel">{% trans "Cancel" %}</button>
+        <button type="submit" class="mi__btn mi__btn--primary">{% trans "Yes, import" %}</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var root = document.getElementById("mi-review");
+  var bar = document.getElementById("mi-bar");
+  var percentEl = document.getElementById("mi-percent");
+  var stageEl = document.getElementById("mi-stage");
+  var progress = document.getElementById("mi-progress");
+  var body = document.getElementById("mi-body");
+  var saveBtn = document.getElementById("mi-save");
+  var importBtn = document.getElementById("mi-import");
+  var confirmBox = document.getElementById("mi-confirm");
+  var csrf = root.querySelector("[name=csrfmiddlewaretoken]").value;
+  var edits = {};
+  var skips = {};   // row -> true/false, only where it differs from what was last checked
+  var timer = null;
+  var last = null;
+  var activeTab = null;
+
+  // Sticks just under the app's fixed header.
+  var head = root.querySelector(".mi__card-head--sticky");
+  function pin() {
+    var top = document.querySelector(".oh-main-header");
+    if (head && top) head.style.top = Math.ceil(top.getBoundingClientRect().bottom) + "px";
+  }
+  pin();
+  window.addEventListener("resize", pin);
+
+  function setProgress(p) {
+    bar.style.width = p + "%";
+    percentEl.textContent = p + "%";
+    stageEl.textContent = p < 10 ? "{% trans 'Reading Your File…' %}"
+      : p < 90 ? "{% trans 'Checking Each Row…' %}" : "{% trans 'Summarising…' %}";
+  }
+  function stopPolling() { if (timer) { clearInterval(timer); timer = null; } }
+
+  function pendingCount() {
+    var n = Object.keys(skips).length;
+    Object.keys(edits).forEach(function (r) { n += Object.keys(edits[r]).length; });
+    return n;
+  }
+  function syncButtons() {
+    var n = pendingCount();
+    saveBtn.style.display = n ? "" : "none";
+    saveBtn.querySelector("span").textContent = "{% trans 'Save Changes & Recheck' %} (" + n + ")";
+    // What was checked is what gets imported, so unsaved changes wait for a recheck:
+    // the button stays visible, shows what it would import now, and is disabled until then.
+    if (!last) { importBtn.style.display = "none"; return; }
+    var leaving = 0;   // valid records ticked to skip since the last check
+    body.querySelectorAll('[data-mi-panel="valid"] [data-skip-row]').forEach(function (b) {
+      if (b.checked) leaving += 1;
+    });
+    var count = Math.max(last.valid - leaving, 0);
+    importBtn.textContent = last.mode === "both"
+      ? "{% trans 'Import' %} " + count + " " + (count === 1 ? "{% trans 'Record' %}" : "{% trans 'Records' %}")
+      : last.mode === "update"
+      ? "{% trans 'Update' %} " + count + " " + (count === 1 ? "{% trans 'Record' %}" : "{% trans 'Records' %}")
+      : "{% trans 'Import' %} " + count + " " + (count === 1 ? "{% trans 'Valid Record' %}" : "{% trans 'Valid Records' %}");
+    importBtn.disabled = n > 0 || count === 0;
+    importBtn.title = n > 0 ? "{% trans 'Save changes & recheck first' %}" : "";
+    importBtn.style.display = last.valid || n ? "" : "none";
+  }
+
+  function runCheck() {
+    edits = {};
+    skips = {};
+    progress.style.display = "";
+    body.style.display = "none";
+    importBtn.style.display = "none";
+    saveBtn.style.display = "none";
+    setProgress(0);
+
+    timer = setInterval(function () {
+      fetch(root.dataset.progress, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then(function (r) { return r.json(); })
+        .then(function (d) { if (timer) setProgress(d.percent); })
+        .catch(function () {});
+    }, 400);
+
+    return fetch(root.dataset.check, {
+      method: "POST",
+      headers: { "X-CSRFToken": csrf, "X-Requested-With": "XMLHttpRequest" }
+    })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
+      .then(function (res) {
+        stopPolling();
+        if (!res.ok || !res.data.ok) throw new Error(res.data.error || "failed");
+        setProgress(100);
+        last = res.data;
+        body.innerHTML = res.data.html;
+        progress.style.display = "none";
+        body.style.display = "";
+        if (activeTab) showTab(activeTab);
+        syncButtons();
+      })
+      .catch(function (e) {
+        stopPolling();
+        progress.style.display = "none";
+        body.style.display = "";
+        body.innerHTML = '<div class="mi__alert mi__alert--bad">{% trans "The check could not be completed." %} ' + (e.message || "") + "</div>";
+      });
+  }
+
+  function showTab(name) {
+    activeTab = name;
+    body.querySelectorAll("[data-mi-tab]").forEach(function (t) { t.classList.toggle("mi__tab--on", t.dataset.miTab === name); });
+    body.querySelectorAll("[data-mi-panel]").forEach(function (p) { p.style.display = p.dataset.miPanel === name ? "" : "none"; });
+    body.querySelectorAll("[data-mi-actions]").forEach(function (a) { a.style.display = a.dataset.miActions === name ? "" : "none"; });
+  }
+
+  body.addEventListener("click", function (e) {
+    var tab = e.target.closest("[data-mi-tab]");
+    if (tab) showTab(tab.dataset.miTab);
+  });
+
+  // Every cell is editable; only what differs from the file is kept.
+  // Search narrows the rows of the table being looked at, by what the cells hold.
+  body.addEventListener("input", function (e) {
+    if (e.target.id !== "mi-find-rows") return;
+    var term = e.target.value.trim().toLowerCase();
+    body.querySelectorAll("[data-mi-panel] tbody tr").forEach(function (tr) {
+      if (!tr.querySelector("[data-field]")) return;
+      var text = Array.prototype.map.call(tr.querySelectorAll("[data-field]"), function (c) { return c.value; }).join(" ").toLowerCase();
+      tr.style.display = !term || text.indexOf(term) !== -1 ? "" : "none";
+    });
+  });
+
+  // Marked as it is typed, picked or cleared: input for text, change for the
+  // dropdowns and date pickers, which some browsers only report on change.
+  function onCellEdit(e) {
+    var cell = e.target.closest("[data-row][data-field]");
+    if (!cell) return;
+    var row = cell.dataset.row, field = cell.dataset.field;
+    var changed = cell.value !== cell.dataset.orig;
+    cell.classList.toggle("mi__cell--edited", changed);
+    if (changed) { (edits[row] = edits[row] || {})[field] = cell.value; }
+    else if (edits[row]) { delete edits[row][field]; if (!Object.keys(edits[row]).length) delete edits[row]; }
+    syncButtons();
+  }
+  body.addEventListener("input", onCellEdit);
+  body.addEventListener("change", onCellEdit);
+
+  // Skipping: ticking leaves a record out, un-ticking (on the Skipped tab) puts it back.
+  function setSkip(box, on) {
+    var row = box.dataset.skipRow;
+    box.checked = on;
+    var was = box.dataset.skipped === "1";
+    if (on !== was) { skips[row] = on; } else { delete skips[row]; }
+    box.closest("tr").classList.toggle("mi__row--skipping", on !== was);
+  }
+  body.addEventListener("change", function (e) {
+    var box = e.target.closest("[data-skip-row]");
+    if (!box) return;
+    setSkip(box, box.checked);
+    syncButtons();
+  });
+  body.addEventListener("click", function (e) {
+    var all = e.target.closest("[data-skip-all]");
+    if (!all) return;
+    body.querySelectorAll('[data-mi-panel="errors"] [data-skip-row]').forEach(function (b) { setSkip(b, true); });
+    syncButtons();
+  });
+
+  saveBtn.addEventListener("click", function () {
+    saveBtn.disabled = true;
+    fetch(root.dataset.edits, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRFToken": csrf, "X-Requested-With": "XMLHttpRequest" },
+      body: JSON.stringify({ edits: edits, skip: skips })
+    })
+      .then(function (r) { if (!r.ok) throw new Error("save failed"); return runCheck(); })
+      .catch(function (e) { alert(e.message); })
+      .then(function () { saveBtn.disabled = false; });
+  });
+
+  importBtn.addEventListener("click", function () {
+    if (!last) return;
+    document.getElementById("mi-confirm-title").textContent = last.mode === "both"
+      ? "{% trans 'Create or update' %} " + last.valid + " {% trans 'records?' %}"
+      : last.mode === "update"
+      ? "{% trans 'Update' %} " + last.valid + " {% trans 'existing records?' %}"
+      : "{% trans 'Import' %} " + last.valid + " {% trans 'valid records?' %}";
+    document.getElementById("mi-confirm-text").textContent = last.error_count
+      ? last.error_count + " {% trans 'rows with errors will be skipped and listed afterwards.' %}"
+      : "{% trans 'Every row in the file passed the check.' %}";
+    confirmBox.style.display = "flex";
+  });
+  document.getElementById("mi-confirm-cancel").addEventListener("click", function () { confirmBox.style.display = "none"; });
+  confirmBox.addEventListener("click", function (e) { if (e.target === confirmBox) confirmBox.style.display = "none"; });
+
+  // The import runs in the background of this page so its progress can be shown.
+  var runForm = document.getElementById("mi-run-form");
+  runForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var runBar = document.getElementById("mi-run-bar");
+    var runPercent = document.getElementById("mi-run-percent");
+    runForm.style.display = "none";
+    document.getElementById("mi-run-progress").style.display = "";
+    var poll = setInterval(function () {
+      fetch(root.dataset.progress, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then(function (r) { return r.json(); })
+        .then(function (d) { runBar.style.width = d.percent + "%"; runPercent.textContent = d.percent + "%"; })
+        .catch(function () {});
+    }, 500);
+    fetch(runForm.action, {
+      method: "POST",
+      headers: { "X-CSRFToken": csrf, "X-Requested-With": "XMLHttpRequest" }
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { clearInterval(poll); runBar.style.width = "100%"; runPercent.textContent = "100%"; miGo(d.url); })
+      .catch(function () { clearInterval(poll); window.location.reload(); });
+  });
+
+  runCheck();
+})();
+</script>
+{% endblock %}

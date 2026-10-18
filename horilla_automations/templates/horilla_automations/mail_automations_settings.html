@@ -13,6 +13,30 @@
         </p>
     </div>
 
+    <div
+        id="refreshAutomationsBanner"
+        class="mb-3 px-4 py-3 rounded-md border-2 border-[#e8a317] bg-[#fff3cd] text-sm text-[#664d03] shadow-sm items-center justify-between gap-3"
+        style="{% if refresh_pending %}display: flex;{% else %}display: none;{% endif %}"
+        role="alert"
+    >
+        <div class="flex items-center gap-2">
+            <ion-icon name="warning" style="font-size: 22px; color: #e8a317; flex-shrink: 0;"></ion-icon>
+            <span>
+                <strong class="text-base">{% trans "Refresh required" %}</strong><br>
+                {% trans "Mail automation changes will not take effect on records until you run Refresh Automations." %}
+            </span>
+        </div>
+        <button
+            type="button"
+            class="oh-btn oh-btn--secondary"
+            style="white-space: nowrap;"
+            hx-get="{% url 'refresh-automations' %}"
+            hx-target="#reloadMessages"
+        >
+            {% trans "Refresh Automations" %}
+        </button>
+    </div>
+
     <div class="border border-[#ebebeb] rounded-md overflow-hidden">
         <div hx-get="{% url 'mail-automations-nav' %}" hx-trigger="load"></div>
 
@@ -59,6 +83,20 @@
 
     <script src="{% static '/automation/automation.js' %}"></script>
     <script>
+        function hideRefreshAutomationsBanner() {
+            $("#refreshAutomationsBanner").hide();
+        }
+        function showRefreshAutomationsAlert() {
+            $("#refreshAutomationsBanner").css("display", "flex");
+            Swal.fire({
+                title: "{% trans 'Refresh Automations required' %}",
+                text: "{% trans 'Changes to mail automations will not take effect on records until you run Refresh Automations.' %}",
+                icon: "info",
+                confirmButtonColor: "#008000",
+                confirmButtonText: "{% trans 'OK' %}",
+            });
+        }
+
         function confirm(message, url) {
             Swal.fire({
                 text: message,

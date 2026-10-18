@@ -276,12 +276,8 @@
                                     {% if perms.employee.add_employee %}
                                         <li class="oh-dropdown__item">
                                             <a
-                                                href="#"
+                                                href="{% url 'master-import' %}?dataset=employees" hx-boost="false"
                                                 class="oh-dropdown__link"
-                                                data-toggle="oh-modal-toggle"
-                                                data-target="#objectCreateModal"
-                                                hx-get="{% url 'work-info-import' %}"
-                                                hx-target="#objectCreateModalTarget"
                                             >
                                                 {% trans "Import" %}
                                             </a>

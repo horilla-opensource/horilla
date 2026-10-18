@@ -96,11 +96,12 @@ class Company(HorillaModel):
 
     company = models.CharField(max_length=50, verbose_name=_("Name"))
     hq = models.BooleanField(default=False)
-    address = models.TextField(max_length=255)
-    country = models.CharField(max_length=50)
-    state = models.CharField(max_length=50)
-    city = models.CharField(max_length=50)
-    zip = models.CharField(max_length=20)
+    # Nullable so a company can be created from just a name (master data import).
+    address = models.TextField(max_length=255, null=True)
+    country = models.CharField(max_length=50, null=True)
+    state = models.CharField(max_length=50, null=True)
+    city = models.CharField(max_length=50, null=True)
+    zip = models.CharField(max_length=20, null=True)
     icon = models.FileField(
         upload_to=upload_path,
         null=True,
@@ -2521,6 +2522,15 @@ class Announcement(HorillaModel):
     )
     company_id = models.ManyToManyField(
         Company, blank=True, related_name="announcement", verbose_name=_("Company")
+    )
+    is_visible_to_all = models.BooleanField(
+        default=True,
+        verbose_name=_("Publish to all"),
+        help_text=_(
+            "When enabled, the announcement is visible to every employee in "
+            "the selected company. Disable it to restrict visibility to the "
+            "employees/department/job position selected below."
+        ),
     )
     disable_comments = models.BooleanField(
         default=False, verbose_name=_("Disable Comments")

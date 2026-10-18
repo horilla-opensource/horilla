@@ -125,7 +125,7 @@ def ess_kpi_data(request):
         ).count()
         upcoming_leave_count = LeaveRequest.objects.filter(
             employee_id=employee,
-            status="approved",
+            status__in=["approved", "cancel_requested"],
             start_date__gte=date.today(),
         ).count()
     except Exception:
@@ -258,7 +258,7 @@ def ess_leave_balance(request):
                 approved = LeaveRequest.objects.filter(
                     employee_id=employee,
                     leave_type_id=al.leave_type_id,
-                    status="approved",
+                    status__in=["approved", "cancel_requested"],
                     start_date__lte=to_date,
                     end_date__gte=from_date,
                 )
@@ -313,6 +313,7 @@ def ess_leave_requests(request):
         status_labels = {
             "requested": _("Pending"),
             "approved": _("Approved"),
+            "cancel_requested": _("Cancel Requested"),
             "rejected": _("Rejected"),
             "cancelled": _("Cancelled"),
         }
@@ -406,7 +407,7 @@ def ess_attendance_calendar(request):
 
         for lr in LeaveRequest.objects.filter(
             employee_id=employee,
-            status="approved",
+            status__in=["approved", "cancel_requested"],
             start_date__lte=to_date,
             end_date__gte=from_date,
         ):

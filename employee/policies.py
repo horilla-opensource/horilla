@@ -17,6 +17,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext_noop
 
+from base.forms import TagsForm
 from base.methods import (
     closest_numbers,
     eval_validate,
@@ -106,7 +107,44 @@ def policies_discipline_faq_tab(request):
     return render(
         request,
         "policies/policies_discipline_faq_tab.html",
-        {"faq_categories": faq_categories, "questions": list(questions)},
+        {
+            "faq_categories": faq_categories,
+            "questions": list(questions),
+            "embed_in_policies": True,
+        },
+    )
+
+
+@login_required
+@hx_request_required
+def policies_discipline_faq_view(request, obj_id):
+    """
+    HTMX fragment showing one FAQ category's questions, swapped into the
+    same tab container as policies_discipline_faq_tab() above -- staying on
+    the Policies & Discipline page instead of navigating to helpdesk's own
+    standalone FAQ page (helpdesk.views.faq_view), which always renders a
+    full index.html page.
+    """
+    from helpdesk.filter import FAQFilter
+    from helpdesk.models import FAQ, FAQCategory
+
+    faq_category = FAQCategory.objects.filter(id=obj_id).first()
+    if not faq_category:
+        messages.info(request, _("No FAQ found for the given category."))
+        return policies_discipline_faq_tab(request)
+
+    faqs = FAQ.objects.filter(category=obj_id)
+    faqs = paginator_qry(faqs, request.GET.get("page"))
+    return render(
+        request,
+        "policies/policies_discipline_faq_list.html",
+        {
+            "faqs": faqs,
+            "f": FAQFilter(request.GET),
+            "cat_id": obj_id,
+            "pd": request.GET.urlencode(),
+            "create_tag_f": TagsForm(),
+        },
     )
 
 
@@ -243,7 +281,16 @@ def add_attachment(request):
         attachments.append(attachment)
     policy.attachments.add(*attachments)
     messages.success(request, _("Attachments added"))
-    return render(request, "policies/attachments.html", {"policy": policy})
+    response = render(request, "policies/attachments.html", {"policy": policy})
+    # See the matching comment in remove_attachment() below: the add-files
+    # form's own hx-target (#attachmentContainer) swaps out the element the
+    # request was made from, so an hx-on::after-request there would never
+    # fire -- an inline <script> in the response runs regardless.
+    response.content += (
+        b"<script>var b=document.getElementById('reloadMessagesButton');"
+        b"if(b)b.click();</script>"
+    )
+    return response
 
 
 @login_required
@@ -260,7 +307,18 @@ def remove_attachment(request):
 
     ids = request.GET.getlist("ids")
     PolicyMultipleFile.objects.filter(id__in=ids).delete()
-    return render(request, "policies/attachments.html", {"policy": policy})
+    messages.success(request, _("Attachment removed"))
+    response = render(request, "policies/attachments.html", {"policy": policy})
+    # `hx-on::after-request` on the remove icon never actually fires here --
+    # the icon's own hx-target (#attachmentContainer) swaps out the content it
+    # is itself part of before the event can reach it, same as the toast-never-
+    # shows-until-refresh case already worked around in delete_policy() above.
+    # An inline <script> in the swapped response runs regardless.
+    response.content += (
+        b"<script>var b=document.getElementById('reloadMessagesButton');"
+        b"if(b)b.click();</script>"
+    )
+    return response
 
 
 @login_required

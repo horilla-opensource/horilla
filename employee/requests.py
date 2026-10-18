@@ -21,6 +21,14 @@ def requests_view(request):
     # the remaining query string on as the filters for that tab's list.
     query = request.GET.copy()
     initial_tab = query.pop("tab", [""])[-1]
+    # ?open_tab=<1-based index> is accepted too, matching the other tabbed pages.
+    open_tab = query.pop("open_tab", [""])[-1]
+    if (
+        not initial_tab
+        and open_tab.isdigit()
+        and 0 < int(open_tab) <= len(REQUEST_TABS)
+    ):
+        initial_tab = REQUEST_TABS[int(open_tab) - 1]
     if initial_tab not in REQUEST_TABS:
         initial_tab = ""
     return render(

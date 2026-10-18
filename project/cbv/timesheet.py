@@ -586,7 +586,7 @@ class TimeSheetFormView(HorillaFormView):
                 (item.id, item.title) for item in tasks
             ]
             self.form.fields["task_id"].choices.append(
-                ("dynamic_create", "Dynamic create")
+                ("dynamic_create", _("Create %(label)s") % {"label": _("Task")})
             )
             task_id = self.request.GET.get("task_id")
             self.form_class.verbose_name = _("Update Timesheet")

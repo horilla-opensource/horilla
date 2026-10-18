@@ -1,6 +1,5 @@
 from typing import Any
 
-from django import forms
 from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponse
@@ -9,8 +8,6 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext_noop
 
-from employee.cbv.employee_profile import EmployeeProfileView
-from employee.models import Employee
 from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
@@ -24,7 +21,7 @@ from horilla_views.generic.cbv.views import (
 )
 from notifications.signals import notify
 from pms.cbv.key_result import KeyResultFormView
-from pms.filters import ActualObjectiveFilter, KeyResultFilter, ObjectiveFilter
+from pms.filters import ActualObjectiveFilter, KeyResultFilter
 from pms.forms import (
     AddAssigneesForm,
     EmployeeKeyResultForm,
@@ -1023,14 +1020,3 @@ class EKRTab(EmployeeObjectiveKeyResultDetailListView):
         context = super().get_context_data(**kwargs)
         context["compact_group_pagination"] = True
         return context
-
-
-EmployeeProfileView.add_tab(
-    tabs=[
-        {
-            "title": _("Key Results"),
-            "view": EKRTab.as_view(),
-            "accessibility": "pms.cbv.accessibility.performance_accessibility",
-        },
-    ]
-)

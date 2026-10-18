@@ -1377,7 +1377,7 @@ def get_stages(request):
         form.fields["stage"].choices = (
             [("", _("Select Stage"))]
             + [(stage.id, stage.title) for stage in stages]
-            + [("dynamic_create", _("Dynamic Create"))]
+            + [("dynamic_create", _("Create %(label)s") % {"label": _("Stage")})]
         )
         # project = Project.objects.filter(id = project_id).first()
         # if (
@@ -1584,7 +1584,9 @@ def get_tasks_in_timesheet(request):
         form.fields["task_id"].queryset = tasks
         form.fields["task_id"].choices = list(form.fields["task_id"].choices)
         if employee in project.managers.all() or request.user.is_superuser:
-            form.fields["task_id"].choices.append(("dynamic_create", "Dynamic create"))
+            form.fields["task_id"].choices.append(
+                ("dynamic_create", _("Create %(label)s") % {"label": _("Task")})
+            )
         task_id = request.GET.get("task_id")
         if task_id:
             form.fields["task_id"].initial = task_id

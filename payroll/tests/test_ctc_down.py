@@ -216,6 +216,50 @@ class CtcDownTests(CtcDownSetup, TestCase):
         )
         self.assertAlmostEqual(data["gross_pay"], ctc - lop, places=2)
 
+    def test_loss_of_pay_comes_off_basic_when_the_contract_has_no_wage_at_all(self):
+        """
+        A stated CTC and no wage, with the daily rate taken from basic pay: the
+        wage-based loss of pay starts at zero, because it is a share of a wage
+        that is not there, and is only worked out properly afterwards from the
+        basic the structure defines. The contract says to take it off basic, so
+        basic must carry it -- not stay whole with the loss of pay beside it.
+        """
+        self._standard_structure()
+        Contract.objects.filter(pk=self.contract.pk).update(
+            monthly_ctc=60000.0,
+            wage=0,
+            daily_leave_amount_base="wage",
+            calculate_daily_leave_amount=True,
+            deduct_leave_from_basic_pay=True,
+        )
+        summary = {
+            "present": 20,
+            "paid_leave": 0,
+            "unpaid_leave": 2,
+            "absent": 0,
+            "week_off": 0,
+            "holiday": 0,
+            "total_working": WORKING_DAYS,
+            "working_days": WORKING_DAYS,
+            "unresolved_conflicts": 0,
+        }
+        # The real day-rate maths, which gives nothing for a contract with no wage:
+        # only the leave lookup is stood in for.
+        with patch("payroll.methods.methods.get_leaves", return_value=EMPTY_LEAVES):
+            data = payroll_calculation(
+                self.employee, PERIOD_START, PERIOD_END, month_summary=summary
+            )
+
+        lop = data["loss_of_pay"]
+        self.assertGreater(lop, 0)
+        self.assertTrue(data["lop_reflected_in_basic"])
+        self.assertAlmostEqual(data["basic_pay"], 60000.0 * 0.50 - lop, places=2)
+        self.assertAlmostEqual(
+            self._named(data["allowances"], "HRA"),
+            (60000.0 * 0.50 - lop) * 0.40,
+            places=2,
+        )
+
     def test_no_employer_contribution_leaves_the_balance_as_it_was(self):
         self._standard_structure()
         data = self._run()

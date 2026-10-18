@@ -930,7 +930,7 @@ class OfflineEmployeesListView(APIView):
                 When(
                     leaverequest__start_date__lte=today,
                     leaverequest__end_date__gte=today,
-                    leaverequest__status="approved",
+                    leaverequest__status__in=["approved", "cancel_requested"],
                     then=Value("On Leave"),
                 ),
                 When(

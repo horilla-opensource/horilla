@@ -1,4 +1,4 @@
-{% extends 'index.html' %} {% block content %} {% load i18n %}
+{% extends 'index.html' %} {% block content %} {% load i18n static %}
 <style>
   .sent-to-employee{
     background-color: yellowgreen;
@@ -48,10 +48,12 @@
       <span class="oh-payslip__title oh-payslip__title--h2 dateformat_changer">{{end_date}}</span>
     </div>
     <div class="oh-payslip__header-left">
-      <img
-        src="{{employee.employee_work_info.company_id.icon.url}}"
-        style="width: 50px"
-      />
+      {% with resolved_company=employee.employee_work_info.company_id|default:company %}
+        <img
+          src="{% if resolved_company.icon %}{{ resolved_company.icon.url }}{% else %}{% static 'images/ui/auth-logo.png' %}{% endif %}"
+          style="width: 50px"
+        />
+      {% endwith %}
     </div>
   </div>
   <div class="oh-payslip__body" id="payslipBody">

@@ -771,6 +771,22 @@ class PolicyForm(ModelForm):
         # Re-insert at the end so it renders after the attachment field.
         self.fields["is_visible_to_all"] = self.fields.pop("is_visible_to_all")
 
+    def clean(self):
+        cleaned_data = super().clean()
+        if not cleaned_data.get("is_visible_to_all"):
+            employees = cleaned_data.get("employees")
+            department = cleaned_data.get("department")
+            job_position = cleaned_data.get("job_position")
+            if not employees and not department and not job_position:
+                message = _(
+                    "Select at least one of Employees, Department or Job "
+                    "Position when Publish to all is disabled."
+                )
+                self.add_error("employees", message)
+                self.add_error("department", message)
+                self.add_error("job_position", message)
+        return cleaned_data
+
     def save(self, *args, commit=True, **kwargs):
         attachemnt = []
         multiple_attachment_ids = []

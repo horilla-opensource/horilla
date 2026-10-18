@@ -61,24 +61,44 @@
                 {% trans "Choose which employees can use Leave Encashment." %}
             </p>
 
-            <div class="w-full mb-3">
-                <label> {% trans "Employees" %}</label>
-                {{ eligibility_form.employees }}
-            </div>
-            <div class="w-full mb-3">
-                <label> {% trans "Department" %}</label>
-                {{ eligibility_form.department }}
-            </div>
-            <div class="w-full mb-3">
-                <label> {% trans "Job Position" %}</label>
-                {{ eligibility_form.job_position }}
-            </div>
+            <div
+                id="encashmentEligibilityScopeFields"
+                {% if eligibility_form.instance.is_applicable_to_all %}style="display:none;"{% endif %}
+            >
+                <div class="w-full mb-3">
+                    <label> {% trans "Employees" %}</label>
+                    {{ eligibility_form.employees }}
+                    {{ eligibility_form.employees.errors }}
+                </div>
+                <div class="w-full mb-3">
+                    <label> {% trans "Department" %}</label>
+                    {{ eligibility_form.department }}
+                    {{ eligibility_form.department.errors }}
+                </div>
+                <div class="w-full mb-3">
+                    <label> {% trans "Job Position" %}</label>
+                    {{ eligibility_form.job_position }}
+                    {{ eligibility_form.job_position.errors }}
+                </div>
 
-            <div class="flex justify-end">
-                <button class="btn mt-3 h-[33px]" type="submit">
-                    {% trans 'Save' %}
-                </button>
+                <div class="flex justify-end">
+                    <button class="btn mt-3 h-[33px]" type="submit">
+                        {% trans 'Save' %}
+                    </button>
+                </div>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    (function () {
+        function toggleEncashmentScopeFields() {
+            var applyToAll = document.getElementById("is_applicable_to_all").checked;
+            document.getElementById("encashmentEligibilityScopeFields").style.display = applyToAll ? "none" : "";
+        }
+        $("#is_applicable_to_all")
+            .off("change.encashmentScope")
+            .on("change.encashmentScope", toggleEncashmentScopeFields);
+    })();
+</script>

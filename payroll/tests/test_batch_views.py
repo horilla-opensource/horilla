@@ -461,6 +461,60 @@ class DetailTests(Fixture):
         self.assertContains(response, "No basic pay could be worked out")
 
 
+class FlashMessageTests(Fixture):
+    """A flash message must not leave an invisible gap in the page."""
+
+    def queue_message(self):
+        """A message left for the next page, the way the app's own views leave one."""
+        from django.contrib.messages.storage import default_storage
+        from django.http import HttpRequest, HttpResponse
+
+        request = HttpRequest()
+        request.session = self.client.session
+        request.COOKIES = {}
+        storage = default_storage(request)
+        storage.add(20, "Back at Review & Regularize.")
+        response = HttpResponse()
+        storage.update(response)
+        request.session.save()
+        self.client.cookies.update(response.cookies)
+
+    def test_a_message_beside_a_page_swap_floats_as_a_toast(self):
+        batch = batch_run.create_batch(
+            name="April", start_date=START, end_date=END, employees=self.people
+        )
+        self.queue_message()
+        html = self.client.get(
+            reverse("payroll-batch-detail", args=[batch.pk]), HTTP_HX_REQUEST="true"
+        ).content.decode()
+        # inside the fixed toast container, not in the page flow where it would fade out but keep its height
+        container = html.index("oh-alert-container")
+        self.assertGreater(
+            html.index("Back at Review &amp; Regularize.", container), container
+        )
+
+    def test_a_full_page_load_has_no_copy_left_in_the_page_flow(self):
+        batch = batch_run.create_batch(
+            name="April", start_date=START, end_date=END, employees=self.people
+        )
+        self.queue_message()
+        html = self.client.get(
+            reverse("payroll-batch-detail", args=[batch.pk])
+        ).content.decode()
+        self.assertIn(
+            "Back at Review &amp; Regularize.", html
+        )  # the layout's own toast
+        section = html[html.index('<section class="oh-wrapper pb">') :]
+        self.assertNotIn("oh-alert--animated", section)
+
+    def test_the_steps_are_named_for_what_you_do(self):
+        html = self.client.get(reverse("payroll-batch-scope")).content.decode()
+        self.assertIn("Select Employees", html)
+        self.assertIn("Review & Regularize", html)
+        self.assertNotIn("Who is in it", html)
+        self.assertNotIn("Check the inputs", html)
+
+
 class PayPeriodTests(Fixture):
     def test_saving_creates_the_row_for_this_company(self):
         self.client.post(
@@ -487,7 +541,7 @@ class PayPeriodTests(Fixture):
 
 
 class ReopenTests(DeleteTests):
-    """Back to "Check the inputs" from a draft run (inherits its draft run and payslip)."""
+    """Back to "Review & Regularize" from a draft run (inherits its draft run and payslip)."""
 
     def setUp(self):
         super().setUp()

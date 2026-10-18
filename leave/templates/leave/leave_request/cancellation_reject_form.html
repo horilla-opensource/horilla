@@ -1,0 +1,22 @@
+{% load i18n %}
+<form hx-post="{% url 'leave-cancellation-reject' id %}" hx-target="#rejectForm"
+    hx-confirm="{% trans 'Do you really want to reject this cancellation request? The leave will stay approved.' %}"
+    hx-on::after-request="if(event.detail.successful){$('#rejectModal').removeClass('oh-modal--show');}">
+    <div class="oh-general__tab-target oh-profile-section">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        <label class="oh-label">{% trans "Reason for Rejection" %}</label>
+        <style>
+          #rejectCancellationReasonWrapper textarea {
+            min-height: 120px;
+          }
+        </style>
+        <div id="rejectCancellationReasonWrapper">{{ form.reason }}</div>
+        {{ form.errors }}
+      </div>
+      <div class="d-flex flex-row-reverse">
+        <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow mt-3">
+          {% trans "Submit" %}
+        </button>
+      </div>
+    </div>
+</form>

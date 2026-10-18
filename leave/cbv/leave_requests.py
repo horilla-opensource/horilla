@@ -140,6 +140,20 @@ class LeaveRequestsListView(HorillaListView):
             """,
         ),
         (
+            "cancel_requested--dot",
+            _("Cancel Requested"),
+            """
+                onclick="
+                    $('#applyFilter').closest('form').find('[name=status]').val('cancel_requested');
+                    $('[name=rejected]').val('unknown').change();
+                    $('[name=approved]').val('unknown').change();
+                    $('[name=requested]').val('unknown').change();
+                    $('#applyFilter').click();
+                "
+
+            """,
+        ),
+        (
             "cancelled--dot",
             _("Cancelled"),
             """
@@ -182,9 +196,7 @@ class LeaveRequestsListView(HorillaListView):
             """,
         ),
     ]
-    row_status_class = (
-        "rejected-{status} cancelled-{status} requested-{status} approved-{status}"
-    )
+    row_status_class = "rejected-{status} cancelled-{status} cancel_requested-{status} requested-{status} approved-{status}"
 
     show_quick_date_filters = True
     quick_date_fields = ("", "from_date", "to_date")
@@ -708,7 +720,9 @@ class DashboardOnLeaveTable(LeaveRequestsListView):
         today = date.today()
 
         self.queryset = queryset.filter(
-            start_date__lte=today, end_date__gte=today, status="approved"
+            start_date__lte=today,
+            end_date__gte=today,
+            status__in=["approved", "cancel_requested"],
         )
 
         return self.queryset

@@ -1,0 +1,100 @@
+{% extends "master_import/base.html" %}
+{% load i18n %}
+
+{% block mi_head %}
+<style>
+  .mi__bar-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: .9rem; }
+  .mi__bar-head .mi__title { margin: 0; }
+  .mi__bar-tools { display: flex; align-items: center; gap: .6rem; }
+  .mi__search-box { position: relative; }
+  .mi__search-box ion-icon { position: absolute; left: .65rem; top: 50%; transform: translateY(-50%); color: var(--mi-muted); font-size: 1rem; pointer-events: none; }
+  .mi__search-box .mi__find { padding-left: 2.1rem; width: 260px; height: 38px; }
+  .mi__icon-btn { display: inline-grid; place-items: center; width: 32px; height: 32px; border: 1px solid var(--mi-line); border-radius: 8px; background: #fff; color: #374151; font-size: 1.05rem; text-decoration: none; transition: background .15s, border-color .15s, color .15s; }
+  .mi__icon-btn:hover { background: #fdecea; border-color: #f3b9b0; color: var(--mi-accent); }
+  .mi__icons { display: flex; gap: .4rem; align-items: center; }
+</style>
+<div class="mi__bar-head">
+  <h1 class="mi__title">{% trans "Import History" %}</h1>
+  <div class="mi__bar-tools">
+    <div class="mi__search-box">
+      <ion-icon name="search-outline"></ion-icon>
+      <input type="search" class="mi__find" id="mi-history-search" placeholder="{% trans 'Search' %}"
+             aria-label="{% trans 'Search Input' %}" autocomplete="off">
+    </div>
+    <a class="mi__btn mi__btn--primary" href="{% url 'master-import' %}">
+      <ion-icon name="add-outline"></ion-icon>{% trans "New Import" %}
+    </a>
+  </div>
+</div>
+{% endblock %}
+
+{% block mi_active %}/master-import/history/{% endblock %}
+
+{% block mi_body %}
+<div class="mi__card">
+  <div class="mi__scroll" style="max-height:none;">
+    <table class="fixed-table w-full border-separate mi__std" id="mi-history">
+      <thead class="sticky top-0 bg-[white] z-[1]">
+        <tr>
+          <th class="text-sm font-medium text-left min-w-[85px]">{% trans "Data" %}</th>
+          <th class="text-sm font-medium text-left min-w-[85px]">{% trans "File" %}</th>
+          <th class="text-sm font-medium text-left min-w-[85px]">{% trans "By" %}</th>
+          <th class="text-sm font-medium text-left min-w-[85px]">{% trans "When" %}</th>
+          <th class="text-sm font-medium text-left min-w-[85px]">{% trans "Imported" %}</th>
+          <th class="text-sm font-medium text-left min-w-[85px]">{% trans "Errors" %}</th>
+          <th class="text-sm font-medium text-left min-w-[85px]">{% trans "Status" %}</th>
+          <th class="text-sm font-medium text-left" style="width:140px;">{% trans "Actions" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for job in jobs %}
+        <tr data-history-row>
+          <td class="text-sm text-left px-1 py-1 text-[#666]">{{ job.dataset_label }}</td>
+          <td class="text-sm text-left px-1 py-1 text-[#666]">{{ job.original_name }}</td>
+          <td class="text-sm text-left px-1 py-1 text-[#666]">{{ job.created_by|default:"-" }}</td>
+          <td class="text-sm text-left px-1 py-1 text-[#666]">{{ job.created_at|date:"j M Y, H:i" }}</td>
+          <td class="text-sm text-left px-1 py-1 text-[#666]">{{ job.summary.imported|default:"-" }}</td>
+          <td class="text-sm text-left px-1 py-1 text-[#666]">{{ job.summary.error_count|default:"-" }}</td>
+          <td class="text-sm text-left px-1 py-1 text-[#666]">
+            <span class="mi__pill {% if job.status == 'done' %}mi__pill--ok{% elif job.status == 'failed' %}mi__pill--miss{% else %}mi__pill--skip{% endif %}">{{ job.get_status_display }}</span>
+          </td>
+          <td class="text-sm text-left px-1 py-1 text-[#666]">
+            <div class="mi__icons">
+              {% if job.status == 'done' or job.status == 'failed' %}
+              <a class="mi__icon-btn" href="{% url 'master-import-done' job.pk %}" title="{% trans 'View Summary' %}">
+                <ion-icon name="eye-outline"></ion-icon>
+              </a>
+              {% else %}
+              <a class="mi__icon-btn" href="{% url 'master-import-map' job.pk %}" title="{% trans 'Continue This Import' %}">
+                <ion-icon name="play-outline"></ion-icon>
+              </a>
+              {% endif %}
+              {% if job.error_file %}
+              <a class="mi__icon-btn" hx-boost="false" href="{% url 'master-import-errors' job.pk %}" title="{% trans 'Download Error File' %}">
+                <ion-icon name="download-outline"></ion-icon>
+              </a>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" class="text-sm text-left px-1 py-1 text-[#666] mi__sample" style="padding:1.5rem;text-align:center;">{% trans "Nothing has been imported yet." %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+(function () {
+  var box = document.getElementById("mi-history-search");
+  if (!box) return;
+  box.addEventListener("input", function () {
+    var q = box.value.trim().toLowerCase();
+    document.querySelectorAll("#mi-history [data-history-row]").forEach(function (tr) {
+      tr.style.display = !q || tr.textContent.toLowerCase().indexOf(q) !== -1 ? "" : "none";
+    });
+  });
+})();
+</script>
+{% endblock %}

@@ -270,8 +270,9 @@ class ModelForm(forms.ModelForm):
                     {
                         "class": f"{existing_class} form-control",
                         "placeholder": label,
-                        "rows": 2,
+                        "rows": 4,
                         "cols": 40,
+                        "style": "height: auto;",
                     }
                 )
 
@@ -2278,6 +2279,35 @@ class ShiftRequestForm(ModelForm):
         table_html = render_to_string("horilla_form.html", context)
         return table_html
 
+    def clean(self):
+        cleaned_data = super().clean()
+        employee = cleaned_data.get("employee_id")
+        start = cleaned_data.get("requested_date")
+        if not employee or not start:
+            return cleaned_data
+        # A permanent request has no end date, so it is open-ended.
+        end = (
+            None
+            if cleaned_data.get("is_permanent_shift")
+            else cleaned_data.get("requested_till")
+        )
+        existing = ShiftRequest.objects.filter(
+            employee_id=employee,
+            approved=True,
+            canceled=False,
+            reallocate_to__isnull=True,
+        ).exclude(pk=self.instance.pk)
+        if end:
+            existing = existing.filter(requested_date__lte=end)
+        existing = existing.filter(
+            Q(requested_till__isnull=True) | Q(requested_till__gte=start)
+        )
+        if existing.exists():
+            raise ValidationError(
+                _("An approved shift request already exists for the selected date(s).")
+            )
+        return cleaned_data
+
     def save(self, commit: bool = ...):
         if not self.instance.approved:
             employee = self.instance.employee_id
@@ -2998,6 +3028,7 @@ class AnnouncementForm(ModelForm):
         "employees": 12,
         "department": 12,
         "job_position": 12,
+        "is_visible_to_all": 12,
     }
 
     required_fields = ["description"]
@@ -3031,6 +3062,16 @@ class AnnouncementForm(ModelForm):
         self.fields["disable_comments"].widget.attrs.update(
             {"hx-on:click": "togglePublicComments()"}
         )
+        # Move it right under Expiry date, ahead of the targeting fields it
+        # toggles the visibility of.
+        is_visible_to_all_field = self.fields.pop("is_visible_to_all")
+        field_items = list(self.fields.items())
+        insert_at = (
+            next(i for i, (name, _) in enumerate(field_items) if name == "expire_date")
+            + 1
+        )
+        field_items.insert(insert_at, ("is_visible_to_all", is_visible_to_all_field))
+        self.fields = dict(field_items)
         if not self.instance.pk:
             request = getattr(_thread_locals, "request", None)
             selected_company = (
@@ -3095,17 +3136,16 @@ class AnnouncementForm(ModelForm):
         departments_selected = self.cleaned_data.get("department")
         job_positions_selected = self.cleaned_data.get("job_position")
 
-        # Check if none of the three are selected
-        # if (
-        #     not employees_selected
-        #     and not departments_selected
-        #     and not job_positions_selected
-        # ):
-        #     raise forms.ValidationError(
-        #         _(
-        #             "You must select at least one of: Employees, Department, or Job Position."
-        #         )
-        #     )
+        if not cleaned_data.get("is_visible_to_all") and not (
+            employees_selected or departments_selected or job_positions_selected
+        ):
+            message = _(
+                "Select at least one of Employees, Department or Job "
+                "Position when Publish to all is disabled."
+            )
+            self.add_error("employees", message)
+            self.add_error("department", message)
+            self.add_error("job_position", message)
 
         return cleaned_data
 

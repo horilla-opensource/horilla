@@ -325,7 +325,9 @@ class Employee(models.Model):
         )
         status = _("Expected working")
         if leaves_requests.exists():
-            if leaves_requests.filter(status="approved").exists():
+            if leaves_requests.filter(
+                status__in=["approved", "cancel_requested"]
+            ).exists():
                 status = _("On Leave")
             elif leaves_requests.filter(status="requested"):
                 status = _("Waiting Approval")

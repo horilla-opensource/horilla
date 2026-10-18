@@ -71,6 +71,10 @@
         bottom: 450px;
     }
 
+    .inner-fabs.show .fab:nth-child(9) {
+        bottom: 500px;
+    }
+
     .inner-fabs.show + .fab i {
         transform: rotate(135deg);
     }
@@ -218,6 +222,19 @@
             </a>
         </div>
     {% endif %}
+    {% if perms.base.add_announcement %}
+        <div id="fab10" class="fab round" data-tooltip="{% trans 'Create Announcement' %}">
+            <a
+                class="text-light"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-get="{% url 'create-announcement' %}"
+                hx-target="#genericModalBody"
+            >
+                <i class="material-icons mt-2">campaign</i>
+            </a>
+        </div>
+    {% endif %}
 </div>
 <div id="fab1" class="fab round" data-tooltip="{% trans 'Quick Action' %}">
     <i id="fabIcon" class="material-icons">add</i>
@@ -244,6 +261,7 @@
                 "fab7",
                 "fab8",
                 "fab9",
+                "fab10",
                 "fabIcon",
             ];
             let isCloseButton =

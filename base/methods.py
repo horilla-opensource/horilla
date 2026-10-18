@@ -1127,6 +1127,7 @@ def export_data(request, model, form_class, filter_class, file_name, perm=None):
         "second_half": _("Second Half"),
         "requested": _("Requested"),
         "approved": _("Approved"),
+        "cancel_requested": _("Cancel Requested"),
         "cancelled": _("Cancelled"),
         "rejected": _("Rejected"),
         "cancelled_and_rejected": _("Cancelled & Rejected"),

@@ -36,6 +36,15 @@
 
             /* ---- letterhead ---- */
             .letterhead { text-align: center; margin-bottom: 18px; }
+            /* A table, not flex: wkhtmltopdf's patched Qt/WebKit build
+               predates flexbox gap support, and asking for it here painted
+               a solid black bar across the page instead of laying out the
+               logo and text side by side. */
+            .letterhead-row { width: auto; margin: 6px auto 0; }
+            .letterhead-row td { vertical-align: middle; }
+            .letterhead-row .logo-cell { padding-right: 10px; }
+            .letterhead-row .logo { width: 36px; height: 36px; object-fit: contain; }
+            .letterhead-row .text { text-align: left; }
             .letterhead h1 { margin: 0 0 6px; font-size: 20px; font-weight: 700; }
             .letterhead .company { font-size: 13px; font-weight: 700; }
             .letterhead .address { font-size: 11px; color: #444; margin-top: 2px; }
@@ -74,27 +83,42 @@
     <body id="printDiv">
         <div class="doc" id="download_section">
 
-            <div class="letterhead">
-                <h1>{% trans "Payslip" %}</h1>
-                {% if employee.employee_work_info.company_id %}
-                    <p class="company">{{ employee.employee_work_info.company_id }}</p>
-                    <p class="address">
-                        {{ employee.employee_work_info.company_id.address }}
-                        {{ employee.employee_work_info.company_id.country }}
-                        {{ employee.employee_work_info.company_id.state }},
-                        {{ employee.employee_work_info.company_id.city }}
-                        {{ employee.employee_work_info.company_id.zip }}
-                    </p>
-                {% else %}
-                    <p class="company">{{ company }} - {% trans "Headquarters" %}</p>
-                    <p class="address">
-                        {{ company.address }}
-                        {{ company.country }} {{ company.state }}, {{ company.city }}
-                        {{ company.zip }}
-                    </p>
-                {% endif %}
-                <p class="period">{{ month_start_name }} {% trans "to" %} {{ month_end_name }}</p>
-            </div>
+            {% with resolved_company=employee.employee_work_info.company_id|default:company %}
+                <div class="letterhead">
+                    <h1>{% trans "Payslip" %}</h1>
+                    <table class="letterhead-row"><tr>
+                        <td class="logo-cell">
+                            <img
+                                class="logo"
+                                width="36"
+                                height="36"
+                                src="{% if resolved_company.icon %}{{ protocol }}://{{ host }}{{ resolved_company.icon.url }}{% else %}{{ protocol }}://{{ host }}{% static 'images/ui/auth-logo.png' %}{% endif %}"
+                                alt="{% trans 'Company Logo' %}"
+                            >
+                        </td>
+                        <td class="text">
+                            {% if employee.employee_work_info.company_id %}
+                                <p class="company">{{ employee.employee_work_info.company_id }}</p>
+                                <p class="address">
+                                    {{ employee.employee_work_info.company_id.address }}
+                                    {{ employee.employee_work_info.company_id.country }}
+                                    {{ employee.employee_work_info.company_id.state }},
+                                    {{ employee.employee_work_info.company_id.city }}
+                                    {{ employee.employee_work_info.company_id.zip }}
+                                </p>
+                            {% else %}
+                                <p class="company">{{ company }} - {% trans "Headquarters" %}</p>
+                                <p class="address">
+                                    {{ company.address }}
+                                    {{ company.country }} {{ company.state }}, {{ company.city }}
+                                    {{ company.zip }}
+                                </p>
+                            {% endif %}
+                            <p class="period">{{ month_start_name }} {% trans "to" %} {{ month_end_name }}</p>
+                        </td>
+                    </tr></table>
+                </div>
+            {% endwith %}
 
             <table class="info">
                 <tr>

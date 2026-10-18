@@ -65,10 +65,20 @@
                 </div>
 
                 <p class="oh-faq-card__desc">{{ category.description }}</p>
-                <a
-                    href="{% url 'faq-view' category.id %}"
-                    class="oh-btn oh-btn--secondary oh-btn--block"
-                >{% trans "View FAQs" %}</a>
+                {% if embed_in_policies %}
+                    <a
+                        hx-get="{% url 'policies-discipline-faq-view' category.id %}"
+                        hx-target="#policiesDisciplineContent"
+                        hx-push-url="false"
+                        style="cursor: pointer;"
+                        class="oh-btn oh-btn--secondary oh-btn--block"
+                    >{% trans "View FAQs" %}</a>
+                {% else %}
+                    <a
+                        href="{% url 'faq-view' category.id %}"
+                        class="oh-btn oh-btn--secondary oh-btn--block"
+                    >{% trans "View FAQs" %}</a>
+                {% endif %}
             </div>
         {% endfor %}
     </div>

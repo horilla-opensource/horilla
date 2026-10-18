@@ -11,7 +11,12 @@ from django.utils.translation import gettext as _
 
 from horilla.decorators import hx_request_required, login_required, permission_required
 from horilla.http.response import HorillaRedirect
-from horilla_automations.methods.methods import generate_choices
+from horilla_automations.methods.methods import (
+    clear_refresh_pending,
+    generate_choices,
+    is_refresh_pending,
+    mark_refresh_pending,
+)
 from horilla_automations.methods.serialize import serialize_form
 from horilla_automations.models import MailAutomation
 from horilla_automations.signals import REFRESH_METHODS
@@ -65,6 +70,7 @@ def delete_automation(request, pk):
     try:
         MailAutomation.objects.get(id=pk).delete()
         messages.success(request, _("Automation deleted"))
+        mark_refresh_pending()
     except Exception as e:
         print(e)
         messages.error(request, _("Something went wrong"))
@@ -81,6 +87,7 @@ def mail_automations_settings_view(request):
     return render(
         request,
         "horilla_automations/mail_automations_settings.html",
+        {"refresh_pending": is_refresh_pending()},
     )
 
 
@@ -102,8 +109,15 @@ def refresh_automations(request):
         refreshed = True
 
     if refreshed:
+        clear_refresh_pending()
         messages.success(request, _("Automations refreshed successfully."))
     else:
         messages.error(request, _("Automation method not available to refresh."))
 
-    return HorillaFormView.HttpResponse()
+    return HorillaFormView.HttpResponse(
+        script=(
+            "if (window.hideRefreshAutomationsBanner) { hideRefreshAutomationsBanner(); }"
+            if refreshed
+            else ""
+        )
+    )

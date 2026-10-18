@@ -1,0 +1,21 @@
+{% load i18n static %}
+
+<div class="mb-3 d-flex justify-content-end">
+    <a
+        hx-get="{% url 'policies-discipline-faq-tab' %}"
+        hx-target="#policiesDisciplineContent"
+        hx-push-url="false"
+        class="oh-btn oh-btn--light-bkg oh-btn--small"
+        style="cursor: pointer;"
+    >
+        <ion-icon name="arrow-back-outline" class="mr-1"></ion-icon>
+        {% trans "Back" %}
+    </a>
+</div>
+
+<div>
+    {% include 'helpdesk/faq/faq_nav.html' %}
+    <div class="oh-wrapper">
+        <div id="faqList" class="accordion-wrapper space-y-2">{% include "helpdesk/faq/faq_list.html" %}</div>
+    </div>
+</div>

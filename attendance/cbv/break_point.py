@@ -38,6 +38,8 @@ class BreakPointList(HorillaListView):
     bulk_select_option = False
 
     columns = [
+        (_("Shifts"), "shifts_col"),
+        (_("Auto Validate From"), "minimum_at_work_to_validate"),
         (_("Auto Validate Till"), "validation_at_work"),
         (_("Min Hour To Approve OT"), "minimum_overtime_to_approve"),
         (_("OT Cut-Off/Day"), "overtime_cutoff"),
@@ -64,10 +66,7 @@ class BreakPointNavView(HorillaNavView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        condition = AttendanceValidationCondition.objects.first()
-        if not condition and self.request.user.has_perm(
-            "attendance.add_attendancevalidationcondition"
-        ):
+        if self.request.user.has_perm("attendance.add_attendancevalidationcondition"):
             self.create_attrs = f"""
                                 onclick = "event.stopPropagation();"
                                 data-toggle="oh-modal-toggle"

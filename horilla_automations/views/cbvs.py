@@ -21,7 +21,12 @@ from horilla.decorators import hx_request_required, login_required, permission_r
 from horilla_automations import models
 from horilla_automations.filters import AutomationFilter
 from horilla_automations.forms import AutomationForm
+from horilla_automations.methods.methods import mark_refresh_pending
 from horilla_views.generic.cbv import views
+
+REFRESH_ALERT_SCRIPT = (
+    "if (window.showRefreshAutomationsAlert) { showRefreshAutomationsAlert(); }"
+)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -130,7 +135,8 @@ class AutomationFormView(views.HorillaFormView):
                 message = "Automation updated"
             form.save()
             messages.success(self.request, _(message))
-            return self.HttpResponse()
+            mark_refresh_pending()
+            return self.HttpResponse(script=REFRESH_ALERT_SCRIPT)
         return super().form_valid(form)
 
 
@@ -327,11 +333,16 @@ class LoadAutomationsView(View):
                     % {"automation_obj_title": automation_obj.title},
                 )
 
-        script = """
+        mark_refresh_pending()
+        script = (
+            """
             <script>
                 $("#reloadMessagesButton").click();
                 $('#applyFilter').click();
                 $('.oh-modal--show').first().removeClass('oh-modal--show');
+                %s
             </script>
         """
+            % REFRESH_ALERT_SCRIPT
+        )
         return HttpResponse(script)

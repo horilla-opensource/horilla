@@ -39,11 +39,6 @@
                 {% trans "Approved" %}
             </button>
         {% endif %}
-    {% else %}
-        <button class="oh-btn oh-btn--success px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300" disabled title="{% trans 'Approved' %}">
-            <ion-icon name="checkmark-outline"></ion-icon>
-            {% trans "Approved" %}
-        </button>
     {% endif %}
 
     {# Not available (owner/reallocate_to only) #}
@@ -54,12 +49,12 @@
             class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
             title="{% trans 'Not available' %}"
         >
-            <ion-icon name="close-circle-outline"></ion-icon>
+            <ion-icon name="thumbs-down-outline"></ion-icon>
             {% trans "Not available" %}
         </a>
     {% else %}
         <button class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300" disabled title="{% trans 'Not available' %}">
-            <ion-icon name="close-circle-outline"></ion-icon>
+            <ion-icon name="thumbs-down-outline"></ion-icon>
             {% trans "Not available" %}
         </button>
     {% endif %}

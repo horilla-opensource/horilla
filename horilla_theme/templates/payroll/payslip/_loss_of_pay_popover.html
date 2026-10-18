@@ -7,10 +7,8 @@ case, when it's already folded into Basic Pay) can include it without a
 second copy of the equation logic drifting out of sync.
 {% endcomment %}
 <span class="ps__info" x-data="{open:false}" @mouseenter="open=true" @mouseleave="open=false">
-  <img src="{% static 'horilla_theme/assets/img/icons/info.svg' %}"
-       alt="{% trans 'Info' %}" class="cursor-pointer"
-       style="display:inline;vertical-align:-2px;">
-  <div class="ps__pop" x-show="open" x-cloak>
+  <button type="button" class="ps__i" aria-label="{% trans 'More info' %}" @focus="open=true" @blur="open=false"><ion-icon name="information-circle-outline"></ion-icon></button>
+  <div class="ps__pop" x-show="open" x-cloak x-transition.opacity.duration.150ms>
     <div class="ps__pop-title">{% trans "How this was worked out" %}</div>
     {% if lop_flat_amount %}
       <div class="ps__pop-row">

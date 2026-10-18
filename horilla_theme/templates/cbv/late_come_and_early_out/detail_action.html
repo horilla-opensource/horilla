@@ -5,7 +5,7 @@
     {% if can_manage or can_penalty or can_delete %}
         {% if can_manage or can_penalty %}
             <a
-                class="w-24 h-8 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+                class="w-24 h-8 px-4 py-2 bg-warning text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-warning-dark transition duration-300"
                 data-toggle="oh-modal-toggle"
                 data-target="#penaltyModal"
                 hx-target="#penaltyModalBody"

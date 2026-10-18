@@ -745,3 +745,58 @@ class IntegrationsSettings:
             ],
         },
     ]
+
+
+# ---------------------------------------------------------------------------
+# 7. Master Data section
+# ---------------------------------------------------------------------------
+
+
+def master_import_accessibility(request, submenu, user_perms, *args, **kwargs):
+    user = request.user
+    return (
+        user.is_superuser
+        or user.has_perm("employee.add_employee")
+        or user.has_perm("leave.add_availableleave")
+        or user.has_perm("asset.add_assetassignment")
+        or user.has_perm("asset.add_asset")
+    )
+
+
+@settings_menu.register
+class MasterDataSettings:
+    title = _("Master Data")
+    order = 12
+    condition = lambda self, request: apps.is_installed("master_import")
+    items = [
+        {
+            "label": _("Import Data"),
+            "url": reverse_lazy("master-import"),
+            "accessibility": master_import_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Import Data"),
+                    "description": _(
+                        "Bring employees into Horilla from a CSV or Excel file"
+                    ),
+                },
+                {
+                    "text": _("Update Existing Employees"),
+                    "description": _("Change many employees at once from a sheet"),
+                },
+            ],
+        },
+        {
+            "label": _("Import History"),
+            "url": reverse_lazy("master-import-history"),
+            "accessibility": master_import_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Import History"),
+                    "description": _(
+                        "Every file brought in through Master Data Import"
+                    ),
+                },
+            ],
+        },
+    ]

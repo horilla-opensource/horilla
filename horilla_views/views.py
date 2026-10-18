@@ -163,7 +163,12 @@ class ReloadField(View):
         queryset = field.queryset
         choices = [(instance.id, instance) for instance in queryset]
         choices.insert(0, ("", "Select option"))
-        choices.append(("dynamic_create", "Dynamic create"))
+        choices.append(
+            (
+                "dynamic_create",
+                _("Create %(label)s") % {"label": field.label or cache_field},
+            )
+        )
 
         form_field = forms.ChoiceField
         if isinstance(field, forms.ModelMultipleChoiceField):

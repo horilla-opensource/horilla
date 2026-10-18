@@ -11,7 +11,6 @@ from django.utils.translation import gettext_lazy as _
 
 from attendance.cbv.attendances import OTAttendancesList, ValidateAttendancesList
 from attendance.filters import LateComeEarlyOutFilter
-from attendance.methods.utils import strtime_seconds
 from attendance.models import AttendanceLateComeEarlyOut, AttendanceValidationCondition
 from base.methods import filtersubordinates
 from horilla_views.cbv_methods import login_required
@@ -59,12 +58,8 @@ class DashboardaAttendanceOT(OTAttendancesList):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        condition = AttendanceValidationCondition.objects.first()
-        minot = strtime_seconds("00:00")
-        if condition is not None and condition.minimum_overtime_to_approve is not None:
-            minot = strtime_seconds(condition.minimum_overtime_to_approve)
         queryset = queryset.filter(
-            overtime_second__gte=minot,
+            AttendanceValidationCondition.min_overtime_q(),
             attendance_validated=True,
             employee_id__is_active=True,
             attendance_overtime_approve=False,

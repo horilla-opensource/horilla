@@ -83,7 +83,7 @@
     >
         <!-- Accordion Header -->
         <button
-            class="accordion-btn w-full flex justify-between items-center px-4 py-2 text-sm transition-all bg-primary-100 text-primary-600"
+            class="accordion-btn w-full flex justify-between items-center px-4 py-3 text-sm transition-all bg-primary-100 text-primary-600"
             @click="open = !open"
         >
             {% comment %} <span class="font-medium">{{ faq.question }}</span>
@@ -100,26 +100,38 @@
                 {% endfor %}
             </ul> {% endcomment %}
 
-            <div class="flex flex-col gap-1">
-                <!-- Question -->
-                <span class="font-medium" style="text-align: left">
-                    {{ faq.question }}
-                </span>
+            <!-- Question -->
+            <span class="flex-[1_1_160px] min-w-0 text-left font-medium">
+                {{ faq.question }}
+            </span>
 
-                <!-- Tags under question -->
-                <ul class="flex flex-wrap gap-2">
-                    {% for tag in faq.tags.all %}
-                        <li
-                            class="px-2 py-0.5 rounded-full text-xs font-medium text-white"
-                            style="background: {{ theme_obj.primary_600|default:'#E54F38' }}"
-                        >
-                            {{ tag|capfirst }}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+            <div class="flex items-center gap-4 shrink-0">
+                <!-- Tags -->
+                {% with all_tags=faq.tags.all %}
+                    {% if all_tags %}
+                        <ul class="flex items-center gap-1.5">
+                            {% for tag in all_tags|slice:":2" %}
+                                <li
+                                    class="max-w-[110px] truncate rounded-full border px-2 py-px text-[11px] font-medium leading-[1.4]"
+                                    title="{{ tag|capfirst }}"
+                                    style="background: color-mix(in srgb, {{ tag.color|cut:';' }} 18%, #fff); color: color-mix(in srgb, {{ tag.color|cut:';' }} 65%, #000); border-color: color-mix(in srgb, {{ tag.color|cut:';' }} 55%, #fff);"
+                                >
+                                    {{ tag|capfirst }}
+                                </li>
+                            {% endfor %}
+                            {% if all_tags|length > 2 %}
+                                <li
+                                    class="whitespace-nowrap rounded-full border px-2 py-px text-[11px] font-medium leading-[1.4]"
+                                    title="{% for tag in all_tags|slice:'2:' %}{{ tag|capfirst }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                                    style="background: #f1f1f2; color: #666; border-color: #e0e0e2;"
+                                >
+                                    +{{ all_tags|length|add:"-2" }}
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
 
-            <div class="flex items-center gap-4">
                 <ion-icon
                     :name="open ? 'chevron-up-outline' : 'chevron-down-outline'"
                     class="oh-tabs__movable-fold-icon text-lg"
@@ -127,7 +139,7 @@
 
                 <!-- Dropdown -->
                 <div class="relative inline-block" x-data="{ menu:false }" @click.stop>
-                    <a class="cursor-pointer" @click="menu = !menu">
+                    <a class="cursor-pointer px-3" @click="menu = !menu">
                         <i class="fa-solid fa-ellipsis-vertical text-black"></i>
                     </a>
 

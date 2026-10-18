@@ -3,20 +3,19 @@
 {% is_manager_of request.user instance as can_manage %}
 {% if perms.leave.change_leaverequest or can_manage %}
 <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation();">
-        {% if instance.status == 'cancelled' %}
-            {% if instance.end_date >= current_date %}
-                <button type="button" data-toggle="oh-modal-toggle"
-                    data-target="#rejectModal" hx-get="{% url 'request-cancel' instance.id %}"
-                    hx-target="#rejectForm" title="{% trans 'Approve cancellation request' %}"
-                    class="oh-btn oh-btn--warning oh-btn--sq-sm">
-                    <ion-icon name="checkmark-outline"></ion-icon>
-                </button>
-            {% else %}
-                <button type="button" href="#" title="{% trans 'Approve cancellation request' %}"
-                    class="oh-btn oh-btn--secondary oh-btn--disabled oh-btn--sq-sm">
-                    <ion-icon name="checkmark-outline"></ion-icon>
-                </button>
-            {% endif %}
+        {% if instance.status == 'cancel_requested' %}
+            <button type="button" hx-post="{% url 'leave-cancellation-approve' instance.id %}"
+                hx-swap="none"
+                hx-confirm="{% trans 'Do you really want to approve this cancellation request?' %}"
+                title="{% trans 'Approve Cancellation' %}"
+                class="oh-btn oh-btn--success oh-btn--sq-sm">
+                <ion-icon name="checkmark-outline"></ion-icon>
+            </button>
+            <button type="button" data-toggle="oh-modal-toggle" data-target="#rejectModal" hx-get="{% url 'leave-cancellation-reject' instance.id %}" hx-target="#rejectForm"
+                title="{% trans 'Reject Cancellation' %}"
+                class="oh-btn oh-btn--danger oh-btn--sq-sm">
+                <ion-icon name="close-circle-outline"></ion-icon>
+            </button>
         {% else %}
             {% if instance.is_approved and instance.status == 'requested' %}
                 <a href="#"

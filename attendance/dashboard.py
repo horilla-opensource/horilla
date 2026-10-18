@@ -84,7 +84,7 @@ def _missing_punches_employees(today=None, employee_ids=None):
     weekday = today.strftime("%A").lower()
 
     on_leave_ids = LeaveRequest.employees_on_leave_today(
-        today=today, status="approved"
+        today=today, status=["approved", "cancel_requested"]
     ).values_list("employee_id", flat=True)
     checked_in_ids = AttendanceActivity.objects.filter(
         attendance_date=today
@@ -495,7 +495,7 @@ def _group_attendance_stats(request, group_field):
 
     leave_days = {}
     for leave in LeaveRequest.objects.filter(
-        status="approved",
+        status__in=["approved", "cancel_requested"],
         employee_id__in=employees,
         start_date__lte=month_end,
         end_date__gte=month_start,

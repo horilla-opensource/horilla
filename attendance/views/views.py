@@ -135,19 +135,21 @@ from notifications.signals import notify
 
 def attendance_validate(attendance):
     """
-    This method is is used to check condition for at work in AttendanceValidationCondition
-    model instance it return true if at work is smaller than condition
-    args:
-        attendance : attendance object
+    Return True when the at work lies within the auto validate range of the attendance shift's condition.
     """
 
-    conditions = AttendanceValidationCondition.objects.all()
-    # Set the default condition for 'at work' to 9:00 AM
-    condition_for_at_work = strtime_seconds("09:00")
-    if conditions.exists():
-        condition_for_at_work = strtime_seconds(conditions[0].validation_at_work)
+    condition = AttendanceValidationCondition.for_shift(attendance.shift_id)
+    minimum_at_work = 0
+    maximum_at_work = strtime_seconds("09:00")
+    if condition is not None:
+        minimum_at_work = strtime_seconds(
+            condition.minimum_at_work_to_validate or "00:00"
+        )
+        maximum_at_work = strtime_seconds(condition.validation_at_work)
     at_work = strtime_seconds(attendance.attendance_worked_hour)
-    return condition_for_at_work >= at_work
+    return at_work <= maximum_at_work and (
+        minimum_at_work == 0 or at_work >= minimum_at_work
+    )
 
 
 @login_required

@@ -14,7 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext_noop
 
 from base.decorators import manager_can_enter
-from base.methods import choosesubordinates, is_reportingmanager
+from base.methods import is_reportingmanager
 from employee.cbv.employee_profile import EmployeeProfileView
 from employee.models import Employee
 from horilla.http.response import HorillaRedirect
@@ -675,18 +675,64 @@ class PerformanceTab(SelfFeedbacktab):
         # tab's "Select"/"Unselect" count. Scope it to this tab instead.
         self.selected_instances_key_id = "performanceSelectedInstances"
 
+    @staticmethod
+    def employee_feedbacks(employee_id):
+        """
+        Active feedbacks about the employee (self) plus those they were asked to answer (requested)
+        """
+        requested_ids = Feedback.objects.filter(
+            Q(manager_id=employee_id)
+            | Q(colleague_id=employee_id)
+            | Q(subordinate_id=employee_id)
+            | Q(others_id=employee_id),
+            employee_id__is_active=True,
+        ).values_list("id", flat=True)
+        return Feedback.objects.filter(
+            Q(employee_id=employee_id) | Q(pk__in=requested_ids), archive=False
+        )
+
     def get_queryset(self):
         queryset = super().get_queryset()
         pk = self.kwargs.get("pk")
-        queryset = Feedback.objects.filter(employee_id=pk, archive=False)
+        queryset = self.employee_feedbacks(pk)
         return queryset
+
+
+@method_decorator(login_required, name="dispatch")
+class PerformanceTabView(HorillaTabView):
+    """
+    Performance tab in employee profile, holding the Feedback and Key Results sub-tabs
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.view_id = "performance-tab"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs.get("pk")
+        context["tabs"] = [
+            {
+                "title": _("Feedback"),
+                "url": reverse("individual-performance-tab-list", kwargs={"pk": pk}),
+                "badge": PerformanceTab.employee_feedbacks(pk).count(),
+            },
+            {
+                "title": _("Key Results"),
+                "url": reverse("individual-key-result-tab-list", kwargs={"pk": pk}),
+                "badge": EmployeeKeyResult.objects.filter(
+                    employee_objective_id__employee_id=pk
+                ).count(),
+            },
+        ]
+        return context
 
 
 EmployeeProfileView.add_tab(
     tabs=[
         {
             "title": _("Performance"),
-            "view": PerformanceTab.as_view(),
+            "view": PerformanceTabView.as_view(),
             "accessibility": "pms.cbv.accessibility.performance_accessibility",
         },
     ]

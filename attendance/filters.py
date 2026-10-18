@@ -1326,7 +1326,9 @@ def get_checked_in_on(queryset, _name, value):
         start_date=value, start_date_breakdown__in=["first_half", "second_half"]
     ) | Q(end_date=value, end_date_breakdown__in=["first_half", "second_half"])
     full_day_leave_ids = (
-        LeaveRequest.objects.filter(status="approved", start_date__lte=value)
+        LeaveRequest.objects.filter(
+            status__in=["approved", "cancel_requested"], start_date__lte=value
+        )
         .filter(Q(end_date__gte=value) | Q(end_date__isnull=True, start_date=value))
         .exclude(half_day_q)
         .values_list("employee_id", flat=True)
@@ -1367,7 +1369,9 @@ def get_expected_to_check_in(queryset, _name, value):
         "employee_id", flat=True
     )
     on_leave_ids = (
-        LeaveRequest.objects.filter(status="approved", start_date__lte=value)
+        LeaveRequest.objects.filter(
+            status__in=["approved", "cancel_requested"], start_date__lte=value
+        )
         .filter(Q(end_date__gte=value) | Q(end_date__isnull=True, start_date=value))
         .values_list("employee_id", flat=True)
     )

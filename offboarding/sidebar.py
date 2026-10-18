@@ -75,14 +75,12 @@ def resignation_letter_accessibility(request, menu, user_perms, *args, **kwargs)
     ] and request.user.has_perm("offboarding.view_resignationletter")
 
 
-def dashboard_accessibility(request, *args):
+def dashboard_accessibility(request, menu, user_perms, *args, **kwargs):
     """
-    Check if the user has permission to view the dashboard.
+    The dashboard views are guarded by ``offboarding.view_offboarding``, so the
+    sidebar entry is shown only to users who actually hold that permission.
     """
-
-    return request.user.has_module_perms("offboarding") or any_manager(
-        request.user.employee_get
-    )
+    return request.user.has_perm("offboarding.view_offboarding")
 
 
 # ---------------------------------------------------------------------------

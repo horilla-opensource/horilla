@@ -19,6 +19,7 @@ from django.core.checks import register
 # "<app_label>.<ModelName>": why it is intentionally not company-scoped.
 EXEMPT = {
     "base.Company": "It is the tenant root; scoping it by itself is circular.",
+    "master_import.ImportJob": "Reached only by its creator or a superuser; the company records where it ran.",
     "horilla_audit.AuditTag": "Global audit vocabulary, shared across tenants.",
     "horilla_audit.AccountBlockUnblock": "Global account-level switch.",
     "horilla_dbtemplate.TemplateVersion": "Versions inherit their template's scope.",

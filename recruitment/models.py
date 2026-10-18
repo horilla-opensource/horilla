@@ -226,7 +226,7 @@ class Recruitment(HorillaModel):
     )
     linkedin_post_id = models.CharField(max_length=150, null=True, blank=True)
     publish_in_linkedin = models.BooleanField(
-        default=True,
+        default=False,
         help_text=_(
             "To publish a recruitment in Linkedin, if active is false then it \
             will not post on LinkedIn."

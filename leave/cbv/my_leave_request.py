@@ -112,6 +112,20 @@ class MainParentListView(HorillaListView):
             """,
         ),
         (
+            "cancel_requested--dot",
+            _("Cancel Requested"),
+            """
+            onclick="
+            $('#applyFilter').closest('form').find('[name=status]').val('cancel_requested');
+            $('[name=rejected]').val('unknown').change();
+            $('[name=approved]').val('unknown').change();
+            $('[name=requested]').val('unknown').change();
+            $('#applyFilter').click();
+            "
+
+            """,
+        ),
+        (
             "cancelled--dot",
             _("Cancelled"),
             """
