@@ -1811,7 +1811,7 @@ class WorkRecords(models.Model):
     at_work_second = models.IntegerField(null=True, blank=True, default=0)
     min_hour_second = models.IntegerField(null=True, blank=True, default=0)
     note = models.TextField(max_length=255)
-    message = models.CharField(max_length=30, null=True, blank=True)
+    message = models.CharField(max_length=100, null=True, blank=True)
     is_attendance_record = models.BooleanField(default=False)
     attendance_id = models.ForeignKey(
         Attendance, on_delete=models.SET_NULL, blank=True, null=True
