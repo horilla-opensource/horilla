@@ -221,17 +221,16 @@ def rotate_shift():
     rotating_shifts = RotatingShiftAssign.objects.filter(is_active=True)
     today = datetime.now().date()
     r_shifts = rotating_shifts.filter(start_date__lte=today)
-    rotating_shifts_modified = None
     for r_shift in r_shifts:
         emp_shift = rotating_shifts.filter(
             employee_id=r_shift.employee_id, start_date__lte=today
         ).exclude(id=r_shift.id)
-        rotating_shifts_modified = rotating_shifts.exclude(
-            id__in=emp_shift.values_list("id", flat=True)
-        )
         emp_shift.update(is_active=False)
 
-    for rotating_shift in rotating_shifts_modified:
+    # Re-read the active assignments: the superseded ones were just
+    # deactivated. (A variable only set inside the loop above left nothing to
+    # iterate when no assignment had started, raising TypeError every run.)
+    for rotating_shift in rotating_shifts:
         based_on = rotating_shift.based_on
         # after day condition
         if based_on == "after":
