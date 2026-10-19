@@ -995,6 +995,10 @@ class HolidayFilter(HorillaFilterSet):
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+    available_for_all = filters.BooleanFilter(
+        method="filter_available_for_all",
+        label=__("Available for all"),
+    )
 
     class Meta:
         """
@@ -1016,6 +1020,13 @@ class HolidayFilter(HorillaFilterSet):
         self.form.fields["to_date"].label = (
             f"{self.Meta.model()._meta.get_field('end_date').verbose_name} Till"
         )
+
+    def filter_available_for_all(self, queryset, _, value):
+        """
+        Holidays not restricted to specific departments/positions/
+        employees (is_specific=False) are available for everyone.
+        """
+        return queryset.filter(is_specific=not value)
 
     def _build_custom_filter_fields(self):
         """
