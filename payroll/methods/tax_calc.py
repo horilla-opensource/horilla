@@ -166,6 +166,9 @@ def compute_yearly_tax(filing, yearly_income, employee=None):
         "taxable_income": round(yearly_income, 2),
         "tax_before_relief": round(tax_before_relief, 2),
         "rebate_applied": round(rebate_applied, 2),
+        # The rule itself, so a preview can say why the rebate did or did not apply.
+        "rebate_limit": float(rebate_limit) if rebate_limit is not None else None,
+        "rebate_max": float(rebate_max or 0) if rebate_limit is not None else None,
         "cess_applied": round(cess_applied, 2),
         "tax": round(federal_tax, 2),
         "mode": "formula" if filing.use_py else "slabs",

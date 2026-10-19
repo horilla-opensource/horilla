@@ -84,13 +84,10 @@ one shadowed the other; the page now lives in one place.
     .fs__adjustments {
       display: flex; gap: .3rem; flex-wrap: wrap; margin-bottom: .5rem;
     }
-    .fs__edit {
-      display: inline-flex; align-items: center; gap: .25rem;
-      font-size: .72rem; color: var(--pb-muted);
-      padding: .1rem .5rem; border: 1px solid var(--pb-line);
-      border-radius: 999px; background: var(--pb-bg); white-space: nowrap;
-    }
-    .fs__edit:hover { color: var(--pb-accent); border-color: var(--pb-accent); }
+    /* Separate square buttons, the delete one solid red, as in the other lists. */
+    .fs__actions { display: inline-flex; gap: 6px; justify-content: flex-end; }
+    .fs__actions .oh-btn { width: 36px; height: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+    .fs__edit { display: inline-flex; align-items: center; gap: .3rem; white-space: nowrap; }
     .fs__adj {
       display: inline-block; padding: .1rem .5rem;
       border: 1px solid var(--pb-line); border-radius: 999px;
@@ -344,17 +341,28 @@ one shadowed the other; the page now lives in one place.
             <td class="pb__num">{{ row.status.employee_count }}</td>
             <td class="pb__num" style="white-space:nowrap;">
               {% if perms.payroll.change_filingstatus %}
-              <a class="pb__rowbtn" href="{{ row.status.get_rules_url }}"
-                 title="{% trans 'Slabs, adjustments and formula' %}">
-                <ion-icon name="options-outline"></ion-icon>
-              </a>
-              <a class="pb__rowbtn" data-toggle="oh-modal-toggle"
-                 data-target="#objectCreateModal"
-                 hx-get="{{ row.status.get_update_url }}"
-                 hx-target="#objectCreateModalTarget"
-                 title="{% trans 'Rename or change the basis' %}">
-                <ion-icon name="create-outline"></ion-icon>
-              </a>
+              <div class="fs__actions">
+                <a class="oh-btn oh-btn--light-bkg" href="{{ row.status.get_rules_url }}"
+                   title="{% trans 'Slabs, adjustments and formula' %}">
+                  <ion-icon name="options-outline"></ion-icon>
+                </a>
+                <a class="oh-btn oh-btn--light-bkg" data-toggle="oh-modal-toggle"
+                   data-target="#objectCreateModal"
+                   hx-get="{{ row.status.get_update_url }}"
+                   hx-target="#objectCreateModalTarget"
+                   title="{% trans 'Rename or change the basis' %}">
+                  <ion-icon name="create-outline"></ion-icon>
+                </a>
+                {% if perms.payroll.delete_filingstatus %}
+                <a class="oh-btn oh-btn--danger" data-toggle="oh-modal-toggle"
+                   data-target="#deleteConfirmation"
+                   hx-get="{{ row.status.get_delete_url }}"
+                   hx-target="#deleteConfirmationBody"
+                   title="{% trans 'Delete' %}">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </a>
+                {% endif %}
+              </div>
               {% endif %}
             </td>
           </tr>
@@ -376,7 +384,7 @@ one shadowed the other; the page now lives in one place.
                       <div class="fs__slabhead">
                         <div class="fs__subhead">{% trans "Formula" %}</div>
                         {% if perms.payroll.change_filingstatus %}
-                        <a class="fs__edit" href="{{ row.status.get_rules_url }}">
+                        <a class="oh-btn oh-btn--light-bkg oh-btn--small fs__edit" href="{{ row.status.get_rules_url }}">
                           <ion-icon name="options-outline"></ion-icon>
                           {% trans "Slabs, adjustments & formula" %}
                         </a>
@@ -410,7 +418,7 @@ one shadowed the other; the page now lives in one place.
                         and having to go back up to the row to fix it is the
                         trip this saves.
                         {% endcomment %}
-                        <a class="fs__edit" href="{{ row.status.get_rules_url }}">
+                        <a class="oh-btn oh-btn--light-bkg oh-btn--small fs__edit" href="{{ row.status.get_rules_url }}">
                           <ion-icon name="options-outline"></ion-icon>
                           {% trans "Slabs, adjustments & formula" %}
                         </a>
@@ -454,7 +462,7 @@ one shadowed the other; the page now lives in one place.
                       <div class="fs__slabhead">
                         <div class="fs__subhead">{% trans "Slabs" %}</div>
                         {% if perms.payroll.change_filingstatus %}
-                        <a class="fs__edit" href="{{ row.status.get_rules_url }}">
+                        <a class="oh-btn oh-btn--light-bkg oh-btn--small fs__edit" href="{{ row.status.get_rules_url }}">
                           <ion-icon name="options-outline"></ion-icon>
                           {% trans "Slabs, adjustments & formula" %}
                         </a>
@@ -515,4 +523,7 @@ one shadowed the other; the page now lives in one place.
     });
   })();
 </script>
+<div style="z-index: 1022" class="oh-modal" id="deleteConfirmation" role="dialog" aria-labelledby="deleteConfirmation" aria-hidden="true">
+  <div class="oh-modal__dialog oh-modal__dialog--custom max-w-[900px]" id="deleteConfirmationBody"></div>
+</div>
 {% endblock content %}

@@ -80,9 +80,11 @@
               </tbody>
             </table>
           </div>
-          <button type="button" class="oh-btn oh-btn--light mt-2" id="addSlab">
-            + {% trans "Add slab" %}
-          </button>
+          <div class="d-flex justify-content-end">
+            <button type="button" class="oh-btn oh-btn--light mt-2" id="addSlab">
+              + {% trans "Add slab" %}
+            </button>
+          </div>
         </div>
         {% endif %}
 
@@ -227,13 +229,31 @@
         if (d.standard_deduction) rows.push(["{% trans 'Less standard deduction' %}", "-" + money(d.standard_deduction)]);
         rows.push(["{% trans 'Taxable income' %}", money(d.taxable_income)]);
         rows.push([d.mode === "slabs" ? "{% trans 'Tax from slabs' %}" : "{% trans 'Tax from formula' %}", money(d.tax_before_relief)]);
-        if (d.rebate_applied) rows.push(["{% trans 'Less rebate' %}", "-" + money(d.rebate_applied)]);
+        var rebateNote = "";
+        if (d.rebate_limit !== null && d.rebate_limit !== undefined) {
+          if (d.rebate_applied) {
+            rebateNote = "{% trans 'Rebate applies: taxable income' %} " + money(d.taxable_income) +
+              " {% trans 'is within the limit of' %} " + money(d.rebate_limit) +
+              ". {% trans 'It takes off up to' %} " + money(d.rebate_max) +
+              ", {% trans 'never more than the tax itself.' %}";
+            rows.push(["{% trans 'Less rebate' %}", "-" + money(d.rebate_applied), rebateNote]);
+          } else if (d.taxable_income > d.rebate_limit) {
+            rebateNote = "{% trans 'No rebate: taxable income' %} " + money(d.taxable_income) +
+              " {% trans 'is above the limit of' %} " + money(d.rebate_limit) +
+              ". {% trans 'At or below it, up to' %} " + money(d.rebate_max) + " {% trans 'comes off the tax.' %}";
+            // Nothing was taken off, so the reason sits under the tax it would have reduced.
+            rows[rows.length - 1].push(rebateNote);
+          }
+        }
         if (d.cess_applied) rows.push(["{% trans 'Plus cess' %}", "+" + money(d.cess_applied)]);
 
         var html = '<table class="w-100">';
         rows.forEach(function (r) {
           html += '<tr><td style="padding:3px 0;color:#555;">' + r[0] + '</td>' +
                   '<td style="padding:3px 0;text-align:right;">' + r[1] + "</td></tr>";
+          if (r[2]) {
+            html += '<tr><td colspan="2" style="padding:0 0 6px;font-size:.72rem;color:#8a8f98;">' + r[2] + "</td></tr>";
+          }
         });
         html += '<tr style="border-top:1px solid #ddd;"><td style="padding:6px 0;font-weight:600;">{% trans "Tax for the year" %}</td>' +
                 '<td style="padding:6px 0;text-align:right;font-weight:600;">' + money(d.tax) + "</td></tr></table>";
