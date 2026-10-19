@@ -26,7 +26,8 @@
 .crpb-mark-btn:hover { box-shadow: 0 0 0 2px currentColor; opacity: .9; }
 .crpb-mark-btn ion-icon { font-size: 1.15rem; }
 .crpb-full   { color:#065f46; border-color:#6ee7b7; background:#d1fae5; }
-.crpb-half   { color:#854d0e; border-color:#fb923c; background:#fef9c3; }
+.crpb-half   { color:#1e3a8a; border-color:#93c5fd; background:linear-gradient(135deg,#d1fae5 50%,#dbeafe 50%); }
+.crpb-halfabs { color:#7f1d1d; border-color:#fca5a5; background:linear-gradient(135deg,#fee2e2 50%,#d1fae5 50%); }
 .crpb-absent { color:#991b1b; border-color:#fca5a5; background:#fee2e2; }
 .crpb-paid   { color:#1e40af; border-color:#93c5fd; background:#dbeafe; }
 .crpb-unpaid { color:#9a3412; border-color:#fdba74; background:#ffedd5; }
@@ -83,6 +84,10 @@
       <button class="crpb-mark-btn crpb-half" onclick="msCalBulkResolvePost('half_present')">
         <ion-icon name="remove-circle-outline"></ion-icon>
         {% trans "Half Day" %}
+      </button>
+      <button class="crpb-mark-btn crpb-halfabs" onclick="msCalBulkResolvePost('half_absent')">
+        <ion-icon name="contrast-outline"></ion-icon>
+        {% trans "Half Absent" %}
       </button>
       <button class="crpb-mark-btn crpb-absent" onclick="msCalBulkResolvePost('absent')">
         <ion-icon name="close-circle-outline"></ion-icon>

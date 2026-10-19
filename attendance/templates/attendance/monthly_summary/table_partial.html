@@ -456,10 +456,16 @@ reloadSelectedCount($('.count_msAttendance'),'selectedInstances');">
           <ion-icon name="checkmark-circle-outline"></ion-icon> {% trans "Full Present" %}
         </button>
         <button class="ms-bulk-btn" onclick="msBulkApply('half_present')"
-                style="background:#fef9c3;color:#854d0e;border:1.5px solid #fb923c;border-radius:7px;
+                style="background:linear-gradient(135deg,#d1fae5 50%,#dbeafe 50%);color:#1e3a8a;border:1.5px solid #93c5fd;border-radius:7px;
                        padding:6px 12px;font-size:.78rem;font-weight:600;cursor:pointer;
                        display:flex;align-items:center;gap:4px;white-space:nowrap;">
           <ion-icon name="remove-circle-outline"></ion-icon> {% trans "Half Day" %}
+        </button>
+        <button class="ms-bulk-btn" onclick="msBulkApply('half_absent')"
+                style="background:linear-gradient(135deg,#fee2e2 50%,#d1fae5 50%);color:#7f1d1d;border:1.5px solid #fca5a5;border-radius:7px;
+                       padding:6px 12px;font-size:.78rem;font-weight:600;cursor:pointer;
+                       display:flex;align-items:center;gap:4px;white-space:nowrap;">
+          <ion-icon name="contrast-outline"></ion-icon> {% trans "Half Absent" %}
         </button>
         <button class="ms-bulk-btn" onclick="msBulkApply('absent')"
                 style="background:#fee2e2;color:#991b1b;border:1.5px solid #fca5a5;border-radius:7px;

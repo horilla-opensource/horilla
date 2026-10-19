@@ -1129,11 +1129,15 @@ def _classify_approved_overtime_seconds(employee, start_date, end_date):
         get_working_days(start_date, end_date, employee)["working_days_on"]
     )
     holiday_dates = set(get_holiday_dates(start_date, end_date, employee))
+    from django.db.models import Q
+
     regularized_dates = set(
         AttendanceConflictResolution.objects.filter(
+            # Worked days, including a split day with a present half ("split:P+A", "split:A+P").
+            Q(resolution__in=("full_present", "half_present", "half_absent"))
+            | Q(resolution__regex=r"^split:(P\+|.+\+P$)"),
             employee_id=employee,
             date__range=(start_date, end_date),
-            resolution__in=("full_present", "half_present"),
         ).values_list("date", flat=True)
     )
 

@@ -397,11 +397,35 @@ and to_date.
         if (panel.querySelector && panel.querySelector('[data-resolved]')) {
           panel.className = 'panel-resolved';
         }
+        // A new day starts at the top: the frame is reused between days, and a scroll
+        // position left over from the last one hid the top of this one under its header.
+        panel.scrollTop = 0;
+        if (window.msCalSplitPreview) { window.msCalSplitPreview(); }
+        var scroller = panel.querySelector('.crp-scroll');
+        if (scroller) { scroller.scrollTop = 0; }
         // Real content is a different height than the loading spinner —
         // recompute so the flip-above-the-cell logic sees the true size.
         _positionResolvePanel(panel, cellEl);
       })
       .catch(function () { panel.innerHTML = '<p style="padding:12px;color:#dc3545;">Failed to load.</p>'; });
+  };
+
+  // Split the day: each half is its own status. The bar under the selects shows
+  // the two colours, the same ones as the buttons and the calendar cell.
+  window.msCalSplitPreview = function () {
+    var a = document.getElementById('crp-split-a');
+    var b = document.getElementById('crp-split-b');
+    var bar = document.getElementById('crp-split-bar');
+    if (!a || !b || !bar) return;
+    var colour = function (select) { return select.options[select.selectedIndex].dataset.color; };
+    bar.style.background = 'linear-gradient(90deg, ' + colour(a) + ' 50%, ' + colour(b) + ' 50%)';
+  };
+
+  window.msCalResolveSplit = function (conflictType) {
+    var a = document.getElementById('crp-split-a');
+    var b = document.getElementById('crp-split-b');
+    if (!a || !b) return;
+    window.msCalResolvePost('split:' + a.value + '+' + b.value, conflictType);
   };
 
   window.msCalResolvePost = function (resolution, conflictType) {
