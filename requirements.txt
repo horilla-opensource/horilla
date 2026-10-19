@@ -33,7 +33,7 @@ psycopg2-binary>=2.9.13,<3
 django-apscheduler==0.7.0
 django-auditlog==3.4.1
 django-cors-headers==4.9.0
-django-filter==26.1
+django-filter==26.2
 django-import-export==4.4.1
 django-mathfilters==1.0.0
 django-model-utils==5.0.0
