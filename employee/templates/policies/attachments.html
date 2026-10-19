@@ -2,7 +2,8 @@
 <form
     hx-post="{% url 'add-attachment-policy' %}?policy_id={{policy.id}}"
     hx-target="#attachmentContainer"
-    class="add-files-form d-flex items-center"
+    class="add-files-form"
+    style="display: grid !important; width: 100%; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 16px !important; align-items: center; justify-items: start"
     method="post"
     hx-encoding="multipart/form-data"
 >
@@ -14,8 +15,7 @@
                 target="_blank"
             >
                 <span
-                    class="oh-file-icon oh-file-icon--pdf"
-                    onmouseover="enlargeImage('{{ attachment.attachment.url }}',$(this))"
+                    class="oh-file-icon {{ attachment.icon_class }}"
                     style="width: 40px; height: 40px"
                     ><img
                         src="{% static '/images/ui/minus-icon.png' %}"
@@ -36,8 +36,7 @@
             rel="noopener noreferrer"
             target="_blank"
             ><span
-                class="oh-file-icon oh-file-icon--pdf"
-                onmouseover="enlargeImage('{{ attachment.attachment.url }}',$(this))"
+                class="oh-file-icon {{ attachment.icon_class }}"
             >
             </span>
         </a>

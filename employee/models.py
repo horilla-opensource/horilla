@@ -1222,6 +1222,22 @@ class PolicyMultipleFile(HorillaModel):
             (".png", ".jpg", ".jpeg", ".gif", ".webp")
         )
 
+    @property
+    def icon_class(self):
+        """Modifier for ``oh-file-icon`` so each file type gets its own icon."""
+        name = self._attachment_name
+        if name.endswith(".pdf"):
+            return "oh-file-icon--pdf"
+        if self.is_image or name.endswith(".svg"):
+            return "oh-file-icon--image"
+        if name.endswith((".xls", ".xlsx", ".xlsm", ".csv")):
+            return "oh-file-icon--excel"
+        if name.endswith((".doc", ".docx")):
+            return "oh-file-icon--word"
+        if name.endswith((".ppt", ".pptx")):
+            return "oh-file-icon--powerpoint"
+        return "oh-file-icon--default"
+
 
 class Policy(HorillaModel):
     """
