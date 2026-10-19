@@ -27,6 +27,27 @@ from horilla.scheduling import get_registered_jobs
 logger = logging.getLogger(__name__)
 
 
+def log_job_error(event):
+    """
+    APScheduler catches per-job exceptions and logs them to its own
+    `apscheduler.executors` logger, so a failing job did not surface anywhere
+    a person or Sentry would see. Re-raise it through our logger instead:
+    logger.exception is what the Sentry integration reports on, and it names
+    the job so the alert is actionable.
+
+    `event.traceback` is APScheduler's already-formatted traceback *string*,
+    not a traceback object, so it can't go in an exc_info tuple (formatting
+    the record then fails with AttributeError and the error is lost). The
+    exception still carries its own traceback, so pass that.
+    """
+    logger.error(
+        "Scheduled job %s raised %s",
+        event.job_id,
+        type(event.exception).__name__,
+        exc_info=event.exception,
+    )
+
+
 class Command(BaseCommand):
     help = "Run all registered background jobs in a single dedicated process."
 
@@ -73,23 +94,6 @@ class Command(BaseCommand):
             )
             logger.info("Scheduled %s (%s, %s)", job.job_id, job.trigger, job.kwargs)
 
-        # APScheduler catches per-job exceptions and logs them to its own
-        # `apscheduler.executors` logger, so a failing job did not surface
-        # anywhere a person or Sentry would see. Re-raise it through our
-        # logger instead: logger.exception is what the Sentry integration
-        # reports on, and it names the job so the alert is actionable.
-        def _on_job_error(event):
-            logger.error(
-                "Scheduled job %s raised %s",
-                event.job_id,
-                type(event.exception).__name__,
-                exc_info=(
-                    type(event.exception),
-                    event.exception,
-                    event.traceback,
-                ),
-            )
-
         def _on_job_missed(event):
             # A missed run means the scheduler was busy or down past the
             # grace time; silent misses are how "payroll did not run" goes
@@ -100,7 +104,7 @@ class Command(BaseCommand):
                 event.scheduled_run_time,
             )
 
-        scheduler.add_listener(_on_job_error, EVENT_JOB_ERROR)
+        scheduler.add_listener(log_job_error, EVENT_JOB_ERROR)
         scheduler.add_listener(_on_job_missed, EVENT_JOB_MISSED)
 
         self.stdout.write(self.style.SUCCESS(f"Running {len(jobs)} scheduled job(s)."))
