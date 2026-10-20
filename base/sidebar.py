@@ -7,7 +7,8 @@ Sections registered:
   - General       : general settings, permissions, tags, mail
   - Base          : department, job position, job role, company
   - Appearance : color theme (only when horilla_theme is installed)
-  - Integrations  : gdrive, linkedin, ldap, google meet, whatsapp
+  - Integrations  : gdrive, linkedin, google meet, whatsapp
+  - Identity & Access : ldap (scim is added by horilla_scim)
 """
 
 from django.apps import apps
@@ -652,29 +653,6 @@ class IntegrationsSettings:
             ],
         },
         {
-            "label": _("LDAP"),
-            "url": reverse_lazy("ldap-settings"),
-            "accessibility": ldap_accessibility,
-            "search_entries": [
-                {
-                    "text": _("LDAP"),
-                    "description": _("Connect to LDAP for employee authentication"),
-                },
-                {
-                    "text": _("LDAP Server"),
-                    "description": _("LDAP server address e.g. ldap://127.0.0.1:389"),
-                },
-                {
-                    "text": _("Bind DN"),
-                    "description": _("LDAP bind distinguished name"),
-                },
-                {
-                    "text": _("Base DN"),
-                    "description": _("LDAP base distinguished name for user search"),
-                },
-            ],
-        },
-        {
             "label": _("Google Meet"),
             "url": reverse_lazy("gmeet-setting"),
             "accessibility": google_meet_accessibility,
@@ -747,6 +725,39 @@ class IntegrationsSettings:
     ]
 
 
+@settings_menu.register
+class IdentityAccessSettings:
+    """Sign-in and provisioning sources; SCIM/SAML/OIDC apps append here."""
+
+    title = _("Identity & Access")
+    order = 12
+    items = [
+        {
+            "label": _("LDAP"),
+            "url": reverse_lazy("ldap-settings"),
+            "accessibility": ldap_accessibility,
+            "search_entries": [
+                {
+                    "text": _("LDAP"),
+                    "description": _("Connect to LDAP for employee authentication"),
+                },
+                {
+                    "text": _("LDAP Server"),
+                    "description": _("LDAP server address e.g. ldap://127.0.0.1:389"),
+                },
+                {
+                    "text": _("Bind DN"),
+                    "description": _("LDAP bind distinguished name"),
+                },
+                {
+                    "text": _("Base DN"),
+                    "description": _("LDAP base distinguished name for user search"),
+                },
+            ],
+        },
+    ]
+
+
 # ---------------------------------------------------------------------------
 # 7. Master Data section
 # ---------------------------------------------------------------------------
@@ -766,7 +777,7 @@ def master_import_accessibility(request, submenu, user_perms, *args, **kwargs):
 @settings_menu.register
 class MasterDataSettings:
     title = _("Master Data")
-    order = 12
+    order = 13
     condition = lambda self, request: apps.is_installed("master_import")
     items = [
         {

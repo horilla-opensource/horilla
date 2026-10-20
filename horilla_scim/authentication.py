@@ -13,16 +13,11 @@ the moment the caller is known, so anything company-scoped the view touches
 is limited to the provider's company.
 """
 
-from datetime import timedelta
-
-from django.utils import timezone
 from rest_framework import authentication, exceptions, permissions
 
 from horilla.horilla_middlewares import set_selected_company
 
 from .models import ScimToken, hash_token
-
-LAST_USED_RESOLUTION = timedelta(minutes=1)
 
 
 class ScimClient:
@@ -56,20 +51,12 @@ class ScimBearerAuthentication(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed("Invalid token.")
 
         token = (
-            ScimToken.objects.usable()
-            .select_related("provider", "provider__company")
+            ScimToken.objects.select_related("provider", "provider__company")
             .filter(token_hash=hash_token(raw), provider__is_enabled=True)
             .first()
         )
         if token is None:
-            raise exceptions.AuthenticationFailed("Invalid or expired token.")
-
-        now = timezone.now()
-        if (
-            token.last_used_at is None
-            or now - token.last_used_at > LAST_USED_RESOLUTION
-        ):
-            ScimToken.objects.filter(pk=token.pk).update(last_used_at=now)
+            raise exceptions.AuthenticationFailed("Invalid token.")
 
         set_selected_company(token.provider.company_id)
         return ScimClient(token), token

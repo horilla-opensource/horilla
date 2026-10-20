@@ -10,8 +10,9 @@ A token can never see or change another company's employees.
 """
 
 import logging
+import re
 import uuid
-from datetime import timedelta
+from urllib.parse import unquote_plus
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
@@ -43,7 +44,6 @@ from .patch import apply_patch
 logger = logging.getLogger(__name__)
 
 SCIM_MEDIA_TYPE = "application/scim+json"
-EVENT_RETENTION = timedelta(days=30)
 
 _PROVISIONING_STATUS = {
     ProvisioningError.UNIQUENESS: (409, "uniqueness"),
@@ -51,6 +51,26 @@ _PROVISIONING_STATUS = {
     ProvisioningError.INVALID: (400, "invalidValue"),
     ProvisioningError.PROTECTED: (409, None),
 }
+
+
+# Quoted filter values (e-mails, names) are personal data; keep them out of
+# the request log.
+_QUOTED = re.compile(r'"(?:[^"\\]|\\.)*"')
+
+
+def _redacted_path(request):
+    query = request.META.get("QUERY_STRING", "")
+    if not query:
+        return request.path
+    return request.path + "?" + _QUOTED.sub('"***"', unquote_plus(query))
+
+
+def _check_external_id(value):
+    limit = ExternalIdentity._meta.get_field("external_id").max_length
+    if value not in (UNSET, None) and len(value) > limit:
+        raise ScimError(
+            400, "invalidValue", f"'externalId' must be at most {limit} characters."
+        )
 
 
 class ScimJSONParser(JSONParser):
@@ -126,13 +146,10 @@ class ScimView(APIView):
                 ScimEvent.objects.create(
                     provider=provider,
                     method=request.method,
-                    path=request.get_full_path()[:255],
+                    path=_redacted_path(request)[:255],
                     status=response.status_code,
                     detail=detail,
                 )
-                ScimEvent.objects.filter(
-                    created_at__lt=timezone.now() - EVENT_RETENTION
-                ).delete()
             except Exception:
                 logger.exception("Could not record SCIM event")
         return response
@@ -268,18 +285,36 @@ class UserMixin:
                 work_info["reporting_manager_id"] = manager
         return work_info
 
+    def deactivate(self, identity, employee):
+        # An employee HR already archived is not marked, so a later
+        # "active: true" from the provider does not bring them back
+        # (unless the provider is allowed to reactivate archived employees).
+        if employee.is_active:
+            identity.deactivated_by_provider = True
+        archived = provisioning.deactivate_employee(employee)
+        identity.pending_offboarding = not archived
+
     def apply_active(self, identity, employee, active):
+        user = employee.employee_user_id
+        inactive = not user.is_active or not employee.is_active
+        if not inactive:
+            # Someone in Horilla reactivated them since the provider
+            # deactivated them, so a later archive is no longer the provider's.
+            identity.deactivated_by_provider = False
         if active is UNSET:
             return
-        user = employee.employee_user_id
         if active is False and (user.is_active or employee.is_active):
-            archived = provisioning.deactivate_employee(employee)
-            identity.pending_offboarding = not archived
-        elif active is True and (not user.is_active or not employee.is_active):
+            self.deactivate(identity, employee)
+        elif active is True and (
+            identity.deactivated_by_provider
+            or (self.provider.reactivate_archived_employees and inactive)
+        ):
             provisioning.reactivate_employee(employee)
+            identity.deactivated_by_provider = False
             identity.pending_offboarding = False
 
     def update_from(self, identity, employee, attrs):
+        _check_external_id(attrs.external_id)
         provisioning.update_employee(
             employee,
             username=None if attrs.user_name is UNSET else attrs.user_name,
@@ -337,6 +372,7 @@ class UsersView(UserMixin, ScimView):
         if not email:
             raise ScimError(400, "invalidValue", "An e-mail address is required.")
         first_name = attrs.first_name()
+        _check_external_id(attrs.external_id)
 
         existing = Employee.objects.entire().filter(email__iexact=email).first()
         if existing is not None:
@@ -424,7 +460,8 @@ class UsersView(UserMixin, ScimView):
         identity.save()
 
         # A user re-created after a soft delete comes back active unless the
-        # IdP says otherwise.
+        # IdP says otherwise. apply_active decides whether an archived
+        # employee may be reactivated.
         if attrs.active is UNSET:
             attrs.active = True
         self.update_from(identity, employee, attrs)
@@ -477,8 +514,7 @@ class UserDetailView(UserMixin, ScimView):
                     employee.pk,
                     exc.message,
                 )
-        archived = provisioning.deactivate_employee(employee)
-        identity.pending_offboarding = not archived
+        self.deactivate(identity, employee)
         identity.unlinked_at = timezone.now()
         identity.save()
         return Response(status=status.HTTP_204_NO_CONTENT)

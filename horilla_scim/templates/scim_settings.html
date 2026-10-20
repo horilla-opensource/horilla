@@ -18,15 +18,27 @@
             </div>
         {% else %}
             <div class="px-4 pb-4">
-                <div class="mb-4 p-3 rounded-md bg-[#f8f8f8] border border-[#ebebeb]">
-                    <p class="text-xs font-semibold text-[#333]">{% trans "SCIM base URL" %}</p>
-                    <p class="text-xs text-gray-500 mb-1">{% trans "Enter this as the SCIM connector / tenant URL in your identity provider." %}</p>
-                    <code class="text-xs select-all break-all">{{ base_url }}</code>
+                <div id="scimHardDeleteWarning" class="mb-4 p-3 rounded-md bg-[#fdecec] border border-[#f1a9a9]"{% if form.delete_mode.value != "hard" %} hidden{% endif %}>
+                    <p class="text-xs font-semibold text-[#a12a2a]">{% trans "Permanent delete cannot be undone" %}</p>
+                    <p class="text-xs text-[#a12a2a]">
+                        {% trans "When the identity provider deletes a user, Horilla permanently deletes the employee, their login and the records linked to them. If other records still depend on the employee, they are archived instead." %}
+                    </p>
                 </div>
-                <form method="post">
+                {# Explicit action: this page is also rendered by the token endpoint. #}
+                <form method="post" action="{% url 'scim-settings' %}">
                     {% csrf_token %}
                     {{ form.as_p }}
                 </form>
+                <script>
+                    (function () {
+                        var select = document.querySelector('select[name="delete_mode"]');
+                        var warning = document.getElementById("scimHardDeleteWarning");
+                        if (!select || !warning) return;
+                        select.addEventListener("change", function () {
+                            warning.hidden = select.value !== "hard";
+                        });
+                    })();
+                </script>
             </div>
         {% endif %}
     </div>
@@ -34,53 +46,56 @@
     {% if provider %}
         <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
             <h2 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">
-                {% trans "Tokens" %}
+                {% trans "Connection" %}
             </h2>
             <div class="p-4">
+                <p class="text-xs text-gray-500 mb-4">
+                    {% trans "Enter these in your identity provider's SCIM settings. The token is sent as a Bearer token." %}
+                </p>
+
+                <label for="scimBaseUrl" class="text-xs font-semibold text-[#333]">{% trans "SCIM base URL" %}</label>
+                <div class="flex items-center gap-2 mt-1 mb-4">
+                    <input type="text" id="scimBaseUrl" class="oh-input w-full font-mono text-xs" value="{{ base_url }}" readonly onclick="this.select();">
+                    <button type="button" class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" title="{% trans 'Copy' %}" onclick="scimCopy(this, 'scimBaseUrl')">
+                        <ion-icon name="copy-outline"></ion-icon>
+                    </button>
+                </div>
+
+                <label for="scimToken" class="text-xs font-semibold text-[#333]">{% trans "Token" %}</label>
+                <div class="flex items-center gap-2 mt-1 mb-1">
+                    <input
+                        type="text"
+                        id="scimToken"
+                        class="oh-input w-full font-mono text-xs"
+                        readonly
+                        value="{% if new_token %}{{ new_token }}{% elif has_token %}********{% endif %}"
+                        placeholder="{% trans 'No token yet' %}"
+                        {% if new_token %}onclick="this.select();"{% endif %}
+                    >
+                    {% if new_token %}
+                        <button type="button" class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" title="{% trans 'Copy' %}" onclick="scimCopy(this, 'scimToken')">
+                            <ion-icon name="copy-outline"></ion-icon>
+                        </button>
+                    {% endif %}
+                </div>
                 {% if new_token %}
-                    <div class="mb-4 p-3 rounded-md bg-[#fff8e6] border border-[#f5d58a]">
-                        <p class="text-xs font-semibold text-[#333]">{% trans "New token" %}</p>
-                        <p class="text-xs text-gray-500 mb-1">{% trans "Copy it into your identity provider now. It will not be shown again." %}</p>
-                        <code class="text-xs select-all break-all">{{ new_token }}</code>
-                    </div>
+                    <p class="text-xs text-[#a15c00] mb-3">{% trans "Copy it into your identity provider now. It will not be shown again." %}</p>
+                {% else %}
+                    <div class="mb-3"></div>
                 {% endif %}
-                <form method="post" action="{% url 'scim-token-create' %}" class="mb-4">
+
+                <form method="post" action="{% url 'scim-token-create' %}">
                     {% csrf_token %}
-                    <button type="submit" class="oh-btn oh-btn--secondary">{% trans "Generate token" %}</button>
+                    {% if has_token %}
+                        <button
+                            type="submit"
+                            class="oh-btn oh-btn--secondary"
+                            onclick="return confirm('{% trans "Reset the token? The current token stops working immediately, so your identity provider must be updated with the new one."|escapejs %}')"
+                        >{% trans "Reset token" %}</button>
+                    {% else %}
+                        <button type="submit" class="oh-btn oh-btn--secondary">{% trans "Generate token" %}</button>
+                    {% endif %}
                 </form>
-                {% if tokens %}
-                    <table class="w-full text-xs">
-                        <thead>
-                            <tr class="text-left text-gray-500">
-                                <th class="py-2">{% trans "Token" %}</th>
-                                <th class="py-2">{% trans "Created" %}</th>
-                                <th class="py-2">{% trans "Last used" %}</th>
-                                <th class="py-2">{% trans "Status" %}</th>
-                                <th class="py-2"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for token in tokens %}
-                                <tr class="border-t border-[#ebebeb]">
-                                    <td class="py-2"><code>{{ token.prefix }}…</code></td>
-                                    <td class="py-2">{{ token.created_at }}</td>
-                                    <td class="py-2">{{ token.last_used_at|default:"-" }}</td>
-                                    <td class="py-2">
-                                        {% if token.is_usable %}{% trans "Active" %}{% else %}{% trans "Revoked" %}{% endif %}
-                                    </td>
-                                    <td class="py-2 text-right">
-                                        {% if token.is_usable %}
-                                            <form method="post" action="{% url 'scim-token-revoke' token.id %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="oh-btn oh-btn--light">{% trans "Revoke" %}</button>
-                                            </form>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% endif %}
             </div>
         </div>
 
@@ -116,4 +131,23 @@
             </div>
         </div>
     {% endif %}
+    <script>
+        // navigator.clipboard only exists in secure contexts (HTTPS/localhost);
+        // fall back to execCommand so copying also works over plain HTTP.
+        function scimCopy(btn, inputId) {
+            var input = document.getElementById(inputId);
+            var done = function () {
+                btn.querySelector("ion-icon").setAttribute("name", "checkmark-outline");
+            };
+            var fallback = function () {
+                input.select();
+                try { if (document.execCommand("copy")) done(); } catch (e) {}
+            };
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(input.value).then(done, fallback);
+            } else {
+                fallback();
+            }
+        }
+    </script>
 {% endblock settings %}

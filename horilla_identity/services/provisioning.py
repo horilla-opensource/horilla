@@ -25,6 +25,8 @@ import logging
 
 from django.apps import apps
 from django.contrib.auth.models import Permission
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.db import transaction
 from django.db.models import ProtectedError
 from django.utils.translation import gettext_noop
@@ -89,6 +91,46 @@ def _check_unique(username=None, email=None, badge_id=None, exclude_employee=Non
         )
 
 
+def _max_length(model, field):
+    return model._meta.get_field(field).max_length
+
+
+def _validate(
+    username=None,
+    email=None,
+    first_name=None,
+    last_name=None,
+    phone=None,
+    badge_id=None,
+):
+    """
+    Reject values the database would refuse. SQLite ignores column lengths
+    but PostgreSQL raises DataError, which would surface as a 500; IdPs read
+    a 500 as an outage and may suspend provisioning.
+    """
+    limits = (
+        ("userName", username, _max_length(HorillaUser, "username")),
+        ("email", email, _max_length(Employee, "email")),
+        ("givenName", first_name, _max_length(Employee, "employee_first_name")),
+        ("familyName", last_name, _max_length(Employee, "employee_last_name")),
+        ("phoneNumber", phone, _max_length(Employee, "phone")),
+        ("employeeNumber", badge_id, _max_length(Employee, "badge_id")),
+    )
+    for name, value, limit in limits:
+        if value and len(value) > limit:
+            raise ProvisioningError(
+                ProvisioningError.INVALID,
+                f"'{name}' must be at most {limit} characters.",
+            )
+    if email:
+        try:
+            validate_email(email)
+        except ValidationError:
+            raise ProvisioningError(
+                ProvisioningError.INVALID, "'email' is not a valid e-mail address."
+            )
+
+
 def _apply_work_info(employee, company, work_info):
     info = EmployeeWorkInformation.objects.entire().filter(employee_id=employee).first()
     if info is None:
@@ -125,6 +167,7 @@ def create_employee(
     """
     username = username.strip().lower()
     email = email.strip().lower()
+    _validate(username, email, first_name, last_name, phone, badge_id)
     _check_unique(username=username, email=email, badge_id=badge_id)
 
     user = HorillaUser.objects.create_user(
@@ -169,6 +212,7 @@ def update_employee(
     _check_not_superuser(employee)
     username = username.strip().lower() if username else None
     email = email.strip().lower() if email else None
+    _validate(username, email, first_name, last_name, phone, badge_id)
     _check_unique(
         username=username, email=email, badge_id=badge_id, exclude_employee=employee
     )

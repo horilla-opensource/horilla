@@ -9,8 +9,7 @@ hand out working provisioning credentials. The raw token is shown once.
 import hashlib
 import secrets
 
-from django.db import models
-from django.utils import timezone
+from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
 from base.models import Company, Department, EmployeeShift, EmployeeType, JobPosition
@@ -48,6 +47,15 @@ class ScimProvider(models.Model):
             "When the identity provider creates a user whose e-mail already "
             "belongs to an employee of this company, link to that employee "
             "instead of rejecting the request."
+        ),
+    )
+    reactivate_archived_employees = models.BooleanField(
+        default=False,
+        verbose_name=_("Allow the identity provider to reactivate archived employees"),
+        help_text=_(
+            "When on, a user the identity provider marks active is reactivated "
+            "even if HR archived them in Horilla. When off, only employees the "
+            "identity provider itself deactivated are reactivated."
         ),
     )
     send_invitation_email = models.BooleanField(
@@ -100,52 +108,33 @@ class ScimProvider(models.Model):
         return f"{self.name} ({self.company})"
 
 
-class ScimTokenQuerySet(models.QuerySet):
-    def usable(self):
-        now = timezone.now()
-        return self.filter(revoked_at__isnull=True).filter(
-            models.Q(expires_at__isnull=True) | models.Q(expires_at__gt=now)
-        )
-
-
 class ScimToken(models.Model):
-    provider = models.ForeignKey(
-        ScimProvider, on_delete=models.CASCADE, related_name="tokens"
+    """A provider has at most one token; resetting it replaces the old one."""
+
+    provider = models.OneToOneField(
+        ScimProvider, on_delete=models.CASCADE, related_name="token"
     )
     token_hash = models.CharField(max_length=64, unique=True, editable=False)
-    prefix = models.CharField(max_length=16, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    expires_at = models.DateTimeField(null=True, blank=True)
-    last_used_at = models.DateTimeField(null=True, blank=True)
-    revoked_at = models.DateTimeField(null=True, blank=True)
-
-    objects = ScimTokenQuerySet.as_manager()
 
     class Meta:
         verbose_name = _("SCIM Token")
         verbose_name_plural = _("SCIM Tokens")
-        ordering = ["-created_at"]
 
     def __str__(self):
-        return f"{self.prefix}…"
+        return f"SCIM token of {self.provider}"
 
     @classmethod
-    def issue(cls, provider, expires_at=None):
-        """Create a token and return ``(token, raw_value)``. Show raw once."""
+    @transaction.atomic
+    def issue(cls, provider):
+        """
+        Create the provider's token, replacing any previous one, and return
+        ``(token, raw_value)``. The raw value is shown once and never stored.
+        """
+        cls.objects.filter(provider=provider).delete()
         raw = TOKEN_PREFIX + secrets.token_urlsafe(32)
-        token = cls.objects.create(
-            provider=provider,
-            token_hash=hash_token(raw),
-            prefix=raw[: len(TOKEN_PREFIX) + 6],
-            expires_at=expires_at,
-        )
+        token = cls.objects.create(provider=provider, token_hash=hash_token(raw))
         return token, raw
-
-    @property
-    def is_usable(self):
-        if self.revoked_at is not None:
-            return False
-        return self.expires_at is None or self.expires_at > timezone.now()
 
 
 class ScimEvent(models.Model):

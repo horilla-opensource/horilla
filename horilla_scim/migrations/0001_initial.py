@@ -21,6 +21,7 @@ class Migration(migrations.Migration):
                 ('is_enabled', models.BooleanField(default=True, verbose_name='Enabled')),
                 ('delete_mode', models.CharField(choices=[('soft', 'Archive the employee and disable login'), ('hard', 'Permanently delete the employee')], default='soft', max_length=10, verbose_name='When the identity provider deletes a user')),
                 ('match_existing_by_email', models.BooleanField(default=True, help_text='When the identity provider creates a user whose e-mail already belongs to an employee of this company, link to that employee instead of rejecting the request.', verbose_name='Link existing employees by e-mail')),
+                ('reactivate_archived_employees', models.BooleanField(default=False, help_text='When on, a user the identity provider marks active is reactivated even if HR archived them in Horilla. When off, only employees the identity provider itself deactivated are reactivated.', verbose_name='Allow the identity provider to reactivate archived employees')),
                 ('send_invitation_email', models.BooleanField(default=False, help_text='Leave off when employees sign in through single sign-on and never need a Horilla password.', verbose_name='Send invitation e-mail to new employees')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('company', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='scim_providers', to='base.company')),
@@ -54,17 +55,12 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('token_hash', models.CharField(editable=False, max_length=64, unique=True)),
-                ('prefix', models.CharField(editable=False, max_length=16)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('expires_at', models.DateTimeField(blank=True, null=True)),
-                ('last_used_at', models.DateTimeField(blank=True, null=True)),
-                ('revoked_at', models.DateTimeField(blank=True, null=True)),
-                ('provider', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tokens', to='horilla_scim.scimprovider')),
+                ('provider', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='token', to='horilla_scim.scimprovider')),
             ],
             options={
                 'verbose_name': 'SCIM Token',
                 'verbose_name_plural': 'SCIM Tokens',
-                'ordering': ['-created_at'],
             },
         ),
     ]

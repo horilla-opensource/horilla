@@ -16,11 +16,6 @@ urlpatterns = [
         views.scim_token_create,
         name="scim-token-create",
     ),
-    path(
-        "settings/scim-settings/tokens/<int:token_id>/revoke/",
-        views.scim_token_revoke,
-        name="scim-token-revoke",
-    ),
     re_path(
         r"^scim/v2/ServiceProviderConfig/?$",
         api.ServiceProviderConfigView.as_view(),

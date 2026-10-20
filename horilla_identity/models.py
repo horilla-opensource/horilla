@@ -43,6 +43,10 @@ class ExternalIdentity(models.Model):
     # Deactivated at the IdP, login cut, but the employee could not be
     # archived because others still depend on them (reports, managers).
     pending_offboarding = models.BooleanField(default=False)
+    # The provider deactivated or deleted this user. Unless the provider is
+    # allowed to reactivate archived employees, only these are reactivated:
+    # an employee HR archived in Horilla stays archived.
+    deactivated_by_provider = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

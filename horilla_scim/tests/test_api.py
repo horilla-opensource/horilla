@@ -4,8 +4,11 @@ the request shapes Okta and Microsoft Entra ID actually send.
 """
 
 import json
+from datetime import timedelta
 
+from django.contrib.auth.models import Permission
 from django.test import Client, TestCase
+from django.utils import timezone
 
 from base.models import Department
 from employee.models import Employee, EmployeeWorkInformation
@@ -13,7 +16,8 @@ from horilla.horilla_middlewares import set_selected_company
 from horilla.testkit import make_company, make_employee, make_user
 from horilla_auth.models import HorillaUser
 from horilla_identity.models import ExternalIdentity
-from horilla_scim.models import ScimEvent, ScimProvider, ScimToken
+from horilla_scim.models import ScimEvent, ScimProvider, ScimToken, hash_token
+from horilla_scim.scheduler import purge_old_events
 from horilla_scim.schemas import CORE_USER, ENTERPRISE_USER, PATCH_OP
 
 BASE = "/scim/v2"
@@ -75,11 +79,12 @@ class AuthTests(ScimTestCase):
         response = self.call("get", "/Users", token="hscim_nope")
         self.assertEqual(response.status_code, 401)
 
-    def test_revoked_token_is_401(self):
-        token = ScimToken.objects.get()
-        token.revoked_at = token.created_at
-        token.save()
-        self.assertEqual(self.call("get", "/Users").status_code, 401)
+    def test_reset_invalidates_old_token(self):
+        old_raw = self.raw_token
+        _token, new_raw = ScimToken.issue(self.provider)
+        self.assertEqual(ScimToken.objects.filter(provider=self.provider).count(), 1)
+        self.assertEqual(self.call("get", "/Users", token=old_raw).status_code, 401)
+        self.assertEqual(self.call("get", "/Users", token=new_raw).status_code, 200)
 
     def test_disabled_provider_is_401(self):
         self.provider.is_enabled = False
@@ -100,6 +105,28 @@ class AuthTests(ScimTestCase):
     def test_requests_are_logged(self):
         self.call("get", "/Users")
         self.assertEqual(ScimEvent.objects.filter(provider=self.provider).count(), 1)
+
+    def test_scheduled_purge_removes_only_old_events(self):
+        self.call("get", "/Users")
+        old = ScimEvent.objects.create(
+            provider=self.provider, method="GET", path="/old", status=200
+        )
+        ScimEvent.objects.filter(pk=old.pk).update(
+            created_at=timezone.now() - timedelta(days=31)
+        )
+        purge_old_events()
+        self.assertEqual(
+            list(ScimEvent.objects.values_list("path", flat=True)), ["/scim/v2/Users"]
+        )
+
+    def test_logged_filter_values_are_redacted(self):
+        self.client.get(
+            BASE + '/Users?filter=userName eq "ann@acme.test"&count=1',
+            HTTP_AUTHORIZATION=f"Bearer {self.raw_token}",
+        )
+        path = ScimEvent.objects.get().path
+        self.assertNotIn("ann@acme.test", path)
+        self.assertEqual(path, '/scim/v2/Users?filter=userName eq "***"&count=1')
 
 
 class DiscoveryTests(ScimTestCase):
@@ -418,6 +445,23 @@ class SettingsViewTests(TestCase):
         make_employee(company=self.company, email="root@acme.test", user=self.admin)
         self.client = Client()
 
+    def test_permanent_delete_warning_follows_delete_mode(self):
+        self.client.force_login(self.admin)
+        session = self.client.session
+        session["selected_company"] = str(self.company.pk)
+        session.save()
+        provider = ScimProvider.objects.create(company=self.company, name="Okta")
+        warning = '<div id="scimHardDeleteWarning" class="mb-4 p-3 rounded-md bg-[#fdecec] border border-[#f1a9a9]"'
+
+        page = self.client.get("/settings/scim-settings/")
+        self.assertContains(page, warning + " hidden>")
+
+        provider.delete_mode = ScimProvider.DELETE_HARD
+        provider.save()
+        page = self.client.get("/settings/scim-settings/")
+        self.assertContains(page, warning + ">")
+        self.assertContains(page, "Permanent delete cannot be undone")
+
     def test_non_superuser_is_refused(self):
         user = make_user("plain")
         make_employee(company=self.company, email="plain@acme.test", user=user)
@@ -437,11 +481,230 @@ class SettingsViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         provider = ScimProvider.objects.get(company=self.company)
 
-        self.client.post("/settings/scim-settings/tokens/")
-        token = ScimToken.objects.get(provider=provider)
+        response = self.client.post("/settings/scim-settings/tokens/")
+        raw = response.context["new_token"]
+        self.assertContains(response, raw)
+        self.assertEqual(
+            ScimToken.objects.get(provider=provider).token_hash, hash_token(raw)
+        )
+        # Shown in the response only, never kept in the session.
+        self.assertNotIn(raw, json.dumps(dict(self.client.session.items())))
+
+        # After a reload the token is masked.
         page = self.client.get("/settings/scim-settings/")
-        self.assertContains(page, token.prefix)
-        # The raw token is shown exactly once.
-        self.assertNotContains(
-            self.client.get("/settings/scim-settings/"), "Copy it into"
+        self.assertNotContains(page, raw)
+        self.assertContains(page, "********")
+        self.assertContains(page, "Reset token")
+
+        # Reset replaces the token; there is still only one.
+        reset = self.client.post("/settings/scim-settings/tokens/")
+        self.assertNotEqual(reset.context["new_token"], raw)
+        self.assertEqual(ScimToken.objects.filter(provider=provider).count(), 1)
+
+
+class ValidationTests(ScimTestCase):
+    """PostgreSQL raises DataError on over-long values, which used to be a
+    500. Each case must be a SCIM 400 and leave nothing behind."""
+
+    def assert_invalid(self, response):
+        self.assertEqual(response.status_code, 400, response.content)
+        self.assertEqual(response.json()["scimType"], "invalidValue")
+
+    def assert_rejected_on_create(self, doc):
+        users_before = HorillaUser.objects.count()
+        self.assert_invalid(self.call("post", "/Users", doc))
+        self.assertFalse(
+            Employee.objects.entire().filter(email="ann@acme.test").exists()
+        )
+        self.assertEqual(HorillaUser.objects.count(), users_before)
+
+    def test_long_username(self):
+        self.assert_rejected_on_create(
+            user_doc(
+                user_name="a" * 151 + "@acme.test",
+                emails=[{"value": "ann@acme.test"}],
+            )
+        )
+
+    def test_long_first_name(self):
+        self.assert_rejected_on_create(
+            user_doc(name={"givenName": "A" * 201, "familyName": "Lee"})
+        )
+
+    def test_long_last_name(self):
+        self.assert_rejected_on_create(
+            user_doc(name={"givenName": "Ann", "familyName": "L" * 201})
+        )
+
+    def test_long_phone(self):
+        self.assert_rejected_on_create(
+            user_doc(phoneNumbers=[{"value": "1" * 26, "type": "work"}])
+        )
+
+    def test_long_employee_number(self):
+        self.assert_rejected_on_create(
+            user_doc(**{ENTERPRISE_USER: {"employeeNumber": "9" * 51}})
+        )
+
+    def test_long_external_id(self):
+        self.assert_rejected_on_create(user_doc(externalId="x" * 256))
+
+    def test_invalid_email(self):
+        self.assert_rejected_on_create(
+            user_doc(user_name="ann", emails=[{"value": "not-an-email"}])
+        )
+
+    def test_patch_with_long_name_or_bad_email(self):
+        created = self.create_user()
+        path = f"/Users/{created['id']}"
+        self.assert_invalid(
+            self.call(
+                "patch",
+                path,
+                patch_doc(
+                    {"op": "replace", "path": "name.givenName", "value": "A" * 201}
+                ),
+            )
+        )
+        self.assert_invalid(
+            self.call(
+                "patch",
+                path,
+                patch_doc(
+                    {
+                        "op": "replace",
+                        "path": 'emails[type eq "work"].value',
+                        "value": "nope",
+                    }
+                ),
+            )
+        )
+        employee = self.employee()
+        self.assertEqual(employee.employee_first_name, "Ann")
+        self.assertEqual(employee.email, "ann@acme.test")
+
+
+class ReactivationTests(ScimTestCase):
+    """By default the provider only reactivates employees it deactivated."""
+
+    def archive_in_horilla(self, employee):
+        # What the employee archive view does.
+        employee.is_active = False
+        employee.save()
+        employee.sync_login_access()
+
+    def activate(self, scim_id):
+        return self.call(
+            "patch",
+            f"/Users/{scim_id}",
+            patch_doc({"op": "replace", "path": "active", "value": True}),
+        )
+
+    def test_patch_does_not_reactivate_employee_archived_by_hr(self):
+        created = self.create_user()
+        self.archive_in_horilla(self.employee())
+        self.assertEqual(self.activate(created["id"]).status_code, 200)
+        employee = self.employee()
+        self.assertFalse(employee.is_active)
+        self.assertFalse(employee.employee_user_id.is_active)
+
+    def test_put_does_not_reactivate_employee_archived_by_hr(self):
+        created = self.create_user()
+        self.archive_in_horilla(self.employee())
+        self.call("put", f"/Users/{created['id']}", user_doc())
+        self.assertFalse(self.employee().is_active)
+
+    def test_adopting_archived_employee_keeps_them_archived(self):
+        employee = make_employee(company=self.company, email="ann@acme.test")
+        self.archive_in_horilla(employee)
+        self.create_user()
+        self.assertFalse(self.employee().is_active)
+
+    def test_setting_allows_reactivating_employee_archived_by_hr(self):
+        self.provider.reactivate_archived_employees = True
+        self.provider.save()
+        created = self.create_user()
+        self.archive_in_horilla(self.employee())
+        self.activate(created["id"])
+        employee = self.employee()
+        self.assertTrue(employee.is_active)
+        self.assertTrue(employee.employee_user_id.is_active)
+
+    def test_login_disabled_in_horilla_is_not_re_enabled(self):
+        created = self.create_user()
+        HorillaUser.objects.filter(email="ann@acme.test").update(is_active=False)
+        self.activate(created["id"])
+        self.assertFalse(self.employee().employee_user_id.is_active)
+
+    def test_setting_allows_re_enabling_login_disabled_in_horilla(self):
+        self.provider.reactivate_archived_employees = True
+        self.provider.save()
+        created = self.create_user()
+        HorillaUser.objects.filter(email="ann@acme.test").update(is_active=False)
+        self.activate(created["id"])
+        self.assertTrue(self.employee().employee_user_id.is_active)
+
+    def test_hr_archive_after_hr_reactivation_is_respected(self):
+        created = self.create_user()
+        off = patch_doc({"op": "replace", "path": "active", "value": False})
+        # The provider deactivates, HR reactivates in Horilla, the provider
+        # syncs, then HR archives again: that archive is HR's, not the
+        # provider's.
+        self.call("patch", f"/Users/{created['id']}", off)
+        employee = self.employee()
+        employee.is_active = True
+        employee.save()
+        employee.sync_login_access()
+        self.call(
+            "patch",
+            f"/Users/{created['id']}",
+            patch_doc({"op": "replace", "path": "name.givenName", "value": "Annie"}),
+        )
+        self.archive_in_horilla(self.employee())
+        self.activate(created["id"])
+        self.assertFalse(self.employee().is_active)
+
+
+class AdminTests(TestCase):
+    """The Django admin shows SCIM models read-only, to superusers only."""
+
+    def setUp(self):
+        set_selected_company(None)
+        self.company = make_company("Acme")
+        self.provider = ScimProvider.objects.create(company=self.company, name="Okta")
+        ScimToken.issue(self.provider)
+        self.client = Client()
+
+    def test_superuser_can_view_but_not_change(self):
+        admin_user = make_user("root", is_superuser=True)
+        make_employee(company=self.company, email="root@acme.test", user=admin_user)
+        self.client.force_login(admin_user)
+        token = ScimToken.objects.get()
+        base = "/admin/horilla_scim/"
+        self.assertEqual(self.client.get(base + "scimprovider/").status_code, 200)
+        self.assertEqual(self.client.get(base + "scimtoken/").status_code, 200)
+        self.assertEqual(self.client.get(base + "scimtoken/add/").status_code, 403)
+        page = self.client.get(f"{base}scimtoken/{token.pk}/change/")
+        self.assertEqual(page.status_code, 200)
+        self.assertContains(page, token.token_hash)
+        self.client.post(
+            f"{base}scimprovider/{self.provider.pk}/change/", {"name": "X"}
+        )
+        self.assertEqual(ScimProvider.objects.get().name, "Okta")
+        self.client.post(f"{base}scimtoken/{token.pk}/delete/", {"post": "yes"})
+        self.assertTrue(ScimToken.objects.exists())
+
+    def test_staff_with_view_permission_is_refused(self):
+        staff = make_user("staff")
+        make_employee(company=self.company, email="staff@acme.test", user=staff)
+        staff.is_staff = True
+        staff.save()
+        staff.user_permissions.add(
+            *Permission.objects.filter(
+                codename__in=["view_scimprovider", "view_scimtoken"]
+            )
+        )
+        self.client.force_login(staff)
+        self.assertEqual(
+            self.client.get("/admin/horilla_scim/scimtoken/").status_code, 403
         )

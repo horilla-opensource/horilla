@@ -17,6 +17,7 @@ class ScimProviderForm(ModelForm):
             "name",
             "delete_mode",
             "match_existing_by_email",
+            "reactivate_archived_employees",
             "send_invitation_email",
             "default_department",
             "default_job_position",

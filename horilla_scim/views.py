@@ -9,8 +9,8 @@ delegable through an ordinary model permission.
 
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
 from base.models import Company
@@ -27,6 +27,22 @@ def _selected_company(request):
     if selected in (None, "all"):
         return None
     return Company.objects.filter(id=selected).first()
+
+
+def _render_settings(request, company, provider, form, new_token=None):
+    context = {
+        "form": form,
+        "company": company,
+        "provider": provider,
+        "base_url": request.build_absolute_uri("/scim/v2"),
+        # Only set in the response to Generate/Reset itself, so the raw
+        # token is never written to the session or the database.
+        "new_token": new_token,
+    }
+    if provider is not None:
+        context["has_token"] = ScimToken.objects.filter(provider=provider).exists()
+        context["events"] = provider.events.all()[:RECENT_EVENTS]
+    return render(request, "scim_settings.html", context)
 
 
 @login_required
@@ -52,43 +68,22 @@ def scim_settings_view(request):
             initial=None if provider else {"name": _("Identity provider")},
         )
 
-    context = {
-        "form": form,
-        "company": company,
-        "provider": provider,
-        "base_url": request.build_absolute_uri("/scim/v2"),
-        # Shown once, right after generation; popped so a reload hides it.
-        "new_token": request.session.pop("scim_new_token", None),
-    }
-    if provider is not None:
-        context["tokens"] = provider.tokens.all()
-        context["events"] = provider.events.all()[:RECENT_EVENTS]
-    return render(request, "scim_settings.html", context)
+    return _render_settings(request, company, provider, form)
 
 
+@never_cache
 @login_required
 @superuser_required
 @require_POST
 def scim_token_create(request):
+    """Generate the provider's token, or reset it (the old one stops working)."""
     company = _selected_company(request)
     provider = get_object_or_404(ScimProvider.objects.order_by("pk"), company=company)
     _token, raw = ScimToken.issue(provider)
-    request.session["scim_new_token"] = raw
     messages.success(
         request, _("Token generated. Copy it now; it will not be shown again.")
     )
-    return redirect("scim-settings")
-
-
-@login_required
-@superuser_required
-@require_POST
-def scim_token_revoke(request, token_id):
-    company = _selected_company(request)
-    token = get_object_or_404(
-        ScimToken, pk=token_id, provider__company=company, revoked_at__isnull=True
-    )
-    token.revoked_at = timezone.now()
-    token.save(update_fields=["revoked_at"])
-    messages.success(request, _("Token revoked."))
-    return redirect("scim-settings")
+    # Rendered here rather than redirected, so the raw value only ever
+    # travels in this one response.
+    form = ScimProviderForm(instance=provider, company=company)
+    return _render_settings(request, company, provider, form, new_token=raw)
