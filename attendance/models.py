@@ -1885,6 +1885,7 @@ class AttendanceConflictResolution(HorillaModel):
         choices=[
             ("full_present", _("Full Present")),
             ("half_present", _("Half Day")),
+            ("half_absent", _("Half Absent")),
             ("partial_hours", _("Partial Hours")),
             ("absent", _("Absent")),
             ("paid_leave", _("Paid Leave")),

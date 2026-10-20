@@ -71,6 +71,14 @@ class WhatEachStatusDoesTests(Fixture):
         self.status("Coded", use_py=True, python_code="tax = 0")
         self.assertContains(self.page(), "Python formula")
 
+    def test_each_row_can_be_deleted_through_the_confirmation_dialog(self):
+        single = self.status("Single", slabs=[(0, None, 10)])
+        response = self.page()
+        self.assertContains(
+            response, "generic-delete/?model=payroll.FilingStatus&amp;pk=%s" % single.pk
+        )
+        self.assertContains(response, 'id="deleteConfirmationBody"')
+
     def test_the_basis_is_shown(self):
         """
         Tax on gross and tax on taxable gross are different amounts, and the
@@ -335,13 +343,13 @@ class SlabPresentationTests(Fixture):
         self.status("Coded", use_py=True, python_code="tax = 0")
         body = self.page().content.decode()
 
-        self.assertIn('class="fs__edit"', body)
+        self.assertIn('oh-btn--small fs__edit"', body)
         self.assertIn(">Formula<", body)
 
     def test_a_status_with_no_slabs_gets_it_too(self):
         """It is the one most likely to need it."""
         self.status("Empty")
-        self.assertContains(self.page(), 'class="fs__edit"')
+        self.assertContains(self.page(), 'oh-btn--small fs__edit"')
 
     def test_every_status_gets_exactly_one(self):
         """
@@ -354,7 +362,7 @@ class SlabPresentationTests(Fixture):
         self.status("WithNothing")
 
         body = self.page().content.decode()
-        self.assertEqual(body.count('class="fs__edit"'), 3)
+        self.assertEqual(body.count('oh-btn--small fs__edit"'), 3)
         self.assertEqual(body.count('class="fs__slabhead"'), 3)
 
     def test_it_is_hidden_without_permission_to_change(self):
@@ -368,7 +376,7 @@ class SlabPresentationTests(Fixture):
         self.status("Single", slabs=[(0, None, 10)])
         self.client.force_login(viewer)
 
-        self.assertNotContains(self.page(), 'class="fs__edit"')
+        self.assertNotContains(self.page(), 'oh-btn--small fs__edit"')
 
     def test_the_bands_are_numbered(self):
         """

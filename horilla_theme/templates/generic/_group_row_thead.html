@@ -31,7 +31,7 @@
                     {% if cell.2 and not cell_attr and not use_shared_colgroup %}style="min-width:180px;"{% endif %}
                 >
                     <div
-                        class="flex gap-1.5 px-1.5 py-1.5 items-center min-w-0{% if forloop.last and not options and not option_method and not actions and not action_method %} justify-between{% endif %}{% for sort_map in sortby_mapping %}{% if sort_map.0 == cell.0 %}cursor-pointer{% endif %}{% endfor %}"
+                        class="flex w-full gap-1.5 px-1.5 py-1.5 items-center min-w-0{% if forloop.last and not options and not option_method and not actions and not action_method %} justify-between{% endif %}{% for sort_map in sortby_mapping %}{% if sort_map.0 == cell.0 %}cursor-pointer{% endif %}{% endfor %}"
                         {% for sort_map in sortby_mapping %}
                             {% if sort_map.0 == cell.0 %}
                                 hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{sortby_key}}={{sort_map.1}}&filter_applied=on"
@@ -68,7 +68,7 @@
                         {% if show_toggle_form and forloop.last and not options and not option_method and not actions and not action_method %}
                             <button
                                 type="button"
-                                class="oh-sticky-dropdown_btn is-column-config-trigger"
+                                class="oh-sticky-dropdown_btn is-column-config-trigger ml-auto shrink-0"
                                 data-gvid="{{gvid}}"
                                 onclick="event.stopPropagation()"
                                 @click="open = !open"

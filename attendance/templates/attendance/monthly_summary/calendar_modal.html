@@ -225,34 +225,40 @@
 }
 .cal-hours-label.edited { color: #7c3aed; }
 
-/* One hue family per status, so no two statuses can be mistaken for each other:
-   green present · green/red split half day · orange partial hours · violet
-   short hours · red absent · blue paid leave · yellow unpaid leave · pink week
-   off · cyan holiday · grey upcoming. The legend dots reuse these same classes. */
+/* The colours are the ones on the buttons that set these statuses, so a day looks like
+   the button that made it: green present · half day = present + paid leave · half
+   absent = absent + present · cyan partial hours · pink short hours · red absent · blue paid leave · orange unpaid leave
+   · teal holiday · violet week off · grey upcoming. A split day shows its two halves'
+   colours side by side. The legend dots reuse these same classes. */
 .cal-present        { background: #86efac; color: #14532d; }
-.cal-half_present   { background: linear-gradient(135deg, #86efac 50%, #fca5a5 50%); color: #1f2937; }
-.cal-partial_hours  { background: #fdba74; color: #7c2d12; }
-.cal-short          { background: #c4b5fd; color: #4c1d95; }
+/* Half Day: a present half and a paid-leave half. Half Absent: an absent half and a present half. */
+.cal-half_present   { background: linear-gradient(135deg, #86efac 50%, #93c5fd 50%); color: #1f2937; }
+.cal-half_absent    { background: linear-gradient(135deg, #fca5a5 50%, #86efac 50%); color: #1f2937; }
+.cal-split          { background: linear-gradient(135deg, var(--h1, #86efac) 50%, var(--h2, #fca5a5) 50%); color: #1f2937; }
+.cal-partial_hours  { background: #67e8f9; color: #155e75; }
+.cal-short          { background: #f9a8d4; color: #831843; }
 .cal-absent         { background: #fca5a5; color: #7f1d1d; }
 /* Not happened yet and nothing recorded: greyed, not counted, not clickable. */
 .cal-future       { background: #f1f5f9; color: #94a3b8; opacity: .75; cursor: not-allowed !important; pointer-events: none; }
 .dark .cal-future { background: #2a2a2a; color: #6b7280; }
 .cal-paid_leave   { background: #93c5fd; color: #1e3a8a; }
-.cal-unpaid_leave { background: #fde047; color: #713f12; }
-.cal-week_off     { background: #f9a8d4; color: #831843; }
-.cal-holiday      { background: #67e8f9; color: #164e63; }
+.cal-unpaid_leave { background: #fdba74; color: #7c2d12; }
+.cal-week_off     { background: #c4b5fd; color: #4c1d95; }
+.cal-holiday      { background: #5eead4; color: #134e4a; }
 .cal-weekend      { background: #f1f5f9; color: #94a3b8; }
 
 /* Summary-strip numbers: the 600-weight of the same hue the day cells and the
    legend use for that status, so a count reads as the colour of its days. */
 .cal-stat-present  { color: #16a34a; }
-.cal-stat-half     { color: #d97706; }
-.cal-stat-short    { color: #7c3aed; }
+.cal-stat-half     { color: #2563eb; }
+.cal-stat-halfabs  { color: #dc2626; }
+.cal-stat-split    { color: #6366f1; }
+.cal-stat-short    { color: #db2777; }
 .cal-stat-absent   { color: #dc2626; }
 .cal-stat-paid     { color: #2563eb; }
-.cal-stat-unpaid   { color: #ca8a04; }
-.cal-stat-weekoff  { color: #db2777; }
-.cal-stat-holiday  { color: #0891b2; }
+.cal-stat-unpaid   { color: #ea580c; }
+.cal-stat-weekoff  { color: #7c3aed; }
+.cal-stat-holiday  { color: #0d9488; }
 
 /* Dark theme: same banding, on dark surfaces. */
 .dark .cal-header, .dark .cal-summary, .dark .cal-hours-strip, .dark .cal-legend { border-color: #3f3f46; }
@@ -275,14 +281,16 @@
   display: none;
   position: fixed;
   z-index: 100010;
-  width: min(340px, calc(100vw - 16px));
-  max-height: min(420px, 70vh);
+  width: min(380px, calc(100vw - 16px));
+  max-height: min(660px, calc(100vh - 24px));
   overflow-y: auto;
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   box-shadow: 0 14px 36px rgba(15,23,42,.25);
 }
+/* The single-day panel scrolls its own body under a fixed head, so the frame itself must not. */
+#cal-resolve-panel:has(.crp-shell) { overflow: hidden; }
 #cal-resolve-panel.panel-conflict { border-color: #e85d04; }
 #cal-resolve-panel.panel-resolved { border-color: #10b981; }
 #cal-resolve-panel.panel-ot       { border-color: #0f766e; }
@@ -337,12 +345,8 @@
 <!-- ── Summary strip ─────────────────────────────────────────────────────── -->
 <div class="cal-summary">
   <div class="cal-summary-item">
-    <span class="cal-summary-val cal-stat-present">{{ cal_summary.full_present }}</span>
-    <span class="cal-summary-lbl">{% trans "Full Present" %}</span>
-  </div>
-  <div class="cal-summary-item">
-    <span class="cal-summary-val cal-stat-half">{{ cal_summary.half_present }}</span>
-    <span class="cal-summary-lbl">{% trans "Half Day" %}</span>
+    <span class="cal-summary-val cal-stat-present">{{ cal_summary.present }}</span>
+    <span class="cal-summary-lbl">{% trans "Present" %}</span>
   </div>
   <div class="cal-summary-item">
     <span class="cal-summary-val cal-stat-short">{{ cal_summary.short }}</span>
@@ -428,10 +432,11 @@
         {% else %}
           <div class="cal-cell cal-{{ cell.status }}{% if cell.is_conflict %} cal-has-conflict{% elif cell.resolution %} cal-resolved-conflict{% endif %}"
                data-date="{{ cell.date|date:'Y-m-d' }}"
-               title="{{ cell.date|date:'d M Y' }}{% if cell.detail %} — {{ cell.detail }}{% endif %}{% if cell.conflict_with == 'paid_leave' or cell.conflict_with == 'unpaid_leave' %} ⚠ conflicts with {{ cell.conflict_with }}{% elif cell.conflict_with == 'holiday_ot' %} HO — Holiday Overtime{% elif cell.conflict_with == 'week_off_ot' %} WO — Week Off Overtime{% elif cell.conflict_with == 'regular_ot' %} OT — Overtime{% elif cell.resolution %} ✓ resolved{% endif %}{% if not readonly %}{% trans ' — Ctrl/Shift-click to select multiple days' %}{% endif %}"
-               {% if not readonly %}onclick="msCalCellClick(event, this, '{{ cell.date|date:'Y-m-d' }}', '{{ cell.conflict_with|default:'' }}', '{{ cell.detail|default:''|escapejs }}')"{% else %}style="cursor:default;"{% endif %}>
+               title="{{ cell.date|date:'d M Y' }}{% if cell.split_label %} — {{ cell.split_label }}{% elif cell.detail %} — {{ cell.detail }}{% endif %}{% if cell.conflict_with == 'paid_leave' or cell.conflict_with == 'unpaid_leave' %} ⚠ conflicts with {{ cell.conflict_with }}{% elif cell.conflict_with == 'holiday_ot' %} HO — Holiday Overtime{% elif cell.conflict_with == 'week_off_ot' %} WO — Week Off Overtime{% elif cell.conflict_with == 'regular_ot' %} OT — Overtime{% elif cell.resolution %} ✓ resolved{% endif %}{% if not readonly %}{% trans ' — Ctrl/Shift-click to select multiple days' %}{% endif %}"
+               {% if not readonly %}onclick="msCalCellClick(event, this, '{{ cell.date|date:'Y-m-d' }}', '{{ cell.conflict_with|default:'' }}', '{{ cell.detail|default:''|escapejs }}')"{% endif %}
+               {% if cell.split_style %}style="{{ cell.split_style }}{% if readonly %};cursor:default{% endif %}"{% elif readonly %}style="cursor:default;"{% endif %}>
             <div class="cal-day-num">{{ cell.day }}</div>
-            {% if cell.detail %}<div class="cal-day-detail">{{ cell.detail }}</div>{% endif %}
+            {% if cell.split_label %}{% elif cell.detail %}<div class="cal-day-detail">{{ cell.detail }}</div>{% endif %}
             {% if cell.conflict_with == "paid_leave" or cell.conflict_with == "unpaid_leave" %}
               <div class="cal-conflict-dot" title="{% trans 'Leave conflict — click to regularize' %}"></div>
             {% elif cell.conflict_with == "holiday_ot" %}
@@ -464,6 +469,8 @@
 <div class="cal-legend">
   <div class="cal-legend-item"><div class="cal-legend-dot cal-present"></div> {% trans "Present (Full)" %}</div>
   <div class="cal-legend-item"><div class="cal-legend-dot cal-half_present"></div> {% trans "Half Day" %}</div>
+  <div class="cal-legend-item"><div class="cal-legend-dot cal-half_absent"></div> {% trans "Half Absent" %}</div>
+  <div class="cal-legend-item"><div class="cal-legend-dot cal-split" style="--h1:#86efac;--h2:#93c5fd"></div> {% trans "Split Day (two halves)" %}</div>
   <div class="cal-legend-item"><div class="cal-legend-dot cal-partial_hours"></div> {% trans "Partial Hours" %}</div>
   <div class="cal-legend-item"><div class="cal-legend-dot cal-short"></div> {% trans "Short Hours" %}</div>
   <div class="cal-legend-item"><div class="cal-legend-dot cal-absent"></div> {% trans "Absent / Missing Out" %}</div>

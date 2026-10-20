@@ -259,9 +259,11 @@ def hourly_computation(employee, wage, start_date, end_date):
     # working day here too, matching build_monthly_summary's same rule.
     regularized_dates = set(
         AttendanceConflictResolution.objects.filter(
+            # Worked days, including a split day with a present half ("split:P+A", "split:A+P").
+            Q(resolution__in=("full_present", "half_present", "half_absent"))
+            | Q(resolution__regex=r"^split:(P\+|.+\+P$)"),
             employee_id=employee,
             date__range=(start_date, end_date),
-            resolution__in=("full_present", "half_present"),
         ).values_list("date", flat=True)
     )
 

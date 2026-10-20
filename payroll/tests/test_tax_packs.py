@@ -83,6 +83,17 @@ class TaxPackDataTests(TestCase):
             preview_yearly_tax(status, 2000000)["tax"], 192400.0, places=2
         )
 
+    def test_the_preview_carries_the_rebate_rule_so_the_page_can_explain_it(self):
+        load_tax_packs(["in_new"])
+        status = FilingStatus.objects.get(filing_status__startswith="India — New")
+        inside = preview_yearly_tax(status, 1275000)
+        self.assertEqual(inside["rebate_limit"], float(status.rebate_income_limit))
+        self.assertEqual(inside["rebate_max"], float(status.rebate_max_amount))
+        self.assertGreater(inside["rebate_applied"], 0)
+        above = preview_yearly_tax(status, 2000000)
+        self.assertEqual(above["rebate_applied"], 0)
+        self.assertGreater(above["taxable_income"], above["rebate_limit"])
+
     def test_us_single_matches_a_hand_computed_bracket_walk(self):
         """100,000 less the 15,000 deduction = 85,000 taxable."""
         load_tax_packs(["us_single"])

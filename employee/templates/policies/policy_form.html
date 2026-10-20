@@ -34,6 +34,11 @@
             var addFilesForm = container.querySelector(".add-files-form");
             if (addFilesForm) addFilesForm.classList.add("flex-wrap");
             fileField.after(container);
+            // The field sits in a half-width column; let it use the full row.
+            var column = document.getElementById("id_attachment_parent_div");
+            if (column) {
+                column.className = column.className.replace(/\bcol-md-\d+\b/g, "").trim() + " col-md-12";
+            }
         }
     })();
     {% endif %}
