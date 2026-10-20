@@ -511,6 +511,11 @@ def dashboard_kpi_data(request):
     if scoped_ids is not None:
         emp_qs = emp_qs.filter(id__in=scoped_ids)
     total_employees = emp_qs.count()
+    # Employees without a shift aren't expected to clock in (e.g. salaried
+    # staff who aren't time-tracked), so they are left out of the expected,
+    # absent and rate figures below; the headcount above still counts them.
+    tracked_qs = emp_qs.filter(employee_work_info__shift_id__isnull=False)
+    tracked_ids = set(tracked_qs.values_list("id", flat=True))
 
     # The tile reads "+N This Month", so this is always the current calendar
     # month (not the picker's range) and only counts active employees.
@@ -580,7 +585,7 @@ def dashboard_kpi_data(request):
 
     # Expected = active employees not on approved leave (excludes leave from
     # the denominator so "absent" is not inflated by people who should be out).
-    expected_today = max(0, total_employees - on_leave)
+    expected_today = max(0, len(tracked_ids - on_leave_employee_ids))
     # Counted as a set difference, not total - present - on_leave: someone on
     # a half-day leave who also clocked in is in both of those sets, and
     # subtracting both would count them out twice. This is the same
@@ -589,7 +594,9 @@ def dashboard_kpi_data(request):
     # the list always agree. The Attendance dashboard's own Offline card is
     # a different, shift-aware metric.
     not_checked_in = (
-        emp_qs.exclude(id__in=present_ids).exclude(id__in=on_leave_employee_ids).count()
+        tracked_qs.exclude(id__in=present_ids)
+        .exclude(id__in=on_leave_employee_ids)
+        .count()
     )
     # On a weekly off or holiday nobody is expected in, so whoever hasn't
     # checked in is on week off rather than absent.
@@ -608,8 +615,9 @@ def dashboard_kpi_data(request):
     expected_to_check_in = not_checked_in
     # Keep absent_today as an alias for not_checked_in for API compatibility.
     absent_today = not_checked_in
+    present_tracked = len(present_ids & tracked_ids)
     attendance_rate = (
-        round((present_today / expected_today * 100), 1) if expected_today > 0 else 0
+        round((present_tracked / expected_today * 100), 1) if expected_today > 0 else 0
     )
 
     pending_leaves = 0
@@ -668,7 +676,10 @@ def dashboard_attendance_trend(request):
         from attendance.models import Attendance
         from employee.models import Employee
 
-        emp_qs = Employee.objects.filter(is_active=True)
+        # Only employees with a shift are expected to clock in.
+        emp_qs = Employee.objects.filter(
+            is_active=True, employee_work_info__shift_id__isnull=False
+        )
         if scoped_ids is not None:
             emp_qs = emp_qs.filter(id__in=scoped_ids)
         total = emp_qs.count()
