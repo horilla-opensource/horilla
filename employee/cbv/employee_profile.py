@@ -7,7 +7,7 @@ from datetime import date
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import View
@@ -64,6 +64,7 @@ class EmployeeProfileView(HorillaProfileView):
             )
 
         employee = request.user.employee_get
+        pk = obj_id
 
         if request.user.has_perm("employee.change_employee"):
             self.actions = [
@@ -81,13 +82,114 @@ class EmployeeProfileView(HorillaProfileView):
                     """,
                 },
                 {
-                    "divider": True,
+                    "title": _("Export Individual Data"),
+                    "src": f"/{settings.STATIC_URL}images/ui/document.png",
+                    "accessibility": "employee.cbv.accessibility.export_data_accessibility",
+                    "attrs": f"""
+                        href="#"
+                        hx-get="{reverse('export-data-employee', args=[pk])}"
+                        hx-target="#export-content"
+                        hx-swap="innerHTML"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#dataExport"
+                    """,
+                },
+                {
+                    "title": _("Allocations"),
+                    "src": f"/{settings.STATIC_URL}images/ui/batch.png",
+                    "accessibility": "employee.cbv.accessibility.allocations_accessibility",
+                    "attrs": f"""
+                        href="#"
+                        hx-get="{reverse('allocation-view', args=[pk])}"
+                        hx-target="#allocationModalBody"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#allocationModal"
+                    """,
+                },
+                {
+                    "title": _("Send Mail"),
+                    "src": f"/{settings.STATIC_URL}images/ui/email.png",
+                    "accessibility": "employee.cbv.accessibility.send_mail_accessibility",
+                    "attrs": f"""
+                        href="#"
+                        hx-get="{reverse('send-mail-employee', args=[pk])}"
+                        hx-target="#mail-content"
+                        hx-swap="innerHTML"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#sendMailModal"
+                    """,
                 },
                 {
                     "title": _("Send password reset link"),
                     "src": f"/{settings.STATIC_URL}images/ui/key.png",
                     "accessibility": "employee.cbv.accessibility.password_reset_accessibility",
                     "attrs": """onclick="$('#reset-button').click();" """,
+                },
+                {
+                    "title": _("Reset Password"),
+                    "src": f"/{settings.STATIC_URL}images/ui/key.png",
+                    "accessibility": "employee.cbv.accessibility.admin_reset_password_accessibility",
+                    "attrs": f"""
+                        href="#"
+                        hx-post="{reverse('employee-reset-password-admin', args=[pk])}"
+                        hx-target="#genericModalBody"
+                        hx-swap="innerHTML"
+                        hx-confirm="{_('This will immediately invalidate the current password. Continue?')}"
+                        hx-on::after-request="if (event.detail.successful) document.getElementById('genericModal').classList.add('oh-modal--show')"
+                    """,
+                },
+                {
+                    "title": _("Send Invitation"),
+                    "src": f"/{settings.STATIC_URL}images/ui/invite-user.svg",
+                    "accessibility": "employee.cbv.accessibility.admin_reset_password_accessibility",
+                    "attrs": f"""
+                        href="#"
+                        hx-post="{reverse('employee-send-invitation', args=[pk])}"
+                        hx-target="#relatedModel"
+                        hx-confirm="{_('Send an invitation email to this employee?')}"
+                    """,
+                },
+                {
+                    "divider": True,
+                },
+                {
+                    "title": _("Archive"),
+                    "src": f"/{settings.STATIC_URL}images/ui/restrict.png",
+                    "accessibility": "employee.cbv.accessibility.archive_accessibility",
+                    "attrs": f"""
+                        href="#"
+                        hx-post="{reverse('employee-archive', args=[pk])}"
+                        hx-target="#relatedModel"
+                        hx-confirm="{_('Do you want to archive this employee?')}"
+                        hx-on::after-request="if (!document.querySelector('#relatedModel .oh-modal')) window.location.reload();"
+                    """,
+                    "variant": "danger",
+                },
+                {
+                    "title": _("Un-Archive"),
+                    "src": f"/{settings.STATIC_URL}images/ui/restrict.png",
+                    "accessibility": "employee.cbv.accessibility.un_archive_accessibility",
+                    "attrs": f"""
+                        href="#"
+                        hx-post="{reverse('employee-archive', args=[pk])}"
+                        hx-target="#relatedModel"
+                        hx-confirm="{_('Do you want to un-archive this employee?')}"
+                        hx-on::after-request="window.location.reload();"
+                    """,
+                    "variant": "success",
+                },
+                {
+                    "title": _("Delete"),
+                    "src": f"/{settings.STATIC_URL}images/ui/delete.svg",
+                    "accessibility": "employee.cbv.accessibility.delete_accessibility",
+                    "attrs": f"""
+                        href="#"
+                        hx-get="{reverse('generic-delete')}?model=employee.Employee&pk={pk}"
+                        hx-target="#deleteConfirmationBody"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#deleteConfirmation"
+                    """,
+                    "variant": "danger",
                 },
                 {
                     "divider": True,
@@ -126,6 +228,13 @@ class EmployeeProfileView(HorillaProfileView):
             ]
 
         return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["send_mail_url"] = reverse(
+            "send-mail-employee", args=[self.kwargs.get("pk")]
+        )
+        return context
 
 
 class UserProfileView(EmployeeProfileView):
