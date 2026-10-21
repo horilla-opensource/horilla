@@ -96,7 +96,7 @@ geopy==2.5.0
 pyzk==0.9
 
 # Image handling
-pillow>=12.3.0,<13
+pillow>=13.0.0,<14
 
 # Security & encryption
 # 50.0.0 clears all five known advisories against 44.0.2; 46.x and 49.x each
