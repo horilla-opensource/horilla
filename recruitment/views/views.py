@@ -1688,6 +1688,7 @@ def interview_employee_remove(request, interview_id, employee_id):
 
 
 @login_required
+@permission_required(perm="recruitment.view_candidate")
 def candidate_export(request):
     """
     This method is used to Export candidate data
