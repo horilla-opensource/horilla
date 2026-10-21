@@ -1,5 +1,5 @@
 {% load i18n %}
-<div class="accordion-wrapper space-y-2">
+{% if not is_chunk %}<div class="accordion-wrapper space-y-2">{% endif %}
     {% for question, answers in feedback_overview.items %}
         <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
             <!-- Accordion Button -->
@@ -19,30 +19,30 @@
                         <table class="w-full">
                             <thead class="bg-white">
                                 <tr class="border-b border-[#ececec]">
-                                    <th class="text-sm font-medium text-left p-3">{% trans "Employee" %}</th>
-                                    <th class="text-sm font-medium text-left p-3">{% trans "Answer" %}</th>
+                                    <th class="text-sm font-medium text-left p-1.5">{% trans "Employee" %}</th>
+                                    <th class="text-sm font-medium text-left p-1.5">{% trans "Answer" %}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for answer in answers %}
                                     {% for employee, value in answer.items %}
                                         <tr class="border-b border-[#ebebeb]">
-                                            <td class="text-sm text-left p-3 text-[#666]">
+                                            <td class="text-sm text-left p-1 text-[#666] h-[30px]">
                                                 <div class="flex gap-3 items-center font-normal text-sm">
                                                     <img
-                                                        src="{{ employee.get_avatar }}"
+                                                        src="{{ employee.avatar_url }}"
                                                         class="rounded-full"
                                                         alt=""
-                                                        width="30"
+                                                        width="24"
                                                     >
                                                     <span>{{ employee }}</span>
                                                 </div>
                                             </td>
-                                            <td class="text-sm text-left p-3 text-[#666]">
+                                            <td class="text-sm text-left p-1 text-[#666] h-[30px]">
                                                 {% if value.1.type == '1' %}
                                                     <span class="oh-activity-sidebar__a">{{ value.0.answer }}</span>
                                                 {% elif value.1.type == '2' %}
-                                                    <ul class="flex gap-2 text-lg ps-4 mb-4">
+                                                    <ul class="flex gap-2 text-lg ps-4">
                                                         {% for i in "12345" %}
                                                             <li>
                                                                 <i
@@ -53,20 +53,22 @@
                                                         {% endfor %}
                                                     </ul>
                                                 {% elif value.1.type == '3' %}
-                                                    <div class="oh-input__group">
-                                                        <div class="oh-input-picker-group">
-                                                            <div class="oh-input-picker oh-input-picker--selected boolean-colour">
-                                                                {{ value.0.answer }}
-                                                                <input type="radio" selected>
-                                                            </div>
-                                                        </div>
+                                                    <div class="flex gap-2">
+                                                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg border text-xs font-medium {% if value.0.answer|lower == 'yes' %}border-primary-600 bg-primary-300 text-dark-600{% else %}border-secondary-200 bg-white text-dark-100 opacity-60{% endif %}">
+                                                            <span class="w-3 h-3 shrink-0 rounded-full border-2 {% if value.0.answer|lower == 'yes' %}border-primary-600 bg-primary-600 ring-2 ring-inset ring-white{% else %}border-secondary-300{% endif %}"></span>
+                                                            {% trans "Yes" %}
+                                                        </span>
+                                                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg border text-xs font-medium {% if value.0.answer|lower == 'no' %}border-primary-600 bg-primary-300 text-dark-600{% else %}border-secondary-200 bg-white text-dark-100 opacity-60{% endif %}">
+                                                            <span class="w-3 h-3 shrink-0 rounded-full border-2 {% if value.0.answer|lower == 'no' %}border-primary-600 bg-primary-600 ring-2 ring-inset ring-white{% else %}border-secondary-300{% endif %}"></span>
+                                                            {% trans "No" %}
+                                                        </span>
                                                     </div>
                                                 {% elif value.1.type == '4' %}
-                                                    <div class="d-block">
-                                                        <label
-                                                            class="oh-label"
-                                                            for="answer1"
-                                                        >{{ value.0.answer }}</label>
+                                                    <div class="flex gap-2">
+                                                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg border text-xs font-medium border-primary-600 bg-primary-300 text-dark-600">
+                                                            <span class="w-3 h-3 shrink-0 rounded-full border-2 border-primary-600 bg-primary-600 ring-2 ring-inset ring-white"></span>
+                                                            {{ value.0.answer }}
+                                                        </span>
                                                     </div>
                                                 {% elif value.1.type == '5' %}
                                                     <div class="d-block mt-2">
@@ -107,36 +109,46 @@
             </div>
         </div>
     {% endfor %}
-</div>
+    {% if page_obj.has_next %}
+        <div
+            hx-get="{% url 'get-feedback-overview' feedback.id %}?page={{ page_obj.next_page_number }}"
+            hx-trigger="intersect once"
+            hx-swap="outerHTML"
+            hx-select="unset"
+            hx-push-url="false"
+        >
+            <div class="flex justify-center items-center p-4">
+                <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+            </div>
+        </div>
+    {% endif %}
+{% if not is_chunk %}</div>
 
 <!-- ACCORDION -->
 <script>
-    document.querySelectorAll('.accordion-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
+    (function () {
+        const pane = document.getElementById("feedback-overview");
+        if (!pane || pane.dataset.accordionBound) return;
+        pane.dataset.accordionBound = "1";
+
+        pane.addEventListener("click", (event) => {
+            const btn = event.target.closest(".accordion-btn");
+            if (!btn) return;
+
             const panel = btn.nextElementSibling;
-            const icon = btn.querySelector('.icon');
+            const icon = btn.querySelector(".icon");
             const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
 
-            // Collapse all others (optional — comment this block if you want multiple open)
-            document.querySelectorAll('.accordion-panel').forEach(p => {
+            pane.querySelectorAll(".accordion-panel").forEach((p) => {
                 p.style.maxHeight = null;
-                p.previousElementSibling.querySelector('.icon').textContent = '+';
-                p.previousElementSibling.classList.remove("bg-primary-600", "text-white");
-                p.previousElementSibling.classList.add("bg-primary-100", "text-primary-600");
+                p.previousElementSibling.querySelector(".icon").textContent = "+";
             });
 
-            // Toggle current
             if (!isOpen) {
-                panel.style.maxHeight = panel.scrollHeight + 'px';
-                icon.textContent = '−';
-                btn.classList.remove("bg-primary-100", "text-primary-600");
-                btn.classList.add("bg-primary-100", "text-primary-600");
-            } else {
-                panel.style.maxHeight = null;
-                icon.textContent = '+';
-                btn.classList.remove("bg-primary-600", "text-white");
-                btn.classList.add("bg-primary-100", "text-primary-600");
+                panel.style.maxHeight = panel.scrollHeight + "px";
+                icon.textContent = "−";
             }
         });
-    });
+    })();
 </script>
+{% endif %}

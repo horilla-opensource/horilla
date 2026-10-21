@@ -162,7 +162,7 @@
     <!-- Feedback Info Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
       <div class="mb-2 flex gap-5 items-center">
-        <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "Owner" %}</span>
+        <span class="font-medium text-sm text-[#565E6C] w-48 shrink-0">{% trans "Owner" %}</span>
         <p class="text-sm font-semibold flex items-center gap-5">:
           <img src="{{ feedback.employee_id.get_avatar }}" alt="{% trans 'owner' %}" class="w-6 h-6 rounded-full inline-block">
           <span>{{ feedback.employee_id }}</span>
@@ -170,12 +170,12 @@
       </div>
 
       <div class="mb-2 flex gap-5 items-center">
-        <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "Start Date" %}</span>
+        <span class="font-medium text-sm text-[#565E6C] w-48 shrink-0">{% trans "Start Date" %}</span>
         <p class="text-sm font-semibold flex items-center gap-5">: <span>{{ feedback.start_date }}</span></p>
       </div>
 
       <div class="mb-2 flex gap-5 items-center">
-        <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "End Date" %}</span>
+        <span class="font-medium text-sm text-[#565E6C] w-48 shrink-0">{% trans "End Date" %}</span>
         <p class="text-sm font-semibold flex items-center gap-5">:
           <span>  {{ feedback.end_date }}</span>
           <span title="Due {% if feedback.end_date == today %} today {% else %}in {{ feedback.end_date|sub:today }}{% endif %}">
@@ -187,9 +187,9 @@
       </div>
 
       <div class="mb-2 flex gap-5 items-center ">
-        <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "Answered Employees" %}</span>
+        <span class="font-medium text-sm text-[#565E6C] w-48 shrink-0">{% trans "Answered Employees" %}</span>
         <p class="text-sm font-semibold flex items-center gap-5">:
-        <ul class="flex items-center gap-1">
+        <ul class="flex flex-wrap items-center gap-1">
           {% for employee in employee_statics.yes %}
             {% if employee %}
               <li><a href="{% url 'employee-view-individual' employee.id %}"><img src="{{ employee.get_avatar }}" class="w-6 h-6 rounded-full" alt=""></a></li>
@@ -199,9 +199,9 @@
       </div>
 
       <div class="mb-2 flex gap-5 items-center">
-        <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "Employees not answered yet" %}</span>
+        <span class="font-medium text-sm text-[#565E6C] w-48 shrink-0">{% trans "Employees not answered yet" %}</span>
         <p class="text-sm font-semibold flex items-center gap-5">:
-        <ul class="flex items-center gap-1">
+        <ul class="flex flex-wrap items-center gap-1">
           {% for employee in employee_statics.no %}
             {% if employee %}
               <li><a href="{% url 'employee-view-individual' employee.id %}"><img src="{{ employee.get_avatar }}" class="w-6 h-6 rounded-full" alt=""></a></li>
@@ -212,11 +212,11 @@
 
       {% if perms.pms.view_feedback and feedback.cyclic_feedback %}
         <div class="mb-2 flex gap-5 items-center">
-          <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "Cyclic feedback period" %}</span>
+          <span class="font-medium text-sm text-[#565E6C] w-48 shrink-0">{% trans "Cyclic feedback period" %}</span>
           <p class="text-sm font-semibold">: {{ feedback.cyclic_feedback_days_count }} {{ feedback.get_cyclic_feedback_period_display }}</p>
         </div>
         <div class="mb-2 flex gap-5 items-center">
-          <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "Next feedback on" %}</span>
+          <span class="font-medium text-sm text-[#565E6C] w-48 shrink-0">{% trans "Next feedback on" %}</span>
           <p class="text-sm font-semibold">: {{ feedback.cyclic_next_start_date }} - {{ feedback.cyclic_next_end_date }}</p>
         </div>
       {% endif %}
@@ -226,15 +226,15 @@
   <div class="bg-white p-3 rounded-md shadow-card ">
     <div class="h-[calc(100vh_-_335px)] overflow-hidden overflow-y-auto">
       <!-- Tab Buttons -->
-      <div class="mytab flex sticky top-0 bg-white" role="tablist">
+      <div class="flex gap-1 sticky top-0 z-10 bg-white pb-1" role="tablist">
           <button
-            class="tab-button px-4 py-2 text-sm font-medium text-blue-600 w-1/2 active"
+            class="tab-button px-2 py-1 rounded-md text-xs flex items-center gap-2 border border-dark-50 text-gray-800 transition duration-300"
             data-target="#feedback-answers"
             data-tab="feedback-answers">
             {% trans 'Feedback Answers' %}
           </button>
           <button
-            class="tab-button px-4 py-2 text-sm font-medium w-1/2"
+            class="tab-button px-2 py-1 rounded-md text-xs flex items-center gap-2 border border-dark-50 text-gray-800 transition duration-300"
             onclick="$('#feedback-overview-button').click()"
             data-target="#feedback-overview"
             data-tab='feedback-overview'>
@@ -250,24 +250,24 @@
             <table class="w-full">
               <thead class="bg-white">
                 <tr class="border-b border-[#ececec]">
-                  <th class="text-sm font-medium text-left p-3" style="width:40%;">{% trans "Employee" %}</th>
-                  <th class="text-sm font-medium text-left p-3" style="width:28%;">{% trans "Status" %}</th>
+                  <th class="text-sm font-medium text-left p-1.5" style="width:40%;">{% trans "Employee" %}</th>
+                  <th class="text-sm font-medium text-left p-1.5" style="width:28%;">{% trans "Status" %}</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 <tr class="border-b border-[#ebebeb]">
-                  <td class="text-sm text-left p-3 text-[#666]">
+                  <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px]">
                     <div class="flex gap-3 items-center font-normal text-sm">
-                      <img src="{{feedback.employee_id.get_avatar}}" class="rounded-full" alt="" width="30" />
+                      <img src="{{feedback.employee_id.get_avatar}}" class="rounded-full" alt="" width="24" />
                       <span>{{feedback.employee_id}}</span>
                     </div>
                   </td>
-                  <td class="text-sm text-left p-3 text-[#666]">
-                    <span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{feedback.employee_id.id}}"></span>
+                  <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px]">
+                    {% if feedback.employee_id.id in answered_ids %}{% trans "Completed" %}{% else %}{% trans "Not-completed" %}{% endif %}
                   </td>
-                  <td class="text-sm text-left p-3 text-[#666]">
-                    <button class="px-4 py-2 bg-info-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-info-800 transition duration-300 oh-activity-sidebar__open"
+                  <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px]">
+                    <button class="px-3 py-1.5 bg-info-600 text-white rounded-md text-xs flex justify-center items-center gap-2 hover:bg-info-800 transition duration-300 oh-activity-sidebar__open"
                       data-target="#answerViewAccordion"
                       hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=feedback.employee_id.id %}"
                       hx-target="#answerView">
@@ -285,24 +285,24 @@
             <table class="w-full">
               <thead class="bg-white">
                 <tr class="border-b border-[#ececec]">
-                  <th class="text-sm font-medium text-left p-3" style="width:40%;">{% trans "Manager" %}</th>
-                  <th class="text-sm font-medium text-left p-3" style="width:28%;">{% trans "Status" %}</th>
+                  <th class="text-sm font-medium text-left p-1.5" style="width:40%;">{% trans "Manager" %}</th>
+                  <th class="text-sm font-medium text-left p-1.5" style="width:28%;">{% trans "Status" %}</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 <tr class="border-b border-[#ebebeb]">
-                  <td class="text-sm text-left p-3 text-[#666]">
+                  <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px]">
                     <div class="flex gap-3 items-center font-normal text-sm">
-                      <img src="{{feedback.manager_id.get_avatar}}" class="rounded-full" alt="" width="30" />
+                      <img src="{{feedback.manager_id.get_avatar}}" class="rounded-full" alt="" width="24" />
                       <span>{{feedback.manager_id}}</span>
                     </div>
                   </td>
-                  <td class="text-sm text-left p-3 text-[#666]">
-                    <span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{feedback.manager_id.id}}"></span>
+                  <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px]">
+                    {% if feedback.manager_id.id in answered_ids %}{% trans "Completed" %}{% else %}{% trans "Not-completed" %}{% endif %}
                   </td>
-                  <td class="text-sm text-left p-3 text-[#666]">
-                    <button class="px-4 py-2 bg-info-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-info-800 transition duration-300 oh-activity-sidebar__open"
+                  <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px]">
+                    <button class="px-3 py-1.5 bg-info-600 text-white rounded-md text-xs flex justify-center items-center gap-2 hover:bg-info-800 transition duration-300 oh-activity-sidebar__open"
                       data-target="#answerViewAccordion"
                       hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=feedback.manager_id.id %}"
                       hx-target="#answerView">
@@ -321,25 +321,25 @@
             <table class="w-full">
               <thead class="bg-white">
                 <tr class="border-b border-[#ececec]">
-                  <th class="text-sm font-medium text-left p-3" style="width:40%;">{% trans "Subordinates" %}</th>
-                  <th class="text-sm font-medium text-left p-3" style="width:28%;">{% trans "Status" %}</th>
+                  <th class="text-sm font-medium text-left p-1.5" style="width:40%;">{% trans "Subordinates" %}</th>
+                  <th class="text-sm font-medium text-left p-1.5" style="width:28%;">{% trans "Status" %}</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 {% for employee in feedback.subordinate_id.all %}
                 <tr class="border-b border-[#ebebeb]">
-                  <td class="text-sm text-left p-3 text-[#666]">
+                  <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px]">
                     <div class="flex gap-3 items-center font-normal text-sm">
-                      <img src="{{employee.get_avatar}}" class="rounded-full" alt="" width="30" />
+                      <img src="{{employee.get_avatar}}" class="rounded-full" alt="" width="24" />
                       <span>{{employee}}</span>
                     </div>
                   </td>
-                  <td class="text-sm text-left p-3 text-[#666]">
-                    <span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{employee.id}}"></span>
+                  <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px]">
+                    {% if employee.id in answered_ids %}{% trans "Completed" %}{% else %}{% trans "Not-completed" %}{% endif %}
                   </td>
-                  <td class="text-sm text-left p-3 text-[#666]">
-                    <button class="px-4 py-2 bg-info-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-info-800 transition duration-300 oh-activity-sidebar__open"
+                  <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px]">
+                    <button class="px-3 py-1.5 bg-info-600 text-white rounded-md text-xs flex justify-center items-center gap-2 hover:bg-info-800 transition duration-300 oh-activity-sidebar__open"
                       data-target="#answerViewAccordion"
                       hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=employee.id %}"
                       hx-target="#answerView">
@@ -359,25 +359,25 @@
             <table class="w-full">
               <thead class="bg-white">
                 <tr class="border-b border-[#ececec]">
-                  <th class="text-sm font-medium text-left p-3" style="width:40%;">{% trans "Colleague" %}</th>
-                  <th class="text-sm font-medium text-left p-3" style="width:28%;">{% trans "Status" %}</th>
+                  <th class="text-sm font-medium text-left p-1.5" style="width:40%;">{% trans "Colleague" %}</th>
+                  <th class="text-sm font-medium text-left p-1.5" style="width:28%;">{% trans "Status" %}</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 {% for employee in feedback.colleague_id.all %}
                 <tr class="border-b border-[#ebebeb]">
-                  <td class="text-sm text-left p-3 text-[#666]">
+                  <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px]">
                     <div class="flex gap-3 items-center font-normal text-sm">
-                      <img src="{{employee.get_avatar}}" class="rounded-full" alt="" width="30" />
+                      <img src="{{employee.get_avatar}}" class="rounded-full" alt="" width="24" />
                       <span>{{employee}}</span>
                     </div>
                   </td>
-                  <td class="text-sm text-left p-3 text-[#666]">
-                    <span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{employee.id}}"></span>
+                  <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px]">
+                    {% if employee.id in answered_ids %}{% trans "Completed" %}{% else %}{% trans "Not-completed" %}{% endif %}
                   </td>
-                  <td class="text-sm text-left p-3 text-[#666]">
-                    <button class="px-4 py-2 bg-info-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-info-800 transition duration-300 oh-activity-sidebar__open"
+                  <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px]">
+                    <button class="px-3 py-1.5 bg-info-600 text-white rounded-md text-xs flex justify-center items-center gap-2 hover:bg-info-800 transition duration-300 oh-activity-sidebar__open"
                       data-target="#answerViewAccordion"
                       hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=employee.id %}"
                       hx-target="#answerView">
@@ -397,25 +397,25 @@
             <table class="w-full">
               <thead class="bg-white">
                 <tr class="border-b border-[#ececec]">
-                  <th class="text-sm font-medium text-left p-3" style="width:40%;">{% trans "Other Employees" %}</th>
-                  <th class="text-sm font-medium text-left p-3" style="width:28%;">{% trans "Status" %}</th>
+                  <th class="text-sm font-medium text-left p-1.5" style="width:40%;">{% trans "Other Employees" %}</th>
+                  <th class="text-sm font-medium text-left p-1.5" style="width:28%;">{% trans "Status" %}</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 {% for employee in feedback.others_id.all %}
                 <tr class="border-b border-[#ebebeb]">
-                  <td class="text-sm text-left p-3 text-[#666]">
+                  <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px]">
                     <div class="flex gap-3 items-center font-normal text-sm">
-                      <img src="{{employee.get_avatar}}" class="rounded-full" alt="" width="30" />
+                      <img src="{{employee.get_avatar}}" class="rounded-full" alt="" width="24" />
                       <span>{{employee}}</span>
                     </div>
                   </td>
-                  <td class="text-sm text-left p-3 text-[#666]">
-                    <span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{employee.id}}"></span>
+                  <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px]">
+                    {% if employee.id in answered_ids %}{% trans "Completed" %}{% else %}{% trans "Not-completed" %}{% endif %}
                   </td>
-                  <td class="text-sm text-left p-3 text-[#666]">
-                    <button class="px-4 py-2 bg-info-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-info-800 transition duration-300 oh-activity-sidebar__open"
+                  <td class="text-sm text-left px-1 py-1 text-[#666] h-[30px]">
+                    <button class="px-3 py-1.5 bg-info-600 text-white rounded-md text-xs flex justify-center items-center gap-2 hover:bg-info-800 transition duration-300 oh-activity-sidebar__open"
                       data-target="#answerViewAccordion"
                       hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=employee.id %}"
                       hx-target="#answerView">
@@ -593,26 +593,53 @@
 
   <!--  TAB DESIGN  -->
   <script>
-      const tabButtons = document.querySelectorAll(".tab-button");
-      const tabPanes = document.querySelectorAll(".tab-pane");
+      (function () {
+          const tabButtons = document.querySelectorAll(".tab-button");
+          const tabPanes = document.querySelectorAll(".tab-pane");
 
-      tabButtons.forEach((btn) => {
-          btn.addEventListener("click", () => {
-              // Remove active class and hide all panes
-              tabButtons.forEach((b) => b.classList.remove("active", "text-blue-600", "border-blue-500"));
+          const activeTabClasses = ["bg-primary-300", "text-primary-600", "border-primary-600"];
+          const inactiveTabClasses = ["text-gray-800", "border-dark-50"];
+
+          function showTab(btn, persist) {
+              tabButtons.forEach((b) => {
+                  b.classList.remove(...activeTabClasses);
+                  b.classList.add(...inactiveTabClasses);
+              });
               tabPanes.forEach((pane) => pane.classList.add("hidden"));
 
-              // Add active class to clicked button
-              btn.classList.add("active", "text-blue-600", "border-blue-500");
+              btn.classList.remove(...inactiveTabClasses);
+              btn.classList.add(...activeTabClasses);
 
-              // Show the selected tab
               const target = btn.getAttribute("data-tab");
               document.getElementById(target).classList.remove("hidden");
-          });
-      });
 
-      // Trigger default active
-      tabButtons[0].click();
+              if (persist) {
+                  $.ajax({
+                      type: "get",
+                      url: "{% url 'active-tab' %}",
+                      data: { path: "{{ request.path|escapejs }}", target: `[data-tab="${target}"]` },
+                  });
+              }
+          }
+
+          tabButtons.forEach((btn) => btn.addEventListener("click", () => showTab(btn, true)));
+
+          const savedTab = Array.from(tabButtons).find(
+              (b) => `[data-tab="${b.getAttribute("data-tab")}"]` === "{{ active_tab|escapejs }}"
+          );
+          const initialTab = savedTab || tabButtons[0];
+          showTab(initialTab, false);
+
+          if (initialTab.getAttribute("data-tab") === "feedback-overview") {
+              const loadOverview = () =>
+                  htmx.ajax("GET", "{% url 'get-feedback-overview' feedback.id %}", { target: "#feedback-overview" });
+              if (window.htmx) {
+                  loadOverview();
+              } else {
+                  window.addEventListener("load", loadOverview);
+              }
+          }
+      })();
   </script>
 
   <!-- ACCORDION -->
