@@ -3424,6 +3424,20 @@ def can_view_leave_request(request, leave_request):
     )
 
 
+def can_view_employee_leave(request, employee):
+    """Whether the requester may see this employee's leave tab.
+
+    The same rule `can_view_leave_request` applies to a single request: the
+    employee themselves, anyone holding the model permission, or a manager of
+    *this* employee.
+    """
+    user = request.user
+    if user.has_perm("leave.view_leaverequest"):
+        return True
+    viewer = getattr(user, "employee_get", None)
+    return bool(viewer) and (viewer == employee or check_manager(viewer, employee))
+
+
 @login_required
 @hx_request_required
 def user_request_one(request, id):
@@ -6459,6 +6473,8 @@ def employee_view_individual_leave_tab(request, pk, **kwargs):
         return HorillaRedirect(
             request, message=_("No leave request found matching the query.")
         )
+    if not can_view_employee_leave(request, employee):
+        return handle_no_permission(request)
     instances = (
         LeaveRequest.objects.filter(employee_id=employee)
         if apps.is_installed("leave")
