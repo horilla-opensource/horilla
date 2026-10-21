@@ -3233,7 +3233,10 @@ def work_info_export(request):
     if not selected_fields:
         selected_fields = form.fields["selected_fields"].initial
         id_list = json.loads(request.GET.get("ids", "[]"))
-        employees = Employee.objects.filter(id__in=id_list)
+        # Select by id from the scoped set, not from every employee.
+        employees = filtersubordinatesemployeemodel(
+            request, Employee.objects.all(), "employee.view_employee"
+        ).filter(id__in=id_list)
 
     # Rows ticked in the employee list (the Export modal's instance_ids):
     # export exactly those, on top of whatever filter was applied.
