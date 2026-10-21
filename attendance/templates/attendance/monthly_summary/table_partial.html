@@ -107,6 +107,13 @@
     background-color: hsl(0, 0%, 96%);
     cursor: pointer;
   }
+  /* The checkbox, Employee and Badge columns paint their own white with !important
+     (they are sticky and must stay opaque), which left them out of the hover. */
+  .ms-table-wrap .fixed-table tbody tr:hover td:first-child,
+  .ms-table-wrap .fixed-table tbody tr:hover td:nth-child(2),
+  .ms-table-wrap .fixed-table tbody tr:hover td:nth-child(3) {
+    background-color: hsl(0, 0%, 96%) !important;
+  }
   /* Checkbox column (1st) — frozen while the rest of the table scrolls.
      30px matches the Employee table's own checkbox column width exactly.
      Padding must stay at 4px each side (not 8px) because box-sizing is
@@ -159,6 +166,9 @@
   body.dark .ms-table-wrap .fixed-table td:nth-child(3) { background-color: #1a1a1a !important; }
   body.dark .ms-table-wrap .fixed-table thead th { background-color: #1a1a1a !important; color: #dfdfdf; border-bottom-color: #444444; }
   body.dark .ms-table-wrap .fixed-table tbody tr:hover td { background-color: #2e2e2e !important; }
+  body.dark .ms-table-wrap .fixed-table tbody tr:hover td:first-child,
+  body.dark .ms-table-wrap .fixed-table tbody tr:hover td:nth-child(2),
+  body.dark .ms-table-wrap .fixed-table tbody tr:hover td:nth-child(3) { background-color: #2e2e2e !important; }
 
   /* Row-checked highlight — .highlight-selected is the same class
      highlightRow() (static/index/index.js) uses on every Horilla list
