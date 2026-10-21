@@ -63,10 +63,12 @@ See *Upgrading* below.
   remembered per user and page.
 - **Employees.** Random initial passwords, admin password reset and invitations, CSV
   export of reset results, Badge ID search, expired-documents panel, history tab across
-  all models.
+  all models, more actions on the profile action button, back navigation from the edit
+  views, and the signed-in user's username on their own profile.
 - **Attendance.** Regularise a month by stating its totals, half-absent and split days
   in the monthly summary, bulk-resolve a range of calendar days, option to show future
-  approved leave.
+  approved leave. The day popover has a single coloured status choice, editable hours
+  with a live breakdown, one Save, and the full change history for the day.
 - **Recruitment.** "How did you hear about us?" on the application form, rejected-by-reason
   chart, redesigned survey preview.
 - **Other.** Announcement quick creation, asset *Lost* return status and service-request
@@ -85,6 +87,11 @@ See *Upgrading* below.
 - Profile tabs, list views and group-by tables share one performance-tuned layout;
   dark-mode inconsistencies fixed.
 - Leave: the standalone employee leave dashboard is removed (My Dashboard replaces it).
+- Attendance: the *Partial Hours* option is removed from the calendar legend.
+- Recruitment: survey questions are no longer tied to a recruitment or template; a
+  question can be added to a template while the template is created. The About tab
+  follows the employee About tab style. PMS feedback detail and overview pages are
+  restyled.
 - Pillow 13 (`>=13.0.0,<14`), PyJWT 2.15.1.
 
 ### Fixed
@@ -98,6 +105,8 @@ See *Upgrading* below.
   for translated text.
 - Leave: 500 on the allocations list and on compensatory-file comment delete, empty
   clashed-requests modal, row locking on cancellation under PostgreSQL.
+- Employee: password-reset modals, select fields and sticky tables, and the Documents
+  tab button. The monthly summary row now colours as a whole on hover.
 - Employee, PMS, recruitment, offboarding, helpdesk, project and base: assorted
   breadcrumb, redirection, filter, modal and chart fixes (full list in the commit
   history).
