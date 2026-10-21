@@ -115,6 +115,7 @@ and to_date.
       toDate:         el.dataset.to,
       resolveUrl:     el.dataset.resolveUrl,
       bulkResolveUrl: el.dataset.bulkResolveUrl,
+      calendarUrl:    el.dataset.calendarUrl,
     };
   }
 
@@ -162,6 +163,9 @@ and to_date.
   // in a half-closed state (popover gone but cells still highlighted, or
   // vice versa).
   window.msCalClosePanel = function () {
+    var floating = document.getElementById('crp-tip-float');
+    if (floating) floating.remove();
+    if (window._crpDdOpen) window._crpDdOpen();
     var panel = document.getElementById('cal-resolve-panel');
     if (panel) {
       panel.style.display = 'none';
@@ -177,6 +181,8 @@ and to_date.
     var panel = document.getElementById('cal-resolve-panel');
     if (!panel || panel.style.display === 'none' || !panel.innerHTML) return;
     if (panel.contains(e.target)) return;
+    // The status lists float outside the popover; picking from one is not an outside click.
+    if (e.target.closest && e.target.closest('.crp-dd-list')) return;
     if (e.target.closest && e.target.closest('.cal-cell:not(.cal-empty):not(.cal-out-of-range)')) return;
     window.msCalClosePanel();
   });
@@ -400,7 +406,8 @@ and to_date.
         // A new day starts at the top: the frame is reused between days, and a scroll
         // position left over from the last one hid the top of this one under its header.
         panel.scrollTop = 0;
-        if (window.msCalSplitPreview) { window.msCalSplitPreview(); }
+        if (window.msCalEnhanceSelects) { window.msCalEnhanceSelects(); }
+        if (window.msCalChoiceChange) { window.msCalChoiceChange(); }
         var scroller = panel.querySelector('.crp-scroll');
         if (scroller) { scroller.scrollTop = 0; }
         // Real content is a different height than the loading spinner —
@@ -419,6 +426,147 @@ and to_date.
     if (!a || !b || !bar) return;
     var colour = function (select) { return select.options[select.selectedIndex].dataset.color; };
     bar.style.background = 'linear-gradient(90deg, ' + colour(a) + ' 50%, ' + colour(b) + ' 50%)';
+    if (window.msCalChoiceChange && !window._crpChoiceBusy) {
+      window._crpChoiceBusy = true;
+      window.msCalChoiceChange();
+      window._crpChoiceBusy = false;
+    }
+  };
+
+  // The status pickers carry a colour on every row, which a native list cannot, so each
+  // select[data-dd] is hidden and driven through a button and a list built from its options.
+  window.msCalEnhanceSelects = function () {
+    document.querySelectorAll('select[data-dd]').forEach(function (sel) {
+      if (sel.dataset.ddReady) return;
+      sel.dataset.ddReady = '1';
+      sel.classList.add('crp-dd-src');
+      var wrap = document.createElement('div');
+      wrap.className = 'crp-dd';
+      sel.parentNode.insertBefore(wrap, sel);
+      wrap.appendChild(sel);
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'crp-dd-btn';
+      btn.innerHTML = '<span class="crp-dd-dot"></span><span class="crp-dd-label"></span>';
+      var list = document.createElement('div');
+      list.className = 'crp-dd-list';
+      // The list is moved out to <body> while open and positioned from the button, so the
+      // popover's scrolling body (and its fixed header) can neither clip nor cover it.
+      function closeList() {
+        wrap.classList.remove('open');
+        list.classList.remove('is-open');
+        list.style.cssText = '';
+        if (list.parentNode !== wrap) wrap.appendChild(list);
+        if (window._crpDdOpen === closeList) window._crpDdOpen = null;
+      }
+      function openList() {
+        if (window._crpDdOpen) window._crpDdOpen();
+        wrap.classList.add('open');
+        document.body.appendChild(list);
+        list.classList.add('is-open');
+        var r = btn.getBoundingClientRect();
+        var below = window.innerHeight - r.bottom - 12;
+        var above = r.top - 12;
+        var natural = Math.min(250, list.scrollHeight);
+        var down = below >= natural || below >= above;
+        var maxH = Math.min(250, list.scrollHeight, down ? below : above);
+        list.style.cssText = 'position:fixed;z-index:100000;left:' + r.left + 'px;width:' + r.width + 'px;max-height:'
+          + maxH + 'px;' + (down ? 'top:' + (r.bottom + 4) + 'px' : 'bottom:' + (window.innerHeight - r.top + 4) + 'px');
+        window._crpDdOpen = closeList;
+      }
+      var dotStyle = function (colour) {
+        return colour === 'split' ? 'linear-gradient(90deg,#86efac 50%,#fca5a5 50%)' : (colour || '#e5e7eb');
+      };
+      var addItem = function (opt) {
+        var item = document.createElement('div');
+        item.className = 'crp-dd-item' + (opt.disabled ? ' dis' : '');
+        item.dataset.value = opt.value;
+        var dot = document.createElement('span');
+        dot.className = 'crp-dd-dot';
+        dot.style.background = dotStyle(opt.dataset.color);
+        var label = document.createElement('span');
+        label.textContent = opt.textContent;
+        item.appendChild(dot);
+        item.appendChild(label);
+        item.addEventListener('click', function () {
+          if (opt.disabled) return;
+          sel.value = opt.value;
+          closeList();
+          sel.dispatchEvent(new Event('change'));
+        });
+        list.appendChild(item);
+      };
+      Array.prototype.forEach.call(sel.children, function (child) {
+        if (child.tagName === 'OPTGROUP') {
+          var head = document.createElement('div');
+          head.className = 'crp-dd-group';
+          head.textContent = child.label;
+          list.appendChild(head);
+          Array.prototype.forEach.call(child.children, addItem);
+        } else {
+          addItem(child);
+        }
+      });
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (wrap.classList.contains('open')) { closeList(); } else { openList(); }
+      });
+      wrap.insertBefore(btn, sel);
+      wrap.appendChild(list);
+    });
+    window.msCalSyncSelects();
+  };
+
+  // Show each picker's current choice, with its colour.
+  window.msCalSyncSelects = function () {
+    document.querySelectorAll('.crp-dd').forEach(function (wrap) {
+      var sel = wrap.querySelector('select');
+      var btn = wrap.querySelector('.crp-dd-btn');
+      if (!sel || !btn) return;
+      var opt = sel.options[sel.selectedIndex];
+      if (!opt) return;
+      var colour = opt.dataset.color;
+      if (colour === 'split') {
+        var a = document.getElementById('crp-split-a');
+        var b = document.getElementById('crp-split-b');
+        colour = a && b
+          ? 'linear-gradient(90deg, ' + a.options[a.selectedIndex].dataset.color + ' 50%, ' + b.options[b.selectedIndex].dataset.color + ' 50%)'
+          : '#e5e7eb';
+      }
+      btn.querySelector('.crp-dd-dot').style.background = colour || '#e5e7eb';
+      btn.querySelector('.crp-dd-label').textContent = opt.textContent;
+      wrap.querySelectorAll('.crp-dd-item').forEach(function (item) {
+        item.classList.toggle('sel', item.dataset.value === sel.value);
+      });
+    });
+  };
+
+  document.addEventListener('click', function () { if (window._crpDdOpen) window._crpDdOpen(); });
+  document.addEventListener('scroll', function (e) {
+    var inList = e.target && e.target.closest && e.target.closest('.crp-dd-list');
+    if (!inList && window._crpDdOpen) window._crpDdOpen();
+  }, true);
+
+  // The one status choice: a split shows its two halves, anything else applies as chosen.
+  // Apply stays off until something differs from what the day opened on.
+  window.msCalChoiceChange = function () {
+    var choice = document.getElementById('crp-choice');
+    var box = document.getElementById('crp-split-box');
+    if (!choice) return;
+    var isSplit = choice.value === 'split';
+    if (box) { box.style.display = isSplit ? '' : 'none'; }
+    var a = document.getElementById('crp-split-a');
+    var b = document.getElementById('crp-split-b');
+    if (a && b && window.msCalSplitPreview) { window.msCalSplitPreview(); }
+    if (window.msCalSyncSelects) { window.msCalSyncSelects(); }
+    if (window.msCalUpdateSave) { window.msCalUpdateSave(); }
+  };
+
+  window.msCalResolveChoice = function (conflictType) {
+    var choice = document.getElementById('crp-choice');
+    if (!choice || !choice.value) return;
+    if (choice.value === 'split') { window.msCalResolveSplit(conflictType); }
+    else { window.msCalResolvePost(choice.value, conflictType); }
   };
 
   window.msCalResolveSplit = function (conflictType) {
@@ -461,5 +609,218 @@ and to_date.
         content.innerHTML = '<p style="padding:24px;color:#dc3545;">Failed to save resolution.</p>';
       });
   };
+  // ── The panel's one Save: status and hours together ───────────────────────
+  // Hours are read as H:MM (or decimal hours) and checked before anything is sent.
+  function _crpParseHours(raw) {
+    raw = (raw || '').trim();
+    if (!raw) return NaN;
+    if (raw.indexOf(':') >= 0) {
+      var parts = raw.split(':');
+      if (!/^\d+$/.test(parts[0]) || !/^\d{1,2}$/.test(parts[1] || '')) return NaN;
+      if (parseInt(parts[1], 10) >= 60) return NaN;
+      return parseInt(parts[0], 10) * 3600 + parseInt(parts[1], 10) * 60;
+    }
+    if (!/^\d+(\.\d+)?$/.test(raw)) return NaN;
+    return Math.round(parseFloat(raw) * 3600);
+  }
+
+  function _crpStatusChanged() {
+    var choice = document.getElementById('crp-choice');
+    if (!choice) return false;
+    var a = document.getElementById('crp-split-a');
+    var b = document.getElementById('crp-split-b');
+    var changed = choice.value !== choice.dataset.initial;
+    if (choice.value === 'split' && !changed && a && b) {
+      changed = a.value !== choice.dataset.initialA || b.value !== choice.dataset.initialB;
+    }
+    return changed && !!choice.value;
+  }
+
+  function _crpHoursChanged() {
+    var input = document.getElementById('crp-hours-input');
+    return !!input && input.value.trim() !== input.dataset.initial;
+  }
+
+  // Regular / overtime / total for the hours typed, by the rule the attendance breakdown
+  // uses: on a holiday or week off it is all overtime, otherwise regular stops at the shift
+  // and overtime at the cap. Anything beyond the cap is shown apart.
+  function _crpFmt(secs) {
+    return Math.floor(secs / 3600) + ':' + ('0' + Math.floor((secs % 3600) / 60)).slice(-2);
+  }
+  window.msCalHoursCompute = function () {
+    var calc = document.getElementById('crp-hours-calc');
+    var input = document.getElementById('crp-hours-input');
+    if (!calc || !input) return;
+    var reg = document.getElementById('crp-calc-reg');
+    var ot = document.getElementById('crp-calc-ot');
+    var total = document.getElementById('crp-calc-total');
+    var excessEl = document.getElementById('crp-calc-excess');
+    var secs = _crpParseHours(input.value);
+    if (isNaN(secs) || secs > 24 * 3600) {
+      reg.value = ot.value = total.value = '—';
+      if (excessEl) { excessEl.style.display = 'none'; excessEl.textContent = ''; }
+      return;
+    }
+    var effMin = parseInt(calc.dataset.effMin, 10) || 28800;
+    var cutoff = parseInt(calc.dataset.otCutoff, 10) || 0;
+    var isOtDay = calc.dataset.isOtDay === '1';
+    var regSec, otSec;
+    if (isOtDay) {
+      regSec = 0;
+      otSec = Math.min(secs, cutoff > 0 ? effMin + cutoff : secs);
+    } else {
+      regSec = Math.min(secs, effMin);
+      var potential = Math.max(0, secs - effMin);
+      otSec = cutoff > 0 ? Math.min(potential, cutoff) : potential;
+    }
+    var excess = Math.max(0, secs - regSec - otSec);
+    reg.value = _crpFmt(regSec);
+    ot.value = _crpFmt(otSec);
+    total.value = _crpFmt(secs);
+    if (excessEl) {
+      excessEl.style.display = excess > 0 ? '' : 'none';
+      excessEl.textContent = excess > 0 ? ('▿ ' + _crpFmt(excess) + ' ' + (calc.dataset.excessText || '')) : '';
+    }
+  };
+
+  // Save stays off until something differs from what the panel opened on.
+  window.msCalUpdateSave = function () {
+    var save = document.getElementById('crp-save');
+    if (window.msCalHoursCompute) { window.msCalHoursCompute(); }
+    var input = document.getElementById('crp-hours-input');
+    var error = document.getElementById('crp-hours-error');
+    if (input && error) {
+      input.classList.remove('is-invalid');
+      error.style.display = 'none';
+    }
+    if (save) { save.disabled = !(_crpStatusChanged() || _crpHoursChanged()); }
+  };
+
+  function _crpHoursError(message) {
+    var input = document.getElementById('crp-hours-input');
+    var error = document.getElementById('crp-hours-error');
+    if (input) { input.classList.add('is-invalid'); input.focus(); }
+    if (error) { error.textContent = message; error.style.display = ''; }
+  }
+
+  window.msCalRefreshCalendar = function () {
+    var ctx = _getCalData();
+    if (!ctx || !ctx.calendarUrl) return;
+    window.msCalClosePanel();
+    content.innerHTML = '<div style="padding:28px 24px;color:#6c757d;font-size:.85rem;">Saving and refreshing...</div>';
+    fetch(ctx.calendarUrl + '?employee_id=' + ctx.empId + '&from_date=' + ctx.fromDate + '&to_date=' + ctx.toDate, {
+      headers: { 'HX-Request': 'true', 'X-Requested-With': 'XMLHttpRequest' },
+    }).then(function (r) { return r.text(); })
+      .then(function (html) { content.innerHTML = html; calChanged = true; });
+  };
+
+  window.msCalSaveDay = function (conflictType) {
+    var ctx = _getCalData();
+    var dateInput = document.getElementById('cal-resolve-date');
+    var foot = document.querySelector('#cal-resolve-panel .crp-foot');
+    var input = document.getElementById('crp-hours-input');
+    if (!ctx || !dateInput || !foot) return;
+    var statusChanged = _crpStatusChanged();
+    var hoursChanged = _crpHoursChanged();
+    if (!statusChanged && !hoursChanged) return;
+
+    var seconds = null;
+    if (hoursChanged) {
+      seconds = _crpParseHours(input.value);
+      if (isNaN(seconds)) { _crpHoursError(foot.dataset.badformat); return; }
+      if (seconds > 24 * 3600) { _crpHoursError(foot.dataset.over24); return; }
+    }
+
+    var csrf = document.cookie.replace(/(?:(?:^|.*;\s*)csrftoken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+    var send = function () {
+      var finish = function () {
+        if (statusChanged) { window.msCalResolveChoice(conflictType); }
+        else { window.msCalRefreshCalendar(); }
+      };
+      if (!hoursChanged) { finish(); return; }
+      fetch(window._MS_HOURS_EDIT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': csrf,
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: new URLSearchParams({
+          employee_id: ctx.empId, date: dateInput.value, from_date: ctx.fromDate, to_date: ctx.toDate,
+          hours: input.value.trim(), computed_sec: '0', panel: '1',
+        }).toString(),
+      }).then(function (r) {
+        if (r.ok) { finish(); return; }
+        return r.text().then(function (message) { _crpHoursError(message); });
+      });
+    };
+
+    // Past 15 hours in a day is possible but unusual: ask before saving it.
+    if (hoursChanged && seconds > 15 * 3600) {
+      var label = Math.floor(seconds / 3600) + 'h ' + ('0' + Math.floor((seconds % 3600) / 60)).slice(-2) + 'm';
+      if (window.Swal) {
+        Swal.fire({
+          title: foot.dataset.warnTitle,
+          text: foot.dataset.warnText + ' ' + label + ' ' + foot.dataset.warnTail,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: foot.dataset.warnYes,
+          cancelButtonText: foot.dataset.warnNo,
+          confirmButtonColor: '#e54f38',
+          // The calendar modal sits above the library's default layer.
+          didOpen: function () { Swal.getContainer().style.zIndex = '100000'; },
+        }).then(function (result) { if (result.isConfirmed) send(); });
+        return;
+      }
+      if (!window.confirm(foot.dataset.warnTitle + ': ' + label)) return;
+    }
+    send();
+  };
+  // The minimum-hours tooltip floats beside the popover instead of inside its scrolling body,
+  // where it would be clipped. It is built from the hidden bubble next to the info icon.
+  function _crpTipHide() {
+    var old = document.getElementById('crp-tip-float');
+    if (old) old.remove();
+  }
+  function _crpTipShow(tip) {
+    _crpTipHide();
+    var source = tip.querySelector('.crp-tip-body');
+    var panel = document.getElementById('cal-resolve-panel');
+    if (!source || !panel) return;
+    var bubble = document.createElement('div');
+    bubble.id = 'crp-tip-float';
+    bubble.className = 'crp-tip-float';
+    bubble.innerHTML = source.innerHTML;
+    document.body.appendChild(bubble);
+    var gap = 12;
+    var p = panel.getBoundingClientRect();
+    var icon = tip.getBoundingClientRect();
+    var w = bubble.offsetWidth;
+    var h = bubble.offsetHeight;
+    var onRight = p.right + gap + w <= window.innerWidth - 8;
+    bubble.classList.add(onRight ? 'right' : 'left');
+    bubble.style.left = (onRight ? p.right + gap : Math.max(8, p.left - gap - w)) + 'px';
+    var top = Math.min(Math.max(8, icon.top - 12), window.innerHeight - h - 8);
+    bubble.style.top = top + 'px';
+    bubble.style.setProperty('--arrow-top', Math.max(10, Math.min(h - 20, icon.top + icon.height / 2 - top - 5)) + 'px');
+  }
+  document.addEventListener('mouseover', function (e) {
+    var tip = e.target.closest && e.target.closest('.crp-tip');
+    if (tip) _crpTipShow(tip);
+  });
+  document.addEventListener('mouseout', function (e) {
+    var tip = e.target.closest && e.target.closest('.crp-tip');
+    if (tip && !(e.relatedTarget && tip.contains(e.relatedTarget))) _crpTipHide();
+  });
+  document.addEventListener('focusin', function (e) {
+    var tip = e.target.closest && e.target.closest('.crp-tip');
+    if (tip) _crpTipShow(tip);
+  });
+  document.addEventListener('focusout', function (e) {
+    if (e.target.closest && e.target.closest('.crp-tip')) _crpTipHide();
+  });
+  // The popover closing, or scrolling, must not leave the bubble behind.
+  document.addEventListener('scroll', _crpTipHide, true);
+
 })();
 </script>
