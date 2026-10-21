@@ -857,6 +857,7 @@ document.getElementById('summary-table-container').addEventListener('htmx:afterS
 // ── Per-day hours editing — must live here (server-rendered template) so
 //    the functions are guaranteed to be defined regardless of HTMX reloads.
 var _MS_HOURS_EDIT_URL = "{% url 'attendance-monthly-summary-daily-hours-edit' %}";
+window._MS_HOURS_EDIT_URL = _MS_HOURS_EDIT_URL;
 
 window.msCalHoursEdit = function (empPk, dateStr, fromDate, toDate, computedSec) {
   var el = document.getElementById('crp-hours-' + empPk + '-' + dateStr);
