@@ -59,6 +59,9 @@ DEFAULT_TRACKED_MODELS = [
     ("attendance", "Attendance"),
     ("attendance", "AttendanceOverTime"),
     ("attendance", "AttendanceActivity"),
+    # The day popover's history: every status set or cleared and every hours edit.
+    ("attendance", "AttendanceConflictResolution"),
+    ("attendance", "AttendanceDailyHours"),
 ]
 
 # Models registered by this module so we can safely unregister them later
