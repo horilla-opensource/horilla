@@ -1,6 +1,10 @@
 {% load static %} {% load i18n %} {% load basefilters %}
 
-<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+<section
+	class="oh-wrapper oh-main__topbar"
+	style="position: sticky; top: 75px; background: #fff; z-index: 30;"
+	x-data="{searchShow: false}"
+>
 	<div class="oh-main__titlebar oh-main__titlebar--left">
 		<a
 			href="{% url 'document-request-view' %}"
@@ -19,6 +23,12 @@
 				></ion-icon>
 			</a>
 		</a>
+		<div
+			class="oh-checkpoint-badge mb-0 ms-3"
+			id="selectedDocuments"
+			data-count-text="{% trans 'Documents Selected' %}"
+			style="display: none"
+		></div>
 	</div>
 	<div class="oh-main__titlebar oh-main__titlebar--right">
 		{% if documents %}

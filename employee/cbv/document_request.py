@@ -437,6 +437,10 @@ class DocumentRequestPipelineView(Pipeline):
             group.filtered_document_count = DocumentRequestFilter(
                 self.request.GET, queryset=group.document_set.all()
             ).qs.count()
+
+        context["bulk_select_option"] = True
+        context["hide_select"] = True
+        context["selected_instances_key_id"] = "selectedInstances"
         return context
 
 
