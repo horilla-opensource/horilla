@@ -85,7 +85,7 @@
     body.append("code", field.value);
     body.append("sample_income", income ? income.value : "0");
 
-    show("{% trans 'Running…' %}", true);
+    show("{% trans 'Running…'|escapejs %}", true);
     fetch("{% url 'test-py-code' %}", {
       method: "POST",
       body: body,
@@ -99,11 +99,11 @@
         if (res.ok && res.data.ok) {
           show("{% trans 'Tax on' %} " + res.data.sample_income + " = " + res.data.result, true);
         } else {
-          show(res.data.error || "{% trans 'Could not run the formula.' %}", false);
+          show(res.data.error || "{% trans 'Could not run the formula.'|escapejs %}", false);
         }
       })
       .catch(function () {
-        show("{% trans 'Could not reach the server.' %}", false);
+        show("{% trans 'Could not reach the server.'|escapejs %}", false);
       });
   });
 

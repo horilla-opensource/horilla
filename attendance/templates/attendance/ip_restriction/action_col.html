@@ -41,7 +41,7 @@
 	function confirmDeleteAllowedIp(btn) {
 		var form = btn.closest("form");
 		Swal.fire({
-			{% comment %} title: "{% trans 'Are you sure?' %}", {% endcomment %}
+			{% comment %} title: "{% trans 'Are you sure?'|escapejs %}", {% endcomment %}
 			text: "{% trans 'Are you sure you want to delete this IP ?'|escapejs %}",
 			icon: "warning",
 			showCancelButton: true,

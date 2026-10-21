@@ -1275,7 +1275,7 @@
                 <div class="tr-card__head">
                     <div><div class="tr-card__title">${trEsc(d.title || "")}</div>
                     <div class="tr-card__sub">${d.count != null ? d.count + " {% trans 'people'|escapejs %}" : ""}${d.message ? " · " + trEsc(d.message) : ""}</div></div>
-                    <button type="button" class="tr-close" aria-label="{% trans 'Close' %}">&times;</button>
+                    <button type="button" class="tr-close" aria-label="{% trans 'Close'|escapejs %}">&times;</button>
                 </div>
                 ${(d.rows || []).length ? `<table class="tr-table"><thead><tr>${cols.map((c) => `<th>${trEsc(c.label)}</th>`).join("")}<th></th></tr></thead>
                 <tbody>${d.rows.map((r) => `<tr>${cols.map((c, i) => `<td>${i === 0 ? `<span class="tr-dot" style="background:${tone}"></span>` : ""}${trEsc(r[c.key])}</td>`).join("")}

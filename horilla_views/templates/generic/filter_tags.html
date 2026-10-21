@@ -44,7 +44,7 @@
                 {% endfor %}
                 <button class="oh-titlebar__tag-close"
                     data-x-field="nested_fields"
-                    title="{% trans 'Clear grouping' %}"
+                    title="{% trans 'Clear grouping'|escapejs %}"
                 >
                     <ion-icon name="close-outline" class="close-icon"></ion-icon>
                 </button>
@@ -90,14 +90,14 @@
 
         <button class="oh-titlebar__save"
             id="saveFilterBtn"
-            title="{% trans 'Save filter' %}"
+            title="{% trans 'Save filter'|escapejs %}"
         >
             <ion-icon name="bookmark-outline"></ion-icon>
             {% trans "Save" %}
         </button>
 
         <span class="oh-titlebar__tag oh-titlebar__tag--custom clear-all"
-            title="{% trans 'Clear All' %}">
+            title="{% trans 'Clear All'|escapejs %}">
         <ion-icon class="close-icon" name="close-outline"></ion-icon>
         </span>
 	{% endif %}

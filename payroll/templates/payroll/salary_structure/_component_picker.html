@@ -163,7 +163,7 @@ two ModelMultipleChoiceFields already expect, so the form is unchanged.
     });
     count.textContent = chosen.length
       ? chosen.length + " {% trans 'selected' %}"
-      : "{% trans 'None selected' %}";
+      : "{% trans 'None selected'|escapejs %}";
   }
 
   picker.addEventListener("change", function (e) {
