@@ -129,7 +129,7 @@
                                                     hx-post="{% url 'recruitment-survey-question-template-delete' question.id %}"
                                                     hx-swap="none"
                                                     hx-confirm="{% trans 'Are you sure want to delete?' %}"
-                                                    hx-on-htmx-after-request="$('#reloadMessagesButton').click(); $('#templateTabRoot .filterButton').click(); $('#questionTabRoot .filterButton').click();"
+                                                    hx-on-htmx-after-request="$('#reloadMessagesButton').click(); $('.navFilterForm .filterButton').click();"
                                                     onsubmit="event.stopPropagation()"
                                                 >
                                                     {% csrf_token %}

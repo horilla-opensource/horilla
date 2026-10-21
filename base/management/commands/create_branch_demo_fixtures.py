@@ -2046,8 +2046,8 @@ class ExtrasMixin:
                     is_mandatory=sequence <= 2,
                 )
                 survey.template_id.add(template)
-        for survey in RecruitmentSurvey.objects.filter(template_id=template):
-            survey.recruitment_ids.add(*recruitments)
+        for recruitment in recruitments:
+            recruitment.survey_templates.add(template)
         for i, candidate in enumerate(candidates[::4]):
             RecruitmentSurveyAnswer.objects.create(
                 candidate_id=candidate,

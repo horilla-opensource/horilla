@@ -633,6 +633,11 @@ urlpatterns = [
         recruitment_survey.SurveyTemplateFormView.as_view(),
         name="survey-template-create",
     ),
+    path(
+        "survey-template-duplicate/<int:obj_id>/",
+        recruitment_survey.SurveyTemplateDuplicateFormView.as_view(),
+        name="survey-template-duplicate",
+    ),
     # path(
     #     "survey-template-create",
     #     surveys.create_template,

@@ -96,7 +96,7 @@
                                 onclick="event.stopPropagation()"
                             >
                                 <a
-                                    class="cursor-pointer dropdown-toggle"
+                                    class="cursor-pointer dropdown-toggle oh-btn"
                                     role="button"
                                 >
                                     <i class="fa-solid fa-ellipsis-vertical text-black"></i>
@@ -152,12 +152,10 @@
                                 </div>
                             </div>
                         {% endif %}
-                        <div class="mr-2">
+                        <div class="mr-2 w-[90%]">
                             <h5 class="mb-1 font-medium text-sm">{{ question }}</h5>
                             <p class="text-xs text-[#565E6C] mb-1">
-                                {% for rec in question.recruitment_ids.all %}
-                                    {{ rec }},&nbsp;
-                                {% endfor %}
+                                {{ question.template_col }}
                             </p>
                         </div>
                     </div>

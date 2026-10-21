@@ -971,11 +971,18 @@ class SurveyFilter(HorillaFilterSet):
         field_name="question",
     )
 
+    recruitment = django_filters.ModelMultipleChoiceFilter(
+        field_name="template_id__recruitment",
+        queryset=Recruitment.objects.all(),
+        distinct=True,
+        label=_("Recruitment"),
+    )
+
     # HorillaFilterSet.ajax_fields (generic AJAX-loaded combobox mechanism)
     # -- Recruitment opts into an AJAX-searched combobox instead of
     # pre-rendering its whole queryset as <option> tags.
     ajax_fields = {
-        "recruitment_ids": {
+        "recruitment": {
             "key": "survey-recruitment",
             "queryset_fn": lambda request: Recruitment.objects.all(),
             "display_fn": lambda obj: obj.title,
