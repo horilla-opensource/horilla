@@ -821,10 +821,15 @@ class QuestionForm(ModelForm):
 
         model = RecruitmentSurvey
         fields = "__all__"
-        exclude = ["recruitment_ids", "job_position_ids", "is_active", "options"]
+        exclude = [
+            "recruitment_ids",
+            "job_position_ids",
+            "is_active",
+            "options",
+            "sequence",
+        ]
         labels = {
             "question": _("Question"),
-            "sequence": _("Sequence"),
             "type": _("Type"),
             "options": _("Options"),
             "is_mandatory": _("Required"),
@@ -925,7 +930,6 @@ class QuestionForm(ModelForm):
         pinned_order = [
             "question",
             "type",
-            "sequence",
             "is_mandatory",
             "template_id",
             "recruitment",

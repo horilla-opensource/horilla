@@ -168,7 +168,6 @@ class RecruitmentSurveyDetailView(HorillaDetailedView):
     body = [
         (_("Question"), "question"),
         (_("Question Type"), "get_question_type"),
-        (_("Sequence"), "sequence"),
         (_("Recruitment"), "recruitment_col"),
         (_("Options"), "options_col", True),
     ]
@@ -177,29 +176,6 @@ class RecruitmentSurveyDetailView(HorillaDetailedView):
 
     cols = {"question": 12}
     action_method = "detail_actions"
-
-    # actions = [
-    #     {
-    #         "action": _("Edit"),
-    #         "icon": "create-outline",
-    #         "attrs": """
-    #                  class="oh-btn oh-btn--info w-50"
-    #                  hx-get="{get_edit_url}"
-    #                  hx-target ="#genericModalBody"
-    #                  data-target = "#genericModal"
-    #                  data-toggle ="oh-modal-toggle"
-    #                  """,
-    #     },
-    #     {
-    #         "action": _("Delete"),
-    #         "icon": "trash-outline",
-    #         "attrs": """
-    #                 class="oh-btn oh-btn--danger w-50"
-    #                 href ="{get_delete_url}"
-    #                 onclick="return confirm(' Are you sure want to delete?')"
-    #                 """,
-    #     },
-    # ]
 
 
 @method_decorator(login_required, name="dispatch")
