@@ -110,29 +110,53 @@ function addToSelectedId(newIds, storeKey) {
     setStoredSelection(storeKey, ids);
 }
 
-/**
- * Select-all helper used by list toolbars. Prefer data-select-ids on the
- * button so huge id lists are not inlined as fragile onclick JS.
- */
 function hlvSelectAllRecords(btn, viewSelector, storeKey) {
     storeKey = storeKey || "selectedInstances";
-    var ids = [];
-    try {
-        ids = JSON.parse($(btn).attr("data-select-ids") || "[]");
-    } catch (e) {
-        ids = [];
+    var $btn = $(btn);
+
+    function applySelection(ids) {
+        addToSelectedId(ids, storeKey);
+        selectSelected(viewSelector, storeKey);
+        var viewId = (viewSelector || "").replace(/^#/, "");
+        reloadSelectedCount($(`#count_${viewId}`), storeKey);
+        reloadSelectedCount($(`.count_${viewId}`), storeKey);
+        // Nested accordion panels lock max-height after the first load — grow
+        // them so Unselect / Export chrome that appears after Select stays visible.
+        var $panel = $(viewSelector).closest(".accordion-panel");
+        if ($panel.length && $panel[0].style.maxHeight) {
+            $panel[0].style.maxHeight = $panel[0].scrollHeight + "px";
+        }
     }
-    addToSelectedId(ids, storeKey);
-    selectSelected(viewSelector, storeKey);
-    var viewId = (viewSelector || "").replace(/^#/, "");
-    reloadSelectedCount($(`#count_${viewId}`), storeKey);
-    reloadSelectedCount($(`.count_${viewId}`), storeKey);
-    // Nested accordion panels lock max-height after the first load — grow
-    // them so Unselect / Export chrome that appears after Select stays visible.
-    var $panel = $(viewSelector).closest(".accordion-panel");
-    if ($panel.length && $panel[0].style.maxHeight) {
-        $panel[0].style.maxHeight = $panel[0].scrollHeight + "px";
+
+    var inlineIds = $btn.attr("data-select-ids");
+    if (inlineIds !== undefined) {
+        var ids = [];
+        try {
+            ids = JSON.parse(inlineIds || "[]");
+        } catch (e) {
+            ids = [];
+        }
+        applySelection(ids);
+        return;
     }
+
+    var selectUrl = $btn.attr("data-select-url");
+    if (!selectUrl || $btn.prop("disabled")) return;
+    var url = new URL(selectUrl, window.location.origin);
+    url.searchParams.set("select_all", "true");
+    $btn.prop("disabled", true);
+    $.ajax({
+        url: url.pathname + url.search,
+        dataType: "json",
+        headers: { "HX-Request": "true" },
+    })
+        .done(applySelection)
+        .fail(function () {
+            console.error(i18nMessages.loadFailed);
+        })
+        .always(function () {
+            $btn.prop("disabled", false);
+        });
 }
 
 /**

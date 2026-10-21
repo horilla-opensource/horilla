@@ -35,7 +35,7 @@
                 type="button"
                 id="select_{{ view_id }}"
                 data-total-count="{{ queryset.paginator.count }}"
-                data-select-ids="{{ select_all_ids }}"
+                data-select-url="{{ request.get_full_path }}"
                 data-store-key="{{ selected_instances_key_id }}"
                 class="quick-bulk-action px-4 py-2 bg-transparent border border-primary-600 text-primary-600 rounded-md text-xs hover:bg-primary-600 hover:text-white transition duration-300"
                 onclick="hlvSelectAllRecords(this, '#{{ root_view_id|default:view_id|safe }}', '{{ selected_instances_key_id }}')"
