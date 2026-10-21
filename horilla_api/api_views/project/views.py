@@ -39,6 +39,19 @@ def object_check(cls, pk):
         return None
 
 
+def scoped_object(request, cls, perm, pk):
+    """The record, only if this user could see it in the list endpoint.
+
+    Uses the same permission_based_queryset narrowing as the list handlers, so
+    the detail and the list agree. Not visible and not found answer the same
+    way.
+    """
+    queryset = permission_based_queryset(
+        request.user, perm, cls.objects.all(), user_obj=True
+    )
+    return queryset.filter(pk=pk).first()
+
+
 # Project Views
 class ProjectGetCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -59,7 +72,7 @@ class ProjectGetCreateAPIView(APIView):
 
     def get(self, request, pk=None):
         if pk:
-            project = object_check(Project, pk)
+            project = scoped_object(request, Project, "project.view_project", pk)
             if project is None:
                 return Response({"error": _("Project not found")}, status=404)
             serializer = ProjectSerializer(project)
@@ -93,7 +106,7 @@ class ProjectGetUpdateDeleteAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
-        project = object_check(Project, pk)
+        project = scoped_object(request, Project, "project.view_project", pk)
         if project is None:
             return Response({"error": _("Project not found")}, status=404)
         serializer = ProjectSerializer(project)
@@ -215,7 +228,7 @@ class TaskGetCreateAPIView(APIView):
 
     def get(self, request, pk=None, project_id=None):
         if pk:
-            task = object_check(Task, pk)
+            task = scoped_object(request, Task, "project.view_task", pk)
             if task is None:
                 return Response({"error": _("Task not found")}, status=404)
             serializer = TaskSerializer(task)
@@ -256,7 +269,7 @@ class TaskGetUpdateDeleteAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
-        task = object_check(Task, pk)
+        task = scoped_object(request, Task, "project.view_task", pk)
         if task is None:
             return Response({"error": _("Task not found")}, status=404)
         serializer = TaskSerializer(task)
