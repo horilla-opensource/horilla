@@ -3,6 +3,28 @@
     {% include "generic/horilla_profile_view.html" %}
 </div>
 
+<div id="relatedModel"></div>
+
+<div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="sendMailModalLabel"><h5>{% trans 'Send Mail' %}</h5></span>
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}"><ion-icon name="close-outline"></ion-icon></button>
+        </div>
+        <div class="oh-modal__dialog-body" id="mail-content"></div>
+    </div>
+</div>
+
+<div class="oh-modal" id="dataExport" role="dialog" aria-labelledby="dataExport" aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title"><h5>{% trans 'Export Data' %}</h5></span>
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}"><ion-icon name="close-outline"></ion-icon></button>
+        </div>
+        <div class="oh-modal__dialog-body" id="export-content"></div>
+    </div>
+</div>
+
 <form  hidden action="{% url 'employee-reset-password' %}" method="post" role="button"
 style="display: flex;">
 {% csrf_token %}
@@ -26,6 +48,12 @@ style="display: flex;">
 </script> {% endcomment %}
 
 <script>
+    // This view is swapped in after page load, so the global close-button binding
+    // never attached to the modals above.
+    $(document).off('click.profileModals').on('click.profileModals', '#sendMailModal .oh-modal__close, #dataExport .oh-modal__close', function () {
+        $(this).closest('.oh-modal').removeClass('oh-modal--show');
+    });
+
     $('#block-account').click(function() {
     var message = '{% if instance.employee_user_id.is_active %}{% trans "Do you really want to prevent this employee from accessing and logging into this webpage?"|escapejs %}{% else %}{% trans "Do you really want to allow this employee to access and log into this webpage?"|escapejs %}{% endif %}';
 

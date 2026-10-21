@@ -280,3 +280,68 @@ def project_accessibility(
     ):
         return True
     return False
+
+
+def export_data_accessibility(
+    request, instance: object = None, user_perms: PermWrapper = [], *args, **kwargs
+) -> bool:
+    """
+    To export individual employee data
+    """
+    return any(apps.is_installed(app) for app in ("leave", "payroll", "attendance"))
+
+
+def allocations_accessibility(
+    request, instance: object = None, user_perms: PermWrapper = [], *args, **kwargs
+) -> bool:
+    """
+    To view employee allocations
+    """
+    return request.user.has_perm("employee.change_employee") or check_manager(
+        request.user.employee_get, instance
+    )
+
+
+def send_mail_accessibility(
+    request, instance: object = None, user_perms: PermWrapper = [], *args, **kwargs
+) -> bool:
+    """
+    To send mail to the employee
+    """
+    return True
+
+
+def admin_reset_password_accessibility(
+    request, instance: object = None, user_perms: PermWrapper = [], *args, **kwargs
+) -> bool:
+    """
+    To reset password / send invitation as admin
+    """
+    return request.user.has_perm("employee.change_employee")
+
+
+def archive_accessibility(
+    request, instance: object = None, user_perms: PermWrapper = [], *args, **kwargs
+) -> bool:
+    """
+    To archive an active employee
+    """
+    return request.user.has_perm("employee.delete_employee") and instance.is_active
+
+
+def un_archive_accessibility(
+    request, instance: object = None, user_perms: PermWrapper = [], *args, **kwargs
+) -> bool:
+    """
+    To un-archive an archived employee
+    """
+    return request.user.has_perm("employee.delete_employee") and not instance.is_active
+
+
+def delete_accessibility(
+    request, instance: object = None, user_perms: PermWrapper = [], *args, **kwargs
+) -> bool:
+    """
+    To delete the employee
+    """
+    return request.user.has_perm("employee.delete_employee")
