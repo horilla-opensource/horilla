@@ -54,6 +54,9 @@ LOCATION_CHECK = "geofencing.views.GeoFencingEmployeeLocationCheckAPIView.post"
 
 
 class GeofenceFailClosedTests(SimpleTestCase):
+    # a company without a fence of its own now falls back to the global one, which is a query
+    databases = {"default"}
+
     def test_enabled_fence_denies_when_check_raises(self):
         """The regression: an erroring check must NOT allow the punch."""
         req = _Req(_company(SimpleNamespace(start=True)))

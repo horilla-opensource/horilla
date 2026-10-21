@@ -93,8 +93,13 @@ def geofence_denial(request):
     try:
         geo_fencing = company.geo_fencing
     except ObjectDoesNotExist:
-        # No GeoFencing row for this company: the feature is not in use here.
-        return None
+        # No fence of its own: use the global one (the row with no company), if there is one.
+        from geofencing.models import GeoFencing
+
+        geo_fencing = GeoFencing.objects.filter(company_id__isnull=True).first()
+        if geo_fencing is None:
+            # No GeoFencing row at all: the feature is not in use here.
+            return None
 
     if not geo_fencing.start:
         return None

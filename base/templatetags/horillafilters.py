@@ -386,7 +386,7 @@ def is_geofencing_enabled(request):
     company = Company.objects.filter(id=selected_company).first()
     if not company:
         return False
-    fence = GeoFencing.objects.filter(company_id=company).first()
+    fence = GeoFencing.for_company(company)
     return bool(fence and fence.start)
 
 

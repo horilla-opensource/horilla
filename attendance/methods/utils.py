@@ -205,7 +205,7 @@ def geofence_denial_web(request, company):
 
     if company is None:
         return None
-    fence = GeoFencing.objects.filter(company_id=company).first()
+    fence = GeoFencing.for_company(company)
     if fence is None or not fence.start:
         return None
 
