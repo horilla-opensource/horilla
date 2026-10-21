@@ -32,7 +32,7 @@ date and open a fresh Unreleased above it.
 ### Security      — vulnerabilities fixed; link the advisory and credit the reporter
 -->
 
-## [2.2.0] — 2026-10-DD
+## [2.2.0] — 2026-10-21
 
 Feature release. Payroll gets a new engine (configurable components, batch runs, tax
 packs), every module dashboard is rebuilt around one chart and legend style, there is a
