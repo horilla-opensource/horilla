@@ -1,14 +1,4 @@
 <script>
-
-    // These handlers used to live only in the standalone disciplinary-actions
-    // page template, so on any other page hosting this form (e.g. the
-    // Policies & Discipline tabs) the Action select's inline onchange threw
-    // "actionTypeChange is not defined" -- the suspension period fields never
-    // appeared and the select2 dropdown was left stuck open. Defining them
-    // with the form fragment itself makes the form self-contained. They must
-    // be defined BEFORE the include below: horilla_form.html's own inline
-    // script fires a change event on the action select while the fragment is
-    // still being processed, which reaches the inline onchange immediately.
     function actionTypeChange(selectElement) {
         var selectedActiontype = selectElement.val();
         var parentForm = selectElement.parents().closest("form");
@@ -80,9 +70,7 @@
         });
     }
 
-    // Sync the period fields (Unit in / Days / Hours) with the currently
-    // selected action: show them (via actionTypeChange) for a selected
-    // action, hide them when nothing is selected yet.
+    // Show or hide the period fields based on the selected action.
     function syncDisciplinaryPeriodFields() {
         var actionElement = $("#id_action");
         if (actionElement.length === 0) {
@@ -105,14 +93,7 @@
 </div>
 
 <script>
-    // The initial hide must ALSO run on htmx:afterSettle, not only right
-    // here: when this form is reopened in a modal whose previous copy was
-    // only hidden (not removed), htmx id-matches the new elements to the old
-    // ones and its settle phase restores their attributes -- wiping any
-    // inline display:none set between swap and settle. Hiding again after
-    // settle is what actually sticks on reopen.
-    // Namespaced + off() first, so reloading this fragment doesn't stack
-    // duplicate document-level handlers.
+    // Re-sync after htmx settles, since settling restores attributes on reopened modals.
     $(document).off("htmx:afterSettle.disciplinaryActionForm").on("htmx:afterSettle.disciplinaryActionForm", function () {
         syncDisciplinaryPeriodFields();
     });

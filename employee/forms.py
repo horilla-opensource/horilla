@@ -766,10 +766,21 @@ class PolicyForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["attachment"] = MultipleFileField(
-            label="Attachements", required=False
+            label="Attachments", required=False
         )
-        # Re-insert at the end so it renders after the attachment field.
-        self.fields["is_visible_to_all"] = self.fields.pop("is_visible_to_all")
+
+        self.order_fields(
+            [
+                "title",
+                "body",
+                "attachment",
+                "is_visible_to_all",
+                "employees",
+                "department",
+                "job_position",
+                "company_id",
+            ]
+        )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -788,21 +799,21 @@ class PolicyForm(ModelForm):
         return cleaned_data
 
     def save(self, *args, commit=True, **kwargs):
-        attachemnt = []
+        attachment = []
         multiple_attachment_ids = []
-        attachemnts = None
+        attachments = None
         if self.files.getlist("attachment"):
-            attachemnts = self.files.getlist("attachment")
+            attachments = self.files.getlist("attachment")
             multiple_attachment_ids = []
-            for attachemnt in attachemnts:
+            for attachment in attachments:
                 file_instance = PolicyMultipleFile()
-                file_instance.attachment = attachemnt
+                file_instance.attachment = attachment
                 file_instance.save()
                 multiple_attachment_ids.append(file_instance.pk)
         instance = super().save(commit)
         if commit:
             instance.attachments.add(*multiple_attachment_ids)
-        return instance, attachemnts
+        return instance, attachments
 
 
 class BonusPointAddForm(ModelForm):
