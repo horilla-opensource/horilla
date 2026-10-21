@@ -97,6 +97,19 @@ class AttendancesRequestListView(HorillaListView):
         super().__init__(**kwargs)
         self.search_url = reverse("attendance-list-tab")
 
+    def get_queryset(self, *args, **kwargs):
+        return (
+            super()
+            .get_queryset(*args, **kwargs)
+            .select_related(
+                "employee_id",
+                "shift_id",
+                "work_type_id",
+                "attendance_day",
+                "approved_by",
+            )
+        )
+
     filter_class = AttendanceFilters
     model = Attendance
     quick_export = False
@@ -261,19 +274,11 @@ class AttendanceListTab(AttendancesRequestListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        data = queryset
-        attendances = filtersubordinates(
+        return filtersubordinates(
             request=self.request,
             perm="attendance.view_attendance",
             queryset=queryset,
         )
-        queryset = attendances | data.filter(
-            employee_id__employee_user_id=self.request.user
-        )
-        queryset = queryset.filter(
-            employee_id__is_active=True,
-        )
-        return queryset
 
     actions = [
         {

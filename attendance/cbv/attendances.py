@@ -583,11 +583,19 @@ class ValidatedAttendancesList(AttendancesListView):
 
     def get_queryset(self):
 
-        if not self.queryset:
-            self.queryset = super().get_queryset()
-            self.queryset = self.queryset.filter(
-                attendance_validated=True, employee_id__is_active=True
+        if self.queryset is None:
+            self.queryset = (
+                super()
+                .get_queryset()
+                .select_related(
+                    "employee_id",
+                    "shift_id",
+                    "work_type_id",
+                    "attendance_day",
+                    "approved_by",
+                )
             )
+            self.queryset = self.queryset.filter(attendance_validated=True)
             self.queryset = filtersubordinates(
                 self.request, self.queryset, "attendance.view_attendance"
             )
