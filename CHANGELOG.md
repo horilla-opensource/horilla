@@ -114,6 +114,29 @@ See *Upgrading* below.
   fails when no rotating shift has started; Docker treats an empty `GUNICORN_WORKERS`
   as unset.
 
+### Security
+
+Five access-control issues, all requiring a signed-in account, reported privately. Every
+one affects 2.0.0 through 2.1.8. With thanks to **@NotAFlightRisk**, **@deadpoor1**,
+**@m0ssser** and **@wict0rious** for reporting them responsibly.
+
+- **Employee leave tab** — [GHSA-mr87-qrw6-rf3g](https://github.com/horilla/horilla-hr/security/advisories/GHSA-mr87-qrw6-rf3g)
+  (Medium). Any employee could open another employee's leave tab. It now requires the
+  employee themselves, their manager, or the leave permission. Reported by **@NotAFlightRisk**.
+- **Helpdesk ticket view** — [GHSA-7jjm-mcgq-9jj5](https://github.com/horilla/horilla-hr/security/advisories/GHSA-7jjm-mcgq-9jj5)
+  (Medium). Any employee could read any ticket by id. Ticket access is now checked in
+  one place for every ticket view. Reported by **@deadpoor1**.
+- **Project and task detail API** — [GHSA-7jwm-2q24-6mv3](https://github.com/horilla/horilla-hr/security/advisories/GHSA-7jwm-2q24-6mv3)
+  (Medium). Detail requests now apply the same scope as the list. Reported by **@m0ssser**.
+- **Exports** — [GHSA-2847-55wj-6r5m](https://github.com/horilla/horilla-hr/security/advisories/GHSA-2847-55wj-6r5m)
+  (Medium). Exports selected by id now apply the requester's scope, and the candidate
+  export requires the candidate view permission. Reported by **@wict0rious**.
+- **Survey attachment file names** — [GHSA-925v-gjrp-mwcp](https://github.com/horilla/horilla-hr/security/advisories/GHSA-925v-gjrp-mwcp)
+  (Medium). Attachments are no longer saved under a client-controlled name. Reported by **@m0ssser**.
+
+Pillow 13 and urllib3 2.8.0 also close the image-decoder and HTTP advisories in those
+libraries.
+
 ### Upgrading
 
 - Run `migrate`.
