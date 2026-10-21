@@ -40,7 +40,7 @@
             <div class="flex items-center justify-between flex-wrap gap-3">
                 <!-- Left: Back + Title -->
                 <div class="flex items-center gap-4">
-                    <a href="{% url 'employee-view' %}?view=list"
+                    <a href="{{ back_url|default:'/employee/employee-view/?view=list' }}"
                        class="w-10 h-10 rounded-full border border-secondary-200 flex items-center justify-center text-color-600 no-underline hover:bg-secondary-50">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
