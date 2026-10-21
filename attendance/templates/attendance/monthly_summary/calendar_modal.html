@@ -326,6 +326,7 @@
      data-to="{{ to_date|date:'Y-m-d' }}"
      data-resolve-url="{% url 'attendance-monthly-summary-conflict-resolve' %}"
      data-bulk-resolve-url="{% url 'attendance-monthly-summary-conflict-bulk-resolve' %}"
+     data-calendar-url="{% url 'attendance-monthly-summary-calendar' %}"
      style="display:none;"></div>
 
 <!-- ── Header ───────────────────────────────────────────────────────────── -->
@@ -468,17 +469,14 @@
 <!-- ── Legend ────────────────────────────────────────────────────────────── -->
 <div class="cal-legend">
   <div class="cal-legend-item"><div class="cal-legend-dot cal-present"></div> {% trans "Present (Full)" %}</div>
-  <div class="cal-legend-item"><div class="cal-legend-dot cal-half_present"></div> {% trans "Half Day" %}</div>
-  <div class="cal-legend-item"><div class="cal-legend-dot cal-half_absent"></div> {% trans "Half Absent" %}</div>
   <div class="cal-legend-item"><div class="cal-legend-dot cal-split" style="--h1:#86efac;--h2:#93c5fd"></div> {% trans "Split Day (two halves)" %}</div>
-  <div class="cal-legend-item"><div class="cal-legend-dot cal-partial_hours"></div> {% trans "Partial Hours" %}</div>
   <div class="cal-legend-item"><div class="cal-legend-dot cal-short"></div> {% trans "Short Hours" %}</div>
   <div class="cal-legend-item"><div class="cal-legend-dot cal-absent"></div> {% trans "Absent / Missing Out" %}</div>
-  <div class="cal-legend-item"><div class="cal-legend-dot cal-weekend"></div> {% trans "Upcoming (not counted)" %}</div>
   <div class="cal-legend-item"><div class="cal-legend-dot cal-paid_leave"></div> {% trans "Paid Leave" %}</div>
   <div class="cal-legend-item"><div class="cal-legend-dot cal-unpaid_leave"></div> {% trans "Unpaid Leave" %}</div>
   <div class="cal-legend-item"><div class="cal-legend-dot cal-week_off"></div> {% trans "Week Off" %}</div>
   <div class="cal-legend-item"><div class="cal-legend-dot cal-holiday"></div> {% trans "Holiday" %}</div>
+  <div class="cal-legend-item"><div class="cal-legend-dot cal-weekend"></div> {% trans "Upcoming (not counted)" %}</div>
   <div class="cal-legend-item">
     <span style="font-size:.62rem;font-weight:800;padding:1px 4px;border-radius:3px;background:#0f766e;color:#fff;line-height:1.4;">HO</span>
     {% trans "Holiday Overtime" %}
