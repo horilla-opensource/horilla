@@ -162,7 +162,7 @@ two ModelMultipleChoiceFields already expect, so the form is unchanged.
       return box.checked;
     });
     count.textContent = chosen.length
-      ? chosen.length + " {% trans 'selected' %}"
+      ? chosen.length + " {% trans 'selected'|escapejs %}"
       : "{% trans 'None selected'|escapejs %}";
   }
 

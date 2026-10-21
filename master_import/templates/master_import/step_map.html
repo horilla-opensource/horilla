@@ -113,7 +113,7 @@
     var left = allColumns.filter(function (c) { return !used[c]; });
     unusedBox.innerHTML = "";
     if (!left.length) {
-      unusedBox.innerHTML = '<span>{% trans "Every column is used." %}</span>';
+      unusedBox.innerHTML = '<span>{% trans "Every column is used."|escapejs %}</span>';
       return;
     }
     left.forEach(function (c) {
@@ -156,7 +156,7 @@
       }
     });
     go.disabled = missing.length > 0;
-    missingNote.textContent = missing.length ? "{% trans 'Still to match:' %} " + missing.join(", ") : "";
+    missingNote.textContent = missing.length ? "{% trans 'Still to match:'|escapejs %} " + missing.join(", ") : "";
   }
 
   form.addEventListener("change", function (e) { if (e.target.matches("[data-map],[data-match]")) refresh(); });

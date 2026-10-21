@@ -232,15 +232,15 @@
         var rebateNote = "";
         if (d.rebate_limit !== null && d.rebate_limit !== undefined) {
           if (d.rebate_applied) {
-            rebateNote = "{% trans 'Rebate applies: taxable income' %} " + money(d.taxable_income) +
-              " {% trans 'is within the limit of' %} " + money(d.rebate_limit) +
-              ". {% trans 'It takes off up to' %} " + money(d.rebate_max) +
-              ", {% trans 'never more than the tax itself.' %}";
+            rebateNote = "{% trans 'Rebate applies: taxable income'|escapejs %} " + money(d.taxable_income) +
+              " {% trans 'is within the limit of'|escapejs %} " + money(d.rebate_limit) +
+              ". {% trans 'It takes off up to'|escapejs %} " + money(d.rebate_max) +
+              ", {% trans 'never more than the tax itself.'|escapejs %}";
             rows.push(["{% trans 'Less rebate'|escapejs %}", "-" + money(d.rebate_applied), rebateNote]);
           } else if (d.taxable_income > d.rebate_limit) {
-            rebateNote = "{% trans 'No rebate: taxable income' %} " + money(d.taxable_income) +
-              " {% trans 'is above the limit of' %} " + money(d.rebate_limit) +
-              ". {% trans 'At or below it, up to' %} " + money(d.rebate_max) + " {% trans 'comes off the tax.' %}";
+            rebateNote = "{% trans 'No rebate: taxable income'|escapejs %} " + money(d.taxable_income) +
+              " {% trans 'is above the limit of'|escapejs %} " + money(d.rebate_limit) +
+              ". {% trans 'At or below it, up to'|escapejs %} " + money(d.rebate_max) + " {% trans 'comes off the tax.'|escapejs %}";
             // Nothing was taken off, so the reason sits under the tax it would have reduced.
             rows[rows.length - 1].push(rebateNote);
           }
@@ -255,12 +255,12 @@
             html += '<tr><td colspan="2" style="padding:0 0 6px;font-size:.72rem;color:#8a8f98;">' + r[2] + "</td></tr>";
           }
         });
-        html += '<tr style="border-top:1px solid #ddd;"><td style="padding:6px 0;font-weight:600;">{% trans "Tax for the year" %}</td>' +
+        html += '<tr style="border-top:1px solid #ddd;"><td style="padding:6px 0;font-weight:600;">{% trans "Tax for the year"|escapejs %}</td>' +
                 '<td style="padding:6px 0;text-align:right;font-weight:600;">' + money(d.tax) + "</td></tr></table>";
         out.innerHTML = html;
       })
       .catch(function () {
-        out.innerHTML = '<div style="color:#b00020;">{% trans "Could not reach the server." %}</div>';
+        out.innerHTML = '<div style="color:#b00020;">{% trans "Could not reach the server."|escapejs %}</div>';
       });
   });
 })();

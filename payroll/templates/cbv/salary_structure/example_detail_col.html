@@ -319,7 +319,7 @@ have), and components that measure attendance report that instead of a guess.
     var tag = "";
     if (taxBase && taxBase === head.key) {
       tag = ' <span class="ss-example__head-tag">' +
-        "{% trans 'Income tax is read from this' %}</span>";
+        "{% trans 'Income tax is read from this'|escapejs %}</span>";
     }
 
     return '<div class="ss-example__head">' +
@@ -356,7 +356,7 @@ have), and components that measure attendance report that instead of a guess.
     }
     return '<div class="ss-example__heads">' +
       '<div class="ss-example__heads-title">' +
-      "{% trans 'Each equation is the one payroll itself uses.' %}</div>" +
+      "{% trans 'Each equation is the one payroll itself uses.'|escapejs %}</div>" +
       data.heads.map(function (head) { return headBlock(head, taxBase); }).join("") +
       "</div>";
   }
@@ -373,12 +373,12 @@ have), and components that measure attendance report that instead of a guess.
   function notes(data) {
     var rows = [];
 
-    var period = "<b>" + data.calendar_days + "</b> {% trans 'calendar days' %}, " +
-      "<b>" + data.worked_days + "</b> {% trans 'of' %} " + data.working_days +
-      " {% trans 'working days' %}";
+    var period = "<b>" + data.calendar_days + "</b> {% trans 'calendar days'|escapejs %}, " +
+      "<b>" + data.worked_days + "</b> {% trans 'of'|escapejs %} " + data.working_days +
+      " {% trans 'working days'|escapejs %}";
     if (data.lop_days) {
-      period += " — {% trans 'after' %} <b>" + data.lop_days +
-        "</b> {% trans 'loss-of-pay days' %}";
+      period += " — {% trans 'after'|escapejs %} <b>" + data.lop_days +
+        "</b> {% trans 'loss-of-pay days'|escapejs %}";
     }
     rows.push(noteRow("{% trans 'Sample period'|escapejs %}", period));
 
@@ -423,7 +423,7 @@ have), and components that measure attendance report that instead of a guess.
     if (!html.length) {
       publishWorking("");
       body.innerHTML = '<div class="ss-example__muted">' +
-        "{% trans 'This structure has no components yet.' %}</div>";
+        "{% trans 'This structure has no components yet.'|escapejs %}</div>";
       return;
     }
 
@@ -444,13 +444,13 @@ have), and components that measure attendance report that instead of a guess.
       if (ok) {
         message = "{% trans 'Earnings and employer share account for the whole CTC.'|escapejs %}";
       } else if (gap > 0) {
-        message = "{% trans 'Short of the CTC by' %} " + money(gap) +
+        message = "{% trans 'Short of the CTC by'|escapejs %} " + money(gap) +
           (data.mode === "ctc_down"
-            ? " — {% trans 'add a balance earning to absorb the remainder.' %}"
-            : " — {% trans 'the package would cost less than the CTC quoted.' %}");
+            ? " — {% trans 'add a balance earning to absorb the remainder.'|escapejs %}"
+            : " — {% trans 'the package would cost less than the CTC quoted.'|escapejs %}");
       } else {
-        message = "{% trans 'Over the CTC by' %} " + money(-gap) +
-          " — {% trans 'the components add up to more than the package quoted.' %}";
+        message = "{% trans 'Over the CTC by'|escapejs %} " + money(-gap) +
+          " — {% trans 'the components add up to more than the package quoted.'|escapejs %}";
       }
       out += '<div class="ss-example__recon ss-example__recon--' +
         (ok ? "ok" : "gap") + '">' + message + "</div>";
@@ -495,7 +495,7 @@ have), and components that measure attendance report that instead of a guess.
       .catch(function () {
         publishWorking("");
         body.innerHTML =
-          '<div class="ss-example__error">{% trans "Could not reach the server." %}</div>';
+          '<div class="ss-example__error">{% trans "Could not reach the server."|escapejs %}</div>';
       });
   });
 })();

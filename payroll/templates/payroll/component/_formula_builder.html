@@ -492,7 +492,7 @@ document.querySelectorAll("[data-formula-builder]").forEach(function (root) {
       var used = Object.keys(NOTES).filter(function (code) { return tokens.indexOf(code) !== -1; });
       notes.hidden = !used.length;
       notes.innerHTML = used.length
-        ? "<strong>{% trans 'Note' %}</strong><ul>" + used.map(function (code) {
+        ? "<strong>{% trans 'Note'|escapejs %}</strong><ul>" + used.map(function (code) {
             return "<li><code>" + code + "</code> - " + NOTES[code] + "</li>";
           }).join("") + "</ul>"
         : "";
