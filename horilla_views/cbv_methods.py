@@ -37,6 +37,7 @@ from django.template.defaultfilters import register
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.datastructures import MultiValueDictKeyError
+from django.utils.formats import get_format
 from django.utils.functional import lazy
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -413,8 +414,29 @@ def paginator_qry(qryset, page_number, records_per_page=50):
     return qryset
 
 
+# A quick date range spanning a calendar week: (label, WEEK, weeks_from_this_week).
+WEEK = "week"
+
+
+def week_start(day):
+    """
+    First day of the calendar week containing `day`. Follows the active
+    language's FIRST_DAY_OF_WEEK format (0 = Sunday, 1 = Monday, ...), which
+    falls back to settings.FIRST_DAY_OF_WEEK, so a site can choose its week
+    the standard Django way (FORMAT_MODULE_PATH or the setting).
+    """
+    first = int(get_format("FIRST_DAY_OF_WEEK"))
+    return day - timedelta(days=(day.isoweekday() - first) % 7)
+
+
 def get_quick_date_filters(ranges, fields):
-    """Build (label, onclick attrs) pairs from (label, start_offset, end_offset) ranges and (exact, from, to) fields."""
+    """
+    Build (label, onclick attrs) pairs from ranges and (exact, from, to) fields.
+
+    Each range is (label, start_offset, end_offset) in days from today (an
+    end_offset of None means that single day), or (label, WEEK, n) for a
+    whole calendar week: 0 is this week, -1 last week.
+    """
     exact_field, from_field, to_field = fields
     today = datetime.now().date()
 
@@ -425,8 +447,12 @@ def get_quick_date_filters(ranges, fields):
 
     filters = []
     for label, start_offset, end_offset in ranges:
-        start = today + timedelta(days=start_offset)
-        end = None if end_offset is None else today + timedelta(days=end_offset)
+        if start_offset == WEEK:
+            start = week_start(today) + timedelta(weeks=end_offset)
+            end = start + timedelta(days=6)
+        else:
+            start = today + timedelta(days=start_offset)
+            end = None if end_offset is None else today + timedelta(days=end_offset)
         steps = []
         if end is None and exact_field:
             steps += [setter(from_field, ""), setter(to_field, "")]
