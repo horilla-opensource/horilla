@@ -26083,3 +26083,12 @@ msgstr "Останні 7 днів"
 #: horilla_views/generic/cbv/views.py
 msgid "Next 7 Days"
 msgstr "Наступні 7 днів"
+
+#: horilla_theme/templates/generic/quick_actions.html
+msgid "Quick filter"
+msgstr "Швидкий фільтр"
+
+#: recruitment/templates/cbv/pipeline/quick_actions.html
+#, python-format
+msgid "Quick filter (%(counter)s)"
+msgstr "Швидкий фільтр (%(counter)s)"

@@ -25796,3 +25796,12 @@ msgstr "Son 7 Gün"
 #: horilla_views/generic/cbv/views.py
 msgid "Next 7 Days"
 msgstr "Sonraki 7 Gün"
+
+#: horilla_theme/templates/generic/quick_actions.html
+msgid "Quick filter"
+msgstr "Hızlı filtre"
+
+#: recruitment/templates/cbv/pipeline/quick_actions.html
+#, python-format
+msgid "Quick filter (%(counter)s)"
+msgstr "Hızlı filtre (%(counter)s)"

@@ -25998,3 +25998,12 @@ msgstr "آخر 7 أيام"
 #: horilla_views/generic/cbv/views.py
 msgid "Next 7 Days"
 msgstr "الأيام السبعة القادمة"
+
+#: horilla_theme/templates/generic/quick_actions.html
+msgid "Quick filter"
+msgstr "تصفية سريعة"
+
+#: recruitment/templates/cbv/pipeline/quick_actions.html
+#, python-format
+msgid "Quick filter (%(counter)s)"
+msgstr "تصفية سريعة (%(counter)s)"

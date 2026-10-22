@@ -30274,3 +30274,12 @@ msgstr "最近 7 天"
 #: horilla_views/generic/cbv/views.py
 msgid "Next 7 Days"
 msgstr "未来 7 天"
+
+#: horilla_theme/templates/generic/quick_actions.html
+msgid "Quick filter"
+msgstr "快速筛选"
+
+#: recruitment/templates/cbv/pipeline/quick_actions.html
+#, python-format
+msgid "Quick filter (%(counter)s)"
+msgstr "快速筛选（%(counter)s）"
