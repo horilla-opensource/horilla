@@ -25990,3 +25990,11 @@ msgstr "Modèles de messages et flux créés avec succès."
 
 #~ msgid "'s Scheduled Interviews"
 #~ msgstr "entrevues planifiées"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Last 7 Days"
+msgstr "7 derniers jours"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Next 7 Days"
+msgstr "7 prochains jours"

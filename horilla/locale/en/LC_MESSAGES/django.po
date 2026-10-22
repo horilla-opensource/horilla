@@ -30235,3 +30235,11 @@ msgstr "Shift Requests"
 
 #~ msgid "user-group-update"
 #~ msgstr "Update"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Last 7 Days"
+msgstr ""
+
+#: horilla_views/generic/cbv/views.py
+msgid "Next 7 Days"
+msgstr ""

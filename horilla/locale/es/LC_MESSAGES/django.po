@@ -26040,3 +26040,11 @@ msgstr "Plantillas y flujos de mensajes creados correctamente."
 
 #~ msgid "'s Scheduled Interviews"
 #~ msgstr "entrevistas programadas"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Last 7 Days"
+msgstr "Últimos 7 días"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Next 7 Days"
+msgstr "Próximos 7 días"

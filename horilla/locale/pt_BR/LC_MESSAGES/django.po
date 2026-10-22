@@ -26091,3 +26091,11 @@ msgstr "Modelos e fluxos de mensagens criados com sucesso."
 
 #~ msgid "Mail not send to %(candidate_name)s"
 #~ msgstr "Correio não enviado para %(candidate_name)s"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Last 7 Days"
+msgstr "Últimos 7 dias"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Next 7 Days"
+msgstr "Próximos 7 dias"

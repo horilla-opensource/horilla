@@ -5,7 +5,7 @@ horilla/cbv_methods.py
 import json
 import types
 import uuid
-from datetime import datetime, timedelta
+from datetime import timedelta
 from io import BytesIO
 from typing import Any
 from urllib.parse import urlencode
@@ -36,8 +36,8 @@ from django.template import loader
 from django.template.defaultfilters import register
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
-from django.utils.formats import get_format
 from django.utils.functional import lazy
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -420,12 +420,11 @@ WEEK = "week"
 
 def week_start(day):
     """
-    First day of the calendar week containing `day`. Follows the active
-    language's FIRST_DAY_OF_WEEK format (0 = Sunday, 1 = Monday, ...), which
-    falls back to settings.FIRST_DAY_OF_WEEK, so a site can choose its week
-    the standard Django way (FORMAT_MODULE_PATH or the setting).
+    First day of the calendar week containing `day`, per
+    settings.HORILLA_FIRST_DAY_OF_WEEK (0 = Sunday, 1 = Monday ... 6 =
+    Saturday; Monday by default, like the attendance dashboard).
     """
-    first = int(get_format("FIRST_DAY_OF_WEEK"))
+    first = int(getattr(settings, "HORILLA_FIRST_DAY_OF_WEEK", 1)) % 7
     return day - timedelta(days=(day.isoweekday() - first) % 7)
 
 
@@ -438,7 +437,7 @@ def get_quick_date_filters(ranges, fields):
     whole calendar week: 0 is this week, -1 last week.
     """
     exact_field, from_field, to_field = fields
-    today = datetime.now().date()
+    today = timezone.localdate()
 
     def setter(name, value):
         return (

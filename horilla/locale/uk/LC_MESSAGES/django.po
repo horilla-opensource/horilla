@@ -26075,3 +26075,11 @@ msgstr "Шаблони повідомлень і потоки успішно с�
 
 #~ msgid "Mail not send to %(candidate_name)s"
 #~ msgstr "Пошта не надсилається на %(candidate_name)s"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Last 7 Days"
+msgstr "Останні 7 днів"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Next 7 Days"
+msgstr "Наступні 7 днів"

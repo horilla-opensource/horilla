@@ -26084,3 +26084,11 @@ msgstr "Nachrichtenvorlagen und Flows erfolgreich erstellt."
 
 #~ msgid "'s Scheduled Interviews"
 #~ msgstr "'s geplante Interviews"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Last 7 Days"
+msgstr "Letzte 7 Tage"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Next 7 Days"
+msgstr "Nächste 7 Tage"
