@@ -675,6 +675,7 @@ class LeaveClashListView(LeaveRequestsListView):
                     | Q(
                         employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id
                     ),
+                    employee_id__employee_work_info__company_id=record.employee_id.employee_work_info.company_id,
                     start_date__lte=record.end_date,
                     end_date__gte=record.start_date,
                 )
