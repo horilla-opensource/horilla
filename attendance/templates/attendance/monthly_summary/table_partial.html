@@ -41,6 +41,7 @@
   }
   /* The same card the Employee list sits in: white, 8px padding, small radius, soft shadow. */
   .ms-table-wrap .oh-table_sticky--wrapper {
+    position: relative;
     background: #fff;
     padding: 8px;
     border-radius: 6px;
@@ -647,7 +648,8 @@ reloadSelectedCount($('.count_msAttendance'),'selectedInstances');">
        since this is a bespoke table, not a HorillaListView. Drag-to-
        reorder is intentionally not implemented, so no drag handles or
        "drag to reorder" hint are shown — only show/hide. -->
-  <div style="position:absolute; top:6px; right:24px; z-index:7;">
+  <div class="oh-table_sticky--wrapper">
+  <div id="ms-columns-anchor" style="position:absolute; top:12px; right:16px; z-index:7;">
     <button type="button" id="ms-columns-toggle"
             class="oh-sticky-dropdown_btn is-column-config-trigger"
             title="{% trans 'Customize columns' %}"
@@ -757,7 +759,6 @@ reloadSelectedCount($('.count_msAttendance'),'selectedInstances');">
       </div>
     </div>
   </div>
-  <div class="oh-table_sticky--wrapper">
   {% if grouped %}
   {# The Employee directory's "Grouped by" bar: numbered level pills you can change or remove, + Add level, Expand / Collapse All. #}
   <div class="ms-ngb-bar">
@@ -1408,6 +1409,31 @@ reloadSelectedCount($('.count_msAttendance'),'selectedInstances');">
     btn.style.display = 'none';
   };
 
+
+(function () {
+  // The columns button sits over the right end of the column header, centred on it: the header's
+  // row starts below whatever is above the table (the grouped view's "Grouped by" bar), and the
+  // vertical scrollbar takes room from the right once the table is taller than its box.
+  var root = document.getElementById('msAttendanceTable');
+  if (!root) return;
+  var anchor = root.querySelector('#ms-columns-anchor');
+  var scroller = root.querySelector('.table-wrapper');
+  var head = root.querySelector('thead');
+  if (!anchor || !scroller || !head) return;
+  function place() {
+    var buttonH = anchor.firstElementChild ? anchor.firstElementChild.offsetHeight : 26;
+    anchor.style.top = Math.round(scroller.offsetTop + (head.getBoundingClientRect().height - buttonH) / 2) + 'px';
+    anchor.style.right = (8 + (scroller.offsetWidth - scroller.clientWidth) + 6) + 'px';
+  }
+  place();
+  window.addEventListener('resize', place);
+  if (window.ResizeObserver) {
+    var observer = new ResizeObserver(place);
+    observer.observe(scroller);
+    var tbl = root.querySelector('table');
+    if (tbl) observer.observe(tbl);
+  }
+})();
 
 (function () {
   var STORAGE_KEY = 'ms_summary_hidden_columns';

@@ -196,6 +196,8 @@ and to_date.
     var panel = document.getElementById('cal-resolve-panel');
     if (!panel || panel.style.display === 'none') return;
     if (panel.contains(e.target)) return;
+    // The status lists float outside the panel: scrolling one is not scrolling the calendar.
+    if (e.target.closest && e.target.closest('.crp-dd-list')) return;
     window.msCalClosePanel();
   }, true);
 
