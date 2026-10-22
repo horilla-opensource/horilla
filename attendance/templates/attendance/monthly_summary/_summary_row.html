@@ -39,8 +39,8 @@
       <span class="truncate" title="{{ row.employee.get_full_name }}">{{ row.employee.get_full_name }}</span>
     </div>
   </td>
-  <td>{{ row.employee.badge_id|default:"&mdash;" }}</td>
-  <td>{{ row.employee.employee_work_info.department_id.department|default:"&mdash;" }}</td>
+  <td>{{ row.employee.badge_id|default:"" }}</td>
+  <td>{{ row.employee.employee_work_info.department_id.department|default:"" }}</td>
   <td class="ms-metric-cell" style="text-align:center;font-weight:600;"
       data-url="{% url 'attendance-monthly-summary-detail' %}?employee_id={{ row.employee.pk }}&from_date={{ from_date }}&to_date={{ to_date }}&metric=present">{{ row.present|floatformat:"-1" }}</td>
   <td class="ms-metric-cell" style="text-align:center;font-weight:600;"
@@ -76,7 +76,7 @@
     {% endif %}
   </td>
   {% else %}
-  <td style="text-align:center;color:#ced4da;">&mdash;</td>
+  <td style="text-align:center;"></td>
   {% endif %}
   <td style="text-align:center;">{{ row.worked_label }}</td>
   <td style="text-align:center;">{{ row.regular_label }}</td>
