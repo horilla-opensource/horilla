@@ -17,7 +17,7 @@ from django.utils.translation import gettext as _
 
 from base.models import Company, EmployeeShiftSchedule, IntegrationApps
 from employee.methods.duration_methods import strtime_seconds
-from horilla.horilla_middlewares import _thread_locals, get_selected_company
+from horilla.horilla_middlewares import _thread_locals
 from horilla.methods import get_horilla_model_class
 from horilla_theme.models import CompanyTheme, HorillaColorTheme
 
@@ -322,14 +322,7 @@ def currency_symbol_position(amount):
     PayrollSettings = get_horilla_model_class(
         app_label="payroll", model="payrollsettings"
     )
-    company_id = get_selected_company()
-    symbol = None
-    if company_id and company_id != "all":
-        symbol = PayrollSettings.objects.filter(company_id=company_id).first()
-    if symbol is None:
-        symbol = PayrollSettings.objects.filter(company_id__isnull=True).first()
-    if symbol is None:
-        symbol = PayrollSettings.objects.first()
+    symbol = PayrollSettings.for_selected_company()
 
     currency = symbol.currency_symbol if symbol else "$"
 

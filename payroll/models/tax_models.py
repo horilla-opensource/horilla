@@ -14,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
+from horilla.horilla_middlewares import get_selected_company
 from horilla.models import HorillaModel
 from payroll.models.models import FilingStatus
 
@@ -42,6 +43,27 @@ class PayrollSettings(HorillaModel):
 
     def __str__(self):
         return f"Payroll Settings {self.currency_symbol}"
+
+    @classmethod
+    def for_selected_company(cls):
+        """
+        Return the selected company's settings, else the settings without a
+        company, else any settings (None if there are none).
+
+        HorillaCompanyManager also lets the row without a company through, so
+        a bare .objects.first() returns whichever row has the lower id. That
+        is usually the "$" row default_currency() creates on the very first
+        page load, not the company's own row saved from the settings page.
+        """
+        company_id = get_selected_company()
+        settings = None
+        if company_id and company_id != "all":
+            settings = cls.objects.filter(company_id=company_id).first()
+        if settings is None:
+            settings = cls.objects.filter(company_id__isnull=True).first()
+        if settings is None:
+            settings = cls.objects.first()
+        return settings
 
 
 class TaxBracket(HorillaModel):
