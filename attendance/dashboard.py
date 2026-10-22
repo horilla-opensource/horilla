@@ -127,20 +127,67 @@ def _missing_punches_employees(today=None, employee_ids=None):
 
 
 def _scoped_employees(request):
-    """Active employees who work a shift, restricted to a reporting
-    manager's subordinates when they lack attendance.view_attendance;
-    unrestricted otherwise. Employees without a shift are not expected to
-    clock in (as in _missing_punches_employees), so they are left out of
-    attendance rates and absences."""
+    """Active employees, restricted to a reporting manager's subordinates
+    when they lack attendance.view_attendance; unrestricted otherwise."""
     from base.methods import filtersubordinatesemployeemodel
     from employee.models import Employee
 
-    employees = Employee.objects.filter(
-        is_active=True, employee_work_info__shift_id__isnull=False
-    )
+    employees = Employee.objects.filter(is_active=True)
     return filtersubordinatesemployeemodel(
         request, employees, perm="attendance.view_attendance"
     )
+
+
+def expected_employee_ids(employees, start, end):
+    """
+    Ids of the employees expected to attend between start and end: those
+    with a shift, plus anyone without one who actually has attendance in
+    the range. The shift is optional and someone without one can still
+    clock in; they count when they do, but are never "absent". Used for the
+    expected / absent / rate figures here and on the main dashboard.
+    """
+    from attendance.models import Attendance
+
+    with_shift = set(
+        employees.filter(employee_work_info__shift_id__isnull=False).values_list(
+            "id", flat=True
+        )
+    )
+    attended = set(
+        Attendance.objects.filter(
+            employee_id__in=employees,
+            attendance_date__gte=start,
+            attendance_date__lte=end,
+        ).values_list("employee_id", flat=True)
+    )
+    return with_shift | attended
+
+
+def _expected_attendance_days(employees, start, end):
+    """
+    {employee id: [dates]} as in _expected_work_days for employees with a
+    shift. An employee without a shift is expected only on the days they
+    actually attended, so they are never counted absent.
+    """
+    from attendance.models import Attendance
+
+    expected = _expected_work_days(employees, start, end)
+    without_shift = set(
+        employees.filter(employee_work_info__shift_id__isnull=True).values_list(
+            "id", flat=True
+        )
+    )
+    if without_shift:
+        attended = {}
+        for row in Attendance.objects.filter(
+            employee_id__in=without_shift,
+            attendance_date__gte=start,
+            attendance_date__lte=end,
+        ).values("employee_id", "attendance_date"):
+            attended.setdefault(row["employee_id"], set()).add(row["attendance_date"])
+        for emp_id in without_shift:
+            expected[emp_id] = sorted(attended.get(emp_id, ()))
+    return expected
 
 
 @login_required
@@ -185,8 +232,13 @@ def attendance_kpi_data(request):
         .count()
     )
 
+    # Out of the employees expected today: those with a shift, plus anyone
+    # without one who clocked in anyway (expected_employee_ids).
+    expected_employees = len(expected_employee_ids(employees, today, today))
     attendance_rate = (
-        round((present_today / total_employees * 100), 1) if total_employees > 0 else 0
+        round((present_today / expected_employees * 100), 1)
+        if expected_employees > 0
+        else 0
     )
 
     # Not scoped to attendance_validated=False: "On Time" below is
@@ -258,6 +310,7 @@ def attendance_kpi_data(request):
     return JsonResponse(
         {
             "total_employees": total_employees,
+            "expected_employees": expected_employees,
             "present_today": present_today,
             "attendance_rate": attendance_rate,
             "on_time": on_time,
@@ -525,7 +578,7 @@ def _group_attendance_stats(request, group_field):
     rows = list(employees.values("id", group_field))
     if not rows:
         return {}
-    expected_days = _expected_work_days(employees, month_start, month_end)
+    expected_days = _expected_attendance_days(employees, month_start, month_end)
 
     present_by_employee = {
         row["employee_id"]: row["days"]
@@ -709,7 +762,7 @@ def attendance_top_absentees(request):
 
     try:
         employees = _scoped_employees(request)
-        expected_days = _expected_work_days(employees, first_of_month, today)
+        expected_days = _expected_attendance_days(employees, first_of_month, today)
         attended = {}
         for row in Attendance.objects.filter(
             employee_id__in=employees,
