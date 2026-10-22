@@ -1801,18 +1801,20 @@ class EmployeeShiftScheduleForm(ModelForm):
         Validation to day field
         """
         if not self.instance.pk:
-            days = self.cleaned_data["day"]
-            for day in days:
-                attendance = EmployeeShiftSchedule.objects.filter(
-                    day=day, shift_id=self.data["shift_id"]
-                ).first()
-                if attendance is not None:
-                    raise ValidationError(
-                        _("Shift schedule is already exist for {day}").format(
-                            day=_(day.day)
+            days = self.cleaned_data.get("day")
+            shift_id = self.data.get("shift_id")
+            if days and shift_id:
+                for day in days:
+                    attendance = EmployeeShiftSchedule.objects.filter(
+                        day=day, shift_id=shift_id
+                    ).first()
+                    if attendance is not None:
+                        raise ValidationError(
+                            _("Shift schedule is already exist for {day}").format(
+                                day=_(day.day)
+                            )
                         )
-                    )
-            if days.first() is None:
+            if not days or days.first() is None:
                 raise ValidationError(_("Employee not chosen"))
             return days.first()
 
