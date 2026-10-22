@@ -1251,7 +1251,7 @@ class Candidate(HorillaModel):
         if self.pk:
             previous = (
                 Candidate.objects.filter(pk=self.pk)
-                .values("recruitment_id", "job_position_id")
+                .values("recruitment_id", "job_position_id", "stage_id")
                 .first()
             )
             if previous:
@@ -1259,6 +1259,17 @@ class Candidate(HorillaModel):
                     previous["recruitment_id"] != self.recruitment_id_id
                     or previous["job_position_id"] != self.job_position_id_id
                 )
+                # Moving a candidate to a stage other than the cancelled one
+                # re-opens a rejected candidate. Without this, `canceled`
+                # stayed True and the block below snapped the candidate
+                # straight back into the cancelled stage.
+                if (
+                    self.canceled
+                    and self.stage_id_id != previous["stage_id"]
+                    and self.stage_id
+                    and self.stage_id.stage_type != "cancelled"
+                ):
+                    self.canceled = False
 
         if not self.recruitment_id.is_event_based and self.job_position_id is None:
             self.job_position_id = self.recruitment_id.job_position_id
