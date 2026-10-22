@@ -2298,7 +2298,7 @@ class HorillaNavView(TemplateView):
     actions: list = []
     group_by_fields: list = []
     nested_group_by_fields: list = []
-    filter_form_context_name: str = ""
+    filter_form_context_name: str = "form"
     filter_instance: FilterSet = None
     filter_instance_context_name: str = ""
     filter_body_template: str = ""
@@ -2623,9 +2623,16 @@ class HorillaProfileView(DetailView):
 
         return view
 
+    def get_status_ribbon(self, instance):
+        """
+        Override to show a corner ribbon, e.g. {"label": _("Rejected"), "variant": "danger"}.
+        """
+        return None
+
     def get_context_data(self, **kwargs: Any) -> dict:
         context = super().get_context_data(**kwargs)
         context["instance"] = context["object"]
+        context["status_ribbon"] = self.get_status_ribbon(context["instance"])
         context["tabs"] = self.tabs
         context["view_id"] = self.view_id
         active_tab = models.ActiveTab.objects.filter(
