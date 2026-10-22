@@ -217,6 +217,8 @@ MIDDLEWARE = [
     "horilla.horilla_middlewares.SVGSecurityMiddleware",
     "horilla.horilla_middlewares.MissingParameterMiddleware",
     "horilla.horilla_middlewares.BulkDeleteSummaryMiddleware",
+    "horilla.horilla_middlewares.ExportDownloadCookieMiddleware",
+    "horilla.horilla_middlewares.ExportOptionsMiddleware",
     "auditlog.middleware.AuditlogMiddleware",
     # Last: needs request.user from AuthenticationMiddleware, and
     # converts a PermissionDenied from the Axes backend into the
