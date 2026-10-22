@@ -22,12 +22,8 @@
     >
       {% if queryset.paginator.count %}
       <div class="oh-checkpoint-badge text-success quick-bulk-action"
-        onclick="
-        addToSelectedId({{select_all_ids|safe}},'{{selected_instances_key_id}}');
-        selectSelected('#{{view_id|safe}}','{{selected_instances_key_id}}');
-        reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
-        reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
-        "
+        data-select-url="{{ request.get_full_path }}"
+        onclick="hlvSelectAllRecords(this, '#{{view_id|safe}}', '{{selected_instances_key_id}}')"
         style="cursor: pointer;">
         <span class="label"
         {% comment %} style="display:none;" {% endcomment %}

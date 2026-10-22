@@ -805,11 +805,6 @@ class QuestionForm(ModelForm):
 
     verbose_name = "Survey Questions"
 
-    recruitment = forms.ModelMultipleChoiceField(
-        queryset=Recruitment.objects.filter(is_active=True),
-        required=False,
-        label=_("Recruitment"),
-    )
     options = forms.CharField(
         widget=forms.TextInput, label=_("Options"), required=False
     )
@@ -821,10 +816,15 @@ class QuestionForm(ModelForm):
 
         model = RecruitmentSurvey
         fields = "__all__"
-        exclude = ["recruitment_ids", "job_position_ids", "is_active", "options"]
+        exclude = [
+            "template_id",
+            "job_position_ids",
+            "is_active",
+            "options",
+            "sequence",
+        ]
         labels = {
             "question": _("Question"),
-            "sequence": _("Sequence"),
             "type": _("Type"),
             "options": _("Options"),
             "is_mandatory": _("Required"),
@@ -842,12 +842,8 @@ class QuestionForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        recruitment = self.cleaned_data.get("recruitment")
         question_type = self.cleaned_data.get("type")
         options = self.cleaned_data.get("options")
-        self.recruitment = (
-            recruitment if recruitment is not None else Recruitment.objects.none()
-        )
         if question_type in ["options", "multiple"] and (
             options is None or options == ""
         ):
@@ -912,11 +908,6 @@ class QuestionForm(ModelForm):
                     self.option_count += 1
                     create_options_field_more(f"options{i}", option)
 
-        if instance:
-            self.fields["recruitment"].initial = instance.recruitment_ids.all()
-        self.fields["type"].widget.attrs.update(
-            {"class": " w-100", "style": "border:solid 1px #6c757d52;height:50px;"}
-        )
         for key, value in self.data.items():
             if key.startswith("options"):
                 self.option_count += 1
@@ -925,10 +916,7 @@ class QuestionForm(ModelForm):
         pinned_order = [
             "question",
             "type",
-            "sequence",
             "is_mandatory",
-            "template_id",
-            "recruitment",
         ]
         fields_order = pinned_order + [
             field for field in self.fields.keys() if field not in pinned_order
@@ -943,11 +931,9 @@ class SurveyForm(forms.Form):
 
     def __init__(self, recruitment, *args, **kwargs) -> None:
         super().__init__(recruitment, *args, **kwargs)
-        questions = recruitment.recruitmentsurvey_set.all()
-        all_questions = RecruitmentSurvey.objects.none() | questions
-        for template in recruitment.survey_templates.all():
-            questions = template.recruitmentsurvey_set.all()
-            all_questions = all_questions | questions
+        all_questions = RecruitmentSurvey.objects.filter(
+            template_id__in=recruitment.survey_templates.all()
+        )
         context = {"form": self, "questions": all_questions.distinct()}
         form = render_to_string("survey_form.html", context)
         self.form = form
@@ -977,14 +963,32 @@ class TemplateForm(BaseModelForm):
     TemplateForm
     """
 
-    cols = {"title": 12, "description": 12, "company_id": 12}
+    cols = {"title": 12, "description": 12, "company_id": 12, "questions": 12}
 
     verbose_name = "Template"
+    field_order = ["title", "questions", "description", "company_id"]
+
+    questions = forms.ModelMultipleChoiceField(
+        queryset=RecruitmentSurvey.objects.all(),
+        required=False,
+        label=_("Questions"),
+    )
 
     class Meta:
         model = SurveyTemplate
         fields = "__all__"
         exclude = ["is_active"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields["questions"].initial = self.instance.questions.all()
+
+    def save(self, commit=True):
+        instance = super().save(commit=commit)
+        if commit:
+            instance.questions.set(self.cleaned_data["questions"])
+        return instance
 
     def as_p(self, *args, **kwargs):
         """

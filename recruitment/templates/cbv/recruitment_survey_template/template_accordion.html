@@ -123,10 +123,10 @@
                             <div class="flex items-center gap-2.5">
                                 <span
                                     class="inline-flex items-center justify-center rounded-full font-semibold min-w-[22px] h-[22px] px-1.5 text-[11px] bg-primary-600 text-white"
-                                    title="{{ instance.recruitmentsurvey_set.count }} {% trans 'Questions' %}"
+                                    title="{{ instance.questions.count }} {% trans 'Questions' %}"
                                     onclick="event.stopPropagation()"
                                 >
-                                    {{ instance.recruitmentsurvey_set.count }}
+                                    {{ instance.questions.count }}
                                 </span>
                                 <span class="text-[13.5px] font-semibold text-gray-700">{{ instance.title }}</span>
                             </div>
@@ -164,19 +164,6 @@
                                             {% if perms.recruitment.change_surveytemplate %}
                                                 <li>
                                                     <a
-                                                        hx-get="{% url 'survey-template-question-add' %}?title={{ instance.title }}"
-                                                        hx-target="#genericModalBody"
-                                                        data-toggle="oh-modal-toggle"
-                                                        data-target="#genericModal"
-                                                        class="block w-full text-left px-3 py-1 text-[#333] hover:text-primary-600 transition duration-300 cursor-pointer"
-                                                    >
-                                                        {% trans "Add Questions" %}
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                            {% if perms.recruitment.change_surveytemplate %}
-                                                <li>
-                                                    <a
                                                         hx-get="{% url 'survey-template-create' %}?title={{ instance.title }}"
                                                         hx-target="#genericModalBody"
                                                         data-toggle="oh-modal-toggle"
@@ -184,6 +171,19 @@
                                                         class="block w-full text-left px-3 py-1 text-[#333] hover:text-primary-600 transition duration-300 cursor-pointer"
                                                     >
                                                         {% trans "Edit" %}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                            {% if perms.recruitment.add_surveytemplate %}
+                                                <li>
+                                                    <a
+                                                        hx-get="{% url 'survey-template-duplicate' instance.pk %}"
+                                                        hx-target="#genericModalBody"
+                                                        data-toggle="oh-modal-toggle"
+                                                        data-target="#genericModal"
+                                                        class="block w-full text-left px-3 py-1 text-[#333] hover:text-primary-600 transition duration-300 cursor-pointer"
+                                                    >
+                                                        {% trans "Duplicate" %}
                                                     </a>
                                                 </li>
                                             {% endif %}
@@ -207,7 +207,7 @@
                             </div>
                         </div>
                         <div class="oh-accordion-body d-none">
-                            {% with questions=instance.recruitmentsurvey_set.all %}
+                            {% with questions=instance.questions.all %}
                                 {% if questions %}
                                     <div class="px-2 rounded-b-lg overflow-hidden">
                                     <table class="fixed-table w-full table-fixed border-separate">

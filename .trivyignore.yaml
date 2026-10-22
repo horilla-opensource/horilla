@@ -53,3 +53,15 @@ vulnerabilities:
     # Unpacker reuse; used only by pip's own HTTP cache.
     statement: "pip vendored copy; installed msgpack is 1.2.2"
     expired_at: 2026-12-06
+  - id: CVE-2026-97687
+    # urllib3 2.7.0, from pip/_vendor/vendor.txt (pip 26.2.2 vendors it; verify
+    # with: unzip -p pip-26.2.2-*.whl pip/_vendor/vendor.txt | grep urllib3).
+    # HTTPS-proxy TLS override; reachable only while pip downloads packages at
+    # build time, never from the running application.
+    statement: "pip vendored copy; installed urllib3 is 2.8.0"
+    expired_at: 2026-12-06
+  - id: CVE-2026-97689
+    # urllib3 2.7.0, from pip/_vendor/vendor.txt. Unbounded memory in the chunk
+    # parser; same reachability as above.
+    statement: "pip vendored copy; installed urllib3 is 2.8.0"
+    expired_at: 2026-12-06

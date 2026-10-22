@@ -919,6 +919,22 @@ def ticket_filter(request):
     return render(request, template, context)
 
 
+def can_view_ticket(request, ticket):
+    """Whether the requester may see this ticket.
+
+    The ticket owner, the owner's reporting manager, the department manager,
+    anyone assigned to it, or a holder of the model permission. Shared by the
+    views that render a ticket.
+    """
+    return bool(
+        request.user.has_perm("helpdesk.view_ticket")
+        or ticket.employee_id.get_reporting_manager() == request.user.employee_get
+        or is_department_manager(request, ticket)
+        or request.user.employee_get == ticket.employee_id
+        or request.user.employee_get in ticket.assigned_to.all()
+    )
+
+
 @login_required
 def ticket_detail(request, ticket_id, **kwargs):
     ticket = Ticket.find(ticket_id)
@@ -927,13 +943,7 @@ def ticket_detail(request, ticket_id, **kwargs):
             request, message=_("No Ticket found matching the query.")
         )
 
-    if (
-        request.user.has_perm("helpdesk.view_ticket")
-        or ticket.employee_id.get_reporting_manager() == request.user.employee_get
-        or is_department_manager(request, ticket)
-        or request.user.employee_get == ticket.employee_id
-        or request.user.employee_get in ticket.assigned_to.all()
-    ):
+    if can_view_ticket(request, ticket):
         today = datetime.now().date()
         c_form = CommentForm()
         f_form = AttachmentForm()
@@ -1008,6 +1018,8 @@ def ticket_individual_view(request, ticket_id):
         return HorillaRedirect(
             request, message=_("No Ticket found matching the query.")
         )
+    if not can_view_ticket(request, ticket):
+        return handle_no_permission(request)
 
     context = {
         "ticket": ticket,

@@ -1557,13 +1557,12 @@ class RecruitmentSurvey(HorillaModel):
         ("rating", _("Rating")),
     ]
     template_id = models.ManyToManyField(
-        SurveyTemplate, verbose_name="Template", blank=True
+        SurveyTemplate,
+        verbose_name="Template",
+        blank=True,
+        related_name="questions",
     )
     is_mandatory = models.BooleanField(default=False)
-    recruitment_ids = models.ManyToManyField(
-        Recruitment,
-        verbose_name=_("Recruitment"),
-    )
     question = models.TextField(null=False)
     job_position_ids = models.ManyToManyField(
         JobPosition, verbose_name=_("Job Positions"), editable=False
@@ -1576,7 +1575,7 @@ class RecruitmentSurvey(HorillaModel):
     options = models.TextField(
         null=True, default="", help_text=_("Separate choices by ',  '"), max_length=255
     )
-    objects = HorillaCompanyManager(related_company_field="recruitment_ids__company_id")
+    objects = HorillaCompanyManager(related_company_field="template_id__company_id")
 
     def __str__(self) -> str:
         return str(self.question)
@@ -1612,13 +1611,11 @@ class RecruitmentSurvey(HorillaModel):
         )
         return url
 
-    def recruitment_col(self):
+    def template_col(self):
         """
-        Manager in detail view
+        Templates this question belongs to, for the detail view.
         """
-        recruitment = self.recruitment_ids.all()
-        recruitment_string = "<br>".join([str(rec) for rec in recruitment])
-        return recruitment_string
+        return ", ".join(str(template) for template in self.template_id.all())
 
     def get_question_type(self):
         return dict(self.question_types).get(self.type)
@@ -1628,16 +1625,6 @@ class RecruitmentSurvey(HorillaModel):
         Used to split the choices
         """
         return self.options.split(", ")
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.template_id is None:
-            general_template = SurveyTemplate.objects.filter(
-                is_general_template=True
-            ).first()
-            if general_template:
-                self.template_id.add(general_template)
-                super().save(*args, **kwargs)
 
     class Meta:
         ordering = [

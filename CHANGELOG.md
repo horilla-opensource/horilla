@@ -32,6 +32,121 @@ date and open a fresh Unreleased above it.
 ### Security      — vulnerabilities fixed; link the advisory and credit the reporter
 -->
 
+## [2.2.0] — 2026-10-21
+
+Feature release. Payroll gets a new engine (configurable components, batch runs, tax
+packs), every module dashboard is rebuilt around one chart and legend style, there is a
+new master-data import wizard, and leave gains a cancellation-request workflow. It also
+carries the security fixes listed below.
+
+**Upgrading from 2.1.x:** run `python manage.py migrate` (46 new migrations, additive;
+tested against a 2.1.8 database loaded with demo data, no pending migrations afterwards).
+See *Upgrading* below.
+
+### Added
+
+- **Payroll engine.** Configurable salary components with ordered evaluation, batch payroll
+  runs with pay periods and a run-review list, tax packs with filing-status rules
+  (income tax annualised by pay period), payslip editing with loss-of-pay breakdown and
+  employer contributions, "How this was worked out" popovers, bulk salary-structure
+  update from contracts, bonus-point balance on the encashment form, `YEARS_OF_SERVICE`
+  and `YEARS_OF_CONTRACT` in formulas.
+- **Master data import.** New `master_import` module with a wizard (employees first),
+  plus import for leave requests, leave types, projects and assets (multiple file
+  formats, per-row error reporting, downloadable templates).
+- **Leave.** "Cancel Requested" status and cancellation workflow, payment filter,
+  department chips on the trend chart, past-date restriction on requests, bulk
+  approve / reject / delete.
+- **Dashboards.** New Employee (My) Dashboard at `/my-dashboard/` with an Admin Dashboard
+  switch; period pickers, count badges and a shared donut legend across all module
+  dashboards; turnover report with hire-vs-turnover drill-down; legend choices are
+  remembered per user and page.
+- **Employees.** Random initial passwords, admin password reset and invitations, CSV
+  export of reset results, Badge ID search, expired-documents panel, history tab across
+  all models, more actions on the profile action button, back navigation from the edit
+  views, and the signed-in user's username on their own profile.
+- **Attendance.** Regularise a month by stating its totals, half-absent and split days
+  in the monthly summary, bulk-resolve a range of calendar days, option to show future
+  approved leave. The day popover has a single coloured status choice, editable hours
+  with a live breakdown, one Save, and the full change history for the day.
+- **Recruitment.** "How did you hear about us?" on the application form, rejected-by-reason
+  chart, redesigned survey preview.
+- **Other.** Announcement quick creation, asset *Lost* return status and service-request
+  flow, per-device biometric log fetch, holiday duplication and "available for all"
+  filter, mail-automation refresh, `seed_dashboard_demo_data` command.
+
+### Changed
+
+- Bulk actions (archive, approve, reject, delete) report counts and refresh the list in
+  place across employee, leave, attendance, payroll, helpdesk, PMS, project and
+  recruitment.
+- Employee list default ordering is by ID rather than first name.
+- "Is Active" / "Is …" labels are now "Active" etc. across all modules (migrations included).
+- New recruitments no longer pre-tick *Post on LinkedIn*.
+- The Cancelled stage type is now Rejected.
+- Profile tabs, list views and group-by tables share one performance-tuned layout;
+  dark-mode inconsistencies fixed.
+- Leave: the standalone employee leave dashboard is removed (My Dashboard replaces it).
+- Attendance: the *Partial Hours* option is removed from the calendar legend.
+- Recruitment: survey questions are no longer tied to a recruitment or template; a
+  question can be added to a template while the template is created. The About tab
+  follows the employee About tab style. PMS feedback detail and overview pages are
+  restyled.
+- Pillow 13 (`>=13.0.0,<14`), PyJWT 2.15.1.
+
+### Fixed
+
+- Payroll: CTC Down loss-of-pay and basic-pay handling, structure components reaching
+  everyone on the structure, payslip pages with unsaved payroll settings, tax-formula
+  worker timeout, tax-rule and slab save errors, payslip PDF when `wkhtmltopdf` is off
+  `PATH`.
+- Attendance: top-absentees ignoring leave and holidays, half-day regularisation,
+  future days counted absent, 405 on individual export, `WorkRecords.message` too short
+  for translated text.
+- Leave: 500 on the allocations list and on compensatory-file comment delete, empty
+  clashed-requests modal, row locking on cancellation under PostgreSQL.
+- Employee: password-reset modals, select fields and sticky tables, and the Documents
+  tab button. The monthly summary row now colours as a whole on hover.
+- Employee, PMS, recruitment, offboarding, helpdesk, project and base: assorted
+  breadcrumb, redirection, filter, modal and chart fixes (full list in the commit
+  history).
+- Scheduled-job failures are now logged with their traceback; `rotate_shift` no longer
+  fails when no rotating shift has started; Docker treats an empty `GUNICORN_WORKERS`
+  as unset.
+
+### Security
+
+Five access-control issues, all requiring a signed-in account, reported privately. Every
+one affects 2.0.0 through 2.1.8. With thanks to **@NotAFlightRisk**, **@deadpoor1**,
+**@m0ssser** and **@wict0rious** for reporting them responsibly.
+
+- **Employee leave tab** — [GHSA-mr87-qrw6-rf3g](https://github.com/horilla/horilla-hr/security/advisories/GHSA-mr87-qrw6-rf3g)
+  (Medium). Any employee could open another employee's leave tab. It now requires the
+  employee themselves, their manager, or the leave permission. Reported by **@NotAFlightRisk**.
+- **Helpdesk ticket view** — [GHSA-7jjm-mcgq-9jj5](https://github.com/horilla/horilla-hr/security/advisories/GHSA-7jjm-mcgq-9jj5)
+  (Medium). Any employee could read any ticket by id. Ticket access is now checked in
+  one place for every ticket view. Reported by **@deadpoor1**.
+- **Project and task detail API** — [GHSA-7jwm-2q24-6mv3](https://github.com/horilla/horilla-hr/security/advisories/GHSA-7jwm-2q24-6mv3)
+  (Medium). Detail requests now apply the same scope as the list. Reported by **@m0ssser**.
+- **Exports** — [GHSA-2847-55wj-6r5m](https://github.com/horilla/horilla-hr/security/advisories/GHSA-2847-55wj-6r5m)
+  (Medium). Exports selected by id now apply the requester's scope, and the candidate
+  export requires the candidate view permission. Reported by **@wict0rious**.
+- **Survey attachment file names** — [GHSA-925v-gjrp-mwcp](https://github.com/horilla/horilla-hr/security/advisories/GHSA-925v-gjrp-mwcp)
+  (Medium). Attachments are no longer saved under a client-controlled name. Reported by **@m0ssser**.
+
+Pillow 13 and urllib3 2.8.0 also close the image-decoder and HTTP advisories in those
+libraries.
+
+### Upgrading
+
+- Run `migrate`.
+- API clients: no API version change (`API_VERSION` unchanged).
+- Saved dashboard layouts are reset once so the new chart defaults apply.
+
+```bash
+docker pull horilla/horilla-hr:2.2.0
+```
+
 ## [2.1.8] — 2026-09-26
 
 Security release. **Upgrade from any 2.x — this closes an unauthenticated
@@ -533,7 +648,8 @@ Secret — message delivery stops until it is set.
 docker pull horilla/horilla-hr:2.1.1
 ```
 
-[Unreleased]: https://github.com/horilla/horilla-hr/compare/2.1.8...HEAD
+[Unreleased]: https://github.com/horilla/horilla-hr/compare/2.2.0...HEAD
+[2.2.0]: https://github.com/horilla/horilla-hr/compare/2.1.8...2.2.0
 [2.1.8]: https://github.com/horilla/horilla-hr/compare/2.1.7...2.1.8
 [2.1.7]: https://github.com/horilla/horilla-hr/compare/2.1.6...2.1.7
 [2.1.6]: https://github.com/horilla/horilla-hr/compare/2.1.5...2.1.6

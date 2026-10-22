@@ -116,6 +116,12 @@
                     <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
                         <h2 class="text-xl font-semibold leading-tight text-dark-500">{{ object }}</h2>
                     </div>
+                    {% if object.employee_user_id and object.employee_user_id == request.user %}
+                        <p class="mt-1 flex items-center gap-1.5 text-xs text-color-600">
+                            <i class="fa-solid fa-user text-primary-600 text-xxs"></i>
+                            {{ object.employee_user_id.username }}
+                        </p>
+                    {% endif %}
 
                     {% if object.get_job_position or object.get_department %}
                         <div class="mt-2 flex flex-wrap gap-2">
@@ -140,19 +146,33 @@
                                 <i class="fa-solid fa-envelope text-xxs"></i>
                             </span>
                             <dd class="min-w-0">
-                                <a href="mailto:{{ object.get_email }}" class="block truncate text-sm text-dark-200 transition-colors hover:text-primary-600">
+                                <span class="block truncate text-sm text-dark-200">
                                     {{ object.get_email }}
-                                </a>
+                                </span>
                             </dd>
+                            {% if send_mail_url %}
+                                <button
+                                    type="button"
+                                    class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-primary-600 transition-colors hover:bg-primary-100"
+                                    title="{% trans 'Send Mail' %}"
+                                    hx-get="{{ send_mail_url }}"
+                                    hx-target="#mail-content"
+                                    hx-swap="innerHTML"
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#sendMailModal"
+                                >
+                                    <i class="fa-solid fa-paper-plane text-xxs"></i>
+                                </button>
+                            {% endif %}
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary-100 text-primary-700">
                                 <i class="fa-solid fa-phone text-xxs"></i>
                             </span>
                             <dd>
-                                <a href="tel:{{ object.phone }}" class="text-sm text-dark-200 transition-colors hover:text-primary-600">
+                                <span class="text-sm text-dark-200">
                                     {{ object.phone }}
-                                </a>
+                                </span>
                             </dd>
                         </div>
                     </dl>
@@ -260,14 +280,14 @@
                             type="button"
                             class="flex h-9 w-9 items-center justify-center rounded-xl border border-secondary-200 bg-white text-color-600 shadow-sm transition-all hover:border-primary-500 hover:text-primary-600"
                             :class="{ 'border-primary-500 bg-primary-50 text-primary-600': open }"
-                            title="{% trans 'Settings' %}"
+                            title="{% trans 'Actions' %}"
                             aria-haspopup="true"
                             :aria-expanded="open.toString()"
                             @click="open = !open"
                             @click.outside="open = false"
                             @keydown.escape="open = false"
                         >
-                            <i class="fas fa-cog transition-transform duration-200" :class="{ 'rotate-45': open }"></i>
+                            <img src="{% static 'horilla_theme/assets/img/icons/setting-line.svg' %}" alt="{% trans 'Actions' %}" width="15">
                         </button>
                         <div
                             class="absolute right-0 z-50 mt-2 w-max min-w-[200px] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-xl bg-white py-2 shadow-card ring-1 ring-secondary-100"
@@ -280,9 +300,6 @@
                             x-transition:leave-end="opacity-0 scale-95"
                             x-cloak
                         >
-                            <span class="block px-3 pb-1.5 pt-0.5 text-[10px] font-semibold uppercase tracking-wide text-color-600 opacity-60">
-                                {% trans "Account Settings" %}
-                            </span>
                             <ul>
                                 {% for action in actions %}
                                     {% if action.divider %}
@@ -290,7 +307,7 @@
                                     {% elif action.accessibility|accessibility:instance %}
                                         <li>
                                             <a
-                                                class="flex w-full items-center gap-2.5 px-3 py-2 text-left text-xs font-medium transition duration-200
+                                                class="flex w-full items-center px-3 py-2 text-left text-xs font-medium transition duration-200
                                                     {% if action.variant == 'danger' %}
                                                         text-danger hover:bg-danger/10
                                                     {% elif action.variant == 'success' %}
@@ -301,16 +318,6 @@
                                                 @click="open = false"
                                                 {{action.attrs|format:instance|safe}}
                                             >
-                                                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg
-                                                    {% if action.variant == 'danger' %}
-                                                        bg-danger/10
-                                                    {% elif action.variant == 'success' %}
-                                                        bg-success/10
-                                                    {% else %}
-                                                        bg-primary-100
-                                                    {% endif %}">
-                                                    <img src="{{action.src}}" alt="" class="h-3 w-3">
-                                                </span>
                                                 <span class="truncate">{{ action.title }}</span>
                                             </a>
                                         </li>

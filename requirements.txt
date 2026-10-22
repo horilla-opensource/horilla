@@ -81,6 +81,9 @@ xhtml2pdf==0.2.17
 beautifulsoup4==4.15.0
 requests==2.34.2
 requests-oauthlib==2.0.0
+# Transitive via requests; 2.8.0 fixes the HTTPS-proxy TLS override and the
+# chunk-parser memory advisories that the release image scan fails on.
+urllib3>=2.8.0,<3
 
 # Google integration
 google-api-python-client==2.200.0
@@ -96,7 +99,7 @@ geopy==2.5.0
 pyzk==0.9
 
 # Image handling
-pillow>=12.3.0,<13
+pillow>=13.0.0,<14
 
 # Security & encryption
 # 50.0.0 clears all five known advisories against 44.0.2; 46.x and 49.x each

@@ -57,11 +57,9 @@ class QuestionFormView(HorillaFormView):
                 message = _("New survey question created.")
             instance = form.save(commit=False)
             instance.save()
-            instance.recruitment_ids.set(form.recruitment)
-            instance.template_id.set(form.cleaned_data["template_id"])
             messages.success(self.request, _(message))
             return self.HttpResponse(
-                targets_to_reload=["#questionTabRoot .filterButton", ".reload-record"]
+                targets_to_reload=[".navFilterForm .filterButton", ".reload-record"]
             )
         return super().form_valid(form)
 
@@ -107,11 +105,9 @@ class QuestionDuplicateFormView(HorillaFormView):
             message = _("New survey question created.")
             instance = form.save(commit=False)
             instance.save()
-            instance.recruitment_ids.set(form.recruitment)
-            instance.template_id.set(form.cleaned_data["template_id"])
             messages.success(self.request, _(message))
             return self.HttpResponse(
-                targets_to_reload=["#questionTabRoot .filterButton", ".reload-record"]
+                targets_to_reload=[".navFilterForm .filterButton", ".reload-record"]
             )
         return super().form_valid(form)
 
@@ -152,9 +148,37 @@ class SurveyTemplateFormView(HorillaFormView):
             form.save()
             messages.success(self.request, _(message))
             return self.HttpResponse(
-                targets_to_reload=["#templateTabRoot .filterButton", ".reload-record"]
+                targets_to_reload=[".navFilterForm .filterButton", ".reload-record"]
             )
         return super().form_valid(form)
+
+
+class SurveyTemplateDuplicateFormView(SurveyTemplateFormView):
+    """
+    form view that creates a new survey template prefilled from an existing one
+    """
+
+    new_display_title = _("Duplicate Survey Template")
+
+    def dispatch(self, request, *args, **kwargs):
+        if not SurveyTemplate.objects.filter(pk=kwargs.get("obj_id")).exists():
+            return HttpResponse()
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form(self, form_class=None):
+        if self.request.POST:
+            self.form = self.form_class(self.request.POST)
+            return self.form
+        original = SurveyTemplate.objects.get(pk=self.kwargs["obj_id"])
+        self.form = self.form_class(
+            initial={
+                "title": f"{original.title[:43]} (copy)",
+                "description": original.description,
+                "company_id": original.company_id,
+                "questions": original.questions.all(),
+            }
+        )
+        return self.form
 
 
 @method_decorator(login_required, name="dispatch")
@@ -168,8 +192,7 @@ class RecruitmentSurveyDetailView(HorillaDetailedView):
     body = [
         (_("Question"), "question"),
         (_("Question Type"), "get_question_type"),
-        (_("Sequence"), "sequence"),
-        (_("Recruitment"), "recruitment_col"),
+        (_("Template"), "template_col"),
         (_("Options"), "options_col", True),
     ]
 
@@ -177,29 +200,6 @@ class RecruitmentSurveyDetailView(HorillaDetailedView):
 
     cols = {"question": 12}
     action_method = "detail_actions"
-
-    # actions = [
-    #     {
-    #         "action": _("Edit"),
-    #         "icon": "create-outline",
-    #         "attrs": """
-    #                  class="oh-btn oh-btn--info w-50"
-    #                  hx-get="{get_edit_url}"
-    #                  hx-target ="#genericModalBody"
-    #                  data-target = "#genericModal"
-    #                  data-toggle ="oh-modal-toggle"
-    #                  """,
-    #     },
-    #     {
-    #         "action": _("Delete"),
-    #         "icon": "trash-outline",
-    #         "attrs": """
-    #                 class="oh-btn oh-btn--danger w-50"
-    #                 href ="{get_delete_url}"
-    #                 onclick="return confirm(' Are you sure want to delete?')"
-    #                 """,
-    #     },
-    # ]
 
 
 @method_decorator(login_required, name="dispatch")
@@ -227,12 +227,12 @@ class SurveyTemplateTabView(HorillaTabView):
         self.tabs = [
             {
                 "title": _("Template"),
-                "url": reverse("survey-template-tab"),
+                "url": reverse("survey-template-tab-shell"),
                 "badge": SurveyTemplate.objects.count(),
             },
             {
                 "title": _("Questions"),
-                "url": reverse("survey-question-tab"),
+                "url": reverse("survey-question-tab-shell"),
                 "badge": RecruitmentSurvey.objects.count(),
             },
         ]
@@ -313,7 +313,7 @@ def _recruitment_survey_queryset_for(request):
     queryset = RecruitmentSurvey.objects.all()
     if not request.user.has_perm("recruitment.view_recruitmentsurvey"):
         queryset = queryset.filter(
-            recruitment_ids__recruitment_managers=getattr(
+            template_id__recruitment__recruitment_managers=getattr(
                 request.user, "employee_get", None
             )
         ).distinct()
@@ -378,18 +378,22 @@ class SurveyQuestionList(HorillaListView):
         queryset = super().get_queryset()
         if not self.request.user.has_perm("recruitment.view_recruitmentsurvey"):
             queryset = queryset.filter(
-                recruitment_ids__recruitment_managers=self.request.user.employee_get
+                template_id__recruitment__recruitment_managers=(
+                    self.request.user.employee_get
+                )
             ).distinct()
         return queryset
 
 
 class SurveyTemplateTabShell(HorillaTabContentShell):
     nav_url_name = "survey-template-nav"
-    container_id = "surveyTemplatesListContainer"
-    tabs_root_id = "survey-templates"
+    container_id = "view-container"
+    tabs_root_id = "surveyTemplateSettingsTab"
+    selected_instances_key_id = "surveyTemplateSelectedInstances"
 
 
 class SurveyQuestionTabShell(HorillaTabContentShell):
     nav_url_name = "survey-question-nav"
-    container_id = "surveyQuestionsListContainer"
-    tabs_root_id = "survey-templates"
+    container_id = "questionViewContainer"
+    tabs_root_id = "surveyTemplateSettingsTab"
+    selected_instances_key_id = "surveyQuestionSelectedInstances"

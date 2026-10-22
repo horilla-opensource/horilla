@@ -1,43 +1,18 @@
 {% load static i18n %}
 {% comment %}
-    Inline nav bar.
+    Compact card-header variant of horilla_nav.html for settings sub-lists:
+    title on the left, optional search, actions and create on the right.
+    Uses the same context as HorillaNavView.
 
-    A compact card-header variant of generic/horilla_nav.html for settings
-    sub-lists (IP Restriction, Grace Time, Break Point, etc.). Renders the
-    section title on the left and optional search / actions / create controls
-    on the right, styled to match the settings section headers
-    (bg-[#f3f3f3] card header).
+    An `actions` entry may be a group, {"group": <label>, "actions": [...]},
+    rendered as one collapsible row. Use it when the list grows with record
+    count, since hundreds of flat rows slow this nav's response.
 
-    Reuses the same context provided by HorillaNavView:
-        nav_title, search_url, search_swap_target, search_input_attrs,
-        view_types, active_view, filter_body_template, group_by_fields,
-        nested_group_by_fields, actions, create_attrs, apply_first_filter,
-        modern_filter, applied_filter_count
-
-    An entry in `actions` may instead be a GROUP - {"group": <label>,
-    "actions": [<action>, ...]} - which renders as one collapsible row
-    rather than a flat row per action. Use it when the action list scales
-    with record count (see stage_pipeline_actions() in the recruitment
-    pipeline); a flat list of hundreds of rows makes this Nav's response
-    large and slow enough to leave the whole toolbar missing on first load.
-
-    modern_filter opts into the same offcanwas slide-over panel as
-    horilla_nav.html (.oh-filter-modern styles, generic/modern_filter_panel.
-    html) instead of the classic anchored dropdown below -- mirrors that
-    template's own {% if modern_filter %}...{% else %}...{% endif %} split
-    around the shared filter_body_template/Group By block, so every page
-    still using the classic dropdown (the vast majority of this template's
-    callers) renders byte-for-byte the same as before. Only one
-    #modernFilterPanel exists in the DOM at a time -- this template is
-    always htmx-loaded into a swap target that fully replaces its previous
-    content (see e.g. requests/requests.html's #requestsContent), never
-    left stacked alongside another instance of itself.
+    modern_filter swaps the classic dropdown for the slide-over panel from
+    modern_filter_panel.html (one #modernFilterPanel per page).
 {% endcomment %}
 <style>
-    /* Styling for grouped actions lives here rather than as per-element
-       utility classes: with one group per record, repeating a long class
-       list on every summary/row is what made the markup dominate this
-       Nav's response size. */
+    /* Grouped actions are styled here, not per element, to keep it small. */
     .ohActGroup > summary {
         display: flex;
         align-items: center;
@@ -68,14 +43,6 @@
 </style>
 {% if modern_filter %}
     {% include 'generic/modern_filter_panel.html' %}
-    {% comment %}
-        Applied-filter-count badge counter and the custom filter builder
-        ("+ Add filter", Advanced section) -- same shared partial
-        horilla_nav.html uses, see its own docstring for the full
-        explanation. Requires this template's own badge <span>s to carry
-        a "js-filter-count-badge" class (added below) for the counter to
-        find them.
-    {% endcomment %}
     {% include 'generic/filter_count_and_custom_builder.html' %}
 {% endif %}
 <div class="text-sm font-semibold bg-[#f3f3f3] px-3 py-3 text-[#333] flex items-center justify-between gap-2 flex-wrap">
@@ -258,12 +225,6 @@
                                 {% endif %}
 
                                 {% if nested_group_by_fields %}
-                                    {% comment %}
-                                        Same unified multi-level Group By picker as
-                                        horilla_nav.html -- each row numbered (submission
-                                        order = grouping hierarchy), removable down to one
-                                        level, preview line before Apply.
-                                    {% endcomment %}
                                     <div class="oh-accordion oh-accordion--top-divider">
                                         <div class="oh-accordion-header"
                                             onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
@@ -277,9 +238,8 @@
                                                     <div class="flex items-center gap-1.5 nested-group-by-row">
                                                         <span class="ngb-level-badge shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-md bg-primary-100 text-primary-700 text-[11px] font-semibold"></span>
                                                         {% comment %}
-                                                            Deliberately NOT .oh-select -- see
-                                                            horilla_nav.html's own copy of this block for why
-                                                            (select2 re-init + row-cloning don't mix).
+                                                            Not .oh-select: rows are cloned, and cloning a
+                                                            Select2-initialised select breaks the copy.
                                                         {% endcomment %}
                                                         <select
                                                             onchange="ngbUpdatePreview(); ngbUpdateDisabledOptions(); ngbDisableOtherGroupBySourceIfPresent('nestedGroupByLevels'); $(this).closest('form').find('#applyFilter').click();"
@@ -316,12 +276,8 @@
                                                 $(this).find('.ngb-level-badge').text(i + 1);
                                             });
                                         }
-                                        // ngbDisableOtherGroupBySource itself is only defined in
-                                        // horilla_nav.html (it coordinates the Filter dropdown's
-                                        // picker against nested_group_by_table.html's own
-                                        // breadcrumb copy) -- a page using this inline nav on its
-                                        // own, without horilla_nav.html also present, wouldn't have
-                                        // it, so this is guarded rather than assumed.
+                                        // ngbDisableOtherGroupBySource is defined in horilla_nav.html,
+                                        // which may not be on the page.
                                         function ngbDisableOtherGroupBySourceIfPresent(exceptContainerId) {
                                             if (typeof ngbDisableOtherGroupBySource === "function") {
                                                 ngbDisableOtherGroupBySource(exceptContainerId);
@@ -439,29 +395,11 @@
                     >
                     {% trans "Actions" %}
                 </button>
-                {# max-h + overflow-y-auto: .dropdown-content is hidden with #}
-                {# opacity/visibility (global.css), NOT display, so it stays #}
-                {# in layout even while closed and a long list still adds its #}
-                {# full height to the page's scrollable area - a Nav whose #}
-                {# actions cover many records (e.g. the pipeline's per-stage #}
-                {# actions) left a tall empty scroll gap under the content. #}
-                {# Capping it also makes such a list usable rather than #}
-                {# running it off-screen. Inert for short menus, which never #}
-                {# reach the cap. #}
+                {# Height is capped because a closed dropdown still takes layout space. #}
                 <div class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0 font-normal max-h-[60vh] overflow-y-auto">
                     <ul class="text-sm">
                         {% for action in actions %}
                             {% if action.group %}
-                                {# Grouped entry: one collapsible <details> per #}
-                                {# group instead of a flat row per action. A     #}
-                                {# Nav whose actions scale with record count     #}
-                                {# (the pipeline's per-stage ones) otherwise     #}
-                                {# renders hundreds of rows. Closed by default,  #}
-                                {# so the browser lays out only the summaries.   #}
-                                {# Styling lives in the scoped <style> above,    #}
-                                {# not per-element classes: repeating a long     #}
-                                {# class list on every row is what made this     #}
-                                {# dropdown's markup dominate the response.      #}
                                 <li>
                                     <details class="ohActGroup">
                                         <summary class="hover:text-primary-600">
@@ -522,13 +460,8 @@
         setTimeout(() => {
             var $activeViewBtn = $inlineNavForm.find(".oh-view-btn--active");
             {% if apply_first_filter %}
-            // Content is already fetched by whoever embedded this Nav, so
-            // only adopt the active view type's URL - don't fetch with it.
-            // Clicking the button (as the non-apply_first_filter path below
-            // does) runs its own onclick, which rewrites the form's hx-get
-            // AND clicks #applyFilter - re-fetching content that is already
-            // on the page. Do just the rewrite half here, so a later search
-            // or filter still submits to the right view's URL.
+            // Content is already loaded, so adopt the view's URL without
+            // clicking (which would refetch).
             var activeViewUrl = $activeViewBtn.attr("data-url");
             if (activeViewUrl) {
                 $inlineNavForm.attr("hx-get", activeViewUrl);

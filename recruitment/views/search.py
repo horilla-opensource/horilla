@@ -192,7 +192,9 @@ def filter_survey(request):
     if request.user.has_perm("recruitment.view_recruitmentsurvey"):
         questions = RecruitmentSurvey.objects.all()
     else:
-        questions = RecruitmentSurvey.objects.filter(recruitment_ids__in=ids)
+        questions = RecruitmentSurvey.objects.filter(
+            template_id__recruitment__in=ids
+        ).distinct()
 
     previous_data = request.GET.urlencode()
     filter_obj = SurveyFilter(request.GET, questions)

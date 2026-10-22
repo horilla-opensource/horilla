@@ -239,7 +239,8 @@ class SplitDayTests(HalfDayResolutionTests):
             },
             HTTP_HX_REQUEST="true",
         ).content.decode()
-        self.assertIn("msCalResolveSplit(", html)
+        self.assertIn("msCalSaveDay(", html)
+        self.assertIn('id="crp-choice"', html)
         self.assertIn('<option value="UL" data-color="#fdba74" selected>', html)
         self.assertIn('<option value="A" data-color="#fca5a5" selected>', html)
         self.assertIn(
@@ -495,13 +496,15 @@ class PopoverStatusTests(HalfDayLeaveNaturalTests):
 
         from horilla.testkit import make_user
 
-        user = make_user("hr-status", is_superuser=True)
-        make_employee(
-            company=self.employee.employee_work_info.company_id,
-            email="hr@status.test",
-            user=user,
-        )
-        self.client.force_login(user)
+        if not getattr(self, "_hr_logged_in", False):
+            user = make_user("hr-status", is_superuser=True)
+            make_employee(
+                company=self.employee.employee_work_info.company_id,
+                email="hr@status.test",
+                user=user,
+            )
+            self.client.force_login(user)
+            self._hr_logged_in = True
         return self.client.get(
             reverse("attendance-monthly-summary-conflict-resolve"),
             {
@@ -558,7 +561,7 @@ class ShortHalfTests(HalfDayLeaveNaturalTests):
         self._attend("01:00")
         self.assertEqual(self._cell()["status"], "short")
 
-    def test_partial_hours_is_only_offered_below_half_the_shift(self):
+    def test_partial_hours_is_no_longer_offered_and_short_hours_are_not_changed(self):
         from django.urls import reverse
 
         from horilla.testkit import make_user
@@ -588,4 +591,193 @@ class ShortHalfTests(HalfDayLeaveNaturalTests):
         self.assertIn("Half Present + Half Short Hours", panel())
         attendance.delete()
         self._attend("01:00")
-        self.assertIn("msCalResolvePost('partial_hours'", panel())
+        self.assertNotIn("msCalResolvePost('partial_hours'", panel())
+
+    def test_an_existing_partial_hours_resolution_still_counts_as_before(self):
+        self._attend("04:00")
+        AttendanceConflictResolution.objects.create(
+            employee_id=self.employee, date=WEDNESDAY, resolution="partial_hours"
+        )
+        row = self._row()
+        # Present in proportion to the hours worked: 4h of an 8h day.
+        self.assertEqual((row["present"], row["absent"]), (0.5, 0.5))
+
+
+class StatusChoiceDefaultTests(PopoverStatusTests):
+    """The status choice opens on what the day actually is."""
+
+    def test_a_worked_day_opens_on_full_present(self):
+        self._attend("08:00")
+        self.assertIn('data-initial="full_present"', self._panel())
+
+    def test_a_day_with_nothing_opens_on_absent(self):
+        self.assertIn('data-initial="absent"', self._panel())
+
+    def test_a_short_day_opens_on_absent(self):
+        self._attend("01:00")
+        self.assertIn('data-initial="absent"', self._panel())
+
+    def test_a_clock_half_day_opens_on_a_split_of_present_and_unpaid(self):
+        self._attend("04:30")
+        html = self._panel()
+        self.assertIn('data-initial="split"', html)
+        self.assertIn('data-initial-a="P" data-initial-b="A"', html)
+
+    def test_half_leave_opens_on_the_split_it_makes(self):
+        self._leave(breakdown="second_half")
+        html = self._panel()
+        self.assertIn('data-initial="split"', html)
+        self.assertIn('data-initial-a="A" data-initial-b="PL"', html)
+
+    def test_a_saved_override_wins(self):
+        self._attend("08:00")
+        AttendanceConflictResolution.objects.create(
+            employee_id=self.employee, date=WEDNESDAY, resolution="paid_leave"
+        )
+        self.assertIn('data-initial="paid_leave"', self._panel())
+
+    def test_an_old_half_day_opens_as_present_plus_paid_leave(self):
+        AttendanceConflictResolution.objects.create(
+            employee_id=self.employee, date=WEDNESDAY, resolution="half_present"
+        )
+        html = self._panel()
+        self.assertIn('data-initial="split"', html)
+        self.assertIn('data-initial-a="P" data-initial-b="PL"', html)
+
+    def test_an_old_half_absent_opens_as_present_plus_absent(self):
+        AttendanceConflictResolution.objects.create(
+            employee_id=self.employee, date=WEDNESDAY, resolution="half_absent"
+        )
+        html = self._panel()
+        self.assertIn('data-initial="split"', html)
+        self.assertIn('data-initial-a="P" data-initial-b="A"', html)
+
+
+class DayHistoryTests(PopoverStatusTests):
+    """The popover's history lists every change to the day, in an accordion."""
+
+    def _post(self, resolution):
+        from django.urls import reverse
+
+        return self.client.post(
+            reverse("attendance-monthly-summary-conflict-resolve"),
+            {
+                "employee_id": self.employee.pk,
+                "date": WEDNESDAY.isoformat(),
+                "from_date": WEDNESDAY.isoformat(),
+                "to_date": WEDNESDAY.isoformat(),
+                "resolution": resolution,
+                "conflict_type": "",
+            },
+            HTTP_HX_REQUEST="true",
+        )
+
+    def test_every_change_is_listed_newest_first(self):
+        self._panel()  # logs the HR user in
+        self._post("paid_leave")
+        self._post("split:P+UL")
+        self._post("clear")
+        html = self._panel()
+        self.assertIn('<details class="crp-hist">', html)
+        self.assertIn("Regularized as", html)
+        self.assertIn("Changed", html)
+        self.assertIn("Override cleared", html)
+        self.assertEqual(html.count('class="crp-hist-item"'), 3)
+        # Newest first: the clear comes before the first regularisation.
+        self.assertLess(html.index("Override cleared"), html.index("Regularized as"))
+
+    def test_a_day_nobody_touched_has_no_history(self):
+        self.assertNotIn('class="crp-hist"', self._panel())
+
+    def test_the_audit_trail_covers_the_two_models(self):
+        from horilla_audit.registry import DEFAULT_TRACKED_MODELS
+
+        self.assertIn(
+            ("attendance", "AttendanceConflictResolution"), DEFAULT_TRACKED_MODELS
+        )
+        self.assertIn(("attendance", "AttendanceDailyHours"), DEFAULT_TRACKED_MODELS)
+
+
+class DayHoursSaveTests(PopoverStatusTests):
+    """Hours are always editable in the popover and saved by its one Save button."""
+
+    def _hours(self, raw):
+        from django.urls import reverse
+
+        self._panel()  # logs the HR user in
+        return self.client.post(
+            reverse("attendance-monthly-summary-daily-hours-edit"),
+            {
+                "employee_id": self.employee.pk,
+                "date": WEDNESDAY.isoformat(),
+                "from_date": WEDNESDAY.isoformat(),
+                "to_date": WEDNESDAY.isoformat(),
+                "hours": raw,
+                "computed_sec": "0",
+                "panel": "1",
+            },
+            HTTP_HX_REQUEST="true",
+        )
+
+    def test_the_panel_has_an_always_editable_hours_input_and_one_save_button(self):
+        self._attend("08:00")
+        html = self._panel()
+        self.assertIn('id="crp-hours-input"', html)
+        self.assertIn('data-initial="8:00"', html)
+        self.assertIn('id="crp-save"', html)
+        self.assertIn(">Save<", html)
+        self.assertNotIn("msCalHoursEdit(", html)
+        self.assertNotIn('id="crp-choice-go"', html)
+        # The Save button sits after the scrolling body, at the foot of the panel.
+        self.assertLess(html.index('class="crp-scroll"'), html.index('id="crp-save"'))
+
+    def test_hours_up_to_24_are_saved(self):
+        from attendance.models import AttendanceDailyHours
+
+        for raw, seconds in (("8:30", 30600), ("16:00", 57600), ("24:00", 86400)):
+            response = self._hours(raw)
+            self.assertEqual(response.status_code, 200, raw)
+            saved = AttendanceDailyHours.objects.get(
+                employee_id=self.employee, date=WEDNESDAY
+            )
+            self.assertEqual(saved.hours_second, seconds)
+
+    def test_more_than_24_hours_is_refused_and_nothing_is_saved(self):
+        from attendance.models import AttendanceDailyHours
+
+        for raw in ("24:01", "25:00", "30"):
+            response = self._hours(raw)
+            self.assertEqual(response.status_code, 400, raw)
+            self.assertIn("24 hours", response.content.decode())
+        self.assertFalse(
+            AttendanceDailyHours.objects.filter(employee_id=self.employee).exists()
+        )
+
+    def test_unreadable_hours_are_refused(self):
+        for raw in ("abc", "8:75", ""):
+            self.assertEqual(self._hours(raw).status_code, 400, raw)
+
+    def test_the_page_carries_the_15_hour_confirmation_text(self):
+        html = self._panel()
+        self.assertIn('data-warn-title="More than 15 hours in a day"', html)
+        self.assertIn('data-over24="A day cannot have more than 24 hours."', html)
+
+    def test_the_hours_card_carries_what_the_live_breakdown_needs(self):
+        self._attend("09:00")
+        html = self._panel()
+        for field in ("crp-calc-reg", "crp-calc-ot", "crp-calc-total"):
+            self.assertIn('id="%s" disabled' % field, html)
+        self.assertIn('data-eff-min="28800"', html)
+        self.assertIn('data-is-ot-day="0"', html)
+
+    def test_the_hours_card_names_the_shift_and_its_minimum_and_explains_the_cap(self):
+        self._attend("09:00")
+        html = self._panel()
+        self.assertIn('id="crp-min-required" disabled value="8:00"', html)
+        self.assertIn("How the minimum hours count", html)
+        self.assertIn("stop at the minimum required hours of the shift, 8:00", html)
+
+    def test_a_day_without_a_record_says_where_its_minimum_comes_from(self):
+        html = self._panel()
+        # Nothing on that day and no shift set up: the 8h default is assumed and says so.
+        self.assertIn("no shift minimum is set, so 8:00 is assumed", html)

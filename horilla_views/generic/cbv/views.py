@@ -2,7 +2,6 @@
 horilla/generic/views.py
 """
 
-import io
 import json
 import logging
 import re
@@ -12,7 +11,6 @@ from urllib.parse import parse_qs, parse_qsl, urlencode, urlparse, urlunparse
 
 import pandas as pd
 from auditlog.registry import auditlog
-from bs4 import BeautifulSoup
 from django import forms
 from django.contrib import messages
 from django.core.cache import cache as CACHE
@@ -28,7 +26,6 @@ from django.utils import translation
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, FormView, ListView, TemplateView
-from xhtml2pdf import pisa
 
 from base.methods import (
     closest_numbers,
@@ -112,52 +109,25 @@ class HorillaListView(ListView):
     filter_class: FilterSet = None
 
     view_id: str = """"""
-
-    export_file_name: str = "quick_export"
-    export_formats: list = [
-        ("xlsx", "Excel"),
-        ("csv", "CSV"),
-        ("pdf", "PDF"),
-    ]
-
     template_name: str = "generic/horilla_list_table.html"
     context_object_name = "queryset"
+    verbose_name: str = ""
+
+    # --- Columns & row rendering ---
     # column = [("Verbose Name","field_name","avatar_mapping")], opt: avatar_mapping
     columns: list = []
     export_columns = []
     default_columns: list = []
     # Optional {column_key: label} override for the columns show/hide panel,
     toggle_labels: dict = {}
-    search_url: str = ""
-    bulk_select_option: bool = True
-    # Opt-out for a view instance that's one of several sharing a single
-    # header rendered elsewhere on the page (e.g. one list per accordion
-    # panel) -- defaults on everywhere else, so no existing page is affected
-    # unless it explicitly sets this to False.
-    show_header: bool = True
-    filter_selected: bool = True
-    quick_export: bool = True
-    bulk_update: bool = True
-    import_fields: list = []
-    import_file_name: str = "Quick Import"
-    update_reference: str = "pk"
-    import_related_model_column_mapping: dict = {}
-    primary_key_mapping: dict = {}
-    import_related_column_export_mapping: dict = {}
-    reverse_model_relation_to_base_model: dict = {}
-    fk_mapping: dict = {}
-    import_help: dict = {}
-    fk_o2o_field_in_base_model: list = []
-    individual_update: bool = False
-    o2o_related_name_mapping: dict = {}
-    # Mirrors HorillaNavView.nested_group_by_fields;
-    # List and Nav render separately but share this field for the "Grouped by" breadcrumb dropdowns.
-    nested_group_by_fields: list = []
-
-    custom_empty_template: str = ""
-
+    show_toggle_form: bool = True
+    header_attrs: dict = {}
     # Model method name returning {column attribute: extra CSS classes} to shade individual row cells.
     cell_class_method: str = ""
+    row_attrs: str = """"""
+    row_status_class: str = """"""
+    row_status_indications: list = []
+    custom_empty_template: str = ""
 
     action_method: str = """"""
     """
@@ -178,25 +148,22 @@ class HorillaListView(ListView):
     ]
     """
     actions: list = []
-
-    # Path to a template rendered behind each accordion header's three-dot menu (generic/group_by_table.html);
-    # `group` is in scope. Leave "" to keep the header as-is.
-    accordian_action: str = ""
-
     option_method: str = ""
     options: list = []
-    row_attrs: str = """"""
-    row_status_class: str = """"""
-    row_status_indications: list = []
+    accordian_action: str = ""
 
+    # --- Sorting & grouping ---
     sortby_key: str = "sortby"
     sortby_mapping: list = []
+    nested_group_by_fields: list = []
+    group_by_template_name: str = ""
 
-    selected_instances_key_id: str = "selectedInstances"
-
+    # --- Filtering & search ---
+    search_url: str = ""
+    filter_selected: bool = True
     show_filter_tags: bool = True
-    show_quick_date_filters: bool = False
     show_saved_filters: bool = True
+    show_quick_date_filters: bool = False
     quick_date_ranges: list = [
         (_("Yesterday"), -1, None),
         (_("Today"), 0, None),
@@ -204,29 +171,49 @@ class HorillaListView(ListView):
         (_("This Week"), 0, 7),
     ]
     quick_date_fields: tuple = ("", "", "")
-    show_toggle_form: bool = True
     filter_keys_to_remove: list = []
     # {field: value} pairs not shown as filter tags (still applied), e.g. a default
     hidden_filter_tag_values: dict = {}
 
+    # --- Pagination ---
     records_per_page: int = 0
-    export_fields: list = []
-    verbose_name: str = ""
+    records_count_in_tab: bool = True
+
+    # --- Selection & bulk actions ---
+    bulk_select_option: bool = True
+    selected_instances_key_id: str = "selectedInstances"
+    individual_update: bool = False
+    bulk_update: bool = True
     bulk_update_fields: list = []
-    # Bulk-update fields that must be filled in (the rest are optional: blank = unchanged).
     bulk_update_required_fields: list = []
     bulk_template: str = "generic/bulk_form.html"
-    records_count_in_tab: bool = True
+
+    # --- Import ---
+    import_fields: list = []
+    import_file_name: str = "Quick Import"
+    update_reference: str = "pk"
+    import_related_model_column_mapping: dict = {}
+    primary_key_mapping: dict = {}
+    import_related_column_export_mapping: dict = {}
+    reverse_model_relation_to_base_model: dict = {}
+    fk_mapping: dict = {}
+    import_help: dict = {}
+    fk_o2o_field_in_base_model: list = []
+    o2o_related_name_mapping: dict = {}
+
+    # --- Export ---
+    quick_export: bool = True
+    export_file_name: str = "quick_export"
+    export_formats: list = [
+        ("xlsx", "Excel"),
+        ("csv", "CSV"),
+        ("pdf", "PDF"),
+    ]
+    export_fields: list = []
+
+    # --- Misc ---
+    show_header: bool = True
     history_tracking: bool = True
-
-    header_attrs: dict = {}
-
-    # Overrides the template used when the user groups this list by a field
-    # (generic/group_by_table.html by default -- the same shared template
-    # behind the "Group By" dropdown on most list pages). Leave "" to keep
-    # the shared one; set only on a page that needs its own grouped layout
-    # without affecting every other page using the generic Group By feature.
-    group_by_template_name: str = ""
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -258,11 +245,16 @@ class HorillaListView(ListView):
         """
         return self.get(self, *args, **kwargs)
 
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Answer the Select button's `?select_all=true` with the filtered ids as JSON.
+        """
+        if request.method == "GET" and request.GET.get("select_all") == "true":
+            return HttpResponse(self.select_all(), content_type="application/json")
+        return super().dispatch(request, *args, **kwargs)
+
     def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
-        if not self.queryset:
-            # `is None`, not truthiness: a scoped queryset that is legitimately
-            # empty (e.g. an employee with no documents) must stay empty
-            # instead of falling back to the model's whole table.
+        if self.queryset is None:
             self.queryset = super().get_queryset() if queryset is None else queryset
             self._saved_filters = QueryDict("", mutable=True)
             if self.filter_class:
@@ -285,25 +277,25 @@ class HorillaListView(ListView):
                     self.request.session["hlv_selected_ids"] = selected_ids
                     self.request.session["prev_path"] = self.request.path
 
+                cached_filter = CACHE.get(saved_filter_cache_key(self.request))
                 if "filter_applied" in query_dict.keys() or "search" in query_dict:
                     update_saved_filter_cache(self.request, CACHE)
-                elif CACHE.get(saved_filter_cache_key(self.request)):
-                    query_dict = CACHE.get(saved_filter_cache_key(self.request))[
-                        "query_dict"
-                    ]
+                elif cached_filter:
+                    query_dict = cached_filter["query_dict"]
 
-                default_filter = models.SavedFilter.objects.filter(
-                    saved_filter_path_query(self.request),
-                    created_by=self.request.user,
-                    is_default=True,
-                ).first()
-                if not bool(query_dict) and default_filter:
-                    data = eval_validate(default_filter.filter)
-                    query_dict = QueryDict("", mutable=True)
-                    for key, value in data.items():
-                        query_dict[key] = value
+                if not bool(query_dict):
+                    default_filter = models.SavedFilter.objects.filter(
+                        saved_filter_path_query(self.request),
+                        created_by=self.request.user,
+                        is_default=True,
+                    ).first()
+                    if default_filter:
+                        data = eval_validate(default_filter.filter)
+                        query_dict = QueryDict("", mutable=True)
+                        for key, value in data.items():
+                            query_dict[key] = value
 
-                    query_dict._mutable = False
+                        query_dict._mutable = False
                 self._saved_filters = query_dict
                 self.request.exclude_filter_form = True
                 if not filtered:
@@ -396,7 +388,7 @@ class HorillaListView(ListView):
 
         # Add verbose names to fields if possible
         updated_column = []
-        get_field = self.model()._meta.get_field
+        get_field = self.model._meta.get_field
         for col in self.columns:
             if isinstance(col, str):
                 try:
@@ -473,8 +465,6 @@ class HorillaListView(ListView):
         context["show_toggle_form"] = self.show_toggle_form
 
         context["model_label"] = self.model._meta.label_lower if self.model else ""
-        if self.bulk_select_option:
-            context["select_all_ids"] = self.select_all
         if self._saved_filters.get("field"):
             active_group = models.ActiveGroup.objects.filter(
                 created_by=self.request.user,
@@ -534,19 +524,6 @@ class HorillaListView(ListView):
                 query_dict, queryset, self.sortby_key, is_first_sort=is_first_sort
             )
 
-        ordered_ids = []
-        try:
-            if not self._saved_filters.get("field"):
-                for instance in queryset:
-                    ordered_ids.append(str(instance.pk))
-        except Exception:
-            pass
-
-        # Only write to the session when changed, to avoid concurrent polls hitting SQLite "database is locked".
-        session_key = self.ordered_ids_key
-        if self.request.session.get(session_key) != ordered_ids:
-            self.request.session[session_key] = ordered_ids
-
         nested_fields = list(
             dict.fromkeys(f for f in self._saved_filters.getlist("nested_fields") if f)
         )
@@ -577,13 +554,13 @@ class HorillaListView(ListView):
                     records_per_page=10,
                 )
                 context["nested_fields_active"] = HorillaNavView._resolve_field_labels(
-                    nested_fields, self.model, self.model()._meta.get_field
+                    nested_fields, self.model, self.model._meta.get_field
                 )
                 context["nested_group_by_fields"] = (
                     HorillaNavView._resolve_field_labels(
                         self.nested_group_by_fields,
                         self.model,
-                        self.model()._meta.get_field,
+                        self.model._meta.get_field,
                     )
                 )
             except Exception:
@@ -615,6 +592,25 @@ class HorillaListView(ListView):
             context["queryset"] = paginator_qry(
                 queryset, self._saved_filters.get("page"), self.records_per_page
             )
+
+        page_object_list = getattr(
+            context["queryset"], "object_list", context["queryset"]
+        )
+        ordered_ids = []
+        try:
+            if hasattr(page_object_list, "values_list"):
+                ordered_ids = [
+                    str(pk) for pk in page_object_list.values_list("pk", flat=True)
+                ]
+            else:
+                ordered_ids = [str(instance.pk) for instance in page_object_list]
+        except Exception:
+            pass
+
+        # Only write to the session when changed, to avoid concurrent polls hitting SQLite "database is locked".
+        session_key = self.ordered_ids_key
+        if self.request.session.get(session_key) != ordered_ids:
+            self.request.session[session_key] = ordered_ids
 
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaListView] = context
         self.export_path = (
@@ -1424,187 +1420,6 @@ class HorillaListView(ListView):
         Select all method
         """
         return json.dumps(list(self.get_queryset().values_list("id", flat=True)))
-
-    # def export_data(self, *args, **kwargs):
-    #     """
-    #     Export list view visible columns
-    #     """
-    #     from import_export import fields, resources
-
-    #     request = getattr(_thread_locals, "request", None)
-    #     ids = eval_validate(request.POST["ids"])
-    #     _columns = eval_validate(request.POST["columns"])
-    #     export_format = request.POST.get("format", "xlsx")
-    #     queryset = self.model.objects.filter(id__in=ids)
-
-    #     _model = self.model
-
-    #     class HorillaListViewResorce(resources.ModelResource):
-    #         """
-    #         Instant Resource class
-    #         """
-
-    #         id = fields.Field(column_name="ID")
-
-    #         class Meta:
-    #             """
-    #             Meta class for additional option
-    #             """
-
-    #             model = _model
-    #             fields = [field[1] for field in _columns]  # 773
-
-    #         def dehydrate_id(self, instance):
-    #             """
-    #             Dehydrate method for id field
-    #             """
-    #             return instance.pk
-
-    #         for field_tuple in _columns:
-    #             dynamic_fn_str = f"def dehydrate_{field_tuple[1]}(self, instance):return self.remove_extra_spaces(getattribute(instance, '{field_tuple[1]}'),{field_tuple})"
-    #             exec(dynamic_fn_str)
-    #             dynamic_fn = locals()[f"dehydrate_{field_tuple[1]}"]
-    #             locals()[field_tuple[1]] = fields.Field(column_name=field_tuple[0])
-
-    #         def remove_extra_spaces(self, text, field_tuple):
-    #             """
-    #             Clean the text:
-    #             - If it's a <select> element, extract the selected option's value.
-    #             - If it's an <input> or <textarea>, extract its 'value'.
-    #             - Otherwise, remove blank spaces, keep line breaks, and handle <li> tags.
-    #             """
-    #             soup = BeautifulSoup(str(text), "html.parser")
-
-    #             # Handle <select> tag
-    #             select_tag = soup.find("select")
-    #             if select_tag:
-    #                 selected_option = select_tag.find("option", selected=True)
-    #                 if selected_option:
-    #                     return selected_option["value"]
-    #                 else:
-    #                     first_option = select_tag.find("option")
-    #                     return first_option["value"] if first_option else ""
-
-    #             # Handle <input> tag
-    #             input_tag = soup.find("input")
-    #             if input_tag:
-    #                 return input_tag.get("value", "")
-
-    #             # Handle <textarea> tag
-    #             textarea_tag = soup.find("textarea")
-    #             if textarea_tag:
-    #                 return textarea_tag.text.strip()
-
-    #             # Default: clean normal text and <li> handling
-    #             for li in soup.find_all("li"):
-    #                 li.insert_before("\n")
-    #                 li.unwrap()
-
-    #             text = soup.get_text()
-    #             lines = text.splitlines()
-    #             non_blank_lines = [line.strip() for line in lines if line.strip()]
-    #             cleaned_text = "\n".join(non_blank_lines)
-    #             return cleaned_text
-
-    #     book_resource = HorillaListViewResorce()
-
-    #     # Export the data using the resource
-    #     dataset = book_resource.export(queryset)
-
-    #     # excel_data = dataset.export("xls")
-
-    #     # Set the response headers
-    #     # file_name = self.export_file_name
-    #     # if not file_name:
-    #     #     file_name = "quick_export"
-    #     # response = HttpResponse(excel_data, content_type="application/vnd.ms-excel")
-    #     # response["Content-Disposition"] = f'attachment; filename="{file_name}.xls"'
-    #     # return response
-    #     json_data = json.loads(dataset.export("json"))
-    #     merged = []
-
-    #     for item in _columns:
-    #         # Check if item has exactly 2 elements
-    #         if len(item) == 2:
-    #             # Check if there's a matching (type, key) in export_fields (t, k, _)
-    #             match_found = any(
-    #                 export_item[0] == item[0] and export_item[1] == item[1]
-    #                 for export_item in self.export_fields
-    #             )
-
-    #             if match_found:
-    #                 # Find the first matching metadata or use {} as fallback
-    #                 try:
-    #                     metadata = next(
-    #                         (
-    #                             export_item[2]
-    #                             for export_item in self.export_fields
-    #                             if export_item[0] == item[0]
-    #                             and export_item[1] == item[1]
-    #                         ),
-    #                         {},
-    #                     )
-    #                 except Exception as e:
-    #                     merged.append(item)
-    #                     continue
-
-    #                 merged.append([*item, metadata])
-    #             else:
-    #                 merged.append(item)
-    #         else:
-    #             merged.append(item)
-    #     columns = []
-    #     for column in merged:
-    #         if len(column) >= 3 and isinstance(column[2], dict):
-    #             column = (column[0], column[0], column[2])
-    #         elif len(column) >= 3:
-    #             column = (column[0], column[1])
-    #         columns.append(column)
-
-    #     if export_format == "json":
-    #         response = HttpResponse(
-    #             json.dumps(json_data, indent=4), content_type="application/json"
-    #         )
-    #         response["Content-Disposition"] = (
-    #             f'attachment; filename="{self.export_file_name}.json"'
-    #         )
-    #         return response
-    #     # CSV
-    #     elif export_format == "csv":
-    #         csv_data = dataset.export("csv")
-    #         response = HttpResponse(csv_data, content_type="text/csv")
-    #         response["Content-Disposition"] = (
-    #             f'attachment; filename="{self.export_file_name}.csv"'
-    #         )
-    #         return response
-    #     elif export_format == "pdf":
-
-    #         headers = dataset.headers
-    #         rows = dataset.dict
-
-    #         # Render to HTML using a template
-    #         html_string = render_to_string(
-    #             "generic/export_pdf.html",
-    #             {
-    #                 "headers": headers,
-    #                 "rows": rows,
-    #             },
-    #         )
-
-    #         # Convert HTML to PDF using xhtml2pdf
-    #         result = io.BytesIO()
-    #         pisa_status = pisa.CreatePDF(html_string, dest=result)
-
-    #         if pisa_status.err:
-    #             return HttpResponse("PDF generation failed", status=500)
-
-    #         # Return response
-    #         response = HttpResponse(result.getvalue(), content_type="application/pdf")
-    #         response["Content-Disposition"] = (
-    #             f'attachment; filename="{self.export_file_name}.pdf"'
-    #         )
-    #         return response
-    #     return export_xlsx(json_data, columns, file_name=self.export_file_name)
 
 
 class HorillaSectionView(TemplateView):

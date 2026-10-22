@@ -27,6 +27,18 @@ function validateDocsIds(event) {
 }
 
 
+function updateSelectedDocumentsCount() {
+    var count = document.querySelectorAll(".doc-select-row:checked").length;
+    var $badge = $("#selectedDocuments");
+    if (!$badge.length) return;
+    if (count > 0) {
+        $badge.text(count + " " + $badge.attr("data-count-text"));
+        $badge.show();
+    } else {
+        $badge.hide();
+    }
+}
+
 function highlightRow(checkbox) {
     // This file is also loaded on the legacy document request pages
     // (employee/templates/documents/requests.html,
@@ -43,14 +55,17 @@ function highlightRow(checkbox) {
         if (checkbox.is(":checked")) {
             $legacyRow.addClass("highlight-selected");
         }
-        return;
+    } else {
+        checkbox.closest(".oh-sticky-table__tr").removeClass("highlight-selected");
+        checkbox.closest("tr").removeClass("highlight-selected");
+        if (checkbox.is(":checked")) {
+            checkbox.closest(".oh-sticky-table__tr").addClass("highlight-selected");
+            checkbox.closest("tr").addClass("highlight-selected");
+        }
     }
 
-    checkbox.closest(".oh-sticky-table__tr").removeClass("highlight-selected");
-    checkbox.closest("tr").removeClass("highlight-selected");
-    if (checkbox.is(":checked")) {
-        checkbox.closest(".oh-sticky-table__tr").addClass("highlight-selected");
-        checkbox.closest("tr").addClass("highlight-selected");
+    if (checkbox.hasClass("doc-select-row")) {
+        updateSelectedDocumentsCount();
     }
 }
 
@@ -59,12 +74,12 @@ function selectAllDocuments(event) {
     const checkbox = event.currentTarget;
     const isChecked = checkbox.checked;
 
-    const accordionBody = checkbox
-        .closest(".oh-accordion-meta__header")
-        .nextElementSibling;
+    const header = checkbox.closest(".oh-accordion-meta__header, .accordion-btn");
+    const accordionBody = header ? header.nextElementSibling : null;
 
     if (accordionBody) {
         const checkboxes = accordionBody.querySelectorAll('[type="checkbox"]');
         checkboxes.forEach(cb => cb.checked = isChecked);
     }
+    updateSelectedDocumentsCount();
 }

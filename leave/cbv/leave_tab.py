@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from base.methods import is_reportingmanager
 from employee.models import Employee
 from horilla.decorators import hx_request_required, login_required
+from horilla.methods import handle_no_permission
 from leave.cbv.my_leave_request import MainParentListView, MyLeaveRequestListView
 
 
@@ -32,8 +33,14 @@ class IndividualLeaveTab(MainParentListView):
             # redirect to login, rather than short-circuiting with an empty
             # response before authentication is even checked.
             return super().dispatch(request, *args, **kwargs)
-        if not Employee.objects.filter(id=kwargs.get("pk")).exists():
+        employee = Employee.objects.filter(id=kwargs.get("pk")).first()
+        if employee is None:
             return HttpResponse()
+        # Imported here: leave.views imports the cbv package at module load.
+        from leave.views import can_view_employee_leave
+
+        if not can_view_employee_leave(request, employee):
+            return handle_no_permission(request)
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: Any):

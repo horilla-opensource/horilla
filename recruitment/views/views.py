@@ -118,7 +118,6 @@ from recruitment.models import (
     LinkedInAccount,
     Recruitment,
     RecruitmentGeneralSetting,
-    RecruitmentSurvey,
     RecruitmentSurveyAnswer,
     RejectedCandidate,
     RejectReason,
@@ -271,9 +270,6 @@ def recruitment(request):
                 post_recruitment_in_linkedin(
                     request, recruitment_obj, recruitment_obj.linkedin_account_id
                 )
-            for survey in form.cleaned_data["survey_templates"]:
-                for sur in survey.recruitmentsurvey_set.all():
-                    sur.recruitment_ids.add(recruitment_obj)
             messages.success(request, _("Recruitment added."))
             with contextlib.suppress(Exception):
                 managers = recruitment_obj.recruitment_managers.select_related(
@@ -347,12 +343,6 @@ def recruitment_update(request, rec_id):
             request, _("The recruitment entry you are trying to edit does not exist.")
         )
         return HorillaRedirect(request)
-    survey_template_list = []
-    survey_templates = RecruitmentSurvey.objects.filter(
-        recruitment_ids=rec_id
-    ).distinct()
-    for survey in survey_templates:
-        survey_template_list.append(survey.template_id.all())
     form = RecruitmentCreationForm(instance=recruitment_obj)
     if request.GET:
         form = RecruitmentCreationForm(request.GET)
@@ -363,9 +353,6 @@ def recruitment_update(request, rec_id):
         form = RecruitmentCreationForm(request.POST, instance=recruitment_obj)
         if form.is_valid():
             recruitment_obj = form.save()
-            for survey in form.cleaned_data["survey_templates"]:
-                for sur in survey.recruitmentsurvey_set.all():
-                    sur.recruitment_ids.add(recruitment_obj)
             recruitment_obj.save()
             if len(form.changed_data) > 0:
                 if (
@@ -1688,6 +1675,7 @@ def interview_employee_remove(request, interview_id, employee_id):
 
 
 @login_required
+@permission_required(perm="recruitment.view_candidate")
 def candidate_export(request):
     """
     This method is used to Export candidate data

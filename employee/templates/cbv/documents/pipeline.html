@@ -38,6 +38,29 @@
   #{{view_id}} .hlv-container > .bg-white.p-2.rounded-md.shadow-card {
     padding-top: 0.25rem;
   }
+
+  /* The page-level Select/Unselect toolbar (generic/quick_actions.html) and
+     the "Document / Status / Date / Actions" header shared by every group's
+     table are pinned together as ONE sticky block right under the Document
+     Requests title bar (which document_requests.html/requests_document_tab.html
+     also pin), so both the live selected count and the column labels stay
+     visible while scrolling through a long list of groups. They're wrapped
+     in a single sticky container rather than each given their own
+     hardcoded top offset -- stacking them in normal flow inside one sticky
+     box means the header's position never has to guess the toolbar's actual
+     height (which changes once something is selected and "Unselect (N)"
+     stops being display:none), unlike two independently-positioned sticky
+     siblings would. */
+  #{{view_id}}StickyHeader {
+    position: sticky;
+    top: 123px;
+    z-index: 20;
+    background: #fff;
+  }
+  #{{view_id}}StickyHeader > .flex.flex-wrap.justify-between.items-center {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
 </style>
 
 <div id="{{view_id}}" class="accordion-wrapper space-y-1.5">
@@ -50,55 +73,49 @@
   ></button>
 
   {% include "generic/filter_tags.html" %}
-  {% include "generic/quick_actions.html" %}
+
+  <div id="{{view_id}}StickyHeader">
+    {% include "generic/quick_actions.html" %}
+
+    {% if groups %}
+
+    <div class="bg-white border border-[#EAE8E3] rounded-lg mb-1.5 overflow-hidden px-2">
+      <table class="fixed-table w-full table-fixed border-separate">
+        {% include "cbv/documents/_document_colgroup.html" %}
+        <thead>
+          <tr class="border-b border-[#ececec]">
+            <th class="text-sm font-medium text-left p-1.5">
+              <div class="flex items-center justify-center">
+                <input
+                  type="checkbox"
+                  class="bulk-list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
+                  title="{% trans 'Select All' %}"
+                  onchange="
+                    $('#{{view_id}}').find('.list-table-row').prop('checked', $(this).is(':checked')).change();
+                    $(document).ready(function () {
+                      reloadSelectedCount($('#count_{{view_id|safe}}'), 'selectedInstances');
+                      reloadSelectedCount($('.count_{{view_id|safe}}'), 'selectedInstances');
+                      updateDocRequestGroupCounts();
+                    });
+                  "
+                >
+              </div>
+            </th>
+            <th class="text-sm font-medium text-left px-1.5 py-1">{% trans "Document" %}</th>
+            <th class="text-sm font-medium text-left px-1.5 py-1">{% trans "Status" %}</th>
+            <th class="text-sm font-medium text-left px-1.5 py-1">{% trans "Date" %}</th>
+            <th class="text-sm font-medium text-center px-1.5 py-1">{% trans "Actions" %}</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+    {% endif %}
+  </div>
 
   {% if not groups %}
   <div class="flex flex-col items-center justify-center py-4">
     <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="120" class="mb-2 opacity-80">
     <p class="text-[#666] text-sm">{% trans "No records available at the moment" %}</p>
-  </div>
-  {% else %}
-  {% comment %}
-  One column header shared by every document-type group's table below,
-  instead of each expanded accordion panel repeating its own -- mirrors the
-  objective detail page (pms/okr/emp_objective/emp_objective_list.html): the
-  per-group tables (show_header=False) drop their own <thead> and use the
-  same colgroup, so columns stay aligned across all of them. The select-all
-  checkbox targets every row checkbox currently loaded on this page rather
-  than one group's own table, matching how the underlying selection store
-  (selectedInstances) is already shared globally, not per group. px-2 matches
-  the p-2 that horilla_list_table.html (the per-group table's own wrapper)
-  puts around its table -- without it the two tables measure at different
-  widths and every column past the first drifts out of alignment.
-  {% endcomment %}
-  <div class="bg-white border border-[#EAE8E3] rounded-lg mb-1.5 overflow-hidden px-2">
-    <table class="fixed-table w-full table-fixed border-separate">
-      {% include "cbv/documents/_document_colgroup.html" %}
-      <thead>
-        <tr class="border-b border-[#ececec]">
-          <th class="text-sm font-medium text-left p-1.5">
-            <div class="flex items-center justify-center">
-              <input
-                type="checkbox"
-                class="bulk-list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
-                title="{% trans 'Select All' %}"
-                onchange="
-                  $('#{{view_id}}').find('.list-table-row').prop('checked', $(this).is(':checked')).change();
-                  $(document).ready(function () {
-                    reloadSelectedCount($('#count_{{view_id|safe}}'), 'selectedInstances');
-                    reloadSelectedCount($('.count_{{view_id|safe}}'), 'selectedInstances');
-                  });
-                "
-              >
-            </div>
-          </th>
-          <th class="text-sm font-medium text-left px-1.5 py-1">{% trans "Document" %}</th>
-          <th class="text-sm font-medium text-left px-1.5 py-1">{% trans "Status" %}</th>
-          <th class="text-sm font-medium text-left px-1.5 py-1">{% trans "Date" %}</th>
-          <th class="text-sm font-medium text-center px-1.5 py-1">{% trans "Actions" %}</th>
-        </tr>
-      </thead>
-    </table>
   </div>
   {% endif %}
   {% for group in groups %}
@@ -201,6 +218,7 @@
     document.addEventListener("htmx:afterSwap", function (e) {
         var panel = e.target;
         if (!panel.id || panel.id.indexOf("docRequest") !== 0) return;
+        updateDocRequestGroupCounts();
         if (!panel.style.maxHeight || panel.style.maxHeight === "0px") return;
         panel.style.maxHeight = panel.scrollHeight + "px";
         // The "no records" illustration can still be mid-download at swap
@@ -216,6 +234,76 @@
             );
         });
     });
+
+
+    $(document).off("htmx:afterSettle.docRequestSelectFix").on(
+        "htmx:afterSettle.docRequestSelectFix",
+        function () {
+            if (!$('[id^="docRequest"]').length) return;
+            setTimeout(updateDocRequestGroupCounts, 450);
+        }
+    );
+
+
+    function updateDocRequestGroupCounts() {
+        $('[id^="docRequest"]').each(function () {
+            var $panel = $(this);
+            var count = $panel.find(".list-table-row:checked").length;
+            var $countEl = $panel.find('[id^="count_"]').first();
+            if (!$countEl.length) return;
+            var id = $countEl.attr("id").split("count_")[1];
+            $countEl.text(count);
+            $panel.find(".count_" + id).text(count);
+            if (count) {
+                $countEl.parent().removeClass("d-none");
+                $("#unselect_" + id + ", #export_" + id + ", #bulk_udate_" + id).removeClass("d-none");
+            } else {
+                $countEl.parent().addClass("d-none");
+                $("#unselect_" + id + ", #export_" + id + ", #bulk_udate_" + id).addClass("d-none");
+            }
+
+
+            var $selectBtn = $("#select_" + id);
+            if ($selectBtn.length) {
+                var total = parseInt($selectBtn.attr("data-total-count"), 10) || 0;
+                $selectBtn.toggleClass("d-none", total > 0 && count >= total);
+            }
+        });
+    }
+
+    var docRequestCountDebounce;
+    $(document).off("change.docRequestBulkCount").on(
+        "change.docRequestBulkCount",
+        "#{{view_id}} .list-table-row",
+        function () {
+            clearTimeout(docRequestCountDebounce);
+            docRequestCountDebounce = setTimeout(function () {
+                updateDocRequestGroupCounts();
+                reloadSelectedCount($("#count_{{view_id|safe}}"), "selectedInstances");
+                reloadSelectedCount($(".count_{{view_id|safe}}"), "selectedInstances");
+            }, 50);
+        }
+    );
+
+
+    function reconcileDocRequestSelection() {
+        var ids = [];
+        $("#{{view_id}} .list-table-row:checked").each(function () {
+            ids.push(String($(this).val()));
+        });
+        $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
+        updateDocRequestGroupCounts();
+        reloadSelectedCount($("#count_{{view_id|safe}}"), "selectedInstances");
+        reloadSelectedCount($(".count_{{view_id|safe}}"), "selectedInstances");
+    }
+
+    $(document).off("click.docRequestReconcile").on(
+        "click.docRequestReconcile",
+        '#{{view_id}} [id^="select_"], #{{view_id}} [id^="unselect_"]',
+        function () {
+            setTimeout(reconcileDocRequestSelection, 60);
+        }
+    );
 
     // Approving/rejecting/uploading a document reloads this entire list from
     // the server (see htmx_refresh_document_request_container), which

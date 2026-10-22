@@ -53,6 +53,7 @@ from horilla.methods import handle_no_permission
 from horilla_auth.models import HorillaUser
 from horilla_automations.methods.methods import generate_choices
 from horilla_automations.methods.serialize import serialize_form
+from horilla_views.models import ActiveTab
 from notifications.signals import notify
 from pms.filters import (
     ActualKeyResultFilter,
@@ -1872,22 +1873,25 @@ def feedback_detailed_view(request, id, **kwargs):
     if is_have_perm:
         feedback_started = Answer.objects.filter(feedback_id=id)
         employees = feedback.requested_employees()
-        yes = []
-        no = []
-        for employee in employees:
-            if Answer.objects.filter(
-                feedback_id=feedback, employee_id=employee
-            ).exists():
-                yes.append(employee)
-            else:
-                no.append(employee)
+        answered_ids = set(
+            Answer.objects.filter(feedback_id=feedback).values_list(
+                "employee_id", flat=True
+            )
+        )
+        yes = [employee for employee in employees if employee.id in answered_ids]
+        no = [employee for employee in employees if employee.id not in answered_ids]
         employee_statics = {"yes": yes, "no": no}
+        active_tab = ActiveTab.objects.filter(
+            created_by=request.user, path=request.path
+        ).first()
         context = {
             "feedback": feedback,
             "feedback_started": feedback_started,
             "feedback_status": Feedback.STATUS_CHOICES,
             "employee_statics": employee_statics,
+            "answered_ids": answered_ids,
             "today": datetime.datetime.today().date(),
+            "active_tab": active_tab.tab_target if active_tab else "",
         }
         return render(request, "feedback/feedback_detailed_view.html", context)
     return handle_no_permission(request)
@@ -2241,46 +2245,75 @@ def get_feedback_overview(request, obj_id):
     overview of feedback
     """
     feedback = Feedback.objects.filter(id=obj_id).first() if obj_id else None
-    if feedback and check_permission_feedback_detailed_view(
+    if feedback and not check_permission_feedback_detailed_view(
         request, feedback, perm="pms.view_feedback"
     ):
-        question_template = feedback.question_template_id
-        questions = question_template.question.all()
-        feedback_answers = feedback.feedback_answer.all()
-        kr_feedbacks = feedback.feedback_key_result.all()
-        feedback_overview = {}
-        for question in questions:
-            answer_list = []
-            for answer in feedback_answers:
-                if answer.question_id == question:
-                    answer_list.append(
-                        {
-                            answer.employee_id: [
-                                answer.answer,
-                                {"type": answer.question_id.question_type},
-                            ]
-                        }
-                    )
-            feedback_overview[question] = answer_list
-        for kr_feedback in kr_feedbacks:
-            answer_list = []
-            answer_list.append(
-                {kr_feedback.employee_id: [kr_feedback.answer, {"type": "6"}]}
-            )
-            feedback_overview[
-                f"Feedback about keyresult: {kr_feedback.key_result_id.key_result_id}"
-            ] = answer_list
-
-        return render(
-            request,
-            "feedback/feedback_overview.html",
-            context={"feedback_overview": feedback_overview},
-        )
-    if feedback:
         messages.info(request, _("You don't have permission."))
-    else:
-        messages.info(request, _("Feedback does not exist."))
-    return HorillaRedirect(request)
+        return HorillaRedirect(request)
+
+    questions = feedback.question_template_id.question.all().order_by("id")
+    page_obj = Paginator(questions, 10).get_page(request.GET.get("page"))
+    page_questions = list(page_obj)
+
+    answers = (
+        feedback.feedback_answer.filter(
+            question_id__in=[question.id for question in page_questions]
+        )
+        .select_related("question_id", "employee_id")
+        .order_by("pk")
+    )
+    avatars = {}
+
+    def with_avatar(employee):
+        if employee.id not in avatars:
+            avatars[employee.id] = employee.get_avatar()
+        employee.avatar_url = avatars[employee.id]
+        return employee
+
+    answers_by_question = {}
+    for answer in answers:
+        if answer.employee_id is None:
+            continue
+        answers_by_question.setdefault(answer.question_id_id, []).append(
+            {
+                with_avatar(answer.employee_id): [
+                    answer.answer,
+                    {"type": answer.question_id.question_type},
+                ]
+            }
+        )
+    feedback_overview = {
+        question: answers_by_question.get(question.id, [])
+        for question in page_questions
+    }
+
+    if not page_obj.has_next():
+        kr_feedbacks = feedback.feedback_key_result.select_related(
+            "employee_id", "key_result_id__key_result_id"
+        ).order_by("pk")
+        for kr_feedback in kr_feedbacks:
+            title = (
+                f"Feedback about keyresult: {kr_feedback.key_result_id.key_result_id}"
+            )
+            feedback_overview.setdefault(title, []).append(
+                {
+                    with_avatar(kr_feedback.employee_id): [
+                        kr_feedback.answer,
+                        {"type": "6"},
+                    ]
+                }
+            )
+
+    return render(
+        request,
+        "feedback/feedback_overview.html",
+        context={
+            "feedback_overview": feedback_overview,
+            "page_obj": page_obj,
+            "is_chunk": page_obj.number > 1,
+            "feedback": feedback,
+        },
+    )
 
 
 @login_required

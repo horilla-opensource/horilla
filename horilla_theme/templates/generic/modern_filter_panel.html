@@ -1,50 +1,40 @@
 {% comment %}
-    modern_filter_panel.html
+    Shared CSS + JS for the slide-over Filter panel. Used by horilla_nav.html,
+    inline_nav.html and plain pages that build their own filter dropdown.
 
-    Shared CSS + JS for the "modern" slide-over Filter panel (trigger
-    button -> #modernFilterBackdrop + #modernFilterPanel), extracted out
-    of horilla_nav.html so both HorillaNavView-based pages (which include
-    horilla_nav.html) and plain FBV pages that build their own filter
-    dropdown (e.g. attendance/work_record) can render the exact same
-    panel look without duplicating this CSS/JS by hand in each one.
-
-    Include this ONCE per page, then build the panel markup as:
-        <button id="modernFilterTrigger" onclick="toggleModernFilterPanel(true)">...</button>
-        <div class="oh-filter-backdrop" id="modernFilterBackdrop" onclick="toggleModernFilterPanel(false)"></div>
+    Include once per page (ids and functions aren't namespaced, so one panel
+    per page), then build the markup as:
+        <button id="modernFilterTrigger"
+                onclick="toggleModernFilterPanel(true)">...</button>
+        <div class="oh-filter-backdrop" id="modernFilterBackdrop"
+             onclick="toggleModernFilterPanel(false)"></div>
         <div class="oh-filter-panel" id="modernFilterPanel">
             <div class="oh-filter-panel__header">...</div>
-            <div class="oh-filter-panel__search"><input id="modernFilterFieldSearch" oninput="filterModernPanelFields(this.value)"></div>
+            <div class="oh-filter-panel__search">
+                <input id="modernFilterFieldSearch"
+                       oninput="filterModernPanelFields(this.value)">
+            </div>
             <div class="oh-filter-panel__body">
                 <div class="oh-filter-modern">
                     <div class="oh-accordion oh-accordion--show">
-                        <div class="oh-accordion-header"><span class="oh-filter-section-icon"><ion-icon name="..."></ion-icon></span>Section</div>
-                        <div class="oh-accordion-body">...oh-input-group/oh-label/oh-input fields...</div>
+                        <div class="oh-accordion-header">Section</div>
+                        <div class="oh-accordion-body">
+                            ...oh-input-group / oh-label / oh-input fields...
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="oh-filter-panel__footer">...</div>
         </div>
-    (see employee/templates/cbv/employees_view/filter_employee.html or
-    attendance/templates/attendance/work_record/work_record_view.html for
-    full examples). Only one panel per page is supported -- these ids/
-    functions aren't namespaced.
+    Examples: employee/templates/cbv/employees_view/filter_employee.html,
+    attendance/templates/attendance/work_record/work_record_view.html.
 {% endcomment %}
 <style>
-    /* ── Modern Filter panel ──
-       Opt-in redesign of the Filter dropdown as a full-height slide-over
-       panel (not a small anchored dropdown) -- scoped entirely under
-       .oh-filter-modern / .oh-filter-panel. First rollout: EmployeeNav --
-       see employee/cbv/employees.py. */
     .oh-filter-backdrop {
         position: fixed;
         inset: 0;
         background: rgba(20, 18, 14, 0.35);
-        /* Above #sidebar (z-index 50) and #sidebarFlyout (10060, see
-           sidebar.html) -- this is a modal-style overlay meant to cover
-           the whole page while open, sidebar included, but those sit at
-           higher z-indexes than this panel used to, so hovering the
-           sidebar while the panel was open rendered it (and its flyout)
-           on top of the modal instead of behind it. */
+        /* Above #sidebar and #sidebarFlyout (10060) to cover the whole page. */
         z-index: 10100;
         opacity: 0;
         visibility: hidden;
@@ -72,18 +62,8 @@
     .oh-filter-panel.oh-filter-panel--open {
         transform: translateX(0);
     }
-    /* Select2 appends its open dropdown to document.body (to escape any
-       parent's overflow/position quirks) with its own fixed z-index
-       (1051 in the bundled select2 build) -- far below this panel's
-       10101, once that had to be raised above the sidebar (see
-       .oh-filter-backdrop above). Every field in this panel that uses
-       Select2 (classic or AJAX) would have its dropdown genuinely open
-       (confirmed: select2 reports isOpen() true, the .select2-dropdown
-       node exists with normal visibility/opacity) yet be fully hidden
-       behind the panel's own opaque background -- not a rendering
-       failure, a stacking-order one. Scoped to while a dropdown is
-       actually open, since raising it unconditionally would be
-       pointless (nothing else needs to out-stack it while closed). */
+    /* Select2 dropdowns are appended to body at z-index 1051, so lift them
+       above the panel while open. */
     .select2-container--open .select2-dropdown {
         z-index: 10200;
     }
@@ -102,10 +82,6 @@
         font-weight: 700;
         color: #26251F;
     }
-    /* "N filters applied" indicator. Rendered on the trigger button/span
-       (both the modern slide-over panel and the classic anchored
-       dropdown) and, slightly larger, next to the panel's own title, so
-       it's visible whether the panel is open or closed. */
     .oh-filter-count-badge {
         box-sizing: border-box;
         display: inline-flex;
@@ -119,13 +95,7 @@
         color: #fff;
         font-size: 10px;
         font-weight: 700;
-        /* line-height: 1 leaves vertical placement to flex's
-           align-items: center alone, which centers the text's LINE BOX --
-           not necessarily the visible glyph, since a font's ascent/descent
-           split around its baseline isn't symmetric. Matching line-height
-           to the badge's own height keeps the line box (and so the glyph)
-           centered regardless of that asymmetry; text-align covers the
-           same idea on the horizontal axis. */
+        /* Line-height matches the badge height so the glyph is vertically centered. */
         line-height: 16px;
         text-align: center;
     }
@@ -137,10 +107,6 @@
         vertical-align: middle;
         margin-left: 4px;
     }
-    /* Toggled by updateFilterCountBadge() (horilla_nav.html) rather than
-       the badge being added/removed from the DOM -- these elements are
-       rendered unconditionally so the client only ever has to update
-       text/toggle a class, never create or destroy nodes. */
     .oh-filter-count-badge--hidden {
         display: none;
     }
@@ -225,35 +191,13 @@
         opacity: 0.9;
     }
 
-    /* Sections keep real collapse behaviour (the existing .oh-accordion
-       click handler + .oh-accordion--show toggle, unchanged) -- just a
-       plain bold label + chevron instead of the pink v1_styles.css block. */
     .oh-filter-modern .oh-accordion {
         background: transparent;
         border: none;
         margin-top: 0 !important;
     }
-    {% comment %}
-    The Group By / nested Group By accordion (appended in
-    horilla_nav.html/inline_nav.html, right after the filter body's own
-    include of filter_body_template) is never a true DOM sibling of the
-    LAST accordion inside that include -- every filter body template wraps
-    its own accordions in a legacy .oh-dropdown__filter-body div, so Group
-    By's real previous sibling is that wrapper div, not .oh-accordion. The
-    adjacent-sibling selector below silently never matches it, so it needs
-    the explicit .oh-accordion--top-divider class instead of relying on
-    DOM position.
-
-    Any Django template tag written here as plain prose (not wrapped in
-    this comment tag) still gets parsed and executed -- a CSS /* comment
-    */ or HTML comment is just text to Django's own template lexer, which
-    scans the whole file for tag delimiters regardless of surrounding
-    markup. An earlier version of this note spelled out the include tag by
-    name in a CSS comment, which Django ran for real and crashed with
-    TemplateDoesNotExist on any page whose context had no
-    filter_body_template to include. Keep any tag names mentioned in prose
-    inside a real {% comment %} block, as here.
-    {% endcomment %}
+    /* Divider between accordion sections. Group By isn't a sibling of the
+       filter body's accordions, so it opts in via .oh-accordion--top-divider. */
     .oh-filter-modern .oh-accordion + .oh-accordion,
     .oh-filter-modern .oh-accordion--top-divider {
         margin-top: 4px !important;
@@ -278,15 +222,7 @@
     }
     .oh-filter-modern .oh-accordion-header::before {
         content: "";
-        /* No margin-left:auto here: ::before renders as the FIRST child in
-           flex order, so margin-left:auto on it pushes itself (and the
-           icon+text that come after, since they're all still in that same
-           row) as a unit to the right, leaving a big empty gap where
-           nothing renders on the left -- the previous, broken layout.
-           Leading with the chevron and no auto-margin instead reads
-           chevron -> icon -> label from the left edge, filling the row
-           naturally (a leading toggle indicator is also the more familiar
-           accordion convention). */
+        /* Leading chevron, so no margin-left:auto (it would push the row right). */
         width: 14px;
         height: 14px;
         flex-shrink: 0;
@@ -314,8 +250,6 @@
         flex-shrink: 0;
     }
 
-    /* Checkbox-list fields (Department, Job Position, ...) -- every option
-       visible and clickable inline instead of a single-choice dropdown. */
     .oh-checkbox-list {
         display: flex;
         flex-direction: column;
@@ -326,11 +260,8 @@
     }
     .oh-checkbox-list__item {
         display: flex;
-        /* flex-start, not center: a long option label (e.g. "Training and
-           Development Coordinator - (Hr Dept)") wraps to 2+ lines, and
-           center-aligning against the checkbox's own single-line height
-           left it floating in the middle of the wrapped block instead of
-           level with the first line. */
+        /* Top-aligned so the checkbox stays level with the first line of a
+           wrapped label. */
         align-items: flex-start;
         gap: 8px;
         font-size: 12.5px;
@@ -340,8 +271,6 @@
         margin: 0;
     }
 
-    /* Segmented Any/Yes/No-style toggle (Is Active, ...) -- radio inputs
-       hidden, their labels styled as a connected button group. */
     .oh-segmented {
         display: inline-flex;
         border: 1px solid #DEDBD4;
@@ -380,16 +309,10 @@
         background: rgb(229 79 56 / 8%);
     }
 
-    /* Any field row hidden by the "Find a filter" search (see
-       filterModernPanelFields() below). */
     .oh-filter-field-hidden {
         display: none !important;
     }
 
-    /* Custom filter builder ("+ Add filter", Advanced section) --
-       styling only; the builder's own JS lives in horilla_nav.html since
-       it's tied to a FilterSet's custom_filter_fields, which a plain FBV
-       page (no FilterSet) doesn't have. */
     .oh-custom-filter-rows {
         display: flex;
         flex-direction: column;
@@ -458,18 +381,12 @@
         }
     }
 
-    /* Inputs, selects, dates -- consistent height/radius/border/focus ring
-       instead of v1_styles.css's plain baseline. */
     .oh-filter-modern .oh-input-group {
         margin-bottom: 10px;
     }
     .oh-filter-modern .oh-label {
         display: block;
-        /* The global .oh-label rule (style.min.css / v1_styles.css) sets
-           a 10-16px margin-top meant for a full-page form's roomier
-           spacing -- left un-overridden it stacks with this group's own
-           margin-bottom and roughly doubles the gap between fields in
-           this much narrower panel. */
+        /* Overrides the global .oh-label margin-top, which doubles the gap. */
         margin-top: 0 !important;
         margin-bottom: 4px;
         color: #6F6D66;
@@ -503,26 +420,12 @@
         accent-color: var(--oh-filter-accent, var(--primary-600, #e54f38));
         flex-shrink: 0;
     }
-    /* Nudges the checkbox down to sit level with a wrapped label's first
-       line instead of the very top of the whole (possibly 2-line) row --
-       see the flex-start comment on .oh-checkbox-list__item above. */
     .oh-checkbox-list__item input[type="checkbox"] {
         margin-top: 2px;
     }
 
-    /* Select2 skin for both the plain .oh-select fields (client-side
-       search over pre-rendered options) and the .oh-select-ajax
-       comboboxes (HorillaAjaxSelectWidget) -- same visual target as the
-       plain inputs above, since Select2 replaces the native control with
-       its own markup that the rules above can't reach directly. */
     .oh-filter-modern .select2 {
-        /* Select2 also sets width:100% itself via inline style at init
-           time, but that's 100% of whatever .oh-input-group column it
-           happened to render in -- a combobox that needs room to show a
-           search placeholder/selected name has to be in a full-width
-           row, and this is the belt-and-suspenders half of that fix:
-           !important here beats Select2's own non-!important inline
-           style if that column is ever narrower than intended again. */
+        /* !important beats Select2's inline width when the column is narrow. */
         width: 100% !important;
     }
     .oh-filter-modern .select2-container--default .select2-selection--single {
@@ -564,8 +467,6 @@
         background: var(--oh-filter-accent, var(--primary-600, #e54f38)) !important;
     }
 
-    /* Classic hover/focus-within dropdown: forced shut after "Apply"
-       until the pointer leaves it (see the .filterButton handler below). */
     .dropdown-content.filter-force-closed {
         opacity: 0 !important;
         visibility: hidden !important;
@@ -647,13 +548,8 @@
     }
 </style>
 <script>
-    // ── Modern Filter panel (slide-over) ──
-    // Open/close is click-toggled (not the classic dropdown's hover/
-    // focus-within), since a full-height overlay staying open only while
-    // hovered would close the instant the cursor moves toward a field.
-    // Guarded against redefinition: a page that includes both
-    // horilla_nav.html (a Nav-View-loaded fragment) AND this partial
-    // directly could otherwise load this script twice.
+    // Modern Filter panel (slide-over), click-toggled; guarded so it is only
+    // defined once when the partial is included twice on a page.
     if (typeof toggleModernFilterPanel !== 'function') {
         window.toggleModernFilterPanel = function (open) {
             var $panel = $('#modernFilterPanel');
@@ -707,20 +603,8 @@
             }, 0);
         });
 
-        // "Find a filter" -- matches the typed text against each field's
-        // own <label>, hiding whichever .oh-input-group rows don't match
-        // (and, if an entire section has no visible rows left, that
-        // section's header too) so the panel narrows down to the
-        // relevant field(s) instead of requiring a scroll through every
-        // section to find one.
-        //
-        // Also searches inside checkbox-list/segmented options (e.g.
-        // typing "sales" surfaces the Department field via its "Sales
-        // Dept" option, not just fields whose own label contains
-        // "sales"): if the field's own label matches, every option stays
-        // visible as-is; otherwise, for a field with options, only the
-        // options that themselves match stay visible (and the field row
-        // shows if at least one does).
+        // "Find a filter": hides rows (and empty sections) whose label or
+        // checkbox/segmented options don't match the query.
         window.filterModernPanelFields = function (query) {
             var q = (query || '').trim().toLowerCase();
             $('#modernFilterPanel .oh-input-group').each(function () {
@@ -744,15 +628,8 @@
             $('#modernFilterPanel .oh-accordion').each(function () {
                 var $section = $(this);
                 var $groups = $section.find('.oh-input-group');
-                // A section with no .oh-input-group at all isn't a set of
-                // filter fields to search over in the first place (e.g. the
-                // nested Group By section's #nestedGroupByLevels rows,
-                // which use their own <select>/badge markup, not
-                // .oh-input-group) -- "0 matches" here would otherwise read
-                // as "hide this section", permanently hiding it the moment
-                // the panel opens (filterModernPanelFields('') runs on
-                // every open) rather than only when a real search excludes
-                // every field in it.
+                // Sections without .oh-input-group rows (e.g. nested Group By)
+                // aren't searchable, so never hide them.
                 if (!$groups.length) {
                     return;
                 }

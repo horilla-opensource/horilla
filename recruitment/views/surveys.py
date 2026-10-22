@@ -282,7 +282,9 @@ def view_question_template(request):
     if request.user.has_perm("recruitment.view_recruitmentsurvey"):
         questions = RecruitmentSurvey.objects.all()
     else:
-        questions = RecruitmentSurvey.objects.filter(recruitment_ids__in=ids)
+        questions = RecruitmentSurvey.objects.filter(
+            template_id__recruitment__in=ids
+        ).distinct()
     # See the matching fix/comment in recruitment/views/search.py's
     # filter_survey() - group_by_queryset() already paginates correctly, but
     # the unused (0-question) templates it can't see get appended afterward
@@ -361,9 +363,6 @@ def update_question_template(request, survey_id):
         if form.is_valid():
             instance = form.save(commit=False)
             instance.save()
-            instance.template_id.set(form.cleaned_data["template_id"])
-            instance.recruitment_ids.set(form.recruitment)
-            # instance.job_position_ids.set(form.job_positions)
             messages.success(request, _("New survey question updated."))
             return HorillaRedirect(request)
     return render(request, "survey/template_update_form.html", {"form": form})
@@ -382,9 +381,6 @@ def create_question_template(request):
         if form.is_valid():
             instance = form.save(commit=False)
             instance.save()
-            instance.recruitment_ids.set(form.recruitment)
-            instance.template_id.set(form.cleaned_data["template_id"])
-            # instance.job_position_ids.set(form.job_positions)
             messages.success(request, _("New survey question created."))
             return HorillaRedirect(request)
     return render(request, "survey/template_form.html", {"form": form})
@@ -484,7 +480,9 @@ def survey_question_tab_list(request):
             for manager in recruitment.recruitment_managers.all():
                 if request.user.employee_get == manager:
                     ids.append(recruitment.id)
-        questions = RecruitmentSurvey.objects.filter(recruitment_ids__in=ids)
+        questions = RecruitmentSurvey.objects.filter(
+            template_id__recruitment__in=ids
+        ).distinct()
 
     questions = SurveyFilter(request.GET, questions).qs
 
@@ -607,13 +605,10 @@ def application_form(request):
             request.session["candidate"] = serializers.serialize(
                 "json", [candidate_obj]
             )
-            has_direct_survey = RecruitmentSurvey.objects.filter(
-                recruitment_ids=recruitment_id
-            ).exists()
             has_template_survey = RecruitmentSurvey.objects.filter(
                 template_id__in=recruitment.survey_templates.all()
             ).exists()
-            if has_direct_survey or has_template_survey:
+            if has_template_survey:
                 return redirect(candidate_survey)
             candidate_obj.save()
 
@@ -725,7 +720,7 @@ def delete_template(request):
 
     if request.META.get("HTTP_HX_REQUEST") == "true":
         return HttpResponse(
-            "<script>$('#templateTabRoot .filterButton').click();</script>"
+            "<script>$('.navFilterForm .filterButton').click();</script>"
         )
     return HorillaRedirect(request)
 
@@ -748,7 +743,7 @@ def delete_survey_template(request, pk):
 
     if request.META.get("HTTP_HX_REQUEST") == "true":
         return HttpResponse(
-            "<script>$('#templateTabRoot .filterButton').click();</script>"
+            "<script>$('.navFilterForm .filterButton').click();</script>"
         )
     return HorillaRedirect(request)
 

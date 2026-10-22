@@ -1,11 +1,6 @@
 {% load i18n %}
 <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
-    {% if not instance.document_request_id %}
-    {% elif instance.document %}
-        <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Upload Document' %}">
-            <ion-icon name="cloud-upload-outline"></ion-icon>
-        </button>
-    {% else %}
+    {% if instance.document_request_id and not instance.document %}
         <button
             class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             title="{% trans 'Upload Document' %}"
@@ -18,41 +13,54 @@
         >
             <ion-icon name="cloud-upload-outline"></ion-icon>
         </button>
+    {% else %}
+        <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Upload Document' %}">
+            <ion-icon name="cloud-upload-outline"></ion-icon>
+        </button>
     {% endif %}
 
-    {% if instance.document_request_id and perms.horilla_documents.change_documentrequest %}
-        {% if not instance.document or instance.status == "approved" %}
-            <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Approve' %}">
-                <ion-icon name="checkmark-outline"></ion-icon>
-            </button>
-        {% else %}
-            <button
-                class="oh-btn oh-btn--success oh-btn--sq-sm"
-                hx-get="{% url 'document-approve' instance.id %}"
-                title="{% trans 'Approve' %}"
-                onclick="event.stopPropagation()"
-            >
-                <ion-icon name="checkmark-outline"></ion-icon>
-            </button>
-        {% endif %}
+    {% if instance.document_request_id %}
+        {% if perms.horilla_documents.change_documentrequest %}
+            {% if not instance.document or instance.status == "approved" %}
+                <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Approve' %}">
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                </button>
+            {% else %}
+                <button
+                    class="oh-btn oh-btn--success oh-btn--sq-sm"
+                    hx-get="{% url 'document-approve' instance.id %}"
+                    title="{% trans 'Approve' %}"
+                    onclick="event.stopPropagation()"
+                >
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                </button>
+            {% endif %}
 
-        {% if not instance.document or instance.status == "rejected" %}
-            <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Reject' %}">
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
-        {% else %}
-            <button
-                class="oh-btn oh-btn--danger oh-btn--sq-sm"
-                hx-get="{% url 'document-reject' instance.id %}"
-                hx-target="#genericModalBody"
-                data-toggle="oh-modal-toggle"
-                data-target="#genericModal"
-                title="{% trans 'Reject' %}"
-                onclick="event.stopPropagation()"
-            >
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
+            {% if not instance.document or instance.status == "rejected" %}
+                <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Reject' %}">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            {% else %}
+                <button
+                    class="oh-btn oh-btn--danger oh-btn--sq-sm"
+                    hx-get="{% url 'document-reject' instance.id %}"
+                    hx-target="#genericModalBody"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    title="{% trans 'Reject' %}"
+                    onclick="event.stopPropagation()"
+                >
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            {% endif %}
         {% endif %}
+    {% else %}
+        <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Approve' %}">
+            <ion-icon name="checkmark-outline"></ion-icon>
+        </button>
+        <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled title="{% trans 'Reject' %}">
+            <ion-icon name="close-outline"></ion-icon>
+        </button>
     {% endif %}
 
     {% if not instance.document_request_id or perms.horilla_documents.change_documentrequest %}

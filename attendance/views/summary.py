@@ -182,6 +182,107 @@ def natural_halves(partial, got_attendance):
     return (leave[0], other) if lead == "first" else (other, leave[0])
 
 
+MAX_DAY_SECONDS = 24 * 3600
+
+
+def day_history(employee, date, status_pill):
+    """
+    Every change made to one day, newest first, from the audit trail.
+
+    status_pill(value) -> (label, background, foreground) for a saved status.
+    Entries: {kind, icon, title, was, now, by, at}; was/now are pills (or None).
+    """
+    from auditlog.models import LogEntry
+    from django.contrib.contenttypes.models import ContentType
+
+    from attendance.models import AttendanceConflictResolution, AttendanceDailyHours
+
+    def actor_name(entry):
+        user = entry.actor
+        if user is None:
+            return ""
+        try:
+            person = user.employee_get
+            return f"{person.employee_first_name} {person.employee_last_name or ''}".strip()
+        except Exception:
+            return user.get_username()
+
+    def hours_text(value):
+        try:
+            secs = int(float(value))
+        except (TypeError, ValueError):
+            return str(value)
+        return f"{secs // 3600}h {(secs % 3600) // 60:02d}m"
+
+    def pill(value):
+        label, bg, fg = status_pill(value)
+        return {"label": label, "bg": bg, "fg": fg}
+
+    entries = []
+    for model in (AttendanceConflictResolution, AttendanceDailyHours):
+        logs = LogEntry.objects.filter(
+            content_type=ContentType.objects.get_for_model(model),
+            serialized_data__fields__employee_id=employee.pk,
+            serialized_data__fields__date=date.isoformat(),
+        ).select_related("actor")
+        for entry in logs:
+            fields = (entry.serialized_data or {}).get("fields", {})
+            changes = entry.changes or {}
+            item = {
+                "at": entry.timestamp,
+                "by": actor_name(entry),
+                "was": None,
+                "now": None,
+            }
+            if model is AttendanceConflictResolution:
+                old, new = (
+                    changes.get("resolution") or [None, fields.get("resolution")]
+                )[:2]
+                item["kind"] = "status"
+                if entry.action == LogEntry.Action.DELETE:
+                    item.update(
+                        icon="refresh-outline",
+                        title=_("Override cleared"),
+                        was=pill(fields.get("resolution")),
+                    )
+                elif entry.action == LogEntry.Action.CREATE or old in (
+                    None,
+                    "None",
+                    "",
+                ):
+                    item.update(
+                        icon="checkmark-circle-outline",
+                        title=_("Regularized as"),
+                        now=pill(new),
+                    )
+                elif "resolution" in changes:
+                    item.update(
+                        icon="swap-horizontal-outline",
+                        title=_("Changed"),
+                        was=pill(old),
+                        now=pill(new),
+                    )
+                else:
+                    continue
+            else:
+                item["kind"] = "hours"
+                new = (
+                    changes.get("hours_second") or [None, fields.get("hours_second")]
+                )[1]
+                if entry.action == LogEntry.Action.DELETE:
+                    item.update(icon="pencil-outline", title=_("Hours edit removed"))
+                elif new in (None, "None") and "is_manually_edited" not in changes:
+                    continue
+                else:
+                    item.update(
+                        icon="pencil-outline",
+                        title=_("Hours set to") + " " + hours_text(new),
+                    )
+            entries.append(item)
+    entries.sort(key=lambda e: e["at"], reverse=True)
+    return entries
+
+
 def _secs_to_label(secs):
     """Format a duration in seconds as 'Hh MMm'."""
     secs = int(secs or 0)
@@ -2537,6 +2638,48 @@ def attendance_monthly_summary_conflict_resolve(request):
             "#1f2937",
         )
 
+    # What the status choice opens on: the saved override, otherwise what the day
+    # actually is (leave, a worked day, a holiday ...), so the usual case needs no click.
+    initial_halves = ("P", "A")
+    if existing:
+        # A Half Day / Half Absent saved before splits existed is a split too: show its halves.
+        _saved_halves = parse_split(existing.resolution) or {
+            "half_present": ("P", "PL"),
+            "half_absent": ("P", "A"),
+        }.get(existing.resolution)
+        choice_initial = "split" if _saved_halves else existing.resolution
+        initial_halves = _saved_halves or initial_halves
+    elif natural_halves_day:
+        choice_initial = "split"
+        # The short half is unpaid, like an absent one, and the choice has no short option.
+        initial_halves = tuple(
+            "A" if code == "SH" else code for code in natural_halves_day
+        )
+    elif conflict_type in ("holiday", "holiday_ot"):
+        choice_initial = "holiday"
+    elif conflict_type in ("week_off", "week_off_ot"):
+        choice_initial = "week_off"
+    else:
+        choice_initial = {
+            "full": "full_present",
+            "short": "absent",
+            "mo": "absent",
+            "paid_leave": "paid_leave",
+            "unpaid_leave": "unpaid_leave",
+            "weekend": "week_off",
+            "absent": "absent",
+        }.get(day_status, "")
+
+    def _status_pill(value):
+        halves = parse_split(value)
+        if halves:
+            return split_label(value), split_pill_bg(halves), "#1f2937"
+        label = _STATUS_LABELS.get(value, value)
+        bg, fg = _STATUS_PILL_COLORS.get(value, ("#f1f5f9", "#475569"))
+        return label, bg, fg
+
+    history_entries = day_history(emp, date, _status_pill)
+
     # OT display formula:
     #   effective_min = shift minimum, or 8h (28800s) when no shift configured
     #   Normal day  : OT = min(max(0, total − eff_min), cutoff)
@@ -2545,7 +2688,49 @@ def attendance_monthly_summary_conflict_resolve(request):
     _ot_cutoff_sec = (
         _ss(_cond.overtime_cutoff) if _cond and _cond.overtime_cutoff else 0
     )
-    _effective_min = _shift_min_secs if _shift_min_secs > 0 else 28800  # 8h default
+    # The shift the minimum comes from. The attendance record carries the minimum it was
+    # created with; a day without a record falls back to the employee's shift schedule for
+    # that weekday, and only then to 8h.
+    from base.models import EmployeeShiftSchedule as _ESS_cap
+    from employee.models import EmployeeWorkInformation as _EWI_cap
+
+    _work_info = (
+        _EWI_cap.objects.filter(employee_id=emp).select_related("shift_id").first()
+    )
+    shift_name = (
+        _work_info.shift_id.employee_shift if _work_info and _work_info.shift_id else ""
+    )
+    _schedule_min = 0
+    if _work_info and _work_info.shift_id_id:
+        _row = (
+            _ESS_cap.objects.filter(
+                shift_id=_work_info.shift_id_id,
+                day__day=[
+                    "monday",
+                    "tuesday",
+                    "wednesday",
+                    "thursday",
+                    "friday",
+                    "saturday",
+                    "sunday",
+                ][date.weekday()],
+            )
+            .values("minimum_working_hour")
+            .first()
+        )
+        if _row and _row["minimum_working_hour"]:
+            _schedule_min = _ss(_row["minimum_working_hour"])
+    if _shift_min_secs > 0:
+        min_source = "record"
+    elif _schedule_min > 0:
+        min_source = "schedule"
+    else:
+        min_source = "default"
+    _effective_min = _shift_min_secs or _schedule_min or 28800  # 8h default
+
+    def _hm(secs):
+        return f"{secs // 3600}:{(secs % 3600) // 60:02d}"
+
     # A holiday/week-off day that HR has regularized (Full Present/Half Day)
     # is no longer treated as 100% overtime — it gets the normal
     # regular/OT split, same as build_monthly_summary and the calendar totals.
@@ -2589,8 +2774,6 @@ def attendance_monthly_summary_conflict_resolve(request):
         "day_status": day_status,
         "natural_status_label": natural_status_label,
         "natural_split": bool(natural_halves_day),
-        # Partial Hours is for a day that did not reach half the shift.
-        "worked_half_or_more": day_type in ("full", "half"),
         "natural_status_bg": natural_status_bg,
         "natural_status_fg": natural_status_fg,
         "override_status_label": override_status_label,
@@ -2608,12 +2791,10 @@ def attendance_monthly_summary_conflict_resolve(request):
         "conflict_label": conflict_label,
         "existing_resolution": existing.resolution if existing else None,
         # A day cut in two: what each half is now, for the selects, and its name for the history.
-        "split_a": (
-            (parse_split(existing.resolution) or ("P", "A"))[0] if existing else "P"
-        ),
-        "split_b": (
-            (parse_split(existing.resolution) or ("P", "A"))[1] if existing else "A"
-        ),
+        "split_a": initial_halves[0],
+        "split_b": initial_halves[1],
+        "choice_initial": choice_initial,
+        "history_entries": history_entries,
         "existing_split_label": (
             split_label(existing.resolution)
             if existing and parse_split(existing.resolution)
@@ -2631,6 +2812,14 @@ def attendance_monthly_summary_conflict_resolve(request):
         "att_ot_sec": _att_ot_sec,
         "att_ot_approved": att_ot_approved,
         "effective_min_secs": _effective_min,
+        "shift_name": shift_name,
+        "min_source": min_source,
+        "min_required_label": _hm(_effective_min),
+        "ot_cutoff_label": _hm(_ot_cutoff_sec) if _ot_cutoff_sec else "",
+        "ot_holiday_cap_label": (
+            _hm(_effective_min + _ot_cutoff_sec) if _ot_cutoff_sec else ""
+        ),
+        "grace_label": _hm(_grace) if _grace else "",
         "ot_cutoff_sec": _ot_cutoff_sec,
         "is_ot_day": _is_ot_day,
         "excess_h": excess_h,
@@ -2905,12 +3094,20 @@ def attendance_monthly_summary_daily_hours_edit(request):
         try:
             if ":" in raw:
                 parts = raw.split(":")
+                if int(parts[1]) >= 60:
+                    raise ValueError("minutes")
                 total_sec = int(parts[0]) * 3600 + int(parts[1]) * 60
             else:
                 total_sec = int(float(raw) * 3600)
-            total_sec = max(0, total_sec)
         except (ValueError, IndexError):
-            total_sec = existing.hours_second if existing else 0
+            return HttpResponse(
+                _("Enter the hours as H:MM, for example 8:30."), status=400
+            )
+        if total_sec < 0:
+            return HttpResponse(_("Hours cannot be negative."), status=400)
+        # A day only has 24 hours; the page asks for confirmation above 15.
+        if total_sec > MAX_DAY_SECONDS:
+            return HttpResponse(_("A day cannot have more than 24 hours."), status=400)
 
         if existing:
             existing.hours_second = total_sec

@@ -1150,9 +1150,18 @@ def export_data(request, model, form_class, filter_class, file_name, perm=None):
 
     form = form_class()
     model_fields = model._meta.get_fields()
+    # An export of per-employee records is limited to the requester's own and
+    # their team's unless they hold the model's view permission, which is the
+    # default for callers that name no `perm`. Models with no employee_id
+    # (holidays, candidates) have nothing to scope by here.
+    if perm is None and any(f.name == "employee_id" for f in model._meta.fields):
+        perm = f"{model._meta.app_label}.view_{model._meta.model_name}"
     export_objects = filter_class(request.GET).qs
+    # What a request may select by id: the scoped set, not the whole model.
+    selectable_objects = model.objects.all()
     if perm:
         export_objects = filtersubordinates(request, export_objects, perm)
+        selectable_objects = filtersubordinates(request, selectable_objects, perm)
 
     # If the caller selected specific rows in the list view (instance_ids),
     # export exactly those - not whatever the filter fields happen to match -
@@ -1165,7 +1174,7 @@ def export_data(request, model, form_class, filter_class, file_name, perm=None):
         with contextlib.suppress(ValueError, SyntaxError):
             instance_ids = ast.literal_eval(instance_ids)
             if instance_ids:
-                export_objects = model.objects.filter(pk__in=instance_ids)
+                export_objects = selectable_objects.filter(pk__in=instance_ids)
                 has_instance_ids = True
 
     selected_fields = request.GET.getlist("selected_fields")
@@ -1175,7 +1184,7 @@ def export_data(request, model, form_class, filter_class, file_name, perm=None):
         if not has_instance_ids:
             ids = request.GET.get("ids", "[]")
             id_list = json.loads(ids)
-            export_objects = model.objects.filter(id__in=id_list)
+            export_objects = selectable_objects.filter(id__in=id_list)
 
     for field in form.fields["selected_fields"].choices:
         value = field[0]
