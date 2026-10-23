@@ -82,13 +82,3 @@ class TestDashboardWithoutShift(TestCase):
     def test_the_expected_to_check_in_list_matches(self):
         expected = get_expected_to_check_in(Employee.objects.all(), None, date.today())
         self.assertEqual(list(expected), [self.worker])
-
-    def test_the_attendance_trend(self):
-        clock_in(self.salaried)
-        weeks = self.get("dashboard-attendance-trend")["weeks"]
-        current = next(w for w in weeks if "(now)" in w["week"])
-        self.assertEqual((current["present"], current["rate"]), (1, 50.0))
-        clock_in(self.worker)
-        weeks = self.get("dashboard-attendance-trend")["weeks"]
-        current = next(w for w in weeks if "(now)" in w["week"])
-        self.assertEqual(current["rate"], 100.0)

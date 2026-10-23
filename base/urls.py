@@ -84,11 +84,6 @@ urlpatterns = [
         name="dashboard-kpi-data",
     ),
     path(
-        "dashboard/api/attendance-trend/",
-        dashboard_module.dashboard_attendance_trend,
-        name="dashboard-attendance-trend",
-    ),
-    path(
         "dashboard/api/leave-breakdown/",
         dashboard_module.dashboard_leave_breakdown,
         name="dashboard-leave-breakdown",
@@ -119,11 +114,6 @@ urlpatterns = [
         name="dashboard-todays-leave",
     ),
     path(
-        "dashboard/api/leave-coverage/",
-        dashboard_module.dashboard_leave_coverage,
-        name="dashboard-leave-coverage",
-    ),
-    path(
         "dashboard/api/upcoming-holidays/",
         dashboard_module.dashboard_upcoming_holidays,
         name="dashboard-upcoming-holidays",
@@ -139,11 +129,6 @@ urlpatterns = [
         name="dashboard-recruitment-pipeline",
     ),
     path(
-        "dashboard/api/payroll-summary/",
-        dashboard_module.dashboard_payroll_summary,
-        name="dashboard-payroll-summary",
-    ),
-    path(
         "dashboard/api/pending-approvals/",
         dashboard_module.dashboard_pending_approvals,
         name="dashboard-pending-approvals",
@@ -154,34 +139,14 @@ urlpatterns = [
         name="dashboard-turnover",
     ),
     path(
-        "dashboard/api/employee-status/",
-        dashboard_module.dashboard_employee_status,
-        name="dashboard-employee-status",
-    ),
-    path(
         "dashboard/api/attendance-overview/",
         dashboard_module.dashboard_attendance_overview,
         name="dashboard-attendance-overview",
     ),
     path(
-        "dashboard/api/department-overtime/",
-        dashboard_module.dashboard_department_overtime,
-        name="dashboard-department-overtime",
-    ),
-    path(
         "dashboard/api/leave-trends/",
         dashboard_module.dashboard_leave_trends,
         name="dashboard-leave-trends",
-    ),
-    path(
-        "dashboard/api/leave-by-department/",
-        dashboard_module.dashboard_leave_by_department,
-        name="dashboard-leave-by-department",
-    ),
-    path(
-        "dashboard/api/department-leave-days/",
-        dashboard_module.dashboard_department_leave_days,
-        name="dashboard-department-leave-days",
     ),
     path(
         "dashboard/api/hiring-timeline/",
