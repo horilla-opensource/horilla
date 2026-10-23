@@ -391,6 +391,24 @@ class Attendance(HorillaModel):
             context={"instance": self},
         )
 
+    def penalty_col(self):
+        """
+        Penalty badges of the late come / early out records of this attendance.
+        """
+
+        penalised = [
+            late_early
+            for late_early in self.late_come_early_out.all()
+            if late_early.get_penalties_count()
+        ]
+        if not penalised:
+            return render_template(
+                path="generic/penalty_badge.html",
+                context={"count": 0},
+            )
+
+        return " ".join(late_early.penalties_column() for late_early in penalised)
+
     def my_attendance_subtitle(self):
         """
         Detail view subtitle
@@ -1557,14 +1575,14 @@ class AttendanceLateComeEarlyOut(HorillaModel):
         ]
         return dict(choices).get(self.type)
 
-    def penalities_column(self):
+    def penalties_column(self):
         """
-        To get penalities
+        To get penalties
 
         """
 
         return render_template(
-            path="cbv/late_come_and_early_out/penality.html",
+            path="cbv/late_come_and_early_out/penalty.html",
             context={"instance": self},
         )
 
