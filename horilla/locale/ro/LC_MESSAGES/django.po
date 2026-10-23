@@ -25606,3 +25606,11 @@ msgstr "Șabloanele de mesaje și fluxurile au fost create cu succes."
 
 #~ msgid "Enable Whatsapp"
 #~ msgstr "Activează WhatsApp"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Last 7 Days"
+msgstr "Ultimele 7 zile"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Next 7 Days"
+msgstr "Următoarele 7 zile"

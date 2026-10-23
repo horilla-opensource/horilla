@@ -26518,3 +26518,11 @@ msgstr "訊息模板和流創建成功。"
 
 #~ msgid "Employee instance already exist"
 #~ msgstr "員工實例已存在"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Last 7 Days"
+msgstr "最近 7 天"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Next 7 Days"
+msgstr "未來 7 天"

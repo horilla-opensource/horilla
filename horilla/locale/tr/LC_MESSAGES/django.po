@@ -25788,3 +25788,11 @@ msgstr "Mesaj şablonları ve akışları başarıyla oluşturuldu."
 
 #~ msgid "Mail not send to %(candidate_name)s"
 #~ msgstr "Posta %(candidate_name)s adresine gönderilemiyor"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Last 7 Days"
+msgstr "Son 7 Gün"
+
+#: horilla_views/generic/cbv/views.py
+msgid "Next 7 Days"
+msgstr "Sonraki 7 Gün"
