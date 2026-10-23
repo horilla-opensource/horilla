@@ -32,6 +32,17 @@ filter of its own: wrap it in ``{% filter escapejs %}...{% endfilter %}``, or ca
 
 Translations in plain HTML text, in ordinary attributes, or in a ``text/template`` block are not
 JavaScript and are left alone.
+
+One more case is not about quotes. If the JavaScript string is later handed to something that
+parses it as HTML (a template literal given to jQuery's ``.html()``, say) and the text can come
+from a request, ``|escapejs`` alone is not enough: it writes ``<`` as ``\\u003C``, which JavaScript
+turns back into a real ``<`` before the HTML parser sees it. Use ``|force_escape|escapejs`` there
+(see ``templates/filter_tags.html``). This test cannot know where a string ends up, so it only
+checks for ``|escapejs``.
+
+Known limits: it does not look at ``hx-on:*``, ``@click`` or ``href="javascript:..."``, and a
+regular-expression literal that contains a quote can confuse the string tracking. None of these
+occurs in the templates today.
 """
 
 import re
@@ -58,6 +69,7 @@ COMMENT_BLOCK = re.compile(
 DJANGO_TAG = re.compile(r"\{%.*?%\}|\{\{.*?\}\}|\{#.*?#\}", re.DOTALL)
 TRANSLATE_TAG = re.compile(r"\{%\s*(trans|translate)\b")
 BLOCK_TRANSLATE_TAG = re.compile(r"\{%\s*(blocktrans|blocktranslate)\b")
+CAPTURES_INTO_VARIABLE = re.compile(r"\sas\s+\w+\s*%\}$")
 FILTER_OPEN = re.compile(r"\{%\s*filter\s+(.*?)\s*%\}", re.DOTALL)
 FILTER_CLOSE = re.compile(r"\{%\s*endfilter\s*%\}")
 INLINE_SCRIPT = re.compile(
@@ -103,7 +115,13 @@ def unsafe_in_strings(code):
             ):
                 # a {% filter escapejs %}...{% endfilter %} block escapes everything inside it,
                 # including a {% blocktrans %}, which cannot take a filter of its own
-                if TRANSLATE_TAG.match(tag) and "escapejs" not in tag:
+                # `{% trans "..." as t %}` only captures the text; where `{{ t|escapejs }}` is
+                # printed is a separate, visible expression
+                if (
+                    TRANSLATE_TAG.match(tag)
+                    and "escapejs" not in tag
+                    and not CAPTURES_INTO_VARIABLE.search(tag)
+                ):
                     found.append((i, tag))
                 elif BLOCK_TRANSLATE_TAG.match(tag):
                     found.append((i, tag))
@@ -200,6 +218,8 @@ class TranslationsAreEscapedInJavaScript(unittest.TestCase):
             # a blocktrans cannot take a filter, but a {% filter escapejs %} block around it works
             "<script>var x = '{% filter escapejs %}{% blocktrans %}Don't{% endblocktrans %}{% endfilter %}';</script>",
             '<button onclick="go(&quot;{% filter escapejs %}{% blocktrans %}Don\'t{% endblocktrans %}{% endfilter %}&quot;)">x</button>',
+            # capturing the text into a variable and printing it escaped is the safe pattern too
+            "<script>var x = '{% trans \"Submit Feedback?\" as t %}{{ t|escapejs }}';</script>",
             # a translation outside any string is fine
             "<script>var title = {% trans 'Hello' as t %}{{ t|escapejs|default:'' }};</script>",
             # a quote inside a comment does not start a string
