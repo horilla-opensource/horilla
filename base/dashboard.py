@@ -580,7 +580,17 @@ def dashboard_kpi_data(request):
 
     # Expected = active employees not on approved leave (excludes leave from
     # the denominator so "absent" is not inflated by people who should be out).
-    expected_today = max(0, total_employees - on_leave)
+    # Only employees with a shift are expected in, plus anyone without one
+    # who checked in anyway (attendance.dashboard.expected_employee_ids, the
+    # same rule as the Attendance dashboard). The headcount counts everyone.
+    expected_ids = set()
+    try:
+        from attendance.dashboard import expected_employee_ids
+
+        expected_ids = expected_employee_ids(emp_qs, real_today, real_today)
+    except Exception:
+        expected_ids = set(emp_qs.values_list("id", flat=True))
+    expected_today = max(0, len(expected_ids - on_leave_employee_ids))
     # Counted as a set difference, not total - present - on_leave: someone on
     # a half-day leave who also clocked in is in both of those sets, and
     # subtracting both would count them out twice. This is the same
@@ -589,7 +599,10 @@ def dashboard_kpi_data(request):
     # the list always agree. The Attendance dashboard's own Offline card is
     # a different, shift-aware metric.
     not_checked_in = (
-        emp_qs.exclude(id__in=present_ids).exclude(id__in=on_leave_employee_ids).count()
+        emp_qs.filter(id__in=expected_ids)
+        .exclude(id__in=present_ids)
+        .exclude(id__in=on_leave_employee_ids)
+        .count()
     )
     # On a weekly off or holiday nobody is expected in, so whoever hasn't
     # checked in is on week off rather than absent.
@@ -665,13 +678,13 @@ def dashboard_attendance_trend(request):
     from_date, to_date = _current_month_bounds()
 
     try:
+        from attendance.dashboard import expected_employee_ids
         from attendance.models import Attendance
         from employee.models import Employee
 
         emp_qs = Employee.objects.filter(is_active=True)
         if scoped_ids is not None:
             emp_qs = emp_qs.filter(id__in=scoped_ids)
-        total = emp_qs.count()
 
         bucket_start = from_date - timedelta(days=from_date.weekday())
         last_monday = to_date - timedelta(days=to_date.weekday())
@@ -685,6 +698,9 @@ def dashboard_attendance_trend(request):
                 employee_id__in=emp_qs,
             )
             present = present_qs.values("employee_id").distinct().count()
+            # Out of those expected that week: employees with a shift, plus
+            # anyone without one who attended (expected_employee_ids).
+            total = len(expected_employee_ids(emp_qs, week_start_q, week_end))
             rate = min(100.0, round((present / total * 100), 1)) if total > 0 else 0
 
             is_current = bucket_start <= today <= bucket_start + timedelta(days=6)
