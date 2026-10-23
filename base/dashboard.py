@@ -655,65 +655,6 @@ def dashboard_kpi_data(request):
 
 
 @login_required
-def dashboard_attendance_trend(request):
-    """Weekly-bucketed attendance trend for the current calendar month.
-
-    Requires attendance view permission, superuser, or reporting-manager status
-    (managers without org-wide employee view see team-scoped rates).
-    """
-    user = request.user
-    if not (
-        user.is_superuser
-        or user.has_perm("attendance.view_attendance")
-        or _is_manager(user)
-    ):
-        return JsonResponse({"no_permission": True})
-
-    today = date.today()
-    weeks = []
-    scoped_ids = _scoped_active_employee_ids(request)
-
-    # Always the current calendar month -- ignores any from_date/to_date so
-    # the trend can't be pinned to a stale period by the shared date picker.
-    from_date, to_date = _current_month_bounds()
-
-    try:
-        from attendance.dashboard import expected_employee_ids
-        from attendance.models import Attendance
-        from employee.models import Employee
-
-        emp_qs = Employee.objects.filter(is_active=True)
-        if scoped_ids is not None:
-            emp_qs = emp_qs.filter(id__in=scoped_ids)
-
-        bucket_start = from_date - timedelta(days=from_date.weekday())
-        last_monday = to_date - timedelta(days=to_date.weekday())
-        while bucket_start <= last_monday:
-            week_end = min(bucket_start + timedelta(days=6), to_date)
-            week_start_q = max(bucket_start, from_date)
-
-            present_qs = Attendance.objects.filter(
-                attendance_date__gte=week_start_q,
-                attendance_date__lte=week_end,
-                employee_id__in=emp_qs,
-            )
-            present = present_qs.values("employee_id").distinct().count()
-            # Out of those expected that week: employees with a shift, plus
-            # anyone without one who attended (expected_employee_ids).
-            total = len(expected_employee_ids(emp_qs, week_start_q, week_end))
-            rate = min(100.0, round((present / total * 100), 1)) if total > 0 else 0
-
-            is_current = bucket_start <= today <= bucket_start + timedelta(days=6)
-            label = bucket_start.strftime("%b %d") + (" (now)" if is_current else "")
-            weeks.append({"week": label, "rate": rate, "present": present})
-            bucket_start += timedelta(weeks=1)
-    except Exception:
-        weeks = [{"week": f"W{i+1}", "rate": 0, "present": 0} for i in range(12)]
-
-    return JsonResponse({"weeks": weeks, "is_team_scoped": scoped_ids is not None})
-
-
-@login_required
 def dashboard_leave_breakdown(request):
     """Leave type breakdown (approved vs pending) for the dashboard date range.
 
@@ -1265,85 +1206,6 @@ def dashboard_recruitment_pipeline(request):
 
 
 @login_required
-def dashboard_payroll_summary(request):
-    """Payroll summary — selected period vs previous period.
-
-    Restricted to payroll operators (staff/superuser or change_payslip), not
-    every user who can merely view a payslip — keeps compensation totals off
-    the general manager home.
-    """
-    user = request.user
-    is_payroll_operator = user.is_superuser or (
-        user.has_perm("payroll.view_payslip")
-        and (user.is_staff or user.has_perm("payroll.change_payslip"))
-    )
-    if not is_payroll_operator:
-        return JsonResponse({"no_permission": True})
-    from_date, to_date = _parse_period(request)
-    today = to_date
-    first_of_month = from_date
-    # Always use full calendar month boundaries for previous month
-    prev_month_end = first_of_month - timedelta(days=1)  # last day of previous month
-    prev_month_start = prev_month_end.replace(day=1)  # first day of previous month
-
-    current = {"gross": 0, "deductions": 0, "net": 0, "count": 0}
-    previous = {"gross": 0, "deductions": 0, "net": 0, "count": 0}
-
-    try:
-        from django.db.models import Sum
-
-        from payroll.models.models import Payslip
-
-        def _aggregate(qs):
-            agg = qs.aggregate(
-                total_gross=Sum("gross_pay"),
-                total_deductions=Sum("deduction"),
-                total_net=Sum("net_pay"),
-            )
-            return {
-                "gross": round(float(agg["total_gross"] or 0), 2),
-                "deductions": round(float(agg["total_deductions"] or 0), 2),
-                "net": round(float(agg["total_net"] or 0), 2),
-                "count": qs.count(),
-            }
-
-        current_qs = Payslip.objects.filter(
-            start_date__gte=first_of_month,
-            start_date__lte=today,
-            employee_id__is_active=True,
-            status__in=["confirmed", "paid", "review_ongoing"],
-        )
-        current = _aggregate(current_qs)
-
-        prev_qs = Payslip.objects.filter(
-            start_date__gte=prev_month_start,
-            start_date__lte=prev_month_end,
-            employee_id__is_active=True,
-            status__in=["confirmed", "paid"],
-        )
-        previous = _aggregate(prev_qs)
-    except Exception:
-        pass
-
-    # Trend calculation
-    change_pct = 0
-    if previous["net"] > 0:
-        change_pct = round(
-            ((current["net"] - previous["net"]) / previous["net"]) * 100, 1
-        )
-
-    return JsonResponse(
-        {
-            "current_month": today.strftime("%B %Y"),
-            "previous_month": prev_month_start.strftime("%B %Y"),
-            "current": current,
-            "previous": previous,
-            "change_percent": change_pct,
-        }
-    )
-
-
-@login_required
 def dashboard_pending_approvals(request):
     """Pending items awaiting the logged-in user's approval.
 
@@ -1723,102 +1585,6 @@ def dashboard_turnover(request):
     return JsonResponse(payload)
 
 
-@login_required
-def dashboard_leave_coverage(request):
-    """Current-month leave coverage: headcount on approved leave per day + by dept.
-
-    Managers without org-wide employee view see team-scoped counts.
-    """
-    today = date.today()
-    first_of_month, last_of_month = _current_month_bounds()
-    scoped_ids = _scoped_active_employee_ids(request)
-    days = []
-    by_department = []
-    active_total = 0
-
-    try:
-        from django.db.models import Count
-
-        from employee.models import Employee
-        from leave.models import LeaveRequest
-
-        emp_qs = Employee.objects.filter(is_active=True)
-        if scoped_ids is not None:
-            emp_qs = emp_qs.filter(id__in=scoped_ids)
-        active_total = emp_qs.count()
-        active_ids = set(emp_qs.values_list("id", flat=True))
-
-        days_in_month = (last_of_month - first_of_month).days + 1
-        for offset in range(days_in_month):
-            day = first_of_month + timedelta(days=offset)
-            leave_qs = LeaveRequest.objects.filter(
-                start_date__lte=day,
-                status__in=["approved", "cancel_requested"],
-                employee_id__is_active=True,
-            ).filter(Q(end_date__gte=day) | Q(end_date__isnull=True, start_date=day))
-            if scoped_ids is not None:
-                leave_qs = leave_qs.filter(employee_id__in=scoped_ids)
-            on_leave = leave_qs.values("employee_id").distinct().count()
-            coverage_pct = (
-                round(((active_total - on_leave) / active_total) * 100, 1)
-                if active_total > 0
-                else 100.0
-            )
-            days.append(
-                {
-                    "date": day.isoformat(),
-                    "label": day.strftime("%a %d"),
-                    "on_leave": on_leave,
-                    "available": max(0, active_total - on_leave),
-                    "coverage_pct": coverage_pct,
-                    "is_today": day == today,
-                }
-            )
-
-        # Current month: on-leave headcount by department (top 8) -- any
-        # employee with an approved leave overlapping the month at all.
-        month_leave_ids = set(
-            LeaveRequest.objects.filter(
-                start_date__lte=last_of_month,
-                status__in=["approved", "cancel_requested"],
-                employee_id__is_active=True,
-            )
-            .filter(
-                Q(end_date__gte=first_of_month)
-                | Q(end_date__isnull=True, start_date__gte=first_of_month)
-            )
-            .values_list("employee_id", flat=True)
-            .distinct()
-        )
-        if scoped_ids is not None:
-            month_leave_ids &= active_ids
-
-        if month_leave_ids:
-            dept_rows = (
-                Employee.objects.filter(id__in=month_leave_ids)
-                .values("employee_work_info__department_id__department")
-                .annotate(count=Count("id"))
-                .order_by("-count")[:8]
-            )
-            for row in dept_rows:
-                name = row["employee_work_info__department_id__department"] or str(
-                    _("Unassigned")
-                )
-                by_department.append({"department": name, "on_leave": row["count"]})
-    except Exception:
-        days = []
-        by_department = []
-
-    return JsonResponse(
-        {
-            "days": days,
-            "by_department": by_department,
-            "active_employees": active_total,
-            "is_team_scoped": scoped_ids is not None,
-        }
-    )
-
-
 # ---------------------------------------------------------------------------
 # Phase 5 — thin dashboard/api/* proxies for module chart JSON still used by
 # templates/dashboard.html (keeps modern home off raw module URL names).
@@ -1849,13 +1615,6 @@ def _force_get_params(request, **params):
         get[key] = value
     forced.GET = get
     return forced
-
-
-@login_required
-def dashboard_employee_status(request):
-    from employee.views import dashboard_employee
-
-    return _call_module_json(dashboard_employee, request)
 
 
 _OPEN_TICKET_STATUSES = ["new", "in_progress", "on_hold"]
@@ -2001,20 +1760,6 @@ def dashboard_attendance_overview(request):
 
 
 @login_required
-def dashboard_department_overtime(request):
-    from attendance.views.dashboard import department_overtime_chart
-
-    from_date, to_date = _parse_period(request)
-    scoped_request = _force_get_params(
-        request,
-        type="date_range",
-        date=from_date.isoformat(),
-        end_date=to_date.isoformat(),
-    )
-    return _call_module_json(department_overtime_chart, scoped_request)
-
-
-@login_required
 def dashboard_leave_trends(request):
     from leave.views import leave_over_period
 
@@ -2023,30 +1768,6 @@ def dashboard_leave_trends(request):
         request, from_date=from_date.isoformat(), to_date=to_date.isoformat()
     )
     return _call_module_json(leave_over_period, scoped_request)
-
-
-@login_required
-def dashboard_leave_by_department(request):
-    from leave.views import overall_leave
-
-    from_date, to_date = _parse_period(request)
-    scoped_request = _force_get_params(
-        request,
-        from_date=from_date.isoformat(),
-        to_date=to_date.isoformat(),
-    )
-    return _call_module_json(overall_leave, scoped_request)
-
-
-@login_required
-def dashboard_department_leave_days(request):
-    from leave.views import department_leave_chart
-
-    from_date, to_date = _parse_period(request)
-    scoped_request = _force_get_params(
-        request, from_date=from_date.isoformat(), to_date=to_date.isoformat()
-    )
-    return _call_module_json(department_leave_chart, scoped_request)
 
 
 @login_required
