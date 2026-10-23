@@ -22,7 +22,9 @@ class GeoFencing(models.Model):
     def for_company(cls, company):
         """
         The fence that applies to ``company``: its own, else the global one (the row with no
-        company), else None. A company-specific fence overrides the global one.
+        company), else None. A company-specific fence overrides the global one - including a
+        company fence that is switched off (``start=False``), which turns the fence off for
+        that company even while the global one is on.
         """
         fence = None
         if company is not None:

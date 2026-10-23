@@ -381,9 +381,13 @@ def is_geofencing_enabled(request):
     from geofencing.models import GeoFencing
 
     selected_company = request.session.get("selected_company")
-    if not selected_company or selected_company == "all":
-        return False
-    company = Company.objects.filter(id=selected_company).first()
+    if selected_company and selected_company != "all":
+        company = Company.objects.filter(id=selected_company).first()
+    else:
+        # "All companies" is selected: the punch is still checked against the employee's own
+        # company (see geofence_denial_web), so the button has to send the location for it.
+        employee = getattr(request.user, "employee_get", None)
+        company = employee.get_company() if employee else None
     if not company:
         return False
     fence = GeoFencing.for_company(company)

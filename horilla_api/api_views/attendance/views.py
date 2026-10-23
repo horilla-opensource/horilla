@@ -3,7 +3,6 @@ from datetime import date, datetime, timedelta, timezone
 
 from django import template
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMessage
 from django.db.models import Case, CharField, F, Value, When
 from django.http import QueryDict
@@ -90,16 +89,13 @@ def geofence_denial(request):
     if company is None:
         return None
 
-    try:
-        geo_fencing = company.geo_fencing
-    except ObjectDoesNotExist:
-        # No fence of its own: use the global one (the row with no company), if there is one.
-        from geofencing.models import GeoFencing
+    # The company's own fence, else the global one.
+    from geofencing.models import GeoFencing
 
-        geo_fencing = GeoFencing.objects.filter(company_id__isnull=True).first()
-        if geo_fencing is None:
-            # No GeoFencing row at all: the feature is not in use here.
-            return None
+    geo_fencing = GeoFencing.for_company(company)
+    if geo_fencing is None:
+        # No GeoFencing row at all: the feature is not in use here.
+        return None
 
     if not geo_fencing.start:
         return None

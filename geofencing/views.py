@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from geopy.distance import geodesic
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -15,7 +15,7 @@ from base.models import Company
 from geofencing.forms import GeoFencingSetupForm
 
 from .models import GeoFencing
-from .serializers import *
+from .serializers import EmployeeLocationSerializer, GeoFencingSetupSerializer
 
 
 class GeoFencingSetupGetPostAPIView(APIView):

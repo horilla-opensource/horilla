@@ -81,10 +81,17 @@ class FenceForCompanyTests(TestCase):
 
 
 @patch("geofencing.models.Nominatim")
-class ApiPunchCheckTests(TestCase):
-    """The mobile/API punch check asks the company for its fence, and falls back to the global one."""
+class WhereTheFenceIsReadTests(TestCase):
+    """Every place that reports or enforces the fence must read the same one."""
 
     LOCATION_CHECK = "geofencing.views.GeoFencingEmployeeLocationCheckAPIView.post"
+
+    def setUp(self):
+        self.acme = make_company("Acme")
+        self.user = make_user("fence-employee")
+        self.employee = make_employee(
+            company=self.acme, email="fence-employee@test.horilla", user=self.user
+        )
 
     def request_for(self, company):
         from types import SimpleNamespace
@@ -96,36 +103,128 @@ class ApiPunchCheckTests(TestCase):
             data={},
         )
 
-    def company_without_a_fence(self):
-        from django.core.exceptions import ObjectDoesNotExist
+    def test_the_api_punch_check_enforces_the_global_fence(self, nominatim):
+        from types import SimpleNamespace
 
-        class Company:
-            @property
-            def geo_fencing(self):
-                raise ObjectDoesNotExist("no fence")
-
-        return Company()
-
-    def test_the_global_fence_is_enforced_for_a_company_without_one(self, nominatim):
         from horilla_api.api_views.attendance.views import geofence_denial
 
         nominatim.return_value.reverse.return_value = MagicMock()
         make_fence(None, start=True)
         with patch(self.LOCATION_CHECK) as location_check:
-            from types import SimpleNamespace
-
             location_check.return_value = SimpleNamespace(status_code=200)
-            geofence_denial(self.request_for(self.company_without_a_fence()))
+            geofence_denial(self.request_for(self.acme))
         location_check.assert_called_once()
 
     def test_no_fence_at_all_lets_the_punch_through(self, nominatim):
         from horilla_api.api_views.attendance.views import geofence_denial
 
         with patch(self.LOCATION_CHECK) as location_check:
-            self.assertIsNone(
-                geofence_denial(self.request_for(self.company_without_a_fence()))
-            )
+            self.assertIsNone(geofence_denial(self.request_for(self.acme)))
         location_check.assert_not_called()
+
+    def test_the_mobile_config_reports_the_global_fence(self, nominatim):
+        from horilla_api.api_views.mobile.views import _geofence_block
+
+        nominatim.return_value.reverse.return_value = MagicMock()
+        make_fence(None, radius_in_meters=500)
+        block = _geofence_block(self.employee)
+        self.assertTrue(block["enabled"])
+        self.assertEqual(block["radius_in_meters"], 500)
+
+    def test_the_mobile_config_is_off_without_any_fence(self, nominatim):
+        from horilla_api.api_views.mobile.views import _geofence_block
+
+        self.assertEqual(_geofence_block(self.employee), {"enabled": False})
+
+    def test_the_login_response_reports_the_global_fence(self, nominatim):
+        from rest_framework.test import APIClient
+
+        nominatim.return_value.reverse.return_value = MagicMock()
+        make_fence(None, start=True)
+        self.user.set_password("fence-pass-1")
+        self.user.save()
+        response = APIClient().post(
+            "/api/v1/auth/login/",
+            {"username": self.user.username, "password": "fence-pass-1"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertIs(response.json()["geo_fencing"], True)
+
+    def test_the_login_response_is_off_without_any_fence(self, nominatim):
+        from rest_framework.test import APIClient
+
+        self.user.set_password("fence-pass-1")
+        self.user.save()
+        response = APIClient().post(
+            "/api/v1/auth/login/",
+            {"username": self.user.username, "password": "fence-pass-1"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertIs(response.json()["geo_fencing"], False)
+
+    def test_a_switched_off_company_fence_overrides_an_enabled_global_one(
+        self, nominatim
+    ):
+        from attendance.methods.utils import geofence_denial_web
+        from horilla_api.api_views.mobile.views import _geofence_block
+
+        nominatim.return_value.reverse.return_value = MagicMock()
+        make_fence(None, start=True)
+        own = make_fence(self.acme, start=False)
+        self.assertEqual(GeoFencing.for_company(self.acme), own)
+        self.assertEqual(_geofence_block(self.employee), {"enabled": False})
+        far_away = RequestFactory().get("/", {"latitude": "40.0", "longitude": "-74.0"})
+        self.assertIsNone(geofence_denial_web(far_away, self.acme))
+
+
+@patch("geofencing.models.Nominatim")
+class FenceButtonWithAllCompaniesTests(TestCase):
+    """With "all companies" selected the check-in button must still send the location."""
+
+    def setUp(self):
+        self.acme = make_company("Acme")
+        self.user = make_user("fence-button-user")
+        make_employee(
+            company=self.acme, email="fence-button@test.horilla", user=self.user
+        )
+        # reload: the user still holds the employee object created above, whose work information
+        # was cached before the company was set
+        self.user = type(self.user).objects.get(pk=self.user.pk)
+
+    def request(self, selected):
+        request = RequestFactory().get("/")
+        request.user = self.user
+        request.session = {"selected_company": selected}
+        return request
+
+    def test_all_companies_uses_the_employees_own_company(self, nominatim):
+        from base.templatetags.horillafilters import is_geofencing_enabled
+
+        nominatim.return_value.reverse.return_value = MagicMock()
+        make_fence(None, start=True)
+        self.assertTrue(is_geofencing_enabled(self.request("all")))
+
+    def test_all_companies_follows_a_switched_off_company_fence(self, nominatim):
+        from base.templatetags.horillafilters import is_geofencing_enabled
+
+        nominatim.return_value.reverse.return_value = MagicMock()
+        make_fence(None, start=True)
+        make_fence(self.acme, start=False)
+        self.assertFalse(is_geofencing_enabled(self.request("all")))
+
+    def test_a_selected_company_still_uses_that_company(self, nominatim):
+        from base.templatetags.horillafilters import is_geofencing_enabled
+
+        nominatim.return_value.reverse.return_value = MagicMock()
+        make_fence(None, start=True)
+        self.assertTrue(is_geofencing_enabled(self.request(str(self.acme.pk))))
+
+    def test_no_fence_means_no_location_is_requested(self, nominatim):
+        from base.templatetags.horillafilters import is_geofencing_enabled
+
+        self.assertFalse(is_geofencing_enabled(self.request("all")))
 
 
 @patch("geofencing.models.Nominatim")
