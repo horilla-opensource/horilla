@@ -163,6 +163,41 @@ def expected_employee_ids(employees, start, end):
     return with_shift | attended
 
 
+def half_day_leave_q(day):
+    """
+    Leave requests that are only half a day on ``day``: day itself is a
+    half-day boundary. A multi-day leave's middle days are always full days,
+    however its start and end are split.
+    """
+    halves = ["first_half", "second_half"]
+    return Q(start_date=day, start_date_breakdown__in=halves) | Q(
+        end_date=day, end_date_breakdown__in=halves
+    )
+
+
+def leave_employee_ids(leaves, day):
+    """
+    (on leave, on full-day leave) employee id sets for ``day`` from
+    ``leaves``, the approved leave requests that cover it.
+    """
+    on_leave = set(leaves.values_list("employee_id", flat=True))
+    full_day = set(
+        leaves.exclude(half_day_leave_q(day)).values_list("employee_id", flat=True)
+    )
+    return on_leave, full_day
+
+
+def expected_today_ids(employees, day, present_ids, on_leave_ids):
+    """
+    Ids of the employees expected in on ``day``, for the attendance rate on
+    both dashboards: expected_employee_ids, less anyone on approved leave,
+    plus whoever is present anyway (e.g. in for the other half of a half-day
+    leave), so the rate never goes over 100%. On a working day this is
+    exactly present + not checked in.
+    """
+    return (expected_employee_ids(employees, day, day) - on_leave_ids) | present_ids
+
+
 def _expected_attendance_days(employees, start, end):
     """
     {employee id: [dates]} as in _expected_work_days for employees with a
@@ -208,6 +243,7 @@ def attendance_kpi_data(request):
     """
     from attendance.filters import get_expected_to_check_in
     from attendance.models import Attendance, AttendanceLateComeEarlyOut
+    from leave.models import LeaveRequest
 
     employees = _scoped_employees(request)
     total_employees = employees.count()
@@ -218,23 +254,37 @@ def attendance_kpi_data(request):
     # than a non-zero count for some other day.
     today = date.today()
 
-    # Everyone with an attendance row today, validated or not - matches the
-    # main HR dashboard's definition (base/dashboard.py's dashboard_kpi_data)
-    # and the card's own link, which has no attendance_validated filter.
-    present_today = (
-        Attendance.objects.filter(
-            attendance_date=today,
-            employee_id__is_active=True,
+    on_leave_ids, full_day_leave_ids = leave_employee_ids(
+        LeaveRequest.objects.filter(
             employee_id__in=employees,
-        )
-        .values("employee_id")
-        .distinct()
-        .count()
+            status__in=["approved", "cancel_requested"],
+            start_date__lte=today,
+        ).filter(Q(end_date__gte=today) | Q(end_date__isnull=True, start_date=today)),
+        today,
     )
 
+    # Everyone with an attendance row today, validated or not, except anyone
+    # on a full-day approved leave (counted as on leave) - matches the main
+    # HR dashboard's definition (base/dashboard.py's dashboard_kpi_data) and
+    # the card's own link, which has no attendance_validated filter.
+    present_ids = (
+        set(
+            Attendance.objects.filter(
+                attendance_date=today,
+                employee_id__is_active=True,
+                employee_id__in=employees,
+            ).values_list("employee_id", flat=True)
+        )
+        - full_day_leave_ids
+    )
+    present_today = len(present_ids)
+
     # Out of the employees expected today: those with a shift, plus anyone
-    # without one who clocked in anyway (expected_employee_ids).
-    expected_employees = len(expected_employee_ids(employees, today, today))
+    # without one who clocked in anyway, less anyone on approved leave
+    # (expected_today_ids, the same rule as the main dashboard).
+    expected_employees = len(
+        expected_today_ids(employees, today, present_ids, on_leave_ids)
+    )
     attendance_rate = (
         round((present_today / expected_employees * 100), 1)
         if expected_employees > 0
