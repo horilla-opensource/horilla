@@ -6,7 +6,11 @@ from unittest import mock
 
 from django.test import SimpleTestCase, override_settings
 
-from horilla_views.cbv_methods import get_quick_date_filters, week_start
+from horilla_views.cbv_methods import (
+    first_day_of_week,
+    get_quick_date_filters,
+    week_start,
+)
 from horilla_views.generic.cbv.views import QUICK_DATE_RANGES
 
 FIELDS = ("attendance_date", "attendance_date__gte", "attendance_date__lte")
@@ -41,6 +45,27 @@ class QuickDateFilterTests(SimpleTestCase):
         menu = ranges_on(WEDNESDAY)
         self.assertEqual(menu["This Week"], ("2026-10-18", "2026-10-24"))
         self.assertEqual(menu["Last Week"], ("2026-10-11", "2026-10-17"))
+
+    def test_first_day_of_week_setting(self):
+        for value, expected in [
+            (0, 0),
+            ("0", 0),
+            ("6", 6),
+            (" 2 ", 2),
+            ("", 1),
+            ("abc", 1),
+            ("7", 1),
+            ("-1", 1),
+            (None, 1),
+        ]:
+            with self.subTest(value=value), override_settings(
+                HORILLA_FIRST_DAY_OF_WEEK=value
+            ):
+                self.assertEqual(first_day_of_week(), expected)
+
+    @override_settings(HORILLA_FIRST_DAY_OF_WEEK="abc")
+    def test_an_invalid_setting_means_monday(self):
+        self.assertEqual(week_start(WEDNESDAY), date(2026, 10, 19))
 
     def test_this_week_and_last_week_are_calendar_weeks(self):
         menu = ranges_on(WEDNESDAY)

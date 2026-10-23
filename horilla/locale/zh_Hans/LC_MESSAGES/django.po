@@ -16074,8 +16074,6 @@ msgstr "小于 (<)"
 msgid "Between"
 msgstr ""
 
-#, fuzzy
-#| msgid "First Week"
 msgid "Last Week"
 msgstr "上周"
 
