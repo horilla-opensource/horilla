@@ -2022,8 +2022,23 @@ urlpatterns = [
     # path("view-penalties", views.view_penalties, name="view-penalties"),
     path("view-penalties/", penalty.ViewPenaltyList.as_view(), name="view-penalties"),
     path(
+        "penalty-records-list/",
+        penalty.PenaltyRecordsList.as_view(),
+        name="penalty-records-list",
+    ),
+    path(
+        "penalty-records-nav/",
+        penalty.PenaltyRecordsNav.as_view(),
+        name="penalty-records-nav",
+    ),
+    path(
+        "penalty-records-create/",
+        penalty.PenaltyRecordsFormView.as_view(),
+        name="penalty-records-create",
+    ),
+    path(
         "delete-penalties/<int:penalty_id>/",
-        views.delete_penalities,
+        views.delete_penalties,
         name="delete-penalties",
     ),
     path(
