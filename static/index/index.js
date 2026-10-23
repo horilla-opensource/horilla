@@ -2148,6 +2148,7 @@ function hlvShowBulkDeleteSummary(r, kind) {
         title: title,
         icon: icon,
         width: "24rem",
+        customClass: { icon: "oh-hlv-result-icon" },
         html:
             '<p style="color:#6b7280;font-size:13px;margin:0">' + text + "</p>" +
             '<div style="display:flex;gap:8px;margin-top:12px">' +
