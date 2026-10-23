@@ -1448,12 +1448,12 @@ class LeaveRequest(HorillaModel):
             context={"instance": self},
         )
 
-    def penality_col(self):
+    def penalty_col(self):
         """
-        method for penality coloumn
+        method for penalty coloumn
         """
         return render_template(
-            path="cbv/leave_requests/penality.html",
+            path="cbv/leave_requests/penalty.html",
             context={"instance": self},
         )
 
