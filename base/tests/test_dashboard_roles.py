@@ -101,10 +101,7 @@ class RoleDefaultPrefsTests(SimpleTestCase):
         self.assertIn("gender_distribution", visible)
 
     def test_every_default_chart_has_a_card(self):
-        """
-        The defaults only name charts the dashboard draws: when a card leaves
-        templates/dashboard.html, its id (and its dashboard/api view) go too.
-        """
+        """Every chart id in the defaults has a card in templates/dashboard.html."""
         import re
         from pathlib import Path
 

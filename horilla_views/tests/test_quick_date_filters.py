@@ -31,6 +31,8 @@ def ranges_on(today):
     return out
 
 
+# Monday unless a test says otherwise, whatever a local .env sets.
+@override_settings(HORILLA_FIRST_DAY_OF_WEEK=1)
 class QuickDateFilterTests(SimpleTestCase):
     def test_weeks_start_on_monday_by_default(self):
         self.assertEqual(week_start(WEDNESDAY), date(2026, 10, 19))
