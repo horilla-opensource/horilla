@@ -563,8 +563,7 @@ class PayslipPDFAPIView(APIView):
         data["json_data"]["employee"] = payslip.employee_id.id
         data["json_data"]["payslip"] = payslip.id
         data["instance"] = payslip
-        payroll_settings = PayrollSettings.for_selected_company()
-        data["currency"] = payroll_settings.currency_symbol if payroll_settings else "₹"
+        data["currency"] = PayrollSettings.currency_for_selected_company()
         data["all_deductions"] = []
         for deduction_list in [
             data.get("basic_pay_deductions", []),

@@ -14,7 +14,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
-from horilla.horilla_middlewares import get_selected_company
+from horilla.horilla_middlewares import _thread_locals, get_selected_company
 from horilla.models import HorillaModel
 from payroll.models.models import FilingStatus
 
@@ -54,8 +54,16 @@ class PayrollSettings(HorillaModel):
         a bare .objects.first() returns whichever row has the lower id. That
         is usually the "$" row default_currency() creates on the very first
         page load, not the company's own row saved from the settings page.
+
+        Remembered on the current request, per company: a payroll list formats
+        every amount through the currency filter. Saving or deleting settings
+        forgets it (payroll/signals.py).
         """
+        request = _thread_locals.request
         company_id = get_selected_company()
+        remembered = getattr(request, "_payroll_settings", None) or {}
+        if company_id in remembered:
+            return remembered[company_id]
         settings = None
         if company_id and company_id != "all":
             settings = cls.objects.filter(company_id=company_id).first()
@@ -63,7 +71,22 @@ class PayrollSettings(HorillaModel):
             settings = cls.objects.filter(company_id__isnull=True).first()
         if settings is None:
             settings = cls.objects.first()
+        if request is not None:
+            request._payroll_settings = {**remembered, company_id: settings}
         return settings
+
+    @classmethod
+    def currency_for_selected_company(cls):
+        """The selected company's currency symbol; "$" when none is set up."""
+        settings = cls.for_selected_company()
+        return (settings.currency_symbol if settings else None) or "$"
+
+    @staticmethod
+    def forget_remembered():
+        """Drop the settings remembered on the current request."""
+        request = _thread_locals.request
+        if request is not None and hasattr(request, "_payroll_settings"):
+            del request._payroll_settings
 
 
 class TaxBracket(HorillaModel):
