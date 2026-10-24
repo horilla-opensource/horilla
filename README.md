@@ -134,9 +134,9 @@ asks for the `DB_INIT_PASSWORD` from your `.env`, then lets you create the first
 administrator.
 
 > **Run the scheduler.** Scheduled jobs (for example automatic payslips, leave resets, work
-> records, shift rotation, contract expiry, document and asset reminders) only
-> run while `run_scheduler` is running. The Docker Compose file starts it for you
-> as the `scheduler` service.
+> records, shift rotation, contract expiry, document and asset reminders, clearing
+> expired sessions) only run while `run_scheduler` is running. The Docker Compose
+> file starts it for you as the `scheduler` service.
 
 
 ## 🛠 Installation
