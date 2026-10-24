@@ -6,9 +6,6 @@
 [![Stars](https://img.shields.io/github/stars/horilla/horilla-hr)](https://github.com/horilla/horilla-hr/stargazers)
 [![Forks](https://img.shields.io/github/forks/horilla/horilla-hr)](https://github.com/horilla/horilla-hr/network/members)
 
-> [!IMPORTANT]
-> **`2.0` is now this repository’s default branch.** Use it to run or deploy Horilla (a plain `git clone` checks it out). To contribute code, branch from and open PRs against `dev/v2.0` — GitHub still pre-selects `2.0` as the PR base, so switch it manually. v1 (`1.0`/`master`) is deprioritized, with fixes considered case-by-case rather than on a guaranteed schedule. Full details → [Discussion #1127](https://github.com/horilla/horilla-hr/discussions/1127).
-
 > **A comprehensive, free, and open-source Human Resource Management System (HRMS) designed to streamline HR operations and enhance organizational efficiency.**
 
 ## 🚀 Features
