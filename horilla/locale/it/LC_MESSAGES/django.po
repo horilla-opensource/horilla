@@ -25992,6 +25992,8 @@ msgstr "Prossimi 7 giorni"
 msgid "Quick filter"
 msgstr "Filtro rapido"
 
+#: offboarding/templates/cbv/exit_process/quick_actions.html
+#: onboarding/templates/cbv/pipeline/onboarding/quick_actions.html
 #: recruitment/templates/cbv/pipeline/quick_actions.html
 #, python-format
 msgid "Quick filter (%(counter)s)"

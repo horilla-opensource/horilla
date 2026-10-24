@@ -21,7 +21,8 @@ class QuickFilterLabelTests(TestCase):
         self.assertNotRegex(html, r">\s*Filter\s*<ion-icon")
 
     def test_the_pipeline_dropdowns_are_called_quick_filter(self):
-        stored = [{"id": 1, "name": "Mine", "params": "a=1"}]
+        # Shaped like a SavedFilter (the fields _saved_filter_chip.html reads).
+        stored = [{"id": 1, "title": "Mine", "urlencode": "a=1", "color": ""}]
         for template in (
             "cbv/pipeline/quick_actions.html",
             "cbv/pipeline/onboarding/quick_actions.html",
@@ -30,3 +31,4 @@ class QuickFilterLabelTests(TestCase):
             with self.subTest(template=template):
                 html = self.render(template, stored_filters=stored)
                 self.assertIn("Quick filter (1)", html)
+                self.assertIn("Mine", html)

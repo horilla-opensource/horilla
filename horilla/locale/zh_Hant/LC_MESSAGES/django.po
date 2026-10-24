@@ -26531,6 +26531,8 @@ msgstr "未來 7 天"
 msgid "Quick filter"
 msgstr "快速篩選"
 
+#: offboarding/templates/cbv/exit_process/quick_actions.html
+#: onboarding/templates/cbv/pipeline/onboarding/quick_actions.html
 #: recruitment/templates/cbv/pipeline/quick_actions.html
 #, python-format
 msgid "Quick filter (%(counter)s)"
