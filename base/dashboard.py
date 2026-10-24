@@ -535,26 +535,16 @@ def dashboard_kpi_data(request):
         leave_qs = _today_leave_qs(
             request, real_today, status=["approved", "cancel_requested"]
         )
-        on_leave_employee_ids = set(
-            leave_qs.values_list("employee_id", flat=True).distinct()
-        )
-        # Half day only counts when today itself is the broken-down boundary
-        # date — a multi-day leave's middle days are always full days
-        # regardless of how its start/end boundaries are split.
-        half_day_q = Q(
-            start_date=real_today,
-            start_date_breakdown__in=["first_half", "second_half"],
-        ) | Q(
-            end_date=real_today,
-            end_date_breakdown__in=["first_half", "second_half"],
+        from attendance.dashboard import half_day_leave_q, leave_employee_ids
+
+        on_leave_employee_ids, full_day_leave_ids = leave_employee_ids(
+            leave_qs, real_today
         )
         half_day_today = (
-            leave_qs.filter(half_day_q).values("employee_id").distinct().count()
-        )
-        full_day_leave_ids = set(
-            leave_qs.exclude(half_day_q)
-            .values_list("employee_id", flat=True)
+            leave_qs.filter(half_day_leave_q(real_today))
+            .values("employee_id")
             .distinct()
+            .count()
         )
     except Exception:
         pass
@@ -581,16 +571,21 @@ def dashboard_kpi_data(request):
     # Expected = active employees not on approved leave (excludes leave from
     # the denominator so "absent" is not inflated by people who should be out).
     # Only employees with a shift are expected in, plus anyone without one
-    # who checked in anyway (attendance.dashboard.expected_employee_ids, the
-    # same rule as the Attendance dashboard). The headcount counts everyone.
+    # who checked in anyway, and anyone on leave who is present anyway
+    # (attendance.dashboard.expected_today_ids, the same rule as the
+    # Attendance dashboard). The headcount counts everyone.
     expected_ids = set()
     try:
-        from attendance.dashboard import expected_employee_ids
+        from attendance.dashboard import expected_today_ids
 
-        expected_ids = expected_employee_ids(emp_qs, real_today, real_today)
+        expected_ids = expected_today_ids(
+            emp_qs, real_today, present_ids, on_leave_employee_ids
+        )
     except Exception:
-        expected_ids = set(emp_qs.values_list("id", flat=True))
-    expected_today = max(0, len(expected_ids - on_leave_employee_ids))
+        expected_ids = (
+            set(emp_qs.values_list("id", flat=True)) - on_leave_employee_ids
+        ) | present_ids
+    expected_today = len(expected_ids)
     # Counted as a set difference, not total - present - on_leave: someone on
     # a half-day leave who also clocked in is in both of those sets, and
     # subtracting both would count them out twice. This is the same
