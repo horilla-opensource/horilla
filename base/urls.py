@@ -104,29 +104,9 @@ urlpatterns = [
         name="dashboard-announcements",
     ),
     path(
-        "dashboard/api/announcements/<int:pk>/",
-        dashboard_module.dashboard_announcement_detail,
-        name="dashboard-announcement-detail",
-    ),
-    path(
-        "dashboard/api/todays-leave/",
-        dashboard_module.dashboard_todays_leave,
-        name="dashboard-todays-leave",
-    ),
-    path(
-        "dashboard/api/upcoming-holidays/",
-        dashboard_module.dashboard_upcoming_holidays,
-        name="dashboard-upcoming-holidays",
-    ),
-    path(
         "dashboard/api/birthdays-anniversaries/",
         dashboard_module.dashboard_birthdays_anniversaries,
         name="dashboard-birthdays-anniversaries",
-    ),
-    path(
-        "dashboard/api/recruitment-pipeline/",
-        dashboard_module.dashboard_recruitment_pipeline,
-        name="dashboard-recruitment-pipeline",
     ),
     path(
         "dashboard/api/pending-approvals/",
@@ -162,11 +142,6 @@ urlpatterns = [
         "dashboard/save-prefs/",
         dashboard_module.save_dashboard_prefs,
         name="dashboard-save-prefs",
-    ),
-    path(
-        "dashboard/load-prefs/",
-        dashboard_module.load_dashboard_prefs,
-        name="dashboard-load-prefs",
     ),
     path(
         "dashboard/dismiss-setup-checklist/",
