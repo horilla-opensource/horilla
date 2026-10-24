@@ -9,8 +9,10 @@ from datetime import date, time
 from django.test import TestCase
 from django.urls import reverse
 
-from attendance.models import Attendance
+from attendance.filters import get_checked_in_on
+from attendance.models import Attendance, AttendanceLateComeEarlyOut
 from base.models import EmployeeShift, EmployeeShiftDay, EmployeeShiftSchedule
+from employee.models import Employee
 from horilla.testkit.factories import (
     make_company,
     make_employee,
@@ -22,7 +24,7 @@ from leave.models import LeaveRequest
 
 
 def clock_in(employee):
-    Attendance.objects.create(
+    return Attendance.objects.create(
         employee_id=employee,
         attendance_date=date.today(),
         attendance_clock_in_date=date.today(),
@@ -125,3 +127,48 @@ class TestDashboardsOnLeave(TestCase):
             data["expected_today"], data["present_today"] + data["not_checked_in"]
         )
         self.assertEqual(data["not_checked_in"], 1)  # the worker
+
+    def test_late_and_on_time_count_only_who_is_checked_in(self):
+        """
+        On time + late = checked in today: someone on a full-day leave who
+        clocked in late is on leave, so not late either.
+        """
+        clock_in(self.worker)
+        late = clock_in(self.away)
+        # Not objects.create(): the model's save() saves twice, and
+        # create()'s force_insert would insert the same row again.
+        for kind in ("late_come", "early_out"):
+            AttendanceLateComeEarlyOut(attendance_id=late, type=kind).save()
+        self.take_leave()
+        self.client.force_login(self.boss)
+        data = self.client.get(reverse("attendance-dashboard-kpi")).json()
+        self.assertEqual(
+            (
+                data["present_today"],
+                data["on_time"],
+                data["late_come"],
+                data["early_out"],
+            ),
+            (1, 1, 0, 0),
+        )
+
+    def test_checked_in_today_links_to_a_list_that_agrees(self):
+        """
+        The Attendance dashboard's card links to the employee list's
+        checked_in_on filter, like the main dashboard's, which leaves out
+        full-day leave too (the attendance list it linked to did not).
+        """
+        clock_in(self.worker)
+        clock_in(self.away)
+        self.take_leave()
+        self.client.force_login(self.boss)
+        data = self.client.get(reverse("attendance-dashboard-kpi")).json()
+        listed = get_checked_in_on(Employee.objects.all(), None, date.today())
+        self.assertEqual(list(listed), [self.worker])
+        self.assertEqual(data["present_today"], listed.count())
+
+        page = self.client.get(reverse("attendance-dashboard")).content.decode()
+        self.assertIn(
+            reverse("employee-view") + "?checked_in_on=${data.date}&is_active=True",
+            page,
+        )

@@ -292,34 +292,28 @@ def attendance_kpi_data(request):
     )
 
     # Not scoped to attendance_validated=False: "On Time" below is
-    # present_today minus late_come, so both sides need the same
+    # present_ids less the late arrivals, so both sides need the same
     # validated+unvalidated scope or the subtraction undercounts lateness
-    # and inflates "On Time".
-    late_come = (
-        AttendanceLateComeEarlyOut.objects.filter(
-            type="late_come",
-            attendance_id__attendance_date=today,
-            employee_id__is_active=True,
-            employee_id__in=employees,
+    # and inflates "On Time". Late arrivals and early outs count only for
+    # employees in present_ids, so someone on a full-day leave who clocked
+    # in (counted as on leave, not present) is not late either, and
+    # on time + late = checked in today.
+    def _late_early_ids(kind):
+        return (
+            set(
+                AttendanceLateComeEarlyOut.objects.filter(
+                    type=kind,
+                    attendance_id__attendance_date=today,
+                    employee_id__in=employees,
+                ).values_list("employee_id", flat=True)
+            )
+            & present_ids
         )
-        .values("employee_id")
-        .distinct()
-        .count()
-    )
 
-    early_out = (
-        AttendanceLateComeEarlyOut.objects.filter(
-            type="early_out",
-            attendance_id__attendance_date=today,
-            employee_id__is_active=True,
-            employee_id__in=employees,
-        )
-        .values("employee_id")
-        .distinct()
-        .count()
-    )
-
-    on_time = max(0, present_today - late_come)
+    late_ids = _late_early_ids("late_come")
+    late_come = len(late_ids)
+    early_out = len(_late_early_ids("early_out"))
+    on_time = len(present_ids - late_ids)
 
     # Not Checked In Today - employees still expected to check in today: reuses the
     # exact "expected to check in" rule the main HR dashboard's KPI and the
